@@ -1,0 +1,131 @@
+# test1.mnu
+#
+# use from Geany context:
+#
+# wish e_menu.tcl s=%s m=menus/test1.mnu
+#
+#% doctest
+#% exec tclsh ~/TKE-clone/TKE-clone/plugins/e_menu/e_menu/e_menu.tcl \
+#%      "m=menus/test1.mnu" t=1
+#> doctest
+#
+#######################################################################
+
+# options should go first because of "co=" (line continuator)
+
+[OPTIONS]
+
+co=;
+o=0
+w=45
+rt=2/5
+
+[MENU]
+ R: Doctest Safe: %e%x R: cd %d
+ S: Doctest Safe: %e%x S: tclsh %m/src/doctest_of_emenu.tcl -v 0 %f
+
+ R: Doctest Safe verbose: %e%x R: cd %d
+ S: Doctest Safe verbose: %e%x S: tclsh %m/src/doctest_of_emenu.tcl -v 1 %f
+
+ R: Doctest: %e%x R: cd %d
+ S: Doctest: %e%x S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 0 %f
+
+ R: Doctest verbose: %e%x R: cd %d
+ S: Doctest verbose: %e%x S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 1 %f
+
+ M:  M: 3
+
+ R: Run me (with %s) R: cd %d
+ R: Run me (with %s) R: %IF "%x"==".htm" || "%x"==".html" %THEN %B %f
+ R: Run me (with %s) R: %IF "%x"==".tcl" %THEN %T tclsh %f %s
+ R: Run me (with %s) R: %IF "%x"==".py"  %THEN %t python3 %f %s
+ R: Run me (with %s) R: ###########################################################
+ R: Run me (with %s) R: %M "Edit this menu for file extention: %x"
+
+ S: Shell script S: ? \
+    err=1; \
+    cd ~/FOSSIL; \
+    while [ $err -eq 1 ]; \
+      do repo=$(find *.fossil 2>/dev/null ); \
+      err=$?; \
+      if [ $? -eq 1 ]; then \
+        if [ $(pwd) = '/' ]; then \
+          echo "repo non esistente" ; break; \
+        fi; \
+        cd ../; \
+      else \
+        echo "$(pwd)/${repo}" ; \
+      fi; \
+    done
+
+ S: Shell script-2 S: %#s err=1; cd ~/FOSSIL
+
+ R: Input dialog R: cd %d
+ R: Input dialog R: \
+  %I "" "TEST OF %I" { \
+  ent1  {{   Find: }} {"$::EN1"} \
+  ent2  {{Replace: }} {"$::EN2"} \
+  labo  {{} {} {-t {\nOptions:} -font {-weight bold}}}  {} \
+  radA  {{Match:   }} {"$::V1" {Exact} {Glob} {RE  }} \
+  seh   {{} {} {}} {} \
+  chb1  {{Match whole word only}} {$::C1} \
+  chb2  {{Match case           }} {$::C2} \
+  seh2  {} {} \
+  v_    {} {} \
+  cbx1  {{Where:   } {} {-state readonly}} {"$::W1" {in file} {in session} {in directory}} \
+  tex1  {{Any text:} {} {-h 3 -w 50 -wrap word -tabnext lbx1}} {$::TEX} \
+  lbx1  {{Related: } {} {-h 3}} {"$::LBX" {my Father} Mother Son Daughter Brother Sister Uncle Aunt Cousin {Big Brother} "Second cousin" "1000th cousin"} \
+  opc1  {{Color:   } {-fill none -anchor w}} {{$::OPT} {{color red green blue -- {{other colors} yellow magenta cyan \
+        | #52CB2F #FFA500 #CB2F6A | #FFC0CB #90EE90 #8B6914}} \
+        {hue dark medium light} -- {{opc widget example}} ok} {-width 16}} \
+  tblSEL1  {{Table:   \n\nThe 'tbl' name\nis tblSEL* to\nreturn an item} {} {-h 4 -columns {16 {Name of widget} left \
+      0 Type left 0 X right 0 Y right} }} {"$::TBL" {"but" "ttk::button" 1 1} \
+      {"can" "canvas" 3 3} \
+      {"chb" "ttk::checkbutton" 4 4} \
+      {"cbx fco" "ttk::combobox" 23 2} \
+      {"ent" "ttk::entry" 212 6}} \
+  } \
+  -head "Enter data:" -weight bold == ::EN1 ::EN2 ::V1 ::C1 ::C2 ::W1 ::TEX ::LBX ::OPT ::TBL
+ R: Input dialog R: %M "> RESULTS:\n ::EN1= '$::EN1' \n ::EN2= '$::EN2' \n ::V1 = $::V1 \
+\n ::C1 = $::C1 \n ::C2 = $::C2\n ::W1 = $::W1 \
+\n ::TEX = $::TEX\n ::LBX = $::LBX\n ::OPT = $::OPT\n ::TBL = $::TBL\n"
+
+
+ R: Input dialog: choosers R: cd %d
+ R: Input dialog: choosers R: %C if {![info exists ::CHFIL]} { \
+   set ::CHFIL [set ::CHFIS [set ::CHDIR [set ::CHFON [set ::CHCLR [set ::CHDAT ""]]]]]}
+ R: Input dialog: choosers R: \
+  %I "" "TEST OF %I" { \
+  fil1  {{        File: } {} {-w 50}} {"$::CHFIL"} \
+  fis1  {{File to save: }} {"$::CHFIS"} \
+  dir1  {{   Directory: }} {"$::CHDIR"} \
+  fon1  {{        Font: }} {"$::CHFON"} \
+  clr1  {{       Color: }} {"$::CHCLR"} \
+  dat1  {{        Data: }} {"$::CHDAT"} \
+  } \
+  -head "Choose data\nwith clicking buttons or pressing F2:" -weight bold == ::CHFIL ::CHFIS ::CHDIR ::CHFON ::CHCLR ::CHDAT
+ R: Input dialog: choosers R: %M "> RESULTS:\n ::CHFIL= $::CHFIL \n ::CHFIS= $::CHFIS\n ::CHDIR= $::CHDIR \n ::CHFON= $::CHFON\n ::CHCLR= $::CHCLR \n ::CHDAT= $::CHDAT\n"
+
+ S: Test utf-8 (Пусть всегда будет солнце) S: cd ~
+ S: Test utf-8 (Пусть всегда будет солнце) S: echo "Пусть всегда будет солнце," ; echo "Пусть всегда будет мама"
+
+ M:  M: 3
+
+ MW: Test2 menu MW: "m=test2.mnu" o=0 "a1=M {It's just a test}; if {![Q {DANGER!} {These commands are dangerous\nand can set the world on fire!\n\nContinue?} yesno]} EXIT"
+
+ MW: Test3 menu MW: "m=test3.mnu" o=0
+
+[OPTIONS]
+in=1.0
+::EN1=%s
+::EN2====
+::V1=Glob
+::C1=0
+::C2=0
+::W1=in directory
+::OPT=opc widget example
+::LBX=my Father
+::TBL=\{cbx fco\} ttk::combobox 23 2
+::TEX=and	tabs	entered with copy-paste\n1234\n\nsome multi-line text			123
+pos=45.21
+%#s geo=969x487+250+140;pos=6.21 # this script is run with %#s wildcard in test1.mnu|!|# it does the same as the previous "Shell script"|!||!|err=1|!|cd ~/FOSSIL|!|while [ $err -eq 1 ];|!|  do repo=$(find *.fossil 2>/dev/null )|!|  err=$?|!|  if [ $? -eq 1 ]; then|!|    if [ $(pwd) = '/' ]; then|!|      echo "repo non esistente" ; break|!|    fi|!|    cd ../|!|  else|!|    echo "$(pwd)/${repo}"|!|  fi|!|done

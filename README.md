@@ -244,4 +244,3 @@ This example is small and easy to observe. Its tree view doesn't differ greatly 
 In a *real life*, a code isn't easily observed even with *bird's eye view* or with *code folding*.
 
 And here the *alited* might come to help.
-# alited
