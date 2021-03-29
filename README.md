@@ -1,7 +1,5 @@
 # What's that
 
-This doesn't pretend to be "a final decision of Tcl IDE" or kind of that. None of heroic. Let tne final decision wait for a better claimant, still wanted.
-
 The *alited* stands for "a lite editor". Edited by *alited* are source files, mostly Tcl/Tk and a bit C.
 
 The main idea of *alited* is "strict organization and light access to edited units".
@@ -28,8 +26,7 @@ If some source lines cannot be recognized by those hierarchical comments as a un
 
 The units are accessible through:
 
-   * the bar of files of a current project
-   * the bar of units of a current file
+   * the bar or tree of files of a current project
    * the tree of units of a current file
    * the list of favorite units of a current project
 
