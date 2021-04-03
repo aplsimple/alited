@@ -38,7 +38,7 @@ pos=156.48
    dir2 {{Output directory:}} {"$::EMENUDIR2"} \
    ent1 {{         Options:}} {"$::EMENUOPTS"} \
    seh {{} {-pady 3} {}} {} \
-   texc {{   Hint:} {} {-h 9 -w 67 -ro 1 -wrap word}} \
+   texc {{   Hint:} {} {-h 9 -w 67 -ro 1 -tabnext butOK}} \
    {\n Select input Tcl files' directory and output directory. \
     \n\n Other options are: \
     \n   -r : if set, the input directories are processed recursively; \
@@ -83,11 +83,11 @@ RE: Ruff! $::EMENUP2 ... RE: %B $::EMENUP2html
 
  R: Ruff! all ... R: %I {} "PROJECT NAME" { \
    v_ {{} {-pady 4}} {} \
-   tex1 {{ Projects to Ruff!:} {} {-h 8 -w 60 -wrap word}} {$::EMENURUFFDIR} \
+   tex1 {{ Projects to Ruff!:} {} {-h 8 -w 60 -tabnext chb1}} {$::EMENURUFFDIR} \
    chb1 {{Mulster afterwards:}} {$::EMENUMULSTER} \
    dir2 {{ Copy to directory:}} {"$::EMENUMULSTRES3"} \
    seh {{} {-pady 5} {}} {} \
-   tex2 {{   Ruff! the files:} {} {-h 8}} {$::EMENURUFFIT} \
+   tex2 {{   Ruff! the files:} {} {-h 8 -tabnext butOK}} {$::EMENURUFFIT} \
    } -head {\n This creates Ruff! documentation of Tcl files. \
    \n Customize ruff.tcl at need. } -weight bold == ::EMENURUFFDIR ::EMENUMULSTER ::EMENUMULSTRES3 ::EMENURUFFIT
 SW: Ruff! all ... SW: %C \
@@ -138,8 +138,8 @@ SW:Save your stuff SW: cd %PD
    fil1 {{ Archive file-$::EMENU7ZCNT:}} {"$::EMENU7ZARC"} \
    ent2 {{ ... its suffix:} {} {-tooltip {Add anything you think\nbe specific for this stuff\ne.g. "spec-edition"\n\navoid special characters:\nspaces, quotes, ?, *, \{, \}}}} {} \
    seh1 {{} {-pady 7} {}} {} \
-   tex1 {{    Directories \n      to backup:} {} {-h 8 -w 60 -wrap word}} {$::EMENU7ZDIR} \
-   tex2 {{    Directories \n      postponed:} {} {-h 8 -w 60 -wrap word}} {$::EMENU7ZSKIP} \
+   tex1 {{    Directories \n      to backup:} {} {-h 8 -w 60 -tabnext tex2}} {$::EMENU7ZDIR} \
+   tex2 {{    Directories \n      postponed:} {} {-h 8 -w 60 -tabnext entdir3}} {$::EMENU7ZSKIP} \
    seh2 {{} {-pady 7} {}} {} \
    dir3 {{        Save to:}} {"$::EMENU7ZBAK"} \
    } -head {\n This creates a backup of your directories.\n } -weight bold == ::EMENU7ZCOM ::EMENU7ZGIT ::EMENU7ZARC ::EMENU7ZSUFF ::EMENU7ZDIR ::EMENU7ZSKIP ::EMENU7ZBAK
@@ -173,8 +173,8 @@ SW: Mulster %F SW: cd %PD
  R: Mulster %F R: %I {} "MULSTER" { \
    ent1 {{TEMP ini file   :}} {"$::EMENU_MULST1"} \
    ent2 {{TEMP result file:}} {"$::EMENU_MULST2"} \
-   tex1 {{Find strings    :} {} {-h 4 -w 60 -wrap word}} {$::EMENU_MULST3} \
-   tex2 {{Replace to      :} {} {-h 4 -w 60 -wrap word}} {$::EMENU_MULST4} \
+   tex1 {{Find strings    :} {} {-h 4 -w 60}} {$::EMENU_MULST3} \
+   tex2 {{Replace to      :} {} {-h 4 -w 60}} {$::EMENU_MULST4} \
    cbx1 {{Mode            :}} {"$::EMENU_MULST5" exact exact0 glob regexp regexp--} \
    } -head {\n This replaces multiple strings in your file.\n (exact0 means "without leading/trailing spaces")\n} -weight bold \
    == ::EMENU_MULST1 ::EMENU_MULST2 ::EMENU_MULST3 ::EMENU_MULST4 ::EMENU_MULST5

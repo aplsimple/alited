@@ -769,18 +769,14 @@ proc ::em::create_template {fname} {
   set res no
   if {[em_question "Menu isn't open" \
   "ERROR of opening\n$fname\n\nCreate it?"]} {
-    if {[catch {set chan [open "$fname" "w"]} e]} {
-      em_message "ERROR of creating\n\n$fname\n\n$e"
+    set dir [file dirname $fname]
+    if {[file tail $dir] eq $::em::prjname} {
+      set menu "$::em::prjname/nam3.mnu"
     } else {
-      chan configure $chan -encoding utf-8
-      set dir [file dirname $fname]
-      if {[file tail $dir] == $::em::prjname} {
-        set menu "$::em::prjname/nam3.mnu"
-      } else {
-        set menu [file join $dir "nam3.mnu"]
-      }
-      puts $chan "R: nam1 R: prog\n\nS: nam2 S: comm\n\nM: nam3 M: m=$menu"
-      close $chan
+      set menu [file join $dir "nam3.mnu"]
+    }
+    set fcont "R: nam1 R: prog\n\nS: nam2 S: comm\n\nM: nam3 M: m=$menu"
+    if {[set res [::apave::writeTextFile $fname fcont]]} {
       set res [::em::addon edit $fname]
       if {!$res} {file delete $fname}
     }

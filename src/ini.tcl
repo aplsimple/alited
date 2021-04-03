@@ -146,27 +146,21 @@ proc ini::_init {} {
 
   namespace upvar ::alited al al obPav obPav obDlg obDlg
 
-  # get alited's options
-  lassign [::apave::parseOptions $::argv \
-    -inidir "" -icons "middle icons" -CS 23 -fontsize 12 -hue 0] \
-    inidir icons cs fontsize hue
+  set al(INI) [file join [file normalize $::alited::INIDIR] alited.ini]
+  ReadIni
 
   # initialize GUI
   ::apave::initWM
-  ::apave::iconImage -init $icons
-  ::apave::obj basicFontSize $fontsize
+  ::apave::iconImage -init $al(INI,ICONS)
+  ::apave::obj basicFontSize $al(FSIZE,std)
 
   # create two main apave objects
   ::apave::APaveInput create $obPav $al(WIN)
   ::apave::APaveInput create $obDlg $al(WIN)
-  $obPav csSet $cs . -doit
+  $obPav csSet $al(INI,CS) . -doit
 
   # set options' values
-  if {$hue} {::apave::obj csToned $cs [expr {$hue*5}]}
-  if {$inidir ne ""} {set ::alited::INIDIR $inidir}
-  set al(INI) [file join [file normalize $::alited::INIDIR] alited.ini]
-
-  ReadIni
+  if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) [expr {$al(INI,HUE)*5}]}
 
   set imgl [::apave::iconImage]
   set llen 21
@@ -179,11 +173,11 @@ proc ini::_init {} {
       append al(tool) " $img {{} -tooltip {Icon$i: $icon@@ -under 4}}"
     }
   }
-  foreach {icon} {tree heart add delete up down plus minus file folder} {
+  foreach {icon} {tree heart add delete up down plus minus file folder actions} {
     set img alimg_$icon
     catch {image create photo $img -data [::apave::iconData $icon small]}
     catch {image create photo $img-small -data [::apave::iconData $icon small]}
   }
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl -CS 23 -hue 0 -fontsize 11
+#RUNF1: alited.tcl

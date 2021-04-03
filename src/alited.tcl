@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.1.1.5
+package provide alited 0.1.1.8
 
 package require Tk
 
@@ -71,7 +71,12 @@ puts "LIBDIR=$LIBDIR"
   set al(TREE,files) no
   set al(TREE,cw0) 200
   set al(TREE,cw1) 70
+  set al(FSIZE,std) 11
+  set al(FSIZE,txt) 12
   set al(FSIZE,small) 9
+  set al(INI,CS) 23
+  set al(INI,HUE) 0
+  set al(INI,ICONS) "middle icons"
   set al(INI,save_onselect) no
   set al(INI,save_onadd) no
   set al(INI,save_onmove) no

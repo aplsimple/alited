@@ -9,7 +9,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide baltip 1.0.3
+package provide baltip 1.0.4
 
 package require Tk
 
@@ -363,7 +363,10 @@ proc ::baltip::my::FadeNext {w aint fint icount alpha show geo {geos ""}} {
   if {![winfo exists $w]} return
   lassign [split [wm geometry $w] +] -> X Y
   if {$geos ne "" && $geos ne "+$X+$Y"} return
-  set al [expr {min($alpha,($fint+$icount*1.5)/$fint)}]
+  if {$fint<=0} {set fint 10}
+  if {[catch {set al [expr {min($alpha,($fint+$icount*1.5)/$fint)}]}]} {
+    set al 0
+  }
   if {$icount<0} {
     if {$al>0} {
       if {[catch {wm attributes $w -alpha $al}]} {set al 0}

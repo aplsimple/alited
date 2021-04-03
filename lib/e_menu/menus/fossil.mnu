@@ -46,7 +46,7 @@ RW:fossil gdiff $::FILETAIL ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
    fco1 {{Version:} {} {-h 10 -state readonly -inpval "$::EMENUCOMMIT"}}\
      {@@-div1 "\[" -div2 "\]" -ret 1 $::EMENUTMPFILE@@    INFO: @@-div1 "\] " -list {{}} $::EMENUTMPFILE@@}\
    seh {{} {-pady 3} {}} {}\
-   texc {{   Hint:} {} {-h 9 -w 60 -ro 1 -wrap word}}\
+   texc {{   Hint:} {} {-h 9 -w 60 -ro 1  -tabnext butOK}}\
    {\n Select a version from the combobox to be compared to tip.\n\n If it's blank, the current file is compared to tip.\n\n No response means no differences.\n\n (temp file: $::EMENUTMPFILE)}\
    } -head {\n This will compare a selected version\n of file to its tip:} -weight bold == ::EMENUFILE ::EMENUCOMMIT
  R:fossil gdiff $::FILETAIL ? R: %C if {"$::EMENUCOMMIT" eq ""} \
@@ -66,7 +66,7 @@ RW:fossil diff ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
    cbx1  {{Regexp filter:} {} {}} { {$::EMENUGREP} {} {^[+]} } \
    chbBr {{        Brief:} {-pady 4} {}} {$::EMENUBRIEF} \
    seh {{} {-pady 3} {}} {} \
-   texc  {{         Hint:} {} {-h 11 -w 67 -ro 1 -wrap word}} \
+   texc  {{         Hint:} {} {-h 11 -w 67 -ro 1 -tabnext butOK}} \
    { Select versions from the comboboxes to be compared. \
   \n\n By default, 'tip' is compared to current files. \
   \n\n A 'to' version is later than 'from'. Empty means 'current files'. \
@@ -125,7 +125,7 @@ SW:fossil diff ? SW: cat "$::EMENUTMPFILE"
    lab2  {{} {} {-t {For COMMIT:} -font {-weight bold}}}  {} \
    cbx2 {{   Options:}} {"$::EM_COMOPT" --allow-conflict --allow-empty --allow-fork --allow-older --baseline {--bgcolor COLOR} {--branch NEW-BRANCH-NAME} {--branchcolor COLOR} --close --delta --integrate {--mimetype MIMETYPE} -n|--dry-run --no-prompt --nosign --override-lock --private --hash {--tag TAG-NAME} {--date-override YYYY-MM-DDTHH:MM:SS.SSS} {--user-override USER}} \
    seh2 {} {} \
-   texc {{Hint:} {} {-h 13 -w 70 -ro 1 -wrap word}} \
+   texc {{Hint:} {} {-h 13 -w 70 -ro 1 -tabnext butOK}} \
    { You can touch any file(s) before committing.\
 \n If you omit file/time of touching, it will not be made.\
 \n     ______________________________________________________\

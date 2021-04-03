@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.3a1
+package provide bartabs 1.3
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -118,6 +118,26 @@ yROnlsp+4xkRFgAuSmqo6nf+ATq/yK22zWynAAAAAElFTkSuQmCC}
     # Draws all bars. Used at updating themes etc.
     foreach bars $bartabs::BarsList {$bars drawAll}
   }
+  #_____
+  
+  proc messageBox {type ttl msg args} {
+    # Runs Tk's or apave's ok/yes/no/cancel dialogue.
+    #  type - ok, yesno or yesnocancel
+    #  ttl - title
+    #  ttl - message
+    # args - additional arguments of tk_messageBox
+    # Returns 1 if 'yes' chosen, 2 if 'no', 0 otherwise.
+  
+    # try the apave package's dialogue
+    if {[catch {set res [::apave::obj $type ques $ttl $msg]}]} {
+      # or run the standard tk_messageBox
+      set res [tk_messageBox -title $ttl -message $msg -type $type \
+        -icon question {*}$args]
+      set res [expr {$res eq "yes" ? 1 : ($res eq "no" ? 2 : 0)}]
+    }
+    return $res
+  }
+
 }
 
 # __________________ Declaring bartabs class hierarchy __________________ #
@@ -586,7 +606,7 @@ method Tab_CloseFew {{TID -1} {left no}} {
     incr i -1
     set tID [lindex $tabs $i 0]
     if {$TID eq "-1" || ($left && $i<$icur) || (!$left && $i>$icur)} {
-      if {![set res [my $tID close no yesnocancel]]} break
+      if {![set res [my $tID close no]]} break
       if {$res==1} {set doupdate yes}
     }
   }
@@ -596,12 +616,32 @@ method Tab_CloseFew {{TID -1} {left no}} {
       my $BID Refill 0 yes
     } else {
       my $BID $TID show
-      #lassign [my Tab_BID $TID] BID icur
-      #my $BID Refill $icur $left
-      #my $TID Tab_BeCurrent
     }
   }
 }
+#_____
+
+method PrepareCmd {TID BID opt args} {
+# Prepares a command bound to an action on a tab.
+#   opt - command option (-csel, -cmov, -cdel)
+#   args - additional argumens of the command
+# The commands can include wildcards: %b for bar ID, %t for tab ID, %l for tab label.
+# Returns "" or the command if 'opt' exists in 'args'.
+
+  variable btData
+  if {[dict exists $btData $BID $opt]} {
+    set com [dict get $btData $BID $opt]
+    if {$TID>-1} {
+      set label [my $TID cget -text]
+    } else {
+      set label ""
+    }
+    set label [string map {\{ ( \} )} $label]
+    return [string map [list %b $BID %t $TID %l $label] $com]
+  }
+  return ""
+}
+
 #_____
 
 method Tab_Cmd {opt args} {
@@ -611,17 +651,8 @@ method Tab_Cmd {opt args} {
 # The commands can include wildcards: %b for bar ID, %t for tab ID, %l for tab label.
 # Returns 1, if no command set; otherwise: 1 for Yes, 0 for No, -1 for Cancel.
 
-  variable btData
   lassign [my IDs [my ID]] TID BID
-  if {[dict exists $btData $BID $opt]} {
-    set com [dict get $btData $BID $opt]
-    if {$TID>-1} {
-      set label [my $TID cget -text]
-    } else {
-      set label ""
-    }
-    set label [string map {\{ ( \} )} $label]
-    set com [string map [list %b $BID %t $TID %l $label] $com]
+  if {[set com [my PrepareCmd $TID $BID $opt {*}$args]] ne ""} {
     if {[catch {set res [{*}$com {*}$args]}]} {set res yes}
     if {$res eq "" || !$res} {return 0}
     return $res
@@ -643,8 +674,7 @@ method Tab_BeCurrent {} {
   $TID ni [my $BID listFlag "m"]} {
     $wb2 configure -image bts_ImgNone
   }
-#?  update
-  my $TID Tab_Cmd -csel2  ;# command after the selection shown
+  my $BID Bar_Cmd2 -csel2 $TID ;# command after the selection shown
 }
 #_____
 
@@ -818,6 +848,7 @@ method OnButtonRelease {wb1o x} {
   if {$tabssav ne $tabs} {
     my $BID configure -TABS $tabs
     my $BID Refill $tleft $left
+    my $BID Bar_Cmd2 -cmov2 $TID ;# command after the action
   }
 }
 #_____
@@ -908,6 +939,7 @@ method OnPopup {X Y {BID "-1"} {TID "-1"} {textcur ""}} {
     }
   }
   if {[llength $lpops]} {
+    catch {::apave::obj themePopup $pop}
     my Bar_MenuList $BID $TID $pop ;# main menu
     foreach popi $lpops {my Bar_MenuList $BID $TID $popi $ipops}
     if {$TID ne "-1"} {
@@ -915,7 +947,6 @@ method OnPopup {X Y {BID "-1"} {TID "-1"} {textcur ""}} {
       bind $pop <Unmap> [list [self] $TID OnLeaveTab $wb1 $wb2]
     }
     my $BID DestroyMoveWindow
-    catch {::apave::obj themePopup $pop}
     tk_popup $pop $X $Y
   } else {
     my $BID popList $X $Y
@@ -952,8 +983,23 @@ method close {{redraw yes} args} {
 # Returns "1" if the deletion was successful, otherwise 0 (no) or -1 (cancel).
 
   lassign [my Tab_BID [set TID [my ID]]] BID icurr
-  if {[my Disabled $TID]} {return 0}
-  if {[set res [my $TID Tab_Cmd -cdel {*}$args]]!=1} {return $res}
+  if {[my Disabled $TID]} {
+    set ttl [msgcat::mc "Closing"]
+    set t [my $TID cget -text]
+    set msg [msgcat::mc "Can't close the disabled\n\"%t\"\n\nClose others?"]
+    set msg [string map [list %t $t] $msg]
+    return [expr {[::bartabs::messageBox yesno $ttl $msg -icon question]==1}]
+  }
+  set cdel [my $BID cget -cdel]
+  if {$cdel eq ""} {
+    set res 1
+  } else {
+    set cdel [my PrepareCmd $TID $BID -cdel {*}$args]
+    if {[catch {set res [{*}$cdel]}]} {
+      set res [my $TID Tab_Cmd -cdel {*}$args]
+    }
+  }
+  if {$res!=1} {return $res}
   if {$redraw} {my $BID clear}
   lassign [my $BID cget -TABS -tleft -tright -tabcurrent] tabs tleft tright tcurr
   my Tab_RemoveLinks $BID $TID
@@ -970,6 +1016,7 @@ method close {{redraw yes} args} {
       }
     }
   }
+  my $BID Bar_Cmd2 -cdel2  ;# command after the action
   return 1
 }
 } ;#  bartabs::Tab
@@ -1045,14 +1092,15 @@ method Bar_DefaultMenu {BID popName} {
   upvar 1 $popName pop
   set bar "[self] $BID"
   set dsbl "{$bar CheckDsblPopup}"
+  lassign [my Mc_MenuItems] close closeall closeleft closeright
   foreach item [list \
   "m {List} {} bartabs_cascade" \
   "m {BHND} {} bartabs_cascade2 $dsbl" \
   "s {} {} {} $dsbl" \
-  "c {Close} {[self] %t close} {} $dsbl" \
-  "c {Close All} {$bar Tab_CloseFew} {} $dsbl" \
-  "c {Close All to the Left} {$bar Tab_CloseFew %t 1} {} $dsbl" \
-  "c {Close All to the Right} {$bar Tab_CloseFew %t} {} $dsbl"] {
+  "c {$close} {[self] %t close} {} $dsbl" \
+  "c {$closeall} {$bar Tab_CloseFew} {} $dsbl" \
+  "c {$closeleft} {$bar Tab_CloseFew %t 1} {} $dsbl" \
+  "c {$closeright} {$bar Tab_CloseFew %t} {} $dsbl"] {
     lappend pop $item
   }
 }
@@ -1083,9 +1131,33 @@ method Bar_MenuList {BID TID popi {ilist ""} {pop ""}} {
     }
     append opts " $font"
     if {$tID==$TID} {append opts " -foreground $fgo -background $bgo"}
+    if {[string match *bartabs_cascade2 $popi] && [my Disabled $tID]} {
+      append opts " -foreground [my $BID cget -FGMAIN]"  ;# move behind any
+    }
     $popi entryconfigure $i {*}$opts
   }
 }
+#_____
+
+method Bar_Cmd2 {comopt2 {TID ""}} {
+# Executes a command after an action.
+#   comopt2 - the command's option (-csel2, -cdel2, -cmov2)
+
+  set BID [my ID]
+  if {[set com2 [my $BID cget $comopt2]] ne ""} {
+    {*}[string map [list %t $TID] $com2]
+  }
+}
+#_____
+
+method Mc_MenuItems {} {
+  # Returns localized menu items' label.
+  return [list [msgcat::mc Close] \
+               [msgcat::mc {Close All}] \
+               [msgcat::mc {Close All at Left}] \
+               [msgcat::mc {Close All at Right}]]
+}
+
 #_____
 
 method InitColors {} {
@@ -1237,7 +1309,7 @@ method FillMenuList {BID popi {TID -1} {mnu ""}} {
       set comm "[self] $tID show 1"
       if {[my Disabled $tID]} {set dsbl "-state disabled"}
     } else {
-      set comm "[self] moveTab $TID $tID"
+      set comm "[self] moveSelTab $TID $tID"
     }
     if {[set cbr [expr {$tiplen>0 && [incr ccnt]>$tiplen}]]} {set ccnt 0}
     $popi add command -label $text -command $comm {*}$dsbl -columnbreak $cbr
@@ -1386,23 +1458,31 @@ method CheckDsblPopup {BID TID mnuit} {
   lassign [my Tab_BID $TID] BID icur
   lassign [my $BID cget -static -LLEN] static llen
   set dsbl [my Disabled $TID]
-  switch -exact -- $mnuit {
+  lassign [my Mc_MenuItems] close closeall closeleft closeright
+  switch -exact -- $mnuit [list \
     "BHND" {
       if {$static} {return 2}
-      lassign [my Tab_TextEllipsed $BID [my $TID cget -text] 16] mnuit
-      return [list [expr {$dsbl||$llen<2||$llen==2&&$icur==1}] {} "\"$mnuit\" behind"]
-    }
-    "Close" - "Close All" - "" {
-      if {$static} {return 2}}
-    "Close All to the Left" {
+      if {[set slen [llength [my $BID listFlag "s"]]]>1} {
+        set mnuit [string map [list %n $slen] [msgcat::mc "%n tabs"]]
+      } else {
+        lassign [my Tab_TextEllipsed $BID [my $TID cget -text] 16] mnuit
+        set mnuit "\"$mnuit\""
+      }
+      set behind [msgcat::mc "behind"]
+      return [list [expr {$dsbl||$llen<2||$llen==2&&$icur==1}] {} "$mnuit $behind"]
+    } \
+    $close - $closeall - "" {
+      if {$static} {return 2}
+    } \
+    $closeleft {
       if {$static} {return 2}
       return [expr {$dsbl || !$icur}]
-    }
-    "Close All to the Right" {
+    } \
+    $closeright {
       if {$static} {return 2}
       return [expr {$dsbl || $icur==($llen-1)}]
-    }
-  }
+    } \
+  ]
   return $dsbl
 }
 #_____
@@ -1772,15 +1852,16 @@ method checkDisabledMenu {BID TID func} {
 #   func - close function
 # *func* equals to:
 #   1 - for "Close All"
-#   2 - for "Close All to the Left"
-#   3 - for "Close All to the Right"
+#   2 - for "Close All at Left"
+#   3 - for "Close All at Right"
 # Returns "yes" if the menu's item is disabled.
 
+  lassign [my Mc_MenuItems] close closeall closeleft closeright
   switch $func {
-    1 {set item "Close All"}
-    2 {set item "Close All to the Left"}
-    3 {set item "Close All to the Right"}
-    default {set item "Close"}
+    1 {set item $closeall}
+    2 {set item $closeleft}
+    3 {set item $closeright}
+    default {set item $close}
   }
   return [my CheckDsblPopup $BID $TID $item]
 }
@@ -1791,8 +1872,8 @@ method closeAll {BID TID func args} {
 #   func - close function
 # *func* equals to:
 #   1 - for "Close All"
-#   2 - for "Close All to the Left"
-#   3 - for "Close All to the Right"
+#   2 - for "Close All at Left"
+#   3 - for "Close All at Right"
 
   switch $func {
     1 {my $BID Tab_CloseFew -1   no}
@@ -1999,8 +2080,8 @@ method isTab {TID} {
 }
 #_____
 
-method moveTab {TID1 TID2} {
-# Changed a tab's position in bar.
+method MoveTab {TID1 TID2} {
+# Changes a tab's position in bar.
 #   TID1 - TID of the moved tab
 #   TID2 - TID of a tab to move TID1 behind
 # TID1 and TID2 must be of the same bar.
@@ -2016,8 +2097,28 @@ method moveTab {TID1 TID2} {
     my $TID1 show 1
   }
 }
+
+#_____
+
+method moveSelTab {TID1 TID2} {
+# Changes a tab's or selected tabs' position in bar.
+#   TID1 - TID of the moved tab
+#   TID2 - TID of a tab to move TID1 behind
+# TID1 and TID2 must be of the same bar.
+
+  set BID [my Tab_BID $TID1 check]
+  set seltabs [my $BID listFlag "s"]
+  if {[set i [llength $seltabs]]>1} {
+    for {incr i -1} {$i>=0} {incr i -1} {
+      set tid [lindex $seltabs $i]
+      if {$tid ne $TID2} {my MoveTab $tid $TID2}
+    }
+  } else {
+    my MoveTab $TID1 $TID2
+  }
+}
 } ;#  bartabs::Bars
 
 # ________________________________ EOF __________________________________ #
-#RUNF0: test.tcl
+#-RUNF0: test.tcl
 #RUNF1: ../tests/test2_pave.tcl

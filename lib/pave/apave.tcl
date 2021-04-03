@@ -52,6 +52,7 @@ package require Tk
 namespace eval ::apave {
 
   ;# default grid options & attributes of widgets (no abbreviations here)
+  variable cursorwidth 1
   variable _Defaults [dict create \
     "bts" {{} {}} \
     "but" {{} {}} \
@@ -62,7 +63,7 @@ namespace eval ::apave {
     "cbx" {{} {}} \
     "fco" {{} {}} \
     "ent" {{} {}} \
-    "enT" {{} {-insertwidth 0.6m}} \
+    "enT" {{} {-insertwidth $::apave::cursorwidth -insertofftime 250 -insertontime 750}} \
     "fil" {{} {}} \
     "fis" {{} {}} \
     "dir" {{} {}} \
@@ -89,21 +90,22 @@ namespace eval ::apave {
     "pro" {{} {}} \
     "rad" {{} {}} \
     "raD" {{} {-padx 6 -pady 2}} \
-    "sca" {{} {-orient horizontal}} \
-    "scA" {{} {-orient horizontal}} \
+    "sca" {{} {-orient horizontal -takefocus 0}} \
+    "scA" {{} {-orient horizontal -takefocus 0}} \
     "sbh" {{-sticky ew} {-orient horizontal -takefocus 0}} \
     "sbH" {{-sticky ew} {-orient horizontal -takefocus 0}} \
     "sbv" {{-sticky ns} {-orient vertical -takefocus 0}} \
     "sbV" {{-sticky ns} {-orient vertical -takefocus 0}} \
-    "seh" {{-sticky ew} {-orient horizontal}} \
-    "sev" {{-sticky ns} {-orient vertical}} \
+    "seh" {{-sticky ew} {-orient horizontal -takefocus 0}} \
+    "sev" {{-sticky ns} {-orient vertical -takefocus 0}} \
     "siz" {{} {}} \
     "spx" {{} {}} \
     "spX" {{} {}} \
     "tbl" {{} {-selectborderwidth 1 -highlightthickness 2 \
-               -labelcommand tablelist::sortByColumn -stretch all \
-               -showseparators 1}} \
-    "tex" {{} {-undo 1 -maxundo 0 -highlightthickness 2 -insertwidth 0.6m}} \
+          -labelcommand tablelist::sortByColumn -stretch all \
+          -showseparators 1}} \
+    "tex" {{} {-undo 1 -maxundo 0 -highlightthickness 2 -insertofftime 250 -insertontime 750 -insertwidth $::apave::cursorwidth -wrap word
+          -selborderwidth 1}} \
     "tre" {{} {}} \
     "h_" {{-sticky ew -csz 3 -padx 3} {}} \
     "v_" {{-sticky ns -rsz 3 -pady 3} {}}]
@@ -617,15 +619,21 @@ oo::class create ::apave::APave {
 
   #########################################################################
 
-  method setDefaultAttrs {typ opt atr} {
+  method defaultAttrs {{typ ""} {opt ""} {atr ""}} {
 
-    # Sets or resets default grid options and attributes for widget type.
+    # Sets or gets default grid options and attributes for widget type.
     #   typ - widget type
     #   opt - new default grid options
     #   atr - new default attributes
-    # Returns a list of updated options and attributes of the widget type.
+    # Returns:
+    #   - if not set typ: a full list of options and attributes of all types
+    #   - if set 'typ' only: a list of options and attributes of 'typ'
+    #   - else: a list of updated options and attributes of the widget type
 
-    lassign [dict get $::apave::_Defaults $typ] defopts defattrs
+    if {$typ eq ""} {return $::apave::_Defaults}
+    set def1 [subst [dict get $::apave::_Defaults $typ]]
+    if {"$opt$atr" eq ""} {return $def1}
+    lassign $def1 defopts defattrs
     set newval [list "$defopts $opt" "$defattrs $atr"]
     dict set ::apave::_Defaults $typ $newval
     return $newval
@@ -672,9 +680,8 @@ oo::class create ::apave::APave {
     if {[string first "-state disabled" $attrs]<0 && $vn ne ""} {
       set all ""
       if {$varopt eq "-lvar"} {
-        lassign [::apave::parseOptions $attrs -values "" -ALL 0] iv a
+        lassign [::apave::extractOptions attrs -values "" -ALL 0] iv a
         if {[string is boolean -strict $a] && $a} {set all "ALL"}
-        set attrs [::apave::removeOptions $attrs -values -ALL]
         lappend _pav(widgetopts) "-lbxname$all $wnamefull $vn"
       }
       if {$rp ne ""} {
@@ -953,7 +960,7 @@ oo::class create ::apave::APave {
     set attrs "[subst $defattrs] $attrs"
     switch -glob -- $nam3 {
       "bts" {
-        package require bartabs
+        if {![info exists ::bartabs::NewBarID]} {package require bartabs}
         set attrs "-bartabs {$attrs}"
         set widget "ttk::frame"
       }
@@ -997,9 +1004,9 @@ oo::class create ::apave::APave {
       "gut" {set widget "canvas"}
       "lab" {
         set widget "ttk::label"
-        if {[::apave::parseOptions $attrs -state normal] eq "disabled"} {
-          set attrs "-foreground grey $attrs"
-          set attrs [::apave::removeOptions $attrs -state]
+        if {[::apave::extractOptions attrs -state normal] eq "disabled"} {
+          set grey [lindex [my csGet] 8]
+          set attrs "-foreground $grey $attrs"
         }
         if {[set cmd [::apave::getOption -link {*}$attrs]] ne ""} {
           set attrs "-linkcom {$cmd} $attrs"
@@ -1764,7 +1771,7 @@ oo::class create ::apave::APave {
         my NormalizeName name i lwidgets
         set dattr "[lrange $v1 1 end]"
         set wid1 [list .[my ownWName [my Transname Lab ${name}_[incr j]]] - - - - "pack -side left -in $w.$name" "-t {[lindex $v1 0]} $dattr"]
-        set wid2 [list .[my ownWName [my Transname Lab $name$j]] - - - - "pack -side left $expand -in $w.$name" "-relief sunken -w $v2 -t { } $dattr"]
+        set wid2 [list .[my ownWName [my Transname Lab $name$j]] - - - - "pack -side left $expand -in $w.$name" "-style TLabelSTD -relief sunken -w $v2 -t { } $dattr"]
       } elseif {$typ eq "toolBar"} {  ;# toolbar
         set packreq ""
         switch -nocase -glob -- $v1 {
@@ -2023,7 +2030,7 @@ oo::class create ::apave::APave {
         -disabledtext - -rotext - -lbxsel - -cbxsel - -notebazook - \
         -entrypop - -entrypopRO - -textpop - -textpopRO - -ListboxSel - \
         -callF2 - -timeout - -bartabs - -onReturn - -linkcom - \
-        -afteridle - -gutter - -propagate {
+        -afteridle - -gutter - -propagate - -columnoptions - -selborderwidth {
           # attributes specific to apave, processed below in "Post"
           set v2 [string trimleft $v "\{"]
           set v2 [string range $v2 0 end-[expr {[string length $v]-[string length $v2]}]]
@@ -2168,6 +2175,14 @@ oo::class create ::apave::APave {
           } else {
             grid propagate $w 0
           }
+        }
+        -columnoptions {
+          foreach {col opts} $v {
+            $w column $col {*}$opts
+          }
+        }
+        -selborderwidth {
+          $w tag configure sel -borderwidth $v
         }
       }
     }
@@ -2415,10 +2430,13 @@ oo::class create ::apave::APave {
       set idx1 [$w index "insert linestart"]
       set idx2 [$w index "insert lineend"]
       set line [$w get $idx1 $idx2]
-      set indent [string repeat " " \
-        [expr {[string length $line]-[string length [string trimleft $line]]}]]
+      set nchars [expr {[string length $line]-[string length [string trimleft $line]]}]
+      set indent [string range $line 0 [expr {$nchars-1}]]
       if {$indent ne ""} {
-        after idle [list $w insert [$w index "$idx1 +1 line"] $indent]
+        set idx1 [$w index "insert"]
+        $w insert [$w index "$idx1"] \n$indent
+        ::tk::TextSetCursor $w [$w index "$idx1 +1 line linestart +$nchars char"]
+        return -code break
       }
     }
   }
@@ -2598,9 +2616,8 @@ oo::class create ::apave::APave {
     }
     if {[::apave::getOption -ro {*}$attrs] ne "" || \
     [::apave::getOption -readonly {*}$attrs] ne ""} {
-      lassign [::apave::parseOptions $attrs -ro 0 -readonly 0] ro readonly
+      lassign [::apave::extractOptions attrs -ro 0 -readonly 0] ro readonly
       lappend addcomms [list my readonlyWidget $wdg [expr $ro||$readonly]]
-      set attrs [::apave::removeOptions $attrs -ro -readonly]
     }
     if {[set wnext [::apave::getOption -tabnext {*}$attrs]] ne ""} {
       set wnext [string trim $wnext "\{\}"]
@@ -2921,7 +2938,7 @@ oo::class create ::apave::APave {
     set minsize [::apave::getOption -minsize {*}$args]
     set args [::apave::removeOptions $args -centerme -ontop -modal -minsize]
     array set opt [list -focus "" -onclose "" -geometry "" -decor 0 \
-      -root $root -resizable "" -variable "" {*}$args]
+      -root $root -resizable "" -variable "" -escape 1 {*}$args]
     lassign [split [wm geometry $root] x+] rw rh rx ry
     if {! $opt(-decor)} {
       wm transient $win $root
@@ -2953,7 +2970,7 @@ oo::class create ::apave::APave {
       set opt(-focus) $win
     }
     set ${_pav(ns)}PN::AR($win) "-"
-    bind $win <Escape> $opt(-onclose)
+    if {$opt(-escape)} {bind $win <Escape> $opt(-onclose)}
     update
     set w [winfo width $win]
     set h [winfo height $win]

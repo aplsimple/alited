@@ -12,7 +12,7 @@ pos=205.7
 ::EMENU7ZCNT=1
 ::EMENU7ZCOM=zip -r
 ::EMENU7ZARC=~/PG/github/apl-github
-::EMENU7ZDIR=~/PG/github/pave/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/bartabs/*\n~/PG/github/doctest/*\n~/PG/github/booksum/*\n~/PG/github/trimmer/*\n~/PG/github/baltip/*\n~/PG/github/mulster/*\n~/PG/github/transpops/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/aplited/*\n~/PG/github/aplsimple.github.io/*
+::EMENU7ZDIR=~/PG/github/pave/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/bartabs/*\n~/PG/github/doctest/*\n~/PG/github/booksum/*\n~/PG/github/trimmer/*\n~/PG/github/baltip/*\n~/PG/github/mulster/*\n~/PG/github/transpops/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/aloupe/*\n~/PG/github/alited/*\n~/PG/github/aplsimple.github.io/*
 ::EMENU7ZSKIP=
 ::EMENU7ZBAK=/media/apl/KINGSTON/
 ::EMENU7ZGIT=1
@@ -108,7 +108,7 @@ SW:git diff ? SW: cat "$::EMENUTMPFILE"
  R:git push R: %q "Pushing changes" "Push all changes in\n\n%PD\n\nto a remote repository ?"
  S:git push S: git push
 
- R:  R: 2
+ R:  R: 1
 
  MW:Fossil MW: m=fossil.mnu w=50
  M:Git M: m=git.mnu
@@ -124,7 +124,7 @@ SW:git diff ? SW: cat "$::EMENUTMPFILE"
 
 # utils menu for e_menu.tcl
 
- R: - R: 2
+ R: - R: 1
 
  R:caja %PD R: caja "%PD"
  R:xterm %PD R: cd %PD
@@ -141,7 +141,7 @@ SW:git diff ? SW: cat "$::EMENUTMPFILE"
  R:wget Web page R: cd %z5/WGET
  R:wget Web page R: %IF [::iswindows] %THEN explorer.exe "." %ELSE caja "."
 
- R: - R: 2
+ R: - R: 1
 
 SW:Save your stuff SW: cd %PD
  R:Save your stuff R: %C set ::EMENU7ZCNT [expr {($::EMENU7ZCNT+1)%4}]
@@ -151,8 +151,8 @@ SW:Save your stuff SW: cd %PD
    fil1 {{ Archive file-$::EMENU7ZCNT:}} {"$::EMENU7ZARC"} \
    ent2 {{ ... its suffix:} {} {-tooltip {Add anything you think\nbe specific for this stuff\ne.g. "spec-edition"\n\navoid special characters:\nspaces, quotes, ?, *, \{, \}}}} {} \
    seh1 {{} {-pady 7} {}} {} \
-   tex1 {{    Directories \n      to backup:} {} {-h 8 -w 60 -wrap word}} {$::EMENU7ZDIR} \
-   tex2 {{    Directories \n      postponed:} {} {-h 8 -w 60 -wrap word}} {$::EMENU7ZSKIP} \
+   tex1 {{    Directories \n      to backup:} {} {-h 8 -w 60 -tabnext tex2}} {$::EMENU7ZDIR} \
+   tex2 {{    Directories \n      postponed:} {} {-h 8 -w 60 -tabnext entdir3}} {$::EMENU7ZSKIP} \
    seh2 {{} {-pady 7} {}} {} \
    dir3 {{        Save to:}} {"$::EMENU7ZBAK"} \
    } -head {\n This creates a backup of your directories.\n } -weight bold == ::EMENU7ZCOM ::EMENU7ZGIT ::EMENU7ZARC ::EMENU7ZSUFF ::EMENU7ZDIR ::EMENU7ZSKIP ::EMENU7ZBAK
@@ -205,7 +205,7 @@ RW: 5. APLinkee      RW: sleep 1
  R: 6. FVords        R: sleep 1
  R: 6. FVords        R: ~/PROGRAMS/C_COMM/commw /media/apl/KINGSTON/FVords_Prepare fvords.exe
  R: 7. poApps        R: # tclsh ~/UTILS/poApps-2/poApps.tcl --dirdiff
- R: 7. poApps        R: poApps-2.5.2-Linux64 --dirdiff
-RW: 8. geany         RW: sleep 1
+ R: 7. poApps        R: poApps --dirdiff
+RW: 8. geany         RW: sleep 3
  R: 8. geany         R: geany
  R: 9. caja          R: caja -g +0+0 /home/apl/PG/github

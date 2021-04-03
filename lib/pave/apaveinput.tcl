@@ -34,7 +34,7 @@
 
 package require Tk
 
-package provide apave 3.3.2a2
+package provide apave 3.3.2b3
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -348,17 +348,8 @@ oo::class create ::apave::APaveInput {
       return false
     }
     set newfile 0
-    set filetxt ""
-    if {[catch {set ch [open $fname]}]} {
-      if {[catch {close [open $fname w]} err]} {
-        puts "ERROR: couldn't create '$fname':\n$err"
-        return false
-      }
-      set newfile 1
-    } else {
-      chan configure $ch -encoding utf-8
-      set filetxt [read $ch]
-      close $ch
+    if {[catch {set filetxt [::apave::readTextFile $fname "" yes]}]} {
+      return false
     }
     lassign [::apave::parseOptions $args -rotext "" -readonly 1 -ro 1] \
       rotext readonly ro
@@ -381,12 +372,7 @@ oo::class create ::apave::APaveInput {
     if {[set res [string index $res 0]] eq "1"} {
       set data [string range $data [string first " " $data]+1 end]
       set data [string trimright $data]
-      set ch [open $fname w]
-      chan configure $ch -encoding utf-8
-      foreach line [split $data \n] {
-        puts $ch [string trimright $line] ;# end spaces conflict with co= arg
-      }
-      close $ch
+      set res [::apave::writeTextFile $fname data]
     } elseif {$newfile} {
       file delete $fname
     }

@@ -266,5 +266,8 @@ proc file::CloseAll {func} {
   set TID [alited::bar::CurrentTabID]
   alited::bar::BAR closeAll $::alited::al(BID) $TID $func yesnocancel
 }
+
+proc file::MoveFile {wtree to itemID} {
+}
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl -CS 24 -fontsize 11
+#RUNF1: alited.tcl

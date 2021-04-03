@@ -19,19 +19,42 @@ co=;
 o=0
 w=45
 rt=2/5
+%C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
+%C set ::FILETAIL \"[file tail {$::EMENUFILE}]\"
 
 [MENU]
- R: Doctest Safe: %e%x R: cd %d
- S: Doctest Safe: %e%x S: tclsh %m/src/doctest_of_emenu.tcl -v 0 %f
+ R: Doctest Safe: $::FILETAIL R: cd %d
+ S: Doctest Safe: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -v 0 %f
 
- R: Doctest Safe verbose: %e%x R: cd %d
- S: Doctest Safe verbose: %e%x S: tclsh %m/src/doctest_of_emenu.tcl -v 1 %f
+ R: Doctest Safe verbose: $::FILETAIL R: cd %d
+ S: Doctest Safe verbose: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -v 1 %f
 
- R: Doctest: %e%x R: cd %d
- S: Doctest: %e%x S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 0 %f
+ R: Doctest: $::FILETAIL R: cd %d
+ S: Doctest: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 0 %f
 
- R: Doctest verbose: %e%x R: cd %d
- S: Doctest verbose: %e%x S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 1 %f
+ R: Doctest verbose: $::FILETAIL R: cd %d
+ S: Doctest verbose: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 1 %f
+
+ M:  M: 3
+ R: Trace $::FILETAIL with {%s} excluded R: %C if {![info exist ::EMENUEXCL]} {set ::EMENUEXCL "%s"}
+ R: Trace $::FILETAIL with {%s} excluded R: %I {} "TRACE" { \
+   v_ {{} {-pady 4} {}} {} \
+   fil1 {{    File:} {} {-w 55}} {"$::EMENUFILE"} \
+   ent1 {{Excluded:} {} {-w 55}} {"$::EMENUEXCL"} \
+   seh {{} {-pady 3} {}} {} \
+   texc {{    Hint:} {} {-h 7 -w 55 -ro 1 -wrap word}} \
+   {\n This utility inserts tracing puts to a Tcl script.\n\n The puts are set below the script's proc/method declarations.\n\n There may be set a list of excluded proc/methods.} \
+   } -head {\n This will set tracing 'puts' into a file.} -weight bold == ::EMENUFILE
+ S: Trace $::FILETAIL with {%s} excluded S: tclsh %m/src/atrace.tcl trace $::EMENUFILE $::EMENUEXCL
+
+ R: Untrace $::FILETAIL R: %I {} "UNTRACE" { \
+   v_ {{} {-pady 4} {}} {} \
+   fil1 {{    File:} {} {-w 55}} {"$::EMENUFILE"} \
+   seh {{} {-pady 3} {}} {} \
+   texc {{    Hint:} {} {-h 5 -w 55 -ro 1 -wrap word}} \
+   {\n This utility removes tracing puts from a Tcl script.\n\n The puts are set below the script's proc/method declarations.} \
+   } -head {\n This will remove tracing 'puts' from a file.} -weight bold == ::EMENUFILE
+ S: Untrace $::FILETAIL S: tclsh %m/src/atrace.tcl untrace $::EMENUFILE 
 
  M:  M: 3
 
@@ -119,13 +142,13 @@ rt=2/5
 in=1.0
 ::EN1=%s
 ::EN2====
-::V1=Glob
+::V1=RE
 ::C1=0
 ::C2=0
 ::W1=in directory
 ::OPT=opc widget example
-::LBX=my Father
-::TBL=\{cbx fco\} ttk::combobox 23 2
+::LBX=Big Brother
+::TBL=ent ttk::entry 212 6
 ::TEX=and	tabs	entered with copy-paste\n1234\n\nsome multi-line text			123
-pos=45.21
+pos=54.29
 %#s geo=969x487+250+140;pos=6.21 # this script is run with %#s wildcard in test1.mnu|!|# it does the same as the previous "Shell script"|!||!|err=1|!|cd ~/FOSSIL|!|while [ $err -eq 1 ];|!|  do repo=$(find *.fossil 2>/dev/null )|!|  err=$?|!|  if [ $? -eq 1 ]; then|!|    if [ $(pwd) = '/' ]; then|!|      echo "repo non esistente" ; break|!|    fi|!|    cd ../|!|  else|!|    echo "$(pwd)/${repo}"|!|  fi|!|done

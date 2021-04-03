@@ -26,7 +26,8 @@ namespace eval ::alited {
   set al(MC,unitsdel)    [msgcat::mc "Remove a unit"]
   set al(MC,favoradd)    [msgcat::mc "Add to favorites"]
   set al(MC,favordel)    [msgcat::mc "Remove from favorites"]
+  set al(MC,nosels)      [msgcat::mc "No item selected."]
 
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl -CS 23 -hue 0 -fontsize 11
+#RUNF1: alited.tcl

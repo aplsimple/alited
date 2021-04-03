@@ -468,9 +468,7 @@ oo::class create ::apave::APaveDialog {
         $txt tag add sel [NewRow $pos1 $to] [NewRow $pos2 $to]
       }
       if {[lsearch [$txt tag names] tagCOM*]>-1} {
-        set i1 [expr {min($lto,$lfrom,$linestart,$lineend)-1}]
-        set i2 [expr {min($lto,$lfrom,$linestart,$lineend)+1}]
-        ::hl_tcl::my::Modified $txt $i1 $i2
+        catch {::hl_tcl::my::Modified $txt insert $lto.0 $lto.end}
       }
       if {$dobreak} {return -code break}
     }
@@ -536,9 +534,13 @@ oo::class create ::apave::APaveDialog {
     #   varFind - variable
 
     if {$txt eq ""} {
+      if {![info exists ${_pdg(ns)}PD::fnd]} return
       set txt [my TexM]
       set sel [set ${_pdg(ns)}PD::fnd]
+    } elseif {$donext && [set sel [my get_HighlightedString]] ne ""} {
+      # find a string got with alt+left/right
     } elseif {$varFind eq ""} {
+      if {![info exists ${_pdg(ns)}PD::fnd]} return
       set sel [set ${_pdg(ns)}PD::fnd]
     } else {
       set sel [set $varFind]
@@ -548,6 +550,7 @@ oo::class create ::apave::APaveDialog {
       set pos [$txt search -- $sel $pos end]
     } else {
       set pos ""
+      my set_HighlightedString ""
     }
     if {![string length "$pos"]} {
       set pos [$txt search -- $sel 1.0 end]
@@ -627,17 +630,38 @@ oo::class create ::apave::APaveDialog {
 
     set res "\$pop add separator
       \$pop add command [my iconA upload] -accelerator Alt+Q \\
-      -label \"Highlight First\" -command \"::apave::obj seek_highlight %w 2\"
+      -label \"Highlight First\" -command \"[self] seek_highlight %w 2\"
       \$pop add command [my iconA download] -accelerator Alt+W \\
-      -label \"Highlight Last\" -command \"::apave::obj seek_highlight %w 3\"
+      -label \"Highlight Last\" -command \"[self] seek_highlight %w 3\"
       \$pop add command [my iconA previous] -accelerator Alt+Left \\
-      -label \"Highlight Previous\" -command \"::apave::obj seek_highlight %w 0\"
+      -label \"Highlight Previous\" -command \"[self] seek_highlight %w 0\"
       \$pop add command [my iconA next] -accelerator Alt+Right \\
-      -label \"Highlight Next\" -command \"::apave::obj seek_highlight %w 1\"
+      -label \"Highlight Next\" -command \"[self] seek_highlight %w 1\"
       \$pop add command [my iconA none] -accelerator Dbl.Click \\
-      -label \"Highlight All\" -command \"::apave::obj highlight_matches %w\""
+      -label \"Highlight All\" -command \"[self] highlight_matches %w\""
     if {$txt ne ""} {set res [string map [list %w $txt] $res]}
     return $res
+  }
+
+  #########################################################################
+
+  method set_HighlightedString {sel} {
+    # Saves a string got from highlighting by Alt+left/right/q/w.
+    #   sel - the string to be saved
+
+    set _pdg(hlstring) $sel
+    if {[info exist ${_pdg(ns)}PD::fnd] && $sel ne ""} {
+      set ${_pdg(ns)}PD::fnd $sel
+    }
+  }
+
+  method get_HighlightedString {} {
+    # Returns a string got from highlighting by Alt+left/right/q/w.
+
+    if {[info exists _pdg(hlstring)]} {
+      return $_pdg(hlstring)
+    }
+    return ""
   }
 
   #########################################################################
@@ -694,6 +718,7 @@ oo::class create ::apave::APaveDialog {
 
     lassign [my get_highlighted $txt] sel pos
     if {$pos eq ""} return
+    my set_HighlightedString $sel
     set lenList {}
     set posList [$txt search -all -count lenList -- "$sel" 1.0 end]
     foreach pos2 $posList len $lenList {
@@ -737,6 +762,7 @@ oo::class create ::apave::APaveDialog {
     my unhighlight_matches $txt
     lassign [my get_highlighted $txt] sel pos pos2
     if {!$pos} return
+    my set_HighlightedString $sel
     switch $mode {
       0 { # backward
         set nc [expr {[string length $sel] - 1}]
@@ -1030,8 +1056,7 @@ oo::class create ::apave::APaveDialog {
             bind \[[self] Entfind\] <FocusIn> {\[[self] Entfind\] selection range 0 end}
             bind $qdlg <F3> {[self] findInText 1}
             bind $qdlg <Control-f> \"[self] InitFindInText 1; focus \[[self] Entfind\]; break\"
-            bind $qdlg <Control-F> \"[self] InitFindInText 1; focus \[[self] Entfind\]; break\"
-            \[[self] TexM\] tag configure sel -borderwidth 1"
+            bind $qdlg <Control-F> \"[self] InitFindInText 1; focus \[[self] Entfind\]; break\""
         }
         if {$readonly} {
           if {!$hidefind} {

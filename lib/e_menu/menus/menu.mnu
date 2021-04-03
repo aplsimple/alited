@@ -18,8 +18,10 @@ pos=5.0
 
  M:  M: 3
  RE: Run me (+ selection) RE: cd %d
- RE: Run me (+ selection) RE: %IF "%x"==".tcl" && {%RF} ne "" %THEN %T tclsh %RF
- RE: Run me (+ selection) RE: %IF "%x"==".tcl" %THEN %T tclsh "$::EMENUFILE" %AR
+  R: Run me (+ selection) R: %C set ::_EM_AR_ [string map {\\$ \$} {%AR}]
+  R: Run me (+ selection) R: %C set ::_EM_RF_ [string map {\\$ \$} {%RF}]
+ RE: Run me (+ selection) RE: %IF "%x"==".tcl" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
+ RE: Run me (+ selection) RE: %IF "%x"==".tcl" %THEN %T tclsh "$::EMENUFILE" $::_EM_AR_
  RE: Run me (+ selection) RE: %IF "%x"==".py"  %THEN %t python3 "$::EMENUFILE" %AR
  SE: Run me (+ selection) SE: %IF {%RF}!="" %THEN %RF
  RE: Run me (+ selection) RE: %IF {%AR}=="" %THEN %O $::EMENUFILE

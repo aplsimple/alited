@@ -100,7 +100,7 @@ The code below:
 
       package require hl_tcl
 
-      proc ::stub {} {puts "stub: [$::txt index end]"}
+      proc ::stub {args} {puts "stub: $args"}
 
       ::hl_tcl::hl_init $::txt -readonly yes -cmd ::stub
 
@@ -129,6 +129,7 @@ The *args* is a list of *-option "value"* where *-option* may be:
    * *-readonly* - flag "text is read-only" (default "no")
    * *-multiline* - flag "multi-line strings" (default "yes")
    * *-cmd* - command to watch editing/viewing (default "")
+   * *-cmdpos* - command to watch cursor positioning (default "")
    * *-seen* - number of first lines seen at start (default 500)
    * *-optRE* - flag "use a regular expression to highlight options" (default "yes")
 

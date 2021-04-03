@@ -18,6 +18,7 @@ namespace eval ::apave {
   # - common options/constants of apave utils
   variable _PU_opts
   array set _PU_opts [list -NONE =NONE=]
+  set _PU_opts(_ERROR_) ""
   # - main color scheme data
   variable _CS_
   array set _CS_ [list]
@@ -37,54 +38,54 @@ namespace eval ::apave {
   fI     bI  --12--  bM    fW      bW     itemHL2 #003...reserved...
 
   set ::apave::_CS_(ALL) {
-{Grey   #000000 #0D0D0D #FFFFFF #DADCE0 #5c1616 #AFAFAF #000 #802e00 grey #933232 #000000 #AFAFAF - #caccd0 #000000 #FBFB95 #e0e0d8 #003 #004 #005 #006 #007}
-{Greyish #121212 #1A1A1A #f1f1f1 #dddddd #6c220c #bababa #000 #802e00 grey #933232 black #a9a9a9 - #cecece #000000 #FBFB96 #dadada #003 #004 #005 #006 #007}
-{InverseGrey black black #c9cbcf #DADCE0 #5c1616 #a5a5a5 #000 #802e00 grey #933232 black #AFAFAF - #c9cbcf #000000 #FBFB95 #bebebe #003 #004 #005 #006 #007}
-{AntiDark1 #050b0d #050b0d #F8F8F8 #dadad8 #5c1616 #AFAFAF #000 #802e00 grey #933232 #000000 #AFAFAF - #caccd0 #000000 #FBFB95 #e0e0d8 #003 #004 #005 #006 #007}
-{AntiDark2 #050b0d #050b0d #e9e9e7 #F8F8F8 #5c1616 #AFAFAF #000 #802e00 grey #933232 #000000 #AFAFAF - #e1e1df #000000 #FBFB95 #d5d5d3 #003 #004 #005 #006 #007}
-{Rosy #2B122A #000000 #FFFFFF #F6E6E9 #570957 #C5ADC8 #000 #802e00 grey #870287 #000000 #C5ADC8 - #e3d3d6 #000000 #FBFB95 #e5e3e1 #003 #004 #005 #006 #007}
-{Clay black black #fdf4ed #ded3cc #500a0a #bcaea2 #000 #802e00 grey #843500 white #766b5f - #d5c9c1 #000000 #FBFB95 #e1dfde #003 #004 #005 #006 #007}
-{Dawn #08085D #030358 #FFFFFF #e3f9f9 #562222 #a3dce5 #000 #802e00 grey #933232 black #99d2db - #d3e9e9 #000000 #FBFB96 #dbe9ed #003 #004 #005 #006 #007}
-{Sky #102433 #0A1D33 #d0fdff #bdf6ff #562222 #95ced7 #000 #0052b9 grey #933232 black #9fd8e1 - #b1eaf3 #000000 #FBFB95 #c0e9ef #003 #004 #005 #006 #007}
-{Celestial #141414 #151616 #d1ffff #a9e2f8 #562222 #82bbd1 #000 #0052b9 grey #933232 black #7fb8ce - #9dd6f9 #000000 #FBFB96 #b6e4e4 #003 #004 #005 #006 #007}
-{Florid #000000 #004000 #e4fce4 white #5c1616 #93e493 #0F2D0F #802e00 grey #802e00 black #8adb8a - #eefdee #000000 #FBFB96 #d7e6d7 #003 #004 #005 #006 #007}
-{LightGreen    #122B05 #091900 #edffed #DEF8DE #562222 #A8CCA8 #000 #802e00 grey #933232 #000000 #A8CCA8 - #d0ead0 #000000 #FBFB96 #dee9de #003 #004 #005 #006 #007}
-{InverseGreen  #122B05 #091900 #cce6c8 #DEF8DE #562222 #9cc09c #000 #802e00 grey #933232 black #98bc98 - #cce6cc #000000 #FBFB96 #bed8ba #003 #004 #005 #006 #007}
-{GreenPeace  #001000 #001000 #e1ffdd #cadfca #562222 #9dbb99 #000 #802e00 grey #933232 #000000 #9cb694 - #c1dfbd #000000 #FBFB96 #d2e1d2 #003 #004 #005 #006 #007}
-{African black black #ffffff #ffffe7 #460000 #ffd797 #000 #821c04 #7e7e7e #771d00 #000000 #e6ae80 - #fffff9 #000000 #eded89 #ededd5 #003 #004 #005 #006 #007}
-{African1 black black #f5f5dd #f2ebd2 #460000 #ffc48a #000 #821c04 #7e7e7e #771d00 #000000 #e6ae80 - #fffce3 #000000 #eded89 #e3e3cb #003 #004 #005 #006 #007}
-{African2 black black #ffffe4 #eae7c0 #500a0a #eaac7a #000 #4A3706 grey #771d00 #00003c #e6ae80 - #f4f0ca #000000 #fbfb74 #e7e7cb #003 #004 #005 #006 #007}
-{African3 black black #fdf9d0 #d5d2af #500a0a #d59d6f #000 #4A3706 grey #771d00 #00003c #e6ae80 - #dedbb8 #000000 #fbfb74 #e5e5cc #003 #004 #005 #006 #007}
-{YellowStone #00002f #00003c #cac08f #cfcdb1 #591c0e #cc9057 #000 red grey #8b4513 #3b1516 #eba969 - #c2c0a4 #000000 #ffff45 #c1b690 #003 #004 #005 #006 #007}
-{Notebook black black #e9e1c8 #c2bca8 #460000 #d59d6f #000 #821c04 #7e7e7e #771d00 #000000 #e6ae80 - #d0cab6 #000000 #eded89 #dad2b9 #003 #004 #005 #006 #007}
-{Notebook1 black black #dad2b9 #b5af9b #460000 #d59d6f #000 #821c04 #707070 #771d00 #000000 #e6ae80 - #c5bfab #000000 #eded89 #ccc4ab #003 #004 #005 #006 #007}
-{Notebook2 black black #cdc5ac #a6a08c #460000 #d59d6f #000 #821c04 #606060 #771d00 #000000 #e6ae80 - #b4ae9a #000000 #eded89 #c1b9a0 #003 #004 #005 #006 #007}
-{Notebook3 black black #beb69d #96907c #460000 #d59d6f #000 #821c04 #505050 #771d00 #000000 #e6ae80 - #a6a08c #000000 #eded89 #b2aa91 #003 #004 #005 #006 #007}
-{Darcula #ececec #c7c7c7 #272727 #323232 #FEEFA8 #2F5692 #e1e1e1 #ff9900 grey #f0a471 #EDC881 #1e4581 - #444444 black #a2a23e #343434 #003 #004 #005 #006 #007}
-{Dark  #F0E8E8 #E7E7E7 #272727 #323232 #FEEFA8 #818181 #000 #E69800 grey #ffd486 black #767676 - #494949 black #cdcd69 #2e2e2e #003 #004 #005 #006 #007}
-{Dark1  #E0D9D9 #C4C4C4 #212121 #292929 #FEEFA8 #818181 #000 #E69800 #606060 #ffd486 black #767676 - #424242 black #cdcd69 #292929 #003 #004 #005 #006 #007}
-{Dark2 #bebebe #bebebe #1f1f1f #262626 #FEEFA8 #818181 #000 #ff9900 #616161 #ffd486 #000000 #767676 - #2b2b2b black #b0b04c #262626 #003 #004 #005 #006 #007}
-{Dark3 #bebebe #bebebe #0a0a0a #232323 #FEEFA8 #818181 #000 #ff9900 #616161 #ffd486 #000000 #767676 - #1c1c1c black #bebe5a #131313 #003 #004 #005 #006 #007}
-{Oscuro #f1f1f1 #f1f1f1 #344545 #526d6d #FEEFA8 #829d9d #000 #ff959f #afafaf #ffd486 black #94afaf - #4f6666 black #cdcd69 #3d4e4e #003 #004 #005 #006 #007}
-{Oscuro1 #f1f1f1 #f1f1f1 #2a3b3b #466161 #FEEFA8 #829d9d #000 #ff959f #a2a2a2 #ffd486 black #8ba6a6 - #4a6161 black #cdcd69 #354646 #003 #004 #005 #006 #007}
-{Oscuro2 #f1f1f1 #f1f1f1 #223333 #3e5959 #FEEFA8 #829d9d #000 #ff959f #a2a2a2 #ffd486 black #819c9c - #3f5656 black #cdcd69 #2b3c3c #003 #004 #005 #006 #007}
-{Oscuro3 #f1f1f1 #f1f1f1 #192a2a #355050 #FEEFA8 #829d9d #000 #ff959f #9e9e9e #ffd486 black #779292 - #364d4d black #cdcd69 #223333 #003 #004 #005 #006 #007}
-{MildDark #d2d2d2 #ffffff #222323 #384e66 #FEEFA8 #557d9b #000 #00ffff #939393 #ffbb6d black #668eac - #394d64 black #bebe5a #2b2c2c #003 #004 #005 #006 #007}
-{MildDark1 #d2d2d2 #ffffff #151616 #2D435B #FEEFA8 #557d9b #000 #00ffff grey #ffbb6d black #668eac - #2e4259 black #bebe5a #1f2020 #003 #004 #005 #006 #007}
-{MildDark2 #b4b4b4 #ffffff #0d0e0e #24384f #FEEFA8 #557d9b #000 #00ffff #757575 #ffbb6d black #668eac - #253a52 black #bebe5a #161717 #003 #004 #005 #006 #007}
-{MildDark3 #e2e2e2 #f1f1f1 black #1B3048 #FEEFA8 #557d9b #000 #00ffff #6c6c6c #ffbb6d black #668eac - #192e46 black #b0b04c #0f0f0f #003 #004 #005 #006 #007}
-{CoolGlow #e0e0e0 #e0e0e0 #06071d #1e2038 #FEEFA8 #727faf #000 #00ffff #6e6e6e #ffbb6d black #7f8bbe - #2e3048 black #b0b04c #121329 #003 #004 #005 #006 #007}
-{Inkpot #d3d3ff #AFC2FF #16161f #1E1E27 #FEEFA8 #7272b3 #000 #ff9900 #6e6e6e #ffbb6d black #8585c6 - #292936 black #a2a23e #202029 #003 #004 #005 #006 #007}
-{Quiverly #cdd8d8 #cdd8d8 #2b303b #333946 #FEEFA8 #7c828f #000 #ff9900 #757575 #ffbb6d black #9197a4 - #414650 black #b0b04c #323742 #003 #004 #005 #006 #007}
-{Sleepy #ffffff #ffffff #323232 #5a5a5a #FEEFA8 #395472 white #ff9900 #969696 orange #ffffff #2d4866 - #4F4F4F black #cdcd69 #3b3b3b #003 #004 #005 #006 #007}
-{Monokai #f8f8f2 #f8f8f2 #272822 #4e5044 #FEEFA8 #818181 #000 #ff959f #9a9a9a #ffd486 black #777777 - #4b4c42 black #cdcd69 #2f302a #003 #004 #005 #006 #007}
-{TurnOfCentury #ffffff #ffffff #47382d #5a4b40 #FEEFA8 #b77f51 #000 #ffff68 #a2a2a2 #ffd486 black #e6ae80 - #55463b #000000 #eded89 #503f34 #003 #004 #005 #006 #007}
-{Magenta #E8E8E8 #F0E8E8 #381e44 #4A2A4A #FEEC9A #9b7b9b #000 #E69800 grey #ffd486 black #ad8dad - #573757 black #cdcd69 #42284e #003 #004 #005 #006 #007}
-{Red white #e9e9e6 #340202 #440702 #ffffb3 #c16f6f #000 yellow #828282 #ffbb6d black #ba6868 - #3e0100 black #bebe5a #461414 #003 #004 #005 #006 #007}
-{TKE-Choco #d6d1ab #d6d1ab #180c0c #402020 #FEEFA8 #664D4D white #ff9900 #828282 orange white #735a5a - #361d1d black #b0b04c #201414 #003 #004 #005 #006 #007}
-{TKE-Aurora #ececec #ececec #302e40 #4e4b68 #FEEFA8 #8b88a5 #000 #ff9900 #919191 #ffd486 black #8d8aa7 - #434259 black #bebe5a #393749 #003 #004 #005 #006 #007}
-{TKE-AnatomyOfGrey #dfdfdf #dddddd #131313 #282828 #FEEFA8 #818181 #000 #ff9900 #6f6f6f #ffd486 black #828282 - #363636 black #b0b04c #1b1b1b #003 #004 #005 #006 #007}
-{TKE-Default #dbdbdb #dbdbdb black #282828 #FEEFA8 #0a0acc white #ff9900 #6a6a6a orange white #0000d3 - #383838 black #b0b04c #0d0e0e #003 #004 #005 #006 #007}
+{{ 0: Grey} "#000" #0D0D0D #FFFFFF #DADCE0 #5c1616 #AFAFAF #000 #444 grey #933232 #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #003 #004 #005 #006 #007}
+{{ 1: Greyish} "#121212" #1A1A1A #f1f1f1 #dddddd #6c220c #bababa #000 #444 grey #933232 #000 #a9a9a9 - #cecece #000 #FBFB96 #dadada #003 #004 #005 #006 #007}
+{{ 2: InverseGrey} "#000" #000 #c9cbcf #DADCE0 #5c1616 #a5a5a5 #000 #444 grey #933232 #000 #AFAFAF - #c9cbcf #000 #FBFB95 #bebebe #003 #004 #005 #006 #007}
+{{ 3: AntiDark1} "#050b0d" #050b0d #F8F8F8 #dadad8 #5c1616 #AFAFAF #000 #444 grey #933232 #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #003 #004 #005 #006 #007}
+{{ 4: AntiDark2} "#050b0d" #050b0d #e9e9e7 #F8F8F8 #5c1616 #AFAFAF #000 #444 grey #933232 #000 #AFAFAF - #e1e1df #000 #FBFB95 #d5d5d3 #003 #004 #005 #006 #007}
+{{ 5: Rosy} "#2B122A" #000 #FFFFFF #F6E6E9 #570957 #C5ADC8 #000 #444 grey #870287 #000 #C5ADC8 - #e3d3d6 #000 #FBFB95 #e5e3e1 #003 #004 #005 #006 #007}
+{{ 6: Clay} "#000" #000 #fdf4ed #ded3cc #500a0a #bcaea2 #000 #444 grey #843500 #fff #766b5f - #d5c9c1 #000 #FBFB95 #e1dfde #003 #004 #005 #006 #007}
+{{ 7: Dawn} "#08085D" #030358 #FFFFFF #e3f9f9 #562222 #a3dce5 #000 #444 grey #933232 #000 #99d2db - #d3e9e9 #000 #FBFB96 #dbe9ed #003 #004 #005 #006 #007}
+{{ 8: Sky} "#102433" #0A1D33 #d0fdff #bdf6ff #562222 #95ced7 #000 #444 grey #933232 #000 #9fd8e1 - #b1eaf3 #000 #FBFB95 #c0e9ef #003 #004 #005 #006 #007}
+{{ 9: Celestial} "#141414" #151616 #d1ffff #a9e2f8 #562222 #82bbd1 #000 #444 grey #933232 #000 #7fb8ce - #9dd6f9 #000 #FBFB96 #b6e4e4 #003 #004 #005 #006 #007}
+{{10: Florid} "#000" #004000 #e4fce4 #fff #5c1616 #93e493 #0F2D0F #444 grey #802e00 #000 #8adb8a - #eefdee #000 #FBFB96 #d7e6d7 #003 #004 #005 #006 #007}
+{{11: LightGreen} "#122B05" #091900 #edffed #DEF8DE #562222 #A8CCA8 #000 #444 grey #933232 #000 #A8CCA8 - #d0ead0 #000 #FBFB96 #dee9de #003 #004 #005 #006 #007}
+{{12: InverseGreen} "#122B05" #091900 #cce6c8 #DEF8DE #562222 #9cc09c #000 #444 grey #933232 #000 #98bc98 - #cce6cc #000 #FBFB96 #bed8ba #003 #004 #005 #006 #007}
+{{13: GreenPeace} "#001000" #001000 #e1ffdd #cadfca #562222 #9dbb99 #000 #444 grey #933232 #000 #9cb694 - #c1dfbd #000 #FBFB96 #d2e1d2 #003 #004 #005 #006 #007}
+{{14: African} "#000" #000 #fff #ffffe7 #460000 #ffd797 #000 #6f2509 #7e7e7e #771d00 #000 #e6ae80 - #fffff9 #000 #eded89 #ededd5 #003 #004 #005 #006 #007}
+{{15: African1} "#000" #000 #f5f5dd #f2ebd2 #460000 #ffc48a #000 #6f2509 #7e7e7e #771d00 #000 #e6ae80 - #fffce3 #000 #eded89 #e3e3cb #003 #004 #005 #006 #007}
+{{16: African2} "#000" #000 #ffffe4 #eae7c0 #500a0a #eaac7a #000 #6f2509 grey #771d00 #00003c #e6ae80 - #f4f0ca #000 #fbfb74 #e7e7cb #003 #004 #005 #006 #007}
+{{17: African3} "#000" #000 #fdf9d0 #d5d2af #500a0a #d59d6f #000 #6f2509 grey #771d00 #00003c #e6ae80 - #dedbb8 #000 #fbfb74 #e5e5cc #003 #004 #005 #006 #007}
+{{18: Yellowstone} "#00002f" #00003c #cac08f #cfcdb1 #591c0e #c89160 #000 #444 grey #771d00 #3b1516 #eba969 - #c2c0a4 #000 #ffff45 #c1b690 #003 #004 #005 #006 #007}
+{{19: Notebook} "#000" #000 #e9e1c8 #c2bca8 #460000 #d59d6f #000 #444 #7e7e7e #771d00 #000 #e6ae80 - #d0cab6 #000 #eded89 #dad2b9 #003 #004 #005 #006 #007}
+{{20: Notebook1} "#000" #000 #dad2b9 #b5af9b #460000 #d59d6f #000 #444 #707070 #771d00 #000 #e6ae80 - #c5bfab #000 #eded89 #ccc4ab #003 #004 #005 #006 #007}
+{{21: Notebook2} "#000" #000 #cdc5ac #a6a08c #460000 #d59d6f #000 #444 #606060 #771d00 #000 #e6ae80 - #b4ae9a #000 #eded89 #c1b9a0 #003 #004 #005 #006 #007}
+{{22: Notebook3} "#000" #000 #beb69d #96907c #460000 #d59d6f #000 #444 #505050 #771d00 #000 #e6ae80 - #a6a08c #000 #eded89 #b2aa91 #003 #004 #005 #006 #007}
+{{23: Darcula} "#ececec" #c7c7c7 #272727 #323232 #FEEFA8 #2F5692 #e1e1e1 #f4f49f grey #d18d3f #EDC881 #1e4581 - #444444 #000 #a2a23e #343434 #003 #004 #005 #006 #007}
+{{24: Dark} "#F0E8E8" #E7E7E7 #272727 #323232 #FEEFA8 #707070 #000 #f4f49f grey #eda95b #000 #767676 - #454545 #000 #cdcd69 #2e2e2e #003 #004 #005 #006 #007}
+{{25: Dark1} "#E0D9D9" #C4C4C4 #212121 #292929 #FEEFA8 #6c6c6c #000 #f4f49f #606060 #eda95b #000 #767676 - #363636 #000 #cdcd69 #292929 #003 #004 #005 #006 #007}
+{{26: Dark2} "#bebebe" #bebebe #1f1f1f #262626 #FEEFA8 #6b6b6b #000 #f4f49f #616161 #eda95b #000 #767676 - #2b2b2b #000 #b0b04c #262626 #003 #004 #005 #006 #007}
+{{27: Dark3} "#bebebe" #bebebe #0a0a0a #232323 #FEEFA8 #6a6a6a #000 #f4f49f #616161 #eda95b #000 #767676 - #1c1c1c #000 #bebe5a #131313 #003 #004 #005 #006 #007}
+{{28: Oscuro} "#f1f1f1" #f1f1f1 #344545 #526d6d #FEEFA8 #728d8d #000 #f4f49f #afafaf #ffbb6d #000 #94afaf - #4f6666 #000 #cdcd69 #3d4e4e #003 #004 #005 #006 #007}
+{{29: Oscuro1} "#f1f1f1" #f1f1f1 #2a3b3b #466161 #FEEFA8 #6c8787 #000 #f4f49f #a2a2a2 #ffbb6d #000 #8ba6a6 - #4a6161 #000 #cdcd69 #354646 #003 #004 #005 #006 #007}
+{{30: Oscuro2} "#f1f1f1" #f1f1f1 #223333 #3e5959 #FEEFA8 #668181 #000 #f4f49f #a2a2a2 #ffbb6d #000 #819c9c - #3f5656 #000 #cdcd69 #2b3c3c #003 #004 #005 #006 #007}
+{{31: Oscuro3} "#f1f1f1" #f1f1f1 #192a2a #355050 #FEEFA8 #5c7777 #000 #f4f49f #9e9e9e #ffbb6d #000 #779292 - #364d4d #000 #cdcd69 #223333 #003 #004 #005 #006 #007}
+{{32: MildDark} "#d2d2d2" #fff #222323 #384e66 #FEEFA8 #557d9b #000 #00ffff #939393 #ffbb6d #000 #668eac - #394d64 #000 #bebe5a #2b2c2c #003 #004 #005 #006 #007}
+{{33: MildDark1} "#d2d2d2" #fff #151616 #2D435B #FEEFA8 #4d7593 #000 #00ffff grey #ffbb6d #000 #668eac - #2e4259 #000 #bebe5a #1f2020 #003 #004 #005 #006 #007}
+{{34: MildDark2} "#b4b4b4" #fff #0d0e0e #24384f #FEEFA8 #426a88 #000 #00ffff #757575 #eda95b #000 #668eac - #253a52 #000 #bebe5a #161717 #003 #004 #005 #006 #007}
+{{35: MildDark3} "#e2e2e2" #f1f1f1 #000 #1B3048 #FEEFA8 #39617f #000 #00ffff #6c6c6c #eda95b #000 #668eac - #192e46 #000 #b0b04c #0f0f0f #003 #004 #005 #006 #007}
+{{36: CoolGlow} "#e0e0e0" #e0e0e0 #06071d #1e2038 #FEEFA8 #5c6999 #000 #f4f49f #6e6e6e #ffbb6d #000 #7f8bbe - #2e3048 #000 #b0b04c #121329 #003 #004 #005 #006 #007}
+{{37: Inkpot} "#d3d3ff" #AFC2FF #16161f #1E1E27 #FEEFA8 #6767a8 #000 #f4f49f #6e6e6e #ffbb6d #000 #8585c6 - #292936 #000 #a2a23e #202029 #003 #004 #005 #006 #007}
+{{38: Quiverly} "#cdd8d8" #cdd8d8 #2b303b #333946 #FEEFA8 #6f7582 #000 #f4f49f #757575 #eda95b #000 #9197a4 - #414650 #000 #b0b04c #323742 #003 #004 #005 #006 #007}
+{{39: Sleepy} "#fff" #fff #3c3c3c #5a5a5a #FEEFA8 #395472 #fff #f4f49f #969696 orange #fff #2d4866 - #4F4F4F #000 #cdcd69 #3b3b3b #003 #004 #005 #006 #007}
+{{40: Monokai} "#f8f8f2" #f8f8f2 #353630 #4e5044 #FEEFA8 #707070 #000 #f4f49f #9a9a9a #ffbb6d #000 #777777 - #46473d #000 #cdcd69 #3c3d37 #003 #004 #005 #006 #007}
+{{41: Desert} "#fff" #fff #47382d #5a4b40 #FEEFA8 #78695e #000 #f4f49f #a2a2a2 #ffbb6d #000 #7f7065 - #55463b #000 #eded89 #503f34 #003 #004 #005 #006 #007}
+{{42: Magenta} "#E8E8E8" #F0E8E8 #381e44 #4A2A4A #FEEC9A #846484 #000 #f4f49f grey #ffbb6d #000 #ad8dad - #573757 #000 #cdcd69 #42284e #003 #004 #005 #006 #007}
+{{43: Red} "#fff" #e9e9e6 #340202 #440702 #ffffb3 #b05e5e #000 #f4f49f #828282 #ffbb6d #000 #ba6868 - #3e0100 #000 #bebe5a #461414 #003 #004 #005 #006 #007}
+{{44: Chocolate} "#d6d1ab" #d6d1ab #251919 #402020 #FEEFA8 #664D4D #fff #f4f49f #828282 #c3984a #fff #583f3f - #361d1d #000 #b0b04c #2d2121 #003 #004 #005 #006 #007}
+{{45: Dusk} "#ececec" #ececec #1a1f21 #262b2d #FEEFA8 #6b7072 #000 #f4f49f #585d5f #ffbb6d #000 #6b7072 - #363b3d #000 #9e9e3a #23282a #003 #004 #005 #006 #007}
+{{46: Nocturne} "#dfdfdf" #dddddd #131313 #1b1b1b #FEEFA8 #707070 #000 #f4f49f #6f6f6f #f5b163 #000 #828282 - #2d2d2d #000 #a2a23e #1b1b1b #003 #004 #005 #006 #007}
+{{47: TKE Default} "#dbdbdb" #dbdbdb #000 #282828 #FEEFA8 #0a0acc #fff #f4f49f #6a6a6a #bd9244 #fff #0000d3 - #383838 #000 #b0b04c #0d0e0e #003 #004 #005 #006 #007}
 }
   set ::apave::_CS_(initall) 1
   set ::apave::_CS_(initWM) 1
@@ -167,12 +168,12 @@ proc ::apave::initWM {args} {
   #   args - options ("name value" pairs)
 
   if {!$::apave::_CS_(initWM)} return
-  lassign [::apave::parseOptions $args -cursorwidth 2 -theme "clam" \
+  lassign [::apave::parseOptions $args -cursorwidth $::apave::cursorwidth -theme "clam" \
     -buttonwidth -8 -buttonborder 1 -labelborder 0 -padding 1] \
     cursorwidth theme buttonwidth buttonborder labelborder padding
   set ::apave::_CS_(initWM) 0
   set ::apave::_CS_(CURSORWIDTH) $cursorwidth
-  if {$::tcl_platform(platform) == "windows"} {
+  if {$::tcl_platform(platform) eq "windows"} {
     wm attributes . -alpha 0.0
   } else {
     wm withdraw .
@@ -185,8 +186,14 @@ proc ::apave::initWM {args} {
   try {ttk::style theme use $theme}
   ttk::style configure TButton -anchor center -width $buttonwidth \
     -relief raised -borderwidth $buttonborder -padding $padding
-  ttk::style configure TLabel -borderwidth $labelborder -padding $padding
   ttk::style configure TMenubutton -width 0 -padding 0
+  # TLabel's standard style saved for occasional uses
+  ttk::style configure TLabelSTD {*}[ttk::style configure TLabel]
+  ttk::style configure TLabelSTD -anchor w
+  ttk::style map       TLabelSTD {*}[ttk::style map TLabel]
+  ttk::style layout    TLabelSTD [ttk::style layout TLabel]
+  # ... and TLabel new style
+  ttk::style configure TLabel -borderwidth $labelborder -padding $padding
   initPOP .
   initStyles
   return
@@ -293,7 +300,7 @@ proc ::apave::parseOptionsFile {strict inpargs args} {
   for {set i 0} {$i < [llength $inpargs]} {incr i} {
     set parg [lindex $inpargs $i]
     if {$actopts} {
-      if {$parg=="--"} {
+      if {$parg eq "--"} {
         set actopts false
       } elseif {[catch {set defval $argarray($parg)}]} {
         if {$strict==1} {
@@ -328,11 +335,11 @@ proc ::apave::parseOptionsFile {strict inpargs args} {
 
 ###########################################################################
 
-proc ::apave::parseOptions {inpargs args} {
+proc ::apave::parseOptions {opts args} {
 
   # Parses argument list containing options.
-  #  inpargs - list of options and values
-  #  args  - list of option/defaultvalue repeated pairs
+  #  opts - list of options and values
+  #  args - list of "option / default value" pairs
   #
   # It's the same as parseOptionsFile, excluding the file name stuff.
   #
@@ -340,9 +347,29 @@ proc ::apave::parseOptions {inpargs args} {
   #
   # See also: parseOptionsFile
 
-  lassign [::apave::parseOptionsFile 0 $inpargs {*}$args] tmp
+  lassign [::apave::parseOptionsFile 0 $opts {*}$args] tmp
   foreach {nam val} $tmp {
     lappend retlist $val
+  }
+  return $retlist
+}
+
+###########################################################################
+
+proc ::apave::extractOptions {optsVar args} {
+
+  # Gets options' values and removes the options from the input list.
+  #  optsVar - variable name for the list of options and values
+  #  args  - list of "option / default value" pairs
+  #
+  # Returns a list of options' values, according to args.
+  #
+  # See also: parseOptions
+
+  upvar 1 $optsVar opts
+  set retlist [::apave::parseOptions $opts {*}$args]
+  foreach {o v} $args {
+    set opts [::apave::removeOptions $opts $o]
   }
   return $retlist
 }
@@ -419,6 +446,19 @@ proc ::apave::removeOptions {options args} {
 
 ###########################################################################
 
+proc ::apave::error {{fileName ""}} {
+  # Gets the error's message at reading/writing.
+  #   fileName - if set, return a full error messageat opening file
+
+  variable _PU_opts
+  if {$fileName eq ""} {
+    return $_PU_opts(_ERROR_)
+  }
+  return "Error of access to\n\"$fileName\"\n\n$_PU_opts(_ERROR_)"
+}
+
+###########################################################################
+
 proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
 
   # Reads a text file.
@@ -428,9 +468,10 @@ proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
   #
   # Returns file contents or "".
 
+  variable _PU_opts
   if {$varName ne ""} {upvar $varName fvar}
-  if {[catch {set chan [open $fileName]} e]} {
-    if {$doErr} {error "\n readTextFile: can't open \"$fileName\"\n $e"}
+  if {[catch {set chan [open $fileName]} _PU_opts(_ERROR_)]} {
+    if {$doErr} {error [::apave::error $fileName]}
     set fvar ""
   } else {
     chan configure $chan -encoding utf-8
@@ -438,6 +479,35 @@ proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
     close $chan
   }
   return $fvar
+}
+
+###########################################################################
+
+proc ::apave::writeTextFile {fileName {varName ""} {doErr 0}} {
+
+  # Writes to a text file.
+  #   fileName - file name
+  #   varName - variable name for file content or ""
+  #   doErr - if 'true', exit at errors with error message
+  #
+  # Returns "yes" if the file was saved successfully.
+
+  variable _PU_opts
+  if {$varName ne ""} {
+    upvar $varName contents
+  } else {
+    set contents ""
+  }
+  if {[catch {set chan [open $fileName w]} _PU_opts(_ERROR_)]} {
+    if {$doErr} {error [::apave::error $fileName]}
+    set res no
+  } else {
+    chan configure $chan -encoding utf-8
+    puts -nonewline $chan $contents
+    close $chan
+    set res yes
+  }
+  return $res
 }
 
 ###########################################################################
@@ -669,7 +739,7 @@ oo::class create ::apave::ObjectTheming {
         set ::apave::_CS_(def_bclr) $bclr
       }
       return [list default \
-           $fg    $fg     $bA    $bg     $fg2    $bS     $fS    #802e00  grey   #4f6379 $fS $bS - $bg $fW $bW $bg2]
+           $fg    $fg     $bA    $bg     $fg2    $bS     $fS    #444  grey   #4f6379 $fS $bS - $bg $fW $bW $bg2]
       # clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk fI  bI fM bM fW bW
     }
     return [lindex $::apave::_CS_(ALL) $ncolor]
@@ -808,7 +878,7 @@ oo::class create ::apave::ObjectTheming {
     if {$ncolor < $::apave::_CS_(MINCS)} {
       return "Default"
     } elseif {$ncolor == $::apave::_CS_(MINCS)} {
-      return "Basic"
+      return "-1: Basic"
     }
     return [lindex [my ColorScheme $ncolor] 0]
   }
@@ -911,8 +981,8 @@ oo::class create ::apave::ObjectTheming {
     set maxcs [::apave::cs_Max]
     for {set i $::apave::_CS_(MINCS)} {$i<=$maxcs} {incr i} {
       lassign [my csGet $i] cfg2 cfg1 cbg2 cbg1 cfhh - - ccur
-      if {$cfg2==$tfg2 && $cfg1==$tfg1 && $cbg2==$tbg2 && $cbg1==$tbg1 && \
-      $cfhh==$tfhh && $ccur==$tcur} {
+      if {$cfg2 eq $tfg2 && $cfg1 eq $tfg1 && $cbg2 eq $tbg2 && \
+      $cbg1 eq $tbg1 && $cfhh eq $tfhh && $ccur eq $tcur} {
         set found $i
         break
       }
@@ -956,7 +1026,7 @@ oo::class create ::apave::ObjectTheming {
       set color [lindex $CS $i]
       if {$i in $mainc} {
         set color [string map {black #000000 white #ffffff grey #808080 \
-          red #ff0000 yellow #ffff00 orange #ffa500} $color]
+          red #ff0000 yellow #ffff00 orange #ffa500 #000 #000000 #fff #ffffff} $color]
         scan $color "#%2x%2x%2x" R G B
         foreach valname {R G B} {
           set val [expr {int([set $valname]*$hue)}]
@@ -984,7 +1054,7 @@ oo::class create ::apave::ObjectTheming {
 
     if {![catch {set oldval [ttk::style $oper $ts $opt]}]} {
       catch {ttk::style $oper $ts $opt $val}
-      if {$oldval=="" && $oper=="configure"} {
+      if {$oldval eq "" && $oper eq "configure"} {
         switch -- $opt {
           -foreground - -background {
             set oldval [ttk::style $oper . $opt]
@@ -1084,8 +1154,8 @@ oo::class create ::apave::ObjectTheming {
       set ::apave::_CS_(expo,$arg) [set $arg]
     }
     # configuring themed widgets
-    foreach ts {TLabel TLabelframe.Label TButton TCheckbutton TScale \
-    TProgressbar TRadiobutton TScrollbar TSizegrip TNotebook.Tab} {
+    foreach ts {TLabel TLabelframe.Label TButton TCheckbutton \
+    TProgressbar TRadiobutton TNotebook.Tab} {
       my Ttk_style configure $ts -font apaveFontDef
       my Ttk_style configure $ts -foreground $tfg1
       my Ttk_style configure $ts -background $tbg1
@@ -1105,20 +1175,20 @@ oo::class create ::apave::ObjectTheming {
       my Ttk_style map $ts -foreground [list selected $tfgS active $tfg2]
       my Ttk_style map $ts -background [list selected $tbgS active $tbg2]
     }
-
-    foreach ts {TEntry Treeview TSpinbox TCombobox TCombobox.Spinbox TProgressbar TMatchbox} {
+    foreach ts {TEntry Treeview TSpinbox TCombobox TCombobox.Spinbox TMatchbox TNotebook.Tab TScrollbar TScale} {
+      my Ttk_style map $ts -lightcolor [list focus $bclr active $bclr]
+      my Ttk_style map $ts -darkcolor [list focus $bclr active $bclr]
+    }
+    foreach ts {TEntry Treeview TSpinbox TCombobox TCombobox.Spinbox TMatchbox} {
       my Ttk_style configure $ts -font apaveFontDef
       my Ttk_style configure $ts -selectforeground $tfgS
       my Ttk_style configure $ts -selectbackground $tbgS
-      my Ttk_style configure $ts -font apaveFontDef
       my Ttk_style map $ts -selectforeground [list !focus $::apave::_CS_(!FG)]
       my Ttk_style map $ts -selectbackground [list !focus $::apave::_CS_(!BG)]
       my Ttk_style configure $ts -fieldforeground $tfg2
       my Ttk_style configure $ts -fieldbackground $tbg2
       my Ttk_style configure $ts -insertcolor $tcur
       my Ttk_style map $ts -bordercolor [list focus $bclr active $bclr]
-      my Ttk_style map $ts -lightcolor [list focus $bclr]
-      my Ttk_style map $ts -darkcolor [list focus $bclr]
       my Ttk_style configure $ts -insertwidth $::apave::_CS_(CURSORWIDTH)
       if {$ts eq "TCombobox"} {
         # combobox is sort of individual
@@ -1242,7 +1312,7 @@ oo::class create ::apave::ObjectTheming {
     my themeNonThemed $win
     # other options per widget type
     foreach {typ v1 v2} $args {
-      if {$typ=="-"} {
+      if {$typ eq "-"} {
         # config of non-themed widgets
         set ind [incr ::apave::_C_($v1,0)]
         set ::apave::_C_($v1,$ind) "$v2"
@@ -1473,10 +1543,10 @@ oo::class create ::apave::ObjectTheming {
         if {[catch {set val [ttk::style configure $ts $opt1]}]} {
           return $att
         }
-        if {$val==""} {
+        if {$val eq ""} {
           catch { set val [ttk::style $oper . $opt2] }
         }
-        if {$val!=""} {
+        if {$val ne ""} {
           append att " $opt2 $val"
         }
       }
@@ -1516,10 +1586,13 @@ oo::class create ::apave::ObjectTheming {
     #   mnu - menu's name (path)
 
     if {[my csCurrent] == $::apave::_CS_(NONCS)} return
-    lassign [my csGet] - fg - bg2 - bgS fgS - - - - - - bg
-    if {[my csCurrent] > $::apave::_CS_(STDCS)} {set bg $bg2}
-    my ThemePopup $mnu -foreground $fg -background $bg \
-      -activeforeground $fgS -activebackground $bgS -font [font actual apaveFontDef]
+    lassign [my csGet] - fg - bg2 - bgS fgS - tfgD - - - - bg
+    if {$bg eq ""} {set bg $bg2}
+    set opts "-foreground $fg -background $bg -activeforeground $fgS \
+      -activebackground $bgS -font {[font actual apaveFontDef]}"
+    if {[catch {my ThemePopup $mnu {*}$opts -disabledforeground $tfgD}]} {
+      my ThemePopup $mnu {*}$opts
+    }
   }
 
   ###########################################################################
@@ -1598,4 +1671,4 @@ oo::class create ::apave::ObjectTheming {
 
 #%   DOCTEST   SOURCE   tests/obbit_1.test
 #-RUNF1: ./tests/test2_pave.tcl
-#RUNF1: ./tests/test2_pave.tcl 9 9 12 "small icons"
+#RUNF1: ./tests/test2_pave.tcl 9 10 12 "small icons"

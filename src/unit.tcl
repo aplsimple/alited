@@ -94,15 +94,82 @@ proc unit::GetUnits {textcont} {
   return $retlist
 }
 
-proc unit::MoveUnit {to} {
-  namespace upvar ::alited al al obPav obPav
-  set TID [alited::bar::CurrentTabID]
-  set curunit ""
-  set wtree [$obPav Tree]
-  set wtxt [$obPav Text]
-  foreach item $al(_unittree,$TID) {
-    set itemID [alited::tree::ItemID [incr iit]]
+proc unit::MoveL1L2 {i1 i2 io} {
+  # Moves a text lines to other location.
+  #   i1 - first line to be moved
+  #   i2 - last line to be moved
+  #   io - destination line (to insert the moved lines before)
+  # Returns a position of destination line, if the moving was successful.
+
+  set wtxt [alited::main::CurrentWTXT]
+  set ind2 [$wtxt index "$i2.end +1 char"]
+  if {($i1<=$io && $io<=$i2) || $io<1 || $i1<1 || $i2<1 || \
+  [set linesmoved [$wtxt get $i1.0 $ind2]] eq ""} {
+    return "" ;# nothing to do
+  }
+  $wtxt delete $i1.0 $ind2
+  if {$io>$i2} {
+    # 3. i1    if moved below, the moved (deleted) lines change 'io', so
+    # 4. i2    'io' is shifted up (by range of moved lines i.e. i1-i2-1)
+    # 5.
+    # 6. io    resulting io = io-(i2-i1+1) = io+i1-i2-1 (6+3-4-1=4)
+    set io [expr {$io+$i1-$i2-1}]
+  }
+  $wtxt insert $io.0 $linesmoved
+  return $io
+}
+
+proc unit::MoveUnit {wtree to itemID} {
+  set tree [alited::tree::GetTree]
+  set newparent [set oldparent ""]
+  set newlev [set oldlev [set iold -1]]
+
+set i1 [set i2 [set io 0]]
+foreach item $tree {
+  lassign $item lev cnt id title values
+  lassign $values l1 l2 prl id lev leaf fl1
+  if {$id eq $itemID} {
+    set oldlev $lev
+    set i1 $l1
+    set i2 $l2
+    if {$to eq "up"} break
+  } elseif {$to ne "up" && $oldlev>-1} {
+    set io [expr {$l2+1}]
+    break
+  }
+  set io $l1
+}
+set pos [MoveL1L2 $i1 $i2 $io]
+if {$pos ne ""} {
+  alited::tree::RecreateTree $pos
+}
+return
+
+  foreach item $tree {
+    incr inew
+    lassign $item lev cnt id title values
+    lassign $values l1 l2 prl id lev leaf fl1
+    if {!$leaf} {
+      set newparent $id  ;# last found branch
+      set newlev $lev
+      if {$oldparent ne "" && $lev <= $oldlev} {
+        # new branch found at moving down
+        if {$lev < $oldlev} {set inew 0}
+        $wtree move $itemID $newparent $inew
+        break
+      }
+    }
+    if {$id eq $itemID} {
+      set oldparent [$wtree parent $itemID]
+      set oldlev [expr {$lev-1}]
+      if {$to eq "up"} {
+        # new branch found at moving up
+        if {$lev < $newlev} {set inew end}
+        $wtree move $itemID $newparent $inew
+        break
+      }
+    }
   }
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl -CS 23 -hue 0 -fontsize 11
+#RUNF1: alited.tcl
