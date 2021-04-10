@@ -52,4 +52,4 @@ namespace eval about {
 
 }
 # _____________________________ EOF _____________________________________ #
-#RUNF1: alited.tcl -icons "small icons" -CS 23 -hue -2 -fontsize 11
+#RUNF1: alited.tcl

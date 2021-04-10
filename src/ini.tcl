@@ -1,8 +1,37 @@
 #! /usr/bin/env tclsh
 # _______________________________________________________________________ #
 #
-# The initializing procedures of alited.
+# The ini-files procedures of alited.
 # _______________________________________________________________________ #
+
+  set al(ED,multiline) no
+  set al(INTRO_LINES) 10
+  set al(LEAF) 0
+  set al(TEXT,opts) "-padx 3 -spacing1 1"
+  set al(TREE,isunits) yes
+  set al(TREE,units) no
+  set al(TREE,files) no
+  set al(TREE,cw0) 200
+  set al(TREE,cw1) 70
+  set al(FONTSIZE,std) 11
+  set al(FONTSIZE,txt) 12
+  set al(FONTSIZE,small) 9
+  set al(INI,CS) 25
+  set al(INI,HUE) 0
+  set al(INI,ICONS) "middle icons"
+  set al(INI,save_onselect) no
+  set al(INI,save_onadd) no
+  set al(INI,save_onmove) no
+  set al(INI,save_onclose) no
+  set al(INI,save_onsave) yes
+  set al(RE,branch) {^\s*(#+) [_]+\s+([^_]+[^[:blank:]]+)\s+[_]+ (#+)$}         ;#  # _ lev 1 _..
+  set al(RE,leaf) {^\s*##\s*[-]*([^-]*)\s*[-]*$}   ;#  # --  / # -- abc / # --abc--
+  set al(RE,proc) {^\s*(((proc|method)\s+([^[:blank:]]+))|((constructor|destructor)))\s.+}
+  set al(RE,leaf2) {[_]+}                       ;#  # _  / # _ abc
+  set al(RE,proc2) {^\s*(proc|method|constructor|destructor)\s+} ;# proc abc {}...
+  set al(RESTART) no
+  set al(FAV,current) [list]
+  set al(FAV,saved) [list]
 
 namespace eval ini {
   variable afterID ""
@@ -71,10 +100,13 @@ proc ini::ReadIniPrj {} {
     }
     while {1} {
       set val [string trim [gets $chan]]
-      if {$val in {"" {[Misc]}}} break
+      if {$val in {"" {EOF}}} break
       switch -glob $val {
         curtab=* {set al(curtab) [string range $val 7 end]}
         prjroot=* {set al(prjroot) [string range $val 8 end]}
+        default {
+         if {$val eq {[Favorites]}} {ReadIniFavorites $chan}
+        }
       }
     }
   }
@@ -83,6 +115,19 @@ proc ini::ReadIniPrj {} {
   if {![string is digit -strict $al(curtab)] || \
   $al(curtab)<0 || $al(curtab)>=[llength $al(tabs)]} {
     set al(curtab) 0
+  }
+}
+
+proc ini::ReadIniFavorites {chan} {
+
+  namespace upvar ::alited al al
+  while {1} {
+    set val [string trim [gets $chan]]
+    if {$val in {"" {EOF}}} break
+    switch -glob $val {
+      current=* {lappend al(FAV,current) [string range $val 8 end]}
+      saved=* {lappend al(FAV,saved) [string range $val 6 end]}
+    }
   }
 }
 
@@ -139,12 +184,22 @@ proc ini::SaveIniPrj {} {
   puts $chan {[Options]}
   puts $chan "curtab=[alited::bar::CurrentTab 3]"
   puts $chan "prjroot=$al(prjroot)"
+  puts $chan {[Favorites]}
+  foreach curfav [alited::tree::GetTree {} TreeFavor] {
+    puts -nonewline $chan "current="
+    puts $chan $curfav
+  }
+  foreach savfav $al(FAV,saved) {
+    puts -nonewline $chan "saved="
+    puts $chan $savfav
+  }
+  puts $chan "EOF"
   close $chan
 }
 
 proc ini::_init {} {
 
-  namespace upvar ::alited al al obPav obPav obDlg obDlg
+  namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2
 
   set al(INI) [file join [file normalize $::alited::INIDIR] alited.ini]
   ReadIni
@@ -152,11 +207,12 @@ proc ini::_init {} {
   # initialize GUI
   ::apave::initWM
   ::apave::iconImage -init $al(INI,ICONS)
-  ::apave::obj basicFontSize $al(FSIZE,std)
+  ::apave::obj basicFontSize $al(FONTSIZE,std)
 
   # create two main apave objects
   ::apave::APaveInput create $obPav $al(WIN)
   ::apave::APaveInput create $obDlg $al(WIN)
+  ::apave::APaveInput create $obDl2 $al(WIN)
   $obPav csSet $al(INI,CS) . -doit
 
   # set options' values
@@ -173,10 +229,14 @@ proc ini::_init {} {
       append al(tool) " $img {{} -tooltip {Icon$i: $icon@@ -under 4}}"
     }
   }
-  foreach {icon} {tree heart add delete up down plus minus file folder actions} {
+  foreach {icon} {gulls heart add delete up down plus minus file folder \
+  retry} {
     set img alimg_$icon
     catch {image create photo $img -data [::apave::iconData $icon small]}
     catch {image create photo $img-small -data [::apave::iconData $icon small]}
+  }
+  for {set i 0} {$i<8} {incr i} {
+    image create photo alimg_pro$i -data [set alited::img::_AL_IMG($i)]
   }
 }
 # _________________________________ EOF _________________________________ #

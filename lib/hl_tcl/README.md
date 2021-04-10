@@ -139,6 +139,7 @@ The rest of *hl_tcl* procedures are:
 
    *  **`hl_all `** updates all highlighted existing text widgets, e.g. at changing a color scheme of application
    *  **`hl_readonly`** gets/sets a read-only mode and/or a command to watch a text widget at viewing/editing it
+   *  **`hl_colors`** gets a list of colors for highlighting
 
 See details in [Reference](https://aplsimple.github.io/en/tcl/hl_tcl/hl_tcl.html).
 

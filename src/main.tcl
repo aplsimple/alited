@@ -55,7 +55,7 @@ proc main::ShowText {{newsuf "-1"}} {
       set w2 $wsbv$p
       set texopts [lindex [$obPav defaultAttrs tex] 1]
       lassign [::apave::extractOptions texopts -selborderwidth 1] selbw
-      text $w1 {*}$texopts -padx 3
+      text $w1 {*}$texopts {*}$al(TEXT,opts)
       $w1 tag configure sel -borderwidth $selbw
       $obPav themeNonThemed [winfo parent $w1]
       set bind [list $obPav fillGutter $w1 $canvas $width $shift]
@@ -71,6 +71,7 @@ proc main::ShowText {{newsuf "-1"}} {
   }
   # show the selected text
   lassign [CurrentSUF $TID $newsuf $wtxt $wsbv] wtxt wsbv
+  alited::bar::SetBarState [alited::bar::CurrentTabID] $curfile $wtxt $wsbv
   if {$doinit} {
     alited::file::ReadFile $TID $curfile $wtxt
   }
@@ -82,34 +83,46 @@ proc main::ShowText {{newsuf "-1"}} {
   }
   if {$doinit || $dopack} {
     set al(TREE,units) no
-    alited::tree::Create
+    alited::tree::Create [set pos$newsuf]
+  } else {
+    FocusText $TID [set pos$newsuf]
   }
-  FocusText $TID $wtxt [set pos$newsuf]
-  alited::bar::SetBarState [alited::bar::CurrentTabID] $curfile $wtxt $wsbv
+  if {[set itemID [alited::tree::NewSelection]] ne ""} {
+    [$obPav Tree] see $itemID
+  }
   alited::file::CheckMenuItems
   focus $wtxt
   ShowHeader
 }
 
-proc main::FocusText {TID wtxt pos} {
+proc main::FocusText {args} {
 
   namespace upvar ::alited al al obPav obPav
+  lassign $args TID pos
+  set wtxt [CurrentWTXT]
+  if {$pos eq ""} {
+    set TID [alited::bar::CurrentTabID]
+    set pos [$wtxt index insert]
+  }
   set alited::tree::doFocus no
+  set wtree [$obPav Tree]
   catch {
-    # search the tree for a unit with current line of text
-    set wtree [$obPav Tree]
-    set l [expr {int($pos)}]
-    foreach it $al(_unittree,$TID) {
-      set itemID [alited::tree::NewItemID [incr iit]]
-      lassign $it lev leaf fl1 title l1 l2
-      if {$l1<=$l && $l<=$l2} {
-        $wtree see $itemID
-        if {$itemID ni [$wtree selection]} {
-          $wtree selection set $itemID
+    if {$al(TREE,isunits)} {
+      # search the tree for a unit with current line of text
+      lassign [alited::tree::CurrentItemByLine $pos 1] itemID lev leaf fl1 title l1 l2
+    } else {
+      # search the tree for a current file
+      foreach it [alited::tree::GetTree] {
+        if {[lindex $it 4 1] eq [alited::bar::FileName]} {
+          set itemID [lindex $it 2]
+          break
         }
-        break
       }
     }
+  }
+  catch {
+    if {$itemID ni [$wtree selection]} {$wtree selection set $itemID}
+    if {$itemID ne ""} {after 10 "$wtree see $itemID"}
   }
   catch {::tk::TextSetCursor $wtxt $pos}
   catch {focus $wtxt}
@@ -131,17 +144,17 @@ proc main::HighlightText {curfile wtxt} {
 # TODO
 #        ::hl_c::hl_init $wtxt -dark [$obPav csDarkEdit] \
           -multiline $al(ED,multiline) \
-          -cmd "::alited::bar::TextModified [alited::bar::CurrentTabID]" \
+          -cmd "::alited::unit::Modified [alited::bar::CurrentTabID]" \
           -cmdpos "::alited::main::CursorPos" \
-          -font "-family {[$obPav basicTextFont]} -size $al(FSIZE,txt)"
+          -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)"
 #        ::hl_c::hl_text $wtxt
       }
       default {
         ::hl_tcl::hl_init $wtxt -dark [$obPav csDarkEdit] \
           -multiline $al(ED,multiline) \
-          -cmd "::alited::bar::TextModified [alited::bar::CurrentTabID]" \
+          -cmd "::alited::unit::Modified [alited::bar::CurrentTabID]" \
           -cmdpos "::alited::main::CursorPos" \
-          -font "-family {[$obPav basicTextFont]} -size $al(FSIZE,txt)" \
+          -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)" \
           -plaintext [expr {$ext ne ".tcl"}]
         ::hl_tcl::hl_text $wtxt
       }
@@ -173,9 +186,12 @@ proc main::BindsForText {wtxt} {
   foreach s {o O} {bind $wtxt "<Control-$s>" {::alited::file::OpenFile; break}}
   foreach s {w W} {bind $wtxt "<Control-$s>" {::alited::file::SaveFileAndClose}}
   bind $wtxt <F3> "$obPav findInText 1 $wtxt"
-  bind $wtxt <F11> {+ ::alited::unit::MoveItem Up}
-  bind $wtxt <F12> {+ ::alited::unit::MoveItem Down}
-  bind $wtxt <FocusIn> "::alited::main::CursorPos $wtxt"
+  bind $wtxt <F11> {+ ::alited::main::MoveItem up yes}
+  bind $wtxt <F12> {+ ::alited::main::MoveItem down yes}
+  bind $wtxt <FocusIn> "
+    ::alited::main::CursorPos $wtxt
+    [$obPav TreeFavor] selection set {}
+    "
 }
 
 proc main::CurrentSUF {TID {suf "-1"} {w1 ""} {w2 ""}} {
@@ -215,30 +231,35 @@ proc main::CursorPos {wtxt args} {
   [$obPav Labstat2] configure -text [incr c]
 }
 
-proc main::MoveItem {to} {
+proc main::MoveItem {to {f1112 no}} {
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav Tree]
-  set itemID [$wtree focus]
+  set itemID [$wtree selection]
   if {$itemID eq ""} {
-    set itemID [$wtree selection]
+    set itemID [$wtree focus]
   }
   if {$itemID eq ""} {
     alited::msg ok warn $al(MC,nosels) -geometry pointer+10+10
     return
   }
   if {$al(TREE,isunits)} {
-    alited::unit::MoveUnit $wtree $to $itemID
+    alited::unit::MoveUnits $wtree $to $itemID $f1112
   } else {
-    alited::file::MoveFile $wtree $to $itemID
+    alited::file::MoveFile $wtree $to $itemID $f1112
   }
 }
 
 proc main::_create {} {
   namespace upvar ::alited al al obPav obPav
 
-  # these lines eliminate the background blinked at switching tabs
+  lassign [$obPav csGet] - - ::alited::FRABG - - - - - bclr
+  ttk::style configure TreeNoHL {*}[ttk::style configure Treeview] -borderwidth 0
+  ttk::style map TreeNoHL {*}[ttk::style map Treeview] \
+    -bordercolor [list focus $bclr active $bclr] \
+    -lightcolor [list focus $::alited::FRABG active $::alited::FRABG] \
+    -darkcolor [list focus $::alited::FRABG active $::alited::FRABG]
+  ttk::style layout    TreeNoHL [ttk::style layout Treeview]
   $obPav untouchWidgets *.frAText
-  set ::alited::FRABG [lindex [$obPav csGet] 2]
   # make the main apave object and populate it
   $obPav makeWindow $al(WIN).fra alited
   $obPav paveWindow $al(WIN).fra {
@@ -255,29 +276,31 @@ proc main::_create {} {
     {.fraBot - - - - {add}}
     {.fraBot.PanBM - - - - {pack -fill both -expand 1} {$alited::PanBM_wh}}
     {.fraBot.panBM.FraTree - - - - {pack -side top -fill both -expand 1}}
-    {.fraBot.panBM.fraTree.v_ - - - - {pack -side top -fill x} {-h 3}}
     {.fraBot.panBM.fraTree.fra1 - - - - {pack -side top -fill x}}
-    {.fraBot.panBM.fraTree.fra1.BuTswitch - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_tree -command {alited::tree::SwitchTree}}}
+    {.fraBot.panBM.fraTree.fra1.BuTswitch - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_gulls -command alited::tree::SwitchTree}}
+    {.fraBot.panBM.fraTree.fra1.BuTUpdT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_retry -tooltip {$alited::al(MC,updtree)}
+    -command alited::tree::RecreateTree}}
+    {.fraBot.panBM.fraTree.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
     {.fraBot.panBM.fraTree.fra1.BuTUp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_up -tooltip {$alited::al(MC,moveup)}
     -command {alited::main::MoveItem up}}}
     {.fraBot.panBM.fraTree.fra1.BuTDown - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_down -tooltip {$alited::al(MC,movedown)}
     -command {alited::main::MoveItem down}}}
-    {.fraBot.panBM.fraTree.fra1.BuTAddT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus}}
-    {.fraBot.panBM.fraTree.fra1.BuTDelT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus}}
+    {.fraBot.panBM.fraTree.fra1.sev2 - - - - {pack -side left -fill y -padx 5}}
+    {.fraBot.panBM.fraTree.fra1.BuTAddT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -command alited::tree::AddItem}}
+    {.fraBot.panBM.fraTree.fra1.BuTDelT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -command alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1} 
-      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}"}}
+      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL}}
     {.fraBot.panBM.fraTree.fra.SbvTree .fraBot.panBM.fraTree.fra.Tree L - - {pack -side right -fill both}}
     {.fratex - - - - {add}}
     {.fratex.v_ - - - - {pack -side top -fill x} {-h 10}}
     {.fratex.fra1 - - - - {pack -side top -fill x}}
-    {.fratex.fra1.BuTFavLists - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_heart -tooltip {$alited::al(MC,FavLists)}}}
-    {.fratex.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -tooltip {$alited::al(MC,favoradd)}}}
-    {.fratex.fra1.BuTDelF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -tooltip {$alited::al(MC,favordel)}}}
-    {.fratex.fra1.lab - - - - {pack -side left -fill x} {-t "Favorites" -anchor center}}
+    {.fratex.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_heart -tooltip {$alited::al(MC,FavLists)}}}
+    {.fratex.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus -tooltip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
+    {.fratex.fra1.BuTDelF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -tooltip {$alited::al(MC,favordel)} -com alited::favor::Delete}}
     {.fratex.fra - - - - {pack -fill both -expand 1} {}}
-    {.fratex.fra.Text3 - - - - {pack -side left -fill both -expand 1} {-borderwidth 0 -h 20 -w 5 -wrap none}}
-    {.fratex.fra.SbvFavor .fratex.fra.Text3 L - - {pack -side left}}
+    {.fratex.fra.TreeFavor - - - - {pack -side left -fill both -expand 1} {-h 5 -show tree -style TreeNoHL -columns {C1 C2 C3 C4} -displaycolumns C1 -show headings}}
+    {.fratex.fra.SbvFavor .fratex.fra.TreeFavor L - - {pack -side left}}
     {fra.pan.PanR - - - - {add} {-orient vertical $alited::PanR_wh}}
     {.fraTop - - - - {add}}
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
@@ -289,10 +312,11 @@ to show, use:
 pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
     }
     {.fraTop.panTop.FraHead  - - - - {pack forget -fill x}}
-    {.fraTop.panTop.fraHead.BuTtmp - - - - {pack -side left} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_tree -command {alited::tree::SwitchTree}}}
+    {.fraTop.panTop.fraHead.BuTtmp - - - - {pack -side left} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_folder -command {alited::tree::SwitchTree}}}
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both} {}}
+    {.fraTop.panTop.CanGut - - - - {pack -side left -expand 0 -fill y} {-w 4}}
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both} {-background $::alited::FRABG}}
-    {.fraTop.panTop.frAText.Text - - - - {pack forget -side left -expand 1 -fill both} {-borderwidth 0 -w 2 -h 20 -gutter GutText -gutterwidth 5 -guttershift 4 -padx 3}}
+    {.fraTop.panTop.frAText.Text - - - - {pack forget -side left -expand 1 -fill both} {-borderwidth 0 -w 2 -h 20 -gutter GutText -gutterwidth 5 -guttershift 4 $alited::al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
     {.fraTop.panTop.fraSbv.SbvText .fraTop.panTop.frAText.text L - - {pack -fill y}}
     {.fraBot - - - - {add}}
@@ -300,10 +324,10 @@ pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
     {.fraBot.fra.Text4 - - - - {pack -side left -fill both -expand 1} {-h 1 -w 2 -wrap none}}
     {.fraBot.fra.sbv .fraBot.fra.Text4 L - - {pack}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
-      {Row:       -font {-slant italic -size $alited::al(FSIZE,small)}} 12
-      {" Col:" -font {-slant italic -size $alited::al(FSIZE,small)}} 5
-      {"" -font {-slant italic -size $alited::al(FSIZE,small)} -anchor w} 60
-      {"" -font {-slant italic -size $alited::al(FSIZE,small)} -anchor e} 40
+      {Row: -font {-slant italic -size $alited::al(FONTSIZE,small)}} 12
+      {" Col:" -font {-slant italic -size $alited::al(FONTSIZE,small)}} 5
+      {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor w} 60
+      {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor e} 40
     }}}
   }
   bind [$obPav Pan] <ButtonRelease> ::alited::tree::AdjustWidth

@@ -138,23 +138,5 @@ proc bar::InsertTab {tab tip} {
   alited::ini::SaveCurrentIni $al(INI,save_onadd)
   return $TID
 }
-
-proc bar::TextModified {TID wtxt {l1 0} {l2 0}} {
-
-  if {[BAR isTab $TID]} {
-    set old [alited::file::IsModified $TID]
-    set new [$wtxt edit modified]
-    if {$old != $new} {
-      if {$new} {
-        BAR markTab $TID
-      } else {
-        BAR unmarkTab $TID
-      }
-    }
-#TODO
-alited::tree::UpdateUnitTree $TID
-  }
-  alited::main::ShowHeader
-}
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl

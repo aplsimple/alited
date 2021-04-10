@@ -79,7 +79,7 @@ proc file::IsSaved {TID} {
   if {[IsModified $TID]} {
     set fname [alited::bar::BAR $TID cget -text]
     set ans [alited::msg yesnocancel warn [string map [list %f $fname] \
-      $al(MC,notsaved)] -title $al(MC,saving)]
+      $al(MC,notsaved)] YES -title $al(MC,saving)]
     return $ans
   }
   return 2  ;# as if "No" chosen
@@ -116,7 +116,9 @@ proc file::OpenFile {{fname ""}} {
       set TID [alited::bar::InsertTab $tab $fname]
     }
     alited::bar::BAR $TID show
+    return $TID
   }
+  return ""
 }
 
 proc file::SaveFileByName {TID fname} {
@@ -128,7 +130,7 @@ proc file::SaveFileByName {TID fname} {
     return 0
   }
   $wtxt edit modified no
-  alited::bar::TextModified $TID $wtxt
+  alited::unit::Modified $TID $wtxt
   alited::main::HighlightText $fname $wtxt
   return 1
 }
@@ -205,7 +207,6 @@ proc file::AllSaved {} {
 proc file::RenameFile {TID fname} {
   # Renames a file.
 
-  namespace upvar ::alited al al
   alited::bar::SetTabState $TID --fname $fname
   set tab [alited::bar::UniqueListTab $fname]
   alited::bar::BAR $TID configure -text $tab -tip $fname
@@ -267,7 +268,129 @@ proc file::CloseAll {func} {
   alited::bar::BAR closeAll $::alited::al(BID) $TID $func yesnocancel
 }
 
-proc file::MoveFile {wtree to itemID} {
+proc file::MoveFile {wtree to itemID f1112} {
+
+  set tree [alited::tree::GetTree]
+  set idx [alited::unit::SearchInBranch $itemID $tree]
+  if {$idx<0} {
+    bell
+    return
+  }
+  set curfile [alited::bar::FileName]
+  set curdir [file dirname $curfile]
+  set selfile [lindex [$wtree item $itemID -values] 1]
+  set selparent [$wtree parent $itemID]
+  set dirname ""
+  set increment [expr {$to eq "up" ? -1 : 1}]
+  for {set i $idx} {1} {incr i $increment} {
+    lassign [lindex $tree $i 4] files fname isfile id
+    if {$fname eq ""} break
+    if {$isfile} {
+      set parent [$wtree parent $id]
+      if {$parent ne $selparent && $parent ne ""} {
+        lassign [$wtree item $parent -values] files fname isfile id
+        set dirname $fname
+        break
+      }
+    } elseif {$id ne $selparent || $fname ne $curdir} {
+      set dirname $fname
+      break
+    }
+  }
+  if {$dirname eq ""} {
+    if {$selparent ne ""} {
+      set dirname $alited::al(prjroot)
+    } else {
+      bell
+      return
+    }
+  }
+  DoMoveFile $curfile $dirname $f1112
+}
+
+proc file::RemoveFile {fname dname} {
+  namespace upvar ::alited al al
+  set ftail [file tail $fname]
+  set dtail [file tail $dname]
+  set fname2 [file join $dname $ftail]
+  if {[file exists $fname2]} {catch {file delete $fname2}}
+  if {[catch {file copy $fname $dname} err]} {
+    set msg [string map [list %f $ftail %d $dname] $al(MC,errcopy)]
+    alited::msg ok err "$msg\n\n$err" -title $al(MC,error)
+  } else {
+    file mtime $fname2 [file mtime $fname]
+    file delete $fname
+    alited::Message [string map [list %f $ftail %d $dtail] $al(MC,removed)]
+    set TID [alited::bar::CurrentTabID]
+    alited::bar::SetTabState $TID --fname $fname2
+    alited::bar::BAR $TID configure -tip $fname2
+    alited::tree::RecreateTree
+  }
+}
+
+proc file::DoMoveFile {fname dname f1112} {
+
+  namespace upvar ::alited al al
+  set tailname [file tail $fname]
+  if {$f1112} {
+    set defb NO
+    set geo ""
+  } else {
+    set defb YES
+    set geo "-geometry pointer+10+10"
+  }
+  set msg [string map [list %f $tailname %d $dname] $al(MC,movefile)]
+  if {![alited::msg yesno ques $msg $defb -title $al(MC,moving) {*}$geo]} {
+    return
+  }
+  RemoveFile $fname $dname
+}
+
+proc file::Add {ID} {
+  namespace upvar ::alited al al obPav obPav obDl2 obDl2
+  if {$ID eq ""} {set ID [alited::tree::CurrentItem]}
+  set dname [lindex [[$obPav Tree] item $ID -values] 1]
+  if {[file isdirectory $dname]} {
+    set fname ""
+  } else {
+    set fname [file tail $dname]
+    set dname [file dirname $dname]
+  }
+  set head [string map [list %d $dname] $al(MC,filesadd2)]
+  while {1} {
+    set res [$obDl2 input "" $al(MC,filesadd) [list \
+      seh {{} {-pady 10}} {} \
+      ent "{$al(MC,filename)}" "{$fname}" \
+      chb [list {} {-padx 5} [list -toprev 1 -t $al(MC,directory)]] {0} ] \
+      -head $head -family "{[::apave::obj basicTextFont]}"]
+    if {[lindex $res 0] && $fname eq ""} bell else break
+  }
+  lassign $res res fname isdir
+  if {$res} {
+    set fname [file join $dname $fname]
+    if {[catch {
+      if {$isdir} {
+        file mkdir $fname
+      } else {
+        if {[file extension $fname] eq ""} {append fname .tcl}
+        if {![file exists $fname]} {close [open $fname w]}
+        OpenFile $fname
+      }
+      alited::tree::RecreateTree
+    } err]} then {
+      alited::msg ok err $err -title $al(MC,error)
+    }
+  }
+}
+
+proc file::Delete {ID wtree} {
+  namespace upvar ::alited al al BAKDIR BAKDIR
+  set name [$wtree item $ID -text]
+  set fname [lindex [$wtree item $ID -values] 1]
+  set msg [string map [list %f $name] $al(MC,delfile)]
+  if {[alited::msg yesno ques $msg NO -title $al(MC,question)]} {
+    RemoveFile $fname $BAKDIR
+  }
 }
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl

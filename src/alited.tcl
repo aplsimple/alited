@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.1.1.8
+package provide alited 0.1.2.2
 
 package require Tk
 
@@ -42,9 +42,9 @@ puts "LIBDIR=$LIBDIR"
   if {[file exists {~/.config}]} {
     set USERDIR [file normalize {~/.config/alited/data}]
   }
-  variable INIDIR  [file join $USERDIR ini]
-  variable PRJDIR  [file join $USERDIR prj]
-  variable TESTDIR [file join $DIR .bak]
+  variable INIDIR [file join $USERDIR ini]
+  variable PRJDIR [file join $USERDIR prj]
+  variable BAKDIR [file join $DIR .bak]
   if {![file exists $USERDIR]} {
     file mkdir $INIDIR
     file mkdir $PRJDIR
@@ -53,11 +53,12 @@ puts "LIBDIR=$LIBDIR"
   # two main objects to build forms (just some unique names)
   variable obPav ::alited::alitedpav
   variable obDlg ::alited::aliteddlg
+  variable obDl2 ::alited::aliteddl2
 
   # load localized messages
   msgcat::mcload $MSGSDIR
 
-  # main data of alited
+  # main data of alited (others are in ini.tcl)
   variable al; array set al [list]
   set al(WIN) .alwin
   set al(PRJEXT) "alited"
@@ -65,27 +66,6 @@ puts "LIBDIR=$LIBDIR"
   set al(prjfile) [file join $PRJDIR $al(prjname)]
   set al(prjroot) [file normalize .]
   set al(TITLE) "%f :: %d :: %p - alited"
-  set al(ED,multiline) no
-  set al(TREE,isunits) yes
-  set al(TREE,units) no
-  set al(TREE,files) no
-  set al(TREE,cw0) 200
-  set al(TREE,cw1) 70
-  set al(FSIZE,std) 11
-  set al(FSIZE,txt) 12
-  set al(FSIZE,small) 9
-  set al(INI,CS) 23
-  set al(INI,HUE) 0
-  set al(INI,ICONS) "middle icons"
-  set al(INI,save_onselect) no
-  set al(INI,save_onadd) no
-  set al(INI,save_onmove) no
-  set al(INI,save_onclose) no
-  set al(INI,save_onsave) yes
-  set al(RE,branch) {^\s*(#+) [_]+([^_]+)[_]+ (#+)}          ;#  # _ lev 1 _ #
-  set al(RE,leaf) {^\s*# [_]+([^_]*)$}                       ;#  # _  / # _ abc
-  set al(RE,abc) {^\s*(proc|method)\s+([[:alnum:]_:]+)\s.+}  ;# proc abc {}...
-  set al(RESTART) no
 }
 
 # _______________________________________________________________________ #
@@ -99,17 +79,35 @@ package require baltip
 
 namespace eval alited {
 
-  proc msg {type icon message args} {
+  proc msg {type icon message {defb ""} args} {
     # Shows a message and asks for an answer.
     #   type - ok/yesno/okcancel/yesnocancel
     #   icon - info/warn/err
     #   message - the message
+    #   defb - default button (for not "ok" dialogs)
     #   args - additional arguments (-title and font's option)
+    # For "ok" dialogue, 'defb' is omitted (being a part of args).
 
     variable obDlg
+    if {$type eq "ok"} {
+      set args [linsert $args 0 $defb]
+      set defb ""
+    }
     lassign [::apave::extractOptions args -title ""] title
     if {$title eq ""} {set title [string toupper $icon]}
-    $obDlg $type $icon $title "\n$message\n" {*}$args
+    $obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args
+  }
+
+  proc p+ {p1 p2} {
+    # Sums two text positions straightforward: lines & columns separately.
+    # The lines may be with "-".
+
+    lassign [split $p1 .] l11 c11
+    lassign [split $p2 .] l21 c21
+    foreach n {l11 c11 l21 c21} {
+      if {![string is digit -strict [string trimleft [set $n] -]]} {set $n 0}
+    }
+    return "[incr l11 $l21].[incr c11 $c21]"
   }
 
   proc HelpAbout {} {
@@ -123,26 +121,46 @@ namespace eval alited {
     if {[alited::file::AllSaved]} {$obPav res $al(WIN) 0}
   }
 
+  proc Message {msg {first 1} {lab ""}} {
+    variable al
+    variable obPav
+    if {$lab eq ""} {set lab [$obPav Labstat3]}
+    if {[catch {$lab configure -text $msg}]} return
+    set slen [string length $msg]
+    if {$first} {
+      if {$first eq "2"} bell
+      set msec [expr {200*$slen}]
+    } else {
+      set msg [string range $msg 0 end-1]
+      set msec 10
+    }
+    catch {after cancel $al(afterID)}
+    if {$msec>0} {
+      set al(afterID) [after $msec "::alited::Message {$msg} 0 $lab"]
+    }
+  }
+
 }
 
 # _______________________________________________________________________ #
 
   # load all sources into alited namespace
   namespace eval alited {
-    source [file join $SRCDIR msgs.tcl]
     source [file join $SRCDIR ini.tcl]
+    source [file join $SRCDIR img.tcl]
+    source [file join $SRCDIR msgs.tcl]
     source [file join $SRCDIR main.tcl]
     source [file join $SRCDIR bar.tcl]
     source [file join $SRCDIR file.tcl]
     source [file join $SRCDIR unit.tcl]
     source [file join $SRCDIR tree.tcl]
+    source [file join $SRCDIR favor.tcl]
   }
   if {[package versions alited] eq ""} {
-    # initialize GUI & data
-    alited::ini::_init
-    # create & run the main form
-    alited::main::_create
-    alited::main::_run
+    alited::ini::_init     ;# initialize GUI & data
+    alited::main::_create  ;# create the main form
+    alited::favor::_init   ;# initialize favorites
+    alited::main::_run     ;# run the main form
     if {$alited::al(RESTART)} {
       cd $alited::SRCDIR
       exec tclsh $alited::SCRIPT {*}$::argv &

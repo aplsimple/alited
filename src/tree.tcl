@@ -11,13 +11,26 @@ namespace eval tree {
 
 proc tree::SwitchTree {} {
   namespace upvar ::alited al al obPav obPav
-  set al(TREE,isunits) [expr {!$al(TREE,isunits)}]
-  set al(TREE,units) no
-  set al(TREE,files) no
-  Create
+  if {[set al(TREE,isunits) [expr {!$al(TREE,isunits)}]]} {
+    RecreateTree
+  } else {
+    set al(TREE,files) no
+    Create
+  }
+  update idletasks
 }
 
-proc tree::Create {} {
+proc tree::AddTags {wtree} {
+  namespace upvar ::alited al al
+  lassign [::hl_tcl::hl_colors "" [::apave::obj csDarkEdit]] - fgred fgbr
+  set fontN "-font {[font actual apaveFontDef] -size $al(FONTSIZE,small)}"
+  append fontB $fontN " -foreground $fgred"
+  $wtree tag configure tagNorm {*}$fontN
+  $wtree tag configure tagBold {*}$fontB
+  $wtree tag configure tagBranch -foreground $fgbr
+}
+
+proc tree::Create {{pos ""}} {
 
   namespace upvar ::alited al al obPav obPav
   if {$al(TREE,isunits) && $al(TREE,units) \
@@ -25,35 +38,33 @@ proc tree::Create {} {
   set TID [alited::bar::CurrentTabID]
   set wtree [$obPav Tree]
   Delete $wtree {} $TID
-  lassign [$obPav csGet] - - - - fgbr - - fgred
-  set fontN "-font {[font actual apaveFontDef] -size $al(FSIZE,small)}"
-  append fontB $fontN " -foreground $fgred"
-  $wtree tag configure tagNorm {*}$fontN
-  $wtree tag configure tagBold {*}$fontB
-  $wtree tag configure tagBranch -foreground $fgbr
+  AddTags $wtree
   $wtree tag bind tagNorm <Motion> {after idle {alited::tree::Tooltip %x %y %X %Y}}
   $wtree tag bind tagNorm <ButtonRelease> {alited::tree::PopupMenu %b %x %y %X %Y}
   bind $wtree <Leave> {alited::tree::TooltipOff}
   if {$al(TREE,isunits)} {
-    CreateUnitsTree $TID $wtree
+    CreateUnitsTree $TID $wtree $pos
   } else {
-    CreateFilesTree $TID $wtree
+    CreateFilesTree $wtree
   }
 }
 
-proc tree::CreateFilesTree {TID wtree} {
+proc tree::CreateFilesTree {wtree} {
 
   namespace upvar ::alited al al obPav obPav
   set al(TREE,files) yes
-  [$obPav BuTswitch] configure -image alimg_folder
+  [$obPav BuTswitch] configure -image alimg_gulls
   baltip::tip [$obPav BuTswitch] $al(MC,swfiles)
   baltip::tip [$obPav BuTAddT] $al(MC,filesadd)
   baltip::tip [$obPav BuTDelT] $al(MC,filesdel)
   $wtree heading #0 -text ":: [file tail $al(prjroot)] ::"
   $wtree heading #1 -text $al(MC,files)
+  set selID ""
+  set selfile [alited::bar::FileName]
   foreach item [GetDirectoryContents $al(prjroot)] {
     set itemID  [alited::tree::NewItemID [incr iit]]
     lassign $item lev isfile fname fcount iroot
+    if {$selfile eq $fname} {set selID $itemID}
     set title [file tail $fname]
     if {$iroot<0} {
       set parent {}
@@ -69,17 +80,22 @@ proc tree::CreateFilesTree {TID wtree} {
       $wtree tag add tagBranch $itemID
     }
   }
+  if {$selID ne ""} {
+    $wtree see $selID
+    $wtree selection set $selID
+  }
 }
 
-proc tree::CreateUnitsTree {TID wtree} {
+proc tree::CreateUnitsTree {TID wtree pos} {
   namespace upvar ::alited al al obPav obPav
   set al(TREE,units) yes
-  [$obPav BuTswitch] configure -image alimg_tree
+  [$obPav BuTswitch] configure -image alimg_folder
   baltip::tip [$obPav BuTswitch] $al(MC,swunits)
   baltip::tip [$obPav BuTAddT] $al(MC,unitsadd)
   baltip::tip [$obPav BuTDelT] $al(MC,unitsdel)
   $wtree heading #0 -text [alited::bar::CurrentTab 1]
   $wtree heading #1 -text $al(MC,line)
+  set ctab [alited::bar::CurrentTabID]
   set parents [list {}]
   set parent {}
   set levprev -1
@@ -89,12 +105,18 @@ proc tree::CreateUnitsTree {TID wtree} {
     if {$title eq ""} {set title "Lines $l1-$l2"}
     set lev [expr {min($lev,[llength $parents])}]
     set parent [lindex $parents [expr {$lev-1}]]
-    if {$leaf} {set imgopt "-image alimg_minus"} {set imgopt "-image alimg_actions"}
+    if {$leaf} {
+      set title " $title"
+      set pr [expr {min(7,($l2-$l1)/20)}]
+      set imgopt "-image alimg_pro$pr"
+    } else {
+      set imgopt "-image alimg_gulls"
+    }
     $wtree insert $parent end -id $itemID -text "$title" \
       -values [list $l1 $l2 "" $itemID $lev $leaf $fl1] -open yes {*}$imgopt
     $wtree tag add tagNorm $itemID
     catch {
-      if {[info exists al(CPOS,"$title")]} {
+      if {$leaf && [info exists al(CPOS,$ctab,[alited::unit::GetHeader $wtree $itemID])]} {
         $wtree tag add tagBold $itemID
       }
     }
@@ -105,10 +127,35 @@ proc tree::CreateUnitsTree {TID wtree} {
     }
     set levprev $lev
   }
+  alited::main::FocusText $TID $pos
 }
 
 proc tree::NewItemID {iit} {
   return "al$iit"
+}
+
+proc tree::AddItem {{ID ""}} {
+  namespace upvar ::alited al al
+  if {$al(TREE,isunits)} {
+    alited::unit::Add
+  } else {
+    alited::file::Add $ID
+  }
+}
+
+proc tree::DelItem {{ID ""}} {
+  namespace upvar ::alited al al obPav obPav
+  if {$ID eq "" && [set ID [alited::tree::CurrentItem]] eq ""} {
+    bell
+    return
+  }
+  set wtree [$obPav Tree]
+  set fname [alited::bar::FileName]
+  if {$al(TREE,isunits)} {
+    alited::unit::Delete $wtree $fname
+  } else {
+    alited::file::Delete $ID $wtree
+  }
 }
 
 proc tree::ShowPopupMenu {ID X Y} {
@@ -117,28 +164,40 @@ proc tree::ShowPopupMenu {ID X Y} {
   set popm $wtree.popup
   catch {destroy $popm}
   menu $popm -tearoff 0
-  set IDparent [$wtree parent $ID]
-  if {$IDparent eq ""} {
-    set parent ROOT
-    set state disabled
+  set header [lindex [split [alited::unit::GetHeader $wtree $ID] \n] 0]
+  set sname [$wtree item $ID -text]
+  if {$al(TREE,isunits)} {
+    set img alimg_folder
+    set m1 $al(MC,swunits)
+    set m2 $al(MC,unitsadd)
+    set m3 $al(MC,unitsdel)
   } else {
-    set parent [$wtree item $IDparent -text]
-    set state normal
+    set img alimg_gulls
+    set m1 $al(MC,swfiles)
+    set m2 $al(MC,filesadd)
+    set m3 $al(MC,filesdel)
   }
-  if {[string length $parent]>25} {set parent "[string range $parent 0 21]..."}
-  set msgsort [string map [list %t $parent] $al(MC,sort)]
+  if {[string length $sname]>25} {set sname "[string range $sname 0 21]..."}
+  $popm add command {*}[$obPav iconA none] -label $m1 \
+    -command "::alited::tree::SwitchTree" -image $img
+  $popm add command {*}[$obPav iconA none] -label $al(MC,updtree) \
+    -command "alited::tree::RecreateTree" -image alimg_retry
+  $popm add separator
   $popm add command {*}[$obPav iconA Up] -label $al(MC,moveup) \
     -accelerator F11 -command "::alited::main::MoveItem up" -image alimg_up
   $popm add command {*}[$obPav iconA Down] -label $al(MC,movedown) \
     -accelerator F12 -command "::alited::main::MoveItem down" -image alimg_down
-  $popm add command {*}[$obPav iconA none] -label $msgsort \
-    -command "::alited::tree::SortItems $IDparent" -state $state
   $popm add separator
+  $popm add command {*}[$obPav iconA none] -label $m2 \
+    -command "::alited::tree::AddItem $ID" -image alimg_add
+  $popm add command {*}[$obPav iconA none] -label $m3 \
+    -command "::alited::tree::DelItem $ID" -image alimg_delete
+  if {$al(TREE,isunits)} {
+    $popm add separator
+    $popm add command {*}[$obPav iconA none] -label $al(MC,copydecl) \
+      -command "clipboard clear ; clipboard append {$header}"
+  }
   tk_popup $popm $X $Y
-}
-
-proc tree::SortItems {IDparent} {
-  puts "$IDparent"
 }
 
 proc tree::PopupMenu {but x y X Y} {
@@ -148,10 +207,10 @@ proc tree::PopupMenu {but x y X Y} {
   if {![$wtree exists $ID]} return
   switch $but {
     "3" {
-        if {$al(TREE,isunits)} {
-          NewSelection $ID
-          ShowPopupMenu $ID $X $Y
+        if {[llength [$wtree selection]]<2} {
+          $wtree selection set $ID
         }
+        ShowPopupMenu $ID $X $Y
     }
     "1" {
       if {$al(TREE,isunits)} {
@@ -181,43 +240,27 @@ proc tree::Tooltip {x y X Y} {
   variable tipID
   set wtree [$obPav Tree]
   set ID [$wtree identify item $x $y]
-  if {[$wtree exists $ID] && $tipID ne $ID} {
+  set NC [$wtree identify column $x $y]
+  set newTipID "$ID/$NC"
+  if {[$wtree exists $ID] && $tipID ne $newTipID} {
     lassign [$wtree bbox $ID] x2 y2 w2 h2
     incr X 10
     if {[catch {incr Y [expr {$y2-$y+$h2}]}]} {incr Y 10}
     if {$al(TREE,isunits)} {
       # for units
-      set tip [$wtree item $ID -text]
-      lassign [$wtree item $ID -values] l1 l2
-      catch {
-        set wtxt [alited::main::CurrentWTXT]
-        set tip2 [string trim [$wtxt get $l1.0 $l1.end]]
-        if {[string match "*\{" $tip2]} {set tip [string trim $tip2 " \{"]}
-        # find first commented line, after the proc/method declaration
-        for {} {$l1<$l2} {} {
-          incr l1
-          set line [string trim [$wtxt get $l1.0 $l1.end]]
-          if {[string index $line end] ni [list \\ \{] && \
-          $line ni {"" "#"} && ![regexp $al(RE,abc) $line]} {
-            if {[string match "#*" $line]} {
-              append tip \n [string trim [string range $line 1 end]]
-            }
-            break
-          }
-        }
-      }
+      set tip [alited::unit::GetHeader $wtree $ID $NC]
     } else {
       # for files
       lassign [$wtree item $ID -values] -> tip isfile
       if {$isfile} { ;# tips for directories only
         ::baltip hide $al(WIN)
-        set tipID $ID
+        set tipID $newTipID
         return
       }
     }
     ::baltip tip $al(WIN) $tip -geometry +$X+$Y -per10 4000 -pause 5 -fade 5
   }
-  set tipID $ID
+  set tipID $newTipID
 }
 
 proc tree::Delete {wtree item TID} {
@@ -228,36 +271,86 @@ proc tree::Delete {wtree item TID} {
   if {$item ne {}} {$wtree delete $item}
 }
 
-proc tree::NewSelection {{itnew ""}} {
+proc tree::CurrentItemByLine {{pos ""} {fullinfo no}} {
+  namespace upvar ::alited al al
+  if {$pos eq ""} {
+    set pos [[alited::main::CurrentWTXT] index insert]
+  }
+  set l [expr {int($pos)}]
+  set TID [alited::bar::CurrentTabID]
+  foreach it $al(_unittree,$TID) {
+    set ID [NewItemID [incr iit]]
+    lassign $it lev leaf fl1 title l1 l2
+    if {$l1<=$l && $l<=$l2} {
+      if {$fullinfo} {
+        return [list $ID $lev $leaf $fl1 $title $l1 $l2]
+      }
+      return $ID
+    }
+  }
+  return ""
+}
+
+proc tree::CurrentItem {{Tree Tree}} {
+  namespace upvar ::alited obPav obPav
+  set wtree [$obPav $Tree]
+  set it [$wtree focus]
+  if {$it eq ""} {set it [lindex [$wtree selection] 0]}
+  return $it
+}
+
+proc tree::NewSelection {{itnew ""} {line 0}} {
 
   namespace upvar ::alited al al obPav obPav
   variable doFocus
   set TID [alited::bar::CurrentTabID]
   set wtxt [alited::main::CurrentWTXT]
+  set ctab [alited::bar::CurrentTabID]
   set wtree [$obPav Tree]
   # newly selected item
-  if {$itnew eq ""} {set itnew [[$obPav Tree] focus]}
-  $wtree tag add tagBold $itnew
-  set title [$wtree item $itnew -text]
+  if {$itnew eq ""} {set itnew [CurrentItem]}
+  lassign [$wtree item $itnew -values] l1 l2 - - - leaf
+  if {$leaf ne "" && $leaf} {
+    $wtree tag add tagBold $itnew
+  }
+  set header [alited::unit::GetHeader $wtree $itnew]
   # get saved pos
-  lassign [$wtree item $itnew -values] l1 l2
-  if {[catch {set pos $al(CPOS,"$title")}]} {set pos ""}
-  if {$pos eq "" || $pos<$l1 || int($pos)>$l2} {
-    # if not saved, get it from 1st line
-    set pos $l1.0
+  if {[catch {set pos $al(CPOS,$ctab,$header)} e]} {
+    set pos [$wtxt index insert]
+  }
+  if {[string is digit -strict $l1] && [string is digit -strict $l2]} {
+    if {[string is double -strict $line] && $line != 0 && \
+    $l1<($l1+$line) && ($l1+$line)<($l2+1)} {
+      # it's coming from a saved favorite item
+      set pos [expr {$l1+$line}]
+    } else {
+      if {$pos<$l1 || $pos>=($l2+1)} {
+        # if not saved, get it from 1st line
+        set pos $l1.0
+      }
+    }
   }
   # previously selected item
-  set itold [alited::bar::BAR $TID cget --currTreeItem]
-  if {$itold ne ""} {
-    # if there was the previously selected item, save the cursor to it
-    set savedpos [expr {[$wtxt index insert]}]
-    catch {set al(CPOS,"[$wtree item $itold -text]") $savedpos}
+  lassign [alited::bar::BAR cget --currSelTab --currSelItem] otab itold
+  if {$itold ne "" && ![catch {lassign [$wtree item $itold -values] o1 o2}]} {
+    # if there was the previously selected item, save its cursor position
+    catch {
+      # -values at files' tree is invalid for this => 'catch'
+      # (then pos=saved position for the whole file, got from --pos)
+      set opos [$wtxt index insert]
+      if {$o1<=$opos && $opos<($o2+1)} {
+        set ohead [alited::unit::GetHeader $wtree $itold]
+        set al(CPOS,$otab,$ohead) "$opos"
+        alited::favor::UpdatePos [alited::bar::FileName] $ohead [alited::p+ $opos -$o1]
+      }
+    }
   }
-  alited::bar::BAR $TID configure --currTreeItem $itnew
-  catch {set al(CPOS,"$title") $pos}
+  alited::bar::BAR configure --currSelTab $ctab --currSelItem $itnew
+  catch {set al(CPOS,$ctab,$header) "$pos"}
   if {$doFocus} {
-    alited::main::FocusText $TID $wtxt $pos
+    alited::main::FocusText $TID $pos
   }
+  return $itnew
 }
 
 proc tree::AdjustWidth {} {
@@ -303,7 +396,9 @@ proc tree::GetDirectoryContents {dirname} {
 proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
 
   incr lev
-  set dcont [lsort -dictionary [glob [file join $dirname *]]]
+  if {[catch {set dcont [lsort -dictionary [glob [file join $dirname *]]]}]} {
+    set dcont [list]
+  }
   # firstly directories
   set i 0
   foreach fname $dcont {
@@ -340,18 +435,29 @@ proc tree::AddToDirContents {lev isfile fname iroot} {
   return $dllen
 }
 
-proc tree::GetTree {} {
+proc tree::GetTree {{parent {}} {Tree Tree}} {
+  # Gets a tree or its branch.
+  #   parent - ID of the branch
+
   namespace upvar ::alited obPav obPav
-  set wtree [$obPav Tree]
+  set wtree [$obPav $Tree]
   set tree [list]
+  set levp -1
   ForEach $wtree {
-    set item [list  %level %children "%item" "%text" "%values"]
-    lappend tree $item
+    set item "%item"
+    set lev %level
+    if {$levp>-1 || $item eq $parent} {
+      if {$lev<=$levp} {return -code break}  ;# all of branch fetched
+      if {$item eq $parent} {set levp $lev}
+    }
+    if {$parent eq {} || $levp>-1} {
+      lappend tree [list $lev %children $item {%text} {%values}]
+    }
   }
   return $tree
 }
 
-proc tree::RecreateTree {pos} {
+proc tree::RecreateTree {{wtree ""} {headers ""}} {
   namespace upvar ::alited al al
   if {$al(TREE,isunits)} {
     set al(TREE,units) no
@@ -360,21 +466,21 @@ proc tree::RecreateTree {pos} {
   }
   set TID [alited::bar::CurrentTabID]
   set wtxt [alited::main::CurrentWTXT]
-  set al(_unittree,$TID) [alited::unit::GetUnits [$wtxt get 1.0 end]]
+  set al(_unittree,$TID) [alited::unit::GetUnits [$wtxt get 1.0 "end -1 char"]]
   Create
-  ::tk::TextSetCursor $wtxt $pos.0
-  alited::main::FocusText $TID $wtxt $pos
-}
-
-proc tree::UpdateUnitTree {TID} {
-  # Gets the unit array from the unit tree.
-  namespace upvar ::alited al al
-  set tree [GetTree]
-  set al(_unittree,$TID) [list]
-  foreach item $tree {
-    lassign $item lev cnt id title values
-    lassign $values l1 l2 prl id lev leaf fl1
-    lappend al(_unittree,$TID) [list $lev $leaf $fl1 $title $l1 $l2]
+  # restore selections
+  if {$headers ne ""} {
+    set selection [list]
+    foreach hd $headers {
+      foreach item [alited::tree::GetTree] {
+        lassign $item lev cnt ID
+        if {[alited::unit::GetHeader $wtree $ID] eq $hd} {
+          lappend selection $ID
+          break
+        }
+      }
+    }
+    $wtree selection set $selection
   }
 }
 

@@ -6,7 +6,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide hl_tcl 0.8.7
+package provide hl_tcl 0.8.9
 
 # _______________ Common data of ::hl_tcl:: namespace ______________ #
 
@@ -486,6 +486,13 @@ proc ::hl_tcl::my::Modified {txt oper pos1 args} {
       }
     }
   }
+  after idle "::hl_tcl::my::CoroRun $txt $pos1 $pos2 $args"
+}
+#_____
+
+proc ::hl_tcl::my::CoroRun {txt pos1 pos2 args} {
+
+  variable data
   if {![info exist data(REG_TXT,$txt)] || $data(REG_TXT,$txt) eq "" || \
   ![info exist data(CUR_LEN,$txt)]} {
     return  ;# skip changes till the highlighting done
@@ -494,11 +501,11 @@ proc ::hl_tcl::my::Modified {txt oper pos1 args} {
   set i1 [expr {int($pos1)}]
   set i2 [expr {int($pos2)}]
   set coroNo [expr {[incr ::hl_tcl::my::data(CORMOD)] % 10000000}]
-  coroutine CoModified$coroNo ::hl_tcl::my::CoroModified $txt $i1 $i2
+  coroutine CoModified$coroNo ::hl_tcl::my::CoroModified $txt $i1 $i2 {*}$args
 }
 #_____
 
-proc ::hl_tcl::my::CoroModified {txt {i1 -1} {i2 -1}} {
+proc ::hl_tcl::my::CoroModified {txt {i1 -1} {i2 -1} args} {
   # Handles modifications of text.
   #   txt - text widget's path
   # See also: Modified
@@ -564,7 +571,7 @@ proc ::hl_tcl::my::CoroModified {txt {i1 -1} {i2 -1}} {
   }
   if {[set cmd $data(CMD,$txt)] ne ""} {
     # run a command after changes done (its arguments are txt, ln1, ln2)
-    append cmd " $txt $lno1 $lno2"
+    append cmd " $txt $lno1 $lno2 $args"
     {*}$cmd
   }
   MemPos $txt
@@ -856,22 +863,20 @@ proc ::hl_tcl::hl_readonly {txt {ro -1} {com2 ""}} {
   set com "[namespace current]::my::Modified $txt"
   #if {$com2 ne ""} {append com " ; $com2"}
   if {$ro} {proc ::$txt {args} "
-      switch -exact -- \[lindex \$args 0\] \{
-          insert \{$com2\}
-          delete \{$com2\}
-          replace \{$com2\}
-          default \{
-              return \[eval $newcom \$args\]
-          \}
-      \}"
+    switch -exact -- \[lindex \$args 0\] \{
+      insert \{$com2\}
+      delete \{$com2\}
+      replace \{$com2\}
+      default \{ return \[eval $newcom \$args\] \}
+    \}"
   } else {proc ::$txt {args} "
-      set _res_ \[eval $newcom \$args\]
-      switch -exact -- \[lindex \$args 0\] \{
-          insert \{after idle \"$com \$args\"\}
-          delete \{after idle \"$com \$args\"\}
-          replace \{after idle \"$com \$args\"\}
-      \}
-      return \$_res_"
+    switch -exact -- \[lindex \$args 0\] \{
+      delete \{$com {*}\$args\}
+      insert \{$com {*}\$args\}
+      replace \{$com {*}\$args\}
+    \}
+    set _res_ \[eval $newcom \$args\]
+    return \$_res_"
   }
 }
 #_____
@@ -907,13 +912,10 @@ proc ::hl_tcl::hl_init {txt args} {
       catch {set clrCURL [lindex [::apave::obj csGet] 16]}
       if {$::hl_tcl::my::data(DARK,$txt)} {
         if {$clrCURL eq ""} {set clrCURL #29383c}
-        set ::hl_tcl::my::data(COLORS,$txt) [list \
-          orange #ff7e00 lightgreen #f1b479 #76a396 #d485d4 #b9b96e $clrCURL]
-        # $clrCOM $clrCOMTK $clrSTR $clrVAR $clrCMN $clrPROC $clrOPT $clrCURL
+        set ::hl_tcl::my::data(COLORS,$txt) [list {*}[hl_colors $txt] $clrCURL]
       } else {
         if {$clrCURL eq ""} {set clrCURL #efe0cd}
-        set ::hl_tcl::my::data(COLORS,$txt) [list \
-          "#923B23" #7d1c00 #035103 #4A181B #505050 #A106A1 #463e11 $clrCURL]
+        set ::hl_tcl::my::data(COLORS,$txt) [list {*}[hl_colors $txt] $clrCURL]
       }
     }
   }
@@ -962,7 +964,7 @@ proc ::hl_tcl::hl_text {txt} {
     bind $txt <KeyPress> [list + ::hl_tcl::my::MemPos1 $txt]
     bind $txt <KeyRelease> [list + ::hl_tcl::my::MemPos $txt]
     bind $txt <ButtonRelease-1> [list + ::hl_tcl::my::MemPos $txt]
-    foreach ev {Enter KeyRelease ButtonRelease} {
+    foreach ev {Enter KeyRelease ButtonRelease-1} {
       bind $txt <$ev> [list + ::hl_tcl::my::HighlightBrackets $txt]
     }
     set ::hl_tcl::my::data(BIND_TXT,$txt) yes
@@ -1002,5 +1004,24 @@ proc ::hl_tcl::hl_all {args} {
     }
   }
 }
+#_____
+
+proc ::hl_tcl::hl_colors {txt {dark ""}} {
+  # Gets the main colors for highlighting (except for "curr.line").
+  #   txt - text widget's path
+  # Returns a list of colors for COM COMTK STR VAR CMN PROC OPT \
+   or, if the colors aren't initialized, "standard" colors.
+
+  if {[info exists ::hl_tcl::my::data(COLORS,$txt)]}  {
+    return $::hl_tcl::my::data(COLORS,$txt)
+  }
+  if {$dark eq ""} {set dark $::hl_tcl::my::data(DARK,$txt)}
+  if {$dark} {
+    return [list orange #ff7e00 lightgreen #f1b479 #76a396 #d485d4 #b9b96e]
+  } else {
+    return [list "#923B23" #7d1c00 #035103 #4A181B #505050 #A106A1 #463e11]
+  }
+}
+
 # _________________________________ EOF _________________________________ #
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 37 9 12
