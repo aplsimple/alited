@@ -23,7 +23,7 @@ proc tree::SwitchTree {} {
 proc tree::AddTags {wtree} {
   namespace upvar ::alited al al
   lassign [::hl_tcl::hl_colors "" [::apave::obj csDarkEdit]] - fgred fgbr
-  set fontN "-font {[font actual apaveFontDef] -size $al(FONTSIZE,small)}"
+  set fontN "-font AlSmallFont"
   append fontB $fontN " -foreground $fgred"
   $wtree tag configure tagNorm {*}$fontN
   $wtree tag configure tagBold {*}$fontB
@@ -40,7 +40,7 @@ proc tree::Create {{pos ""}} {
   Delete $wtree {} $TID
   AddTags $wtree
   $wtree tag bind tagNorm <Motion> {after idle {alited::tree::Tooltip %x %y %X %Y}}
-  $wtree tag bind tagNorm <ButtonRelease> {alited::tree::PopupMenu %b %x %y %X %Y}
+  $wtree tag bind tagNorm <ButtonPress> {after idle {alited::tree::PopupMenu %b %x %y %X %Y}}
   bind $wtree <Leave> {alited::tree::TooltipOff}
   if {$al(TREE,isunits)} {
     CreateUnitsTree $TID $wtree $pos
@@ -59,6 +59,7 @@ proc tree::CreateFilesTree {wtree} {
   baltip::tip [$obPav BuTDelT] $al(MC,filesdel)
   $wtree heading #0 -text ":: [file tail $al(prjroot)] ::"
   $wtree heading #1 -text $al(MC,files)
+  bind $wtree <Return> {::alited::tree::OpenFile}
   set selID ""
   set selfile [alited::bar::FileName]
   foreach item [GetDirectoryContents $al(prjroot)] {
@@ -71,7 +72,15 @@ proc tree::CreateFilesTree {wtree} {
     } else {
       set parent [alited::tree::NewItemID [incr iroot]]
     }
-    if {$isfile} {set imgopt "-image alimg_file"} {set imgopt "-image alimg_folder"}
+    if {$isfile} {
+      if {[string tolower [file extension $fname]] eq ".tcl"} {
+        set imgopt "-image alimg_tclfile"
+      } else {
+        set imgopt "-image alimg_file"
+      }
+    } else {
+      set imgopt "-image alimg_folder"
+    }
     if {$fcount} {set fc "$fcount"} {set fc ""}
     $wtree insert $parent end \
       -id $itemID -text "$title" -values [list $fc $fname $isfile $itemID] -open yes {*}$imgopt
@@ -218,13 +227,24 @@ proc tree::PopupMenu {but x y X Y} {
       } else {
         set msec [clock milliseconds]
         if {[info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<400}]} {
-          lassign [$wtree item $ID -values] -> fname isfile
-          if {$isfile} {alited::file::OpenFile $fname}
+          OpenFile $ID
         }
         $wtree selection set $ID
         set al(_MSEC) $msec
       }
     }
+  }
+}
+
+proc tree::OpenFile {{ID ""}} {
+  namespace upvar ::alited al al obPav obPav
+  if {!$al(TREE,isunits)} {
+    set wtree [$obPav Tree]
+    if {$ID eq ""} {
+      if {[set ID [$wtree selection]] eq ""} return
+    }
+    lassign [$wtree item $ID -values] -> fname isfile
+    if {$isfile} {alited::file::OpenFile $fname}
   }
 }
 

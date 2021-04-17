@@ -73,7 +73,7 @@ proc main::ShowText {{newsuf "-1"}} {
   lassign [CurrentSUF $TID $newsuf $wtxt $wsbv] wtxt wsbv
   alited::bar::SetBarState [alited::bar::CurrentTabID] $curfile $wtxt $wsbv
   if {$doinit} {
-    alited::file::ReadFile $TID $curfile $wtxt
+    alited::file::DisplayFile $TID $curfile $wtxt
   }
   if {$doinit || $newsuf ne ""} {
     HighlightText $curfile $wtxt
@@ -109,7 +109,7 @@ proc main::FocusText {args} {
   catch {
     if {$al(TREE,isunits)} {
       # search the tree for a unit with current line of text
-      lassign [alited::tree::CurrentItemByLine $pos 1] itemID lev leaf fl1 title l1 l2
+      set itemID [alited::tree::CurrentItemByLine $pos]
     } else {
       # search the tree for a current file
       foreach it [alited::tree::GetTree] {
@@ -192,6 +192,10 @@ proc main::BindsForText {wtxt} {
     ::alited::main::CursorPos $wtxt
     [$obPav TreeFavor] selection set {}
     "
+  bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt"
+  alited::keys::ReservedAdd
+  alited::keys::BindKeys $wtxt action
+  alited::keys::BindKeys $wtxt template
 }
 
 proc main::CurrentSUF {TID {suf "-1"} {w1 ""} {w2 ""}} {
@@ -259,7 +263,7 @@ proc main::_create {} {
     -lightcolor [list focus $::alited::FRABG active $::alited::FRABG] \
     -darkcolor [list focus $::alited::FRABG active $::alited::FRABG]
   ttk::style layout    TreeNoHL [ttk::style layout Treeview]
-  $obPav untouchWidgets *.frAText
+  $obPav untouchWidgets *.frAText *.fraBot.fra.lbxInfo
   # make the main apave object and populate it
   $obPav makeWindow $al(WIN).fra alited
   $obPav paveWindow $al(WIN).fra {
@@ -290,16 +294,16 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.BuTDelT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -command alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1} 
-      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL}}
+      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0}}
     {.fraBot.panBM.fraTree.fra.SbvTree .fraBot.panBM.fraTree.fra.Tree L - - {pack -side right -fill both}}
     {.fratex - - - - {add}}
     {.fratex.v_ - - - - {pack -side top -fill x} {-h 10}}
     {.fratex.fra1 - - - - {pack -side top -fill x}}
-    {.fratex.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_heart -tooltip {$alited::al(MC,FavLists)}}}
+    {.fratex.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_heart -tooltip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
     {.fratex.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus -tooltip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
     {.fratex.fra1.BuTDelF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -tooltip {$alited::al(MC,favordel)} -com alited::favor::Delete}}
     {.fratex.fra - - - - {pack -fill both -expand 1} {}}
-    {.fratex.fra.TreeFavor - - - - {pack -side left -fill both -expand 1} {-h 5 -show tree -style TreeNoHL -columns {C1 C2 C3 C4} -displaycolumns C1 -show headings}}
+    {.fratex.fra.TreeFavor - - - - {pack -side left -fill both -expand 1} {-h 5 -style TreeNoHL -columns {C1 C2 C3 C4} -displaycolumns C1 -show headings -takefocus 0}}
     {.fratex.fra.SbvFavor .fratex.fra.TreeFavor L - - {pack -side left}}
     {fra.pan.PanR - - - - {add} {-orient vertical $alited::PanR_wh}}
     {.fraTop - - - - {add}}
@@ -321,8 +325,9 @@ pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
     {.fraTop.panTop.fraSbv.SbvText .fraTop.panTop.frAText.text L - - {pack -fill y}}
     {.fraBot - - - - {add}}
     {.fraBot.fra - - - - {pack -fill both -expand 1}}
-    {.fraBot.fra.Text4 - - - - {pack -side left -fill both -expand 1} {-h 1 -w 2 -wrap none}}
-    {.fraBot.fra.sbv .fraBot.fra.Text4 L - - {pack}}
+    {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1} {-h 1 -w 40 -lvar ::alited::info::list -font AlSmallFont -takefocus 0}}
+    {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - {pack}}
+    {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
       {Row: -font {-slant italic -size $alited::al(FONTSIZE,small)}} 12
       {" Col:" -font {-slant italic -size $alited::al(FONTSIZE,small)}} 5
@@ -331,6 +336,14 @@ pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
     }}}
   }
   bind [$obPav Pan] <ButtonRelease> ::alited::tree::AdjustWidth
+  set sbhi [$obPav SbhInfo]
+  set lbxi [$obPav LbxInfo]
+  pack forget $sbhi
+  bind $lbxi <FocusIn> "pack $sbhi -side bottom -before $lbxi -fill both"
+  bind $lbxi <FocusOut> "pack forget $sbhi; $lbxi selection clear 0 end"
+alited::info::Put "find & bar 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
+alited::info::Put "find & bar ------------ 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 123467890 1234567890 1234567890 1234567890 1234567890 1234567890 "
+foreach i {1 2 3 4 5 6 7} {alited::info::Put "find $i"}
 }
 
 proc main::_run {} {

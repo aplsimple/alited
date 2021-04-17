@@ -5,8 +5,8 @@
 
  M:  M: 3
 
- R: poApps        R: # tclsh ~/UTILS/poApps.tcl --dirdiff
- R: poApps        R: poApps --dirdiff
+ R: poApps        R: tclsh /home/apl/PG/github/poApps/poApps.tcl --dirdiff
+ R: poApps        R: # poApps --dirdiff
  R: ruler         R: tclsh /usr/share/tcltk/tklib0.7/widget/ruler.tcl
  R: screenshooter R: cd ~/UTILS
  R: screenshooter R: screenshooter

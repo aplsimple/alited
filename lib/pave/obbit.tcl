@@ -70,10 +70,10 @@ namespace eval ::apave {
 {{29: Oscuro1} "#f1f1f1" #f1f1f1 #2a3b3b #466161 #FEEFA8 #6c8787 #000 #f4f49f #a2a2a2 #ffbb6d #000 #8ba6a6 - #4a6161 #000 #cdcd69 #354646 #003 #004 #005 #006 #007}
 {{30: Oscuro2} "#f1f1f1" #f1f1f1 #223333 #3e5959 #FEEFA8 #668181 #000 #f4f49f #a2a2a2 #ffbb6d #000 #819c9c - #3f5656 #000 #cdcd69 #2b3c3c #003 #004 #005 #006 #007}
 {{31: Oscuro3} "#f1f1f1" #f1f1f1 #192a2a #355050 #FEEFA8 #5c7777 #000 #f4f49f #9e9e9e #ffbb6d #000 #779292 - #364d4d #000 #cdcd69 #223333 #003 #004 #005 #006 #007}
-{{32: MildDark} "#d2d2d2" #fff #222323 #384e66 #FEEFA8 #557d9b #000 #00ffff #939393 #ffbb6d #000 #668eac - #394d64 #000 #bebe5a #2b2c2c #003 #004 #005 #006 #007}
-{{33: MildDark1} "#d2d2d2" #fff #151616 #2D435B #FEEFA8 #4d7593 #000 #00ffff grey #ffbb6d #000 #668eac - #2e4259 #000 #bebe5a #1f2020 #003 #004 #005 #006 #007}
-{{34: MildDark2} "#b4b4b4" #fff #0d0e0e #24384f #FEEFA8 #426a88 #000 #00ffff #757575 #eda95b #000 #668eac - #253a52 #000 #bebe5a #161717 #003 #004 #005 #006 #007}
-{{35: MildDark3} "#e2e2e2" #f1f1f1 #000 #1B3048 #FEEFA8 #39617f #000 #00ffff #6c6c6c #eda95b #000 #668eac - #192e46 #000 #b0b04c #0f0f0f #003 #004 #005 #006 #007}
+{{32: MildDark} "#d2d2d2" #fff #222323 #384e66 #FEEFA8 #79a1bf #000 #00ffff #939393 #ffbb6d #000 #668eac - #394d64 #000 #bebe5a #2b2c2c #003 #004 #005 #006 #007}
+{{33: MildDark1} "#d2d2d2" #fff #151616 #2D435B #FEEFA8 #6f97b5 #000 #00ffff grey #ffbb6d #000 #668eac - #2e4259 #000 #bebe5a #1f2020 #003 #004 #005 #006 #007}
+{{34: MildDark2} "#b4b4b4" #fff #0d0e0e #24384f #FEEFA8 #638ba9 #000 #00ffff #757575 #eda95b #000 #668eac - #253a52 #000 #bebe5a #161717 #003 #004 #005 #006 #007}
+{{35: MildDark3} "#e2e2e2" #f1f1f1 #000 #1B3048 #FEEFA8 #5a82a0 #000 #00ffff #6c6c6c #eda95b #000 #668eac - #192e46 #000 #b0b04c #0f0f0f #003 #004 #005 #006 #007}
 {{36: CoolGlow} "#e0e0e0" #e0e0e0 #06071d #1e2038 #FEEFA8 #5c6999 #000 #f4f49f #6e6e6e #ffbb6d #000 #7f8bbe - #2e3048 #000 #b0b04c #121329 #003 #004 #005 #006 #007}
 {{37: Inkpot} "#d3d3ff" #AFC2FF #16161f #1E1E27 #FEEFA8 #6767a8 #000 #f4f49f #6e6e6e #ffbb6d #000 #8585c6 - #292936 #000 #a2a23e #202029 #003 #004 #005 #006 #007}
 {{38: Quiverly} "#cdd8d8" #cdd8d8 #2b303b #333946 #FEEFA8 #6f7582 #000 #f4f49f #757575 #eda95b #000 #9197a4 - #414650 #000 #b0b04c #323742 #003 #004 #005 #006 #007}
@@ -154,10 +154,21 @@ proc ::apave::initStyles {args} {
   # Initializes miscellaneous styles, e.g. button's.
   #   args - options ("name value" pairs)
 
+  ::apave::obj create_Fonts
   ttk::style configure TButtonWest {*}[ttk::style configure TButton]
   ttk::style configure TButtonWest -anchor w
   ttk::style map       TButtonWest {*}[ttk::style map TButton]
   ttk::style layout    TButtonWest [ttk::style layout TButton]
+
+  ttk::style configure TButtonBold {*}[ttk::style configure TButton]
+  ttk::style configure TButtonBold -font [font actual apaveFontDefBold]
+  ttk::style map       TButtonBold {*}[ttk::style map TButton]
+  ttk::style layout    TButtonBold [ttk::style layout TButton]
+
+  ttk::style configure TButtonWestBold {*}[ttk::style configure TButton]
+  ttk::style configure TButtonWestBold -anchor w -font [font actual apaveFontDefBold]
+  ttk::style map       TButtonWestBold {*}[ttk::style map TButton]
+  ttk::style layout    TButtonWestBold [ttk::style layout TButton]
 }
 
 #########################################################################
@@ -651,13 +662,17 @@ oo::class create ::apave::ObjectTheming {
 
   ###########################################################################
 
-  method Create_Fonts {} {
+  method create_Fonts {} {
     # Creates fonts used in apave.
 
     catch {font delete apaveFontMono}
     catch {font delete apaveFontDef}
+    catch {font delete apaveFontMonoBold}
+    catch {font delete apaveFontDefBold}
     font create apaveFontMono -family $::apave::_CS_(textFont) -size $::apave::_CS_(fs)
     font create apaveFontDef -family $::apave::_CS_(defFont) -size $::apave::_CS_(fs)
+    font create apaveFontMonoBold  {*}[my boldTextFont]
+    font create apaveFontDefBold {*}[my boldDefFont]
   }
 
   ###########################################################################
@@ -679,7 +694,7 @@ oo::class create ::apave::ObjectTheming {
     #
     # The *foreground disabled* is set as `grey`.
 
-    my Create_Fonts
+    my create_Fonts
     ttk::style configure "." \
       -background        $tbg1 \
       -foreground        $tfg1 \
@@ -782,6 +797,18 @@ oo::class create ::apave::ObjectTheming {
 
   ###########################################################################
 
+  method boldDefFont {{fs 0}} {
+
+    # Returns a bold default font.
+    #    fs - font size
+
+    if {$fs == 0} {set fs [my basicFontSize]}
+    set bf [font actual basicDefFont]
+    return [dict replace $bf -family [my basicDefFont] -weight bold -size $fs]
+  }
+
+  ###########################################################################
+
   method basicTextFont {{textfont ""}} {
 
     # Gets/Sets a basic font used in editing/viewing text widget.
@@ -799,12 +826,12 @@ oo::class create ::apave::ObjectTheming {
 
   ###########################################################################
 
-  method boldTextFont {{fs ""}} {
+  method boldTextFont {{fs 0}} {
 
     # Returns a bold fixed font.
     #    fs - font size
 
-    if {$fs eq ""} {set fs [expr {2+[my basicFontSize]}]}
+    if {$fs == 0} {set fs [expr {2+[my basicFontSize]}]}
     set bf [font actual TkFixedFont]
     return [dict replace $bf -family [my basicTextFont] -weight bold -size $fs]
   }
@@ -814,7 +841,7 @@ oo::class create ::apave::ObjectTheming {
   method csFont {fontname} {
     # Returns attributes of CS font.
     if {[catch {set font [font configure $fontname]}]} {
-      my Create_Fonts
+      my create_Fonts
       set font [font configure $fontname]
     }
     return $font

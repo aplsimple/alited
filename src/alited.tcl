@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.1.2.2
+package provide alited 0.1.2.5
 
 package require Tk
 
@@ -54,6 +54,10 @@ puts "LIBDIR=$LIBDIR"
   variable obPav ::alited::alitedpav
   variable obDlg ::alited::aliteddlg
   variable obDl2 ::alited::aliteddl2
+  variable obFND ::alited::alitedFND
+
+  # misc. consts
+  variable EOL {@~}  ;# "end of line" for ini-files
 
   # load localized messages
   msgcat::mcload $MSGSDIR
@@ -95,7 +99,8 @@ namespace eval alited {
     }
     lassign [::apave::extractOptions args -title ""] title
     if {$title eq ""} {set title [string toupper $icon]}
-    $obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args
+    set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
+    return [lindex $res 0]
   }
 
   proc p+ {p1 p2} {
@@ -118,7 +123,10 @@ namespace eval alited {
   proc Exit {{w ""}} {
     variable al
     variable obPav
-    if {[alited::file::AllSaved]} {$obPav res $al(WIN) 0}
+    if {[alited::file::AllSaved]} {
+      $obPav res $al(WIN) 0
+      alited::find::Close
+    }
   }
 
   proc Message {msg {first 1} {lab ""}} {
@@ -128,7 +136,12 @@ namespace eval alited {
     if {[catch {$lab configure -text $msg}]} return
     set slen [string length $msg]
     if {$first} {
-      if {$first eq "2"} bell
+      lassign [$obPav csGet] - fg - - - - - - - fgbold
+      if {$first eq "2"} {
+        bell
+        set fg $fgbold
+      }
+      $lab configure -foreground $fg
       set msec [expr {200*$slen}]
     } else {
       set msg [string range $msg 0 end-1]
@@ -155,6 +168,10 @@ namespace eval alited {
     source [file join $SRCDIR unit.tcl]
     source [file join $SRCDIR tree.tcl]
     source [file join $SRCDIR favor.tcl]
+    source [file join $SRCDIR favor_ls.tcl]
+    source [file join $SRCDIR find.tcl]
+    source [file join $SRCDIR keys.tcl]
+    source [file join $SRCDIR info.tcl]
   }
   if {[package versions alited] eq ""} {
     alited::ini::_init     ;# initialize GUI & data

@@ -106,42 +106,50 @@ proc unit::GetUnits {textcont} {
   return $retlist
 }
 
+proc unit::InsertTemplate {tpldata} {
+
+  lassign $tpldata tex pos place
+  set wtxt [alited::main::CurrentWTXT]
+  switch $place {
+    4 { ;# after 1st line
+      set pos0 2.0
+    }
+    3 { ;# after cursor
+      set pos0 [$wtxt index insert]
+    }
+    2 { ;# after unit
+      lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - - l1 l2
+      if {$l2 ne ""} {
+        set pos0 [$wtxt index "$l2.0 +1 line linestart"]
+        if {[string index $tex end] ne "\n"} {append tex \n}
+      } else {
+        set place 1
+      }
+    }
+    default { ;# after line
+      set place 1
+    }
+  }
+  if {$place == 1} {
+    set pos0 [$wtxt index "insert +1 line linestart"]
+    if {[string index $tex end] ne "\n"} {append tex \n}
+  }
+  set p2 [string range $pos [string first . $pos] end]
+  set pos "[expr {int($pos)-1}]$p2"
+  set pos [alited::p+ $pos0 $pos]
+  $wtxt insert $pos0 $tex
+  ::tk::TextSetCursor $wtxt $pos
+}
+
 proc unit::Add {} {
-  namespace upvar ::alited obPav obPav
-  if {![info exists ::alited::unit_tpl::ilast]} {
+  if {![info exists ::alited::unit_tpl::win]} {
     source [file join $alited::SRCDIR unit_tpl.tcl]
   }
   set res [::alited::unit_tpl::_run]
   if {$res ne ""} {
-    lassign $res place pos tex
-    set wtxt [alited::main::CurrentWTXT]
-    switch $place {
-      3 { ;# after cursor
-        set pos0 [$wtxt index insert]
-      }
-      2 { ;# after unit
-        lassign [alited::tree::CurrentItemByLine "" 1] itemID lev leaf fl1 title l1 l2
-        if {$l2 ne ""} {
-          set pos0 [$wtxt index "$l2.0 +1 line linestart"]
-          if {[string index $tex end] ne "\n"} {append tex \n}
-        } else {
-          set place 1
-        }
-      }
-      default { ;# after line
-        set place 1
-      }
-    }
-    if {$place == 1} {
-      set pos0 [$wtxt index "insert +1 line linestart"]
-      if {[string index $tex end] ne "\n"} {append tex \n}
-    }
-    set p2 [string range $pos [string first . $pos] end]
-    set pos "[expr {int($pos)-1}]$p2"
-    set pos [alited::p+ $pos0 $pos]
-    $wtxt insert $pos0 $tex
-    ::tk::TextSetCursor $wtxt $pos
+    InsertTemplate $res
   }
+  alited::keys::BindKeys [alited::main::CurrentWTXT] template
 }
 
 proc unit::Delete {wtree fname} {

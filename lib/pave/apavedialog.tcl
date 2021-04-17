@@ -1210,8 +1210,11 @@ oo::class create ::apave::APaveDialog {
     }
     if {$wasgeo} {
       lassign [split $pdgeometry x+] w h x y
-      if {abs($x-$gx)<30} {set x $gx}
-      if {abs($y-$gy)<30} {set y $gy}
+      catch {
+        # geometry option can contain pointer/root etc.
+        if {abs($x-$gx)<30} {set x $gx}
+        if {abs($y-$gy)<30} {set y $gy}
+      }
       return [list $result ${w}x${h}+${x}+${y} $textcont [string trim $inopts]]
     }
     return "$result$textcont$inopts"

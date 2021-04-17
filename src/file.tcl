@@ -44,7 +44,7 @@ proc file::CheckMenuItems {} {
 
   namespace upvar ::alited al al
   set TID [alited::bar::CurrentTabID]
-  foreach idx {7 8 9} {
+  foreach idx {8 9 10} {
     set dsbl [alited::bar::BAR checkDisabledMenu $al(BID) $TID [incr item]]
     if {$dsbl} {
       set state "-state disabled"
@@ -85,11 +85,17 @@ proc file::IsSaved {TID} {
   return 2  ;# as if "No" chosen
 }
 
-proc file::ReadFile {TID curfile wtxt} {
-  namespace upvar ::alited al al obPav obPav
+proc file::ReadFile {TID curfile} {
+  namespace upvar ::alited al al
   set filecont [::apave::readTextFile $curfile]
-  $obPav displayText $wtxt $filecont
   set al(_unittree,$TID) [alited::unit::GetUnits $filecont]
+  return $filecont
+}
+
+proc file::DisplayFile {TID curfile wtxt} {
+  namespace upvar ::alited al al obPav obPav
+  set filecont [ReadFile $TID $curfile]
+  $obPav displayText $wtxt $filecont
   $obPav makePopup $wtxt no yes
 }
 
@@ -223,7 +229,7 @@ proc file::CheckForNew {{docheck no}} {
   }
 }
 
-proc file::CloseFile {{TID ""}} {
+proc file::CloseFile {{TID ""} {checknew yes}} {
   # Closes a file.
 
   namespace upvar ::alited al al obPav obPav
@@ -246,7 +252,7 @@ proc file::CloseFile {{TID ""}} {
       catch {destroy "${wtxt}_S2"}
       catch {destroy "${wsbv}_S2"}
     }
-    alited::file::CheckForNew
+    if {$checknew} CheckForNew
     alited::ini::SaveCurrentIni $al(INI,save_onclose)
   }
   return $res

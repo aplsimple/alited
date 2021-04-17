@@ -80,7 +80,7 @@ namespace eval ::apave {
     "laB" {{-sticky w} {}} \
     "lfr" {{} {}} \
     "lfR" {{} {-relief groove}} \
-    "lbx" {{} {-activestyle none -exportselection 0}} \
+    "lbx" {{} {-activestyle none -exportselection 0 -selectmode browse}} \
     "flb" {{} {}} \
     "meb" {{} {}} \
     "meB" {{} {}} \
@@ -2631,7 +2631,8 @@ oo::class create ::apave::APave {
 
     upvar $attrsName attrs
     set addcomms {}
-    if {[set tooltip [::apave::getOption -tooltip {*}$attrs]] ne ""} {
+    if {[set tooltip [::apave::getOption -tooltip {*}$attrs]] ne "" ||
+    [set tooltip [::apave::getOption -tip {*}$attrs]] ne ""} {
       if {[set i [string first $_pav(edge) $tooltip]]>=0} {
         set tooltip [string range $tooltip 1 end-1]
         set tattrs [string range $tooltip [incr i -1]+[string length $_pav(edge)] end]
@@ -2641,7 +2642,7 @@ oo::class create ::apave::APave {
       }
       lappend addcomms [list baltip::tip $wdg $tooltip {*}$tattrs]
       lappend ::apave::_AP_VARS(TIMW) $wdg
-      set attrs [::apave::removeOptions $attrs -tooltip]
+      set attrs [::apave::removeOptions $attrs -tooltip -tip]
     }
     if {[::apave::getOption -ro {*}$attrs] ne "" || \
     [::apave::getOption -readonly {*}$attrs] ne ""} {
@@ -2990,7 +2991,11 @@ oo::class create ::apave::APave {
         [winfo reqwidth $win] [winfo reqheight $win]]
     } elseif {[string first "pointer" $inpgeom]==0} {
       lassign [split $inpgeom+0+0 +] -> x y
-      set inpgeom +[incr x [winfo pointerx .]]+[incr y [winfo pointery .]]
+      set inpgeom +[expr {$x+[winfo pointerx .]}]+[expr {$y+[winfo pointery .]}]
+      set opt(-geometry) $inpgeom
+    } elseif {[string first "root" $inpgeom]==0} {
+      set root .[string trimleft [string range $inpgeom 5 end] .]
+      set opt(-geometry) [set inpgeom ""]
     }
     if {[set pp [string first + $opt(-geometry)]]>=0} {
       wm geometry $win [string range $opt(-geometry) $pp end]

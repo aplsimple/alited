@@ -12,7 +12,7 @@
 %MA R: %C \
    if {"$::EMENUFILES" eq ""} {set ::EMENU_ ""} {set ::EMENU_ "$::EMENUFILES"}
 %MA R: cd $::EMENUDIR
-%MA S: echo "$::EMENUDIR"\n\ngrep $::EMENU_ $GREPMODE -e '$::EMENUFIND'
+%MA S: echo "$::EMENUDIR" \n\n grep $::EMENU_ $GREPMODE -e '$::EMENUFIND'
 
  M:  M: 3
  S: GREP EXACT ? S: %MA GREP EXACT %MA -F -H -n -I -s -d skip *

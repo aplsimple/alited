@@ -199,13 +199,14 @@ SW:Save your stuff SW: $::EMENU7ZCOM $::EMENUTMP $::EMENU7ZDIR_LIST ; mplayer %m
  R: 1. tkcon         R: tkcon
  R: 2. Stop working! R: ?-33*60/-7*60:ah=3? audacious  /home/apl/PROGRAMS/C_COMM/breakon.wav
  R: 3. Arbeiten!     R: audacious /home/apl/PROGRAMS/C_COMM/breakoff.wav
- R: 4. Edit          R: tke
+ R: 4. Edit          R: cd /home/apl/PG/github/TKE
+ R: 4. Edit          R: wish ./tke/lib/tke.tcl
 RW: 5. APLinkee      RW: sleep 1
  R: 5. APLinkee      R: python3 /home/apl/PROGRAMS/run_APLinkee/run_APLinkee.py /media/windows/APLinkee.Shk/APLinkee.arli /media/apl/KINGSTON/APLinkee.Shk/APLinkee.arli 10
  R: 6. FVords        R: sleep 1
  R: 6. FVords        R: ~/PROGRAMS/C_COMM/commw /media/apl/KINGSTON/FVords_Prepare fvords.exe
- R: 7. poApps        R: # tclsh ~/UTILS/poApps-2/poApps.tcl --dirdiff
- R: 7. poApps        R: poApps --dirdiff
-RW: 8. geany         RW: sleep 3
+ R: 7. poApps        R: tclsh /home/apl/PG/github/poApps/poApps.tcl --dirdiff
+ R: 7. poApps        R: # poApps --dirdiff
+RW: 8. geany         RW: sleep 5
  R: 8. geany         R: geany
  R: 9. caja          R: caja -g +0+0 /home/apl/PG/github

@@ -6,6 +6,7 @@
 
 namespace eval favor {
   variable tipID ""
+  variable initialFavs [list]
 }
 
 proc favor::IsSelected {wtreeN IDN nameN fnameN snameN headerN lineN} {
@@ -19,11 +20,74 @@ proc favor::IsSelected {wtreeN IDN nameN fnameN snameN headerN lineN} {
   return yes
 }
 
+proc favor::SetAndClose {cont} {
+  SetFavorites $cont
+  set fnamecont ""
+  foreach tab [alited::bar::BAR listTab] {
+    set TID [lindex $tab 0]
+    set fname [alited::bar::FileName $TID]
+    set found no
+    foreach fit $cont {
+      set fnamecont [lindex $fit 4 1]
+      if {$fname eq $fnamecont} {
+        set found yes
+        break
+      }
+    }
+    if {!$found} {
+      if {![alited::file::CloseFile $TID no]} break
+      alited::bar::BAR $TID close no
+    }
+  }
+  if {![llength [alited::bar::BAR listTab]]} {
+    # no tabs open
+    if {$fnamecont ne ""} {
+      alited::file::OpenFile $fnamecont  ;#  open a file from favorites
+    } else {
+      alited::file::CheckForNew  ;# ... or create "no name" tab
+    }
+  }
+}
+
+proc favor::SetFavorites {cont} {
+  namespace upvar ::alited al al obPav obPav
+  variable initialFavs
+  set wtree [$obPav TreeFavor]
+  foreach it [alited::tree::GetTree {} TreeFavor] {
+    $wtree delete [lindex $it 2]
+  }
+  foreach curfav $cont {
+    catch {
+      lassign $curfav - - - - values
+      if {$values ne ""} {
+        set itemID [$wtree insert {} end -values $values]
+        $wtree tag add tagNorm $itemID
+      }
+    }
+  }
+}
+
+proc favor::Lists {} {
+  variable initialFavs
+  if {![llength $initialFavs]} {
+    set initialFavs [alited::tree::GetTree {} TreeFavor]
+  }
+  lassign [::alited::favor_ls::_run] pla cont
+  switch $pla {
+    1 {SetFavorites $cont}
+    2 {SetAndClose $cont}
+    3 {SetFavorites $initialFavs}
+  }
+}
+
 proc favor::Add {{undermouse yes}} {
   namespace upvar ::alited al al obPav obPav
-  lassign [alited::tree::CurrentItemByLine] - - itemID name values
+  lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - name l1 l2
   set name [string trim $name]
-  if {$name eq ""} return
+  if {$name eq ""} {
+    bell
+    return
+  }
   if {$undermouse} {set geo "-geometry pointer+10+10"} {set geo ""}
   set fname [alited::bar::FileName]
   set sname [file tail $fname]
@@ -40,7 +104,6 @@ proc favor::Add {{undermouse yes}} {
     set wtree [$obPav Tree]
     set header [alited::unit::GetHeader [$obPav Tree] $itemID]
     set pos [[alited::main::CurrentWTXT] index insert]
-    lassign [$wtree item $itemID -values] l1 l2
     set line [expr {($l1 eq "" || $l2 eq "" || $l1>$pos || $l2<$pos) ? 0 : \
       [alited::p+ $pos -$l1]}]
     set wt2 [$obPav TreeFavor]
@@ -115,7 +178,7 @@ proc favor::ShowPopupMenu {ID X Y} {
   set msgsel [string map [list %t $sname] $al(MC,selfavor)]
   $popm add command -label $msgsel -command "::alited::favor::Select $ID"
   $popm add separator
-  $popm add command -label $al(MC,FavLists) -command "::alited::favor::Lists $wtree"
+  $popm add command -label $al(MC,FavLists) -command "::alited::favor::Lists"
   $popm add command -label $al(MC,favoradd) -command "::alited::favor::Add no"
   $popm add command -label $al(MC,favordel) -command "::alited::favor::Delete no"
   $popm add separator
@@ -166,19 +229,11 @@ proc favor::_init {} {
   alited::tree::AddTags $wtree
   $wtree tag bind tagNorm <Return> {::alited::favor::Select}
   $wtree tag bind tagNorm <Double-Button-1> {::alited::favor::Select}
-  $wtree tag bind tagNorm <ButtonRelease-3> {alited::favor::PopupMenu %x %y %X %Y}
+  $wtree tag bind tagNorm <ButtonPress-3> {after idle {alited::favor::PopupMenu %x %y %X %Y}}
   $wtree tag bind tagNorm <Motion> {after idle {alited::favor::Tooltip %x %y %X %Y}}
   bind $wtree <Leave> {alited::favor::TooltipOff}
   $wtree heading #1 -text [msgcat::mc $al(MC,favorites)]
-  foreach curfav $al(FAV,current) {
-    catch {
-      lassign $curfav - - - - values
-      if {$values ne ""} {
-        set itemID [$wtree insert {} end -values $values]
-        $wtree tag add tagNorm $itemID
-      }
-    }
-  }
+  SetFavorites $al(FAV,current)
 }
 
 # _________________________________ EOF _________________________________ #

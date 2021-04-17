@@ -4,6 +4,9 @@
 # The ini-files procedures of alited.
 # _______________________________________________________________________ #
 
+# default settings of alited app:
+
+namespace eval ::alited {
   set al(ED,multiline) no
   set al(INTRO_LINES) 10
   set al(LEAF) 0
@@ -31,11 +34,15 @@
   set al(RE,proc2) {^\s*(proc|method|constructor|destructor)\s+} ;# proc abc {}...
   set al(RESTART) no
   set al(FAV,current) [list]
-  set al(FAV,saved) [list]
+  set al(TPL,list) [list]
+  set al(KEYS,bind) [list]
+}
 
 namespace eval ini {
   variable afterID ""
 }
+
+# ________________________ read common settings _________________________ #
 
 proc ini::ReadIni {} {
 
@@ -44,12 +51,23 @@ proc ini::ReadIni {} {
     ::alited::PanBM_wh ::alited::PanTop_wh ::alited::al(GEOM)
   catch {
     set chan [open $::alited::al(INI)]
-    while {1} {
-      set stini [gets $chan]
-      switch -exact -- $stini {
-        {} break
-        {[Geometry]} {ReadIniGeometry $chan}
-        {[Options]} {ReadIniOptions $chan}
+    set mode ""
+    while {![eof $chan]} {
+      set stini [string trim [gets $chan]]
+      switch -exact $stini {
+        {[Geometry]} - {[Options]} - {[Templates]} - {[Keys]} {
+          set mode $stini
+          continue
+        }
+      }
+      set i [string first = $stini]
+      set nam [string range $stini 0 $i-1]
+      set val [string range $stini $i+1 end]
+      switch -exact $mode {
+        {[Geometry]}  {ReadIniGeometry $nam $val}
+        {[Options]}   {ReadIniOptions $nam $val}
+        {[Templates]} {ReadIniTemplates $nam $val}
+        {[Keys]}      {ReadIniKeys $nam $val}
       }
     }
   }
@@ -57,56 +75,87 @@ proc ini::ReadIni {} {
   ReadIniPrj
 }
 
-proc ini::ReadIniGeometry {chan} {
+proc ini::ReadIniGeometry {nam val} {
   # Gets the geometry options of alited.
 
   namespace upvar ::alited al al
-  foreach v {Pan PanL PanR PanBM PanTop} {
-    lassign [split [gets $chan] x+] w h
-    set ::alited::${v}_wh "-w $w -h $h"
-  }
-  lassign [split [gets $chan] x+] - - x y
-  if {[string is digit -strict "$x$y"]} {
-    set ::alited::al(GEOM) "-geometry +$x+$y"
-  }
-}
-
-proc ini::ReadIniOptions {chan} {
-  # Gets other options of alited.
-  namespace upvar ::alited al al
-  while {1} {
-    set st [string trim [gets $chan]]
-    if {$st in {"" {[Misc]}}} break
-    set val [string range $st 8 end] ;# i like the 8-)
-    switch -glob -- $st {
-      project=* {set al(prjfile) $val}
-      treecw0=* {set al(TREE,cw0) $val}
-      treecw1=* {set al(TREE,cw1) $val}
+  switch -glob $nam {
+    Pan* {
+      lassign [split $val x+] w h
+      set ::alited::${nam}_wh "-w $w -h $h"
+    }
+    GEOM {
+      lassign [split $val x+] - - x y
+      set ::alited::al(GEOM) "-geometry +$x+$y"
+    }
+    geomfind {
+      set ::alited::find::geo $val
+    }
+    minsizefind {
+      set ::alited::find::minsize $val
+    }
+    datafind {
+      catch {
+        array set ::alited::find::data $val
+        set ::alited::find::data(en1) ""
+        set ::alited::find::data(en2) ""
+      }
     }
   }
 }
+
+proc ini::ReadIniOptions {nam val} {
+  # Gets other options of alited.
+  namespace upvar ::alited al al
+  switch -exact $nam {
+    project {set al(prjfile) $val}
+    treecw0 {set al(TREE,cw0) $val}
+    treecw1 {set al(TREE,cw1) $val}
+  }
+}
+
+proc ini::ReadIniTemplates {nam val} {
+  # Gets other options of alited.
+  namespace upvar ::alited al al
+  switch -exact $nam {
+    tpl {lappend al(TPL,list) $val}
+  }
+}
+
+proc ini::ReadIniKeys {nam val} {
+  # Gets other options of alited.
+  namespace upvar ::alited al al
+  switch -exact $nam {
+    key {lappend al(KEYS,bind) $val}
+  }
+}
+
+# _______________________ read project settings _________________________ #
 
 proc ini::ReadIniPrj {} {
 
   namespace upvar ::alited al al
+  alited::favor_ls::GetIni ""  ;# initializes favorites' lists
   set al(tabs) [list]
   set al(curtab) ""
   catch {
     set chan [open $::alited::al(prjfile) r]
-    while {1} {
-      set val [string trim [gets $chan]]
-      if {$val in {"" {[Options]}}} break
-      lappend al(tabs) $val
-    }
-    while {1} {
-      set val [string trim [gets $chan]]
-      if {$val in {"" {EOF}}} break
-      switch -glob $val {
-        curtab=* {set al(curtab) [string range $val 7 end]}
-        prjroot=* {set al(prjroot) [string range $val 8 end]}
-        default {
-         if {$val eq {[Favorites]}} {ReadIniFavorites $chan}
+    set mode ""
+    while {![eof $chan]} {
+      set stini [string trim [gets $chan]]
+      switch -exact $stini {
+        {[Tabs]} - {[Options]} - {[Favorites]} {
+          set mode $stini
+          continue
         }
+      }
+      set i [string first = $stini]
+      set nam [string range $stini 0 $i-1]
+      set val [string range $stini $i+1 end]
+      switch -exact $mode {
+        {[Tabs]} {ReadPrjTabs $nam $val}
+        {[Options]} {ReadPrjOptions $nam $val}
+        {[Favorites]} {ReadPrjFavorites $nam $val}
       }
     }
   }
@@ -118,18 +167,33 @@ proc ini::ReadIniPrj {} {
   }
 }
 
-proc ini::ReadIniFavorites {chan} {
-
+proc ini::ReadPrjTabs {nam val} {
+  # Gets tabs of project.
   namespace upvar ::alited al al
-  while {1} {
-    set val [string trim [gets $chan]]
-    if {$val in {"" {EOF}}} break
-    switch -glob $val {
-      current=* {lappend al(FAV,current) [string range $val 8 end]}
-      saved=* {lappend al(FAV,saved) [string range $val 6 end]}
-    }
+  switch -exact $nam {
+    tab {lappend al(tabs) $val}
   }
 }
+
+proc ini::ReadPrjOptions {nam val} {
+  # Gets options of project.
+  namespace upvar ::alited al al
+  switch -exact $nam {
+    curtab  {set al(curtab) $val}
+    prjroot {set al(prjroot) $val}
+  }
+}
+
+proc ini::ReadPrjFavorites {nam val} {
+  # Gets favorites of project.
+  namespace upvar ::alited al al
+  switch -exact $nam {
+    current {lappend al(FAV,current) $val}
+    saved   {alited::favor_ls::GetIni $val}
+  }
+}
+
+# ____________________________ save settings ____________________________ #
 
 proc ini::SaveCurrentIni {{saveon yes} {doit no}} {
   ;# for sessions to come
@@ -150,14 +214,28 @@ proc ini::SaveIni {} {
   # save the geometry options
   puts $chan {[Geometry]}
   foreach v {Pan PanL PanR PanBM PanTop} {
-    puts $chan [winfo geometry [$::alited::obPav $v]]
+    puts $chan $v=[winfo geometry [$::alited::obPav $v]]
   }
-  puts $chan [wm geometry $::alited::al(WIN)]
+  puts $chan GEOM=[wm geometry $::alited::al(WIN)]
+  puts $chan geomfind=$::alited::find::geo
+  puts $chan minsizefind=$::alited::find::minsize
+  puts $chan datafind=[array get ::alited::find::data]
   # save other options
-  foreach opt {prjfile} {puts $chan [set al($opt)]}
+  puts $chan ""
   puts $chan {[Options]}
+  puts $chan "project=$al(prjfile)"
   puts $chan "treecw0=[[$obPav Tree] column #0 -width]"
   puts $chan "treecw1=[[$obPav Tree] column #1 -width]"
+  puts $chan ""
+  puts $chan {[Templates]}
+  foreach t $al(TPL,list) {
+    puts $chan "tpl=$t"
+  }
+  puts $chan ""
+  puts $chan {[Keys]}
+  foreach k $al(KEYS,bind) {
+    puts $chan "key=$k"
+  }
   close $chan
   SaveIniPrj
 }
@@ -166,6 +244,7 @@ proc ini::SaveIniPrj {} {
 
   namespace upvar ::alited al al obPav obPav
   set chan [open $::alited::al(prjfile) w]
+  puts $chan {[Tabs]}
   lassign [alited::bar::GetBarState] TIDcur - wtxt
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
@@ -179,27 +258,28 @@ proc ini::SaveIniPrj {} {
       }
     }
     append line \t $pos \t $pos_S2
-    puts $chan $line
+    puts $chan "tab=$line"
   }
+  puts $chan ""
   puts $chan {[Options]}
   puts $chan "curtab=[alited::bar::CurrentTab 3]"
   puts $chan "prjroot=$al(prjroot)"
+  puts $chan ""
   puts $chan {[Favorites]}
   foreach curfav [alited::tree::GetTree {} TreeFavor] {
-    puts -nonewline $chan "current="
-    puts $chan $curfav
+    puts $chan "current=$curfav"
   }
-  foreach savfav $al(FAV,saved) {
-    puts -nonewline $chan "saved="
-    puts $chan $savfav
+  foreach savfav [::alited::favor_ls::PutIni] {
+    puts $chan "saved=$savfav"
   }
-  puts $chan "EOF"
   close $chan
 }
 
+# ______________________ initializer of alited app ______________________ #
+
 proc ini::_init {} {
 
-  namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2
+  namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2 obFND obFND
 
   set al(INI) [file join [file normalize $::alited::INIDIR] alited.ini]
   ReadIni
@@ -213,6 +293,7 @@ proc ini::_init {} {
   ::apave::APaveInput create $obPav $al(WIN)
   ::apave::APaveInput create $obDlg $al(WIN)
   ::apave::APaveInput create $obDl2 $al(WIN)
+  ::apave::APaveInput create $obFND $al(WIN)
   $obPav csSet $al(INI,CS) . -doit
 
   # set options' values
@@ -230,7 +311,7 @@ proc ini::_init {} {
     }
   }
   foreach {icon} {gulls heart add delete up down plus minus file folder \
-  retry} {
+  retry previous next} {
     set img alimg_$icon
     catch {image create photo $img -data [::apave::iconData $icon small]}
     catch {image create photo $img-small -data [::apave::iconData $icon small]}
@@ -238,6 +319,8 @@ proc ini::_init {} {
   for {set i 0} {$i<8} {incr i} {
     image create photo alimg_pro$i -data [set alited::img::_AL_IMG($i)]
   }
+  image create photo alimg_tclfile -data [set alited::img::_AL_IMG(Tcl)]
+  font create AlSmallFont {*}[font actual apaveFontDef] -size $alited::al(FONTSIZE,small)
 }
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl

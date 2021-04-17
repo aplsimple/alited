@@ -8,8 +8,8 @@ namespace eval bar {}
 
 proc bar::FillBar {wframe} {
   namespace upvar ::alited al al obPav obPav
-  set wbase [$obPav Text4]
-  set bar1Opts [list -wbar $wframe -wbase $wbase -lablen 16 -relief flat \
+  set wbase [$obPav LbxInfo]
+  set bar1Opts [list -wbar $wframe -wbase $wbase -lablen 16 -pady 2 \
     -menu "" \
     -csel2 {alited::bar::OnTabSelection %t} \
     -cdel {alited::file::CloseFile %t} \

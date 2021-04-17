@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.3
+package provide bartabs 1.4.1
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -452,7 +452,7 @@ method Tab_MarkAttrs {BID TID {withbg yes} {wb2 ""}} {
   }
   if {$imagemark ne ""} {
     set res " -image $imagemark -compound left"
-    if {$wb2 ne ""} {$wb2 configure {*}$res}
+    if {$wb2 ne ""} {$wb2 configure {*}$res -style ClButton$BID}
   }
   return $res
 }
@@ -720,7 +720,7 @@ method OnLeaveTab {wb1 wb2} {
   my Tab_MarkBars $BID
   if {"-image" ni [set attrs [my Tab_MarkAttrs $BID $TID 0 $wb2]] && \
   [my Tab_Iconic $BID]} {
-    $wb2 configure -image bts_ImgNone
+    $wb2 configure -image bts_ImgNone -style ClButton$BID
   }
 }
 #_____
@@ -824,7 +824,7 @@ method OnButtonRelease {wb1o x} {
     incr i
   }
   if {$iw1==-1} return  ;# for sure
-  if {[my $TID Tab_Cmd -cmov]<1} return ;# chosen to not move
+  if {[my $TID Tab_Cmd -cmov] ni {"1" "yes" "true"}} return ;# chosen to not move
   set vislen2 [expr {$vislen0+$x-$movx1}]
   foreach vl $vlist {
     lassign $vl i vislen wl
@@ -999,7 +999,7 @@ method close {{redraw yes} args} {
       set res [my $TID Tab_Cmd -cdel {*}$args]
     }
   }
-  if {$res!=1} {return $res}
+  if {$res ni {"1" "yes" "true"}} {return $res}
   if {$redraw} {my $BID clear}
   lassign [my $BID cget -TABS -tleft -tright -tabcurrent] tabs tleft tright tcurr
   my Tab_RemoveLinks $BID $TID
@@ -1036,7 +1036,8 @@ method Bar_Data {barOptions} {
   set barOpts [dict create -wbar ""  -wbase "" -wproc "" -static no -lowlist no \
     -hidearrows no -scrollsel yes -lablen 0 -tiplen 0 -tleft 0 -tright end \
     -disable [list] -select [list] -mark [list] -fgmark #800080  -fgsel "." \
-    -relief groove -bd 1 -padx 3 -pady 3 -expand 1 -tabcurrent -1 -dotip no \
+    -relief groove -padx 1 -pady 1 -expand 0 -tabcurrent -1 -dotip no \
+    -bd 0 -separator 1 \
     -ELLIPSE "\u2026" -MOVWIN ".bt_move" -ARRLEN 0 -USERMNU 0 -LLEN 0]
   set tabinfo [set imagetabs [set popup [list]]]
   my Bar_DefaultMenu $BID popup
@@ -1180,8 +1181,10 @@ method InitColors {} {
     set fgo $bgmain
     if {$bgo in {black #000000}} {set bgo #444444; set fgo #FFFFFF}
   }
-  my [my ID] configure -FGMAIN $fgmain -BGMAIN $bgmain \
+  set BID [my ID]
+  my $BID configure -FGMAIN $fgmain -BGMAIN $bgmain \
     -FGDSBL $fgdsbl -BGDSBL $bgdsbl -FGOVER $fgo -BGOVER $bgo
+  my $BID Style
 }
 #_____
 
@@ -1189,10 +1192,12 @@ method Style {} {
 # Sets styles a bar's widgets.
 
   set BID [my ID]
+  set bg [my $BID cget -BGMAIN]
   ttk::style configure ClButton$BID [ttk::style configure TButton]
   ttk::style configure ClButton$BID -relief flat -padx 0 -bd 0 -highlightthickness 0
-  ttk::style map       ClButton$BID [ttk::style map TButton]
-  ttk::style layout    ClButton$BID [ttk::style layout TButton]
+  ttk::style map ClButton$BID [ttk::style map TButton]
+  ttk::style map ClButton$BID -background [list active $bg]
+  ttk::style layout ClButton$BID [ttk::style layout TButton]
 }
 #_____
 
@@ -1405,7 +1410,7 @@ method FillFromRight {tleft tright behind} {
     set tabs [lreplace $tabs $i $i [my Tab_ItemDict $TID $text $wb $wb1 $wb2 $pf]]
   }
   set i $tright
-  while {$behind && [incr i]<($llen-1) && $totlen<$bwidth} {
+  while {$behind && [incr i]<$llen && $totlen<$bwidth} {
     # go behind the right tab as far as possible
     lassign [my Tab_DictItem [lindex $tabs $i]] TID text wb wb1 wb2 pf
     lassign [my Tab_Create $BID $TID $wframe $text] wb wb1 wb2
@@ -1833,11 +1838,13 @@ method remove {} {
   set BID [my ID]
   variable btData
   if {[dict exists $btData $BID]} {
+    catch {bind [my $BID cget -wbase] <Configure> {}}
     lassign [my $BID cget -BINDWBASE] wb bnd
     if {$wb ne ""} {bind $wb <Configure> $bnd}
     set bar [dict get $btData $BID]
     foreach tab [dict get $bar -TABS] {my Tab_RemoveLinks $BID [lindex $tab 0]}
-    foreach wb [dict get $bar -WWID] {catch {destroy $wb}}
+    catch {destroy {*}[dict get $bar -WWID]}
+    catch {destroy [my $BID cget -UNDERWID]}
     if {[set bc [my $BID cget -BARCOM]] ne ""} {catch {rename $bc ""}}
     foreach tc [my $BID cget -TABCOM] {catch {rename [lindex $tc 1] ""}}
     dict unset btData $BID
@@ -1968,7 +1975,7 @@ method create {barCom {barOpts ""} {tab1 ""}} {
   set wrarr $w.rarr   ;# right arrow
   lappend barOpts -WWID [list $wframe $wlarr $wrarr]
   my My [set BID [my Bar_Data $barOpts]]
-  my $BID Style
+  my $BID InitColors
   ttk::button $wlarr -style ClButton$BID -image bts_ImgLeft \
     -command [list [self] $BID scrollLeft] -takefocus 0
   ttk::button $wrarr -style ClButton$BID -image bts_ImgRight \
@@ -1977,6 +1984,13 @@ method create {barCom {barOpts ""} {tab1 ""}} {
   pack $wlarr -side left -padx 0 -pady 0 -anchor e
   pack $wframe -after $wlarr -side left -padx 0 -pady 0 -fill x -expand 1
   pack $wrarr -after $wframe -side right -padx 0 -pady 0 -anchor w
+  if {[my $BID cget -separator]} {
+    if {![winfo exists $w.under]} {
+      ttk::separator $w.under -orient horizontal
+      my $BID configure -UNDERWID $w.under
+    }
+    pack $w.under -before $wlarr -side bottom -fill x -expand 1 -padx 0 -pady 2
+  }
   foreach w {wlarr wrarr} {
     bind [set $w] <Button-3> "[self] $BID popList %X %Y"
   }
@@ -2120,5 +2134,6 @@ method moveSelTab {TID1 TID2} {
 } ;#  bartabs::Bars
 
 # ________________________________ EOF __________________________________ #
-#-RUNF0: test.tcl
+#RUNF1: ../../alited/src/alited.tcl
+#RUNF0: test.tcl
 #RUNF1: ../tests/test2_pave.tcl

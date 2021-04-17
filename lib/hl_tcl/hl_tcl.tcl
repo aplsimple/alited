@@ -6,7 +6,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide hl_tcl 0.8.9
+package provide hl_tcl 0.8.10
 
 # _______________ Common data of ::hl_tcl:: namespace ______________ #
 
@@ -340,18 +340,19 @@ proc ::hl_tcl::my::CoroHighlightAll {txt} {
   # See also: HighlightAll
 
   variable data
-  if {$data(PLAINTEXT,$txt)} return
-  set tlen [lindex [split [$txt index end] .] 0]
-  RemoveTags $txt 1.0 end
-  set maxl [expr {min($::hl_tcl::my::data(SEEN,$txt),$tlen)}]
-  set maxl [expr {min($::hl_tcl::my::data(SEEN,$txt),$tlen)}]
-  for {set currQtd [set ln [set lnseen 0]]} {$ln<=$tlen} {} {
-    set currQtd [HighlightLine $txt $ln $currQtd]
-    incr ln
-    if {[incr lnseen]>$::hl_tcl::my::data(SEEN,$txt)} {
-      set lnseen 0
-      after idle after 1 [info coroutine]
-      yield
+  if {!$data(PLAINTEXT,$txt)} {
+    set tlen [lindex [split [$txt index end] .] 0]
+    RemoveTags $txt 1.0 end
+    set maxl [expr {min($::hl_tcl::my::data(SEEN,$txt),$tlen)}]
+    set maxl [expr {min($::hl_tcl::my::data(SEEN,$txt),$tlen)}]
+    for {set currQtd [set ln [set lnseen 0]]} {$ln<=$tlen} {} {
+      set currQtd [HighlightLine $txt $ln $currQtd]
+      incr ln
+      if {[incr lnseen]>$::hl_tcl::my::data(SEEN,$txt)} {
+        set lnseen 0
+        after idle after 1 [info coroutine]
+        yield
+      }
     }
   }
   set ::hl_tcl::my::data(REG_TXT,$txt) "1"
@@ -886,6 +887,7 @@ proc ::hl_tcl::hl_init {txt args} {
   #   txt - text widget's path
   #   args - dict of options
   # The 'args' options include:
+  #   -- - means that only args' options will be initialized (defaults skipped)
   #   -dark - flag "the text widget has dark background"
   #   -readonly - flag "read-only"
   #   -optRE - flag "use of RE to highlight options"
@@ -897,10 +899,17 @@ proc ::hl_tcl::hl_init {txt args} {
   #   -seen - lines seen at start
   # This procedure has to be called before writing a text in the text widget.
 
+  if {[set setonly [expr {[lindex $args 0] eq "--"}]]} {
+    set args [lrange $args 1 end]
+  }
   set ::hl_tcl::my::data(REG_TXT,$txt) ""  ;# disables Modified at changing the text
   foreach {opt val} {-dark 0 -readonly 0 -cmd "" -cmdpos "" -optRE 1 \
   -multiline 1 -seen 500 -plaintext no -insertwidth 2} {
-    if {[dict exists $args $opt]} {set val [dict get $args $opt]}
+    if {[dict exists $args $opt]} {
+      set val [dict get $args $opt]
+    } elseif {$setonly} {
+      continue  ;# only those set in args are taken into account
+    }
     set ::hl_tcl::my::data([string toupper [string range $opt 1 end]],$txt) $val
   }
   if {[dict exists $args -colors]} {
@@ -919,12 +928,16 @@ proc ::hl_tcl::hl_init {txt args} {
       }
     }
   }
-  if {[dict exists $args -font]} {
-    set ::hl_tcl::my::data(FONT,$txt) [dict get $args -font]
-  } else {
-    set ::hl_tcl::my::data(FONT,$txt) [font actual TkFixedFont]
+  if {!$setonly} {
+    if {[dict exists $args -font]} {
+      set ::hl_tcl::my::data(FONT,$txt) [dict get $args -font]
+    } else {
+      set ::hl_tcl::my::data(FONT,$txt) [font actual TkFixedFont]
+    }
   }
-  hl_readonly $txt $::hl_tcl::my::data(READONLY,$txt)
+  if {!$setonly || [dict exists $args -readonly]} {
+    hl_readonly $txt $::hl_tcl::my::data(READONLY,$txt)
+  }
   if {[string first "::hl_tcl::" [bind $txt]]<0} {
     bind $txt <FocusIn> [list + ::hl_tcl::my::ShowCurrentLine $txt]
   }
@@ -994,11 +1007,8 @@ proc ::hl_tcl::hl_all {args} {
         if {![info exists ::hl_tcl::my::data(SETCOLORS,$txt)]} {
           unset ::hl_tcl::my::data(COLORS,$txt) ;# colors defined by DARK
         }
-        hl_init $txt {*}$args
-        # args (if set) override the settings for $txt
-        # except for these VIPs: readonly and command
-        set ::hl_tcl::my::data(READONLY,$txt) $ro
-        set ::hl_tcl::my::data(CMD,$txt) $com2
+        # args (if set) override the appropriate settings for $txt
+        hl_init $txt -- {*}$args
         hl_text $txt
       }
     }
