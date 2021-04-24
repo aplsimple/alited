@@ -27,11 +27,11 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.3.2b7"
+  variable em_version "e_menu 3.3.3"
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq \
     [file normalize [info script]]} ? 1 : 0]
   variable Argv0
-  if {[info exist ::argv0]} {set Argv0 [file normalize $::argv0]} {set Argv0 [info script]}
+  if {$solo} {set Argv0 [file normalize $::argv0]} {set Argv0 [info script]}
   if {[info exist ::em::executable]} {set Argv0 [file dirname $Argv0]}
   variable Argv; if {[info exist ::argv]} {set Argv $::argv} {set Argv [list]}
   variable Argc; if {[info exist ::argc]} {set Argc $::argc} {set Argc 0}
@@ -2280,6 +2280,7 @@ proc ::em::on_exit {{really 1} args} {
   }
   if {$::em::solo} exit
   ::em::pool_pull
+  set ::em::geometry [::em::geometry]
   set ::em::reallyexit $really
   set ::em::em_win_var 0
 }
@@ -2325,16 +2326,28 @@ proc ::em::run_autohidden {alist} {
   }
 }
 #=== run commands of ::em::ex list and exit
-proc ::em::run_ex {} {
-  if {[llength $::em::ex]} {
-    foreach ex [split $::em::ex ,] {
-      if {[string match "h*" $ex] && $ex ne "h"} {
+proc ::em::run_ex {{exe ""}} {
+  if {$exe eq ""} {set exe $::em::ex}
+  if {[llength $exe]} {
+    foreach ex [split $exe ,] {
+      if {$ex eq "Help"} {
+        ::em::help_button $::em::pseltd
+      } elseif {[string match "h*" $ex] && $ex ne "h"} {
         ::em::run_autohidden [string range $ex 1 end]
       } else {
         ::em::run_auto $ex
       }
     }
-    exit
+    ::em::on_exit 1
+  }
+}
+#=== set focus on .em window
+proc ::em::focus_em {} {
+  after 50 {
+    if {[winfo exists .em]} {
+      focus -force .em
+      ::em::focus_button $::em::lasti
+    }
   }
 }
 #=== run tasks assigned in a= (by their hotkeys)
@@ -2347,6 +2360,7 @@ proc ::em::initauto {} {
   run_autohidden $::em::autohidden
   run_tcl_commands ::em::commandA2  ;# run the command as last init
   run_ex                            ;# after all inits/autos, run "ex=" if any
+  if {$::em::reallyexit} return
   if {!$::em::solo} {
     # only 1st start for 1st window (non-solo)
     set ::em::Argv [::apave::removeOptions $::em::Argv a=* a0=* a1=* a2=* ah=*]
@@ -2357,12 +2371,7 @@ proc ::em::initauto {} {
     bind .em <Left> [::eh::ctrl_alt_off "::em::on_exit"]
   }
   if {$::em::lasti < $::em::begin} {set ::em::lasti $::em::begin}
-  after 50 {
-    if {[winfo exists .em]} {
-      focus -force .em
-      ::em::focus_button $::em::lasti
-    }
-  }
+  ::em::focus_em
 }
 #=== begin inits
 proc ::em::initbegin {} {
@@ -2417,6 +2426,7 @@ proc ::em::initall {} {
     ::em::initmain
     ::em::initmenu
     ::em::initauto
+    if {$::em::reallyexit} return
     ::em::initend
   }
 }
@@ -2436,7 +2446,7 @@ proc ::em::main {args} {
   set args [::apave::removeOptions $args -prior -modal -remain -noCS]
   if {$::em::noCS} {set ::em::noCS "disabled"} {set ::em::noCS "normal"}
   if {$prior} {
-    set ::em::empool []  ;# continue with variables of previous session
+    set ::em::empool [list]  ;# continue with variables of previous session
   }
   set ::em::Argv $args
   set ::em::Argc [llength $args]
@@ -2448,26 +2458,33 @@ proc ::em::main {args} {
     set ::em::empool [lrange $::em::empool 0 0]  ;# fetch the clean variables
     pool_item_activate 0
   }
-  ::apave::initWM
-  ::apave::iconImage -init small
   set ::em::reallyexit false
   while {!$::em::reallyexit && ![::apave::endWM ?]} {
     pool_push
     initall
+    if {$::em::reallyexit} {
+      pool_pull
+      return 1
+    }
     if {!$::em::reallyexit} {  ;# may be set in autoruns
       ::apave::obj showWindow .em $modal $::em::ontop ::em::em_win_var
       destroy .em
-      if {![::em::pool_pull]} break
+      if {![pool_pull]} break
     } elseif {$::em::reallyexit eq "2"} {
-      set ::em::empool []
+      set ::em::empool [list]
       set ::em::reallyexit false  ;# enter the newly created menu
     }
   }
+  set ::em::empool [list]
   if [winfo exists .em] {destroy .em}
   return $::em::em_win_var
 }
 
-if {$::em::solo} {::em::main -modal 0 -remain 0 {*}$::argv}
+if {$::em::solo} {
+  ::apave::initWM
+  ::apave::iconImage -init small
+  ::em::main -modal 0 -remain 0 {*}$::argv
+}
 
 # _____________________________ EOF _____________________________________ #
 #RUNF1: ../pave/tests/test2_pave.tcl 8 9 12 'small icons'

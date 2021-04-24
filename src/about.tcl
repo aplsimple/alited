@@ -47,7 +47,7 @@ namespace eval about {
 
   proc textImaged {w} {
     ::apave::obj labelFlashing [::apave::obj textLink $w 3] "" 1 \
-      -file [file join $::alited::IMGDIR feather.png] -pause 0.5 -incr 0.1 -after 40
+      -data $::alited::img::_AL_IMG(feather) -pause 0.5 -incr 0.1 -after 40
   }
 
 }

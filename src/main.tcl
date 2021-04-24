@@ -6,91 +6,87 @@
 
 namespace eval main {}
 
-proc main::ShowText {{newsuf "-1"}} {
-
+proc main::GetText {TID {doshow no}} {
   namespace upvar ::alited al al obPav obPav
-  set curfile [alited::bar::CurrentTab 2]
+  set curfile [alited::bar::BAR $TID cget -tip]
   set wtxt [$obPav Text]
   set wsbv [$obPav SbvText]
   set doinit yes
-  set TID [alited::bar::CurrentTabID]
   lassign [alited::bar::GetBarState] TIDold fileold wold1 wold2
-  lassign [alited::bar::GetTabState $TID --pos --pos_S2] pos pos_S2
+  lassign [alited::bar::GetTabState $TID --pos] pos
   if {$TIDold eq "-1"} {
     ;# first text to edit in original Text widget: create its scrollbar
-    set additW12 "_S2"
-    BindsForText $wtxt
+    BindsForText $TID $wtxt
   } elseif {[alited::bar::GetTabState $TID --wtxt] ne ""} {
     # edited text: get its widgets' data
     lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
-    set doinit no
+    set doinit [expr {[alited::bar::BAR $TID cget --reload] ne ""}]
+    if {$doinit} {
+      set al(HL,$wtxt) "" ;# to highlight the loaded text
+    }
+    alited::bar::BAR $TID configure --reload ""
   } else {
     # till now, not edited text: create its own Text/SbvText widgets
-    set additW12 [list "" "_S2"]
     append wtxt "_$TID"  ;# new text
     append wsbv "_$TID"  ;# new scrollbar
   }
   if {![string is double -strict $pos]} {set pos 1.0}
-  if {![string is double -strict $pos_S2]} {set pos_S2 1.0}
   # check for previous text and hide it, if it's not the selected one
-  set oldsuf [CurrentSUF $TIDold]
-  if {$newsuf eq "-1"} {set newsuf [CurrentSUF $TID]}
-  set dopack [expr {$TID ne $TIDold || $newsuf ne $oldsuf}]
-  if {$dopack && [winfo exists $wold1]} {
-    if {$oldsuf eq ""} {
-      alited::bar::SetTabState $TIDold --pos [$wold1 index insert]
-    } else {
-      alited::bar::SetTabState $TIDold --pos_S2 [$wold1 index insert]
+  set dopack [expr {$TID ne $TIDold}]
+  if {[winfo exists $wold1]} {
+    alited::bar::SetTabState $TIDold --pos [$wold1 index insert]
+    if {$dopack && $doshow} {
+      pack forget $wold1  ;# a text
+      pack forget $wold2  ;# a scrollbar
     }
-    catch {pack forget $wold1}  ;# a text
-    catch {pack forget $wold2}  ;# a scrollbar
   }
-  CurrentSUF $TID $newsuf
   alited::bar::SetTabState $TID --fname $curfile --wtxt $wtxt --wsbv $wsbv
   # create the text and the scrollbar if new
-  if {![winfo exists "${wtxt}_S2"]} {
+  if {![winfo exists $wtxt]} {
     lassign [GutterAttrs] canvas width shift
-    foreach p $additW12 {
-      set w1 $wtxt$p
-      set w2 $wsbv$p
-      set texopts [lindex [$obPav defaultAttrs tex] 1]
-      lassign [::apave::extractOptions texopts -selborderwidth 1] selbw
-      text $w1 {*}$texopts {*}$al(TEXT,opts)
-      $w1 tag configure sel -borderwidth $selbw
-      $obPav themeNonThemed [winfo parent $w1]
-      set bind [list $obPav fillGutter $w1 $canvas $width $shift]
-      bind $w1 <Configure> $bind
-      if {[trace info execution $w1] eq ""} {
-        trace add execution $w1 leave $bind
-      }
-      ttk::scrollbar $w2 -orient vertical -takefocus 0
-      $w1 configure -yscrollcommand "$w2 set"
-      $w2 configure -command "$w1 yview"
-      BindsForText $w1
+    set texopts [lindex [$obPav defaultAttrs tex] 1]
+    lassign [::apave::extractOptions texopts -selborderwidth 1] selbw
+    text $wtxt {*}$texopts {*}$al(TEXT,opts)
+    $wtxt tag configure sel -borderwidth $selbw
+    $obPav themeNonThemed [winfo parent $wtxt]
+    set bind [list $obPav fillGutter $wtxt $canvas $width $shift]
+    bind $wtxt <Configure> $bind
+    if {[trace info execution $wtxt] eq ""} {
+      trace add execution $wtxt leave $bind
     }
+    ttk::scrollbar $wsbv -orient vertical -takefocus 0
+    $wtxt configure -yscrollcommand "$wsbv set"
+    $wsbv configure -command "$wtxt yview"
+    BindsForText $TID $wtxt
   }
   # show the selected text
-  lassign [CurrentSUF $TID $newsuf $wtxt $wsbv] wtxt wsbv
-  alited::bar::SetBarState [alited::bar::CurrentTabID] $curfile $wtxt $wsbv
+  if {$doshow} {
+    alited::bar::SetBarState [alited::bar::CurrentTabID] $curfile $wtxt $wsbv
+  }
   if {$doinit} {
     alited::file::DisplayFile $TID $curfile $wtxt
+    HighlightText $TID $curfile $wtxt
   }
-  if {$doinit || $newsuf ne ""} {
-    HighlightText $curfile $wtxt
-  }
+  return [list $curfile $wtxt $wsbv $pos $doinit $dopack]
+}
+
+proc main::ShowText {} {
+
+  namespace upvar ::alited al al obPav obPav
+  set TID [alited::bar::CurrentTabID]
+  lassign [GetText $TID yes] curfile wtxt wsbv pos doinit dopack
   if {$dopack} {
     PackTextWidgets $wtxt $wsbv
   }
   if {$doinit || $dopack} {
     set al(TREE,units) no
-    alited::tree::Create [set pos$newsuf]
-  } else {
-    FocusText $TID [set pos$newsuf]
+    alited::tree::Create
   }
+  FocusText $TID $pos
   if {[set itemID [alited::tree::NewSelection]] ne ""} {
     [$obPav Tree] see $itemID
   }
-  alited::file::CheckMenuItems
+  alited::menu::CheckMenuItems
   focus $wtxt
   ShowHeader
 }
@@ -135,7 +131,7 @@ proc main::GutterAttrs {} {
   return [list [$obPav GutText] 5 4]
 }
 
-proc main::HighlightText {curfile wtxt} {
+proc main::HighlightText {TID curfile wtxt} {
   namespace upvar ::alited al al obPav obPav
   set ext [string tolower [file extension $curfile]]
   if {![info exists al(HL,$wtxt)] || $al(HL,$wtxt) ne $ext} {
@@ -144,7 +140,7 @@ proc main::HighlightText {curfile wtxt} {
 # TODO
 #        ::hl_c::hl_init $wtxt -dark [$obPav csDarkEdit] \
           -multiline $al(ED,multiline) \
-          -cmd "::alited::unit::Modified [alited::bar::CurrentTabID]" \
+          -cmd "::alited::unit::Modified $TID" \
           -cmdpos "::alited::main::CursorPos" \
           -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)"
 #        ::hl_c::hl_text $wtxt
@@ -152,7 +148,7 @@ proc main::HighlightText {curfile wtxt} {
       default {
         ::hl_tcl::hl_init $wtxt -dark [$obPav csDarkEdit] \
           -multiline $al(ED,multiline) \
-          -cmd "::alited::unit::Modified [alited::bar::CurrentTabID]" \
+          -cmd "::alited::unit::Modified $TID" \
           -cmdpos "::alited::main::CursorPos" \
           -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)" \
           -plaintext [expr {$ext ne ".tcl"}]
@@ -174,39 +170,21 @@ proc main::PackTextWidgets {wtxt wsbv} {
   {*}$bind
 }
 
-proc main::BindsForText {wtxt} {
-
+proc main::FocusInText {TID wtxt} {
   namespace upvar ::alited obPav obPav
-  bind $wtxt <F2> {::alited::file::SaveFile}
-  foreach s {s S} {
-    bind $wtxt "<Control-$s>" {::alited::file::SaveFileAs}
-    bind $wtxt "<Shift-Control-$s>" {::alited::file::SaveAll}
-  }
-  foreach s {n N} {bind $wtxt "<Control-$s>" {::alited::file::NewFile}}
-  foreach s {o O} {bind $wtxt "<Control-$s>" {::alited::file::OpenFile; break}}
-  foreach s {w W} {bind $wtxt "<Control-$s>" {::alited::file::SaveFileAndClose}}
-  bind $wtxt <F3> "$obPav findInText 1 $wtxt"
-  bind $wtxt <F11> {+ ::alited::main::MoveItem up yes}
-  bind $wtxt <F12> {+ ::alited::main::MoveItem down yes}
-  bind $wtxt <FocusIn> "
-    ::alited::main::CursorPos $wtxt
-    [$obPav TreeFavor] selection set {}
-    "
-  bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt"
-  alited::keys::ReservedAdd
-  alited::keys::BindKeys $wtxt action
-  alited::keys::BindKeys $wtxt template
+  ::alited::main::CursorPos $wtxt
+  [$obPav TreeFavor] selection set {}
+  alited::file::OutwardChange $TID
 }
 
-proc main::CurrentSUF {TID {suf "-1"} {w1 ""} {w2 ""}} {
+proc main::BindsForText {TID wtxt} {
 
-  if {![alited::bar::BAR isTab $TID]} {return ""}
-  if {$suf == -1} {
-    return [alited::bar::BAR $TID cget -ALSUF]
-  } else {
-    alited::bar::BAR $TID configure -ALSUF $suf
-  }
-  return [list $w1$suf $w2$suf]
+  bind $wtxt <FocusIn> [list after 200 "::alited::main::FocusInText $TID $wtxt"]
+  bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt"
+  bind $wtxt <Control-Shift-ButtonRelease-1> "::alited::find::SearchWordInSession"
+  alited::keys::ReservedAdd $wtxt
+  alited::keys::BindKeys $wtxt action
+  alited::keys::BindKeys $wtxt template
 }
 
 proc main::CurrentWTXT {} {
@@ -217,8 +195,8 @@ proc main::ShowHeader {} {
   namespace upvar ::alited al al
   if {[alited::file::IsModified]} {set modif "*"} {set modif " "}
   set TID [alited::bar::CurrentTabID]
-  if {$modif ne [alited::bar::BAR $TID cget -ALmodif]} {
-    alited::bar::BAR $TID configure -ALmodif $modif
+  if {"$modif$TID" ne [alited::bar::BAR cget -ALmodif]} {
+    alited::bar::BAR configure -ALmodif "$modif$TID"
     set f [alited::bar::CurrentTab 1]
     set d [file normalize [file dirname [alited::bar::CurrentTab 2]]]
     set p [file rootname $al(prjname)]
@@ -243,7 +221,8 @@ proc main::MoveItem {to {f1112 no}} {
     set itemID [$wtree focus]
   }
   if {$itemID eq ""} {
-    alited::msg ok warn $al(MC,nosels) -geometry pointer+10+10
+    if {$f1112} {set geo ""} {set geo "-geometry pointer+10+10"}
+    alited::msg ok warn $al(MC,nosels) {*}$geo
     return
   }
   if {$al(TREE,isunits)} {
@@ -270,10 +249,11 @@ proc main::_create {} {
     {Menu - - - - - {-array {
       File "&File"
       edit "&Edit"
+      tool "&Tools"
       Help "&Help"
-    }} alited::file::FillMenu}
+    }} alited::menu::FillMenu}
     {frat - - - - {pack -fill both}}
-    {frat.toolTop - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::al(tool)}}}
+    {frat.ToolTop - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::al(tool)}}}
     {fra - - - - {pack -side top -fill both -expand 1 -pady 0}}
     {fra.Pan - - - - {pack -side top -fill both -expand 1} {-orient horizontal $alited::Pan_wh}}
     {fra.pan.PanL - - - - {add} {-orient vertical $alited::PanL_wh}}
@@ -299,6 +279,8 @@ proc main::_create {} {
     {.fratex - - - - {add}}
     {.fratex.v_ - - - - {pack -side top -fill x} {-h 10}}
     {.fratex.fra1 - - - - {pack -side top -fill x}}
+    {.fratex.fra1.BuTVisitF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_misc -tooltip {$alited::al(MC,FavVisit)} -com alited::favor::Visited}}
+    {.fratex.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
     {.fratex.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_heart -tooltip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
     {.fratex.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus -tooltip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
     {.fratex.fra1.BuTDelF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -tooltip {$alited::al(MC,favordel)} -com alited::favor::Delete}}
@@ -325,13 +307,13 @@ pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
     {.fraTop.panTop.fraSbv.SbvText .fraTop.panTop.frAText.text L - - {pack -fill y}}
     {.fraBot - - - - {add}}
     {.fraBot.fra - - - - {pack -fill both -expand 1}}
-    {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1} {-h 1 -w 40 -lvar ::alited::info::list -font AlSmallFont -takefocus 0}}
+    {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1} {-h 1 -w 40 -lvar ::alited::info::list -font $alited::al(FONT,defsmall) -takefocus 0}}
     {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - {pack}}
     {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
       {Row: -font {-slant italic -size $alited::al(FONTSIZE,small)}} 12
       {" Col:" -font {-slant italic -size $alited::al(FONTSIZE,small)}} 5
-      {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor w} 60
+      {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor w} 50
       {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor e} 40
     }}}
   }
@@ -340,14 +322,13 @@ pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
   set lbxi [$obPav LbxInfo]
   pack forget $sbhi
   bind $lbxi <FocusIn> "pack $sbhi -side bottom -before $lbxi -fill both"
-  bind $lbxi <FocusOut> "pack forget $sbhi; $lbxi selection clear 0 end"
-alited::info::Put "find & bar 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-alited::info::Put "find & bar ------------ 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 123467890 1234567890 1234567890 1234567890 1234567890 1234567890 "
-foreach i {1 2 3 4 5 6 7} {alited::info::Put "find $i"}
+  bind $lbxi <FocusOut> "pack forget $sbhi"
+  bind $lbxi <<ListboxSelect>> {alited::info::ListboxSelect %W}
 }
 
 proc main::_run {} {
   namespace upvar ::alited al al obPav obPav
+  ::apave::setAppIcon $al(WIN) $::alited::img::_AL_IMG(feather)
   [$obPav Labstat4] configure -text "System encoding: [encoding system]"
   $obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
     -onclose alited::Exit {*}$al(GEOM)

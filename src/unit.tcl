@@ -12,11 +12,9 @@ proc unit::SelectUnit {} {
   namespace upvar ::alited al al
   set TID [alited::bar::CurrentTabID]
   lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
-  set suf [alited::main::CurrentSUF $TID]
-  pack forget $wtxt$suf
-  pack forget $wsbv$suf
-  if {$suf eq ""} {set suf "_S2"} else {set suf ""}
-  alited::main::ShowText $suf
+  pack forget $wtxt
+  pack forget $wsbv
+  alited::main::ShowText
 }
 
 proc unit::GetUnits {textcont} {
@@ -106,11 +104,61 @@ proc unit::GetUnits {textcont} {
   return $retlist
 }
 
+proc unit::TemplateData {wtxt l1 tpldata} {
+  namespace upvar ::alited al al
+  lassign $tpldata tex pos place
+  set sec [clock seconds]
+  set tex [string map [list \
+    %d [clock format $sec -format $al(TPL,%d)] \
+    %t [clock format $sec -format $al(TPL,%t)] \
+    %u $al(TPL,%u) \
+    %U $al(TPL,%U) \
+    %m $al(TPL,%m) \
+    %w $al(TPL,%w) \
+    ] $tex]
+  # get a list of proc/method's arguments:
+  # from "proc pr {ar1 ar2 ar3} " and a template "  # %a -\n"
+  # to get
+  #   # ar1 -
+  #   # ar2 -
+  #   # ar3 -
+  lassign [split "[$wtxt get $l1.0 $l1.end]" "\{\}"] proc iarg
+  catch {
+    set tpla [string map [list \\n \n] $al(TPL,%a)]
+    set oarg [set st1 ""]
+    foreach a $iarg {
+      set st [string map [list %a $a] $tpla]
+      if {$st1 eq ""} {set st1 $st}
+      append oarg $st
+    }
+    if {[string first %a $tex]>-1} {
+      set place 0
+      set pos 1.[string length $st1]
+    }
+    set tex [string map [list \\n \n %a $oarg] $tex]
+  }
+  set ll1 [string length $tex]
+  set tex [string map [list %p [lindex $proc 1]] $tex]
+  set ll2 [string length $tex]
+  if {[set ll [expr {$ll2-$ll1}]]} {
+    lassign [split $pos .] r c
+    if {[string is digit -strict $c]} {
+      set pos $r.[expr {$c+$ll}]
+    }
+  }
+  return [list $tex $pos $place]
+}
+
 proc unit::InsertTemplate {tpldata} {
 
-  lassign $tpldata tex pos place
   set wtxt [alited::main::CurrentWTXT]
+  lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - - l1 l2
+  lassign [TemplateData $wtxt $l1 $tpldata] tex pos place
+  set col0 [string range $pos [string first . $pos] end]
   switch $place {
+    0 { ;# returned by TemplateData: after a declaration
+      set pos0 [expr {$l1+1}].0
+    }
     4 { ;# after 1st line
       set pos0 2.0
     }
@@ -118,7 +166,6 @@ proc unit::InsertTemplate {tpldata} {
       set pos0 [$wtxt index insert]
     }
     2 { ;# after unit
-      lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - - l1 l2
       if {$l2 ne ""} {
         set pos0 [$wtxt index "$l2.0 +1 line linestart"]
         if {[string index $tex end] ne "\n"} {append tex \n}
@@ -134,17 +181,13 @@ proc unit::InsertTemplate {tpldata} {
     set pos0 [$wtxt index "insert +1 line linestart"]
     if {[string index $tex end] ne "\n"} {append tex \n}
   }
-  set p2 [string range $pos [string first . $pos] end]
-  set pos "[expr {int($pos)-1}]$p2"
+  set pos "[expr {int($pos)-1}]$col0"
   set pos [alited::p+ $pos0 $pos]
   $wtxt insert $pos0 $tex
   ::tk::TextSetCursor $wtxt $pos
 }
 
 proc unit::Add {} {
-  if {![info exists ::alited::unit_tpl::win]} {
-    source [file join $alited::SRCDIR unit_tpl.tcl]
-  }
   set res [::alited::unit_tpl::_run]
   if {$res ne ""} {
     InsertTemplate $res
@@ -347,6 +390,93 @@ proc unit::SelectByHeader {header line} {
   }
 }
 
+proc unit::ToolButName {img} {
+  namespace upvar ::alited obPav obPav
+  return [$obPav ToolTop].buT_alimg_$img-big
+}
+
+proc unit::SelectedLines {} {
+  set wtxt [alited::main::CurrentWTXT]
+  lassign [$wtxt tag ranges sel] l1 l2
+  if {$l1 eq ""} {
+    set l1 [set l2 [$wtxt index insert]]
+  }
+  set l1 [expr {int($l1)}]
+  set l2 [expr {int($l2)}]
+  if {[string trim [$wtxt get $l2.0 $l2.end]] eq ""} {incr l2 -1}
+  return [list $wtxt $l1 $l2]
+}
+
+proc unit::Indent {} {
+  lassign [SelectedLines] wtxt l1 l2
+  for {set l $l1} {$l<=$l2} {incr l} {
+    $wtxt insert $l.0 $::apave::_AP_VARS(INDENT)
+  }
+}
+
+proc unit::UnIndent {} {
+  lassign [SelectedLines] wtxt l1 l2
+  set len [string length $::apave::_AP_VARS(INDENT)]
+  for {set l $l1} {$l<=$l2} {incr l} {
+    set line [$wtxt get $l.0 $l.end]
+    if {[string first $::apave::_AP_VARS(INDENT) $line]==0} {
+      $wtxt delete $l.0 "$l.0 + ${len}c"
+    }
+  }
+}
+
+proc unit::Comment {} {
+  lassign [SelectedLines] wtxt l1 l2
+  for {set l $l1} {$l<=$l2} {incr l} {
+    $wtxt insert $l.0 #
+  }
+}
+
+proc unit::UnComment {} {
+  namespace upvar ::alited obPav obPav
+  lassign [SelectedLines] wtxt l1 l2
+  for {set l $l1} {$l<=$l2} {incr l} {
+    set line [$wtxt get $l.0 $l.end]
+    set isp [$obPav leadingSpaces $line]
+    if {[string index $line $isp] eq "#"} {
+      $wtxt delete $l.$isp "$l.$isp + 1c"
+    }
+  }
+}
+
+proc unit::CheckUndoRedoIcons {wtxt TID} {
+  set oldundo [alited::bar::BAR $TID cget --undo]
+  set oldredo [alited::bar::BAR $TID cget --undo]
+  set newundo [$wtxt edit canundo]
+  set newredo [$wtxt edit canredo]
+  if {$oldundo ne $newundo} {
+    if {$newundo} {set stat normal} {set stat disabled}
+    [ToolButName undo] configure -state $stat
+  }
+  if {$oldredo ne $newredo} {
+    if {$newredo} {set stat normal} {set stat disabled}
+    [ToolButName redo] configure -state $stat
+  }
+}
+
+proc unit::CheckSaveIcons {modif} {
+  namespace upvar ::alited al al
+  set marked [alited::bar::BAR listFlag "m"]
+  set b_save [ToolButName SaveFile]
+  set b_saveall [ToolButName saveall]
+  if {![llength $marked]} {
+    foreach but {SaveFile saveall} {
+      [ToolButName $but] configure -state disabled
+    }
+  } else {
+    if {$modif} {set stat normal} {set stat disabled}
+    $b_save configure -state $stat
+    $b_saveall configure -state normal
+  }
+  $al(MENUFILE) entryconfigure 3 -state [$b_save cget -state]
+  $al(MENUFILE) entryconfigure 5 -state [$b_saveall cget -state]
+}
+
 proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
 
   namespace upvar ::alited al al
@@ -359,7 +489,9 @@ proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
       } else {
         alited::bar::BAR unmarkTab $TID
       }
+      CheckSaveIcons $new
     }
+    CheckUndoRedoIcons $wtxt $TID
     if {$al(TREE,isunits) && (![info exists al(RECREATE)] || $al(RECREATE))} {
       if {$l1<$l2 || $al(LEAF) && [regexp $al(RE,leaf2) $args] || \
       !$al(LEAF) && [regexp $al(RE,proc2) $args]} {

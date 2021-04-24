@@ -9,10 +9,9 @@ namespace eval favor {
   variable initialFavs [list]
 }
 
-proc favor::IsSelected {wtreeN IDN nameN fnameN snameN headerN lineN} {
+proc favor::IsSelected {IDN nameN fnameN snameN headerN lineN} {
   namespace upvar ::alited al al obPav obPav
-  upvar 1 $wtreeN wtree $IDN ID $nameN name $fnameN fname $snameN sname
-  upvar 1 $headerN header $lineN line
+  upvar 1 $IDN ID $nameN name $fnameN fname $snameN sname $headerN header $lineN line
   if {[set ID [alited::tree::CurrentItem TreeFavor]] eq ""} {return no}
   set wtree [$obPav TreeFavor]
   lassign [$wtree item $ID -values] name fname header line
@@ -67,6 +66,26 @@ proc favor::SetFavorites {cont} {
   }
 }
 
+proc favor::Visited {} {
+  namespace upvar ::alited al al obPav obPav
+  set al(FAV,IsFavor) [expr {!$al(FAV,IsFavor)}]
+  if {$al(FAV,IsFavor)} {
+    [$obPav BuTVisitF] configure -image alimg_misc
+    set tip $alited::al(MC,FavVisit)
+    set state normal
+    SetFavorites $al(FAV,current)
+  } else {
+    [$obPav BuTVisitF] configure -image alimg_heart
+    set tip $al(MC,favorites)
+    set state disable
+    SetFavorites $al(FAV,visited)
+  }
+  foreach but {BuTListF BuTAddF BuTDelF} {
+    [$obPav $but] configure -state $state
+  }
+  baltip::tip [$obPav BuTVisitF] $tip
+}
+
 proc favor::Lists {} {
   variable initialFavs
   if {![llength $initialFavs]} {
@@ -88,7 +107,7 @@ proc favor::Add {{undermouse yes}} {
     bell
     return
   }
-  if {$undermouse} {set geo "-geometry pointer+10+10"} {set geo ""}
+  if {$undermouse} {set geo "-geometry pointer+10+-100"} {set geo ""}
   set fname [alited::bar::FileName]
   set sname [file tail $fname]
   foreach it [alited::tree::GetTree {} TreeFavor] {
@@ -107,16 +126,16 @@ proc favor::Add {{undermouse yes}} {
     set line [expr {($l1 eq "" || $l2 eq "" || $l1>$pos || $l2<$pos) ? 0 : \
       [alited::p+ $pos -$l1]}]
     set wt2 [$obPav TreeFavor]
-    set ID2 [$wt2 insert {} end -values [list $name $fname $header $line]]
+    set ID2 [$wt2 insert {} 0 -values [list $name $fname $header $line]]
     $wt2 tag add tagNorm $ID2
   }
 }
 
 proc favor::Delete {{undermouse yes}} {
   namespace upvar ::alited al al
-  if {![IsSelected wtree favID name fname sname header line]} return
+  if {![IsSelected favID name fname sname header line]} return
   set msg [string map [list %n $name %f $sname] $al(MC,delfavor)]
-  if {$undermouse} {set geo "-geometry pointer+10+10"} {set geo ""}
+  if {$undermouse} {set geo "-geometry pointer+10+-100"} {set geo ""}
   if {[alited::msg yesno warn $msg NO -title $al(MC,warning) {*}$geo]} {
     $wtree delete $favID
   }
@@ -128,7 +147,7 @@ proc favor::Select {{favID ""}} {
   if {$favID ne ""} {
     lassign [$wtree item $favID -values] name fname header line
     set sname [file tail $fname]
-  } elseif {![IsSelected wtree favID name fname sname header line]} {
+  } elseif {![IsSelected favID name fname sname header line]} {
     return
   }
   if {[set TID [alited::file::OpenFile $fname]] eq ""} return
@@ -138,7 +157,7 @@ proc favor::Select {{favID ""}} {
   $wtree tag add tagNorm $favID
   $wtree tag add tagBold $favID
   alited::unit::SelectByHeader $header $line
-  after idle "alited::favor::ShowSelection $wtree $favID"
+  alited::favor::ShowSelection $wtree $favID
 }
 
 proc favor::ShowSelection {wtree favID} {
@@ -208,19 +227,19 @@ proc favor::TooltipOff {} {
 }
 
 proc favor::Tooltip {x y X Y} {
-  namespace upvar ::alited al al obPav obPav
-  variable tipID
-  set wtree [$obPav TreeFavor]
-  set ID [$wtree identify item $x $y]
-  if {![$wtree exists $ID]} {
-    TooltipOff
-  } elseif {$tipID ne $ID} {
-    set decl [lindex [$wtree item $ID -values] 2]
-    set fname [lindex [$wtree item $ID -values] 1]
-    append tip $decl \n $fname
-    ::baltip tip $al(WIN) $tip -geometry +$X+$Y -per10 4000 -pause 5 -fade 5
-  }
-  set tipID $ID
+#  namespace upvar ::alited al al obPav obPav
+#  variable tipID
+#  set wtree [$obPav TreeFavor]
+#  set ID [$wtree identify item $x $y]
+#  if {![$wtree exists $ID]} {
+#    TooltipOff
+#  } elseif {$tipID ne $ID} {
+#    set decl [lindex [$wtree item $ID -values] 2]
+#    set fname [lindex [$wtree item $ID -values] 1]
+#   append tip $decl \n $fname
+#    ::baltip tip $al(WIN) $tip -geometry +$X+$Y -per10 4000 -pause 5 -fade 5
+#  }
+#  set tipID $ID
 }
 
 proc favor::_init {} {
@@ -228,7 +247,7 @@ proc favor::_init {} {
   set wtree [$obPav TreeFavor]
   alited::tree::AddTags $wtree
   $wtree tag bind tagNorm <Return> {::alited::favor::Select}
-  $wtree tag bind tagNorm <Double-Button-1> {::alited::favor::Select}
+  $wtree tag bind tagNorm <ButtonRelease-1> {::alited::favor::Select}
   $wtree tag bind tagNorm <ButtonPress-3> {after idle {alited::favor::PopupMenu %x %y %X %Y}}
   $wtree tag bind tagNorm <Motion> {after idle {alited::favor::Tooltip %x %y %X %Y}}
   bind $wtree <Leave> {alited::favor::TooltipOff}

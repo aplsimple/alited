@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.1.2.5
+package provide alited 0.2
 
 package require Tk
 
@@ -19,11 +19,7 @@ namespace eval alited {
   # directories of sources
   variable SRCDIR [file join $DIR src]
 
-  #variable LIBDIR [file join $DIR lib]
-
-# TODO: to delete
-variable LIBDIR [file normalize [file join $DIR ..]]
-puts "LIBDIR=$LIBDIR"
+  variable LIBDIR [file join $DIR lib]
 
   # directories of required packages
   variable PAVEDIR [file join $LIBDIR pave]
@@ -31,6 +27,8 @@ puts "LIBDIR=$LIBDIR"
   variable HLDIR   [file join $LIBDIR hl_tcl]
   variable BALTDIR [file join $LIBDIR baltip]
   lappend ::auto_path $PAVEDIR $BARSDIR $HLDIR $BALTDIR
+
+  set ::e_menu_dir [file join $LIBDIR e_menu]
 
   # directories of key data
   variable DATADIR [file join $DIR data]
@@ -42,6 +40,8 @@ puts "LIBDIR=$LIBDIR"
   if {[file exists {~/.config}]} {
     set USERDIR [file normalize {~/.config/alited/data}]
   }
+  if {$::argc} {set USERDIR [lindex $argv 0]}
+
   variable INIDIR [file join $USERDIR ini]
   variable PRJDIR [file join $USERDIR prj]
   variable BAKDIR [file join $DIR .bak]
@@ -55,6 +55,7 @@ puts "LIBDIR=$LIBDIR"
   variable obDlg ::alited::aliteddlg
   variable obDl2 ::alited::aliteddl2
   variable obFND ::alited::alitedFND
+  variable obEM  ::alited::alitedEM
 
   # misc. consts
   variable EOL {@~}  ;# "end of line" for ini-files
@@ -125,23 +126,35 @@ namespace eval alited {
     variable obPav
     if {[alited::file::AllSaved]} {
       $obPav res $al(WIN) 0
-      alited::find::Close
+      alited::find::_close
+      alited::tool::_close
     }
   }
 
-  proc Message {msg {first 1} {lab ""}} {
+  proc FgFgBold {} {
+    variable obPav
+    lassign [$obPav csGet] - fg - - - - - - - fgbold
+    return [list $fg $fgbold]
+  }
+
+  proc Message {msg {mode 1} {lab ""} {first yes}} {
     variable al
     variable obPav
+    lassign [FgFgBold] fg fgbold
     if {$lab eq ""} {set lab [$obPav Labstat3]}
-    if {[catch {$lab configure -text $msg}]} return
+    set font [[$obPav Labstat2] cget -font]
+    set fontB "$font -weight bold"
     set slen [string length $msg]
-    if {$first} {
-      lassign [$obPav csGet] - fg - - - - - - - fgbold
-      if {$first eq "2"} {
-        bell
-        set fg $fgbold
+    if {[catch {$lab configure -text $msg}] || !$slen} return
+    $lab configure -font $font -foreground $fg
+    if {$mode in {"2" "3" "4"}} {
+      $lab configure -font $fontB
+      if {$mode in {"3" "4"}} {
+        $lab configure -foreground $fgbold
+        if {$mode eq "4" && $first} bell
       }
-      $lab configure -foreground $fg
+    }
+    if {$first} {
       set msec [expr {200*$slen}]
     } else {
       set msg [string range $msg 0 end-1]
@@ -149,7 +162,7 @@ namespace eval alited {
     }
     catch {after cancel $al(afterID)}
     if {$msec>0} {
-      set al(afterID) [after $msec "::alited::Message {$msg} 0 $lab"]
+      set al(afterID) [after $msec [list ::alited::Message $msg $mode $lab no]]
     }
   }
 
@@ -166,12 +179,15 @@ namespace eval alited {
     source [file join $SRCDIR bar.tcl]
     source [file join $SRCDIR file.tcl]
     source [file join $SRCDIR unit.tcl]
+    source [file join $SRCDIR unit_tpl.tcl]
     source [file join $SRCDIR tree.tcl]
     source [file join $SRCDIR favor.tcl]
     source [file join $SRCDIR favor_ls.tcl]
     source [file join $SRCDIR find.tcl]
     source [file join $SRCDIR keys.tcl]
     source [file join $SRCDIR info.tcl]
+    source [file join $SRCDIR tool.tcl]
+    source [file join $SRCDIR menu.tcl]
   }
   if {[package versions alited] eq ""} {
     alited::ini::_init     ;# initialize GUI & data
@@ -185,3 +201,4 @@ namespace eval alited {
     exit
   }
 # _________________________________ EOF _________________________________ #
+#RUNF1: alited.tcl

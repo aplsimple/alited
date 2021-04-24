@@ -23,14 +23,14 @@ proc tree::SwitchTree {} {
 proc tree::AddTags {wtree} {
   namespace upvar ::alited al al
   lassign [::hl_tcl::hl_colors "" [::apave::obj csDarkEdit]] - fgred fgbr
-  set fontN "-font AlSmallFont"
+  set fontN "-font $alited::al(FONT,defsmall)"
   append fontB $fontN " -foreground $fgred"
   $wtree tag configure tagNorm {*}$fontN
   $wtree tag configure tagBold {*}$fontB
   $wtree tag configure tagBranch -foreground $fgbr
 }
 
-proc tree::Create {{pos ""}} {
+proc tree::Create {} {
 
   namespace upvar ::alited al al obPav obPav
   if {$al(TREE,isunits) && $al(TREE,units) \
@@ -43,7 +43,7 @@ proc tree::Create {{pos ""}} {
   $wtree tag bind tagNorm <ButtonPress> {after idle {alited::tree::PopupMenu %b %x %y %X %Y}}
   bind $wtree <Leave> {alited::tree::TooltipOff}
   if {$al(TREE,isunits)} {
-    CreateUnitsTree $TID $wtree $pos
+    CreateUnitsTree $TID $wtree
   } else {
     CreateFilesTree $wtree
   }
@@ -87,6 +87,8 @@ proc tree::CreateFilesTree {wtree} {
     $wtree tag add tagNorm $itemID
     if {!$isfile} {
       $wtree tag add tagBranch $itemID
+    } elseif {[alited::bar::FileTID $fname] ne ""} {
+      $wtree tag add tagBold $itemID
     }
   }
   if {$selID ne ""} {
@@ -95,7 +97,7 @@ proc tree::CreateFilesTree {wtree} {
   }
 }
 
-proc tree::CreateUnitsTree {TID wtree pos} {
+proc tree::CreateUnitsTree {TID wtree} {
   namespace upvar ::alited al al obPav obPav
   set al(TREE,units) yes
   [$obPav BuTswitch] configure -image alimg_folder
@@ -136,7 +138,6 @@ proc tree::CreateUnitsTree {TID wtree pos} {
     }
     set levprev $lev
   }
-  alited::main::FocusText $TID $pos
 }
 
 proc tree::NewItemID {iit} {

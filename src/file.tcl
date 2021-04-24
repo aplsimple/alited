@@ -6,68 +6,6 @@
 
 namespace eval file {}
 
-proc file::FillMenu {} {
-  # Populates alited's main menu.
-
-  namespace upvar ::alited al al
-  set m [set al(MENUFILE) $al(WIN).menu.file]
-  $m add command -label "New" -command {alited::file::NewFile} -accelerator Ctrl+N
-  $m add command -label "Open..." -command {alited::file::OpenFile} -accelerator Ctrl+O
-  $m add separator
-  $m add command -label "Save" -command {alited::file::SaveFile} -accelerator F2
-  $m add command -label "Save As..." -command {alited::file::SaveFileAs} -accelerator Ctrl+S
-  $m add command -label "Save All" -command {alited::file::SaveAll} -accelerator Shift+Ctrl+S
-  $m add separator
-  $m add command -label "Close" -command {alited::file::CloseFileMenu}
-  $m add command -label "Close All" -command {alited::file::CloseAll 1}
-  $m add command -label "Close All at Left" -command {alited::file::CloseAll 2}
-  $m add command -label "Close All at Right" -command {alited::file::CloseAll 3}
-  $m add separator
-  $m add command -label "Restart" -command {set alited::al(RESTART) yes; alited::Exit}
-  $m add separator
-  $m add command -label "Quit" -command {alited::Exit}
-  set m [set al(MENUEDIT) $al(WIN).menu.edit]
-  $m add command -label "Cut" -command {alited::msg ok ques "This is just a demo: no action."}
-  $m add command -label "Copy" -command {alited::msg ok warn "This is just a demo: no action."}
-  $m add command -label "Paste" -command {alited::msg ok err "This is just a demo: no action."}
-  $m add separator
-  $m add command -label "Find..." -command {::t::findTclFirst yes}
-  $m add command -label "Find Next" -command {::t::findTclNext yes}
-  $m add separator
-  $m add command -label "Reload the bar of tabs" -command {::t::RefillBar}
-  set m [set al(MENUHELP) $al(WIN).menu.help]
-  $m add command -label "About" -command alited::HelpAbout
-}
-
-proc file::CheckMenuItems {} {
-  # Disables/enables "File/Close All..." menu items.
-
-  namespace upvar ::alited al al
-  set TID [alited::bar::CurrentTabID]
-  foreach idx {8 9 10} {
-    set dsbl [alited::bar::BAR checkDisabledMenu $al(BID) $TID [incr item]]
-    if {$dsbl} {
-      set state "-state disabled"
-    } else {
-      set state "-state normal"
-    }
-    $al(MENUFILE) entryconfigure $idx {*}$state
-  }
-}
-
-proc file::SearchFileTID {fname} {
-
-  set TID ""
-  foreach tab [alited::bar::BAR listTab] {
-    set TID2 [lindex $tab 0]
-    if {$fname eq [alited::bar::FileName $TID2]} {
-      set TID $TID2
-      break
-    }
-  }
-  return $TID
-}
-
 proc file::IsModified {{TID ""}} {
   if {$TID eq ""} {set TID [alited::bar::CurrentTabID]}
   return [expr {[lsearch -index 0 [alited::bar::BAR listFlag "m"] $TID]>-1}]
@@ -83,6 +21,27 @@ proc file::IsSaved {TID} {
     return $ans
   }
   return 2  ;# as if "No" chosen
+}
+
+proc file::OutwardChange {TID {docheck yes}} {
+  namespace upvar ::alited al al
+  set fname [alited::bar::FileName $TID]
+  set mtime [alited::bar::BAR $TID cget --mtime]
+  if {[file exists $fname]} {
+    set curtime [file mtime $fname]
+  } elseif {$fname ne $al(MC,nofile)} {
+    set curtime "?"
+  } else {
+    set curtime ""
+  }
+  if {$docheck && $mtime ne "" && $curtime ne $mtime} {
+    set msg [string map [list %f [file tail $fname]] $al(MC,modiffile)]
+    if {[alited::msg yesno warn $msg YES -title $al(MC,saving)]} {
+      alited::bar::BAR $TID configure --reload "yes"
+      OpenFile $fname yes
+    }
+  }
+  alited::bar::BAR $TID configure --mtime $curtime
 }
 
 proc file::ReadFile {TID curfile} {
@@ -102,13 +61,13 @@ proc file::DisplayFile {TID curfile wtxt} {
 proc file::NewFile {} {
 
   namespace upvar ::alited al al
-  if {[set TID [SearchFileTID $al(MC,nofile)]] eq ""} {
+  if {[set TID [alited::bar::FileTID $al(MC,nofile)]] eq ""} {
     set TID [alited::bar::InsertTab $al(MC,nofile) $al(MC,nofile)]
   }
   alited::bar::BAR $TID show
 }
 
-proc file::OpenFile {{fname ""}} {
+proc file::OpenFile {{fname ""} {reload no}} {
 
   namespace upvar ::alited al al
   set al(filename) ""
@@ -117,9 +76,18 @@ proc file::OpenFile {{fname ""}} {
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
   }
   if {[file exists $fname]} {
-    if {[set TID [SearchFileTID $fname]] eq ""} {
+    set exts "tcl / c / html / md / txt"
+    set ext [string tolower [string trim [file extension $fname] "."]]
+    if {!$reload && $ext ni [split [string map {" " ""} $exts] "/"]} {
+      set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
+      if {![alited::msg yesno warn $msg NO -title $al(MC,warning)]} {
+        return ""
+      }
+    }
+    if {[set TID [alited::bar::FileTID $fname]] eq ""} {
       set tab [alited::bar::UniqueListTab $fname]
       set TID [alited::bar::InsertTab $tab $fname]
+    } elseif {$reload} {
     }
     alited::bar::BAR $TID show
     return $TID
@@ -132,12 +100,13 @@ proc file::SaveFileByName {TID fname} {
   set wtxt [alited::bar::GetTabState $TID --wtxt]
   set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
   if {![::apave::writeTextFile $fname fcont]} {
-    alited::msg ok err [::apave::error $fname] -w 50 -text 1 -title "Error"
+    alited::msg ok err [::apave::error $fname] -w 50 -text 1 -title $alited::al(MC,error)
     return 0
   }
   $wtxt edit modified no
   alited::unit::Modified $TID $wtxt
-  alited::main::HighlightText $fname $wtxt
+  alited::main::HighlightText $TID $fname $wtxt
+  OutwardChange $TID no
   return 1
 }
 
@@ -322,16 +291,15 @@ proc file::RemoveFile {fname dname} {
   if {[file exists $fname2]} {catch {file delete $fname2}}
   if {[catch {file copy $fname $dname} err]} {
     set msg [string map [list %f $ftail %d $dname] $al(MC,errcopy)]
-    alited::msg ok err "$msg\n\n$err" -title $al(MC,error)
-  } else {
-    file mtime $fname2 [file mtime $fname]
-    file delete $fname
-    alited::Message [string map [list %f $ftail %d $dtail] $al(MC,removed)]
-    set TID [alited::bar::CurrentTabID]
-    alited::bar::SetTabState $TID --fname $fname2
-    alited::bar::BAR $TID configure -tip $fname2
-    alited::tree::RecreateTree
+    if {![alited::msg yesno warn "$err\n\n$msg" NO -title $al(MC,warning)]} return
   }
+  catch {file mtime $fname2 [file mtime $fname]}
+  file delete $fname
+  alited::Message [string map [list %f $ftail %d $dtail] $al(MC,removed)]
+  set TID [alited::bar::CurrentTabID]
+  alited::bar::SetTabState $TID --fname $fname2
+  alited::bar::BAR $TID configure -tip $fname2
+  alited::tree::RecreateTree
 }
 
 proc file::DoMoveFile {fname dname f1112} {

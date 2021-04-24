@@ -21,12 +21,13 @@ namespace eval ::alited {
   set al(MC,moveup)      [msgcat::mc "Move Up"]
   set al(MC,movedown)    [msgcat::mc "Move Down"]
   set al(MC,FavLists)    [msgcat::mc "Lists of Favorites"]
+  set al(MC,FavVisit)    [msgcat::mc "Last Visited"]
   set al(MC,swfiles)     [msgcat::mc "Switch to Unit Tree"]
   set al(MC,swunits)     [msgcat::mc "Switch to File Tree"]
   set al(MC,filesadd)    [msgcat::mc "Create File"]
   set al(MC,filesadd2)   [msgcat::mc "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' checkbox.\nThe directory can include subdirectories (a/b/c)."]
   set al(MC,filesdel)    [msgcat::mc "Delete File"]
-  set al(MC,unitsadd)    [msgcat::mc "Add Unit"]
+  set al(MC,unitsadd)    [msgcat::mc "Add Unit by Template"]
   set al(MC,unitsdel)    [msgcat::mc "Remove Unit(s)"]
   set al(MC,favoradd)    [msgcat::mc "Add to Favorites"]
   set al(MC,favordel)    [msgcat::mc "Remove from Favorites"]
@@ -44,6 +45,9 @@ namespace eval ::alited {
   set al(MC,copydecl)    [msgcat::mc "Copy Declaration"]
   set al(MC,delitem)     [msgcat::mc "Remove \"%n\"\nfrom \"%f\"?"]
   set al(MC,delfile)     [msgcat::mc "Delete \"%f\"?"]
+  set al(MC,modiffile)   [msgcat::mc "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?"]
+
+  # messages for templates
   set al(MC,tpl)         [msgcat::mc "Templates"]
   set al(MC,tpl1)        [msgcat::mc "Use buttons on the right to add/change/delete a template."]
   set al(MC,tpl2)        [msgcat::mc "In its text, set the cursor where it should be in the editor."]
@@ -72,6 +76,8 @@ namespace eval ::alited {
   set al(MC,tplttloc3)   [msgcat::mc "Inserts a template at the cursor\n(good for one-liners)"]
   set al(MC,tplttloc4)   [msgcat::mc "Inserts a template after 1st line of a file\n(License, Introduction etc.)"]
   set al(MC,tpldelq)     [msgcat::mc "Delete a template #%n ?"]
+
+  # messages for favorites
   set al(MC,fav1)        [msgcat::mc "Use buttons on the right to add/change/delete a favorites' list."]
   set al(MC,fav2)        [msgcat::mc "Enter a name for current favorites to add a new favorites' list."]
   set al(MC,fav3)        [msgcat::mc "Favorites' lists:"]
@@ -97,10 +103,18 @@ namespace eval ::alited {
   set al(MC,favtip3)     [msgcat::mc "Sets a list of favorites\nactive before these ones."]
   set al(MC,favdelq)     [msgcat::mc "Delete a favorites' list #%n ?"]
   set al(MC,favinit)     [msgcat::mc "Initial"]
-  set al(MC,errcopy)     [msgcat::mc "Can't copy \"%f\" to\n\"%d\""]
-  set al(MC,removed)     [msgcat::mc "\"%f\" removed to \"%d\""]
-  set al(MC,filename)    [msgcat::mc "File name:"]
-  set al(MC,directory)   [msgcat::mc "Directory"]
+
+# icons of toolbar
+  set al(MC,icofile)     [msgcat::mc "Create a new file"]
+  set al(MC,icoOpenFile) [msgcat::mc "Open a file"]
+  set al(MC,icoSaveFile) [msgcat::mc "Save the file"]
+  set al(MC,icosaveall)  [msgcat::mc "Save all files"]
+  set al(MC,icohelp)     [msgcat::mc "Tcl/Tk help on the selection"]
+  set al(MC,icofind)     [msgcat::mc "Find / Replace"]
+  set al(MC,icorun)      [msgcat::mc "Run the file"]
+  set al(MC,icoe_menu)   [msgcat::mc "Run e_menu"]
+  set al(MC,icoundo)   [msgcat::mc "Undo changes"]
+  set al(MC,icoredo)   [msgcat::mc "Redo changes"]
 
 # find-replace dialogue
   set al(MC,frttl)   [msgcat::mc "Find | Replace"]
@@ -124,6 +138,17 @@ namespace eval ::alited {
   set al(MC,frtip2)  [msgcat::mc "Allows to use the regular expressions\nin \"find\" string."]
   set al(MC,frtip3)  [msgcat::mc "Allows replacements by the empty string,\nin fact, to erase the found ones."]
   set al(MC,frtip4)  [msgcat::mc "Keeps the dialogue above other windows."]
+  set al(MC,frres1)  [msgcat::mc "Found %n matches for \"%s\"."]
+  set al(MC,frres2)  [msgcat::mc "Made %n replacements of \"%s\" with \"%r\"."]
+  set al(MC,frdoit1) [msgcat::mc "Replace all of \"%s\" with \"%r\"\nin \"%f\"?"]
+  set al(MC,frdoit2) [msgcat::mc "Replace all of \"%s\" with \"%r\"\nin all texts?"]
+
+  set al(MC,errcopy)     [msgcat::mc "Can't backup \"%f\" to\n\"%d\"!\n\nDelete it anyway?"]
+  set al(MC,removed)     [msgcat::mc "\"%f\" removed to \"%d\""]
+  set al(MC,filename)    [msgcat::mc "File name:"]
+  set al(MC,directory)   [msgcat::mc "Directory"]
+  set al(MC,nottoopen)   [msgcat::mc "The file\n\"%f\"\nseems to be not %s.\n\nStill do you want to open it?"]
+
 }
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl

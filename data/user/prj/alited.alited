@@ -1,0 +1,28 @@
+[Tabs]
+tab=/home/apl/PG/github/alited/src/tool.tcl	65.0
+tab=/home/apl/PG/github/alited/src/alited.tcl	165.78
+tab=/home/apl/PG/github/alited/src/img.tcl	53.28
+tab=/home/apl/PG/github/alited/lib/e_menu/e_menu.tcl	1.0
+tab=/home/apl/PG/github/alited/src/about.tcl	55.12
+tab=/home/apl/PG/github/alited/src/main.tcl	328.0
+tab=/home/apl/PG/github/alited/lib/hl_tcl/hl_tcl.tcl	373.77
+tab=/home/apl/PG/github/alited/lib/pave/apavedialog.tcl	1.0
+tab=/home/apl/PG/github/alited/src/msgs.tcl	100.50
+tab=/home/apl/PG/github/alited/lib/pave/apave.tcl	2458.53
+tab=/home/apl/PG/github/alited/src/ini.tcl	67.0
+tab=/home/apl/PG/github/alited/src/keys.tcl	154.77
+tab=/home/apl/PG/github/alited/src/tree.tcl	1.0
+tab=/home/apl/PG/github/alited/src/unit_tpl.tcl	354.49
+tab=/home/apl/PG/github/alited/src/unit.tcl	124.8
+
+[Options]
+curtab=10
+prjroot=/home/apl/PG/github/alited
+
+[Favorites]
+current=1 0 I001 {} {main::ShowText /home/apl/PG/github/alited/src/main.tcl {proc main::ShowText {}} 0.0}
+current=1 0 I002 {} {tool::e_menu /home/apl/PG/github/alited/src/tool.tcl {proc tool::e_menu {args}} 0.0}
+saved=find&bar@~1@~1 0 I001 {} {find::SearchUnit /home/apl/PG/github/alited/find.tcl {proc find::SearchUnit {wtxt}} 9.44}@~1 0 I002 {} {bar::FillBar /home/apl/PG/github/alited/src/bar.tcl {proc bar::FillBar {wframe}} 15.9}
+
+[Misc]
+datafind=en1 {} v2 2 vals2 {win obj {Exact matching string} {Global subject} {Boss Regularity}} c5 0 c1 0 en2 {} c2 1 c3 1 v1 1 vals1 {{expr {int($pos)-1}} InsertTemplate ::alited::Message errcopy yesno MC,warn showModal al(WIN) obPav TemplateData %a INIDIR unit_tpl::_run BuTAddT unitsadd FillM} c4 0

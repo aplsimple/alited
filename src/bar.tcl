@@ -10,16 +10,15 @@ proc bar::FillBar {wframe} {
   namespace upvar ::alited al al obPav obPav
   set wbase [$obPav LbxInfo]
   set bar1Opts [list -wbar $wframe -wbase $wbase -lablen 16 -pady 2 \
-    -menu "" \
+    -menu "" -separator 0 -font apaveFontDefTypedsmall\
     -csel2 {alited::bar::OnTabSelection %t} \
     -cdel {alited::file::CloseFile %t} \
     -cmov2 alited::bar::OnTabMove]
-  set tabs [set files [set posis [set posis2 [list]]]]
+  set tabs [set files [set posis [list]]]
   foreach tab $al(tabs) {
-    lassign [split $tab \t] tab pos pos_S2
+    lassign [split $tab \t] tab pos
     lappend files $tab
     lappend posis $pos
-    lappend posis2 $pos_S2
     set tab [UniqueTab $tabs [file tail $tab]]
     lappend tabs $tab
     lappend bar1Opts -tab $tab
@@ -28,9 +27,9 @@ proc bar::FillBar {wframe} {
   ::bartabs::Bars create al(bts)   ;# al(bts) is Bars object
   set al(BID) [al(bts) create al(bt) $bar1Opts $curname]
   set tabs [BAR listTab]
-  foreach tab $tabs fname $files pos $posis pos_S2 $posis2 {
+  foreach tab $tabs fname $files pos $posis {
     set tid [lindex $tab 0]
-    SetTabState $tid --fname $fname --pos $pos --pos_S2 $pos_S2
+    SetTabState $tid --fname $fname --pos $pos
     BAR $tid configure -tip $fname
   }
   set curname [lindex $files $al(curtab)]
@@ -109,6 +108,19 @@ proc bar::FileName {{TID ""}} {
   return [BAR $TID cget -tip]
 }
 
+proc bar::FileTID {fname} {
+
+  set TID ""
+  foreach tab [BAR listTab] {
+    set TID2 [lindex $tab 0]
+    if {$fname eq [FileName $TID2]} {
+      set TID $TID2
+      break
+    }
+  }
+  return $TID
+}
+
 proc bar::ColorBar {} {
   namespace upvar ::alited obPav obPav
   set cs [$obPav csCurrent]
@@ -127,7 +139,10 @@ proc bar::OnTabSelection {TID} {
 
   namespace upvar ::alited al al
   alited::main::ShowText
+  alited::find::ClearTags
   alited::ini::SaveCurrentIni $al(INI,save_onselect)
+  alited::unit::CheckSaveIcons [alited::file::IsModified $TID]
+  alited::unit::CheckUndoRedoIcons [alited::main::CurrentWTXT] $TID
 }
 
 proc bar::InsertTab {tab tip} {

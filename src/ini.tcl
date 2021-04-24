@@ -18,8 +18,8 @@ namespace eval ::alited {
   set al(TREE,cw1) 70
   set al(FONTSIZE,std) 11
   set al(FONTSIZE,txt) 12
-  set al(FONTSIZE,small) 9
-  set al(INI,CS) 25
+  set al(FONTSIZE,small) 10
+  set al(INI,CS) 19
   set al(INI,HUE) 0
   set al(INI,ICONS) "middle icons"
   set al(INI,save_onselect) no
@@ -34,8 +34,29 @@ namespace eval ::alited {
   set al(RE,proc2) {^\s*(proc|method|constructor|destructor)\s+} ;# proc abc {}...
   set al(RESTART) no
   set al(FAV,current) [list]
+  set al(FAV,visited) [list]
+  set al(FAV,IsFavor) yes
   set al(TPL,list) [list]
+  set al(TPL,%d) "%D"
+  set al(TPL,%t) "%T"
+  set al(TPL,%u) "aplsimple"
+  set al(TPL,%U) "Alex Plotnikov"
+  set al(TPL,%m) "aplsimple@gmail.com"
+  set al(TPL,%w) "https://aplsimple.github.io"
+  set al(TPL,%a) "  #   %a - \\n"
   set al(KEYS,bind) [list]
+  set al(MISC,smallfont) -1
+  set al(MISC,maxsaved) 16
+  set al(EM,geometry) "240x1+10+10"
+  set al(EM,save) yes
+  set al(EM,saveall) no
+  set al(EM,PD=) "~/PG/e_menu_PD.txt"
+  set al(EM,h=) "~/DOC/www.tcl.tk/man/tcl8.6"
+  set al(EM,tt=) "xterm -fs 12 -geometry 90x30+1+1"
+  set al(EM,menu) "menu.mnu"
+  set al(EM,menudir) "$::e_menu_dir/menus"
+  set al(EM,cs) 33
+  set al(EM,exec) no
 }
 
 namespace eval ini {
@@ -50,12 +71,13 @@ proc ini::ReadIni {} {
   lassign "" ::alited::Pan_wh ::alited::PanL_wh ::alited::PanR_wh \
     ::alited::PanBM_wh ::alited::PanTop_wh ::alited::al(GEOM)
   catch {
+    puts "alited: reading $al(INI)"
     set chan [open $::alited::al(INI)]
     set mode ""
     while {![eof $chan]} {
       set stini [string trim [gets $chan]]
       switch -exact $stini {
-        {[Geometry]} - {[Options]} - {[Templates]} - {[Keys]} {
+        {[Geometry]} - {[Options]} - {[Templates]} - {[Keys]} - {[EM]} - {[Misc]} {
           set mode $stini
           continue
         }
@@ -68,6 +90,8 @@ proc ini::ReadIni {} {
         {[Options]}   {ReadIniOptions $nam $val}
         {[Templates]} {ReadIniTemplates $nam $val}
         {[Keys]}      {ReadIniKeys $nam $val}
+        {[EM]}        {ReadIniEM $nam $val}
+        {[Misc]}      {ReadIniMisc $nam $val}
       }
     }
   }
@@ -94,13 +118,6 @@ proc ini::ReadIniGeometry {nam val} {
     minsizefind {
       set ::alited::find::minsize $val
     }
-    datafind {
-      catch {
-        array set ::alited::find::data $val
-        set ::alited::find::data(en1) ""
-        set ::alited::find::data(en2) ""
-      }
-    }
   }
 }
 
@@ -108,9 +125,13 @@ proc ini::ReadIniOptions {nam val} {
   # Gets other options of alited.
   namespace upvar ::alited al al
   switch -exact $nam {
-    project {set al(prjfile) $val}
+    project {
+      set al(prjfile) $val
+      set al(prjname) [file tail [file rootname $val]]
+    }
     treecw0 {set al(TREE,cw0) $val}
     treecw1 {set al(TREE,cw1) $val}
+    cs      {set al(INI,CS) $val}
   }
 }
 
@@ -120,13 +141,45 @@ proc ini::ReadIniTemplates {nam val} {
   switch -exact $nam {
     tpl {lappend al(TPL,list) $val}
   }
+  foreach n {%d %t %u %U %m %w %a} {
+    if {$n eq $nam} {
+      if {$val ne ""} {set al(TPL,$n) $val}
+      break
+    }
+  }
 }
 
 proc ini::ReadIniKeys {nam val} {
-  # Gets other options of alited.
+  # Gets keys options of alited.
   namespace upvar ::alited al al
   switch -exact $nam {
     key {lappend al(KEYS,bind) $val}
+  }
+}
+
+proc ini::ReadIniEM {nam val} {
+  # Gets e_menu options of alited.
+  namespace upvar ::alited al al
+  switch -exact $nam {
+    emgeometry {set al(EM,geometry) $val}
+    emsave     {set al(EM,save) $val}
+    emsaveall  {set al(EM,saveall) $val}
+    emPD       {set al(EM,PD=) $val}
+    emh        {set al(EM,h=) $val}
+    emtt       {set al(EM,tt=) $val}
+    emmenu     {set al(EM,menu) $val}
+    emmenudir  {set al(EM,menudir) $val}
+    emcs       {set al(EM,cs) $val}
+    emexec     {set al(EM,exec) $val}
+  }
+}
+
+proc ini::ReadIniMisc {nam val} {
+  # Gets miscellaneous options of alited.
+  namespace upvar ::alited al al
+  switch -exact $nam {
+    smallfont  {set al(MISC,smallfont) $val}
+    maxsaved   {set al(MISC,maxsaved) $val}
   }
 }
 
@@ -144,7 +197,7 @@ proc ini::ReadIniPrj {} {
     while {![eof $chan]} {
       set stini [string trim [gets $chan]]
       switch -exact $stini {
-        {[Tabs]} - {[Options]} - {[Favorites]} {
+        {[Tabs]} - {[Options]} - {[Favorites]} - {[Misc]} {
           set mode $stini
           continue
         }
@@ -156,6 +209,7 @@ proc ini::ReadIniPrj {} {
         {[Tabs]} {ReadPrjTabs $nam $val}
         {[Options]} {ReadPrjOptions $nam $val}
         {[Favorites]} {ReadPrjFavorites $nam $val}
+        {[Misc]} {ReadPrjMisc $nam $val}
       }
     }
   }
@@ -193,6 +247,20 @@ proc ini::ReadPrjFavorites {nam val} {
   }
 }
 
+proc ini::ReadPrjMisc {nam val} {
+  # Gets favorites of project.
+  namespace upvar ::alited al al
+  switch -exact $nam {
+    datafind {
+      catch {
+        array set ::alited::find::data $val
+        set ::alited::find::data(en1) ""
+        set ::alited::find::data(en2) ""
+      }
+    }
+  }
+}
+
 # ____________________________ save settings ____________________________ #
 
 proc ini::SaveCurrentIni {{saveon yes} {doit no}} {
@@ -210,6 +278,7 @@ proc ini::SaveCurrentIni {{saveon yes} {doit no}} {
 proc ini::SaveIni {} {
 
   namespace upvar ::alited al al obPav obPav
+  puts "alited: storing $al(INI)"
   set chan [open $::alited::al(INI) w]
   # save the geometry options
   puts $chan {[Geometry]}
@@ -219,23 +288,42 @@ proc ini::SaveIni {} {
   puts $chan GEOM=[wm geometry $::alited::al(WIN)]
   puts $chan geomfind=$::alited::find::geo
   puts $chan minsizefind=$::alited::find::minsize
-  puts $chan datafind=[array get ::alited::find::data]
   # save other options
   puts $chan ""
   puts $chan {[Options]}
   puts $chan "project=$al(prjfile)"
   puts $chan "treecw0=[[$obPav Tree] column #0 -width]"
   puts $chan "treecw1=[[$obPav Tree] column #1 -width]"
+  puts $chan "cs=$al(INI,CS)"
   puts $chan ""
   puts $chan {[Templates]}
   foreach t $al(TPL,list) {
     puts $chan "tpl=$t"
+  }
+  foreach n {%d %t %u %U %m %w %a} {
+    puts $chan "$n=$al(TPL,$n)"
   }
   puts $chan ""
   puts $chan {[Keys]}
   foreach k $al(KEYS,bind) {
     puts $chan "key=$k"
   }
+  puts $chan ""
+  puts $chan {[EM]}
+  puts $chan "emsave=$al(EM,save)"
+  puts $chan "emsaveall=$al(EM,saveall)"
+  puts $chan "emPD=$al(EM,PD=)"
+  puts $chan "emh=$al(EM,h=)"
+  puts $chan "emtt=$al(EM,tt=)"
+  puts $chan "emmenu=$al(EM,menu)"
+  puts $chan "emmenudir=$al(EM,menudir)"
+  puts $chan "emcs=$al(EM,cs)"
+  puts $chan "emgeometry=$al(EM,geometry)"
+  puts $chan "emexec=$al(EM,exec)"
+  puts $chan ""
+  puts $chan {[Misc]}
+  puts $chan "smallfont=$al(FONTSIZE,small)"
+  puts $chan "maxsaved=$al(MISC,maxsaved)"
   close $chan
   SaveIniPrj
 }
@@ -249,15 +337,12 @@ proc ini::SaveIniPrj {} {
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
     set line [alited::bar::FileName $TID]
-    lassign [alited::bar::GetTabState $TID --pos --pos_S2] pos pos_S2
     if {$TID eq $TIDcur} {
-      if {[alited::main::CurrentSUF $TID] eq ""} {
-        set pos [$wtxt index insert]
-      } else {
-        set pos_S2 [$wtxt index insert]
-      }
+      set pos [$wtxt index insert]
+    } else {
+      set pos [alited::bar::GetTabState $TID --pos]
     }
-    append line \t $pos \t $pos_S2
+    append line \t $pos
     puts $chan "tab=$line"
   }
   puts $chan ""
@@ -266,12 +351,16 @@ proc ini::SaveIniPrj {} {
   puts $chan "prjroot=$al(prjroot)"
   puts $chan ""
   puts $chan {[Favorites]}
+  if {!$al(FAV,IsFavor)} {alited::favor::Visited}
   foreach curfav [alited::tree::GetTree {} TreeFavor] {
     puts $chan "current=$curfav"
   }
   foreach savfav [::alited::favor_ls::PutIni] {
     puts $chan "saved=$savfav"
   }
+  puts $chan ""
+  puts $chan {[Misc]}
+  puts $chan "datafind=[array get ::alited::find::data]"
   close $chan
 }
 
@@ -279,7 +368,7 @@ proc ini::SaveIniPrj {} {
 
 proc ini::_init {} {
 
-  namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2 obFND obFND
+  namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2 obFND obFND obEM obEM
 
   set al(INI) [file join [file normalize $::alited::INIDIR] alited.ini]
   ReadIni
@@ -296,31 +385,65 @@ proc ini::_init {} {
   ::apave::APaveInput create $obFND $al(WIN)
   $obPav csSet $al(INI,CS) . -doit
 
+    apave::APaveInput create $obEM .win
+    $obEM makeWindow .win.fra ""
+
   # set options' values
   if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) [expr {$al(INI,HUE)*5}]}
-
-  set imgl [::apave::iconImage]
-  set llen 21
-  for {set i 1} {$i<$llen} {incr i} {
-    set icon [lindex $imgl $i]
-    set img _alited_ICN$i
-    catch {image create photo $img -data [::apave::iconData $icon]}
-    catch {image create photo $img-small -data [::apave::iconData $icon small]}
-    if {$i<11} {
-      append al(tool) " $img {{} -tooltip {Icon$i: $icon@@ -under 4}}"
-    }
-  }
-  foreach {icon} {gulls heart add delete up down plus minus file folder \
-  retry previous next} {
+  foreach {icon} {gulls heart add delete up down plus minus retry misc previous next \
+  folder file OpenFile SaveFile saveall undo redo help find e_menu run} {
     set img alimg_$icon
+    catch {image create photo $img-big -data [::apave::iconData $icon]}
     catch {image create photo $img -data [::apave::iconData $icon small]}
-    catch {image create photo $img-small -data [::apave::iconData $icon small]}
+    if {$icon in {"file" OpenFile SaveFile saveall help find e_menu run undo redo}} {
+      append al(tool) " $img-big \{{} -tooltip {$alited::al(MC,ico$icon)@@ -under 4} "
+      switch $icon {
+        "file" {
+          append al(tool) "-com alited::file::NewFile\}"
+        } 
+        OpenFile {
+          append al(tool) "-com alited::file::OpenFile\} h_ 2 sev 7"
+        } 
+        SaveFile {
+          append al(tool) "-com alited::file::SaveFile -state disabled\}"
+        } 
+        saveall {
+          append al(tool) "-com alited::file::SaveAll -state disabled\} h_ 2 sev 7"
+        }
+        undo {
+          append al(tool) "-com alited::tool::Undo -state disabled\}"
+        } 
+        redo {
+          append al(tool) "-com alited::tool::Redo -state disabled\} h_ 2 sev 7"
+        }
+        help {
+          append al(tool) "-com alited::tool::Help\}"
+        } 
+        find {
+          append al(tool) "-com alited::find::_run\} h_ 2 sev 7"
+        }
+        run {
+          append al(tool) "-com alited::tool::Run\}"
+        } 
+        e_menu {
+          image create photo $img-big -data $alited::img::_AL_IMG(e_menu)
+          append al(tool) "-com alited::tool::e_menu\}"
+        }
+      }
+    }
   }
   for {set i 0} {$i<8} {incr i} {
     image create photo alimg_pro$i -data [set alited::img::_AL_IMG($i)]
   }
   image create photo alimg_tclfile -data [set alited::img::_AL_IMG(Tcl)]
-  font create AlSmallFont {*}[font actual apaveFontDef] -size $alited::al(FONTSIZE,small)
+  # new find/repl. geometry
+  if {$al(MISC,smallfont) ne $al(FONTSIZE,small)} {
+    set ::alited::find::geo [set ::alited::find::minsize ""]
+  }
+  # styles & fonts used in "small" dialogues
+  ::apave::initStylesFS -size $al(FONTSIZE,small)
+  lassign [::apave::obj create_FontsType small -size $al(FONTSIZE,small)] \
+     al(FONT,defsmall) al(FONT,monosmall)
 }
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl

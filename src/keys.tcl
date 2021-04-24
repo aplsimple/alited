@@ -14,17 +14,22 @@ proc keys::ReservedList {} {
     F3 \
     F4 \
     F5 \
+    F11 \
+    F12 \
     Control-A \
     Control-C \
     Control-D \
     Control-F \
+    Control-I \
     Control-M \
     Control-N \
     Control-O \
     Control-R \
     Control-S \
+    Control-U \
     Control-V \
     Control-W \
+    Control-X \
     Control-Y \
     Control-Z \
     Control-Shift-Z \
@@ -42,15 +47,15 @@ proc keys::ReservedList {} {
 
 proc keys::UserList {} {
   set reserved [ReservedList]
-  foreach mod {"" Alt- Control- Shift- Alt-Control- Alt-Shift-} {
-    if {$mod ni {Control- Alt-Control-}} {
+  foreach mod {"" Control- Alt- Shift- Control-Alt-} {
+    if {$mod ni {Control- Control-Alt-}} {
       foreach k {F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12} {
         set key "$mod$k"
         if {$key ni $reserved} {lappend res $key}
       }
     }
     if {$mod ni {"" "Shift-"}} {
-      foreach k {A B C D E F G H I J K L M N O P Q R S T U V W X Y Z} {
+      foreach k {0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z} {
         set key "$mod$k"
         if {$key ni $reserved} {lappend res $key}
       }
@@ -84,8 +89,25 @@ proc keys::EngagedList {{type ""} {mode "keyscont"}} {
   return $res
 }
 
-proc keys::ReservedAdd {} {
+proc keys::ReservedAdd {wtxt} {
+  namespace upvar ::alited obPav obPav
   Add action "find-replace" Control-F {alited::find::_run; break}
+  Add action "new-file"     Control-N {::alited::file::NewFile; break}
+  Add action "open-file"    Control-O {::alited::file::OpenFile; break}
+  Add action "indent"       Control-I {::alited::unit::Indent; break}
+  Add action "unindent"     Control-U {::alited::unit::UnIndent; break}
+  Add action "comment"      Control-bracketleft {::alited::unit::Comment; break}
+  Add action "uncomment"    Control-bracketright {::alited::unit::UnComment; break}
+  Add action "save-as"      Control-S {::alited::file::SaveFileAs; break}
+  Add action "save-all"     Shift-Control-S {::alited::file::SaveAll; break}
+  Add action "save-close"   Control-W {::alited::file::SaveFileAndClose; break}
+  Add action "help"         F1 {alited::tool::Help}
+  Add action "save-file"    F2 {::alited::file::SaveFile}
+  Add action "find-next"    F3 "$obPav findInText 1 $wtxt"
+  Add action "e_menu"       F4 {alited::tool::e_menu}
+  Add action "run"          F5 {alited::tool::Run}
+  Add action "item-up"      F11 {+ ::alited::main::MoveItem up yes}
+  Add action "item-down"    F12 {+ ::alited::main::MoveItem down yes}
 }
 
 proc keys::Add {type name keys cont} {
@@ -125,7 +147,6 @@ proc keys::BindKeys {wtxt type} {
   foreach kb [alited::keys::EngagedList $type all] {
     lassign $kb -> tpl keys tpldata
     if {[catch {
-      set tpldata [string map [list $::alited::EOL \n] $tpldata]
       if {[set i [string last - $keys]]>0} {
         set lt [string range $keys $i+1 end]
         if {[string length $lt]==1} {  ;# for lower case of letters
@@ -134,7 +155,9 @@ proc keys::BindKeys {wtxt type} {
       }
       foreach k $keys {
         if {$type eq "template"} {
-          bind $wtxt "<$k>" [list ::alited::unit::InsertTemplate $tpldata]
+          lassign $tpldata tex pos place
+          set tex [string map [list $::alited::EOL \n % %%] $tex]
+          bind $wtxt "<$k>" [list ::alited::unit::InsertTemplate [list $tex $pos $place]]
         } else {
           bind $wtxt "<$k>" $tpldata
         }
