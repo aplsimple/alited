@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.4.1
+package provide bartabs 1.4.2
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -684,6 +684,22 @@ method Disabled {TID} {
   set dsbltabs [my [my $TID cget -BID] cget -disable]
   return [expr {[lsearch $dsbltabs $TID]>-1}]
 }
+#_____
+
+method Visible {} {
+# Checks if a tab is visible.
+# Returns yes if the tab is visible,.
+
+  lassign [my IDs [my ID]] TID BID
+  lassign [my $BID cget -tleft -tright] tleft tright
+  set tabs [my $BID listTab]
+  for {set i $tleft} {$i<=$tright} {incr i} {
+    if {$TID eq [lindex $tabs $i 0]} {
+      return yes
+    }
+  }
+  return no
+}
 
 # ____________________________ Event handlers ___________________________ #
 
@@ -971,6 +987,16 @@ method show {{anyway yes}} {
     }
     incr itab
   }
+  if {[my $BID cget -lifo]} {
+    if {![my $TID Visible]} {
+      # if the tab is not visible, move it to 0th position and show from there
+      set tabs [my $BID cget -TABS]
+      lassign [my Tab_BID $TID] -> i tab
+      set tabs [linsert [lreplace $tabs $i $i] 0 $tab]          
+      my $BID configure -TABS $tabs
+      set itab 0
+    }
+  }
   if {$anyway} {my $BID Refill $itab no yes}
   my $TID Tab_BeCurrent
 }
@@ -1019,6 +1045,7 @@ method close {{redraw yes} args} {
   my $BID Bar_Cmd2 -cdel2  ;# command after the action
   return 1
 }
+
 } ;#  bartabs::Tab
 
 # ________________________ Private methods of Bar _______________________ #
@@ -1037,7 +1064,7 @@ method Bar_Data {barOptions} {
     -hidearrows no -scrollsel yes -lablen 0 -tiplen 0 -tleft 0 -tright end \
     -disable [list] -select [list] -mark [list] -fgmark #800080  -fgsel "." \
     -relief groove -padx 1 -pady 1 -expand 0 -tabcurrent -1 -dotip no \
-    -bd 0 -separator 1 \
+    -bd 0 -separator 1 -lifo 0 \
     -ELLIPSE "\u2026" -MOVWIN ".bt_move" -ARRLEN 0 -USERMNU 0 -LLEN 0]
   set tabinfo [set imagetabs [set popup [list]]]
   my Bar_DefaultMenu $BID popup
@@ -2134,6 +2161,6 @@ method moveSelTab {TID1 TID2} {
 } ;#  bartabs::Bars
 
 # ________________________________ EOF __________________________________ #
-#RUNF1: ../../alited/src/alited.tcl
+#RUNF1: ../../src/alited.tcl DEBUG
 #RUNF0: test.tcl
 #RUNF1: ../tests/test2_pave.tcl

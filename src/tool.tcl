@@ -1,7 +1,7 @@
 #! /usr/bin/env tclsh
 # _______________________________________________________________________ #
 #
-# The ini-files procedures of alited.
+# The tools' procedures of alited.
 # _______________________________________________________________________ #
 
 # default settings of alited app:
@@ -44,7 +44,7 @@ proc tool::e_menuOptions {opts} {
 }
 
 proc tool::e_menu {args} {
-  if {"ex=Help" ni $args} SaveFile(s)
+  if {"ex=Help" ni $args} SaveFiles
   if {$alited::al(EM,exec)} {
     e_menu1 $args
   } else {
@@ -53,7 +53,7 @@ proc tool::e_menu {args} {
 }
 
 proc tool::e_menu1 {opts} {
-  exec tclsh [file join $::e_menu_dir e_menu.tcl] {*}[e_menuOptions $opts] c=$alited::al(EM,cs) &
+  exec tclsh [file join $::e_menu_dir e_menu.tcl] {*}[e_menuOptions $opts] c=$alited::al(EM,CS) &
 }
 
 proc tool::e_menu2 {opts} {
@@ -68,7 +68,7 @@ proc tool::Help {} {
   Run Help
 }
 
-proc tool::SaveFile(s) {} {
+proc tool::SaveFiles {} {
   namespace upvar ::alited al al
   if {$al(EM,saveall)} {
     alited::file::SaveAll
@@ -78,14 +78,22 @@ proc tool::SaveFile(s) {} {
 }
 
 proc tool::Run {{what ""}} {
-  if {[winfo exists .em]} {
+  namespace upvar ::alited al al
+  set fpid [file join $al(EM,menudir) .pid~]
+  if {[file exists $fpid]} {
+    catch {
+      set pid [::apave::readTextFile $fpid]
+      exec kill -s SIGINT $pid
+    }
+  }
+  if {[winfo exists .em] && [winfo ismapped .em]} {
     bell
   }
   if {$what eq ""} {
     set what "1" ;# 'Run me' e_menu item
-    SaveFile(s)
+    SaveFiles
   }
   e_menu "ex=$what"
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

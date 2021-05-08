@@ -6,11 +6,11 @@
 
 namespace eval bar {}
 
-proc bar::FillBar {wframe} {
+proc bar::FillBar {wframe {newproject no}} {
   namespace upvar ::alited al al obPav obPav
   set wbase [$obPav LbxInfo]
   set bar1Opts [list -wbar $wframe -wbase $wbase -lablen 16 -pady 2 \
-    -menu "" -separator 0 -font apaveFontDefTypedsmall\
+    -menu "" -separator no -font apaveFontDefTypedsmall -lifo yes \
     -csel2 {alited::bar::OnTabSelection %t} \
     -cdel {alited::file::CloseFile %t} \
     -cmov2 alited::bar::OnTabMove]
@@ -24,8 +24,12 @@ proc bar::FillBar {wframe} {
     lappend bar1Opts -tab $tab
   }
   set curname [lindex $tabs $al(curtab)]
-  ::bartabs::Bars create al(bts)   ;# al(bts) is Bars object
-  set al(BID) [al(bts) create al(bt) $bar1Opts $curname]
+  if {$newproject || [catch {
+    ::bartabs::Bars create al(bts)   ;# al(bts) is Bars object
+    set al(BID) [al(bts) create al(bt) $bar1Opts $curname]
+  }]} then {
+    foreach tab $tabs {BAR insertTab $tab}
+  }
   set tabs [BAR listTab]
   foreach tab $tabs fname $files pos $posis {
     set tid [lindex $tab 0]
@@ -147,11 +151,11 @@ proc bar::OnTabSelection {TID} {
 
 proc bar::InsertTab {tab tip} {
   namespace upvar ::alited al al
-  set TID [BAR insertTab $tab]
+  set TID [BAR insertTab $tab 0]
   BAR $TID configure -tip $tip
   SetTabState $TID --fname $tip
   alited::ini::SaveCurrentIni $al(INI,save_onadd)
   return $TID
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

@@ -43,6 +43,29 @@ proc unit_tpl::Cancel {args} {
   $obDl2 res $win 0
 }
 
+proc unit_tpl::Help {args} {
+  namespace upvar ::alited al al
+  variable win
+  set msg { Use buttons on the right to add, change or delete a template.
+
+ Choose or erase a template's hot keys from the dropdown combobox.
+
+ In a template's text, set the cursor where it should be at inserting.
+
+ In the text, use the following wildcards:
+    %d - date
+    %t - time
+    %u - user's login
+    %U - user's name
+    %m - user's mail
+    %w - user's web site
+    %f - current file's tail name
+    %n - current file's root name (namespace)
+    %p - current procedure/method's name
+    %a - current procedure/method's arguments}
+  alited::msg ok "" $msg -title $al(MC,help) -text 1 -geometry root=$win -scroll no
+}
+
 proc unit_tpl::Message {msg {first 1}} {
   namespace upvar ::alited obDl2 obDl2
   alited::Message $msg $first [$obDl2 LabTpl]
@@ -131,6 +154,7 @@ proc unit_tpl::Select {{item ""}} {
     if {[$tree selection] ne $item} {
       $tree selection set $item
     }
+    $tree see $item
   }
 }
 
@@ -234,7 +258,7 @@ proc unit_tpl::Delete {} {
   set nsel [expr {$isel+1}]
   set msg [string map [list %n $nsel] $al(MC,tpldelq)]
   set geo "-geometry root=$win"
-  if {![alited::msg yesno warn $msg NO -title $al(MC,warning) {*}$geo]} {
+  if {![alited::msg yesno warn $msg NO {*}$geo]} {
     return
   }
   foreach tl {tpllist tplcont tplpos tplpla tplid tplkeys} {
@@ -307,33 +331,30 @@ proc unit_tpl::_create {} {
   variable tplkey
   variable tplKEYS
 #alited::keys::Test [alited::keys::UserList]
-  $obDl2 untouchWidgets *.texTpl
   $obDl2 makeWindow $win $al(MC,tpl)
   $obDl2 paveWindow $win {
-    {fralab - - 2 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
-    {.lab1 - - 1 10 {-st ew} {-t "$alited::al(MC,tpl1)"}}
-    {.lab2 fralab.lab1 T 1 10 {-st ew} {-t "$alited::al(MC,tpl2)"}}
-    {fraTreeTpl fralab T 10 10 {-st nswe -pady 8} {}}
+    {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAdd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tooltip {$alited::al(MC,tpladd)}}}
-    {.fra.buTChange - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tooltip {$alited::al(MC,tplchg)}}}
-    {.fra.buTDelete - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tooltip {$alited::al(MC,tpldel)}}}
-    {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 7 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-width 20}"}}
+    {.fra.buTAdd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip {$alited::al(MC,tpladd)}}}
+    {.fra.buTChange - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip {$alited::al(MC,tplchg)}}}
+    {.fra.buTDelete - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip {$alited::al(MC,tpldel)}}}
+    {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 7 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-stretch 0}"}}
     {.sbvTpls fraTreeTpl.TreeTpl L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
     {.labTpl - - 1 1 {-st we} {-anchor center -t "$alited::al(MC,tpl4)"}}
-    {.EntTpl fra1.labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 30 -tooltip {$alited::al(MC,tplent1)}}}
-    {.CbxKey fra1.EntTpl L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tooltip {$alited::al(MC,tplcbx)}}}
+    {.EntTpl fra1.labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {$alited::al(MC,tplent1)}}}
+    {.CbxKey fra1.EntTpl L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {$alited::al(MC,tplcbx)}}}
     {fra1.fratex fra1.labTpl T 10 10 {-st nsew} {}}
-    {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 60 -tooltip {$alited::al(MC,tplent2) -font $alited::al(FONT,monosmall)}}}
+    {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip {$alited::al(MC,tplent2)}}}
     {.sbvTpl .TexTpl L - - {pack -side left -fill both} {}}
     {fra2 fra1 T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t {$alited::al(MC,tplloc)}}}
-    {.radA - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc1)} -var ::alited::unit_tpl::place -value 1 -tooltip {$al(MC,tplttloc1)}}}
-    {.radB - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc2)} -var ::alited::unit_tpl::place -value 2 -tooltip {$al(MC,tplttloc2)}}}
-    {.radC - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc3)} -var ::alited::unit_tpl::place -value 3 -tooltip {$al(MC,tplttloc3)}}}
-    {.radD - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc4)} -var ::alited::unit_tpl::place -value 4 -tooltip {$al(MC,tplttloc4)}}}
+    {.radA - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc1)} -var ::alited::unit_tpl::place -value 1 -tip {$al(MC,tplttloc1)}}}
+    {.radB - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc2)} -var ::alited::unit_tpl::place -value 2 -tip {$al(MC,tplttloc2)}}}
+    {.radC - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc3)} -var ::alited::unit_tpl::place -value 3 -tip {$al(MC,tplttloc3)}}}
+    {.radD - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc4)} -var ::alited::unit_tpl::place -value 4 -tip {$al(MC,tplttloc4)}}}
     {fra3 fra2 T 1 10 {-st nsew}}
+    {.butHelp - - - - {pack -side left} {-t "$alited::al(MC,help)" -command ::alited::unit_tpl::Help}}
     {.LabTpl - - - - {pack -side left -expand 1 -fill both}}
     {.butOK - - - - {pack -side left} {-t "$alited::al(MC,select)" -command ::alited::unit_tpl::Ok}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::unit_tpl::Cancel}}
@@ -342,6 +363,7 @@ proc unit_tpl::_create {} {
   $tree heading C1 -text $al(MC,tplhd1)
   $tree heading C2 -text $al(MC,tplhd2)
   UpdateTree
+  Select
   set wtxt [$obDl2 TexTpl]
   bind $tree <<TreeviewSelect>> "::alited::unit_tpl::Select"
   bind $tree <Delete> "::alited::unit_tpl::Delete"
@@ -370,4 +392,4 @@ proc unit_tpl::_run {} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

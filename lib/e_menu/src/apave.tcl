@@ -202,7 +202,7 @@ namespace eval ::apave {
       if {$regist} {
         lappend _AP_VARS(MODALWIN) $info
       } else {
-        set _AP_VARS(MODALWIN) [lreplace $_AP_VARS(MODALWIN) $i $i]
+        catch {set _AP_VARS(MODALWIN) [lreplace $_AP_VARS(MODALWIN) $i $i]}
       }
       set res [IntStatus . MODALS $val]
     } else {
@@ -254,7 +254,7 @@ namespace eval ::apave {
       if {$i>0} {
         lassign [lindex $_AP_VARS(MODALWIN) $i] w var
         if {[winfo exists $w]} {set $var 0}
-        set _AP_VARS(MODALWIN) [lreplace $_AP_VARS(MODALWIN) $i $i]
+        catch {set _AP_VARS(MODALWIN) [lreplace $_AP_VARS(MODALWIN) $i $i]}
       } else {
         break
       }
@@ -344,7 +344,7 @@ namespace eval ::apave {
         catch {set appIcon [image create photo -file $winicon]}
       }
     }
-    if {$appIcon ne ""} {wm iconphoto $win $appIcon}
+    if {$appIcon ne ""} {wm iconphoto $win -default $appIcon}
   }
 
   ##########################################################################
@@ -1376,6 +1376,58 @@ oo::class create ::apave::APave {
 
   #########################################################################
 
+  method getWidChildren {wid treeName {init yes}} {
+    # Gets children of a widget.
+    #   wid - widget's path
+    #   treeName - name of variable to hold the result.
+
+    upvar $treeName tree
+    if {$init} {set tree [list]}
+    foreach ch [winfo children $wid] {
+      lappend tree $ch
+      my getWidChildren $ch $treeName no
+    }
+  }
+
+  #########################################################################
+
+  method findWidPath {wid {mode "exact"} {visible yes}} {
+    # Searches a widget's path among the active widgets.
+    #   w - widget name, set partially e.g. "wid" instead of ".win.wid"
+    #   mode - if "exact", searches *.wid; if "globe", searches *wid*
+    # Returns the widget's full path or "" if the widget isn't active.
+
+    my getWidChildren . tree
+    if {$mode eq "exact"} {
+      set i [lsearch -glob $tree "*.$wid"]
+    } else {
+      set i [lsearch -glob $tree "*$wid*"]
+    }
+    if {$i>-1} {return [lindex $tree $i]}
+    return ""
+  }
+
+  #########################################################################
+
+  method AuxSetChooserGeometry {vargeo parent widname} {
+    # Auxiliary method to set some Linux choosers' geometry.
+    #   vargeo - variable for geometry value
+    #   parent - list containing a parent's path
+    #   widname - name of the chooser
+    # Returns a path to the chooser to be open.
+
+    set wchooser [lindex $parent 1].$widname
+    catch {
+      lassign [set $vargeo] -> geom
+      if {[string match "*x*+*+*" $geom] && [::islinux]} {
+        after idle "catch {wm geometry $wchooser $geom}"
+      }
+    }
+    return $wchooser
+  }
+
+  #########################################################################
+
   method chooser {nchooser tvar args} {
 
     # Chooser (for all available types).
@@ -1395,20 +1447,29 @@ oo::class create ::apave::APave {
     # Returns a selected value.
 
     set isfilename 0
-    set ftxvar [::apave::getOption -ftxvar {*}$args]
-    set args [::apave::removeOptions $args -ftxvar]
+    lassign [::apave::extractOptions args -ftxvar ""] ftxvar
+    lassign [::apave::getProperty DirFilGeoVars] dirvar filvar
+    set vargeo [set dirgeo [set filgeo ""]]
+    set parent [my ParentOpt]
+    if {$dirvar ne ""} {set dirgeo [set $dirvar]}
+    if {$filvar ne ""} {set filgeo [set $filvar]}
     if {$nchooser eq "ftx_OpenFile"} {
       set nchooser "tk_getOpenFile"
     }
+    set widname ""
     set choosname $nchooser
     if {$choosname in {"fontChooser" "colorChooser" "dateChooser"}} {
       set nchooser "my $choosname $tvar"
     } elseif {$choosname in {"tk_getOpenFile" "tk_getSaveFile"}} {
+      set vargeo $filvar
+      set widname [my AuxSetChooserGeometry $vargeo $parent __tk_filedialog]
       if {[set fn [set $tvar]] eq ""} {set dn [pwd]} {set dn [file dirname $fn]}
-      set args "-initialfile \"$fn\" -initialdir \"$dn\" [my ParentOpt] $args"
+      set args "-initialfile \"$fn\" -initialdir \"$dn\" $parent $args"
       incr isfilename
     } elseif {$nchooser eq "tk_chooseDirectory"} {
-      set args "-initialdir \"[set $tvar]\" [my ParentOpt] $args"
+      set vargeo $dirvar
+      set widname [my AuxSetChooserGeometry $vargeo $parent __tk_choosedir]
+      set args "-initialdir \"[set $tvar]\" $parent $args"
       incr isfilename
     }
     if {$::tcl_platform(platform) eq "unix" && $choosname ne "dateChooser"} {
@@ -1433,6 +1494,11 @@ oo::class create ::apave::APave {
         }
       }
       set $tvar $res
+    }
+    if {$vargeo ne "" && $widname ne "" && [::islinux]} {
+      catch {
+        set $vargeo [list $widname [wm geometry $widname]]  ;# 1st item for possible usage only
+      }
     }
     return $res
   }
@@ -1730,6 +1796,8 @@ oo::class create ::apave::APave {
         catch {set val [subst $val]}
         set ind -1
         foreach {v1 v2} $val {
+          catch {set v1 [subst -nocommand -nobackslash $v1]}
+          catch {set v2 [subst -nocommand -nobackslash $v2]}
           lappend namvar [namespace current]::$typ[incr ind] $v1 $v2
         }
       } else {
@@ -1757,11 +1825,6 @@ oo::class create ::apave::APave {
     set itmp $i
     set k [set j [set j2 [set wasmenu 0]]]
     foreach {nam v1 v2} $namvar {
-      if {[incr k 3]==[llength $namvar]} {
-        set expand "-expand 1 -fill x"
-      } else {
-        set expand ""
-      }
       if {$v1 eq "h_"} {  ;# horisontal space
         set ntmp [my Transname fra ${name}[incr j2]]
         set wid1 [list $ntmp - - - - "pack -side left -in $w.$name -fill y"]
@@ -1772,8 +1835,15 @@ oo::class create ::apave::APave {
         set wid2 [list $ntmp.[my ownWName [my Transname sev $name$j]] - - - - "pack -fill y -expand 1 -padx $v2"]
       } elseif {$typ eq "statusBar"} {  ;# statusbar
         my NormalizeName name i lwidgets
-        set dattr "[lrange $v1 1 end]"
+        set dattr [lrange $v1 1 end]
+        if {[::apave::extractOptions dattr -expand 0]} {
+          set expand "-expand 1 -fill x"
+        } else {
+          set expand ""
+        }
+        # status prompt
         set wid1 [list .[my ownWName [my Transname Lab ${name}_[incr j]]] - - - - "pack -side left -in $w.$name" "-t {[lindex $v1 0]} $dattr"]
+        # status value
         set wid2 [list .[my ownWName [my Transname Lab $name$j]] - - - - "pack -side left $expand -in $w.$name" "-style TLabelSTD -relief sunken -w $v2 -t { } $dattr"]
       } elseif {$typ eq "toolBar"} {  ;# toolbar
         set packreq ""
@@ -2687,16 +2757,17 @@ oo::class create ::apave::APave {
 
     if {[string first "STD" $wname]>0} return
     if {($widget in {ttk::entry entry})} {
-      bind $wname <Up> [list \
-        if {$::tcl_platform(platform) eq "windows"} [list \
-          event generate $wname <Shift-Tab> \
-        ] else [list \
-          event generate $wname <Key> -keysym ISO_Left_Tab] \
-        ]
-      bind $wname <Down> [list \
-        event generate $wname <Key> -keysym Tab]
-    }
-    if {$widget in {ttk::button button ttk::checkbutton checkbutton \
+      bind $wname <Up>  \
+        "$wname selection clear ; \
+        if {{$::tcl_platform(platform)} eq {windows}} {
+          event generate $wname <Shift-Tab>
+        } else {
+          event generate $wname <Key> -keysym ISO_Left_Tab
+        }"
+      bind $wname <Down>  \
+        "$wname selection clear ; \
+        event generate $wname <Key> -keysym Tab"
+    } elseif {$widget in {ttk::button button ttk::checkbutton checkbutton \
     ttk::radiobutton radiobutton "my tk_optionCascade"}} {
       foreach k {<Up> <Left>} {
         bind $wname $k [list \
@@ -2721,7 +2792,7 @@ oo::class create ::apave::APave {
     if {$widget in {ttk::entry entry spinbox ttk::spinbox}} {
       foreach k {<Return> <KP_Enter>} {
         bind $wname $k \
-        [list + event generate $wname <Key> -keysym Tab]
+          "+ $wname selection clear ; event generate $wname <Key> -keysym Tab"
       }
     }
   }
@@ -2765,6 +2836,15 @@ oo::class create ::apave::APave {
       if {[my Replace_Tcl i lwlen lwidgets {*}$lst1] ne ""} {incr i}
     }
     set lwlen [llength $lwidgets]
+    # firstly, normalize all names that are "subwidgets": .lab instead fra.lab etc
+    for {set i $lwlen} {$i} {incr i -1} {
+      set lst1 [lindex $lwidgets $i]
+      lassign $lst1 name neighbor
+      lassign [my NormalizeName name i lwidgets] name wname
+      lassign [my NormalizeName neighbor i lwidgets] neighbor
+      set lst1 [lreplace $lst1 0 1 $wname $neighbor]
+      set lwidgets [lreplace $lwidgets $i $i $lst1]
+    }
     for {set i 0} {$i < $lwlen} {} {
       # List of widgets contains data per widget:
       #   widget's name,
@@ -2780,7 +2860,6 @@ oo::class create ::apave::APave {
       lassign $lst1 name neighbor posofnei rowspan colspan options1 attrs1
       set prevw $name
       lassign [my NormalizeName name i lwidgets] name wname
-      lassign [my NormalizeName neighbor i lwidgets] neighbor
       set wname [my MakeWidgetName $w $wname]
       if {$colspan eq {} || $colspan eq {-}} {
         set colspan 1
@@ -3264,5 +3343,5 @@ oo::class create ::apave::APave {
 
 }
 # _____________________________ EOF _____________________________________ #
-#RUNF1: ../../src/alited.tcl
+#RUNF1: ../../src/alited.tcl DEBUG
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 0 9 12 "middle icons"

@@ -311,7 +311,8 @@ proc ::tk::dialog::color::BuildDialog {w} {
   set lab [ttk::label $selFrame.lab -text [mc "Selection:"]]
   set ent [ttk::entry $selFrame.ent -textvariable $mainentry -width 14]
   set f1  [ttk::frame $selFrame.f1 -relief sunken]
-  set data(finalCanvas) [frame $f1.demo -bd 1 -width 110 -height 116]
+  #set data(finalCanvas) [frame $f1.demo -bd 1 -width 110 -height 116]
+  set data(finalCanvas) [label $f1.demo -bd 1 -width 10 -height 7]
 
   pack $lab -side top -padx 4 -anchor sw
   pack $ent -side top -padx 4 -pady 2 -anchor n
@@ -319,6 +320,7 @@ proc ::tk::dialog::color::BuildDialog {w} {
   pack $data(finalCanvas) -expand yes -fill both -anchor s
 
   bind $ent <Return> [list tk::dialog::color::HandleSelEntry $w]
+  bind $data(finalCanvas) <Button-1> [list tk::dialog::color::ReverseFinalFg $w]
 
   pack $selFrame -side left -fill none -anchor nw
   pack $topFrame -side top -expand yes -fill both -anchor nw
@@ -482,7 +484,7 @@ proc ::tk::dialog::color::DrawColorScale {w c {create 0}} {
       set color [format "#%02x%02x%02x" \
         $data(red,intensity) $data(green,intensity) $intensity]
     }
-  
+
     if {$create} {
       incr startx 4
       set index [$col create rect $startx $highlightW \
@@ -519,6 +521,28 @@ proc ::tk::dialog::color::CreateSelector {w sel c } {
   $sel move $data($c,index) $data($c,x) 0
 }
 
+# Inverts colors from light to dark and vice versa to get "fg" from "bg".
+# It's simplified way, just to not include the bulky HSV code.
+#  r - red component
+#  g - green component
+#  b - blue component
+# Returns {R G B} list of inverted colors.
+
+proc ::tk::dialog::color::InvertBg {r g b} {
+  set c [expr {$r<100 && $g<100 || $r<100 && $b<100 || $b<100 && $g<100 ||
+    ($r+$g+$b)<300 ? 255 : 0}]
+  return [string toupper [format "#%02x%02x%02x" $c $c $c]]
+}
+
+proc ::tk::dialog::color::ReverseFinalFg {w} {
+  upvar ::tk::dialog::color::[winfo name $w] data
+  set testcolors [list 000000 FFFFFF 804000 004000 004080 008080 800080 808000 \
+    ffff00 ff00ff 00ffff 0000ff 00ff00 ff0000]
+  if {[incr data(idxFinalColor)]>=[llength $testcolors]} {set data(idxFinalColor) 0}
+  set fg #[lindex $testcolors $data(idxFinalColor)]
+  $data(finalCanvas) configure -fg $fg -text $fg
+}
+
 # ::tk::dialog::color::RedrawFinalColor
 #
 #    Combines the intensities of the three colors into the final color
@@ -529,7 +553,10 @@ proc ::tk::dialog::color::RedrawFinalColor {w} {
   set color [format "#%02x%02x%02x" $data(red,intensity) \
     $data(green,intensity) $data(blue,intensity)]
 
-  $data(finalCanvas) configure -bg $color
+  #$data(finalCanvas) configure -bg $color
+  set fg [InvertBg $data(red,intensity) $data(green,intensity) $data(blue,intensity)]
+  $data(finalCanvas) configure -bg $color -fg $fg -text $fg
+  set data(idxFinalColor) [expr {$fg ne "#000000"}]
   set data(finalColor) $color
   set data(selection) $color
   set data(finalRGB) [list \

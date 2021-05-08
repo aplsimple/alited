@@ -17,9 +17,10 @@ proc unit::SelectUnit {} {
   alited::main::ShowText
 }
 
-proc unit::GetUnits {textcont} {
+proc unit::GetUnits {TID textcont} {
   # Gets a unit structure from a text.
-  #   textcont - contents of text
+  #   TID - tab ID of the text
+  #   textcont - contents of the text
   # Returns a list of unit items.
   # An item contains:
   #   - level
@@ -72,6 +73,10 @@ proc unit::GetUnits {textcont} {
           break
         }
       }
+      if {[set cl [string last :: $title]]>-1 && [set cl [string last :: $title $cl]]>-1} {
+        # let only a last namespace be present in the titles
+        set title [string range $title $cl+2 end]
+      }
       set flag1 $al(LEAF)
       set flag [set leaf 1]
     } else {
@@ -101,6 +106,11 @@ proc unit::GetUnits {textcont} {
         [expr {$lev+$leaf}] $leaf $flag1 [string trim $title " #"] [expr {$i+1}]]
     }
   }
+  if {![llength $retlist]} {
+    set name [file tail [alited::bar::FileName $TID]]
+    set name [string map [list %f $name] $al(MC,alloffile)]
+    lappend retlist [list 1 1 1 $name 1 $llen]
+  }
   return $retlist
 }
 
@@ -108,6 +118,7 @@ proc unit::TemplateData {wtxt l1 tpldata} {
   namespace upvar ::alited al al
   lassign $tpldata tex pos place
   set sec [clock seconds]
+  set fname [alited::bar::FileName]
   set tex [string map [list \
     %d [clock format $sec -format $al(TPL,%d)] \
     %t [clock format $sec -format $al(TPL,%t)] \
@@ -115,6 +126,8 @@ proc unit::TemplateData {wtxt l1 tpldata} {
     %U $al(TPL,%U) \
     %m $al(TPL,%m) \
     %w $al(TPL,%w) \
+    %f [file tail $fname] \
+    %n [file rootname [file tail $fname]] \
     ] $tex]
   # get a list of proc/method's arguments:
   # from "proc pr {ar1 ar2 ar3} " and a template "  # %a -\n"
@@ -122,7 +135,8 @@ proc unit::TemplateData {wtxt l1 tpldata} {
   #   # ar1 -
   #   # ar2 -
   #   # ar3 -
-  lassign [split "[$wtxt get $l1.0 $l1.end]" "\{\}"] proc iarg
+  if {[catch {set textcont [$wtxt get $l1.0 $l1.end]}]} {set textcont ""}
+  lassign [split $textcont "\{\}"] proc iarg
   catch {
     set tpla [string map [list \\n \n] $al(TPL,%a)]
     set oarg [set st1 ""]
@@ -160,7 +174,7 @@ proc unit::InsertTemplate {tpldata} {
       set pos0 [expr {$l1+1}].0
     }
     4 { ;# after 1st line
-      set pos0 2.0
+      set pos0 1.0
     }
     3 { ;# after cursor
       set pos0 [$wtxt index insert]
@@ -206,7 +220,7 @@ proc unit::Delete {wtree fname} {
     set ID [lindex $selection $i]
     set name [$wtree item $ID -text]
     set msg [string map [list %n $name %f [file tail $fname]] $al(MC,delitem)]
-    set ans [alited::msg yesnocancel ques $msg NO -title $al(MC,question)]
+    set ans [alited::msg yesnocancel ques $msg NO]
     switch $ans {
       0 break
       2 {}
@@ -397,13 +411,17 @@ proc unit::ToolButName {img} {
 
 proc unit::SelectedLines {} {
   set wtxt [alited::main::CurrentWTXT]
-  lassign [$wtxt tag ranges sel] l1 l2
-  if {$l1 eq ""} {
-    set l1 [set l2 [$wtxt index insert]]
+  lassign [$wtxt tag ranges sel] pos1 pos2
+  if {$pos1 eq ""} {
+    set pos1 [set pos2 [$wtxt index insert]]
+  } else {
+    set pos21 [$wtxt index "$pos2 linestart"]
+    if {[$wtxt get $pos21 $pos2] eq ""} {
+      set pos2 [$wtxt index "$pos2 - 1 line"]
+    }
   }
-  set l1 [expr {int($l1)}]
-  set l2 [expr {int($l2)}]
-  if {[string trim [$wtxt get $l2.0 $l2.end]] eq ""} {incr l2 -1}
+  set l1 [expr {int($pos1)}]
+  set l2 [expr {int($pos2)}]
   return [list $wtxt $l1 $l2]
 }
 
@@ -501,7 +519,7 @@ proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
       } else {
         set line [$wtxt get $l1.0 $l1.end]
         if {$al(LEAF) && [regexp $al(RE,leaf) $line] || \
-        !$al(LEAF) && [regexp $al(RE,proc) $line]} {
+        !$al(LEAF) && [regexp $al(RE,proc) $line] || [regexp $al(RE,branch) $line]} {
           alited::tree::RecreateTree
         }
       }
@@ -511,4 +529,4 @@ proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

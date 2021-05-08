@@ -210,17 +210,26 @@ proc favor_ls::Split {lines} {
 
 proc favor_ls::GetIni {lines} {
   variable favlist
+  variable favlistsaved
   variable favcont
   variable favpla
+  variable currents
+  variable fav
+  variable place
   set lines [Split $lines]
   if {[llength $lines]<3} {
     # initialize arrays
     set favlist [list]
+    set favlistsaved [list]
     set favcont [list]
-  } else {
+    set favpla  [list]
+    set currents [list]
+    set fav ""
+    set place 1
+  } elseif {[set cont [lrange $lines 2 end]] ne ""} {
     lappend favlist [lindex $lines 0]
     lappend favpla  [lindex $lines 1]
-    lappend favcont [join [lrange $lines 2 end] $::alited::EOL]
+    lappend favcont [join $cont $::alited::EOL]
   }
   Save_favlist
 }
@@ -247,32 +256,31 @@ proc favor_ls::_create {} {
   variable win
   variable favlist
   variable fav
-  $obDl2 untouchWidgets *.texFav
   $obDl2 makeWindow $win $al(MC,favorites)
   $obDl2 paveWindow $win {
-    {fralab - - 2 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
+    {fralab - - 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.lab1 - - 1 10 {-st ew} {-t "$alited::al(MC,fav1)"}}
     {.lab2 fralab.lab1 T 1 10 {-st ew} {-t "$alited::al(MC,fav2)"}}
     {fraLbxFav fralab T 10 10 {-st nswe -pady 8} {}}
     {.labFavs - - - - {pack -side top -fill x -anchor nw} {-t "$alited::al(MC,fav3)"}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAdd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::favor_ls::Add -tooltip {$alited::al(MC,favadd)}}}
-    {.fra.buTChange - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Change -tooltip {$alited::al(MC,favchg)}}}
-    {.fra.buTDelete - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Delete -tooltip {$alited::al(MC,favdel)}}}
+    {.fra.buTAdd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::favor_ls::Add -tip {$alited::al(MC,favadd)}}}
+    {.fra.buTChange - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Change -tip {$alited::al(MC,favchg)}}}
+    {.fra.buTDelete - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Delete -tip {$alited::al(MC,favdel)}}}
     {.LbxFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 40 -lvar ::alited::favor_ls::favlist}}
     {.sbvFavs fraLbxFav.LbxFav L - - {pack -side left -fill both} {}}
     {fra1 fraLbxFav T 10 10 {-st nsew}}
     {.labFav - - 1 1 {-st we} {-anchor center -t "$alited::al(MC,fav4)"}}
-    {.EntFav fra1.labFav L 1 9 {-st we} {-tvar ::alited::favor_ls::fav -w 40 -tooltip {$alited::al(MC,favent1)}}}
+    {.EntFav fra1.labFav L 1 9 {-st we} {-tvar ::alited::favor_ls::fav -w 40 -tip {$alited::al(MC,favent1)}}}
     {fra1.fratex fra1.labFav T 10 10 {-st nsew} {}}
-    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 50 -tooltip {$alited::al(MC,favent2) -font $alited::al(FONT,monosmall)} -ro 1}}
+    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 50 -tip {$alited::al(MC,favent2)} -ro 1}}
     {.sbvFav .TexFav L - - {pack -side left -fill both}}
     {fra2 fra1 T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t {$alited::al(MC,favloc)}}}
-    {.radA - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,favloc1)} -var ::alited::favor_ls::place -value 1 -tooltip {$al(MC,favtip1)}}}
-    {.radB - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,favloc2)} -var ::alited::favor_ls::place -value 2 -tooltip {$al(MC,favtip2)}}}
+    {.radA - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,favloc1)} -var ::alited::favor_ls::place -value 1 -tip {$al(MC,favtip1)}}}
+    {.radB - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,favloc2)} -var ::alited::favor_ls::place -value 2 -tip {$al(MC,favtip2)}}}
     {fra3 fra2 T 1 10 {-st nsew}}
-    {.LabFav - - - - {pack -side left -expand 1 -fill both}}
+    {.LabFav - - - - {pack -side left -expand 1 -fill both} {-w 50}}
     {.butUndo - - - - {pack -side left} {-t "$alited::al(MC,favinit)" -command {::alited::favor_ls::Ok 3} -tip {$alited::al(MC,favtip3)}}}
     {.butOK - - - - {pack -side left} {-t "$alited::al(MC,select)" -command ::alited::favor_ls::Ok}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::favor_ls::Cancel}}
@@ -301,4 +309,4 @@ proc favor_ls::_run {} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

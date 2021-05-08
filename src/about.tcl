@@ -24,7 +24,6 @@ namespace eval about {
       ]
     ::alited::msg ok info "  <red>alited v[package require alited]</red> stands for \"a lite editor\".
 
-  Some of code structuring & code gardening.
   Well fit for Tcl/Tk programming.
 
   Details: \
@@ -52,4 +51,4 @@ namespace eval about {
 
 }
 # _____________________________ EOF _____________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

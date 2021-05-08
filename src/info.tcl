@@ -49,7 +49,8 @@ proc info::ListboxSelect {w} {
       if {$TID ne [alited::bar::CurrentTabID]} {
         alited::bar::BAR $TID show
       }
-      after idle "alited::main::FocusText $TID $line.0"
+      after idle "alited::main::FocusText $TID $line.0 ; \
+        alited::tree::NewSelection {} $line.0 yes"
     }
   }
 }

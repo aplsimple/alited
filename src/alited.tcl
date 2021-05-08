@@ -5,9 +5,27 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.2
+package provide alited 0.3
 
 package require Tk
+catch {package require comm}  ;# Generic message transport
+
+# __________________________ Open existing app _________________________ #
+
+wm withdraw .
+if {"DEBUG" eq [lindex $::argv 0]} {
+  set ::argv [lreplace $::argv 0 0]
+  incr ::argc -1
+} else {
+  set port 48784
+  if {[catch {::comm::comm config -port $port}] && \
+  ![catch {::comm::comm send $port ::alited::run_remote ::alited::raise_window }]} {
+    destroy .
+    exit
+  }
+}
+
+# ________________________ Main variables _________________________ #
 
 namespace eval alited {
 
@@ -29,6 +47,7 @@ namespace eval alited {
   lappend ::auto_path $PAVEDIR $BARSDIR $HLDIR $BALTDIR
 
   set ::e_menu_dir [file join $LIBDIR e_menu]
+  variable MNUDIR "$::e_menu_dir/menus"
 
   # directories of key data
   variable DATADIR [file join $DIR data]
@@ -36,28 +55,22 @@ namespace eval alited {
   variable MSGSDIR [file join $DATADIR msgs]
 
   # directories of user's data
-  variable USERDIR [file join $DIR data user]
-  if {[file exists {~/.config}]} {
-    set USERDIR [file normalize {~/.config/alited/data}]
-  }
-  if {$::argc} {set USERDIR [lindex $argv 0]}
-
-  variable INIDIR [file join $USERDIR ini]
-  variable PRJDIR [file join $USERDIR prj]
-  variable BAKDIR [file join $DIR .bak]
-  if {![file exists $USERDIR]} {
-    file mkdir $INIDIR
-    file mkdir $PRJDIR
-  }
+  variable USERDIRSTD [file normalize {~/.config}]
+  variable USERDIRROOT $USERDIRSTD
+  if {$::argc} {set USERDIRROOT [lindex $argv 0]}
 
   # two main objects to build forms (just some unique names)
   variable obPav ::alited::alitedpav
   variable obDlg ::alited::aliteddlg
   variable obDl2 ::alited::aliteddl2
   variable obFND ::alited::alitedFND
-  variable obEM  ::alited::alitedEM
+
+  # misc. vars
+  variable DirGeometry ""
+  variable FilGeometry ""
 
   # misc. consts
+  variable PRJEXT ".alited"
   variable EOL {@~}  ;# "end of line" for ini-files
 
   # load localized messages
@@ -66,10 +79,12 @@ namespace eval alited {
   # main data of alited (others are in ini.tcl)
   variable al; array set al [list]
   set al(WIN) .alwin
-  set al(PRJEXT) "alited"
-  set al(prjname) "myproject.$al(PRJEXT)"
-  set al(prjfile) [file join $PRJDIR $al(prjname)]
-  set al(prjroot) [file normalize .]
+  set al(prjname) ""
+  set al(prjfile) ""
+  set al(prjroot) ""
+  set al(prjdesc) ""
+  set al(prjindent) 2
+  set al(prjEOL) LF
   set al(TITLE) "%f :: %d :: %p - alited"
 }
 
@@ -94,13 +109,22 @@ namespace eval alited {
     # For "ok" dialogue, 'defb' is omitted (being a part of args).
 
     variable obDlg
+    variable al
     if {$type eq "ok"} {
       set args [linsert $args 0 $defb]
       set defb ""
     }
     lassign [::apave::extractOptions args -title ""] title
-    if {$title eq ""} {set title [string toupper $icon]}
+    if {$title eq ""} {
+      switch $icon {
+        "warn" {set title $al(MC,warning)}
+        "err" {set title $al(MC,error)}
+        "ques" {set title $al(MC,question)}
+        default {set title $al(MC,info)}
+     }
+    }
     set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
+    after idle {catch alited::main::UpdateGutter}
     return [lindex $res 0]
   }
 
@@ -129,6 +153,11 @@ namespace eval alited {
       alited::find::_close
       alited::tool::_close
     }
+  }
+  proc Restart {} {
+    variable al
+    set al(RESTART) 1
+    Exit
   }
 
   proc FgFgBold {} {
@@ -166,39 +195,57 @@ namespace eval alited {
     }
   }
 
+  proc raise_window {} {
+    # Raises the app's window.
+
+    variable al
+    wm withdraw $al(WIN)
+    wm deiconify $al(WIN)
+  }
+
+  proc run_remote {cmd args} {
+    # Runs a command that was started by another process.
+  
+    if {[catch { $cmd {*}$args }]} {
+      return -code error
+    }
+  }
+
+# _______________ Load all sources into alited namespace _______________ #
+
+  source [file join $SRCDIR ini.tcl]
+  source [file join $SRCDIR img.tcl]
+  source [file join $SRCDIR msgs.tcl]
+  source [file join $SRCDIR main.tcl]
+  source [file join $SRCDIR bar.tcl]
+  source [file join $SRCDIR file.tcl]
+  source [file join $SRCDIR unit.tcl]
+  source [file join $SRCDIR unit_tpl.tcl]
+  source [file join $SRCDIR tree.tcl]
+  source [file join $SRCDIR favor.tcl]
+  source [file join $SRCDIR favor_ls.tcl]
+  source [file join $SRCDIR find.tcl]
+  source [file join $SRCDIR keys.tcl]
+  source [file join $SRCDIR info.tcl]
+  source [file join $SRCDIR tool.tcl]
+  source [file join $SRCDIR menu.tcl]
+  source [file join $SRCDIR pref.tcl]
+  source [file join $SRCDIR project.tcl]
 }
 
-# _______________________________________________________________________ #
+# _________________________ Run the alited app _________________________ #
 
-  # load all sources into alited namespace
-  namespace eval alited {
-    source [file join $SRCDIR ini.tcl]
-    source [file join $SRCDIR img.tcl]
-    source [file join $SRCDIR msgs.tcl]
-    source [file join $SRCDIR main.tcl]
-    source [file join $SRCDIR bar.tcl]
-    source [file join $SRCDIR file.tcl]
-    source [file join $SRCDIR unit.tcl]
-    source [file join $SRCDIR unit_tpl.tcl]
-    source [file join $SRCDIR tree.tcl]
-    source [file join $SRCDIR favor.tcl]
-    source [file join $SRCDIR favor_ls.tcl]
-    source [file join $SRCDIR find.tcl]
-    source [file join $SRCDIR keys.tcl]
-    source [file join $SRCDIR info.tcl]
-    source [file join $SRCDIR tool.tcl]
-    source [file join $SRCDIR menu.tcl]
+# this "if" satisfies the Ruff doc generator "package require":
+if {[package versions alited] eq ""} {
+  alited::ini::_init     ;# initialize GUI & data
+  alited::main::_create  ;# create the main form
+  alited::favor::_init   ;# initialize favorites
+  alited::main::_run     ;# run the main form
+  if {$alited::al(RESTART)} {
+    cd $alited::SRCDIR
+    exec tclsh $alited::SCRIPT {*}$::argv &
   }
-  if {[package versions alited] eq ""} {
-    alited::ini::_init     ;# initialize GUI & data
-    alited::main::_create  ;# create the main form
-    alited::favor::_init   ;# initialize favorites
-    alited::main::_run     ;# run the main form
-    if {$alited::al(RESTART)} {
-      cd $alited::SRCDIR
-      exec tclsh $alited::SCRIPT {*}$::argv &
-    }
-    exit
-  }
+  exit
+}
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

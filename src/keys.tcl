@@ -21,6 +21,7 @@ proc keys::ReservedList {} {
     Control-D \
     Control-F \
     Control-I \
+    Control-L \
     Control-M \
     Control-N \
     Control-O \
@@ -32,6 +33,7 @@ proc keys::ReservedList {} {
     Control-X \
     Control-Y \
     Control-Z \
+    Control-Shift-L \
     Control-Shift-Z \
     Alt-Q \
     Alt-W \
@@ -47,7 +49,7 @@ proc keys::ReservedList {} {
 
 proc keys::UserList {} {
   set reserved [ReservedList]
-  foreach mod {"" Control- Alt- Shift- Control-Alt-} {
+  foreach mod {"" Control- Alt- Shift- Control-Shift- Control-Alt-} {
     if {$mod ni {Control- Control-Alt-}} {
       foreach k {F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12} {
         set key "$mod$k"
@@ -193,4 +195,4 @@ proc keys::Test {klist} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

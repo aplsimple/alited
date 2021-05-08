@@ -1,7 +1,7 @@
 #! /usr/bin/env tclsh
 # _______________________________________________________________________ #
 #
-# The unit procedures of alited.
+# The unit/file tree procedures of alited.
 # _______________________________________________________________________ #
 
 namespace eval tree {
@@ -12,8 +12,12 @@ namespace eval tree {
 proc tree::SwitchTree {} {
   namespace upvar ::alited al al obPav obPav
   if {[set al(TREE,isunits) [expr {!$al(TREE,isunits)}]]} {
+    unset al(widthPanBM)  ;# the variable used to save the panel's size
+    [$obPav PanL] add [$obPav FraFV]
     RecreateTree
   } else {
+    set al(widthPanBM) [winfo geometry [$::alited::obPav PanBM]]
+    [$obPav PanL] forget [$obPav FraFV]
     set al(TREE,files) no
     Create
   }
@@ -57,6 +61,10 @@ proc tree::CreateFilesTree {wtree} {
   baltip::tip [$obPav BuTswitch] $al(MC,swfiles)
   baltip::tip [$obPav BuTAddT] $al(MC,filesadd)
   baltip::tip [$obPav BuTDelT] $al(MC,filesdel)
+  baltip::tip [$obPav BuTUp] $al(MC,moveupF)
+  baltip::tip [$obPav BuTDown] $al(MC,movedownF)
+  $al(MENUEDIT) entryconfigure 0 -label $al(MC,moveupF)
+  $al(MENUEDIT) entryconfigure 1 -label $al(MC,movedownF)
   $wtree heading #0 -text ":: [file tail $al(prjroot)] ::"
   $wtree heading #1 -text $al(MC,files)
   bind $wtree <Return> {::alited::tree::OpenFile}
@@ -104,6 +112,10 @@ proc tree::CreateUnitsTree {TID wtree} {
   baltip::tip [$obPav BuTswitch] $al(MC,swunits)
   baltip::tip [$obPav BuTAddT] $al(MC,unitsadd)
   baltip::tip [$obPav BuTDelT] $al(MC,unitsdel)
+  baltip::tip [$obPav BuTUp] $al(MC,moveupU)
+  baltip::tip [$obPav BuTDown] $al(MC,movedownU)
+  $al(MENUEDIT) entryconfigure 0 -label $al(MC,moveupU)
+  $al(MENUEDIT) entryconfigure 1 -label $al(MC,movedownU)
   $wtree heading #0 -text [alited::bar::CurrentTab 1]
   $wtree heading #1 -text $al(MC,line)
   set ctab [alited::bar::CurrentTabID]
@@ -118,7 +130,7 @@ proc tree::CreateUnitsTree {TID wtree} {
     set parent [lindex $parents [expr {$lev-1}]]
     if {$leaf} {
       set title " $title"
-      set pr [expr {min(7,($l2-$l1)/20)}]
+      set pr [expr {max(0,min(7,($l2-$l1)/20))}]
       set imgopt "-image alimg_pro$pr"
     } else {
       set imgopt "-image alimg_gulls"
@@ -181,11 +193,15 @@ proc tree::ShowPopupMenu {ID X Y} {
     set m1 $al(MC,swunits)
     set m2 $al(MC,unitsadd)
     set m3 $al(MC,unitsdel)
+    set moveup $al(MC,moveupU) 
+    set movedown $al(MC,movedownU)
   } else {
     set img alimg_gulls
     set m1 $al(MC,swfiles)
     set m2 $al(MC,filesadd)
     set m3 $al(MC,filesdel)
+    set moveup $al(MC,moveupF) 
+    set movedown $al(MC,movedownF)
   }
   if {[string length $sname]>25} {set sname "[string range $sname 0 21]..."}
   $popm add command {*}[$obPav iconA none] -label $m1 \
@@ -193,9 +209,9 @@ proc tree::ShowPopupMenu {ID X Y} {
   $popm add command {*}[$obPav iconA none] -label $al(MC,updtree) \
     -command "alited::tree::RecreateTree" -image alimg_retry
   $popm add separator
-  $popm add command {*}[$obPav iconA Up] -label $al(MC,moveup) \
+  $popm add command {*}[$obPav iconA Up] -label $moveup \
     -accelerator F11 -command "::alited::main::MoveItem up" -image alimg_up
-  $popm add command {*}[$obPav iconA Down] -label $al(MC,movedown) \
+  $popm add command {*}[$obPav iconA Down] -label $movedown \
     -accelerator F12 -command "::alited::main::MoveItem down" -image alimg_down
   $popm add separator
   $popm add command {*}[$obPav iconA none] -label $m2 \
@@ -245,7 +261,10 @@ proc tree::OpenFile {{ID ""}} {
       if {[set ID [$wtree selection]] eq ""} return
     }
     lassign [$wtree item $ID -values] -> fname isfile
-    if {$isfile} {alited::file::OpenFile $fname}
+    if {$isfile} {
+      alited::file::OpenFile $fname
+      after idle ::alited::tree::RecreateTree
+    }
   }
 }
 
@@ -320,7 +339,7 @@ proc tree::CurrentItem {{Tree Tree}} {
   return $it
 }
 
-proc tree::NewSelection {{itnew ""} {line 0}} {
+proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
 
   namespace upvar ::alited al al obPav obPav
   variable doFocus
@@ -330,16 +349,18 @@ proc tree::NewSelection {{itnew ""} {line 0}} {
   set wtree [$obPav Tree]
   # newly selected item
   if {$itnew eq ""} {set itnew [CurrentItem]}
+  set header [alited::unit::GetHeader $wtree $itnew]
   lassign [$wtree item $itnew -values] l1 l2 - - - leaf
   if {$leaf ne "" && $leaf} {
     $wtree tag add tagBold $itnew
   }
-  set header [alited::unit::GetHeader $wtree $itnew]
   # get saved pos
   if {[catch {set pos $al(CPOS,$ctab,$header)} e]} {
     set pos [$wtxt index insert]
   }
-  if {[string is digit -strict $l1] && [string is digit -strict $l2]} {
+  if {$topos} {
+    set pos $line
+  } elseif {[string is digit -strict $l1] && [string is digit -strict $l2]} {
     if {[string is double -strict $line] && $line != 0 && \
     $l1<($l1+$line) && ($l1+$line)<($l2+1)} {
       # it's coming from a saved favorite item
@@ -362,7 +383,6 @@ proc tree::NewSelection {{itnew ""} {line 0}} {
       if {$o1<=$opos && $opos<($o2+1)} {
         set ohead [alited::unit::GetHeader $wtree $itold]
         set al(CPOS,$otab,$ohead) "$opos"
-        alited::favor::UpdatePos [alited::bar::FileName] $ohead [alited::p+ $opos -$o1]
       }
     }
   }
@@ -371,6 +391,10 @@ proc tree::NewSelection {{itnew ""} {line 0}} {
   if {$doFocus} {
     alited::main::FocusText $TID $pos
   }
+  if {$al(TREE,isunits)} {
+    alited::favor::LastVisited [$wtree item $itnew] $header
+  }
+  alited::main::UpdateGutter
   return $itnew
 }
 
@@ -427,6 +451,8 @@ proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
       set dcont [lreplace $dcont $i $i [list $fname "y"]]
       set nroot [AddToDirContents $lev 0 $fname $iroot]
       DirContents $fname $lev $nroot $globs
+    } else {
+      set dcont [lreplace $dcont $i $i [list $fname]]
     }
     incr i
   }
@@ -478,6 +504,17 @@ proc tree::GetTree {{parent {}} {Tree Tree}} {
   return $tree
 }
 
+proc tree::ExpandTree {tree {isexp yes}} {
+  namespace upvar ::alited al al obPav obPav
+  set wtree [$obPav $tree]
+  foreach item [GetTree {} $tree] {
+    lassign $item lev cnt ID
+    if {[llength [$wtree children $ID]]} {
+      $wtree item $ID -open $isexp
+    }
+  }
+}
+
 proc tree::RecreateTree {{wtree ""} {headers ""}} {
   namespace upvar ::alited al al
   if {$al(TREE,isunits)} {
@@ -487,7 +524,7 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
   }
   set TID [alited::bar::CurrentTabID]
   set wtxt [alited::main::CurrentWTXT]
-  set al(_unittree,$TID) [alited::unit::GetUnits [$wtxt get 1.0 "end -1 char"]]
+  set al(_unittree,$TID) [alited::unit::GetUnits $TID [$wtxt get 1.0 "end -1 char"]]
   Create
   # restore selections
   if {$headers ne ""} {
@@ -506,4 +543,4 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

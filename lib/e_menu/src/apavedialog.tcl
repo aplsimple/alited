@@ -325,7 +325,7 @@ oo::class create ::apave::APaveDialog {
         set defb2 $but
       }
       if {[set _ [string first "::" $txt]]>-1} {
-        set tt " -tooltip {[string range $txt $_+2 end]}"
+        set tt " -tip {[string range $txt $_+2 end]}"
         set txt [string range $txt 0 $_-1]
       } else {
         set tt ""
@@ -449,6 +449,8 @@ oo::class create ::apave::APaveDialog {
       lassign $sel pos1 pos2         ;# selection's start & end
       set l1 [expr {int($pos1)}]
       set l2 [expr {int($pos2)}]
+      set pos21 [$txt index "$pos2 linestart"]
+      if {[$txt get $pos21 $pos2] eq ""} {incr l2 -1}
       set lfrom [expr {$to>0 ? $l2+1 : $l1-1}]
       set lto   [expr {$to>0 ? $l1-1 : $l2-1}]
     } else {
@@ -1222,5 +1224,6 @@ oo::class create ::apave::APaveDialog {
 
 }
 # _____________________________ EOF _____________________________________ #
+#RUNF1: ../../src/alited.tcl
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl -1 9 12 "small icons"
 #RUNF1: ./tests/test_pavedialog.tcl

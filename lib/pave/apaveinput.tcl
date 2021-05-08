@@ -34,7 +34,7 @@
 
 package require Tk
 
-package provide apave 3.3.3a1
+package provide apave 3.3.3a6
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -380,3 +380,5 @@ oo::class create ::apave::APaveInput {
   }
 
 }
+# _________________________________ EOF _________________________________ #
+#RUNF1: ~/PG/github/pave/tests/test_pavedialog.tcl

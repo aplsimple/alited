@@ -7,23 +7,23 @@
 namespace eval find {
   variable win $::alited::al(WIN).winFind
   variable data; array set data [list]
-  set data(c1) 0
-  set data(c2) 0
-  set data(c3) 0
-  set data(c4) 0
-  set data(c5) 0
-  set data(vals1) [list exac "gl*" {\s+reg[[:alpha:]]*$}]
-  set data(vals2) [list "Exact matching string" "Global subject" "Boss Regularity"]
+  set data(c1) 0  ;# words only
+  set data(c2) 1  ;# case
+  set data(c3) 0  ;# by blank
+  set data(c4) 1  ;# wrap
+  set data(c5) 0  ;# on top
+  set data(vals1) [list]
+  set data(vals2) [list]
   set data(v1) 1
   set data(v2) 2
   set data(en1) ""
   set data(en2) ""
   set data(docheck) yes
-  set geo root=$::alited::al(WIN)
-  set minsize ""
-  variable delim1 [list " " "" ";" \n \t \$ \" ` ' @ % ^ & * ( ) # = | \\ / : , . ? ! < >]
-  variable ldelim [list " " "\n" "\t" "\}" "\{" "\[" "" "#" ";"]
-  variable rdelim [list " " "\n" "\t" "\}" "\]" "" "#" ";"]
+  variable geo root=$::alited::al(WIN)
+  variable minsize ""
+  variable delim1 [list " " "" ";" \n \t \$ \" ` ' @ # % ^ & * ( ) - + = | \\ / : , . ? ! < >]
+  variable ldelim [list " " "\n" "\t" "\}" "\{" "\[" "" "#" ";" \" \\]
+  variable rdelim [list " " "\n" "\t" "\}" "\]" "" "#" ";" \" \\]
   variable adelim [list "\}" "\{" "\[" "\]" {*}$delim1]
   variable counts ""
 }
@@ -67,9 +67,10 @@ proc find::GetCommandOfText {wtxt} {
   return [list [GetCommandOfLine $line $idx] $idx]
 }
 
-proc find::GetWordOfText {} {
+proc find::GetWordOfText {{mode ""}} {
   set wtxt [alited::main::CurrentWTXT]
-  if {[catch {set sel [$wtxt get sel.first sel.last]}]} {
+  if {$mode eq "noselect" || \
+  [catch {set sel [$wtxt get sel.first sel.last]}]} {
     set idx [$wtxt index insert]
     set line [$wtxt get "$idx linestart" "$idx lineend"]
     set sel [GetWordOfLine $line $idx]
@@ -146,7 +147,7 @@ proc find::CheckData {op} {
         set data(vals$i) [lreplace [set data(vals$i)] $f $f]
       }
       set data(vals$i) [linsert [set data(vals$i)] 0 [set data(en$i)]]
-      catch {set data(vals$i) [lreplace [set data(vals$i)] $al(MISC,maxsaved) end]}
+      catch {set data(vals$i) [lreplace [set data(vals$i)] $al(INI,maxfind) end]}
       $win.cbx$i configure -values [set data(vals$i)]
     } elseif {$i==1 || ($op eq "repl" && !$data(c3))} {
       set foc $win.cbx$i
@@ -202,15 +203,15 @@ proc find::Search {wtxt} {
   $obPav set_HighlightedString $findstr
   if {[$obPav csDarkEdit]} {
     set fg white
-    set bg #005a5d
+    set bg #1c1cff
   } else {
     set fg black
-    set bg #78fcff
+    set bg #8fc7ff
   }
   $wtxt tag configure fndTag -borderwidth 1 -relief raised -foreground $fg -background $bg
   $wtxt tag lower fndTag
   if {[catch {set fnd [$wtxt search {*}$options -count alited::find::counts -all -- $findstr 1.0]} err]} {
-    alited::msg ok err $err -title $alited::al(MC,error) -ontop yes -parent $win
+    alited::msg ok err $err -ontop yes -parent $win
     return {}
   }
   set i 0
@@ -226,11 +227,16 @@ proc find::Search {wtxt} {
 }
 
 proc find::Find {} {
+  namespace upvar ::alited obFND obFND
   variable data
   set wtxt [alited::main::CurrentWTXT]
   $wtxt tag remove sel 1.0 end
   set fndlist [Search $wtxt]
-  if {![llength $fndlist]} return
+  if {![llength $fndlist]} {
+    bell
+    focus [$obFND Cbx1]
+    return
+  }
   set indexprev [set indexnext 0]
   set index [$wtxt index insert]
   foreach idx12 $fndlist {
@@ -261,24 +267,28 @@ proc find::Find {} {
     if {$indexprev} {
       ::tk::TextSetCursor $wtxt $indexprev
       $wtxt tag add sel $indexprev $indp2
-    } else bell
+    } else {
+      bell
+    }
 
   } elseif {!$data(c4) && $data(v2)==2} {  ;# search forward & not wrap around
     if {$indexnext} {
       ::tk::TextSetCursor $wtxt $indexnext
       $wtxt tag add sel $indexnext $indn2
-    } else bell
+    } else {
+      bell
+    }
   }
   ::alited::main::CursorPos $wtxt
 }
 
-proc find::FindAll {wtxt TID} {
+proc find::FindAll {wtxt TID {tagme "add"}} {
   set fname [file tail [alited::bar::FileName $TID]]
   set l1 -1
   set allfnd [Search $wtxt]
   foreach idx12 $allfnd {
     lassign $idx12 index1 index2
-    $wtxt tag add fndTag $index1 $index2
+    if {$tagme eq "add"} {$wtxt tag add fndTag $index1 $index2}
     set l2 [expr {int($index1)}]
     if {$l1 != $l2} {
       set line [$wtxt get "$index1 linestart" "$index1 lineend"]
@@ -289,7 +299,9 @@ proc find::FindAll {wtxt TID} {
   return $allfnd
 }
 
-proc find::ShowResults {msg {mode 2}} {
+proc find::ShowResults {msg {mode 2} {TID ""}} {
+  set fname [file tail [alited::bar::FileName $TID]]
+  set msg [string map [list %f $fname] $msg]
   alited::info::Put $msg "" yes
   alited::Message "$msg [string repeat { } 40]" $mode
 }
@@ -300,10 +312,10 @@ proc find::ShowResults1 {allfnd} {
   ShowResults [string map [list %n [llength $allfnd] %s $data(en1)] $alited::al(MC,frres1)]
 }
 
-proc find::ShowResults2 {rn} {
+proc find::ShowResults2 {rn msg {TID ""}} {
   namespace upvar ::alited al al
   variable data
-  ShowResults [string map [list %n $rn %s $data(en1) %r $data(en2)] $alited::al(MC,frres2)] 3
+  ShowResults [string map [list %n $rn %s $data(en1) %r $data(en2)] $msg] 3 $TID
 }
 
 proc find::FindInText {} {
@@ -313,7 +325,7 @@ proc find::FindInText {} {
   ShowResults1 [FindAll $wtxt $TID]
 }
 
-proc find::FindInSession {} {
+proc find::FindInSession {{tagme "add"}} {
   namespace upvar ::alited al al
   alited::info::Clear
   set currTID [alited::bar::CurrentTabID]
@@ -324,22 +336,31 @@ proc find::FindInSession {} {
       alited::file::ReadFile $TID [alited::bar::FileName $TID]
     }
     lassign [alited::main::GetText $TID] curfile wtxt
-    lappend allfnd {*}[FindAll $wtxt $TID]
+    lappend allfnd {*}[FindAll $wtxt $TID $tagme]
   }
   ShowResults1 $allfnd
 }
 
 proc find::SearchWordInSession {} {
   variable data
-  set saved $data(en1)
-  if {[set data(en1) [GetWordOfText]] eq ""} {
+  set saven1 $data(en1)  ;# field "Find"
+  set savv1 $data(v1)    ;# rad "Exact"
+  set savc1 $data(c1)    ;# chb "Word only"
+  set savc2 $data(c2)    ;# chb "Case Sensitive"
+  if {[set data(en1) [GetWordOfText noselect]] eq ""} {
     bell
   } else {
-    set data(docheck) no
-    FindInSession
+    set data(v1) 1
+    set data(c1) 1
+    set data(c2) 1
+    set data(docheck) no  ;# no checks - no usage of the dialogue's widgets
+    FindInSession notag
     set data(docheck) yes
   }
-  set data(en1) $saved
+  set data(en1) $saven1
+  set data(v1) $savv1
+  set data(c1) $savc1
+  set data(c2) $savc2
 }
 
 proc find::SetCursor {wtxt idx1} {
@@ -347,6 +368,11 @@ proc find::SetCursor {wtxt idx1} {
   set len [string length $data(en2)]
   ::tk::TextSetCursor $wtxt [$wtxt index "$idx1 + ${len}c"]
   ::alited::main::CursorPos $wtxt
+}
+
+proc find::UpdateAfterReplace {} {
+  alited::main::UpdateGutter
+  alited::main::UpdateText
 }
 
 proc find::Replace {} {
@@ -361,6 +387,7 @@ proc find::Replace {} {
     SetCursor $wtxt $idx1
     set msg [string map [list %n 1 %s $data(en1) %r $data(en2)] $alited::al(MC,frres2)]
     ShowResults $msg 3
+    UpdateAfterReplace
   }
 }
 
@@ -383,12 +410,13 @@ proc find::ReplaceInText {} {
   if {![CheckData repl]} return
   set fname [file tail [alited::bar::FileName]]
   set msg [string map [list %f $fname %s $data(en1) %r $data(en2)] $al(MC,frdoit1)]
-  if {![alited::msg yesno warn $msg NO -title $al(MC,warning)]} {
+  if {![alited::msg yesno warn $msg NO]} {
     return ""
   }
   set wtxt [alited::main::CurrentWTXT]
   set rn [ReplaceAll $wtxt [Search $wtxt]]
-  ShowResults2 $rn
+  ShowResults2 $rn $alited::al(MC,frres2)
+  UpdateAfterReplace
 }
 
 proc find::ReplaceInSession {} {
@@ -396,7 +424,7 @@ proc find::ReplaceInSession {} {
   variable data
   if {![CheckData repl]} return
   set msg [string map [list %s $data(en1) %r $data(en2)] $al(MC,frdoit2)]
-  if {![alited::msg yesno warn $msg NO -title $al(MC,warning)]} {
+  if {![alited::msg yesno warn $msg NO]} {
     return ""
   }
   set currTID [alited::bar::CurrentTabID]
@@ -407,10 +435,13 @@ proc find::ReplaceInSession {} {
       alited::file::ReadFile $TID [alited::bar::FileName $TID]
     }
     lassign [alited::main::GetText $TID] curfile wtxt
-    incr rn [ReplaceAll $wtxt [Search $wtxt]]
+    if {[set rdone [ReplaceAll $wtxt [Search $wtxt]]]} {
+      ShowResults2 $rdone $alited::al(MC,frres2) $TID
+      incr rn $rdone
+    }
   }
-  ShowResults2 $rn
-
+  ShowResults2 $rn $alited::al(MC,frres3)
+  UpdateAfterReplace
 }
 
 proc find::Next {} {
@@ -440,7 +471,7 @@ proc find::_create {} {
   variable data
   set res 1
   while {$res} {
-    $obFND makeWindow $win $al(MC,frttl)
+    $obFND makeWindow $win $al(MC,icoreplace)
     $obFND paveWindow $win {
       {labB1 - - 1 1    {-st e}  {-t {$alited::al(MC,frfind)} -style TLabelFS}}
       {Cbx1 labB1 L 1 9 {-st wes} {-tvar ::alited::find::data(en1) -values {$::alited::find::data(vals1)}}}
@@ -482,7 +513,7 @@ proc find::_create {} {
       }]
     }
     after idle [$win.cbx1 selection range 0 end]
-    set res [$obFND showModal $win -geometry $::alited::find::geo {*}$minsize -focus $win.cbx1 -modal no -ontop $data(c5)]
+    set res [$obFND showModal $win -geometry $geo {*}$minsize -focus $win.cbx1 -modal no -ontop $data(c5)]
     set geo [wm geometry $win] ;# save the new geometry of the dialogue
     destroy $win
     ClearTags
@@ -507,4 +538,4 @@ proc find::_run {} {
   }
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

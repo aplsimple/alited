@@ -27,9 +27,9 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.3.3"
-  variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq \
-    [file normalize [info script]]} ? 1 : 0]
+  variable em_version "e_menu 3.3.3a6"
+  variable solo [expr {[info exist ::em::executable] || ( \
+  [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
   if {$solo} {set Argv0 [file normalize $::argv0]} {set Argv0 [info script]}
   if {[info exist ::em::executable]} {set Argv0 [file dirname $Argv0]}
@@ -625,7 +625,7 @@ proc ::em::xterm {sel amp {term ""}} {
   foreach {o v s} {-fs fs tf -geometry geo tg -title ttl _tmp} {
     if {[string first $o $tpars]>=0} {set $v ""} {set $v "$o [set ::em::$s]"}
   }
-  exec -ignorestderr {*}$term {*}$lang {*}$fs {*}$geo {*}$ttl {*}$tpars \
+  ::em::execcom {*}$term {*}$lang {*}$fs {*}$geo {*}$ttl {*}$tpars \
     -e {*}$composite
 }
 #=== call command in terminal
@@ -655,9 +655,23 @@ proc ::em::term {sel amp {term ""}} {
       }
     }
     set composite "$::em::lin_console $sel $amp"
-    exec -ignorestderr {*}$::em::linuxconsole -e {*}$composite
+    ::em::execcom {*}$::em::linuxconsole -e {*}$composite
   }
 }
+#=== exec for ex= parameter
+proc ::em::execcom {args} {
+  if {$::em::ex eq ""} {
+    exec -ignorestderr {*}$args
+  } else {
+    catch {
+      set com [string trim "$args" &]
+      set pid [pid [open "|$com"]]
+      set menudir [file dirname $::em::menufilename]
+      ::apave::writeTextFile "$menudir/.pid~" pid
+    }
+  }
+}
+
 #=== call command in shell
 proc ::em::shell0 {sel amp {silent -1}} {
   set ret true

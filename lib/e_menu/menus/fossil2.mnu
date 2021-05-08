@@ -1,15 +1,20 @@
 [OPTIONS]
 o=0
 in=1.0
-pos=154.42
+pos=14.0
 ::FSLUSER=aplsimple
-::FSLBRANCH=TclOO forced
-::FSLBRANCHCOLOR=#fe95ca
+::FSLBRANCH=tip
+::FSLBRANCHCOLOR=#004000
 ::EMENUTMPFILE=%mn.tmp~
-::EM_T_FILE=-g *,src/*,menus/*
-::EM_T_TIME=--now
+::EM_T_FILE=-g *,src/*,menus/*,lib/*
+::EM_T_TIME=none
 ::EM_T_DRY=0
 ::EM_T_VERBOSE=1
+::EMENUBRIEF=0
+::EMENUGREP=
+%C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT ""}
+%C if {![info exist ::EMENUCOMMIT1]} {set ::EMENUCOMMIT1 tip}
+%C if {![info exist ::EMENUCOMMIT2]} {set ::EMENUCOMMIT2 ""}
 
 [MENU]
  S:fossil pull S: cd %PD
@@ -84,30 +89,6 @@ SW:fossil uv sync %F SW: fossil uv add %F\nfossil uv sync
    https://$::FSLUSER:$::FSLPASS@chiselapp.com/user/$::FSLUSER/repository/$::FSLREPO
 
  R:  R: 2
-
- S:fossil commit ? S: cd %PD
- R:fossil commit ? R: %I {} "TOUCH & COMMIT" { \
-   fil1 {{   File(s):}} {"$::EM_T_FILE"} \
-   opc1 {{Time stamp:}} {{$::EM_T_TIME} {{none} {time --now --checkin --checkout}}} \
-   v_ {{} {-pady 4}} {} \
-   chb2 {{   Verbose:}} {$::EM_T_VERBOSE} \
-   v_2 {{} {-pady 4}} {} seh {} {} \
-   texc {{Hint:} {} {-h 15 -w 64 -ro 1 -wrap word}} \
-   { You can touch any file(s) before committing.\
-\n If you omit file/time of touching, it will not be made.\
-\n     ______________________________________________________\
-\n\n The file(s) mtime will be updated to the 'Time stamp'. \
-\n\n The 'File(s)' may be globs. Set '-g' before a comma-separated\
-\n list of glob patterns, for example: -g *,src/*,menus/*. \
-\n\n The 'Dry run' shows the supposed changes, not doing actually. \
-\n\n The 'Verbose' outputs extra information. \
-\n     ______________________________________________________\
-\n\n           AFTER TOUCHING THE COMMIT WILL BE MADE.} \
-   } -head {\n This will TOUCH the file(s) of Fossil repository\n to have the file(s) time equal to the time stamp.\n\n Then this will run COMMITTING on the repository:\n %PD\n} -weight bold == ::EM_T_FILE ::EM_T_TIME ::EM_T_VERBOSE
- S:fossil commit ? S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}
- SW:fossil commit ? SW: %IF "$::EM_T_TIME" ni {{} none} && "$::EM_T_FILE" ne "" %THEN fossil touch $::EM_T_v $::EM_T_TIME $::EM_T_FILE
- S:fossil commit ? S: fossil commit --allow-empty
-
  R:fossil commit -m ? --branch ? R: cd %PD
  R:fossil commit -m ? --branch ? R: %C set ::COMMES "%s" ; \
    if {"$::FSLBRANCH" eq ""} {set ::FSLBRANCH "%s"}
@@ -172,6 +153,66 @@ SW:fossil undo SW: fossil undo -n
    \n\n(This cancels result of prior operations, notably \
    \nof 'update', 'merge', stash', 'revert'.)" yesno warn NO
  S:fossil undo S: fossil undo
+
+ R:  R: 2
+
+ S:fossil commit ? S: cd %PD
+ R:fossil commit ? R: %I {} "TOUCH & COMMIT" { \
+   fil1 {{   File(s):}} {"$::EM_T_FILE"} \
+   opc1 {{Time stamp:}} {{$::EM_T_TIME} {{none} {time --now --checkin --checkout}}} \
+   v_ {{} {-pady 4}} {} \
+   chb2 {{   Verbose:}} {$::EM_T_VERBOSE} \
+   v_2 {{} {-pady 4}} {} seh {} {} \
+   texc {{Hint:} {} {-h 15 -w 64 -ro 1 -wrap word}} \
+   { You can touch any file(s) before committing.\
+\n If you omit file/time of touching, it will not be made.\
+\n     ______________________________________________________\
+\n\n The file(s) mtime will be updated to the 'Time stamp'. \
+\n\n The 'File(s)' may be globs. Set '-g' before a comma-separated\
+\n list of glob patterns, for example: -g *,src/*,menus/*. \
+\n\n The 'Dry run' shows the supposed changes, not doing actually. \
+\n\n The 'Verbose' outputs extra information. \
+\n     ______________________________________________________\
+\n\n           AFTER TOUCHING THE COMMIT WILL BE MADE.} \
+   } -head {\n This will TOUCH the file(s) of Fossil repository\n to have the file(s) time equal to the time stamp.\n\n Then this will run COMMITTING on the repository:\n %PD\n} -weight bold == ::EM_T_FILE ::EM_T_TIME ::EM_T_VERBOSE
+ S:fossil commit ? S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}
+ SW:fossil commit ? SW: %IF "$::EM_T_TIME" ni {{} none} && "$::EM_T_FILE" ne "" %THEN fossil touch $::EM_T_v $::EM_T_TIME $::EM_T_FILE
+ S:fossil commit ? S: fossil commit --allow-empty
+
+ S:fossil diff ? S: cd %PD
+RW:fossil diff ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
+ R:fossil diff ? R: %I {} "DIFF" { \
+   v_ {{} {-pady 4} {}} {} \
+   fco1  {{         From:} {} {-h 10 -state readonly -cbxsel "$::EMENUCOMMIT1"}} \
+     {@@-div1 "\[" -div2 "\]" -ret 1 -list {"" tip} $::EMENUTMPFILE@@ \
+     INFO: @@-div1 "\] " $::EMENUTMPFILE@@} \
+   fco2  {{           To:} {} {-h 10 -state readonly -cbxsel "$::EMENUCOMMIT2"}} \
+     {@@-div1 "\[" -div2 "\]" -ret 1 -list {"" tip} $::EMENUTMPFILE@@ \
+     INFO: @@-div1 "\] " $::EMENUTMPFILE@@} \
+   cbx1  {{Regexp filter:} {} {}} { {$::EMENUGREP} {} {^[+]} } \
+   chbBr {{        Brief:} {-pady 4} {}} {$::EMENUBRIEF} \
+   seh {{} {-pady 3} {}} {} \
+   texc  {{         Hint:} {} {-h 11 -w 67 -ro 1 -wrap word}} \
+   { Select versions from the comboboxes to be compared. \
+  \n\n By default, 'tip' is compared to current files. \
+  \n\n A 'to' version is later than 'from'. Empty means 'current files'. \
+  \n\n When 'regexp filter' set, an additional console shows \
+  \n the filtered lines. \
+  \n\n temp file:\n $::EMENUTMPFILE} \
+   } -head {\n This will compare selected versions of file:} \
+   -weight bold == ::EMENUCOMMIT1 ::EMENUCOMMIT2 ::EMENUGREP ::EMENUBRIEF
+ R:fossil diff ? R: %C \
+   if {"$::EMENUCOMMIT1" eq ""} {set ::EMENUTMP1 ""} {set ::EMENUTMP1 "--from $::EMENUCOMMIT1"}; \
+   if {"$::EMENUCOMMIT2" eq ""} {set ::EMENUTMP2 ""} {set ::EMENUTMP2 "--to $::EMENUCOMMIT2"}; \
+   if {"$::EMENUCOMMIT1$::EMENUCOMMIT2" eq ""} \
+     {set ::EMENUTMP1 "--from current"; set ::EMENUTMP2 "--to tip"}
+ R:fossil diff ? R: %C if {$::EMENUBRIEF} {append ::EMENUTMP2 " -brief"}
+ R:fossil diff ? R: %C set ::EMENUTMP "fossil diff $::EMENUTMP1 $::EMENUTMP2"
+ R:fossil diff ? R: %IF {$::EMENUGREP} eq "" %THEN %T $::EMENUTMP
+RW:fossil diff ? RW: $::EMENUTMP | grep -n "$::EMENUGREP" > "$::EMENUTMPFILE"
+SW:fossil diff ? SW: cat "$::EMENUTMPFILE"
+ R:fossil diff ? R: %C file delete "$::EMENUTMPFILE"
+ R:fossil diff ? R: %IF !$::EMENUBRIEF %THEN %T $::EMENUTMP
 
  R:  R: 2
 
