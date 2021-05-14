@@ -630,10 +630,12 @@ oo::class create ::apave::APaveDialog {
     #   pop - path to the menu
     #   txt - path to the text
 
+    set accQ [::apave::KeyAccelerator [::apave::getTextHotkeys AltQ]]
+    set accW [::apave::KeyAccelerator [::apave::getTextHotkeys AltW]]
     set res "\$pop add separator
-      \$pop add command [my iconA upload] -accelerator Alt+Q \\
+      \$pop add command [my iconA upload] -accelerator $accQ \\
       -label \"Highlight First\" -command \"[self] seek_highlight %w 2\"
-      \$pop add command [my iconA download] -accelerator Alt+W \\
+      \$pop add command [my iconA download] -accelerator $accW \\
       -label \"Highlight Last\" -command \"[self] seek_highlight %w 3\"
       \$pop add command [my iconA previous] -accelerator Alt+Left \\
       -label \"Highlight Previous\" -command \"[self] seek_highlight %w 0\"
@@ -678,9 +680,11 @@ oo::class create ::apave::APaveDialog {
     bind $w <KeyRelease> [list + [self] unhighlight_matches $w]
     bind $w <Alt-Left> "[self] seek_highlight $w 0 ; break"
     bind $w <Alt-Right> "[self] seek_highlight $w 1 ; break"
-    foreach {kq kw} {q w Q W} {
-      bind $w <Alt-$kq> [list [self] seek_highlight $w 2]
-      bind $w <Alt-$kw> [list [self] seek_highlight $w 3]
+    foreach k [::apave::getTextHotkeys AltQ] {
+      bind $w <$k> [list [self] seek_highlight $w 2]
+    }
+    foreach k [::apave::getTextHotkeys AltW] {
+      bind $w <$k> [list [self] seek_highlight $w 3]
     }
   }
 
@@ -961,7 +965,7 @@ oo::class create ::apave::APaveDialog {
     set il [set maxw 0]
     if {$readonly} {
       # only for messaging (not for editing):
-      set msg [string map {\\n \n} $msg]
+      set msg [string map {\\\\n \\n \\n \n} $msg]
     }
     foreach m [split $msg \n] {
       set m [string map {$ \$ \" \'\'} $m]
@@ -1047,7 +1051,7 @@ oo::class create ::apave::APaveDialog {
         if {$hidefind} {
           lappend widlist [list h__ h_3 L 1 4 "-cw 1"]
         } else {
-          lappend widlist [list labfnd h_3 L 1 1 "-st e" "-t {Find:}"]
+          lappend widlist [list labfnd h_3 L 1 1 "-st e" "-t {[msgcat::mc {Find: }]}"]
           lappend widlist [list Entfind labfnd L 1 1 \
             "-st ew -cw 1" "-tvar ${_pdg(ns)}PD::fnd -w 10"]
           lappend widlist [list labfnd2 Entfind L 1 1 "-cw 2" "-t {}"]
@@ -1224,6 +1228,6 @@ oo::class create ::apave::APaveDialog {
 
 }
 # _____________________________ EOF _____________________________________ #
-#RUNF1: ../../src/alited.tcl
+#RUNF1: ../../src/alited.tcl DEBUG
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl -1 9 12 "small icons"
 #RUNF1: ./tests/test_pavedialog.tcl

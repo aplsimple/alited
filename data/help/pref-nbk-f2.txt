@@ -1,0 +1,23 @@
+ Use drop-down list to select End-of-Line for your texts.
+ "LF" fits Linux, "CR" - Mac, "CRLF" - Windows. The empty
+ value means "auto".
+
+ The alited application provides a space indentation only.
+ No "smart", "auto", "tab replacements" etc.
+
+ Select the indentation length for your projects.
+
+ The "multiline strings" option should be set carefully.
+ Its "on" value would highlight all Tcl strings properly,
+ including the multi-line ones.
+
+ However, its "on" value is NOT recommended for large files
+ or/and poor hardware, because it would drasticly slow the
+ editing.
+
+ On the other hand, having granular projects with a lot of
+ small Tcl modules, you can try and switch this option on.
+
+ Also note that using "\" as string continuations and "\\n"
+ as line cutters you can easily avoid issues with multiline
+ strings, even with the "multiline strings" option off.

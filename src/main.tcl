@@ -163,7 +163,7 @@ proc main::HighlightText {TID curfile wtxt} {
           -cmd "::alited::unit::Modified $TID" \
           -cmdpos "::alited::main::CursorPos" \
           -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)" \
-          -plaintext [expr {$ext ne ".tcl"}]
+          -plaintext [expr {$ext ni {.tcl .tm .msg}}]
         ::hl_tcl::hl_text $wtxt
       }
     }
@@ -181,7 +181,8 @@ proc main::PackTextWidgets {wtxt wsbv} {
   set bind [list $obPav fillGutter $wtxt $canvas $width $shift]
   {*}$bind
   # widgets created outside apave require the theming:
-  after idle "$obPav csSet $al(INI,CS) $al(WIN) -doit"
+  set cs [$obPav csCurrent]
+  after idle "$obPav csSet $cs $al(WIN) -doit"
 }
 
 proc main::FocusInText {TID wtxt} {
@@ -194,14 +195,16 @@ proc main::FocusInText {TID wtxt} {
 
 proc main::BindsForText {TID wtxt} {
 
-  bind $wtxt <FocusIn> [list after 200 "::alited::main::FocusInText $TID $wtxt"]
-  foreach ev {L l ButtonRelease-1} {
-    bind $wtxt <Control-$ev> "::alited::find::SearchUnit $wtxt ; break"
-    bind $wtxt <Control-Shift-$ev> "::alited::find::SearchWordInSession ; break"
+  if {[alited::bar::BAR isTab $TID]} {
+    bind $wtxt <FocusIn> [list after 200 "::alited::main::FocusInText $TID $wtxt"]
   }
+  bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
+  bind $wtxt <Control-Shift-ButtonRelease-1> "::alited::find::SearchWordInSession ; break"
+  bind $wtxt <Control-Tab> "::alited::bar::ControlTab ; break"
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action
   alited::keys::BindKeys $wtxt template
+  alited::keys::BindKeys $wtxt preference
 }
 
 proc main::CurrentWTXT {} {
@@ -231,6 +234,10 @@ proc main::CursorPos {wtxt args} {
 
 proc main::MoveItem {to {f1112 no}} {
   namespace upvar ::alited al al obPav obPav
+  if {$al(TPL,%u) ne "DEBUG"} {
+    alited::Message "DEBUG mode yet" 4
+    return
+  }
   if {!$al(TREE,isunits) && [alited::file::MoveExternal $f1112]} return
   set wtree [$obPav Tree]
   set itemID [$wtree selection]
@@ -239,7 +246,7 @@ proc main::MoveItem {to {f1112 no}} {
   }
   if {$itemID eq ""} {
     if {$f1112} {set geo ""} {set geo "-geometry pointer+10+10"}
-    alited::msg ok warn $al(MC,nosels) {*}$geo
+    alited::Message "No item selected." 4
     return
   }
   if {$al(TREE,isunits)} {
@@ -253,6 +260,8 @@ proc main::UpdateProjectInfo {} {
   namespace upvar ::alited al al obPav obPav
   if {$al(prjroot) ne ""} {set stsw normal} {set stsw disabled}
   [$obPav BuTswitch] configure -state $stsw
+  if {[set eol $al(prjEOL)] eq ""} {set eol auto}
+  [$obPav Labstat4] configure -text "eol=$eol, [msgcat::mc ind]=$al(prjindent)"
 }
 
 proc main::_create {} {
@@ -273,6 +282,7 @@ proc main::_create {} {
       file $alited::al(MC,mnufile)
       edit $alited::al(MC,mnuedit)
       tool $alited::al(MC,mnutools)
+      setup $alited::al(MC,mnusetup)
       help $alited::al(MC,mnuhelp)
     }} alited::menu::FillMenu}
     {frat - - - - {pack -fill both}}
@@ -305,7 +315,7 @@ proc main::_create {} {
     {.fraFV.v_ - - - - {pack -side top -fill x} {-h 5}}
     {.fraFV.fra1 - - - - {pack -side top -fill x}}
     {.fraFV.fra1.seh - - - - {pack -side top -fill x -expand 1 -pady 0}}
-    {.fraFV.fra1.BuTVisitF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_misc -tip {$alited::al(MC,FavVisit)} -com alited::favor::SwitchFavVisit}}
+    {.fraFV.fra1.BuTVisitF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_misc -tip {$alited::al(MC,lastvisit)} -com alited::favor::SwitchFavVisit}}
     {.fraFV.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
     {.fraFV.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_heart -tip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
     {.fraFV.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -tip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
@@ -320,7 +330,7 @@ proc main::_create {} {
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
     {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3} {alited::bar::FillBar %w}}
     {#TODO
-to hide, use:
+to hide the header 'FraHead', use:
 pack forget [$obPav FraHead]
 to show, use:
 pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
@@ -339,8 +349,8 @@ pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
     {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - {pack}}
     {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
-      {Row: -font {-slant italic -size $alited::al(FONTSIZE,small)}} 12
-      {" Col:" -font {-slant italic -size $alited::al(FONTSIZE,small)}} 5
+      {{$alited::al(MC,Row:)} -font {-slant italic -size $alited::al(FONTSIZE,small)}} 12
+      {{$alited::al(MC,Col:)} -font {-slant italic -size $alited::al(FONTSIZE,small)}} 5
       {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor w -expand 1} 50
       {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor e} 25
     }}}
@@ -359,12 +369,12 @@ proc main::_run {} {
   namespace upvar ::alited al al obPav obPav
   ::apave::setAppIcon $al(WIN) $::alited::img::_AL_IMG(feather)
   ::apave::setProperty DirFilGeoVars [list ::alited::DirGeometry ::alited::FilGeometry]
-  [$obPav Labstat4] configure -text "System encoding: [encoding system]"
-  $obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
-    -onclose alited::Exit {*}$al(GEOM)
-  if {$al(RESTART) ne "2"} {alited::ini::SaveIni}
+  set ans [$obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
+    -onclose alited::Exit {*}$al(GEOM)]
+  if {$ans ne "2"} {alited::ini::SaveIni}
   destroy $al(WIN)
   $obPav destroy
+  return $ans
 }
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl DEBUG

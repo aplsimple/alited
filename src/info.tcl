@@ -37,6 +37,9 @@ proc info::Clear {{i -1}} {
   } else {
     set list [lreplace $list $i $i]
     set info [lreplace $info $i $i]
+    namespace upvar ::alited obPav obPav
+    lassign [alited::FgFgBold] fg
+    catch {[$obPav LbxInfo] itemconfigure 0 -foreground $fg}
   }
 }
 
@@ -56,4 +59,4 @@ proc info::ListboxSelect {w} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl
+#RUNF1: alited.tcl DEBUG

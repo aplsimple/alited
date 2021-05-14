@@ -1,0 +1,17 @@
+ Use buttons on the right to add, change or delete a template.
+
+ Choose or erase a template's hot keys from the dropdown combobox.
+
+ In a template's text, set the cursor where it should be at inserting.
+
+ In the text, use the following wildcards:
+    %d - date
+    %t - time
+    %u - user's login
+    %U - user's name
+    %m - user's mail
+    %w - user's web site
+    %f - current file's tail name
+    %n - current file's root name (namespace)
+    %p - current procedure/method's name
+    %a - current procedure/method's arguments

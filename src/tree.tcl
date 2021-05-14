@@ -81,7 +81,7 @@ proc tree::CreateFilesTree {wtree} {
       set parent [alited::tree::NewItemID [incr iroot]]
     }
     if {$isfile} {
-      if {[string tolower [file extension $fname]] eq ".tcl"} {
+      if {[alited::file::IsTcl $fname]} {
         set imgopt "-image alimg_tclfile"
       } else {
         set imgopt "-image alimg_file"
@@ -125,7 +125,7 @@ proc tree::CreateUnitsTree {TID wtree} {
   foreach item $al(_unittree,$TID) {
     set itemID  [alited::tree::NewItemID [incr iit]]
     lassign $item lev leaf fl1 title l1 l2
-    if {$title eq ""} {set title "Lines $l1-$l2"}
+    if {$title eq ""} {set title "[msgcat::mc Lines] $l1-$l2"}
     set lev [expr {min($lev,[llength $parents])}]
     set parent [lindex $parents [expr {$lev-1}]]
     if {$leaf} {
@@ -188,6 +188,7 @@ proc tree::ShowPopupMenu {ID X Y} {
   menu $popm -tearoff 0
   set header [lindex [split [alited::unit::GetHeader $wtree $ID] \n] 0]
   set sname [$wtree item $ID -text]
+  lassign [$wtree item $ID -values] -> fname isfile - - isunit
   if {$al(TREE,isunits)} {
     set img alimg_folder
     set m1 $al(MC,swunits)
@@ -219,10 +220,18 @@ proc tree::ShowPopupMenu {ID X Y} {
   $popm add command {*}[$obPav iconA none] -label $m3 \
     -command "::alited::tree::DelItem $ID" -image alimg_delete
   if {$al(TREE,isunits)} {
+    if {$isunit} {
+      $popm add separator
+      $popm add command {*}[$obPav iconA none] -label $al(MC,copydecl) \
+        -command "clipboard clear ; clipboard append {$header}"
+    }
+  } elseif {!$isfile} {
     $popm add separator
-    $popm add command {*}[$obPav iconA none] -label $al(MC,copydecl) \
-      -command "clipboard clear ; clipboard append {$header}"
+    set msg [string map [list %n $sname] $al(MC,openofdir)]
+    $popm add command {*}[$obPav iconA OpenFile] -label $msg \
+      -command "::alited::file::OpenOfDir {$fname}"
   }
+  $obPav themePopup $popm
   tk_popup $popm $X $Y
 }
 

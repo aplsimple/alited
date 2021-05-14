@@ -24,7 +24,7 @@ proc unit::GetUnits {TID textcont} {
   # Returns a list of unit items.
   # An item contains:
   #   - level
-  #   - 0 (branch) or 1 (leaf)
+  #   - 0 (branch) or 1 (INI,LEAF)
   #   - title
   #   - line1 - first text line for the item 
   #   - line2 - last text line for the item 
@@ -64,8 +64,8 @@ proc unit::GetUnits {TID textcont} {
       set leaf [set icomleaf 0]
       set lev [expr {max(0,[string length $cmn1]-1)}]
     } elseif { \
-    $al(LEAF)  && $al(RE,leaf) ne {} && [regexp $al(RE,leaf) $line -> t1 t2 t3 t4 t5 t6 t7] || \
-    !$al(LEAF) && $al(RE,proc) ne {} && [regexp $al(RE,proc) $line -> t1 t2 t3 t4 t5 t6 t7]} {
+    $al(INI,LEAF)  && $al(RE,leaf) ne {} && [regexp $al(RE,leaf) $line -> t1 t2 t3 t4 t5 t6 t7] || \
+    !$al(INI,LEAF) && $al(RE,proc) ne {} && [regexp $al(RE,proc) $line -> t1 t2 t3 t4 t5 t6 t7]} {
       set title $t2  ;# default title: just after found string
       foreach t {t7 t6 t5 t4 t3} {
         if {[set _ [set $t]] ne ""} {
@@ -77,7 +77,7 @@ proc unit::GetUnits {TID textcont} {
         # let only a last namespace be present in the titles
         set title [string range $title $cl+2 end]
       }
-      set flag1 $al(LEAF)
+      set flag1 $al(INI,LEAF)
       set flag [set leaf 1]
     } else {
       set flag [expr {$i>=$llen}]
@@ -87,7 +87,7 @@ proc unit::GetUnits {TID textcont} {
         set l1 [expr {[lindex $item 4]-1}]
         if {$l1>0 && ![llength $retlist]} {
           # first found at line>1 => create a starting leaf
-          lappend retlist [list $lev 1 $al(LEAF) "" 1 $l1]
+          lappend retlist [list $lev 1 $al(INI,LEAF) "" 1 $l1]
         }
         lassign [lindex $retlist end] levE leafE flE namE l1E
         lassign $item levC leafC flC namC l1C
@@ -287,8 +287,8 @@ proc unit::MoveUnit {wtree to itemID headers f1112} {
     }
     set io $l1
   }
-  if {$io<$al(INTRO_LINES)} {
-    set msg [string map [list %n $al(INTRO_LINES)] $al(MC,introln2)]
+  if {$io<$al(INI,LINES1)} {
+    set msg [string map [list %n $al(INI,LINES1)] $al(MC,introln2)]
     if {$f1112} {set geo ""} else {set geo "-geometry pointer+10+10"}
     alited::msg ok err $msg -title $al(MC,introln1) {*}$geo
     return no
@@ -326,6 +326,9 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
     if {!$ok} break
   }
   after idle "set alited::al(RECREATE) 1"
+  if {[set sel [$wtree selection]] ne ""} {
+    after idle [list after 10 "$wtree selection set {$sel}"]
+  }
 }
 
 proc unit::GetHeader {wtree ID {NC ""}} {
@@ -427,8 +430,19 @@ proc unit::SelectedLines {} {
 
 proc unit::Indent {} {
   lassign [SelectedLines] wtxt l1 l2
+  set indent $::apave::_AP_VARS(INDENT)
+  set len [string length $::apave::_AP_VARS(INDENT)]
   for {set l $l1} {$l<=$l2} {incr l} {
-    $wtxt insert $l.0 $::apave::_AP_VARS(INDENT)
+    set line [$wtxt get $l.0 $l.end]
+    set leadsp [::apave::obj leadingSpaces $line]
+    set sp [expr {$leadsp % $len}]
+    # align by the indent edge
+    if {$sp==0} {
+      set ind $indent
+    } else {
+      set ind [string repeat " " [expr {$len - $sp}]]
+    }
+    $wtxt insert $l.0 $ind
   }
 }
 
@@ -437,8 +451,12 @@ proc unit::UnIndent {} {
   set len [string length $::apave::_AP_VARS(INDENT)]
   for {set l $l1} {$l<=$l2} {incr l} {
     set line [$wtxt get $l.0 $l.end]
-    if {[string first $::apave::_AP_VARS(INDENT) $line]==0} {
-      $wtxt delete $l.0 "$l.0 + ${len}c"
+    if {[string first " " $line]==0} {
+      set leadsp [::apave::obj leadingSpaces $line]
+      # align by the indent edge
+      set sp [expr {$leadsp % $len}]
+      if {$sp==0} {set sp $len}
+      $wtxt delete $l.0 "$l.0 + ${sp}c"
     }
   }
 }
@@ -511,15 +529,15 @@ proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
     }
     CheckUndoRedoIcons $wtxt $TID
     if {$al(TREE,isunits) && (![info exists al(RECREATE)] || $al(RECREATE))} {
-      if {$l1<$l2 || $al(LEAF) && [regexp $al(RE,leaf2) $args] || \
-      !$al(LEAF) && [regexp $al(RE,proc2) $args]} {
+      if {$l1<$l2 || $al(INI,LEAF) && [regexp $al(RE,leaf2) $args] || \
+      !$al(INI,LEAF) && [regexp $al(RE,proc2) $args]} {
         alited::tree::RecreateTree
       } elseif {[lsearch -index 4 $al(_unittree,$TID) $l1]>-1} {
         alited::tree::RecreateTree
       } else {
         set line [$wtxt get $l1.0 $l1.end]
-        if {$al(LEAF) && [regexp $al(RE,leaf) $line] || \
-        !$al(LEAF) && [regexp $al(RE,proc) $line] || [regexp $al(RE,branch) $line]} {
+        if {$al(INI,LEAF) && [regexp $al(RE,leaf) $line] || \
+        !$al(INI,LEAF) && [regexp $al(RE,proc) $line] || [regexp $al(RE,branch) $line]} {
           alited::tree::RecreateTree
         }
       }

@@ -5,24 +5,55 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.3
+package provide alited 0.6
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
 
 # __________________________ Open existing app _________________________ #
 
-wm withdraw .
+namespace eval alited {
+
+  proc raise_window {} {
+    # Raises the app's window.
+
+    variable al
+
+    if {$::tcl_platform(platform) eq "windows"} {
+      #wm attributes . -alpha 1.0
+    } else {
+      catch {wm deiconify . ; raise .}
+      wm withdraw $al(WIN)
+      wm deiconify $al(WIN)
+    }
+  }
+
+  proc run_remote {cmd args} {
+    # Runs a command that was started by another process.
+  
+    if {[catch { $cmd {*}$args }]} {
+      return -code error
+    }
+  }
+}
+
+if {$::tcl_platform(platform) eq "windows"} {
+  wm attributes . -alpha 0.0
+} else {
+  wm withdraw .
+}
 if {"DEBUG" eq [lindex $::argv 0]} {
   set ::argv [lreplace $::argv 0 0]
   incr ::argc -1
-} else {
+} elseif {$::tcl_platform(platform) eq "unix"} {
   set port 48784
   if {[catch {::comm::comm config -port $port}] && \
   ![catch {::comm::comm send $port ::alited::run_remote ::alited::raise_window }]} {
     destroy .
     exit
   }
+} else {
+  after idle ::alited::raise_window
 }
 
 # ________________________ Main variables _________________________ #
@@ -70,7 +101,7 @@ namespace eval alited {
   variable FilGeometry ""
 
   # misc. consts
-  variable PRJEXT ".alited"
+  variable PRJEXT ".ale"
   variable EOL {@~}  ;# "end of line" for ini-files
 
   # load localized messages
@@ -82,20 +113,20 @@ namespace eval alited {
   set al(prjname) ""
   set al(prjfile) ""
   set al(prjroot) ""
-  set al(prjdesc) ""
   set al(prjindent) 2
-  set al(prjEOL) LF
+  set al(prjmultiline) 0
+  set al(prjEOL) {}
   set al(TITLE) "%f :: %d :: %p - alited"
 }
 
-# _______________________________________________________________________ #
+# _____________________________ Packages used __________________________ #
 
 package require bartabs
 package require apave
 package require hl_tcl
 package require baltip
 
-# _______________________________________________________________________ #
+# __________________________ Common procs ________________________ #
 
 namespace eval alited {
 
@@ -128,44 +159,6 @@ namespace eval alited {
     return [lindex $res 0]
   }
 
-  proc p+ {p1 p2} {
-    # Sums two text positions straightforward: lines & columns separately.
-    # The lines may be with "-".
-
-    lassign [split $p1 .] l11 c11
-    lassign [split $p2 .] l21 c21
-    foreach n {l11 c11 l21 c21} {
-      if {![string is digit -strict [string trimleft [set $n] -]]} {set $n 0}
-    }
-    return "[incr l11 $l21].[incr c11 $c21]"
-  }
-
-  proc HelpAbout {} {
-    source [file join $alited::SRCDIR about.tcl]
-    about::About
-  }
-
-  proc Exit {{w ""}} {
-    variable al
-    variable obPav
-    if {[alited::file::AllSaved]} {
-      $obPav res $al(WIN) 0
-      alited::find::_close
-      alited::tool::_close
-    }
-  }
-  proc Restart {} {
-    variable al
-    set al(RESTART) 1
-    Exit
-  }
-
-  proc FgFgBold {} {
-    variable obPav
-    lassign [$obPav csGet] - fg - - - - - - - fgbold
-    return [list $fg $fgbold]
-  }
-
   proc Message {msg {mode 1} {lab ""} {first yes}} {
     variable al
     variable obPav
@@ -195,23 +188,57 @@ namespace eval alited {
     }
   }
 
-  proc raise_window {} {
-    # Raises the app's window.
-
-    variable al
-    wm withdraw $al(WIN)
-    wm deiconify $al(WIN)
+  proc Message2 {msg {first 1}} {
+    variable obDl2
+    alited::Message $msg $first [$obDl2 LabMess]
   }
 
-  proc run_remote {cmd args} {
-    # Runs a command that was started by another process.
+  proc p+ {p1 p2} {
+    # Sums two text positions straightforward: lines & columns separately.
+    # The lines may be with "-".
+
+    lassign [split $p1 .] l11 c11
+    lassign [split $p2 .] l21 c21
+    foreach n {l11 c11 l21 c21} {
+      if {![string is digit -strict [string trimleft [set $n] -]]} {set $n 0}
+    }
+    return "[incr l11 $l21].[incr c11 $c21]"
+  }
+
+  proc HelpAbout {} {
+    source [file join $alited::SRCDIR about.tcl]
+    about::About
+  }
+
+  proc Help {win {suff ""}} {
+    variable DATADIR
+    set fname [lindex [split [dict get [info frame -1] proc] :] end-2]
+    set fname [file join [file join $DATADIR help] $fname$suff.txt]
+    if {[file exists $fname]} {
+      set msg [::apave::readTextFile $fname]
+    } else {
+      set msg "Here should be a text of\n\"$fname\""
+    }
+    msg ok "" $msg -title Help -text 1 -geometry root=$win -scroll no
+  }
   
-    if {[catch { $cmd {*}$args }]} {
-      return -code error
+  proc FgFgBold {} {
+    variable obPav
+    lassign [$obPav csGet] - fg - - - - - - - fgbold
+    return [list $fg $fgbold]
+  }
+
+  proc Exit {{w ""} {res 0}} {
+    variable al
+    variable obPav
+    if {[alited::file::AllSaved]} {
+      $obPav res $al(WIN) $res
+      alited::find::_close
+      alited::tool::_close
     }
   }
 
-# _______________ Load all sources into alited namespace _______________ #
+# _______________________ Sources in alited NS _______________________ #
 
   source [file join $SRCDIR ini.tcl]
   source [file join $SRCDIR img.tcl]
@@ -231,17 +258,17 @@ namespace eval alited {
   source [file join $SRCDIR menu.tcl]
   source [file join $SRCDIR pref.tcl]
   source [file join $SRCDIR project.tcl]
+  source [file join $SRCDIR check.tcl]
 }
 
-# _________________________ Run the alited app _________________________ #
+# _________________________ Run the app _________________________ #
 
 # this "if" satisfies the Ruff doc generator "package require":
 if {[package versions alited] eq ""} {
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
-  alited::main::_run     ;# run the main form
-  if {$alited::al(RESTART)} {
+  if {[alited::main::_run]} {     ;# run the main form
     cd $alited::SRCDIR
     exec tclsh $alited::SCRIPT {*}$::argv &
   }

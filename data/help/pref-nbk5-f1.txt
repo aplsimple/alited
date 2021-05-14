@@ -1,0 +1,7 @@
+ Use drop-down comboboxes to select a key combination
+ for appropriate operations.
+
+ Some key combinations may not work, so that you might
+ prefer some key groups to others.
+
+ E.g. Alt+A/B/C.. would highly likely work everywhere.

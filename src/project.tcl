@@ -1,0 +1,546 @@
+#! /usr/bin/env tclsh
+# ___________________________ Description _________________________ #
+
+# Name:    project.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    04/28/2021
+# Brief:   Handles projects.
+# License: MIT.
+
+# _________________________ Code of project ________________________ #
+
+namespace eval project {
+  variable win $::alited::al(WIN).fraPrj
+  variable OPTS [list prjname prjroot prjEOL prjindent prjmultiline]
+  variable prjlist [list]
+  variable tablist [list]
+  variable geo root=$::alited::al(WIN)
+  variable minsize ""
+  variable ilast -1
+  variable oldTab ""
+  variable prjinfo; array set prjinfo [list]
+  variable data; array set data [list]
+  variable fnotes ""
+}
+
+proc project::TabFileInfo {} {
+  namespace upvar ::alited al al obDl2 obDl2
+  set lbx [$obDl2 LbxFlist]
+  $lbx delete 0 end
+  foreach tab $al(tablist) {
+    set fname [lindex [split $tab \t] 0]
+    $lbx insert end $fname
+  }
+}
+
+proc project::SaveCurrFileList {title {isnew no}} {
+  namespace upvar ::alited al al obDl2 obDl2
+  variable win
+  set asks [list $al(MC,prjaddfl) add $al(MC,prjsubstfl) change $al(MC,prjdelfl) delete \
+    $al(MC,prjnochfl) file Cancel cancel]
+  set msg [string map [list %n [string toupper $title]] $al(MC,prjgoing)]
+  append msg \n\n $al(MC,prjsavfl)
+  set ans [$obDl2 misc ques $title $msg $asks file]
+  switch $ans {
+    "delete" {
+      set al(tablist) [list]
+      TabFileInfo
+    }
+    "add" - "change" {
+      if {$ans eq "change" || $isnew} {
+        set al(tablist) [list]
+      }
+      lassign [alited::bar::GetBarState] TIDcur - wtxt
+      foreach tab [alited::bar::BAR listTab] {
+        set TID [lindex $tab 0]
+        if {$TID eq $TIDcur} {
+          set pos [$wtxt index insert]
+        } else {
+          set pos [alited::bar::GetTabState $TID --pos]
+        }
+        set fname [set fn [alited::bar::BAR $TID cget -tip]]
+        append fn \t $pos
+        if {$fname ne $al(MC,nofile) && [lsearch -exact $al(tablist) $fn]<0} {
+          lappend al(tablist) $fn
+        }
+      }
+      TabFileInfo
+    }
+    "file" {
+      if {$isnew} {
+        set al(tablist) [list]
+        TabFileInfo
+      }
+    }
+    default {
+      return no
+    }
+  }
+  return yes
+}
+
+proc project::Selected {what {domsg yes}} {
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  set tree [$obDl2 TreePrj]
+  if {[set isel [$tree selection]] eq "" && [set isel [$tree focus]] eq "" \
+  && $domsg} {
+    alited::Message2 $al(MC,prjsel) 4
+  }
+  if {$isel ne "" && $what eq "index"} {
+    set isel [$tree index $isel]
+  }
+  return $isel
+}
+
+proc project::Ok {args} {
+  namespace upvar ::alited al al obDl2 obDl2 obPav obPav
+  variable win
+  variable prjlist
+  variable prjinfo
+  variable data
+  if {[set isel [Selected index]] eq ""} {
+    focus [$obDl2 TreePrj]
+    return
+  }
+  if {[llength [alited::bar::BAR listFlag m]]} {
+    set msg [msgcat::mc "All modified files will be saved.\n\nDo you agree?"]
+    if {![alited::msg yesno ques $msg NO -geometry root=$win]} return
+  }
+  if {![alited::file::SaveAll]} {
+    $obDl2 res $win 0
+    return
+  }
+  set pname $al(prjname)
+  set fname [ProjectFileName $pname]
+  RestoreSettings
+  alited::ini::SaveIni
+  alited::file::CloseAll 1
+  set al(prjname) $pname
+  set al(prjfile) $fname
+  alited::ini::ReadIni $fname
+  alited::bar::FillBar [$obPav BtsBar]
+  alited::file::MakeThemReload
+  set TID [lindex [alited::bar::BAR listTab] $al(curtab) 0]
+  catch {alited::bar::BAR $TID show}
+  alited::main::ShowText
+  alited::main::UpdateProjectInfo
+  $obDl2 res $win 1
+  return
+}
+
+proc project::Cancel {args} {
+  namespace upvar ::alited obDl2 obDl2
+  variable win
+  SaveIni
+  RestoreSettings
+  $obDl2 res $win 0
+}
+
+proc project::ReadIni {} {
+  ProcEOL $::alited::EOL \n
+}
+
+proc project::SaveIni {} {
+  variable ilast
+  ProcEOL \n $::alited::EOL
+  set ilast [Selected index no]
+}
+
+proc project::SaveSettings {} {
+  namespace upvar ::alited al al
+  variable data
+  variable OPTS
+  foreach v $OPTS {
+    set data($v) $al($v)
+  }
+  set data(prjfile) $al(prjfile)
+}
+
+proc project::RestoreSettings {} {
+  namespace upvar ::alited al al
+  variable data
+  variable OPTS
+  foreach v $OPTS {
+    set al($v) $data($v)
+  }
+  set al(prjfile) $data(prjfile)
+  TabFileInfo
+}
+
+proc project::CurrentFileList {} {
+  namespace upvar ::alited al al
+  variable OPTS
+  set al(tablist) ""
+  foreach tab [alited::bar::BAR listTab] {
+    if {$al(tablist) ne ""} {append al(tablist) $alited::EOL}
+    set TID [lindex $tab 0]
+    append al(tablist) [alited::bar::BAR $TID cget -tip]
+  }
+}
+
+proc project::PutMiscOpts {fname} {
+  GetProjectOpts $fname
+  PutProjectOpts $fname $fname
+}
+
+proc project::GetProjectOpts {fname} {
+  namespace upvar ::alited al al
+  variable prjlist
+  variable prjinfo
+  variable OPTS
+  set pname [ProjectName $fname]
+  # save project names to 'prjlist' variable to display it by treeview widget
+  lappend prjlist $pname
+  # save project files' settings in prjinfo array
+  set filecont [::apave::readTextFile $fname]
+  foreach opt $OPTS {
+    catch {set prjinfo($pname,$opt) $al($opt)}  ;#defaults
+  }
+  set prjinfo($pname,prjfile) $fname
+  set prjinfo($pname,prjname) $pname
+  set prjinfo($pname,tablist) [list]
+  foreach line [split $filecont \n] {
+    lassign [GetOptVal $line] opt val
+    if {[lsearch $OPTS $opt]>-1} {
+      set prjinfo($pname,$opt) [ProcEOL $val in]
+    } elseif {$opt eq "tab"} {
+      lappend prjinfo($pname,tablist) $val
+    }
+  }
+  set al(tablist) $prjinfo($pname,tablist)
+  return $pname
+}
+
+proc project::GetProjects {} {
+  namespace upvar ::alited al al PRJEXT PRJEXT
+  variable prjlist
+  variable ilast
+  set prjlist [list]
+  set i [set ilast 0]
+  foreach finfo [alited::tree::GetDirectoryContents $::alited::PRJDIR] {
+    set fname [lindex $finfo 2]
+    if {[file extension $fname] eq $PRJEXT} {
+      if {[GetProjectOpts $fname] eq $al(prjname)} {
+        set ilast $i
+      }
+      incr i
+    }
+  }
+}
+
+proc project::SaveNotes {} {
+  namespace upvar ::alited obDl2 obDl2
+  variable fnotes
+  if {$fnotes ne ""} {
+    set fcont [[$obDl2 TexPrj] get 1.0 "end -1c"]
+    ::apave::writeTextFile $fnotes fcont
+  }
+}
+
+proc project::Select {{item ""}} {
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  variable prjinfo 
+  variable OPTS
+  variable fnotes
+  if {$item eq ""} {set item [Selected item no]}
+  if {$item ne ""} {
+    set tree [$obDl2 TreePrj]
+    if {[string is digit $item]} {  ;# the item is an index
+      if {$item<0 || $item>=[llength $prjlist]} return
+      set prj [lindex $prjlist $item]
+      set item $prjinfo($prj,ID)
+    } elseif {![$tree exists $item]} {
+      return
+    }
+    set isel [$tree index $item]
+    set prj [lindex $prjlist $isel]
+    set fnotes [file join $::alited::PRJDIR $prj-notes.txt]
+    set wtxt [$obDl2 TexPrj]
+    $wtxt delete 1.0 end
+    if {[file exists $fnotes]} {
+      $wtxt insert end [::apave::readTextFile $fnotes]
+    }
+    foreach opt $OPTS {
+      set al($opt) $prjinfo($prj,$opt)
+    }
+    set al(tablist) $prjinfo($prj,tablist)
+    TabFileInfo
+    if {[$tree selection] ne $item} {
+      $tree selection set $item
+    }
+    $tree see $item
+  }
+}
+
+proc project::UpdateTree {} {
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  variable prjinfo
+  set tree [$obDl2 TreePrj]
+  $tree delete [$tree children {}]
+  foreach prj $prjlist {
+    set prjinfo($prj,ID) [$tree insert {} end -values [list $prj]]
+  }
+}
+
+proc project::GetOptVal {line} {
+  if {[set i [string first "=" $line]]>-1} {
+    return [list [string range $line 0 $i-1] [string range $line $i+1 end]]
+  }
+  return [list]
+}
+
+proc project::ProcEOL {val mode} {
+  if {$mode eq "in"} {
+    return [string map [list $::alited::EOL \n] $val]
+  } else {
+    return [string map [list \n $::alited::EOL] $val]
+  }
+}
+
+proc project::ProjectName {fname} {
+  return [file rootname [file tail $fname]]
+}
+
+proc project::ProjectFileName {name} {
+  namespace upvar ::alited al al PRJDIR PRJDIR PRJEXT PRJEXT
+  set name [file rootname [file tail $name]]
+  return [file normalize [file join $PRJDIR $name$PRJEXT]]
+}
+
+proc project::ValidProject {} {
+  namespace upvar ::alited al al obDl2 obDl2
+  if {[string trim $al(prjname)] eq ""} {
+    bell
+    focus [$obDl2 EntName]
+    return no
+  }
+  return yes
+}
+
+proc project::PutProjectOpts {fname oldname} {
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjinfo
+  variable OPTS
+  set filecont [::apave::readTextFile $oldname]
+  set newcont ""
+  foreach line [split $filecont \n] {
+    lassign [GetOptVal $line] opt val
+    if {$line eq {[Tabs]}} {
+      foreach tab $al(tablist) {
+        append line \n "tab=$tab"
+      }
+    } elseif {$opt in [list tab {*}$OPTS]} {
+      continue
+    } elseif {$opt in {curtab}} {
+      # 
+    } elseif {$line eq {[Options]}} {
+      foreach opt $OPTS {
+        if {$opt ni {prjname tablist}} {
+          set val [set alited::al($opt)]
+          append line \n $opt= $val
+          set prjinfo($al(prjname),$opt) [ProcEOL $val in]
+        }
+      }
+    }
+    append newcont $line \n
+  }
+  ::apave::writeTextFile $fname newcont
+  if {$oldname ne $fname} {catch {file delete $oldname}}
+}
+
+proc project::Add {} {
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  variable prjinfo
+  variable OPTS
+  if {![ValidProject]} return
+  set pname $al(prjname)
+  if {[lsearch -exact $prjlist $pname]>-1} {
+    focus [$obDl2 EntName]
+    set msg [string map [list %n $pname] $al(MC,prjexists)]
+    alited::Message2 $msg 4
+    return
+  }
+  if {![SaveCurrFileList $al(MC,prjadd) yes]} return
+  set al(tabs) $al(tablist)
+  set al(prjfile) [ProjectFileName $pname]
+  alited::ini::SaveIni yes  ;# to initialize ini-file
+  foreach opt $OPTS {
+    set prjinfo($pname,$opt) $al($opt)
+  }
+  PutProjectOpts $al(prjfile) $al(prjfile)
+  GetProjects
+  UpdateTree
+  Select $prjinfo($pname,ID)
+  alited::Message2 [string map [list %n $pname] $al(MC,prjnew)]
+}
+
+proc project::Change {{askappend yes} {isel -1}} {
+  namespace upvar ::alited al al obDl2 obDl2
+  variable data
+  variable prjlist
+  variable prjinfo
+  if {$isel==-1 && [set isel [Selected index]] eq ""} return
+  if {![ValidProject]} return
+  for {set i 0} {$i<[llength $prjlist]} {incr i} {
+    if {$i!=$isel && [lindex $prjlist $i] eq $al(prjname)} {
+      set msg [string map [list %n $al(prjname)] $al(MC,prjexists)]
+      alited::Message2 $msg 4
+      return
+    }
+  }
+  if {$askappend && ![SaveCurrFileList $al(MC,prjchg)]} return
+  set oldprj [lindex $prjlist $isel]
+  set newprj $al(prjname)
+  catch {unset prjinfo($oldprj,tablist)}
+  set prjinfo($newprj,tablist) $al(tablist)
+  set oldname [ProjectFileName $oldprj]
+  set prjlist [lreplace $prjlist $isel $isel $newprj]
+  set fname [ProjectFileName $newprj]
+  if {$newprj eq $data(prjname)} SaveSettings
+  PutProjectOpts $fname $oldname
+  GetProjects
+  UpdateTree
+  Select $prjinfo($newprj,ID)
+  alited::Message2 [string map [list %n [lindex $prjlist $isel]] $al(MC,prjupd)]
+}
+
+proc project::Delete {} {
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  variable prjinfo
+  variable win
+  variable data
+  if {[set isel [Selected index]] eq ""} return
+  set geo "-geometry root=$win"
+  set nametodel [lindex $prjlist $isel]
+  if {$nametodel eq $data(prjname)} {
+    alited::msg ok err $al(MC,prjcantdel) {*}$geo
+    return
+  }
+  set msg [string map [list %n $nametodel] $al(MC,prjdelq)]
+  if {![alited::msg yesno ques $msg NO {*}$geo]} {
+    return
+  }
+  if {[catch {file delete [ProjectFileName $nametodel]} err]} {
+    alited::msg ok err $err {*}$geo
+    return
+  }    
+  if {[set llen [llength $prjlist]] && $isel>=$llen} {
+    set isel [incr llen -1]
+  }
+  GetProjects
+  UpdateTree
+  Select $isel
+  alited::Message2 [string map [list %n $nametodel] $al(MC,prjrem)]
+}
+
+proc project::MainFrame {} {
+  namespace upvar ::alited al al obDl2 obDl2
+  variable win
+  return {
+    {fraTreePrj - - 10 1 {-st nswe -pady 4 -rw 1} {}}
+    {.TreePrj - - - - {pack -side left -expand 1 -fill both} {-h 16 -show headings -columns {C1} -displaycolumns {C1}}}
+    {.sbvPrjs fraTreePrj.TreePrj L - - {pack -side left -fill both}}
+    {fraR fraTreePrj L 10 1 {-st nsew -cw 1 -pady 4}}
+    {fraR.Nbk - - - - {pack -side top -expand 1 -fill both} {
+      f1 {-text {$al(MC,info)}}
+      f2 {-text {$al(MC,prjOptions)}}
+      -traverse yes -select f1
+    }}
+    {LabMess fraTreePrj T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
+    {fraB labMess T 1 2 {-st nsew} {-padding {5 5 5 5} -relief groove}}
+    {.buTad - - - - {pack -side left -anchor n} {-takefocus 0 -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big}}
+    {.buTch - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big}}
+    {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel)} -image alimg_delete-big}}
+    {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
+    {.butOK - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,select)} -command ::alited::project::Ok}}
+    {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::project::Cancel}}
+  }
+}
+
+proc project::Tab1 {} {
+  return {
+    {v_ - - 1 1}
+    {fra1 v_ T 1 2 {-st nsew -cw 1}}
+    {.labName - - 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,prjName)}}}
+    {.EntName fra1.labName L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 50}}
+    {.labDir fra1.labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
+    {.Dir fra1.labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 50}}
+    {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
+    {fra2 lab T 1 2 {-st nsew -rw 1 -cw 1}}
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 7 -w 40 -wrap word -tabnext $alited::project::win.fraB.butOK -tip {$alited::al(MC,notes)}}}
+    {.sbv fra2.TexPrj L - - {pack -side left}}
+  }
+}
+
+proc project::Tab2 {} {
+  return {
+    {v_ - - 1 10}
+    {fra2 v_ T 1 2 {-st nsew -cw 1}}
+    {.labEOL - - 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
+    {.cbxEOL fra2.labEOL L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 5 -state readonly}}
+    {.labIndent fra2.labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
+    {.spXIndent fra2.labIndent L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjindent) -w 3 -from 2 -to 8 -justify center}}
+    {.labMult fra2.labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
+    {.chbMult fra2.labMult L 1 1 {-st sw -pady 5 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
+    {.labFlist fra2.labMult T 1 1 {-pady 5 -padx 3} {-t "List of files:"}}
+    {fraFlist fra2.labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
+    {.LbxFlist - - - - {pack -side left -fill both -expand 1}}
+    {.sbvFlist fraFlist.lbxFlist L - - {pack -side left}}
+  }
+}
+
+proc project::_create {} {
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable win
+  variable geo
+  variable minsize
+  variable prjlist
+  variable oldTab
+  variable ilast
+  $obDl2 makeWindow $win "$al(MC,projects) :: $::alited::PRJDIR"
+  $obDl2 paveWindow \
+    $win [MainFrame] \
+    $win.fraR.nbk.f1 [Tab1] \
+    $win.fraR.nbk.f2 [Tab2]
+  set tree [$obDl2 TreePrj]
+  $tree heading C1 -text $al(MC,projects)
+  if {$oldTab ne ""} {
+    $win.fraR.nbk select $oldTab
+  }
+  UpdateTree
+  bind $tree <<TreeviewSelect>> "::alited::project::Select"
+  bind $tree <Delete> "::alited::project::Delete"
+  bind $tree <Double-Button-1> "::alited::project::Ok"
+  bind $tree <Return> "::alited::project::Ok"
+  if {$ilast>-1} {Select $ilast}
+  if {$minsize eq ""} {      ;# save default min.sizes
+    after idle [list after 100 {
+      set ::alited::project::minsize "-minsize {[winfo width $::alited::project::win] [winfo height $::alited::project::win]}"
+    }]
+  }
+  bind [$obDl2 TexPrj] <FocusOut> "alited::project::SaveNotes"
+  set res [$obDl2 showModal $win  -geometry $geo {*}$minsize \
+    -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
+  set oldTab [$win.fraR.nbk select]
+  if {[llength $res] < 2} {set res ""}
+  set geo [wm geometry $win] ;# save the new geometry of the dialogue
+  destroy $win
+  return $res
+}
+
+proc project::_run {} {
+
+  SaveSettings
+  GetProjects
+  set res [_create]
+  return $res
+}
+
+# _________________________________ EOF _________________________________ #
+#RUNF1: alited.tcl DEBUG

@@ -7,9 +7,9 @@
 # default settings of alited app:
 
 namespace eval ::alited {
-  set al(ED,multiline) [set al(prjmultiline) 0] ;# "true" only for projects of small modules
-  set al(INTRO_LINES) 10
-  set al(LEAF) 0
+  set al(ED,multiline) 0 ;# "true" only for projects of small modules
+  set al(ED,EOL) {}
+  set al(ED,indent) 2
   set al(TEXT,opts) "-padx 3 -spacing1 1"
   set al(TREE,isunits) yes
   set al(TREE,units) no
@@ -21,18 +21,21 @@ namespace eval ::alited {
   set al(FONTSIZE,txt) 12
   set al(INI,CS) -1
   set al(INI,HUE) 0
+  set al(INI,LINES1) 10
+  set al(INI,LEAF) 0
   set al(INI,ICONS) "middle icons"
   set al(INI,save_onselect) no
   set al(INI,save_onadd) no
   set al(INI,save_onmove) no
   set al(INI,save_onclose) no
   set al(INI,save_onsave) yes
+  set al(INI,maxfind) 16
+  set al(INI,bartiplen) 32
   set al(RE,branch) {^\s*(#+) [_]+\s+([^_]+[^[:blank:]]*)\s+[_]+ (#+)$}         ;#  # _ lev 1 _..
   set al(RE,leaf) {^\s*##\s*[-]*([^-]*)\s*[-]*$}   ;#  # --  / # -- abc / # --abc--
   set al(RE,proc) {^\s*(((proc|method)\s+([^[:blank:]]+))|((constructor|destructor)))\s.+}
   set al(RE,leaf2) {[_]+}                       ;#  # _  / # _ abc
   set al(RE,proc2) {^\s*(proc|method|constructor|destructor)\s+} ;# proc abc {}...
-  set al(RESTART) 0
   set al(FAV,current) [list]
   set al(FAV,visited) [list]
   set al(FAV,IsFavor) yes
@@ -46,7 +49,6 @@ namespace eval ::alited {
   set al(TPL,%w) "https://aplsimple.github.io"
   set al(TPL,%a) "  #   %a - \\n"
   set al(KEYS,bind) [list]
-  set al(INI,maxfind) 16
   set al(EM,geometry) "240x1+10+10"
   set al(EM,save) yes
   set al(EM,saveall) no
@@ -57,6 +59,7 @@ namespace eval ::alited {
   set al(EM,menudir) ""
   set al(EM,CS) 33
   set al(EM,exec) no
+  set al(tablist) [list]
 }
 
 namespace eval ini {
@@ -104,12 +107,22 @@ proc ini::ReadIni {{projectfile ""}} {
     }
   }
   catch {close $chan}
-  # some options may be active outside of any project
-  set al(prjmultiline) $al(ED,multiline)
-  if {$projectfile ne ""} {
+  # some options may be active outside of any project; they are set by default values
+  if {$projectfile eq "" && $al(prjfile) eq ""} {
+    set al(prjmultiline) $al(ED,multiline)
+    set al(prjindent) $al(ED,indent)
+    set al(prjEOL) $al(ED,EOL)
+  } else {
+    if {$projectfile eq ""} {
+      set projectfile $al(prjfile)
+    } else {
+      set al(prjfile) $projectfile
+    }
     ReadIniOptions project $projectfile
   }
   ReadIniPrj
+  ::apave::setTextIndent $al(prjindent)
+  ::apave::textEOL $al(prjEOL)
 }
 
 proc ini::ReadIniGeometry {nam val} {
@@ -129,6 +142,8 @@ proc ini::ReadIniGeometry {nam val} {
     minsizefind    {set ::alited::find::minsize $val}
     geomproject    {set ::alited::project::geo $val}
     minsizeproject {set ::alited::project::minsize $val}
+    geompref       {set ::alited::pref::geo $val}
+    minsizepref    {set ::alited::pref::minsize $val}
     dirgeometry    {set ::alited::DirGeometry $val}
     filgeometry    {set ::alited::FilGeometry $val}
     treecw0        {set al(TREE,cw0) $val}
@@ -145,10 +160,13 @@ proc ini::ReadIniOptions {nam val} {
       set al(prjname) [file tail [file rootname $val]]
     }
     cs            {set al(INI,CS) $val}
+    hue           {set al(INI,HUE) $val}
     smallfontsize {set al(FONTSIZE,small) $val}
     stdfontsize   {set al(FONTSIZE,std) $val}
     txtfontsize   {set al(FONTSIZE,txt) $val}
-    edmultiline   {set al(ED,multiline) $val}
+    multiline     {set al(ED,multiline) $val}
+    indent        {set al(ED,indent) $val}
+    EOL           {set al(ED,EOL) $val}
     maxfind       {set al(INI,maxfind) $val}
   }
 }
@@ -194,6 +212,10 @@ proc ini::ReadIniEM {nam val} {
 
 proc ini::ReadIniMisc {nam val} {
   # Gets miscellaneous options of alited.
+  namespace upvar ::alited al al
+  switch -exact $nam {
+    isfavor {set al(FAV,IsFavor) $val}
+  }
 }
 
 # _______________________ read project settings _________________________ #
@@ -204,8 +226,11 @@ proc ini::ReadIniPrj {} {
   set al(tabs) [list]
   set al(curtab) ""
   alited::favor_ls::GetIni ""  ;# initializes favorites' lists
-  catch {
-    puts "alited project: $::alited::al(prjfile)"
+  if {![file exists $al(prjfile)]} {
+    set al(prjfile) [file join $alited::PRJDIR [file tail $al(prjfile)]]
+  }
+  if {[catch {
+    puts "alited project: $al(prjfile)"
     set chan [open $::alited::al(prjfile) r]
     set mode ""
     while {![eof $chan]} {
@@ -226,6 +251,12 @@ proc ini::ReadIniPrj {} {
         {[Misc]} {ReadPrjMisc $nam $val}
       }
     }
+    if {$al(prjroot) eq ""} {set al(prjroot) $alited::DIR}
+  }]} then {
+    puts "Not open: $al(prjfile)"
+    set al(prjname) ""
+    set al(prjfile) ""
+    set al(prjroot) ""
   }
   catch {close $chan}
   catch {cd $al(prjroot)}
@@ -245,6 +276,7 @@ proc ini::ReadPrjTabs {nam val} {
 
 proc ini::ReadPrjOptions {nam val} {
   # Gets options of project.
+  if {$nam in {"" "prjfile"}} return ;# to avoid resetting the current project file name
   namespace upvar ::alited al al
   set al($nam) $val
 }
@@ -297,10 +329,13 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan {[Options]}
   puts $chan "project=$al(prjfile)"
   puts $chan "cs=$al(INI,CS)"
+  puts $chan "hue=$al(INI,HUE)"
   puts $chan "smallfontsize=$al(FONTSIZE,small)"
   puts $chan "stdfontsize=$al(FONTSIZE,std)"
   puts $chan "txtfontsize=$al(FONTSIZE,txt)"
-  puts $chan "edmultiline=$al(ED,multiline)"
+  puts $chan "multiline=$al(ED,multiline)"
+  puts $chan "indent=$al(ED,indent)"
+  puts $chan "EOL=$al(ED,EOL)"
   puts $chan "maxfind=$al(INI,maxfind)"
   puts $chan ""
   puts $chan {[Templates]}
@@ -338,11 +373,13 @@ proc ini::SaveIni {{newproject no}} {
     }
     puts $chan $v=$w
   }
-  puts $chan "GEOM=[wm geometry $::alited::al(WIN)]"
+  puts $chan "GEOM=[wm geometry $al(WIN)]"
   puts $chan "geomfind=$::alited::find::geo"
   puts $chan "minsizefind=$::alited::find::minsize"
   puts $chan "geomproject=$::alited::project::geo"
   puts $chan "minsizeproject=$::alited::project::minsize"
+  puts $chan "geompref=$::alited::pref::geo"
+  puts $chan "minsizepref=$::alited::pref::minsize"
   puts $chan "treecw0=[[$obPav Tree] column #0 -width]"
   puts $chan "treecw1=[[$obPav Tree] column #1 -width]"
   puts $chan "dirgeometry=$::alited::DirGeometry"
@@ -350,6 +387,7 @@ proc ini::SaveIni {{newproject no}} {
   # save other options
   puts $chan ""
   puts $chan {[Misc]}
+  puts $chan "isfavor=$al(FAV,IsFavor)"
   close $chan
   SaveIniPrj $newproject
 }
@@ -457,6 +495,8 @@ proc ini::CreateUserDirs {} {
   }
   if {![file exists $al(INI)]} {
     file copy -force [file join $DATADIR user ini alited.ini] $al(INI)
+    file copy -force [file join $DATADIR user prj default.ale] \
+      [file join $PRJDIR default.ale]
     ReadIni
     InitGUI
   }
@@ -468,13 +508,15 @@ proc ini::CreateUserDirs {} {
   }
 }
 
+# ________________________ Main (+ bar) _________________________ #
+
 proc ini::InitGUI {} {
   # Initializes GUI.
 
   namespace upvar ::alited al al
   ::apave::obj basicFontSize $al(FONTSIZE,std)
   ::apave::obj csSet $al(INI,CS) . -doit
-
+  if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE)}
 }
 
 proc ini::_init {} {
@@ -483,11 +525,18 @@ proc ini::_init {} {
 
   ::apave::initWM
   ::apave::iconImage -init $al(INI,ICONS)
+  set ::apave::MC_NS ::alited
+
   GetUserDirs
   ReadIni
   InitGUI
   CheckIni
   GetUserDirs
+
+  # get hotkeys
+  alited::pref::IniKeys
+  alited::pref::RegisterKeys
+  alited::pref::KeyAccelerators
 
   # create main apave objects
   ::apave::APaveInput create $obPav $al(WIN)
@@ -495,48 +544,53 @@ proc ini::_init {} {
   ::apave::APaveInput create $obDl2 $al(WIN)
   ::apave::APaveInput create $obFND $al(WIN)
 
-  # set options' values
-  if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) [expr {$al(INI,HUE)*5}]}
-
   # here, the order of icons defines their order in the toolbar
-  foreach {icon} {gulls heart add change delete up down plus minus retry misc previous next \
-  folder file OpenFile SaveFile saveall undo redo help replace run e_menu} {
+  foreach {icon} {gulls heart add change delete up down plus minus \
+  retry misc previous next folder file OpenFile box SaveFile saveall \
+  undo redo help replace run e_menu ok} {
     set img alimg_$icon
     catch {image create photo $img-big -data [::apave::iconData $icon]}
     catch {image create photo $img -data [::apave::iconData $icon small]}
-    if {$icon in {"file" OpenFile SaveFile saveall help replace e_menu run undo redo}} {
+    if {$icon in {"file" OpenFile box SaveFile saveall help ok \
+    replace e_menu run undo redo}} {
       append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4} "
       switch $icon {
         "file" {
           append al(atools) "-com alited::file::NewFile\}"
-        } 
+        }
         OpenFile {
-          append al(atools) "-com alited::file::OpenFile\} h_ 2 sev 7"
-        } 
+          append al(atools) "-com alited::file::OpenFile\}"
+        }
+        box {
+          append al(atools) "-com alited::project::_run\} h_ 2 sev 4"
+        }
         SaveFile {
           append al(atools) "-com alited::file::SaveFile -state disabled\}"
-        } 
+        }
         saveall {
-          append al(atools) "-com alited::file::SaveAll -state disabled\} h_ 2 sev 7"
+          append al(atools) "-com alited::file::SaveAll -state disabled\} h_ 2 sev 4"
         }
         undo {
           append al(atools) "-com alited::tool::Undo -state disabled\}"
-        } 
+        }
         redo {
-          append al(atools) "-com alited::tool::Redo -state disabled\} h_ 2 sev 7"
+          append al(atools) "-com alited::tool::Redo -state disabled\} h_ 2 sev 4"
         }
         help {
           append al(atools) "-com alited::tool::Help\}"
-        } 
+        }
         replace {
-          append al(atools) "-com alited::find::_run\} h_ 2 sev 7"
+          append al(atools) "-com alited::find::_run\} h_ 2 sev 4"
         }
         run {
-          append al(atools) "-com alited::tool::Run\}"
-        } 
+          append al(atools) "-com alited::tool::_run\}"
+        }
         e_menu {
           image create photo $img-big -data $alited::img::_AL_IMG(e_menu)
           append al(atools) "-com alited::tool::e_menu\}"
+        }
+        ok {
+          append al(atools) "-com alited::check::_run\}"
         }
       }
     }
@@ -545,6 +599,7 @@ proc ini::_init {} {
     image create photo alimg_pro$i -data [set alited::img::_AL_IMG($i)]
   }
   image create photo alimg_tclfile -data [set alited::img::_AL_IMG(Tcl)]
+  image create photo alimg_kbd -data [set alited::img::_AL_IMG(kbd)]
   # new find/repl. geometry
   if {$al(FONTSIZE,small) ne $al(FONTSIZE,small)} {
     set ::alited::find::geo [set ::alited::find::minsize ""]

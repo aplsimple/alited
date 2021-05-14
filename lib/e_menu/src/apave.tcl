@@ -126,10 +126,15 @@ namespace eval ::apave {
   set _AP_VARS(LINKFONT) [list -underline 1]
   set _AP_VARS(HILI) 0
   set _AP_VARS(INDENT) "  "
+  set _AP_VARS(KEY,CtrlD) [list Control-D Control-d]
+  set _AP_VARS(KEY,CtrlY) [list Control-Y Control-y]
+  set _AP_VARS(KEY,AltQ) [list Alt-Q Alt-q]
+  set _AP_VARS(KEY,AltW) [list Alt-W Alt-w]
   variable _AP_VISITED;  array set _AP_VISITED [list]
   set _AP_VISITED(ALL) [list]
   variable UFF "\uFFFF"
   variable _OBJ_ ""
+  variable MC_NS ""
 
 # _______________________ A bit of apave procedures _____________________ #
 
@@ -362,6 +367,55 @@ namespace eval ::apave {
 
   ##########################################################################
 
+  proc getTextHotkeys {key} {
+
+    variable _AP_VARS
+    if {![info exist _AP_VARS(KEY,$key)]} {return [list]}
+    set keys $_AP_VARS(KEY,$key)
+    if {[llength $keys]==1} {
+      if {[set i [string last - $keys]]>0} {
+        set lt [string range $keys $i+1 end]
+        if {[string length $lt]==1} {  ;# for lower case of letters
+          set keys "[string range $keys 0 $i][string toupper $lt]"
+          lappend keys "[string range $keys 0 $i][string tolower $lt]"
+        }
+      }
+    }
+    return $keys
+  }
+
+  ##########################################################################
+
+  proc setTextHotkeys {key value} {
+    # Sets new key combinations for some operations on text widgets.
+    #   key - ctrlD for "double selection", ctrlY for "delete line" operation
+    #   value - list of new key combinations
+
+    variable _AP_VARS
+    set _AP_VARS(KEY,$key) $value
+  }
+
+  ##########################################################################
+
+  proc setTextIndent {len} {
+    # Sets an indenting for text widgets.
+    #   len - length of indenting
+
+    variable _AP_VARS
+    set _AP_VARS(INDENT) [string repeat " " $len]
+  }
+
+  ##########################################################################
+
+  proc KeyAccelerator {acc} {
+    # Returns a key accelerator.
+    #   acc - key name, may contain 2 items (e.g. Control-D Control-d)
+    set acc [lindex $acc 0]
+    return [string map {Control Ctrl - + bracketleft [ bracketright ]} $acc]
+  }
+
+  ##########################################################################
+
   proc obj {com args} {
 
     # Calls a method of APaveInput class.
@@ -389,11 +443,11 @@ namespace eval ::apave {
 
 }  ;# ::apave
 
-############################################################################
+# ________________________ Sourcing obbit.tcl _________________________ #
 
 source [file join $::apave::apaveDir obbit.tcl]
 
-############################################################################
+# ________________________ Creating APave oo::class _________________________ #
 
 oo::class create ::apave::APave {
 
@@ -1100,10 +1154,7 @@ oo::class create ::apave::APave {
       "v_*" {set widget "ttk::frame"}
       default {set widget ""}
     }
-    if {[dict exists $attrs -t]} {
-      set t [dict get $attrs -t]
-      set attrs [dict set attrs -t [::apave::mc $t]]
-    }
+    set attrs [my GetMC $attrs]
     if {$nam3 in {cbx ent enT fco spx spX}} {
       ;# entry-like widgets need their popup menu
       my AddPopupAttr $wnamefull attrs -entrypop 0 readonly disabled
@@ -1114,6 +1165,38 @@ oo::class create ::apave::APave {
     set options [string trim $options]
     set attrs   [list {*}$attrs]
     return [list $widget $options $attrs $nam3 $disabled]
+  }
+
+  #########################################################################
+
+  method MC {msg} {
+    # Gets localized message
+    #   msg - the message
+
+    # to use a preset namespace name, we need a fully qualified variable
+    set ::apave::_MC_TEXT_ $msg
+    if {$::apave::MC_NS ne ""} {
+      namespace eval $::apave::MC_NS {
+        set ::apave::_MC_TEXT_ [msgcat::mc $::apave::_MC_TEXT_]
+      }
+    } else {
+      set ::apave::_MC_TEXT_ [msgcat::mc $::apave::_MC_TEXT_]
+    }
+    return $::apave::_MC_TEXT_
+  }
+
+  #########################################################################
+
+  method GetMC {attrs} {
+    # Gets localized -text attribute.
+    #   attrs - list of attributes
+
+    lassign [::apave::extractOptions attrs -t "" -text ""] t text
+    if {$t ne "" || $text ne ""} {
+      if {$text eq ""} {set text $t}
+      set attrs [dict set attrs -t [my MC $text]]
+    }
+    return $attrs
   }
 
   #########################################################################
@@ -1241,6 +1324,7 @@ oo::class create ::apave::APave {
     my OptionCascade_add $w.m $vname $items $precom {*}$args
     trace var $vname w \
       "$w config -text \"\[[self] optionCascadeText \${$vname}\]\" ;\#"
+    lappend ::apave::_AP_VARS(_TRACED_$w) $vname
     return $w.m
   }
 
@@ -1989,11 +2073,15 @@ oo::class create ::apave::APave {
       bind $wt <Return> {+ [self] onKeyTextM $wt %K}
       catch {bind $wt <braceright> {+ [self] onKeyTextM $wt %K}}"
     }
+    foreach k [::apave::getTextHotkeys CtrlD] {
+      append res "
+      bind $wt <$k> {[self] doubleText $wt}"
+    }
+    foreach k [::apave::getTextHotkeys CtrlY] {
+      append res "
+      bind $wt <$k> {[self] deleteLine $wt}"
+    }
     append res "
-      bind $wt <Control-d> {[self] doubleText $wt}
-      bind $wt <Control-D> {[self] doubleText $wt}
-      bind $wt <Control-y> {[self] deleteLine $wt}
-      bind $wt <Control-Y> {[self] deleteLine $wt}
       bind $wt <Alt-Up> {[self] linesMove $wt -1}
       bind $wt <Alt-Down> {[self] linesMove $wt +1}
       bind $wt <Control-a> \"$wt tag add sel 1.0 end; break\""
@@ -2103,7 +2191,7 @@ oo::class create ::apave::APave {
       switch -- $a {
         -disabledtext - -rotext - -lbxsel - -cbxsel - -notebazook - \
         -entrypop - -entrypopRO - -textpop - -textpopRO - -ListboxSel - \
-        -callF2 - -timeout - -bartabs - -onReturn - -linkcom - \
+        -callF2 - -timeout - -bartabs - -onReturn - -linkcom - -selcombobox - \
         -afteridle - -gutter - -propagate - -columnoptions - -selborderwidth {
           # attributes specific to apave, processed below in "Post"
           set v2 [string trimleft $v "\{"]
@@ -2193,6 +2281,7 @@ oo::class create ::apave::APave {
             } elseif {[string match "-sel*" $fr]} {
               $w select $w.$attr
             } elseif {![string match "#*" $fr]} {
+              set attr [my GetMC $attr]
               $w add [ttk::frame $w.$fr] {*}[subst $attr]
             }
           }
@@ -2258,6 +2347,9 @@ oo::class create ::apave::APave {
         -selborderwidth {
           $w tag configure sel -borderwidth $v
         }
+        -selcombobox {
+          bind $w <<ComboboxSelected>> $v
+        }
       }
     }
     return
@@ -2281,6 +2373,15 @@ oo::class create ::apave::APave {
         if {[string first $wr $w]==0 && ![catch {baltip::hide $w}]} {
           set ::apave::_AP_VARS(TIMW) [lreplace $::apave::_AP_VARS(TIMW) $i $i]
         }
+      }
+      foreach {lst vars} [array get ::apave::_AP_VARS "_TRACED_${wr}*"] {
+        foreach v $vars {
+          foreach t [trace info variable $v] {
+            lassign $t o c
+            trace remove variable ::alited::pref::opcc $o $c
+          }
+        }
+        set ::apave::_AP_VARS($lst) [list]
       }
     }
   }
@@ -2727,6 +2828,7 @@ oo::class create ::apave::APave {
       } else {
         set tattrs ""
       }
+      set tooltip [my MC $tooltip]
       lappend addcomms [list baltip::tip $wdg $tooltip {*}$tattrs]
       lappend ::apave::_AP_VARS(TIMW) $wdg
       set attrs [::apave::removeOptions $attrs -tooltip -tip]

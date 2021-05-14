@@ -1,12 +1,80 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
 #
-# The 'favorites/last visited' procedures of alited.
-# _______________________________________________________________________ #
+# Name:    favor.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    05/13/2021
+# Brief:   Handles favorites/last visited lists.
+# License: MIT.
+
+# _________________________ Variables of favor ________________________ #
+
 
 namespace eval favor {
   variable tipID ""
   variable initialFavs [list]
+}
+
+# ________________________ Main _________________________ #
+
+proc favor::LastVisited {item header} {
+  namespace upvar ::alited al al obPav obPav
+  set name [string trim [lindex $item 1]]
+  if {[string trim $name] eq ""} return
+  set fname [alited::bar::FileName] 
+  # search an old item
+  set found no
+  set i 0
+  foreach it $al(FAV,visited) {
+    lassign $it - - ID - values
+    lassign $values name2 fname2 header2
+    if {$fname eq $fname2 && $header eq $header2} {
+      set found yes
+      # if found, move it to 0th position
+      set al(FAV,visited) [lreplace $al(FAV,visited) $i $i]
+      break
+    }
+    incr i
+  }
+  set al(FAV,visited) [linsert $al(FAV,visited) 0 [list - - - - [list $name $fname $header]]]
+  # delete last items if the list's limit is exceeded
+  catch {set al(FAV,visited) [lreplace $al(FAV,visited) $al(FAV,MaxLast) end]}
+  # update the tree widget
+  if {!$al(FAV,IsFavor)} {
+    SetFavorites $al(FAV,visited)
+    set wtree [$obPav TreeFavor]
+    if {[set id0 [lindex [$wtree children {}] 0]] ne ""} {
+      $wtree see $id0
+    }
+  }
+}
+
+proc favor::Select {} {
+  namespace upvar ::alited al al obPav obPav
+  set msec [clock milliseconds]
+  if {[info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<800}]} {
+    return ;# disables double click
+  }
+  set al(_MSEC) $msec
+  set wtree [$obPav TreeFavor]
+  if {![IsSelected favID name fname sname header line]} {
+    return
+  }
+  if {[set TID [alited::file::OpenFile $fname]] eq ""} return
+  foreach it [alited::tree::GetTree {} TreeFavor] {
+    lassign $it - - ID - values
+    lassign $values name2 fname2 header2
+    if {$fname eq $fname2 && $header eq $header2} {
+      set favID $ID
+      break
+    }
+  }
+  if {[$wtree exists $favID]} {
+    set values [$wtree item $favID -values]
+    $wtree delete $favID
+    set favID [$wtree insert {} 0 -values $values]
+    $wtree tag add tagNorm $favID
+    alited::unit::SelectByHeader $header $line
+  }
 }
 
 proc favor::IsSelected {IDN nameN fnameN snameN headerN lineN} {
@@ -18,6 +86,7 @@ proc favor::IsSelected {IDN nameN fnameN snameN headerN lineN} {
   set sname [file tail $fname]
   return yes
 }
+# ________________________ Setup _________________________ #
 
 proc favor::SetAndClose {cont} {
   SetFavorites $cont
@@ -66,13 +135,27 @@ proc favor::SetFavorites {cont} {
   }
 }
 
-proc favor::SwitchFavVisit {} {
+proc favor::Lists {} {
+  variable initialFavs
+  if {![llength $initialFavs]} {
+    set initialFavs [alited::tree::GetTree {} TreeFavor]
+  }
+  lassign [::alited::favor_ls::_run] pla cont
+  switch $pla {
+    1 {SetFavorites $cont}
+    2 {SetAndClose $cont}
+    3 {SetFavorites $initialFavs}
+  }
+}
+
+# ________________________ Display _________________________ #
+
+proc favor::Show {} {
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav TreeFavor]
-  set al(FAV,IsFavor) [expr {!$al(FAV,IsFavor)}]
   if {$al(FAV,IsFavor)} {
     [$obPav BuTVisitF] configure -image alimg_misc
-    set tip $alited::al(MC,FavVisit)
+    set tip $alited::al(MC,lastvisit)
     set state normal
     SetFavorites $al(FAV,current)
     $wtree heading #1 -text [msgcat::mc $al(MC,favorites)]
@@ -94,25 +177,13 @@ proc favor::SwitchFavVisit {} {
   baltip::tip [$obPav BuTVisitF] $tip
 }
 
-proc favor::Lists {} {
-  variable initialFavs
-  if {![llength $initialFavs]} {
-    set initialFavs [alited::tree::GetTree {} TreeFavor]
-  }
-  lassign [::alited::favor_ls::_run] pla cont
-  switch $pla {
-    1 {SetFavorites $cont}
-    2 {SetAndClose $cont}
-    3 {SetFavorites $initialFavs}
-  }
+proc favor::SwitchFavVisit {} {
+  namespace upvar ::alited al al obPav obPav
+  set al(FAV,IsFavor) [expr {!$al(FAV,IsFavor)}]
+  Show
 }
 
-proc favor::CurrentName {} {
-  lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - name l1 l2
-  set name [string trim $name]
-  if {$name eq ""} bell
-  return [list $itemID $name $l1 $l2]
-}
+# ________________________ Changing lists ________________________ #
 
 proc favor::Add {{undermouse yes}} {
   namespace upvar ::alited al al obPav obPav
@@ -167,71 +238,14 @@ proc favor::Delete {{undermouse yes}} {
   }
 }
 
-proc favor::Select {} {
-  namespace upvar ::alited al al obPav obPav
-  set msec [clock milliseconds]
-  if {[info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<800}]} {
-    return ;# disables double click
-  }
-  set al(_MSEC) $msec
-  set wtree [$obPav TreeFavor]
-  if {![IsSelected favID name fname sname header line]} {
-    return
-  }
-  if {[set TID [alited::file::OpenFile $fname]] eq ""} return
-  foreach it [alited::tree::GetTree {} TreeFavor] {
-    lassign $it - - ID - values
-    lassign $values name2 fname2 header2
-    if {$fname eq $fname2 && $header eq $header2} {
-      set favID $ID
-      break
-    }
-  }
-  if {[$wtree exists $favID]} {
-    set values [$wtree item $favID -values]
-    $wtree delete $favID
-    set favID [$wtree insert {} 0 -values $values]
-    $wtree tag add tagNorm $favID
-    alited::unit::SelectByHeader $header $line
-  }
+proc favor::CurrentName {} {
+  lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - name l1 l2
+  set name [string trim $name]
+  if {$name eq ""} bell
+  return [list $itemID $name $l1 $l2]
 }
 
-proc favor::LastVisited {item header} {
-  namespace upvar ::alited al al obPav obPav
-  set name [string trim [lindex $item 1]]
-  if {[string trim $name] eq ""} return
-  set fname [alited::bar::FileName] 
-  # search an old item
-  set found no
-  set i 0
-  foreach it $al(FAV,visited) {
-    lassign $it - - ID - values
-    lassign $values name2 fname2 header2
-    if {$fname eq $fname2 && $header eq $header2} {
-      set found yes
-      # if found, move it to 0th position
-      set al(FAV,visited) [lreplace $al(FAV,visited) $i $i]
-      break
-    }
-    incr i
-  }
-  set al(FAV,visited) [linsert $al(FAV,visited) 0 [list - - - - [list $name $fname $header]]]
-  # delete last items if the list's limit is exceeded
-  catch {set al(FAV,visited) [lreplace $al(FAV,visited) $al(FAV,MaxLast) end]}
-  # update the tree widget
-  if {!$al(FAV,IsFavor)} {
-    SetFavorites $al(FAV,visited)
-    set wtree [$obPav TreeFavor]
-    if {[set id0 [lindex [$wtree children {}] 0]] ne ""} {
-      $wtree see $id0
-    }
-  }
-}
-
-proc favor::CopyDeclaration {wtree ID} {
-  clipboard clear
-  clipboard append [lindex [$wtree item $ID -values] 2]
-}
+# ________________________ Popup menus _________________________ #
 
 proc favor::ShowPopupMenu {ID X Y} {
   namespace upvar ::alited al al obPav obPav
@@ -250,6 +264,7 @@ proc favor::ShowPopupMenu {ID X Y} {
   }
   $popm add command -label $al(MC,copydecl) \
     -command "::alited::favor::CopyDeclaration $wtree $ID"
+  $obPav themePopup $popm
   tk_popup $popm $X $Y
 }
 
@@ -265,6 +280,12 @@ proc favor::PopupMenu {x y X Y} {
   ShowPopupMenu $ID $X $Y
 }
 
+# ________________________ Tips _________________________ #
+
+proc favor::CopyDeclaration {wtree ID} {
+  clipboard clear
+  clipboard append [lindex [$wtree item $ID -values] 2]
+}
 
 proc favor::TooltipOff {} {
   namespace upvar ::alited al al obPav obPav
@@ -289,6 +310,8 @@ proc favor::Tooltip {x y X Y} {
   set tipID $ID
 }
 
+# ________________________ Initialization _________________________ #
+
 proc favor::_init {} {
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav TreeFavor]
@@ -300,6 +323,7 @@ proc favor::_init {} {
   bind $wtree <Leave> {alited::favor::TooltipOff}
   $wtree heading #1 -text [msgcat::mc $al(MC,favorites)]
   SetFavorites $al(FAV,current)
+  if {!$al(FAV,IsFavor)} Show
 }
 
 # _________________________________ EOF _________________________________ #

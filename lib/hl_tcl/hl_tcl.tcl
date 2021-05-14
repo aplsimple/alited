@@ -6,7 +6,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide hl_tcl 0.8.14
+package provide hl_tcl 0.8.15
 
 # _______________ Common data of ::hl_tcl:: namespace ______________ #
 
@@ -127,45 +127,6 @@ proc ::hl_tcl::my::NotEscaped {line i} {
 }
 #_____
 
-proc ::hl_tcl::my::FirstQtd {lineName iName currQtd} {
-  # Searches the quote characters in line.
-  #   lineName - variable's name for 'line'
-  #   iName - variable's name for 'i'
-  #   currQtd - yes, if searching inside the quoted
-  # Returns "yes" if a quote character was found.
-
-  variable data
-  upvar 1 $lineName line $iName i
-  while {1} {
-    if {[set i [string first \" $line $i]]==-1} {return no}
-    if {[NotEscaped $line $i]} {
-      if {$currQtd} {return yes}
-      set i1 [expr {$i-1}]
-      set i2 [expr {$i+1}]
-      if {[NotEscaped $line $i1]} {
-        set c1 [string index $line $i1]  ;# check the string ends
-        set c2 [string index $line $i2]
-        if {$c1 in $data(S_BOTH) || $c2 in $data(S_BOTH) ||
-        $c1 in $data(S_LEFT) && $c2 ni $data(S_RIGHT) || $c1 ni $data(S_LEFT) && $c2 in $data(S_RIGHT)} {
-          return yes
-        }
-        # last reverence: for braced expression
-        set i1 $i
-        while {$i1>0} {
-          set c1 [string index $line $i1-1]
-          set c2 [string index $line $i1]
-          if {$c1 in $data(S_SPACE)} {return [expr {$c2 ne "\{"}]}
-          incr i1 -1
-        }
-        return no
-      }
-      return yes
-    }
-    incr i
-  }
-}
-#_____
-
 proc ::hl_tcl::my::RemoveTags {txt from to} {
   # Removes tags in text.
   #   txt - text widget's path
@@ -278,6 +239,45 @@ proc ::hl_tcl::my::HighlightStr {txt p1 p2} {
 }
 #_____
 
+proc ::hl_tcl::my::FirstQtd {lineName iName currQtd} {
+  # Searches the quote characters in line.
+  #   lineName - variable's name for 'line'
+  #   iName - variable's name for 'i'
+  #   currQtd - yes, if searching inside the quoted
+  # Returns "yes" if a quote character was found.
+
+  variable data
+  upvar 1 $lineName line $iName i
+  while {1} {
+    if {[set i [string first \" $line $i]]==-1} {return no}
+    if {[NotEscaped $line $i]} {
+      if {$currQtd} {return yes}
+      set i1 [expr {$i-1}]
+      set i2 [expr {$i+1}]
+      if {[NotEscaped $line $i1]} {
+        set c1 [string index $line $i1]  ;# check the string ends
+        set c2 [string index $line $i2]
+        if {$c1 in $data(S_BOTH) || $c2 in $data(S_BOTH) ||
+        $c1 in $data(S_LEFT) && $c2 ni $data(S_RIGHT) || $c1 ni $data(S_LEFT) && $c2 in $data(S_RIGHT)} {
+          return yes
+        }
+        # last reverence: for braced expression
+        set i1 $i
+        while {$i1>0} {
+          set c1 [string index $line $i1-1]
+          set c2 [string index $line $i1]
+          if {$c1 in $data(S_SPACE)} {return [expr {$c2 ne "\{"}]}
+          incr i1 -1
+        }
+        return no
+      }
+      return yes
+    }
+    incr i
+  }
+}
+#_____
+
 proc ::hl_tcl::my::HighlightLine {txt ln prevQtd} {
   # Highlightes a line in text.
   #   txt - text widget's path
@@ -378,31 +378,6 @@ proc ::hl_tcl::my::CoroHighlightAll {txt} {
 
 # _________________________ DYNAMIC highlighting ________________________ #
 
-proc ::hl_tcl::my::CountChar {str ch} {
-  # Counts a character in a string.
-  #   str - a string
-  #   ch - a character
-  #
-  # Returns a number of non-escaped occurences of character *ch* in
-  # string *str*.
-  #
-  # See also:
-  # [wiki.tcl-lang.org](https://wiki.tcl-lang.org/page/Reformatting+Tcl+code+indentation)
-
-  set icnt 0
-  while {[set idx [string first $ch $str]] >= 0} {
-    set backslashes 0
-    set nidx $idx
-    while {[string equal [string index $str [incr nidx -1]] \\]} {
-      incr backslashes
-    }
-    if {$backslashes % 2 == 0} { incr icnt }
-    set str [string range $str [incr idx] end]
-  }
-  return $icnt
-}
-#_____
-
 proc ::hl_tcl::my::CountQSH {txt ln} {
   # Counts quotes, slashes, hashes in a line
   #   txt - text widget's path
@@ -410,7 +385,7 @@ proc ::hl_tcl::my::CountQSH {txt ln} {
 
   set ln [expr {int($ln)}]
   set st [$txt get $ln.0 $ln.end]
-  return [list [CountChar2 $st "\""] [CountChar2 $st "\\"] [CountChar2 $st "#"]]
+  return [list [CountChar $st "\""] [CountChar $st "\\"] [CountChar $st "#"]]
 }
 #_____
 
@@ -427,13 +402,27 @@ proc ::hl_tcl::my::ShowCurrentLine {txt} {
 }
 #_____
 
-proc ::hl_tcl::my::MemPos1 {txt {donorm yes}} {
+proc ::hl_tcl::my::MemPos1 {txt {donorm yes} {K ""} {s ""}} {
   # Checks and sets the cursor's width, depending on its position.
   #   txt - text widget's path
   #   donorm - if yes, forces "normal" cursor
+  #   K - key (%K of bind)
+  #   s - state (%s of bind)
   # This fixes an issue with text cursor: less width at 0th column.
 
   variable data
+  if {$K eq "Home" && [string is digit -strict $s] && \
+  [expr {$s & 4}]==0 && [expr {$s & 1}]==0} {
+    # Ctrl-Home & Shift-Home are passed
+    set p1 [$txt index insert]
+    set line [$txt get "$p1 linestart" "$p1 lineend"]
+    set p [expr {[string length $line]-[string length [string trimleft $line]]}]
+    set p2 [expr {int($p1)}].$p
+    if {$p && $p2 ne $p1} {
+      after idle "::tk::TextSetCursor $txt $p2"
+      return
+    }
+  }
   if {$data(INSERTWIDTH,$txt)==1} {
     if {[$txt cget -insertwidth]!=1} {$txt configure -insertwidth 1}
     return 0
@@ -661,7 +650,7 @@ proc ::hl_tcl::my::LineState {txt tSTR tCMN l1} {
     set i1 [$txt index "$i1 -1 chars"]
   }
   set ch [$txt get "$i1" "$i1 +1 chars"]
-  if {[SearchTag $tCMN $i1]!=-1} {    ;# is a comment continues?
+  if {[SearchTag $tCMN [$txt index "$i1 -1 chars"]]!=-1} {    ;# is a comment continues?
     if {$ch eq "\\"} {return -1}
   } else {                            ;# is a string continues?
     set nl [lindex [split $l1 .] 0]
@@ -760,15 +749,15 @@ proc ::hl_tcl::my::MergePosList {none args} {
 #% puts MergePosList:[time {::hl_tcl::my::MergePosList -1 {11 12} 13} 10000]
 #_____
 
-proc ::hl_tcl::my::CountChar2 {str ch {plistName ""} {escaped yes}} {
+proc ::hl_tcl::my::CountChar {str ch {plistName ""} {escaped yes}} {
   # Counts a character in a string.
   #   str - the string
   #   ch - the character
   #   plistName - variable name for a list of positions of *ch*
   #   escaped - true, if the character is escaped.
-  # Returns a number of any occurences of character *ch* in string *str* if the character \
-    is escaped, but if it is not escaped, only non-escaped characters are counted.
-  # See also: my::CountChar
+  # Returns a number of any occurences of character *ch* in string *str*
+  # if the character is escaped, but if it is not escaped, only non-escaped
+  # characters are counted.
 
   if {$plistName ne ""} {
     upvar 1 $plistName plist
@@ -818,8 +807,8 @@ proc ::hl_tcl::my::MatchedBrackets {inplist curpos schar dchar dir} {
   while {$nl>=0 && $nl<$inplen} {
     set line [lindex $inplist $nl]
     set line [string range $line {*}$rng1]
-    set sc [CountChar2 $line $schar slist $escaped]
-    set dc [CountChar2 $line $dchar dlist $escaped]
+    set sc [CountChar $line $schar slist $escaped]
+    set dc [CountChar $line $dchar dlist $escaped]
     set plen [llength [set plist [MergePosList -1 $slist $dlist]]]
     for {set i [expr {$dir>0?0:($plen-1)}]} {$i>=0 && $i<$plen} {incr i $dir} {
       lassign [lindex $plist $i] src pos
@@ -995,7 +984,7 @@ proc ::hl_tcl::hl_text {txt} {
   $txt tag configure tagCMN -font "$font2" -foreground $clrCMN
   $txt tag configure tagPROC -font "$font1" -foreground $clrPROC
   $txt tag configure tagOPT -font "$font0" -foreground $clrOPT
-  $txt tag configure tagBRACKET -font "$font1" -foreground $clrBRA
+  $txt tag configure tagBRACKET -font "$font0" -foreground $clrBRA
   $txt tag configure tagBRACKETERR -font "$font1" -foreground white -background red
   $txt tag configure tagCURLINE -background $clrCURL
   $txt tag raise sel
@@ -1004,7 +993,7 @@ proc ::hl_tcl::hl_text {txt} {
   my::HighlightAll $txt
   if {![info exists ::hl_tcl::my::data(BIND_TXT,$txt)]} {
     bind $txt <FocusIn> [list + ::hl_tcl::my::MemPos $txt]
-    bind $txt <KeyPress> [list + ::hl_tcl::my::MemPos1 $txt]
+    bind $txt <KeyPress> [list + ::hl_tcl::my::MemPos1 $txt yes %K %s]
     bind $txt <KeyRelease> [list + ::hl_tcl::my::MemPos $txt]
     bind $txt <ButtonRelease-1> [list + ::hl_tcl::my::MemPos $txt]
     foreach ev {Enter KeyRelease ButtonRelease-1} {
@@ -1059,7 +1048,7 @@ proc ::hl_tcl::hl_colors {txt {dark ""}} {
   if {$dark} {
     return [list orange #ff7e00 lightgreen #f1b479 #76a396 #d485d4 #b9b96e cyan]
   } else {
-    return [list "#923B23" #7d1c00 #035103 #4A181B #505050 #A106A1 #463e11 #e900e9]
+    return [list "#923B23" #7d1c00 #035103 #4A181B #505050 #A106A1 #463e11 #FF0000]
   }
 }
 

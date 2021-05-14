@@ -52,16 +52,16 @@ proc favor_ls::Cancel {args} {
   $obDl2 res $win 0
 }
 
-proc favor_ls::Message {msg {first 1}} {
-  namespace upvar ::alited obDl2 obDl2
-  alited::Message $msg $first [$obDl2 LabFav]
+proc favor_ls::Help {args} {
+  variable win
+  alited::Help $win
 }
 
 proc favor_ls::Selected {} {
   namespace upvar ::alited al al obDl2 obDl2
   variable favlist
   if {[set isel [[$obDl2 LbxFav] curselection]] eq ""} {
-    Message $al(MC,favsel) 4
+    alited::Message2 $al(MC,favsel) 4
   }
   return $isel
 }
@@ -121,15 +121,15 @@ proc favor_ls::Add {} {
   }
   set fav [string trim $fav]
   if {$fav ne "" && $cont ne "" && $found} {
-    Message $al(MC,favexists) 4
+    alited::Message2 $al(MC,favexists) 4
     Select $isel
     return
   } elseif {$fav eq ""} {
     focus [$obDl2 EntFav]
-    Message $al(MC,favent1) 4
+    alited::Message2 $al(MC,favent1) 4
     return
   } elseif {[string trim $cont] eq ""} {
-    Message $al(MC,favent3) 4
+    alited::Message2 $al(MC,favent3) 4
     return
   } else {
     set isel end
@@ -137,7 +137,7 @@ proc favor_ls::Add {} {
     lappend favcont $cont
     lappend favpla $place
     set msg [string map [list %n [llength $favlist]] $al(MC,favnew)]
-    Message $msg
+    alited::Message2 $msg
   }
   Focus $isel
 }
@@ -150,13 +150,13 @@ proc favor_ls::Change {} {
   variable fav
   if {[set isel [Selected]] eq ""} return
   if {[set isl1 [lsearch -exact $favlist $fav]]!=$isel} {
-    Message $al(MC,favexists) 4
+    alited::Message2 $al(MC,favexists) 4
     Select $isl1
   } else {
     set favlist [lreplace $favlist $isel $isel $fav]
     set favpla [lreplace $favpla $isel $isel $place]
     set msg [string map [list %n [incr isel]] $al(MC,favupd)]
-    Message $msg
+    alited::Message2 $msg
   }
 }
 
@@ -178,7 +178,7 @@ proc favor_ls::Delete {} {
   if {$isel>$llen} {set isel $llen}
   if {$llen>=0} {Select $isel}
   set msg [string map [list %n $nsel] $al(MC,favrem)]
-  Message $msg
+  alited::Message2 $msg
 }
 
 proc favor_ls::IniFile {} {
@@ -258,33 +258,34 @@ proc favor_ls::_create {} {
   variable fav
   $obDl2 makeWindow $win $al(MC,favorites)
   $obDl2 paveWindow $win {
-    {fralab - - 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
-    {.lab1 - - 1 10 {-st ew} {-t "$alited::al(MC,fav1)"}}
-    {.lab2 fralab.lab1 T 1 10 {-st ew} {-t "$alited::al(MC,fav2)"}}
-    {fraLbxFav fralab T 10 10 {-st nswe -pady 8} {}}
-    {.labFavs - - - - {pack -side top -fill x -anchor nw} {-t "$alited::al(MC,fav3)"}}
+    {fraLbxFav - - 1 2 {-st nswe -pady 4} {}}
+    {.labFavs - - - - {pack -side top -anchor nw -padx 4} {-t "$alited::al(MC,fav3)"}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAdd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::favor_ls::Add -tip {$alited::al(MC,favadd)}}}
-    {.fra.buTChange - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Change -tip {$alited::al(MC,favchg)}}}
-    {.fra.buTDelete - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Delete -tip {$alited::al(MC,favdel)}}}
+    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::favor_ls::Add -tip {$alited::al(MC,favadd)} -image alimg_add-big}}
+    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Change -tip {$alited::al(MC,favchg)} -image alimg_change-big}}
+    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Delete -tip {$alited::al(MC,favdel)} -image alimg_delete-big}}
     {.LbxFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 40 -lvar ::alited::favor_ls::favlist}}
     {.sbvFavs fraLbxFav.LbxFav L - - {pack -side left -fill both} {}}
-    {fra1 fraLbxFav T 10 10 {-st nsew}}
-    {.labFav - - 1 1 {-st we} {-anchor center -t "$alited::al(MC,fav4)"}}
-    {.EntFav fra1.labFav L 1 9 {-st we} {-tvar ::alited::favor_ls::fav -w 40 -tip {$alited::al(MC,favent1)}}}
-    {fra1.fratex fra1.labFav T 10 10 {-st nsew} {}}
-    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 50 -tip {$alited::al(MC,favent2)} -ro 1}}
-    {.sbvFav .TexFav L - - {pack -side left -fill both}}
-    {fra2 fra1 T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
+    {fra1 fraLbxFav T 1 2 {-st nswe}}
+    {fra1.fraEnt - - 1 1 {pack -side top -expand 1 -fill both -pady 4}}
+    {.labFav - - 1 1 {pack -side left -padx 4} {-t "$alited::al(MC,fav4)"}}
+    {.EntFav fra1.labFav L 1 1 {pack -side left -expand 1 -fill both} {-tvar ::alited::favor_ls::fav -tip {$alited::al(MC,favent1)}}}
+    {fra1.fratex fra1.labFav T 1 2 {pack -side bottom}}
+    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 80 -tip {$alited::al(MC,favent2)} -ro 1}}
+    {.sbvFav .TexFav L - - {pack -side left}}
+    {fra2 fra1 T 1 2 {-st nswe} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t {$alited::al(MC,favloc)}}}
     {.radA - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,favloc1)} -var ::alited::favor_ls::place -value 1 -tip {$al(MC,favtip1)}}}
     {.radB - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,favloc2)} -var ::alited::favor_ls::place -value 2 -tip {$al(MC,favtip2)}}}
-    {fra3 fra2 T 1 10 {-st nsew}}
-    {.LabFav - - - - {pack -side left -expand 1 -fill both} {-w 50}}
+    {LabMess fra2 T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
+    {fra3 labMess T 1 2 {-st nswe}}
+    {.butHelp - - - - {pack -side left} {-t "$alited::al(MC,help)" -command ::alited::favor_ls::Help}}
+    {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
     {.butUndo - - - - {pack -side left} {-t "$alited::al(MC,favinit)" -command {::alited::favor_ls::Ok 3} -tip {$alited::al(MC,favtip3)}}}
-    {.butOK - - - - {pack -side left} {-t "$alited::al(MC,select)" -command ::alited::favor_ls::Ok}}
+    {.butOK - - - - {pack -side left -padx 2} {-t "$alited::al(MC,select)" -command ::alited::favor_ls::Ok}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::favor_ls::Cancel}}
   }
+
   set fav ""
   set lbx [$obDl2 LbxFav]
   set wtxt [$obDl2 TexFav]

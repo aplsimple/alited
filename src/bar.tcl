@@ -1,16 +1,31 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
 #
-# The bar procedures.
-# _______________________________________________________________________ #
+# Name:    bar.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    05/13/2021
+# Brief:   Handles bar of tabs.
+# License: MIT.
 
-namespace eval bar {}
+# _________________________ Main procs of bar ________________________ #
+
+namespace eval bar {
+  variable ctrltablist [list]
+}
+
+proc bar::BAR {args} {
+  # Runs the tab bar's method.
+  #   args - method's name and its arguments
+
+  namespace upvar ::alited al al
+  return [al(bts) $al(BID) {*}$args]
+}
 
 proc bar::FillBar {wframe {newproject no}} {
   namespace upvar ::alited al al obPav obPav
   set wbase [$obPav LbxInfo]
   set bar1Opts [list -wbar $wframe -wbase $wbase -lablen 16 -pady 2 \
-    -menu "" -separator no -font apaveFontDefTypedsmall -lifo yes \
+    -lifo yes -lowlist $al(FONTSIZE,small) -tiplen $al(INI,bartiplen) \
+    -menu "" -separator no -font apaveFontDefTypedsmall \
     -csel2 {alited::bar::OnTabSelection %t} \
     -cdel {alited::file::CloseFile %t} \
     -cmov2 alited::bar::OnTabMove]
@@ -42,14 +57,6 @@ proc bar::FillBar {wframe {newproject no}} {
   alited::file::CheckForNew
 }
 
-proc bar::BAR {args} {
-  # Runs the tab bar's method.
-  #   args - method's name and its arguments
-
-  namespace upvar ::alited al al
-  return [al(bts) $al(BID) {*}$args]
-}
-
 proc bar::UniqueTab {tabs tab args} {
   set cnttab 1
   set taborig $tab
@@ -67,24 +74,7 @@ proc bar::UniqueListTab {fname} {
   return [UniqueTab $tabs $tab -index 1]
 }
 
-proc bar::SetBarState {TID args} {
-  BAR configure -ALITED [list $TID {*}$args]
-}
-
-proc bar::GetBarState {} {
-  return [BAR cget -ALITED]
-}
-
-proc bar::SetTabState {TID args} {
-  if {![BAR isTab $TID]} return
-  BAR $TID configure {*}$args
-}
-
-proc bar::GetTabState {{TID ""} args} {
-  if {$TID eq ""} {set TID [CurrentTabID]}
-  if {![BAR isTab $TID]} {return ""}
-  return [BAR $TID cget {*}$args]
-}
+# ________________________ Identification  _________________________ #
 
 proc bar::CurrentTabID {} {
   # Gets ID of the current tab.
@@ -125,14 +115,28 @@ proc bar::FileTID {fname} {
   return $TID
 }
 
-proc bar::ColorBar {} {
-  namespace upvar ::alited obPav obPav
-  set cs [$obPav csCurrent]
-  if {$cs>-1} {
-    lassign [$obPav csGet $cs] cfg2 cfg1 cbg2 cbg1 cfhh - - - - fgmark
-    BAR configure -fgmark $fgmark
-  }
+# ________________________ State of bar / tab _________________________ #
+
+proc bar::SetBarState {TID args} {
+  BAR configure -ALITED [list $TID {*}$args]
 }
+
+proc bar::GetBarState {} {
+  return [BAR cget -ALITED]
+}
+
+proc bar::SetTabState {TID args} {
+  if {![BAR isTab $TID]} return
+  BAR $TID configure {*}$args
+}
+
+proc bar::GetTabState {{TID ""} args} {
+  if {$TID eq ""} {set TID [CurrentTabID]}
+  if {![BAR isTab $TID]} {return ""}
+  return [BAR $TID cget {*}$args]
+}
+
+# ________________________ Event handlers _________________________ #
 
 proc bar::OnTabMove {} {
   namespace upvar ::alited al al
@@ -147,6 +151,57 @@ proc bar::OnTabSelection {TID} {
   alited::ini::SaveCurrentIni $al(INI,save_onselect)
   alited::unit::CheckSaveIcons [alited::file::IsModified $TID]
   alited::unit::CheckUndoRedoIcons [alited::main::CurrentWTXT] $TID
+  CurrentControlTab [FileName $TID]
+}
+
+# ________________________ Handlers Ctrl+Tab keys ______________________ #
+
+proc bar::CurrentControlTab {{fname ""}} {
+  variable ctrltablist
+  if {[set ret [expr {$fname eq ""}]]} {
+    set fname [FileName]
+  }
+  if {[set i [lsearch -exact $ctrltablist $fname]]>-1} {
+    set ctrltablist [lreplace $ctrltablist $i $i]
+  }
+  if {$ret} {return $fname}
+  set ctrltablist [linsert $ctrltablist 0 $fname]
+}
+
+proc bar::ControlTab {} {
+  # Switches last two active tabs.
+  variable ctrltablist
+  set fname [CurrentControlTab]
+  set found no
+  while {[llength $ctrltablist]} {
+    set fnext [lindex $ctrltablist 0]
+    foreach tab [BAR listTab] {
+      set TID [lindex $tab 0]
+      if {$fnext eq [FileName $TID]} {
+        set found yes
+        break
+      }
+    }
+    if {$found} break
+    # if the file was closed, remove it from the ctrl-tabbed
+    set ctrltablist [lreplace $ctrltablist 0 0]
+  }
+  CurrentControlTab $fname
+  if {$found} {
+    # select the first of open files that was next to the current
+    alited::file::OpenFile $fnext
+  }
+}
+
+# ________________________ Service  _________________________ #
+
+proc bar::ColorBar {} {
+  namespace upvar ::alited obPav obPav
+  set cs [$obPav csCurrent]
+  if {$cs>-1} {
+    lassign [$obPav csGet $cs] cfg2 cfg1 cbg2 cbg1 cfhh - - - - fgmark
+    BAR configure -fgmark $fgmark
+  }
 }
 
 proc bar::InsertTab {tab tip} {
@@ -157,5 +212,6 @@ proc bar::InsertTab {tab tip} {
   alited::ini::SaveCurrentIni $al(INI,save_onadd)
   return $TID
 }
+
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl DEBUG

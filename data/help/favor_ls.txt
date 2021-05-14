@@ -1,0 +1,19 @@
+ Use buttons on the right to add/change/delete a list of favorites.
+
+ The currently used list of favorites is displayed at the bottom.
+ Enter a name for the list and click "Add" button to use it aftewards.
+
+ This way you can keep a kind of "projects inside a project", choosing
+ a list of favorites for appropriate tasks inside a current project.
+
+ For small tasks, click "kept" button to work with other open files.
+
+ For big tasks, click "closed" button to work with the favorites only.
+
+ Click "Back" button to return to an original list of favorites
+ that were active initially, at starting the application.
+
+ Click "Select" button or double-click a list to make it active.
+
+ NOTE: If you consider the current favorites somehow significant,
+ save them under some name, let it be even "tmp".

@@ -1,0 +1,12 @@
+ Use drop-down list to select a color scheme.
+
+ To tint the scheme's colors, change the "Tint".
+ The negative values mean "darker", the positive
+ values mean "lighter".
+
+ E.g. you might try "African 1" and "Tint" -10.
+
+ The font sizes will touch the following widgets:
+ - small font : lists, tabs, info and status bars
+ - middle font: menus, labels
+ - large font : editor's texts

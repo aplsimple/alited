@@ -1,0 +1,13 @@
+ In a text of template, the following wildcards are used:
+    %U - user's name
+    %u - user's login
+    %m - user's mail
+    %w - user's web site
+    %d - date (default format is %D)
+    %t - time (default format is %T)
+    %f - current file's tail name
+    %n - current file's root name (namespace)
+    %p - current procedure/method's name
+    %a - current procedure/method's arguments
+
+ Some of them can be customized in this dialogue.

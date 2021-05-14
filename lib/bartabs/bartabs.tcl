@@ -1145,7 +1145,11 @@ method Bar_MenuList {BID TID popi {ilist ""} {pop ""}} {
   lassign [my $BID cget -tabcurrent -select -FGOVER -BGOVER -lowlist] \
     tabcurr fewsel fgo bgo ll
   if {$ll || [catch {set fs "-size [dict get [$pop cget -font] -size]"}]} {
-    set fs ""
+    if {$ll && [string is digit $ll] && $ll>1} {
+      set fs "-size $ll"
+    } else {
+      set fs ""
+    }
   }
   for {set i 0} {$i<[llength $ilist]} {incr i} {
     if {[set tID [lindex $ilist $i]] eq "s"} continue
@@ -2148,6 +2152,9 @@ method moveSelTab {TID1 TID2} {
 # TID1 and TID2 must be of the same bar.
 
   set BID [my Tab_BID $TID1 check]
+  # -lifo option prevents moving, so it has to be temporarily disabled
+  set lifo [my $BID cget -lifo]
+  my $BID configure -lifo no
   set seltabs [my $BID listFlag "s"]
   if {[set i [llength $seltabs]]>1} {
     for {incr i -1} {$i>=0} {incr i -1} {
@@ -2157,6 +2164,7 @@ method moveSelTab {TID1 TID2} {
   } else {
     my MoveTab $TID1 $TID2
   }
+  my $BID configure -lifo $lifo  ;# restore -lifo option
 }
 } ;#  bartabs::Bars
 

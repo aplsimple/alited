@@ -10,40 +10,24 @@ namespace eval ::alited::keys {
 proc keys::ReservedList {} {
   return [list \
     F1 \
-    F2 \
-    F3 \
-    F4 \
-    F5 \
-    F11 \
-    F12 \
+    F10 \
     Control-A \
     Control-C \
-    Control-D \
     Control-F \
-    Control-I \
-    Control-L \
     Control-M \
     Control-N \
     Control-O \
     Control-R \
-    Control-S \
-    Control-U \
     Control-V \
     Control-W \
     Control-X \
-    Control-Y \
     Control-Z \
-    Control-Shift-L \
     Control-Shift-Z \
-    Alt-Q \
-    Alt-W \
     Alt-Up \
     Alt-Down \
     Alt-Left \
     Alt-Right \
-    Alt-F4 \
-    Return \
-    Escape \
+    Alt-F4
   ]
 }
 
@@ -63,6 +47,8 @@ proc keys::UserList {} {
       }
     }
   }
+  lappend res Control-bracketleft
+  lappend res Control-bracketright
   return $res
 }
 
@@ -96,20 +82,23 @@ proc keys::ReservedAdd {wtxt} {
   Add action "find-replace" Control-F {alited::find::_run; break}
   Add action "new-file"     Control-N {::alited::file::NewFile; break}
   Add action "open-file"    Control-O {::alited::file::OpenFile; break}
-  Add action "indent"       Control-I {::alited::unit::Indent; break}
-  Add action "unindent"     Control-U {::alited::unit::UnIndent; break}
-  Add action "comment"      Control-bracketleft {::alited::unit::Comment; break}
-  Add action "uncomment"    Control-bracketright {::alited::unit::UnComment; break}
-  Add action "save-as"      Control-S {::alited::file::SaveFileAs; break}
   Add action "save-all"     Shift-Control-S {::alited::file::SaveAll; break}
   Add action "save-close"   Control-W {::alited::file::SaveFileAndClose; break}
   Add action "help"         F1 {alited::tool::Help}
-  Add action "save-file"    F2 {::alited::file::SaveFile}
-  Add action "find-next"    F3 "$obPav findInText 1 $wtxt"
-  Add action "e_menu"       F4 {alited::tool::e_menu}
-  Add action "run"          F5 {alited::tool::Run}
-  Add action "item-up"      F11 {+ ::alited::main::MoveItem up yes}
-  Add action "item-down"    F12 {+ ::alited::main::MoveItem down yes}
+  # other keys are customized in Preferences
+  Add action "save-file"    [alited::pref::BindKey 0 - F2] {::alited::file::SaveFile}
+  Add action "save-as"      [alited::pref::BindKey 1 - Control-S] {::alited::file::SaveFileAs; break}
+  Add action "e_menu"       [alited::pref::BindKey 2 - F4] {alited::tool::e_menu}
+  Add action "run"          [alited::pref::BindKey 3 - F5] {alited::tool::_run}
+  Add action "indent"       [alited::pref::BindKey 6 - Control-I] {::alited::unit::Indent; break}
+  Add action "unindent"     [alited::pref::BindKey 7 - Control-U] {::alited::unit::UnIndent; break}
+  Add action "comment"      [alited::pref::BindKey 8 - Control-bracketleft] {::alited::unit::Comment; break}
+  Add action "uncomment"    [alited::pref::BindKey 9 - Control-bracketright] {::alited::unit::UnComment; break}
+  Add action "find-next"    [alited::pref::BindKey 12 - F3] "$obPav findInText 1 $wtxt"
+  Add action "look-declaration"    [alited::pref::BindKey 13 - Control-L] "::alited::find::SearchUnit $wtxt ; break"
+  Add action "look-word"    [alited::pref::BindKey 14 - Control-Shift-L] "::alited::find::SearchWordInSession ; break"
+  Add action "item-up"      [alited::pref::BindKey 15 - F11] {+ ::alited::main::MoveItem up yes}
+  Add action "item-down"    [alited::pref::BindKey 16 - F12] {+ ::alited::main::MoveItem down yes}
 }
 
 proc keys::Add {type name keys cont} {
@@ -138,8 +127,10 @@ proc keys::Search {type name} {
   namespace upvar ::alited al al
   set i 0
   foreach kb $al(KEYS,bind) {
-    lassign $kb t n
-    if {$t eq $type && ($name eq "" || $n eq $name)} {return $i}
+    lassign $kb t n n2
+    if {($type eq "" || $t eq $type) && ($name eq "" || $name eq $n || $name eq $n2)} {
+      return $i
+    }
     incr i
   }
   return -1
@@ -160,6 +151,9 @@ proc keys::BindKeys {wtxt type} {
           lassign $tpldata tex pos place
           set tex [string map [list $::alited::EOL \n % %%] $tex]
           bind $wtxt "<$k>" [list ::alited::unit::InsertTemplate [list $tex $pos $place]]
+        } elseif {$type eq "preference"} {
+          set tpldata [string map [list %k $keys] $tpldata]
+          {*}$tpldata
         } else {
           bind $wtxt "<$k>" $tpldata
         }

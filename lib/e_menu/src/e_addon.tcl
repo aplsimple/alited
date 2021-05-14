@@ -87,7 +87,7 @@ proc ::em::countCh2 {str ch {plistName ""}} {
   #   ch - a character
   #   plistName - variable name for a list of positions of *ch*
   # Returns a number of ANY occurences of character *ch* in string *str*.
-  # See also: my::CountChar
+  # See also: countCh
 
   if {$plistName ne ""} {
     upvar 1 $plistName plist

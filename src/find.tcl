@@ -104,8 +104,9 @@ proc find::SearchThisUnit {com1 TID} {
   return $found
 }
 
-proc find::SearchUnit {wtxt} {
+proc find::SearchUnit {{wtxt ""}} {
   namespace upvar ::alited al al
+  if {$wtxt eq ""} {set wtxt [alited::main::CurrentWTXT]}
   lassign [GetCommandOfText $wtxt] com1 idx
   set com2 $com1
   if {$com1 eq ""} return
@@ -328,7 +329,8 @@ proc find::FindInText {} {
 proc find::FindInSession {{tagme "add"}} {
   namespace upvar ::alited al al
   alited::info::Clear
-  set currTID [alited::bar::CurrentTabID]
+  alited::info::Put $al(MC,wait) "" yes
+  update
   set allfnd [list]
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
@@ -338,6 +340,7 @@ proc find::FindInSession {{tagme "add"}} {
     lassign [alited::main::GetText $TID] curfile wtxt
     lappend allfnd {*}[FindAll $wtxt $TID $tagme]
   }
+  alited::info::Clear 0
   ShowResults1 $allfnd
 }
 
@@ -347,11 +350,16 @@ proc find::SearchWordInSession {} {
   set savv1 $data(v1)    ;# rad "Exact"
   set savc1 $data(c1)    ;# chb "Word only"
   set savc2 $data(c2)    ;# chb "Case Sensitive"
-  if {[set data(en1) [GetWordOfText noselect]] eq ""} {
+  if {[set data(en1) [GetWordOfText select]] eq ""} {
     bell
   } else {
+    set wtxt [alited::main::CurrentWTXT]
+    if {[catch {set sel [$wtxt get sel.first sel.last]}] || $sel eq ""} {
+      set data(c1) 1
+    } else {
+      set data(c1) 0  ;# if selected, let it be looked for (at "not word only")
+    }
     set data(v1) 1
-    set data(c1) 1
     set data(c2) 1
     set data(docheck) no  ;# no checks - no usage of the dialogue's widgets
     FindInSession notag
@@ -471,16 +479,16 @@ proc find::_create {} {
   variable data
   set res 1
   while {$res} {
-    $obFND makeWindow $win $al(MC,icoreplace)
+    $obFND makeWindow $win $al(MC,findreplace)
     $obFND paveWindow $win {
       {labB1 - - 1 1    {-st e}  {-t {$alited::al(MC,frfind)} -style TLabelFS}}
       {Cbx1 labB1 L 1 9 {-st wes} {-tvar ::alited::find::data(en1) -values {$::alited::find::data(vals1)}}}
       {labB2 labB1 T 1 1 {-st e}  {-t {$alited::al(MC,frrepl)} -style TLabelFS}}
       {cbx2 labB2 L 1 9 {-st wes} {-tvar ::alited::find::data(en2) -values {$::alited::find::data(vals2)}}}
       {labBm labB2 T 1 1 {-st e}  {-t {$alited::al(MC,frmatch)} -style TLabelFS}}
-      {radA labBm L 1 1 {-st ws}  {-t {$alited::al(MC,frexact)} -var ::alited::find::data(v1) -value 1 -style TRadiobuttonFS}}
-      {radB radA L 1 2 {-st ws}  {-t "Glob" -var ::alited::find::data(v1) -value 2 -tip {$alited::al(MC,frtip1)} -style TRadiobuttonFS}}
-      {radC radB L 1 3 {-st es}  {-t "RE" -var ::alited::find::data(v1) -value 3 -tip {$alited::al(MC,frtip2)} -style TRadiobuttonFS}}
+      {radA labBm L 1 1 {-st ws -padx 0}  {-t {$alited::al(MC,frexact)} -var ::alited::find::data(v1) -value 1 -style TRadiobuttonFS}}
+      {radB radA L 1 1 {-st ws -padx 5}  {-t "Glob" -var ::alited::find::data(v1) -value 2 -tip {$alited::al(MC,frtip1)} -style TRadiobuttonFS}}
+      {radC radB L 1 4 {-st ws -padx 0}  {-t "RE" -var ::alited::find::data(v1) -value 3 -tip {$alited::al(MC,frtip2)} -style TRadiobuttonFS}}
       {h_1 radC L 1 1  {-cw 1}}
       {h_2 labBm T 1 9  {-st es -rw 1}}
       {seh  h_2 T 1 9  {-st ews}}
@@ -495,15 +503,15 @@ proc find::_create {} {
       {.chb4 - - - - {pack -anchor sw} {-t {$alited::al(MC,frwrap)} -var ::alited::find::data(c4) -style TCheckbuttonFS}}
       {chb5 fralabB3 T 1 1 {-st sw} {-t {$alited::al(MC,frontop)} -var ::alited::find::data(c5) -tip {$alited::al(MC,frtip4)} -com "$::alited::obFND res $::alited::find::win -1" -style TCheckbuttonFS}}
       {sev2 cbx1 L 10 1 }
-      {but1 sev2 L 1 1 {-st we} {-t {$alited::al(MC,frfind1)} -com "::alited::find::Find" -style TButtonWestBoldFS}}
+      {but1 sev2 L 1 1 {-st we} {-t Find -com "::alited::find::Find" -style TButtonWestBoldFS}}
       {but2 but1 T 1 1 {-st we} {-t {$alited::al(MC,frfind2)} -com "::alited::find::FindInText" -style TButtonWestFS}}
       {but3 but2 T 1 1 {-st we} {-t {$alited::al(MC,frfind3)} -com "::alited::find::FindInSession" -style TButtonWestFS}}
       {h_3 but3 T 2 1}
-      {but4 h_3 T 1 1 {-st we} {-t {$alited::al(MC,frrepl1)}  -com "::alited::find::Replace" -style TButtonWestBoldFS}}
+      {but4 h_3 T 1 1 {-st we} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
       {but5 but4 T 1 1 {-st nwe} {-t {$alited::al(MC,frfind2)} -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
       {but6 but5 T 1 1 {-st nwe} {-t {$alited::al(MC,frfind3)} -com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
       {h_4 but6 T 1 1}
-      {but0 h_4 T 1 1 {-st swe} {-t "Close" -com ::alited::find::_close -style TButtonWestBoldFS}}
+      {but0 h_4 T 1 1 {-st swe} {-t Close -com ::alited::find::_close -style TButtonWestBoldFS}}
     }
     bind $win.cbx1 <Return> "$win.but1 invoke"  ;# the Enter key is
     bind $win.cbx2 <Return> "$win.but4 invoke"  ;# hot in comboboxes

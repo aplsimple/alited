@@ -44,31 +44,8 @@ proc unit_tpl::Cancel {args} {
 }
 
 proc unit_tpl::Help {args} {
-  namespace upvar ::alited al al
   variable win
-  set msg { Use buttons on the right to add, change or delete a template.
-
- Choose or erase a template's hot keys from the dropdown combobox.
-
- In a template's text, set the cursor where it should be at inserting.
-
- In the text, use the following wildcards:
-    %d - date
-    %t - time
-    %u - user's login
-    %U - user's name
-    %m - user's mail
-    %w - user's web site
-    %f - current file's tail name
-    %n - current file's root name (namespace)
-    %p - current procedure/method's name
-    %a - current procedure/method's arguments}
-  alited::msg ok "" $msg -title $al(MC,help) -text 1 -geometry root=$win -scroll no
-}
-
-proc unit_tpl::Message {msg {first 1}} {
-  namespace upvar ::alited obDl2 obDl2
-  alited::Message $msg $first [$obDl2 LabTpl]
+  alited::Help $win
 }
 
 proc unit_tpl::UpdateTree {} {
@@ -97,7 +74,7 @@ proc unit_tpl::Selected {what {domsg yes}} {
   set tree [$obDl2 TreeTpl]
   if {[set isel [$tree selection]] eq "" && [set isel [$tree focus]] eq "" \
   && $domsg} {
-    Message $al(MC,tplsel) 4
+    alited::Message2 $al(MC,tplsel) 4
   }
   if {$isel ne "" && $what eq "index"} {
     set isel [$tree index $isel]
@@ -197,15 +174,15 @@ proc unit_tpl::Add {} {
       set pos [lindex $tplpos $isel3]
       ::tk::TextSetCursor $wtxt $pos
     }
-    Message $al(MC,tplexists) 4
+    alited::Message2 $al(MC,tplexists) 4
     return
   } elseif {$tpl eq ""} {
     focus [$obDl2 EntTpl]
-    Message $al(MC,tplent1) 4
+    alited::Message2 $al(MC,tplent1) 4
     return
   } elseif {[string trim $txt] eq ""} {
     focus [$obDl2 TexTpl]
-    Message $al(MC,tplent2) 4
+    alited::Message2 $al(MC,tplent2) 4
     return
   }
   lappend tpllist $tpl
@@ -219,7 +196,7 @@ proc unit_tpl::Add {} {
   set item [lindex [$tree children {}] end]
   lappend tplid $item
   Select [expr {[llength $tplid]-1}]
-  Message $msg
+  alited::Message2 $msg
 }
 
 proc unit_tpl::Change {} {
@@ -242,7 +219,7 @@ proc unit_tpl::Change {} {
   UpdateTree
   Select $isel
   set msg [string map [list %n [incr isel]] $al(MC,tplupd)]
-  Message $msg
+  alited::Message2 $msg
 }
 
 proc unit_tpl::Delete {} {
@@ -269,7 +246,7 @@ proc unit_tpl::Delete {} {
   UpdateTree
   if {$llen>=0} {Select $isel}
   set msg [string map [list %n $nsel] $al(MC,tplrem)]
-  Message $msg
+  alited::Message2 $msg
 }
 
 proc unit_tpl::ReadIni {} {
@@ -335,9 +312,9 @@ proc unit_tpl::_create {} {
   $obDl2 paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAdd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip {$alited::al(MC,tpladd)}}}
-    {.fra.buTChange - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip {$alited::al(MC,tplchg)}}}
-    {.fra.buTDelete - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip {$alited::al(MC,tpldel)}}}
+    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip {$alited::al(MC,tpladd)} -image alimg_add-big}}
+    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip {$alited::al(MC,tplchg)} -image alimg_change-big}}
+    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip {$alited::al(MC,tpldel)} -image alimg_delete-big}}
     {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 7 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-stretch 0}"}}
     {.sbvTpls fraTreeTpl.TreeTpl L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
@@ -353,10 +330,11 @@ proc unit_tpl::_create {} {
     {.radB - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc2)} -var ::alited::unit_tpl::place -value 2 -tip {$al(MC,tplttloc2)}}}
     {.radC - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc3)} -var ::alited::unit_tpl::place -value 3 -tip {$al(MC,tplttloc3)}}}
     {.radD - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc4)} -var ::alited::unit_tpl::place -value 4 -tip {$al(MC,tplttloc4)}}}
-    {fra3 fra2 T 1 10 {-st nsew}}
+    {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
+    {fra3 labMess T 1 10 {-st nsew}}
     {.butHelp - - - - {pack -side left} {-t "$alited::al(MC,help)" -command ::alited::unit_tpl::Help}}
-    {.LabTpl - - - - {pack -side left -expand 1 -fill both}}
-    {.butOK - - - - {pack -side left} {-t "$alited::al(MC,select)" -command ::alited::unit_tpl::Ok}}
+    {.h_ - - - - {pack -side left -expand 1 -fill both}}
+    {.butOK - - - - {pack -side left -padx 2} {-t "$alited::al(MC,select)" -command ::alited::unit_tpl::Ok}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::unit_tpl::Cancel}}
   }
   set tree [$obDl2 TreeTpl]

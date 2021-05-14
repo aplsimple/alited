@@ -44,7 +44,7 @@ proc file::OutwardChange {TID {docheck yes}} {
     if {[alited::msg yesno warn $msg YES -title $al(MC,saving)]} {
       # if the answer was "no save", let the text remains a while for further considerations
       if {$isfile} {
-        alited::bar::BAR $TID configure --reload "yes"
+        MakeThemReload $TID
         OpenFile $fname yes
       } else {
         SaveFile $TID
@@ -53,6 +53,15 @@ proc file::OutwardChange {TID {docheck yes}} {
     }
   }
   alited::bar::BAR $TID configure --mtime $curtime --mtimefile $fname
+}
+
+proc file::MakeThemReload {{tabs ""}} {
+  if {$tabs eq ""} {
+    set tabs [alited::bar::BAR listTab]
+  }
+  foreach tab $tabs {
+    alited::bar::BAR [lindex $tab 0] configure --reload "yes"
+  }
 }
 
 proc file::ReadFile {TID curfile} {
@@ -87,7 +96,7 @@ proc file::OpenFile {{fname ""} {reload no}} {
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
   }
   if {[file exists $fname]} {
-    set exts "tcl, msg, c, html, md, txt, ini"
+    set exts "tcl, tm, msg, c, h, cc, cpp, hpp, html, css, md, txt, ini"
     set ext [string tolower [string trim [file extension $fname] "."]]
     if {!$reload && $ext ni [split [string map {" " ""} $exts] ","]} {
       set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
@@ -113,6 +122,23 @@ proc file::OpenFile {{fname ""} {reload no}} {
     return $TID
   }
   return ""
+}
+
+proc file::OpenOfDir {dname} {
+  if {![catch {set flist [glob -directory $dname *]}]} {
+    foreach fname [lsort -decreasing $flist] {
+      if {[file isfile $fname] && [IsTcl $fname]} {
+        OpenFile $fname
+      }
+    }
+  }
+}
+
+proc file::IsTcl {fname} {
+  if {[string tolower [file extension $fname]] in {.tcl .tm .msg}} {
+    return yes
+  }
+  return no
 }
 
 proc file::SaveFileByName {TID fname} {
@@ -273,6 +299,7 @@ proc file::CloseAll {func} {
 
   set TID [alited::bar::CurrentTabID]
   alited::bar::BAR closeAll $::alited::al(BID) $TID $func yesnocancel
+  return [expr {[llength [alited::bar::BAR listFlag "m"]]==0}]
 }
 
 proc file::MoveExternal {f1112} {

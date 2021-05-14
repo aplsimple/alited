@@ -19,6 +19,7 @@ namespace eval ::apave {
   variable _PU_opts;       array set _PU_opts [list -NONE =NONE=]
   variable _AP_Properties; array set _AP_Properties [list]
   set _PU_opts(_ERROR_) ""
+  set _PU_opts(_EOL_) ""
   # - main color scheme data
   variable _CS_
   array set _CS_ [list]
@@ -111,7 +112,7 @@ namespace eval ::apave {
   }
 }
 
-# _______________________________________________________________________ #
+# _____________________________ Misc procs ________________________________ #
 
 proc ::iswindows {} {
 
@@ -525,6 +526,31 @@ proc ::apave::error {{fileName ""}} {
 
 ###########################################################################
 
+proc ::apave::textEOL {{EOL "-"}} {
+  # Gets/sets End-of-Line for text reqding/writing.
+  #   EOL - LF, CR, CRLF or {}
+  # If EOL omitted or equals to {} or "-", return the current EOL.
+  # If EOL equals to "translation", return -translation option or {}.
+
+  variable _PU_opts
+  if {$EOL eq "-"} {return $_PU_opts(_EOL_)}
+  if {$EOL eq "translation"} {
+    if {$_PU_opts(_EOL_) eq ""} {return ""}
+    return "-translation $_PU_opts(_EOL_)"
+  }
+  set _PU_opts(_EOL_) [string trim [string tolower $EOL]]
+}
+
+proc ::apave::textChanConfigure {channel} {
+  # Configures a channel for text file.
+  #   channel - the channel
+
+  chan configure $channel -encoding utf-8
+  chan configure $channel {*}[::apave::textEOL translation]
+}
+
+###########################################################################
+
 proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
 
   # Reads a text file.
@@ -540,7 +566,7 @@ proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
     if {$doErr} {error [::apave::error $fileName]}
     set fvar ""
   } else {
-    chan configure $chan -encoding utf-8
+    ::apave::textChanConfigure $chan
     set fvar [read $chan]
     close $chan
   }
@@ -568,7 +594,7 @@ proc ::apave::writeTextFile {fileName {varName ""} {doErr 0}} {
     if {$doErr} {error [::apave::error $fileName]}
     set res no
   } else {
-    chan configure $chan -encoding utf-8
+    ::apave::textChanConfigure $chan
     puts -nonewline $chan $contents
     close $chan
     set res yes
@@ -644,7 +670,32 @@ proc ::apave::getProperty {name {defvalue ""}} {
   return $defvalue
 }
 
-###########################################################################
+
+proc ::apave::countChar {str ch} {
+  # Counts a character in a string.
+  #   str - a string
+  #   ch - a character
+  #
+  # Returns a number of non-escaped occurences of character *ch* in
+  # string *str*.
+  #
+  # See also:
+  # [wiki.tcl-lang.org](https://wiki.tcl-lang.org/page/Reformatting+Tcl+code+indentation)
+
+  set icnt 0
+  while {[set idx [string first $ch $str]] >= 0} {
+    set backslashes 0
+    set nidx $idx
+    while {[string equal [string index $str [incr nidx -1]] \\]} {
+      incr backslashes
+    }
+    if {$backslashes % 2 == 0} { incr icnt }
+    set str [string range $str [incr idx] end]
+  }
+  return $icnt
+}
+
+# ________________________ ObjectProperty _________________________ #
 #
 # 1st bit: Set/Get properties of object.
 #
@@ -720,7 +771,8 @@ oo::class create ::apave::ObjectProperty {
 
 }
 
-###########################################################################
+
+# ________________________ ObjectTheming _________________________ #
 # Another bit - theming manager
 
 oo::class create ::apave::ObjectTheming {

@@ -1,0 +1,23 @@
+ This tool checks Tcl files only (.tcl, .tm, .msg).
+
+ The results contain general info about a file and
+ specific data on its units (procedures and methods).
+
+ The file results cover the whole of the file. There
+ might be inconsistencies in some specific units and
+ seemingly "good" results for the file as whole.
+
+ The file results include (x/y/z) info meaning
+ inconsistencies for {}, [] and ().
+
+ The inconsistencies for {} occur most often when
+ some procedure declares a procedure inside itself.
+ Or when a procedure is located at edges of a class
+ or a namespace - in such cases the unit may include
+ the starting/finishing braces.
+
+ To get rid of these "inconsistencies" you can insert
+ branches named like "End of class/NS so and so". Or
+ just take these artifacts "as is".
+
+ Click on a result to enter the appropriate file/unit.

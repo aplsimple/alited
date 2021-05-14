@@ -1,0 +1,26 @@
+# List of project directories for e_menu.
+
+# Add, replace or delete the projects.
+# The comments and blank lines are ignored.
+
+# A second name as "apave" below may be used for %PN wildcard in menu files.
+# It's an alias of project name. See e.g. fossil2.mnu, meaning "Fossil/Next".
+
+/home/apl/PG/github/pave apave
+
+/home/apl/PG/github/trimmer
+/home/apl/PG/github/baltip
+/home/apl/PG/github/bartabs
+/home/apl/PG/github/hl_tcl
+/home/apl/PG/github/aplsimple.github.io
+
+/home/apl/PG/github/e_menu
+/home/apl/PG/github/doctest
+/home/apl/PG/github/mulster
+/home/apl/PG/github/tkcc
+/home/apl/PG/github/booksum
+/home/apl/PG/github/alited
+/home/apl/PG/chisel/HOWTO_chisel
+
+/home/apl/PG/github/TKE/tke
+/home/apl/PG/github/geany-aplsimple/geany

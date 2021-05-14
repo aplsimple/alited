@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.3.3a6"
+  variable em_version "e_menu 3.3.3a7"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -981,8 +981,6 @@ proc ::em::log {oper} {
 #=== procs for HELP/EXEC/SHELL/MENU items run by button pressing
 proc ::em::help_button {help} {
   ::eh::browse [::eh::html $help $::em::offline]
-  set ::em::lasti 1
-  save_options
   on_exit 0
 }
 proc ::em::run_button {typ s1 {amp ""}} {

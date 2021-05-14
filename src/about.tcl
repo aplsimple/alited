@@ -22,19 +22,20 @@ namespace eval about {
       [list "linkapl" "::apave::openDoc %t@@https://github.com/aplsimple/@@"] \
       [list "linkMIT" "::apave::openDoc %t@@https://en.wikipedia.org/wiki/MIT_License@@"] \
       ]
-    ::alited::msg ok info "  <red>alited v[package require alited]</red> stands for \"a lite editor\".
+    ::alited::msg ok {} "  <red>alited v[package require alited]</red> [msgcat::mc {stands for}] \"a lite editor\".
 
-  Well fit for Tcl/Tk programming.
+  [msgcat::mc {Written in pure Tcl/Tk.}]
+  [msgcat::mc {And well fit for programming with it.}]
 
-  Details: \
+  [msgcat::mc {Details:}] \
 
     \u2022 <link1>aplsimple.github.io/en/tcl/alited</link1>
 
-  Authors: \
+  [msgcat::mc {Authors:}] \
 
     \u2022 <linkapl>Alex Plotnikov</linkapl>
 
-  License: <linkMIT>MIT</linkMIT>
+  [msgcat::mc {License:}] <linkMIT>MIT</linkMIT>
   __________________________________________
 
   <red> $alited::tcltk_version </red> <link3></link3>
@@ -45,6 +46,8 @@ namespace eval about {
   }
 
   proc textImaged {w} {
+    # Makes the feather blink.
+    #  w - window's path
     ::apave::obj labelFlashing [::apave::obj textLink $w 3] "" 1 \
       -data $::alited::img::_AL_IMG(feather) -pause 0.5 -incr 0.1 -after 40
   }

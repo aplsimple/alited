@@ -65,7 +65,7 @@ proc tool::e_menu2 {opts} {
 }
 
 proc tool::Help {} {
-  Run Help
+  _run Help
 }
 
 proc tool::SaveFiles {} {
@@ -77,7 +77,7 @@ proc tool::SaveFiles {} {
   }
 }
 
-proc tool::Run {{what ""}} {
+proc tool::_run {{what ""}} {
   namespace upvar ::alited al al
   set fpid [file join $al(EM,menudir) .pid~]
   if {[file exists $fpid]} {
