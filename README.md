@@ -4,7 +4,7 @@ The *alited* stands for "a lite editor".
 
 The main features of *alited* are:
 
-  * structured code 
+structured code 
   * easy access to the code
   * born for Tcl/Tk development only
 
@@ -199,9 +199,21 @@ And here the *alited* comes to help.
 
 # How that's installed
 
+The installation of *alited* is straightforward:
+
+  * download [alited.zip](https://chiselapp.com/user/aplsimple/repository/alited/zip/trunk/alited.zip)
+
+  * unpack *alited.zip* to some directory, say ~/PG/alited
+
+To run the installed *alited*, use the command (given *~/PG/alited* is the installation directory):
+
+    wish ~/PG/alited/src/alited.tcl
+
+In Linux, you can run *tclsh* instead of *wish*.
+
 Being written in pure Tcl/Tk 8.6, the *alited* needs only the core Tcl/Tk packages.
 
-If you a novice to Tcl/Tk 8.6, try and install it. Then try and install the  *alited* and its dependencies, noticing the messages of CLI. Let the installations be a sort of your exercise in Tcl/Tk.
+If you are a novice to Tcl/Tk 8.6, try and install it. Then try and install the  *alited* and its dependencies, noticing the messages of CLI. Let the installations be a sort of your exercise in Tcl/Tk.
 
 As noticed above, the *alited is born for Tcl/Tk development only*, so it needs aggressively a basic Tcl/Tk knowledge and the Tcl/Tk packages installed.
 
