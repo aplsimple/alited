@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.6
+package provide alited 0.7
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -30,7 +30,7 @@ namespace eval alited {
 
   proc run_remote {cmd args} {
     # Runs a command that was started by another process.
-  
+
     if {[catch { $cmd {*}$args }]} {
       return -code error
     }
@@ -92,8 +92,9 @@ namespace eval alited {
 
   # two main objects to build forms (just some unique names)
   variable obPav ::alited::alitedpav
-  variable obDlg ::alited::aliteddlg
-  variable obDl2 ::alited::aliteddl2
+  variable obDlg ::alited::aliteddlg  ;# dialog of 1st level
+  variable obDl2 ::alited::aliteddl2  ;# dialog of 2nd level
+  variable obDl3 ::alited::aliteddl3  ;# dialog of 3rd level
   variable obFND ::alited::alitedFND
 
   # misc. vars
@@ -169,12 +170,16 @@ namespace eval alited {
     set slen [string length $msg]
     if {[catch {$lab configure -text $msg}] || !$slen} return
     $lab configure -font $font -foreground $fg
-    if {$mode in {"2" "3" "4"}} {
+    if {$mode in {"2" "3" "4" "5"}} {
       $lab configure -font $fontB
-      if {$mode in {"3" "4"}} {
+      if {$mode in {"3" "4" "5"}} {
         $lab configure -foreground $fgbold
         if {$mode eq "4" && $first} bell
       }
+    }
+    if {$mode eq "5"} {
+      update
+      return
     }
     if {$first} {
       set msec [expr {200*$slen}]
@@ -210,6 +215,10 @@ namespace eval alited {
     about::About
   }
 
+  proc HelpAlited {} {
+    Help $alited::al(WIN)
+  }
+
   proc Help {win {suff ""}} {
     variable DATADIR
     set fname [lindex [split [dict get [info frame -1] proc] :] end-2]
@@ -221,7 +230,7 @@ namespace eval alited {
     }
     msg ok "" $msg -title Help -text 1 -geometry root=$win -scroll no
   }
-  
+
   proc FgFgBold {} {
     variable obPav
     lassign [$obPav csGet] - fg - - - - - - - fgbold
@@ -259,6 +268,14 @@ namespace eval alited {
   source [file join $SRCDIR pref.tcl]
   source [file join $SRCDIR project.tcl]
   source [file join $SRCDIR check.tcl]
+}
+
+# ____________ TO COMMENT ______________ #
+
+catch {
+  source /home/apl/PG/github/transpops/transpops.tcl
+  #set ::transpops::my::perchars 1.0 ;# for popups to be 12 times longer
+  ::transpops::run /home/apl/PG/github/alited/.bak/transpops.txt {<Alt-t> <Alt-y>} .alwin
 }
 
 # _________________________ Run the app _________________________ #

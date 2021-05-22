@@ -7,6 +7,7 @@
 # default settings of alited app:
 
 namespace eval ::alited {
+  set al(MAXFILES) 2000 ;# maximum size of file tree (max size of project)
   set al(ED,multiline) 0 ;# "true" only for projects of small modules
   set al(ED,EOL) {}
   set al(ED,indent) 2
@@ -60,6 +61,10 @@ namespace eval ::alited {
   set al(EM,CS) 33
   set al(EM,exec) no
   set al(tablist) [list]
+  set al(RECENTFILES) [list]
+  set al(INI,RECENTFILES) 16
+  set al(closefunc) 0
+  set alited::al(chosencolor) green
 }
 
 namespace eval ini {
@@ -215,6 +220,7 @@ proc ini::ReadIniMisc {nam val} {
   namespace upvar ::alited al al
   switch -exact $nam {
     isfavor {set al(FAV,IsFavor) $val}
+    chosencolor {set alited::al(chosencolor) $val}
   }
 }
 
@@ -226,6 +232,7 @@ proc ini::ReadIniPrj {} {
   set al(tabs) [list]
   set al(curtab) ""
   alited::favor_ls::GetIni ""  ;# initializes favorites' lists
+  set al(prjdirign) ".git .bak"
   if {![file exists $al(prjfile)]} {
     set al(prjfile) [file join $alited::PRJDIR [file tail $al(prjfile)]]
   }
@@ -269,8 +276,11 @@ proc ini::ReadIniPrj {} {
 proc ini::ReadPrjTabs {nam val} {
   # Gets tabs of project.
   namespace upvar ::alited al al
-  switch -exact $nam {
-    tab {lappend al(tabs) $val}
+  if {[string trim $val] ne ""} {
+    switch -exact $nam {
+      tab {lappend al(tabs) $val}
+      recent {alited::file::InsertRecent $val end}
+    }
   }
 }
 
@@ -388,6 +398,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan ""
   puts $chan {[Misc]}
   puts $chan "isfavor=$al(FAV,IsFavor)"
+  puts $chan "chosencolor=$alited::al(chosencolor)"
   close $chan
   SaveIniPrj $newproject
 }
@@ -408,6 +419,7 @@ proc ini::SaveIniPrj {newproject} {
     if {!$newproject} {
       set TID [lindex $tab 0]
       set tab [alited::bar::FileName $TID]
+      if {$tab eq ""} continue
       if {$TID eq $TIDcur} {
         set pos [$wtxt index insert]
       } else {
@@ -417,6 +429,9 @@ proc ini::SaveIniPrj {newproject} {
     }
     lappend al(tabs) $tab
     puts $chan "tab=$tab"
+  }
+  foreach rf $al(RECENTFILES) {
+    puts $chan "recent=$rf"
   }
   puts $chan ""
   puts $chan {[Options]}
@@ -494,9 +509,10 @@ proc ini::CreateUserDirs {} {
     catch {file mkdir [set $dir]}
   }
   if {![file exists $al(INI)]} {
-    file copy -force [file join $DATADIR user ini alited.ini] $al(INI)
-    file copy -force [file join $DATADIR user prj default.ale] \
+    file copy [file join $DATADIR user ini alited.ini] $al(INI)
+    file copy [file join $DATADIR user prj default.ale] \
       [file join $PRJDIR default.ale]
+    file copy [file join $DATADIR user notes.txt] [file join $USERDIR notes.txt]
     ReadIni
     InitGUI
   }
@@ -521,7 +537,8 @@ proc ini::InitGUI {} {
 
 proc ini::_init {} {
 
-  namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2 obFND obFND
+  namespace upvar ::alited al al \
+    obPav obPav obDlg obDlg obDl2 obDl2 obDl3 obDl3 obFND obFND
 
   ::apave::initWM
   ::apave::iconImage -init $al(INI,ICONS)
@@ -542,6 +559,7 @@ proc ini::_init {} {
   ::apave::APaveInput create $obPav $al(WIN)
   ::apave::APaveInput create $obDlg $al(WIN)
   ::apave::APaveInput create $obDl2 $al(WIN)
+  ::apave::APaveInput create $obDl3 $al(WIN)
   ::apave::APaveInput create $obFND $al(WIN)
 
   # here, the order of icons defines their order in the toolbar

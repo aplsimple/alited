@@ -20,12 +20,13 @@ namespace eval ::alited {
     "Close" "Закрыть"
     "New" "Новый"
     "Open..." "Открыть..."
+    "Recent Files" "Недавние файлы"
     "Save" "Сохранить"
     "Save as..." "Сохранить как..."
     "Save All" "Сохранить все"
-    "Close All" "Закрыть все"
-    "Close All at Left" "Закрыть все слева"
-    "Close All at Right" "Закрыть все справа"
+    "... All" "... все"
+    "... All at Left" "... все слева"
+    "... All at Right" "... все справа"
     "Preferences" "Настройки"
     "Preferences..." "Настройки..."
     "Restart" "Перезапуск"
@@ -36,10 +37,12 @@ namespace eval ::alited {
     "Comment" "Закомментировать"
     "Uncomment" "Раскомментировать"
     "Find Next" "Искать дальше"
-    "Look for declaration" "Искать объявление"
-    "Look for word" "Искать слово"
+    "Look for Declaration" "Искать объявление"
+    "Look for Word" "Искать слово"
     "Run" "Запуск"
     "Moving" "Перемещение"
+    "Help of alited" "Справка alited"
+    "Color picker" "Выбор цвета"
   }
 
   ::msgcat::mcmset ru {
@@ -73,6 +76,9 @@ namespace eval ::alited {
     "Contract All" "Свернуть всё"
     "Expand All" "Развернуть всё"
     "Move %f\nto\n%d\n?" "Переместить %f\nв\n%d\n?"
+    "Go to Line" "Перейти на строку"
+    "Line number:" "Номер строки:"
+    "\"%n\" contains unbalanced \{\}: %1!=%2" "\"%n\" имеет несогласованные \{\}: %1!=%2"
   }
 
   # when trying to move a first unit up
@@ -95,8 +101,6 @@ namespace eval ::alited {
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" был изменен другим приложением.\n\nОтменить вашу редакцию и перезагрузить файл?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" был удален другим приложением.\n\nСохранить файл?"
     "Wait a little ..." "Ожидайте ..."
-    "Row: " "Стр: "
-    " Col: " " Поз: "
   }
 
   # messages for templates
@@ -143,6 +147,7 @@ namespace eval ::alited {
     "Options" "Опции"
     "Project name:" "Название проекта:"
     "Root directory:" "Корневой каталог:"
+    "Skip subdirectories:" "Пропускать подкаталоги:"
     "Description:" "Описание:"
     "Indentation:" "Пробелов отступа:"
     "End of line:" "Концы строк:"
@@ -157,6 +162,9 @@ namespace eval ::alited {
     "Delete a project \"%n\" ?" "Удалить проект \"%n\" ?"
     "A project \"%n\" already exists." "Проект \"%n\" уже существует."
     "All modified files will be saved.\n\nDo you agree?" "Все измененные файлы будут сохранены.\n\nСогласны?"
+    "Directory \"%d\"\ndoesn't exist.\n\nCreate it?" "Каталог \"%d\"\nне существует.\n\nСоздать его?"
+    "Checking %d. Wait a little..." "Проверка %d. Ожидайте..."
+    "Too big directory for a project: %n files or more." "Слишком велик каталог проекта: %n файлов или более."
   }
 
   # messages for favorites
@@ -219,6 +227,7 @@ namespace eval ::alited {
     "Replace" "Замена"
     "All in Text" "Все в тексте"
     "All in Session" "Все в сеансе"
+    "All in %n Files" "Все в %n файлах"
     "Allows to use *, ?, \[ and \]\nin \"find\" string." "Позволяет использовать *, ?, \[, \]\nв строке поиска."
     "Allows to use the regular expressions\nin \"find\" string." "Позволяет использовать регулярные выражения\nв строке поиска."
     "Allows replacements by the empty string,\nin fact, to erase the found ones." "Разрешает пустые замены,\nт.е. просто удаление строк поиска."
@@ -271,15 +280,15 @@ namespace eval ::alited {
     "Small font's size:" "Размер малого шрифта:"
     "Middle font's size:" "Размер среднего шрифта:"
     "Large font's size:" "Размер крупного шрифта:"
-    "Save file" "Сохранить файл"
-    "Save file as" "Сохранить файл как"
+    "Save File" "Сохранить файл"
+    "Save File as" "Сохранить файл как"
     "Run e_menu" "Запуск e_menu"
     "Run file" "Запуск файла"
-    "Double selection" "Дублировать выделение"
-    "Delete line" "Удалить строку"
-    "Highlight first" "Выделить первое"
-    "Highlight last" "Выделить последнее"
-    "Find next match" "Найти следующее"
+    "Double Selection" "Дублировать выделение"
+    "Delete Line" "Удалить строку"
+    "Highlight First" "Выделить первое"
+    "Highlight Last" "Выделить последнее"
+    "Find Next Match" "Найти следующее"
     "Item up" "Поднять элемент"
     "Item down" "Опустить элемент"
     "Notes:" "Заметки:"
@@ -306,12 +315,33 @@ namespace eval ::alited {
     "No errors found." "Ошибок не найдено."
   }
 
+  # bar of tabs
+  ::msgcat::mcmset ru {
+    "(Un)Select" "Выделить / нет"
+    "... Visible" "... видимые"
+    "... All at Left" "... все слева"
+    "... All at Right" "... все справа"
+  }
+
   # Abbreviations etc.
   #   Line - 2nd column's title of unit tree
   #   ind = indentation
   ::msgcat::mcmset ru {
-    "Line" "№ ст."
     "ind" "отс"
+    "Row" "Стр."
+    "Row: " "Стр: "
+    " Col: " " Поз: "
+  }
+}
+
+namespace eval ::bartabs {
+  ::msgcat::mcmset ru {
+    "List" "Список"
+    "behind" "следом за"
+    "Close" "Закрыть"
+    "... All" "... все"
+    "... All at Left" "... все слева"
+    "... All at Right" "... все справа"
   }
 }
 

@@ -1,0 +1,15 @@
+ROAD MAP
+
+alited from v0.6 to v1.0:
+  + recent files
+  + go to line
+  + for selected tabs: find/replace
+  + for selected tabs: e_menu items (fossil.mnu, grep.mnu etc.)
+  + general help in "Help" menu
+  - "e_menu items for toolbar" options
+  - "backup to <dir>" option of project
+  - all options of Preferences & Projects
+  - fossil/git diff of a file
+  - C syntax
+  - comments & units
+  - index.html on Github

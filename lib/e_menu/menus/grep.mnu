@@ -12,7 +12,7 @@
 %MA R: %C \
    if {"$::EMENUFILES" eq ""} {set ::EMENU_ ""} {set ::EMENU_ "$::EMENUFILES"}
 %MA R: cd $::EMENUDIR
-%MA S: echo "$::EMENUDIR" \n\n grep $::EMENU_ $GREPMODE -e '$::EMENUFIND'
+%MA S: echo "$::EMENUDIR" \n\n grep $::EMENU_ $GREPMODE -e '$::EMENUFIND' %ls
 
  M:  M: 3
  S: GREP EXACT ? S: %MA GREP EXACT %MA -F -H -n -I -s -d skip *
@@ -32,11 +32,15 @@
  S: GREP REGEXP recursive ignoring case ? S: %MA GREP REGEXP recursive ignoring case \
     %MA -E -H -n -I -s -i -d recurse *
 
+ M:  M: 3
+ S: GREP EXACT...  LS=%ls? S: %MA GREP EXACT %MA -F -H -n -I -s
+ S: GREP REGEXP... LS=%ls? S: %MA GREP REGEXP %MA -E -H -n -I -s
+
 [OPTIONS]
 w=45
 o=0
-in=1.0
-%#t geo=900x500+100+100;pos=5.0 cd %PD|!||!|#grep -E -H -n -I -s -d recurse --include '*tcl' --include '*html' -e "%s"|!|#grep -E -H -n -I -s -l -d recurse --include '*.tcl' -e "found"|!|grep -E -H -n -I -s -d recurse --include '*tcl' --include '*html' -e "\{\}"|!||!|#cd %d|!|#grep -E -H -n -I -s -d recurse * -e "aplsimple"|!||!|# selected text of TKE:|!|#grep -E -H -n -I -s -i -d recurse * -e '%s'|!|#grep -E -H -n -I -s -d recurse --include '*tcl' --include '*html' -e "%s"|!||!|# year 1900-2099|!|# grep -E -H -n -I -s -i -d recurse * -e '(^|[^[:digit:]])(19|20)[[:digit:]]{2}([^[:digit:]]|$)'|!||!|# domain|!|# grep -E -H -n -I -s -i -d recurse * -e '([a-z][a-z0-9-]+(\\.|-*\\.))+[a-z]{2,6}'|!||!|# email|!|#grep -E -H -n -I -s -i -d recurse * -e '[_]*([a-z0-9]+(\\.|_*)?)+@([a-z][a-z0-9-]+(\\.|-*\\.))+[a-z]{2,6}'|!||!||!|echo "\n################################################################################\n... searched in: $PWD"\n\n
-pos=15.25
+in=13.3
+%#t geo=900x500+100+100;pos=3.78 cd %PD |!||!| grep -E -H -n -I -s -d recurse --include '*tcl' --include '*html' -e "%s" %ls|!|#grep -E -H -n -I -s -l -d recurse --include '*.tcl' -e "found"|!|#grep -E -H -n -I -s -d recurse --include '*tcl' --include '*html' -e "\{\}"|!||!|#cd %d|!|#grep -E -H -n -I -s -d recurse * -e "aplsimple"|!||!|# selected text of TKE:|!|#grep -E -H -n -I -s -i -d recurse * -e '%s'|!|#grep -E -H -n -I -s -d recurse --include '*tcl' --include '*html' -e "%s"|!||!|# year 1900-2099|!|# grep -E -H -n -I -s -i -d recurse * -e '(^|[^[:digit:]])(19|20)[[:digit:]]{2}([^[:digit:]]|$)'|!||!|# domain|!|# grep -E -H -n -I -s -i -d recurse * -e '([a-z][a-z0-9-]+(\\.|-*\\.))+[a-z]{2,6}'|!||!|# email|!|#grep -E -H -n -I -s -i -d recurse * -e '[_]*([a-z0-9]+(\\.|_*)?)+@([a-z][a-z0-9-]+(\\.|-*\\.))+[a-z]{2,6}'|!||!||!|echo \n################################################################################\n|!|echo "in: $PWD"
+pos=36.18
 ::EMENUFILES=--include=*.tcl --include=*.mnu --include=*.txt
 ::EMENUDIR=%d

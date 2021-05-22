@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.3.3a7"
+  variable em_version "e_menu 3.3.3b2"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -188,6 +188,7 @@ namespace eval ::em {
   variable source_addons true
   variable empool [list]
   variable hili no
+  variable ls ""
 }
 #=== creates an item for the menu pool
 proc ::em::pool_item_create {} {
@@ -1248,6 +1249,7 @@ proc ::em::prepr_pn {refpn {dt 0}} {
   prepr_1 pn "dd" $::em::dseltd ;# %dd is %s with special simbols deleted
   prepr_1 pn "ss" $::em::sseltd ;# %ss is %s trimmed
   prepr_1 pn "lg" [::eh::get_language] ;# %lg is a locale (e.g. ru_RU.utf8)
+  prepr_1 pn "ls" $::em::ls            ;# %ls is a list of files
   lassign [get_AR] AR RF
   prepr_1 pn "AR" $AR                 ;# %AR is contents of #ARGS..: line
   prepr_1 pn "RF" $RF                 ;# %RF is contents of #RUNF..: line
@@ -1809,7 +1811,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         z0= z1= z2= z3= z4= z5= z6= z7= z8= z9= \
         a= d= e= f= p= l= h= b= cs= c= t= g= n= \
         fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= cc= gr= ht= hh= rt= \
-        m= om= ts= TF= yn= in= ex=} { ;# the processing order is important
+        m= om= ts= TF= yn= in= ex= ls=} { ;# the processing order is important
     if {($s1 in {o= s= m=}) && !($s1 in $osm)} {
       continue
     }
@@ -1931,7 +1933,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           set ::em::$s01 [::apave::getN $seltd [set ::em::$s01]]
         }
         ed= {set ::em::editor $seltd}
-        tg= - om= - dk= - ex= {set ::em::$s01 $seltd}
+        tg= - om= - dk= - ex= - ls= {set ::em::$s01 $seltd}
         md= {set ::em::basedir $seltd}
         tf= {set ::em::tf [::apave::getN $seltd $::em::tf]}
         in= {

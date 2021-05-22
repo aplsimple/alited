@@ -6,7 +6,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide hl_tcl 0.8.15
+package provide hl_tcl 0.9.1
 
 # _______________ Common data of ::hl_tcl:: namespace ______________ #
 
@@ -22,10 +22,10 @@ namespace eval ::hl_tcl {
     oo::define oo::class oo::objdefine oo::object
   ]]
   set data(CMD_TCL) [lsort [list \
-    set incr if string expr list lindex lrange llength lappend lreplace lsearch \
-    lassign append split info array dict foreach for while break continue \
-    switch default linsert lsort lset lmap lrepeat catch variable concat \
-    format scan regexp regsub upvar uplevel namespace try throw read eval \
+    set incr if else elseif string expr list lindex lrange llength lappend \
+    lreplace lsearch lassign append split info array dict foreach for while \
+    break continue switch default linsert lsort lset lmap lrepeat catch variable \
+    concat format scan regexp regsub upvar uplevel namespace try throw read eval \
     after update error global puts file chan open close eof seek flush mixin \
     msgcat gets rename glob fconfigure fblocked fcopy cd pwd mathfunc then \
     mathop apply fileevent unset join next exec refchan package source \
@@ -73,10 +73,6 @@ namespace eval ::hl_tcl {
 
   set data(RE0) {(^|\[|\{|\}|;)+\s*([:_[:alpha:]])+}
   set data(RE1) {(\[|\{|\}|;)+\s*([:_[:alpha:]])+}
-  set data(RE2else) "\}\\s+(else)\\s+\{"
-  set data(RE2elseif) "\}\\s+(elseif)\\s+\{"
-  set data(RE3) {(^|[^\\])\$+\{?([:[:alnum:]_,()])+\}?}
-  set data(RE4) {(\s*|^)(-[[:alpha:]]+\w*)(\s*|$)}
   set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})+}
   }
 }
@@ -149,7 +145,7 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
   #   i - current position in 'line'
 
   variable data
-  $txt tag add tagSTD "$ln.$pri" "$ln.$i -1 chars"
+  $txt tag add tagSTD "$ln.$pri" "$ln.$i +1 chars"
   set st [string range $line $pri $i-1]
   if {$pri} {set RE $data(RE1)} {set RE $data(RE0)}
   set lcom [regexp -inline -all -indices $RE $st]
@@ -170,43 +166,56 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
       }
     }
   }
-  foreach el {else elseif} {
-    set lcom [regexp -inline -all -indices $data(RE2$el) $st]
-    foreach {_ lc} $lcom {
-      lassign $lc i1 i2
-      $txt tag add tagCOM "$ln.$pri +$i1 char" "$ln.$pri +[incr i2] char"
+  # $variables:
+  set dlist [list]
+  set slen [expr {[string length $st]-1}]
+  set cnt [CountChar $st \$ dlist no]
+  foreach dl $dlist {
+    if {[string index $st $dl+1] eq "\{"} {
+      if {[set br2 [string first "\}" $st $dl+2]]!=-1} {
+        $txt tag add tagVAR "$ln.$pri +$dl char" "$ln.$pri +[incr br2] char"
+      }
+      continue
     }
-  }
-  # $variables
-  set lcom [regexp -inline -all -indices $data(RE3) $st]
-  foreach {lc _ _} $lcom {
-    lassign $lc i1 i2
-    set i [string first \$ [set c [string range $st $i1 $i2]]]
-    if {[string last \} $c]>0 && [string first \$\{ $c]==-1} {incr i2 -1}
-    if {[incr i1 $i]<[incr i2]} {
-      $txt tag add tagVAR "$ln.$pri +$i1 char" "$ln.$pri +$i2 char"
+    for {set i [set dl2 $dl]} {$i<$slen} {} {
+      incr i
+      set ch [string index $st $i]
+      if {[string is wordchar $ch]} {
+        set dl2 $i
+        continue
+      } elseif {$ch eq "("} {
+        if {[set br2 [string first ")" $st $i+1]]>-1} {
+          set dl2 $br2
+        }
+      }
+      break
+    }
+    if {$dl2>$dl} {
+      $txt tag add tagVAR "$ln.$pri +$dl char" "$ln.$pri +[incr dl2] char"
     }
   }
   # -options
-  if {$::hl_tcl::my::data(OPTRE,$txt)} {
-    set lcom [regexp -inline -all -indices $data(RE4) $st]
-    foreach {_ _ lc _} $lcom {
-      lassign $lc i1 i2
-      $txt tag add tagOPT "$ln.$pri +$i1 char" "$ln.$pri +[incr i2] char"
+  set dl -1
+  while {[set dl [string first "-" $st [incr dl]]]>-1} {
+    if {[string index $st $dl-1] ni $data(S_SPACE)} continue
+    if {[string index $st $dl+1] eq "-"} {
+      incr dl ;# for --longoption
     }
-  } else {
-    # "-options without regexp":
-    # performance improved by 10% or so, but it's not very strict mode
-    set i1 -1
-    while {[set i1 [string first "-" $st [incr i1]]]>-1 &&
-    [string is alpha [string index $st $i1+1]]} {
-      if {[set i2 [string first " " $st $i1]]>-1} {
-        $txt tag add tagOPT "$ln.$pri +$i1 char" "$ln.$pri +$i2 char"
-        set i1 $i2
-      } else {
-        $txt tag add tagOPT "$ln.$pri +$i1 char" "$ln.end"
-        break
-      }
+    set i $dl
+    set ch [string index $st $i+1]
+    if {![string is alpha -strict $ch]} { ;# || ![string is ascii -strict $ch]
+      continue ;# first, a Latin letter
+    }
+    set dl2 -1
+    while {$i<$slen} {
+      incr i
+      set ch [string index $st $i]
+      if {![string is wordchar $ch] && $ch ne "-"} break
+      set dl2 $i
+    }
+    if {$dl2>-1} {
+      $txt tag add tagOPT "$ln.$pri +$dl char" "$ln.$pri +[incr dl2] char"
+      set dl $dl2
     }
   }
   return
@@ -1050,6 +1059,23 @@ proc ::hl_tcl::hl_colors {txt {dark ""}} {
   } else {
     return [list "#923B23" #7d1c00 #035103 #4A181B #505050 #A106A1 #463e11 #FF0000]
   }
+}
+#_____
+
+proc ::hl_tcl::hl_line {txt} {
+  # Updates a current line's highlighting.
+  #   txt - text's path
+
+  set ln [expr {int([$txt index insert])}]
+  set tSTR [$txt tag ranges tagSTR]
+  set tCMN [$txt tag ranges tagCMN]
+  if {$ln==1} {
+    set currQtd 0
+  } else {
+    set currQtd [::hl_tcl::my::LineState $txt $tSTR $tCMN "$ln.0 -1 chars"]
+  }
+  ::hl_tcl::my::HighlightLine $txt $ln $currQtd
+  ::hl_tcl::my::MemPos $txt
 }
 
 # _________________________________ EOF _________________________________ #

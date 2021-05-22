@@ -23,9 +23,19 @@ proc bar::BAR {args} {
 proc bar::FillBar {wframe {newproject no}} {
   namespace upvar ::alited al al obPav obPav
   set wbase [$obPav LbxInfo]
+  set lab0 [msgcat::mc "(Un)Select"]
+  set lab1 [msgcat::mc "... Visible"]
+  set lab2 [msgcat::mc "... All at Left"]
+  set lab3 [msgcat::mc "... All at Right"]
   set bar1Opts [list -wbar $wframe -wbase $wbase -lablen 16 -pady 2 \
     -lifo yes -lowlist $al(FONTSIZE,small) -tiplen $al(INI,bartiplen) \
-    -menu "" -separator no -font apaveFontDefTypedsmall \
+    -menu [list \
+      sep \
+      "com {$lab0} {::alited::bar::SelTab %t} {} {}" \
+      "com {$lab1} {::alited::bar::SelTabVis} {} {}" \
+      "com {$lab2} {::alited::bar::SelTabLeft %t} {} {{\[::alited::bar::IsTabLeft %t]}}" \
+      "com {$lab3} {::alited::bar::SelTabRight %t} {} {{\[::alited::bar::IsTabRight %t]}}"] \
+    -separator no -font apaveFontDefTypedsmall \
     -csel2 {alited::bar::OnTabSelection %t} \
     -cdel {alited::file::CloseFile %t} \
     -cmov2 alited::bar::OnTabMove]
@@ -74,6 +84,54 @@ proc bar::UniqueListTab {fname} {
   return [UniqueTab $tabs $tab -index 1]
 }
 
+# ________________________ Menu additions _________________________ #
+
+proc bar::SelTab {tab} {
+  if {$tab in [BAR cget -select]} {
+    BAR unselectTab $tab
+  } else {
+    BAR selectTab $tab
+  }
+}
+
+proc bar::SelTabVis {} {
+  foreach tab [BAR listFlag v] {
+    SelTab $tab
+  }
+}
+
+proc bar::SelTabLeft {tab} {
+  foreach t [BAR listTab] {
+    set t [lindex $t 0]
+    if {$t eq $tab} break
+    SelTab $t
+  }
+}
+
+proc bar::SelTabRight {tab} {
+  set cntrd no
+  foreach t [BAR listTab] {
+    set t [lindex $t 0]
+    if {$t eq $tab} {
+      set cntrd yes
+    } elseif {$cntrd} {
+      SelTab $t
+    }
+  }
+  
+}
+
+proc bar::IsTabLeft {tab} {
+  set i [CurrentTab 3 $tab]
+  if {$i} {return 0}
+  return 1  ;# disables "select all at left"
+}
+
+proc bar::IsTabRight {tab} {
+  set i [CurrentTab 3 $tab]
+  if {$i < ([llength [BAR listTab]]-1)} {return 0}
+  return 1  ;# disables "select all at right"
+}
 # ________________________ Identification  _________________________ #
 
 proc bar::CurrentTabID {} {
@@ -82,11 +140,11 @@ proc bar::CurrentTabID {} {
   return [BAR cget -tabcurrent]
 }
 
-proc bar::CurrentTab {io} {
+proc bar::CurrentTab {io {TID ""}} {
   # Gets an attribute of the current tab.
   #   io - 0 to get ID, 1 - short name (tab label), 2 - full name, 3 - index
 
-  set TID [CurrentTabID]
+  if {$TID eq ""} {set TID [CurrentTabID]}
   switch $io {
     0 {set res $TID}
     1 {set res [BAR $TID cget -text]}
@@ -189,7 +247,7 @@ proc bar::ControlTab {} {
   CurrentControlTab $fname
   if {$found} {
     # select the first of open files that was next to the current
-    alited::file::OpenFile $fnext
+    BAR $TID show
   }
 }
 

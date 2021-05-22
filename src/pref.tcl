@@ -19,23 +19,24 @@ namespace eval pref {
   variable opcc ""
   variable stdkeys
   set stdkeys [dict create \
-     0 [list "Save file" F2] \
-     1 [list "Save file as" Control-S] \
+     0 [list "Save File" F2] \
+     1 [list "Save File as" Control-S] \
      2 [list "Run e_menu" F4] \
      3 [list "Run file" F5] \
-     4 [list "Double selection" Control-D] \
-     5 [list "Delete line" Control-Y] \
+     4 [list "Double Selection" Control-D] \
+     5 [list "Delete Line" Control-Y] \
      6 [list "Indent" Control-I] \
      7 [list "Unindent" Control-U] \
      8 [list "Comment" Control-bracketleft] \
      9 [list "Uncomment" Control-bracketright] \
-    10 [list "Highlight first" Alt-Q] \
-    11 [list "Highlight last" Alt-W] \
-    12 [list "Find next match" F3] \
-    13 [list "Look for declaration" Control-L] \
-    14 [list "Look for word" Control-Shift-L] \
+    10 [list "Highlight First" Alt-Q] \
+    11 [list "Highlight Last" Alt-W] \
+    12 [list "Find Next Match" F3] \
+    13 [list "Look for Declaration" Control-L] \
+    14 [list "Look for Word" Control-Shift-L] \
     15 [list "Item up" F11] \
     16 [list "Item down" F12] \
+    17 [list "Go to Line" Control-G] \
   ]
   variable stdkeysSize [dict size $stdkeys]
 }
@@ -116,6 +117,7 @@ proc pref::MainFrame {} {
     }}
     {fraR.nbk6 - - - - {pack forget -side top} {
       f1 {-t "Tools"}
+      f2 {-t "e_menu"}
     }}
     {#LabMess fraL T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fraB fraL T 1 2 {-st nsew} {-padding {5 5 5 5} -relief groove}}
@@ -191,6 +193,10 @@ proc pref::General_Tab1 {} {
     {.spxFsz2 fra1.labFsz2 L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(FONTSIZE,std) -from 9 -to 16 -justify center -w 3}}
     {.labFsz3 fra1.labFsz2 T 1 1 {-st w -pady 8 -padx 3} {-t "Large font's size:"}}
     {.spxFsz3 fra1.labFsz3 L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(FONTSIZE,txt) -from 10 -to 18 -justify center -w 3}}
+    {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
+    {fra2 lab T 1 2 {-st nsew -rw 1 -cw 1}}
+    {.TexNotes - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 77 -wrap word -tabnext $alited::pref::win.fraB.butOK -tip {$alited::al(MC,notes)}}}
+    {.sbv fra2.TexNotes L - - {pack -side left}}
   }
 }
 
@@ -217,10 +223,6 @@ proc pref::General_Tab2 {} {
     {.spXIndent fra1.labIndent L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,indent) -w 3 -from 2 -to 8 -justify center}}
     {.labMult fra1.labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
     {.chbMult fra1.labMult L 1 1 {-st sw -pady 5 -padx 3} {-var alited::al(ED,multiline) -tip {$alited::al(MC,notrecomm)}}}
-    {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
-    {fra2 lab T 1 2 {-st nsew -rw 1 -cw 1}}
-    {.TexNotes - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 18 -w 77 -wrap word -tabnext $alited::pref::win.fraB.butOK -tip {$alited::al(MC,notes)}}}
-    {.sbv fra2.TexNotes L - - {pack -side left}}
     {#.labFlist fra2.labMult T 1 1 {-pady 5 -padx 3} {-t "List of files:"}}
     {#fraFlist fra2.labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
     {#.LbxFlist - - - - {pack -side left -fill both -expand 1}}
@@ -233,25 +235,16 @@ proc pref::General_Tab2 {} {
 ## ________________________ Edit / View _________________________ ##
 
 proc pref::Edit_Tab1 {} {
-  return {
-    {buT - - 1 1 {pack -fill both -expand 1} {-t TODO}}
-  }
 }
 
 ## ________________________ Edit / Syntax _________________________ ##
 
 proc pref::Edit_Tab2 {} {
-  return {
-    {buT - - 1 1 {pack -fill both -expand 1} {-t TODO}}
-  }
 }
 
 # ________________________ Tab "Units" _________________________ #
 
 proc pref::Units_Tab1 {} {
-  return {
-    {buT - - 1 1 {pack -fill both -expand 1} {-t TODO}}
-  }
 }
 
 # ________________________ Tab "Template" _________________________ #
@@ -311,8 +304,7 @@ proc pref::RegisterKeys {} {
 proc pref::GetKeyList {nk} {
   namespace upvar ::alited obDl2 obDl2
   RegisterKeys
-  set keys [linsert [alited::keys::VacantList] 0 ""]
-  [$obDl2 CbxKey$nk] configure -values $keys
+  [$obDl2 CbxKey$nk] configure -values [alited::keys::VacantList]
 }
 
 proc pref::SelectKey {nk} {
@@ -346,16 +338,16 @@ proc pref::BindKey {nk {key ""} {defk ""}} {
     return $defk
   }
   switch $nk {
-    4 { ;# "Double selection"
+    4 { ;# "Double Selection"
       ::apave::setTextHotkeys CtrlD $keys($nk)
     }
-    5 { ;# "Delete line"
+    5 { ;# "Delete Line"
       ::apave::setTextHotkeys CtrlY $keys($nk)
     }
-    10 { ;# "Highlight first"
+    10 { ;# "Highlight First"
       ::apave::setTextHotkeys AltQ $keys($nk)
     }
-    11 { ;# "Highlight last"
+    11 { ;# "Highlight Last"
       ::apave::setTextHotkeys AltW $keys($nk)
     }
   }
@@ -381,7 +373,7 @@ proc pref::IniKeys {} {
 
 # ________________________ Tab "Tools" _________________________ #
 
-proc pref::Tools_Tab1 {} {
+proc pref::TODO_Tab {} {
   return {
     {buT - - 1 1 {pack -fill both -expand 1} {-t TODO}}
   }
@@ -398,17 +390,18 @@ proc pref::_create {} {
   variable arrayTab
   variable curTab
   variable oldTab
-  $obDl2 makeWindow $win "$al(MC,pref) :: $::alited::PRJDIR"
+  $obDl2 makeWindow $win "$al(MC,pref) :: $::alited::USERDIR"
   $obDl2 paveWindow \
     $win [MainFrame] \
     $win.fraR.nbk.f1 [General_Tab1] \
     $win.fraR.nbk.f2 [General_Tab2] \
-    $win.fraR.nbk2.f1 [Edit_Tab1] \
-    $win.fraR.nbk2.f2 [Edit_Tab2] \
-    $win.fraR.nbk3.f1 [Units_Tab1] \
+    $win.fraR.nbk2.f1 [TODO_Tab] \
+    $win.fraR.nbk2.f2 [TODO_Tab] \
+    $win.fraR.nbk3.f1 [TODO_Tab] \
     $win.fraR.nbk4.f1 [Template_Tab1] \
     $win.fraR.nbk5.f1 [Keys_Tab1] \
-    $win.fraR.nbk6.f1 [Tools_Tab1]
+    $win.fraR.nbk6.f1 [TODO_Tab] \
+    $win.fraR.nbk6.f2 [TODO_Tab]
   if {$minsize eq ""} {      ;# save default min.sizes
     after idle [list after 100 {
       set ::alited::pref::minsize "-minsize {[winfo width $::alited::pref::win] [winfo height $::alited::pref::win]}"

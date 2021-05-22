@@ -1,0 +1,27 @@
+ Try and use buttons under the list to add/change/delete a project.
+
+ Try and enter a short name of project, avoiding special characters.
+
+ Try and choose a root directory of the project. Supposedly, it should
+ contain all files and subdirectories of the project.
+
+ If the project directory contains some subdirectories which should be
+ ignored (most often, SCM ones like ".git"), enter their tail names.
+ Separate them with spaces. Use double quotes if they include spaces.
+
+ The "Notes" field may be used as a sort of diary for the project.
+
+ The "Options" tab contains other details of the project:
+
+   - "End of line" - if this field is empty, the EOL for texts would
+     correspond your platform; but if you have some projects with
+     other EOLs, set the field accordingly;
+
+   - "Indentation" is a number of spaces to indent your texts' lines;
+
+   - "Multi-line strings" is strongly recommended be OFF; it's only for
+     granular (with small source files) projects the ON value could be
+     a good choice as it can slow your work; use it on your own risk.
+
+ At adding / changing a project, you can choose to include the current
+ files into it. Other choices are "replace", "clear" and "don't change".

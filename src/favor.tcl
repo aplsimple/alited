@@ -257,12 +257,25 @@ proc favor::ShowPopupMenu {ID X Y} {
   if {[string length $sname]>25} {set sname "[string range $sname 0 21]..."}
   set msgsel [string map [list %t $sname] $al(MC,selfavor)]
   if {$al(FAV,IsFavor)} {
-    $popm add command -label $al(MC,FavLists) -command "::alited::favor::Lists"
-    $popm add command -label $al(MC,favoradd) -command "::alited::favor::Add no"
-    $popm add command -label $al(MC,favordel) -command "::alited::favor::Delete no"
+    set img alimg_misc
+    set lab $al(MC,lastvisit)
+  } else {
+    set img alimg_heart
+    set lab $al(MC,favorites)
+  }
+  $popm add command -label $lab {*}[$obPav iconA none] \
+    -command "alited::favor::SwitchFavVisit" -image $img
+  $popm add separator
+  if {$al(FAV,IsFavor)} {
+    $popm add command -label $al(MC,FavLists) {*}[$obPav iconA none] \
+      -command "::alited::favor::Lists" -image alimg_heart
+    $popm add command -label $al(MC,favoradd) {*}[$obPav iconA none] \
+      -command "::alited::favor::Add no" -image alimg_add
+    $popm add command -label $al(MC,favordel) {*}[$obPav iconA none] \
+      -command "::alited::favor::Delete no" -image alimg_delete
     $popm add separator
   }
-  $popm add command -label $al(MC,copydecl) \
+  $popm add command -label $al(MC,copydecl) {*}[$obPav iconA none] \
     -command "::alited::favor::CopyDeclaration $wtree $ID"
   $obPav themePopup $popm
   tk_popup $popm $X $Y

@@ -332,7 +332,7 @@ proc find::FindInSession {{tagme "add"}} {
   alited::info::Put $al(MC,wait) "" yes
   update
   set allfnd [list]
-  foreach tab [alited::bar::BAR listTab] {
+  foreach tab [SessionList] {
     set TID [lindex $tab 0]
     if {![info exist al(_unittree,$TID)]} {
       alited::file::ReadFile $TID [alited::bar::FileName $TID]
@@ -418,7 +418,7 @@ proc find::ReplaceInText {} {
   if {![CheckData repl]} return
   set fname [file tail [alited::bar::FileName]]
   set msg [string map [list %f $fname %s $data(en1) %r $data(en2)] $al(MC,frdoit1)]
-  if {![alited::msg yesno warn $msg NO]} {
+  if {![alited::msg yesno warn $msg NO -ontop $data(c5)]} {
     return ""
   }
   set wtxt [alited::main::CurrentWTXT]
@@ -432,12 +432,12 @@ proc find::ReplaceInSession {} {
   variable data
   if {![CheckData repl]} return
   set msg [string map [list %s $data(en1) %r $data(en2)] $al(MC,frdoit2)]
-  if {![alited::msg yesno warn $msg NO]} {
+  if {![alited::msg yesno warn $msg NO -ontop $data(c5)]} {
     return ""
   }
   set currTID [alited::bar::CurrentTabID]
   set rn 0
-  foreach tab [alited::bar::BAR listTab] {
+  foreach tab [SessionList] {
     set TID [lindex $tab 0]
     if {![info exist al(_unittree,$TID)]} {
       alited::file::ReadFile $TID [alited::bar::FileName $TID]
@@ -463,6 +463,23 @@ proc find::ClearTags {} {
       [alited::main::CurrentWTXT] tag remove fndTag 1.0 end
     }
   }
+}
+
+proc find::SessionList {} {
+  set res [alited::bar::BAR listFlag s]
+  if {[llength $res]==1} {set res [alited::bar::BAR listTab]}
+  return $res
+}
+
+proc find::SessionButtons {} {
+  namespace upvar ::alited al al obFND obFND
+  if {[set llen [llength [alited::bar::BAR listFlag s]]]>1} {
+    set btext [string map [list %n $llen] [msgcat::mc "All in %n Files"]]
+  } else {
+    set btext [msgcat::mc "All in Session"]
+  }
+  [$obFND But3] configure -text $btext
+  [$obFND But6] configure -text $btext
 }
 
 proc find::_close {} {
@@ -505,14 +522,15 @@ proc find::_create {} {
       {sev2 cbx1 L 10 1 }
       {but1 sev2 L 1 1 {-st we} {-t Find -com "::alited::find::Find" -style TButtonWestBoldFS}}
       {but2 but1 T 1 1 {-st we} {-t {$alited::al(MC,frfind2)} -com "::alited::find::FindInText" -style TButtonWestFS}}
-      {but3 but2 T 1 1 {-st we} {-t {$alited::al(MC,frfind3)} -com "::alited::find::FindInSession" -style TButtonWestFS}}
+      {But3 but2 T 1 1 {-st we} {-com "::alited::find::FindInSession" -style TButtonWestFS}}
       {h_3 but3 T 2 1}
       {but4 h_3 T 1 1 {-st we} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
       {but5 but4 T 1 1 {-st nwe} {-t {$alited::al(MC,frfind2)} -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
-      {but6 but5 T 1 1 {-st nwe} {-t {$alited::al(MC,frfind3)} -com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
+      {But6 but5 T 1 1 {-st nwe} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
       {h_4 but6 T 1 1}
       {but0 h_4 T 1 1 {-st swe} {-t Close -com ::alited::find::_close -style TButtonWestBoldFS}}
     }
+    SessionButtons
     bind $win.cbx1 <Return> "$win.but1 invoke"  ;# the Enter key is
     bind $win.cbx2 <Return> "$win.but4 invoke"  ;# hot in comboboxes
     if {$minsize eq ""} {      ;# save default min.sizes
@@ -534,6 +552,7 @@ proc find::_run {} {
   variable win
   GetFindEntry
   if {[winfo exists $win]} {
+    SessionButtons
     wm withdraw $win
     wm deiconify $win
     if {[set foc [focus -lastfor $win]] ne ""} {

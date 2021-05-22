@@ -163,7 +163,7 @@ proc main::HighlightText {TID curfile wtxt} {
           -cmd "::alited::unit::Modified $TID" \
           -cmdpos "::alited::main::CursorPos" \
           -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)" \
-          -plaintext [expr {$ext ni {.tcl .tm .msg}}]
+          -plaintext [expr {![alited::file::IsTcl $curfile]}]
         ::hl_tcl::hl_text $wtxt
       }
     }
@@ -171,18 +171,16 @@ proc main::HighlightText {TID curfile wtxt} {
   set al(HL,$wtxt) $ext
 }
 
-
 proc main::PackTextWidgets {wtxt wsbv} {
 
   namespace upvar ::alited al al obPav obPav
   lassign [GutterAttrs] canvas width shift
+  # widgets created outside apave require the theming:
+  $obPav csSet [$obPav csCurrent] $al(WIN) -doit
   pack $wtxt -side left -expand 1 -fill both
   pack $wsbv -fill y -expand 1
   set bind [list $obPav fillGutter $wtxt $canvas $width $shift]
   {*}$bind
-  # widgets created outside apave require the theming:
-  set cs [$obPav csCurrent]
-  after idle "$obPav csSet $cs $al(WIN) -doit"
 }
 
 proc main::FocusInText {TID wtxt} {
@@ -232,12 +230,24 @@ proc main::CursorPos {wtxt args} {
   [$obPav Labstat2] configure -text [incr c]
 }
 
+proc main::GotoLine {} {
+  namespace upvar ::alited al al obDl2 obDl2
+  set head [msgcat::mc "Go to Line"]
+  set prompt [msgcat::mc "Line number:"]
+  set wtxt [CurrentWTXT]
+  set ln [expr {int([$wtxt index insert])}]
+  set lmax [expr {int([$wtxt index "end -1c"])}]
+  lassign [$obDl2 input "" $head [list \
+    Spx "{$prompt} {} {-w 6 -justify center -from 1 -to $lmax -selected yes}" "{$ln}" \
+  ]] res ln
+  if {$res} {
+    ::tk::TextSetCursor $wtxt $ln.0
+    ::hl_tcl::hl_line $wtxt
+  }
+}
+
 proc main::MoveItem {to {f1112 no}} {
   namespace upvar ::alited al al obPav obPav
-  if {$al(TPL,%u) ne "DEBUG"} {
-    alited::Message "DEBUG mode yet" 4
-    return
-  }
   if {!$al(TREE,isunits) && [alited::file::MoveExternal $f1112]} return
   set wtree [$obPav Tree]
   set itemID [$wtree selection]
@@ -265,6 +275,7 @@ proc main::UpdateProjectInfo {} {
 }
 
 proc main::_create {} {
+
   namespace upvar ::alited al al obPav obPav
 
   lassign [$obPav csGet] - - ::alited::FRABG - - - - - bclr
@@ -338,7 +349,7 @@ pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
     {.fraTop.panTop.FraHead  - - - - {pack forget -fill x}}
     {.fraTop.panTop.fraHead.BuTtmp - - - - {pack -side left} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_folder -command {alited::tree::SwitchTree}}}
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both} {}}
-    {.fraTop.panTop.CanGut - - - - {pack -side left -expand 0 -fill y} {-w 4}}
+    {.fraTop.panTop.CanDiff - - - - {pack -side left -expand 0 -fill y} {-w 4}}
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both} {-background $::alited::FRABG}}
     {.fraTop.panTop.frAText.Text - - - - {pack forget -side left -expand 1 -fill both} {-borderwidth 0 -w 2 -h 20 -gutter GutText -gutterwidth 5 -guttershift 4 $alited::al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
@@ -366,8 +377,9 @@ pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
 }
 
 proc main::_run {} {
+
   namespace upvar ::alited al al obPav obPav
-  ::apave::setAppIcon $al(WIN) $::alited::img::_AL_IMG(feather)
+  ::apave::setAppIcon $al(WIN) $::alited::img::_AL_IMG(ale)
   ::apave::setProperty DirFilGeoVars [list ::alited::DirGeometry ::alited::FilGeometry]
   set ans [$obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
     -onclose alited::Exit {*}$al(GEOM)]

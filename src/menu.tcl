@@ -13,7 +13,7 @@ proc menu::CheckMenuItems {} {
 
   namespace upvar ::alited al al
   set TID [alited::bar::CurrentTabID]
-  foreach idx {8 9 10} {
+  foreach idx {9 10 11} {
     if {[alited::bar::BAR isTab $TID]} {
       set dsbl [alited::bar::BAR checkDisabledMenu $al(BID) $TID [incr item]]
     } else {
@@ -28,6 +28,22 @@ proc menu::CheckMenuItems {} {
   }
 }
 
+proc menu::FillRecent {} {
+  namespace upvar ::alited al al
+  set m $al(MENUFILE).recentfiles
+  $m delete 0 end
+  if {[llength $al(RECENTFILES)]} {
+    $al(MENUFILE) entryconfigure 2 -state normal
+    set i 0
+    foreach rf $al(RECENTFILES) {
+      $m add command -label $rf -command "alited::file::ChooseRecent $i"
+      incr i
+    }
+  } else {
+    $al(MENUFILE) entryconfigure 2 -state disabled
+  }
+}
+
 proc menu::FillMenu {} {
   # Populates alited's main menu.
 
@@ -37,6 +53,8 @@ proc menu::FillMenu {} {
   set m [set al(MENUFILE) $al(WIN).menu.file]
   $m add command -label $al(MC,new) -command alited::file::NewFile -accelerator Ctrl+N
   $m add command -label $al(MC,open...) -command alited::file::OpenFile -accelerator Ctrl+O
+  menu $m.recentfiles -tearoff 0
+  $m add cascade -label  [msgcat::mc "Recent Files"] -menu $m.recentfiles
   $m add separator
   $m add command -label $al(MC,save) -command alited::file::SaveFile -accelerator $al(acc_0)
   $m add command -label $al(MC,saveas...) -command alited::file::SaveFileAs -accelerator $al(acc_1)
@@ -64,14 +82,17 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label $al(MC,findreplace) -command alited::find::_run -accelerator Ctrl+F
   $m add command -label $al(MC,findnext) -command alited::find::Next -accelerator $al(acc_12)
-  $m add command -label [msgcat::mc "Look for declaration"] -command alited::find::SearchUnit -accelerator $al(acc_13)
-  $m add command -label [msgcat::mc "Look for word"] -command alited::find::SearchWordInSession -accelerator $al(acc_14)
+  $m add command -label [msgcat::mc "Look for Declaration"] -command alited::find::SearchUnit -accelerator $al(acc_13)
+  $m add command -label [msgcat::mc "Look for Word"] -command alited::find::SearchWordInSession -accelerator $al(acc_14)
+  $m add separator
+  $m add command -label [msgcat::mc "Go to Line"] -command alited::main::GotoLine -accelerator $al(acc_17)
 
 ## ________________________ Tools _________________________ ##
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label $al(MC,run) -command alited::tool::_run -accelerator $al(acc_3)
-  $m add command -label "e_menu" -command alited::tool::_run -accelerator $al(acc_2)
+  $m add command -label "e_menu" -command alited::tool::e_menu -accelerator $al(acc_2)
   $m add command -label $al(MC,checktcl) -command alited::check::_run
+  $m add command -label [msgcat::mc "Color picker"] -command alited::tool::ColorPicker
 
 ## ________________________ Setup _________________________ ##
   set m [set al(SETUP) $al(WIN).menu.setup]
@@ -84,7 +105,9 @@ proc menu::FillMenu {} {
   set m [set al(MENUHELP) $al(WIN).menu.help]
   $m add command -label "$al(MC,help) Tcl/Tk" -command alited::tool::Help -accelerator F1
   $m add separator
-  $m add command -label $al(MC,about...) -command alited::HelpAbout
+  $m add command -label [msgcat::mc "Help of alited"] -command alited::HelpAlited
+  $m add command -label [msgcat::mc "About..."] -command alited::HelpAbout
+  FillRecent
 }
 
 # _________________________________ EOF _________________________________ #

@@ -117,7 +117,7 @@ proc tree::CreateUnitsTree {TID wtree} {
   $al(MENUEDIT) entryconfigure 0 -label $al(MC,moveupU)
   $al(MENUEDIT) entryconfigure 1 -label $al(MC,movedownU)
   $wtree heading #0 -text [alited::bar::CurrentTab 1]
-  $wtree heading #1 -text $al(MC,line)
+  $wtree heading #1 -text [msgcat::mc "Row"]
   set ctab [alited::bar::CurrentTabID]
   set parents [list {}]
   set parent {}
@@ -447,8 +447,20 @@ proc tree::GetDirectoryContents {dirname} {
   return $al(_dirtree)
 }
 
+proc tree::IgnoredDir {dir} {
+  namespace upvar ::alited al al
+  set dir [file tail $dir]
+  catch {    ;# there might be an incorrect list -> catch it
+    foreach d $al(prjdirign) {
+      set d [string trim $d \"]
+      if {$dir eq $d} {return yes}
+    }
+  }
+  return no
+}
 proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
 
+  namespace upvar ::alited al al
   incr lev
   if {[catch {set dcont [lsort -dictionary [glob [file join $dirname *]]]}]} {
     set dcont [list]
@@ -457,22 +469,32 @@ proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
   set i 0
   foreach fname $dcont {
     if {[file isdirectory $fname]} {
+      if {[IgnoredDir $fname]} {
+        set dcont [lreplace $dcont $i $i]
+        continue
+      }
       set dcont [lreplace $dcont $i $i [list $fname "y"]]
       set nroot [AddToDirContents $lev 0 $fname $iroot]
-      DirContents $fname $lev $nroot $globs
+      if {[llength $al(_dirtree)] < $al(MAXFILES)} {
+        DirContents $fname $lev $nroot $globs
+      } else {
+        break
+      }
     } else {
       set dcont [lreplace $dcont $i $i [list $fname]]
     }
     incr i
   }
   # then files
-  foreach fname $dcont {
-    lassign $fname fname d
-    if {$d ne "y"} {
-      foreach gl [split $globs ","] {
-        if {[string match $gl $fname]} {
-          AddToDirContents $lev 1 $fname $iroot
-          break
+  if {[llength $al(_dirtree)] < $al(MAXFILES)} {
+    foreach fname $dcont {
+      lassign $fname fname d
+      if {$d ne "y"} {
+        foreach gl [split $globs ","] {
+          if {[string match $gl $fname]} {
+            AddToDirContents $lev 1 $fname $iroot
+            break
+          }
         }
       }
     }
@@ -482,11 +504,13 @@ proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
 proc tree::AddToDirContents {lev isfile fname iroot} {
   namespace upvar ::alited al al
   set dllen [llength $al(_dirtree)]
-  lappend al(_dirtree) [list $lev $isfile $fname 0 $iroot]
-  if {$iroot>-1} {
-    lassign [lindex $al(_dirtree) $iroot] lev isfile fname fcount sroot
-    set al(_dirtree) [lreplace $al(_dirtree) $iroot $iroot \
-      [list $lev $isfile $fname [incr fcount] $sroot]]
+  if {$dllen < $al(MAXFILES)} {
+    lappend al(_dirtree) [list $lev $isfile $fname 0 $iroot]
+    if {$iroot>-1} {
+      lassign [lindex $al(_dirtree) $iroot] lev isfile fname fcount sroot
+      set al(_dirtree) [lreplace $al(_dirtree) $iroot $iroot \
+        [list $lev $isfile $fname [incr fcount] $sroot]]
+    }
   }
   return $dllen
 }
@@ -528,12 +552,12 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
   namespace upvar ::alited al al
   if {$al(TREE,isunits)} {
     set al(TREE,units) no
+    set TID [alited::bar::CurrentTabID]
+    set wtxt [alited::main::CurrentWTXT]
+    set al(_unittree,$TID) [alited::unit::GetUnits $TID [$wtxt get 1.0 "end -1 char"]]
   } else {
     set al(TREE,files) no
   }
-  set TID [alited::bar::CurrentTabID]
-  set wtxt [alited::main::CurrentWTXT]
-  set al(_unittree,$TID) [alited::unit::GetUnits $TID [$wtxt get 1.0 "end -1 char"]]
   Create
   # restore selections
   if {$headers ne ""} {

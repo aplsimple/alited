@@ -1596,6 +1596,7 @@ oo::class create ::apave::APave {
     #  args - additional arguments for tracing
     # The code is borrowed from open source tedit project.
 
+    if {![winfo exists $txt]} return
     if {$canvas eq ""} {
       event generate $txt <Configure> ;# repaints the gutter
       return
@@ -2192,7 +2193,8 @@ oo::class create ::apave::APave {
         -disabledtext - -rotext - -lbxsel - -cbxsel - -notebazook - \
         -entrypop - -entrypopRO - -textpop - -textpopRO - -ListboxSel - \
         -callF2 - -timeout - -bartabs - -onReturn - -linkcom - -selcombobox - \
-        -afteridle - -gutter - -propagate - -columnoptions - -selborderwidth {
+        -afteridle - -gutter - -propagate - -columnoptions - -selborderwidth -
+        -selected {
           # attributes specific to apave, processed below in "Post"
           set v2 [string trimleft $v "\{"]
           set v2 [string range $v2 0 end-[expr {[string length $v]-[string length $v2]}]]
@@ -2349,6 +2351,11 @@ oo::class create ::apave::APave {
         }
         -selcombobox {
           bind $w <<ComboboxSelected>> $v
+        }
+        -selected {
+          if {[string is true $v]} {
+            after idle "$w selection range 0 end"
+          }
         }
       }
     }

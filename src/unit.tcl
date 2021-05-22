@@ -303,6 +303,22 @@ proc unit::MoveUnit {wtree to itemID headers f1112} {
 proc unit::MoveUnits {wtree to itemIDs f1112} {
   # save the headers of moved items (as unique references)
   namespace upvar ::alited al al
+  # firstly, check fo consistency of braces
+  set wtxt [alited::main::CurrentWTXT]
+  foreach ID $itemIDs {
+    lassign [$wtree item $ID -values] l1 l2 - id
+    set cc1 [set cc2 0]
+    foreach line [split [$wtxt get $l1.0 $l2.end] \n] {
+      incr cc1 [::apave::countChar $line \{]
+      incr cc2 [::apave::countChar $line \}]
+    }
+    if {$cc1!=$cc2} {
+      set tip [string trim [$wtree item $ID -text]]
+      set msg [string map [list %n $tip %1 $cc1 %2 $cc2] $al(MC,errmove)]
+      alited::Message $msg 4
+      return
+    }
+  }
   set al(RECREATE) 0
   set headers [list]
   foreach ID $itemIDs {
@@ -325,7 +341,7 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
     }
     if {!$ok} break
   }
-  after idle "set alited::al(RECREATE) 1"
+  after idle "set alited::al(RECREATE) 1 ; alited::tree::RecreateTree"
   if {[set sel [$wtree selection]] ne ""} {
     after idle [list after 10 "$wtree selection set {$sel}"]
   }
@@ -509,8 +525,8 @@ proc unit::CheckSaveIcons {modif} {
     $b_save configure -state $stat
     $b_saveall configure -state normal
   }
-  $al(MENUFILE) entryconfigure 3 -state [$b_save cget -state]
-  $al(MENUFILE) entryconfigure 5 -state [$b_saveall cget -state]
+  $al(MENUFILE) entryconfigure 4 -state [$b_save cget -state]
+  $al(MENUFILE) entryconfigure 6 -state [$b_saveall cget -state]
 }
 
 proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {

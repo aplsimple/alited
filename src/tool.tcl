@@ -38,9 +38,18 @@ proc tool::e_menuOptions {opts} {
   set sel [alited::find::GetWordOfText]
   set f [alited::bar::FileName]
   set d [file dirname $f]
+  set tabs [alited::bar::BAR listFlag s]
+  if {[llength $tabs]>1} {
+    foreach tab $tabs {
+      append ls [alited::bar::FileName $tab] " "
+    }
+    set ls "\"ls=$ls\""
+  } else {
+    set ls "ls="
+  }
   return [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" \
     "PD=$al(EM,PD=)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
-    o=-1 om=0 g=$al(EM,geometry) {*}$opts]
+    o=-1 om=0 g=$al(EM,geometry) {*}$ls {*}$opts]
 }
 
 proc tool::e_menu {args} {
@@ -62,6 +71,16 @@ proc tool::e_menu2 {opts} {
   }
   ::em::main -prior 1 -modal 0 -remain 0 {*}[e_menuOptions $opts]
   set alited::al(EM,geometry) $::em::geometry
+}
+
+proc tool::ColorPicker {} {
+  
+  set res [::apave::obj chooser colorChooser alited::al(chosencolor)]
+  if {$res ne ""} {
+    set alited::al(chosencolor) $res
+    set wtxt [alited::main::CurrentWTXT]
+    $wtxt insert [$wtxt index insert] $res
+  }
 }
 
 proc tool::Help {} {

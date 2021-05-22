@@ -11,7 +11,7 @@
 
 namespace eval project {
   variable win $::alited::al(WIN).fraPrj
-  variable OPTS [list prjname prjroot prjEOL prjindent prjmultiline]
+  variable OPTS [list prjname prjroot prjdirign prjEOL prjindent prjmultiline]
   variable prjlist [list]
   variable tablist [list]
   variable geo root=$::alited::al(WIN)
@@ -34,13 +34,13 @@ proc project::TabFileInfo {} {
 }
 
 proc project::SaveCurrFileList {title {isnew no}} {
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al obDl3 obDl3
   variable win
   set asks [list $al(MC,prjaddfl) add $al(MC,prjsubstfl) change $al(MC,prjdelfl) delete \
     $al(MC,prjnochfl) file Cancel cancel]
   set msg [string map [list %n [string toupper $title]] $al(MC,prjgoing)]
   append msg \n\n $al(MC,prjsavfl)
-  set ans [$obDl2 misc ques $title $msg $asks file]
+  set ans [$obDl3 misc ques $title $msg $asks file]
   switch $ans {
     "delete" {
       set al(tablist) [list]
@@ -123,9 +123,10 @@ proc project::Ok {args} {
   alited::file::MakeThemReload
   set TID [lindex [alited::bar::BAR listTab] $al(curtab) 0]
   catch {alited::bar::BAR $TID show}
-  alited::main::ShowText
   alited::main::UpdateProjectInfo
+  alited::ini::GetUserDirs
   $obDl2 res $win 1
+  after idle alited::main::ShowText
   return
 }
 
@@ -137,6 +138,10 @@ proc project::Cancel {args} {
   $obDl2 res $win 0
 }
 
+proc project::Help {} {
+  variable win
+  alited::Help $win
+}
 proc project::ReadIni {} {
   ProcEOL $::alited::EOL \n
 }
@@ -199,6 +204,7 @@ proc project::GetProjectOpts {fname} {
   }
   set prjinfo($pname,prjfile) $fname
   set prjinfo($pname,prjname) $pname
+  set prjinfo($pname,prjdirign) ".git .bak"
   set prjinfo($pname,tablist) [list]
   foreach line [split $filecont \n] {
     lassign [GetOptVal $line] opt val
@@ -312,12 +318,31 @@ proc project::ProjectFileName {name} {
 
 proc project::ValidProject {} {
   namespace upvar ::alited al al obDl2 obDl2
+  variable win
   if {[string trim $al(prjname)] eq ""} {
     bell
     focus [$obDl2 EntName]
     return no
   }
-  return yes
+  set al(prjroot) [file nativename $al(prjroot)]
+  if {![file exists $al(prjroot)]} {
+    set msg [string map [list %d $al(prjroot)] $al(makeroot)]
+    if {![alited::msg yesno ques $msg NO -geometry root=$win]} {
+      return no
+    }
+    file mkdir $al(prjroot)
+  }
+  set msg [string map [list %d $al(prjroot)] $al(checkroot)]
+  alited::Message2 $msg 5
+  if {[llength [alited::tree::GetDirectoryContents $al(prjroot)]] >= $al(MAXFILES)} {
+    set msg [string map [list %n $al(MAXFILES)] $al(badroot)]
+    alited::Message2 $msg 4
+    set res no
+  } else {
+    alited::Message2 {} 5
+    set res yes
+  }
+  return $res
 }
 
 proc project::PutProjectOpts {fname oldname} {
@@ -451,11 +476,13 @@ proc project::MainFrame {} {
       f2 {-text {$al(MC,prjOptions)}}
       -traverse yes -select f1
     }}
-    {LabMess fraTreePrj T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
-    {fraB labMess T 1 2 {-st nsew} {-padding {5 5 5 5} -relief groove}}
+    {fraB1 fraTreePrj T 1 1 {-st nsew} {}}
     {.buTad - - - - {pack -side left -anchor n} {-takefocus 0 -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big}}
     {.buTch - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big}}
     {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel)} -image alimg_delete-big}}
+    {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
+    {fraB2 fraB1 T 1 2 {-st nsew} {-padding {5 5 5 5} -relief groove}}
+    {.butHelp - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,help)} -command ::alited::project::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
     {.butOK - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,select)} -command ::alited::project::Ok}}
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::project::Cancel}}
@@ -470,9 +497,11 @@ proc project::Tab1 {} {
     {.EntName fra1.labName L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 50}}
     {.labDir fra1.labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
     {.Dir fra1.labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 50}}
+    {.labIgn fra1.labDir T 1 1 {-st w -pady 8 -padx 3} {-t "Skip subdirectories:"}}
+    {.entIgn fra1.labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 50}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 lab T 1 2 {-st nsew -rw 1 -cw 1}}
-    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 7 -w 40 -wrap word -tabnext $alited::project::win.fraB.butOK -tip {$alited::al(MC,notes)}}}
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fraB2.butOK -tip {$alited::al(MC,notes)}}}
     {.sbv fra2.TexPrj L - - {pack -side left}}
   }
 }

@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.4.2
+package provide bartabs 1.4.3
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -921,7 +921,7 @@ method OnPopup {X Y {BID "-1"} {TID "-1"} {textcur ""}} {
       lassign [{*}$dsbl $BID $TID $label] dsbl comimg comlabel hotk
     } else {
       lassign $dsbl dsbl comimg comlabel hotk
-      catch {set dsbl [expr $dsbl]}
+      if {$dsbl ne ""} {set dsbl [expr $dsbl]}
       set dsbl [expr {([string is boolean $dsbl] && $dsbl ne "")?$dsbl:0}]
     }
     if {$dsbl eq "2"} continue  ;# 2 - "hide"; 1 - "disable"; 0 - "normal"
@@ -1120,9 +1120,9 @@ method Bar_DefaultMenu {BID popName} {
   upvar 1 $popName pop
   set bar "[self] $BID"
   set dsbl "{$bar CheckDsblPopup}"
-  lassign [my Mc_MenuItems] close closeall closeleft closeright
+  lassign [my Mc_MenuItems] list behind close closeall closeleft closeright
   foreach item [list \
-  "m {List} {} bartabs_cascade" \
+  "m {$list} {} bartabs_cascade" \
   "m {BHND} {} bartabs_cascade2 $dsbl" \
   "s {} {} {} $dsbl" \
   "c {$close} {[self] %t close} {} $dsbl" \
@@ -1184,10 +1184,15 @@ method Bar_Cmd2 {comopt2 {TID ""}} {
 
 method Mc_MenuItems {} {
   # Returns localized menu items' label.
-  return [list [msgcat::mc Close] \
-               [msgcat::mc {Close All}] \
-               [msgcat::mc {Close All at Left}] \
-               [msgcat::mc {Close All at Right}]]
+
+  namespace eval ::bartabs {
+    return [list [msgcat::mc List] \
+                 [msgcat::mc behind] \
+                 [msgcat::mc Close] \
+                 [msgcat::mc {... All}] \
+                 [msgcat::mc {... All at Left}] \
+                 [msgcat::mc {... All at Right}]]
+  }
 }
 
 #_____
@@ -1494,7 +1499,7 @@ method CheckDsblPopup {BID TID mnuit} {
   lassign [my Tab_BID $TID] BID icur
   lassign [my $BID cget -static -LLEN] static llen
   set dsbl [my Disabled $TID]
-  lassign [my Mc_MenuItems] close closeall closeleft closeright
+  lassign [my Mc_MenuItems] list behind close closeall closeleft closeright
   switch -exact -- $mnuit [list \
     "BHND" {
       if {$static} {return 2}
@@ -1504,7 +1509,6 @@ method CheckDsblPopup {BID TID mnuit} {
         lassign [my Tab_TextEllipsed $BID [my $TID cget -text] 16] mnuit
         set mnuit "\"$mnuit\""
       }
-      set behind [msgcat::mc "behind"]
       return [list [expr {$dsbl||$llen<2||$llen==2&&$icur==1}] {} "$mnuit $behind"]
     } \
     $close - $closeall - "" {
@@ -1894,7 +1898,7 @@ method checkDisabledMenu {BID TID func} {
 #   3 - for "Close All at Right"
 # Returns "yes" if the menu's item is disabled.
 
-  lassign [my Mc_MenuItems] close closeall closeleft closeright
+  lassign [my Mc_MenuItems] list behind close closeall closeleft closeright
   switch $func {
     1 {set item $closeall}
     2 {set item $closeleft}

@@ -91,7 +91,9 @@ proc file::OpenFile {{fname ""} {reload no}} {
 
   namespace upvar ::alited al al obPav obPav
   set al(filename) ""
+  set chosen no
   if {$fname eq ""} {
+    set chosen yes
     set fname [$obPav chooser tk_getOpenFile alited::al(filename) \
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
   }
@@ -118,6 +120,7 @@ proc file::OpenFile {{fname ""} {reload no}} {
       set tab [alited::bar::UniqueListTab $fname]
       set TID [alited::bar::InsertTab $tab $fname]
     }
+    alited::file::AddRecent $fname
     alited::bar::BAR $TID show
     return $TID
   }
@@ -135,7 +138,7 @@ proc file::OpenOfDir {dname} {
 }
 
 proc file::IsTcl {fname} {
-  if {[string tolower [file extension $fname]] in {.tcl .tm .msg}} {
+  if {[string tolower [file extension $fname]] in {.tcl .tm .msg {}}} {
     return yes
   }
   return no
@@ -231,6 +234,7 @@ proc file::RenameFile {TID fname} {
   # Renames a file.
 
   alited::bar::SetTabState $TID --fname $fname
+  alited::bar::BAR $TID configure -text "" -tip ""
   set tab [alited::bar::UniqueListTab $fname]
   alited::bar::BAR $TID configure -text $tab -tip $fname
   alited::bar::BAR $TID show
@@ -252,6 +256,7 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
   namespace upvar ::alited al al obPav obPav
   set res 1
   if {$TID eq ""} {set TID [alited::bar::CurrentTabID]}
+  set fname [alited::bar::FileName $TID]
   lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
   if {$TID ni {"-1" ""} && $wtxt ne ""} {
     switch [IsSaved $TID] {
@@ -272,6 +277,9 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
     if {$checknew} CheckForNew
     alited::ini::SaveCurrentIni $al(INI,save_onclose)
     RecreateFileTree
+  }
+  if {$al(closefunc) != 1} {  ;# close func = 1 means "close all"
+    alited::file::AddRecent $fname
   }
   return $res
 }
@@ -297,8 +305,11 @@ proc file::CloseAll {func} {
   # Closes files.
   #   func - "1/2/3" means closing "all/to left/to right"
 
+  namespace upvar ::alited al al
   set TID [alited::bar::CurrentTabID]
+  set al(closefunc) $func ;# disables "recent files" at closing all
   alited::bar::BAR closeAll $::alited::al(BID) $TID $func yesnocancel
+  set al(closefunc) 0
   return [expr {[llength [alited::bar::BAR listFlag "m"]]==0}]
 }
 
@@ -450,5 +461,28 @@ proc file::Delete {ID wtree} {
     RemoveFile $fname $BAKDIR backup
   }
 }
+
+proc file::InsertRecent {fname pos} {
+  namespace upvar ::alited al al
+  if {[set i [lsearch $al(RECENTFILES) $fname]]>-1} {
+    set al(RECENTFILES) [lreplace $al(RECENTFILES) $i $i]
+  }
+  set al(RECENTFILES) [linsert $al(RECENTFILES) $pos $fname]
+  set al(RECENTFILES) [lreplace $al(RECENTFILES) $al(INI,RECENTFILES) end]
+}
+
+proc file::AddRecent {fname} {
+  namespace upvar ::alited al al
+  InsertRecent $fname 0
+  alited::menu::FillRecent
+}
+
+proc file::ChooseRecent {idx} {
+  namespace upvar ::alited al al
+  set fname [lindex $al(RECENTFILES) $idx]
+  AddRecent $fname
+  OpenFile $fname
+}
+
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl DEBUG

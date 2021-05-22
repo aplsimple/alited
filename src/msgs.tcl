@@ -4,12 +4,10 @@
 # The list of alited's localized messages.
 # _______________________________________________________________________ #
 
-
 namespace eval ::alited {
 
   set al(MC,nofile)      [msgcat::mc "No name"]
   set al(MC,about)       [msgcat::mc "About"]
-  set al(MC,about...)    [msgcat::mc "About..."]
   set al(MC,error)       [msgcat::mc "Error"]
   set al(MC,warning)     [msgcat::mc "Warning"]
   set al(MC,question)    [msgcat::mc "Question"]
@@ -21,12 +19,11 @@ namespace eval ::alited {
   set al(MC,mnutools)    [msgcat::mc "Tools"]
   set al(MC,mnusetup)    [msgcat::mc "Setup"]
   set al(MC,mnuhelp)     [msgcat::mc "Help"]
-  set al(MC,select)      [msgcat::mc "Select"]  ;# verb "to select"
+  set al(MC,select)      [msgcat::mc "Select"]  ;# verb
   set al(MC,notsaved)    [msgcat::mc "\"%f\" wasn't saved.\n\nSave it?"]
   set al(MC,saving)      [msgcat::mc "Saving"]
   set al(MC,saveas)      [msgcat::mc "Save as"]
   set al(MC,files)       [msgcat::mc "Files"]
-  set al(MC,line)        [msgcat::mc "Line"]
   set al(MC,moving)      [msgcat::mc "Moving"]
   set al(MC,run)         [msgcat::mc "Run"]
   set al(MC,new)         [msgcat::mc "New"]
@@ -35,9 +32,9 @@ namespace eval ::alited {
   set al(MC,save)        [msgcat::mc "Save"]
   set al(MC,saveas...)   [msgcat::mc "Save as..."]
   set al(MC,saveall)     [msgcat::mc "Save All"]
-  set al(MC,clall)       [msgcat::mc "Close All"]
-  set al(MC,clallleft)   [msgcat::mc "Close All at Left"]
-  set al(MC,clallright)  [msgcat::mc "Close All at Right"]
+  set al(MC,clall)       [msgcat::mc "... All"]
+  set al(MC,clallleft)   [msgcat::mc "... All at Left"]
+  set al(MC,clallright)  [msgcat::mc "... All at Right"]
   set al(MC,pref)        [msgcat::mc "Preferences"]
   set al(MC,pref...)     [msgcat::mc "Preferences..."]
   set al(MC,notrecomm)   [msgcat::mc "Not recommended!"]
@@ -86,6 +83,8 @@ namespace eval ::alited {
   set al(MC,wasdelfile)  [msgcat::mc "File \"%f\" was deleted by some application.\n\nSave the file?"]
   set al(MC,Row:)        [msgcat::mc "Row: "]
   set al(MC,Col:)        [msgcat::mc " Col: "]
+  set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
+
   # messages for templates
   set al(MC,tpl)         [msgcat::mc "Templates"]
   set al(MC,tpl4)        [msgcat::mc "Current template:"]
@@ -176,7 +175,6 @@ namespace eval ::alited {
   set al(MC,frfind1) [msgcat::mc "Find"]
   set al(MC,frrepl1) [msgcat::mc "Replace"]
   set al(MC,frfind2) [msgcat::mc "All in Text"]
-  set al(MC,frfind3) [msgcat::mc "All in Session"]
   set al(MC,frtip1)  [msgcat::mc "Allows to use *, ?, \[ and \]\nin \"find\" string."]
   set al(MC,frtip2)  [msgcat::mc "Allows to use the regular expressions\nin \"find\" string."]
   set al(MC,frtip3)  [msgcat::mc "Allows replacements by the empty string,\nin fact, to erase the found ones."]
@@ -200,6 +198,9 @@ namespace eval ::alited {
 
   set al(MC,notes)       [msgcat::mc "Sort of diary.\nList of TODOs etc."]
   set al(MC,checktcl)    [msgcat::mc "Check of Tcl"]
+  set al(checkroot)      [msgcat::mc "Checking %d. Wait a little..."]
+  set al(badroot)        [msgcat::mc "Too big directory for a project: %n files or more."]
+  set al(makeroot)       [msgcat::mc "Directory \"%d\"\ndoesn't exist.\n\nCreate it?"]
 
 
 # icons of toolbar
