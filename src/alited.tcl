@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.7.6
+package provide alited 0.7.7
 
 package require Tk
 catch {package require comm}  ;# Generic message transport

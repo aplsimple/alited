@@ -95,7 +95,7 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label $al(MC,checktcl) -command alited::check::_run
   $m add separator
-  $m add command -label [msgcat::mc "Color Picker"] -command alited::tool::ColorPicker
+  $m add command -label $al(MC,colorpicker) -command alited::tool::ColorPicker
   $m add command -label [msgcat::mc "Screen Loupe"] -command alited::tool::Loupe
 
 ## ________________________ Setup _________________________ ##

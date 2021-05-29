@@ -332,17 +332,37 @@ proc file::MoveExternal {f1112} {
   return yes
 }
 
+proc file::MoveFile1 {wtree fromID toID} {
+  if {![$wtree exists $fromID] || ![$wtree exists $toID]} return
+  set curfile [lindex [$wtree item $fromID -values] 1]
+  set dirname [lindex [$wtree item $toID -values] 1]
+  if {![file isdirectory $dirname]} {
+    set dirname [file dirname $dirname]
+  }
+  if {[file isdirectory $curfile]} {
+    if {$curfile ne $dirname} {
+      alited::msg ok err [msgcat::mc "Only files are moved by alited."] \
+        -geometry pointer+10+-100
+    }
+    return
+  }
+  if {[file dirname $curfile] ne $dirname} {
+    DoMoveFile $curfile $dirname no
+    alited::main::ShowHeader yes
+  }
+}
+
 proc file::MoveFile {wtree to itemID f1112} {
 
   set tree [alited::tree::GetTree]
   set idx [alited::unit::SearchInBranch $itemID $tree]
-  if {$idx<0} {
-    bell
+  if {$idx<0} return
+  if {$to eq {move}} {
+    MoveFile1 $wtree $itemID $f1112
     return
   }
   set curfile [alited::bar::FileName]
   set curdir [file dirname $curfile]
-  set selfile [lindex [$wtree item $itemID -values] 1]
   set selparent [$wtree parent $itemID]
   set dirname {}
   set increment [expr {$to eq {up} ? -1 : 1}]

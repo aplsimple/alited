@@ -43,9 +43,14 @@ proc tree::Create {} {
   set wtree [$obPav Tree]
   Delete $wtree {} $TID
   AddTags $wtree
-  $wtree tag bind tagNorm <Motion> {after idle {alited::tree::Tooltip %x %y %X %Y}}
-  $wtree tag bind tagNorm <ButtonPress> {after idle {alited::tree::PopupMenu %b %x %y %X %Y}}
-  bind $wtree <Leave> {alited::tree::TooltipOff}
+  $wtree tag bind tagNorm <ButtonPress> {after idle {alited::tree::ButtonPress %b %x %y %X %Y}}
+  $wtree tag bind tagNorm <ButtonRelease> {after idle {alited::tree::ButtonRelease %b %x %y %X %Y}}
+  $wtree tag bind tagNorm <Motion> {after idle {alited::tree::ButtonMotion %b %x %y %X %Y}}
+  bind $wtree <ButtonRelease> {alited::tree::DestroyMoveWindow no}
+  bind $wtree <Leave> {
+    alited::tree::TooltipOff
+    alited::tree::DestroyMoveWindow yes
+  }
   if {$al(TREE,isunits)} {
     CreateUnitsTree $TID $wtree
   } else {
@@ -237,11 +242,13 @@ proc tree::ShowPopupMenu {ID X Y} {
   tk_popup $popm $X $Y
 }
 
-proc tree::PopupMenu {but x y X Y} {
+proc tree::ButtonPress {but x y X Y} {
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav Tree]
   set ID [$wtree identify item $x $y]
   if {![$wtree exists $ID]} return
+  TooltipOff
+  set al(movID) [set al(movWin) {}]
   switch $but {
     "3" {
         if {[llength [$wtree selection]]<2} {
@@ -250,6 +257,8 @@ proc tree::PopupMenu {but x y X Y} {
         ShowPopupMenu $ID $X $Y
     }
     "1" {
+      set al(movID) $ID
+      set al(movWin) ".tritem_move"
       if {$al(TREE,isunits)} {
         NewSelection $ID
       } else {
@@ -262,6 +271,63 @@ proc tree::PopupMenu {but x y X Y} {
       }
     }
   }
+}
+
+proc tree::ButtonRelease {but x y X Y} {
+  namespace upvar ::alited al al obPav obPav
+  set wtree [$obPav Tree]
+  set ID [$wtree identify item $x $y]
+  DestroyMoveWindow no
+  if {[$wtree exists $ID] && [info exists al(movID)] && \
+  $al(movID) ne {} && $ID ne {} && $al(movID) ne $ID} {
+    if {$al(TREE,isunits)} {
+      alited::unit::MoveUnits $wtree move $al(movID) $ID
+    } else {
+      alited::file::MoveFile $wtree move $al(movID) $ID
+    }
+  }
+  DestroyMoveWindow yes
+  set al(movID) {}
+}
+
+proc tree::ButtonMotion {but x y X Y} {
+  namespace upvar ::alited al al obPav obPav
+  if {![info exists al(movWin)] || $al(movWin) eq ""} {
+    alited::tree::Tooltip $x $y $X $Y
+    return
+  }
+  set wtree [$obPav Tree]
+  # dragging the tab
+  if {![winfo exists $al(movWin)]} {
+    # make the tab's replica to be dragged
+    toplevel $al(movWin)
+    if {$::tcl_platform(platform) == "windows"} {
+      wm attributes $al(movWin) -alpha 0.0
+    } else {
+      wm withdraw $al(movWin)
+    }
+    if {[tk windowingsystem] eq "aqua"} {
+      ::tk::unsupported::MacWindowStyle style $al(movWin) help none
+    } else {
+      wm overrideredirect $al(movWin) 1
+    }
+    label $al(movWin).label -text [$wtree item $al(movID) -text] -relief solid \
+      -foreground black -background #ff95ff
+    pack $al(movWin).label -expand 1 -fill both -ipadx 1
+  }
+  set ID [$wtree identify item $x $y]
+  wm geometry $al(movWin) +[expr {$X+10}]+[expr {$Y+10}]
+  if {$::tcl_platform(platform) == "windows"} {
+    if {[wm attributes $al(movWin) -alpha] < 0.1} {wm attributes $al(movWin) -alpha 1.0}
+  } else {
+    catch {wm deiconify $al(movWin) ; raise $al(movWin)}
+  }
+}
+
+proc tree::DestroyMoveWindow {cancel} {
+  namespace upvar ::alited al al
+  catch {destroy $al(movWin)}
+  if {$cancel} {lassign {} al(movWin) al(movID)}
 }
 
 proc tree::OpenFile {{ID ""}} {

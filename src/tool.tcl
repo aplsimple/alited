@@ -34,7 +34,10 @@ proc tool::Redo {} {
 # ________________________ Various tools _________________________ #
 
 proc tool::ColorPicker {} {
-  
+
+  if {[set color [alited::find::GetWordOfText]] ne {}} {
+    set alited::al(chosencolor) $color
+  }
   set res [::apave::obj chooser colorChooser alited::al(chosencolor)]
   if {$res ne ""} {
     set alited::al(chosencolor) $res

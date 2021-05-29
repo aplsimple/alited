@@ -43,6 +43,7 @@ namespace eval ::alited {
     "Moving" "Перемещение"
     "Help of alited" "Справка alited"
     "Color Picker" "Выбор цвета"
+    "tkcon" "Консоль tkcon"
     "Screen Loupe" "Экранная лупа"
     "Confirmations" "Подтверждения"
     "Confirm exit:" "Подтверждать выход:"
@@ -64,6 +65,7 @@ namespace eval ::alited {
     "Move Unit Down" "Опустить блок"
     "Move File Up" "Переместить файл вверх"
     "Move File Down" "Переместить файл вниз"
+    "Only files are moved by alited." "Только файлы перемещает alited."
     "Lists of Favorites" "Списки избранного"
     "Last Visited" "Последние посещения"
     "Switch to Unit Tree" "Перейти на список блоков"
@@ -334,6 +336,7 @@ namespace eval ::alited {
     "... Visible" "... видимые"
     "... All at Left" "... все слева"
     "... All at Right" "... все справа"
+    "... All" "... все"
   }
 
   # Abbreviations etc.

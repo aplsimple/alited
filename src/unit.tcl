@@ -300,6 +300,29 @@ proc unit::MoveUnit {wtree to itemID headers f1112} {
   return yes
 }
 
+proc unit::MoveUnit1 {wtree fromID toID} {
+  if {$fromID eq $toID} return
+  set wtxt [alited::main::CurrentWTXT]
+  set tree [alited::tree::GetTree]
+  set i1 [set i2 [set io 0]]
+  foreach item $tree {
+    lassign $item lev cnt id title values
+    lassign $values l1 l2 prl id lev leaf fl1
+    if {$id eq $fromID} {
+      set i1 $l1
+      set i2 $l2
+    } elseif {$id eq $toID} {
+      set io $l1
+    }
+  }
+  if {$i1 && $i2 && $io} {
+    if {[set pos [MoveL1L2 $wtxt $i1 $i2 $io]] ne {}} {
+      ::tk::TextSetCursor $wtxt [expr {int($pos)}].0
+      alited::tree::RecreateTree
+    }
+  }
+}
+
 proc unit::MoveUnits {wtree to itemIDs f1112} {
   # save the headers of moved items (as unique references)
   namespace upvar ::alited al al
@@ -318,6 +341,10 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
       alited::Message $msg 4
       return
     }
+  }
+  if {$to eq "move"} {
+    MoveUnit1 $wtree $itemIDs $f1112
+    return
   }
   set al(RECREATE) 0
   set headers [list]

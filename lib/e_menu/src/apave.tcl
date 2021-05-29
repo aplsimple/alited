@@ -1391,11 +1391,18 @@ oo::class create ::apave::APave {
     #
     # Returns a selected color.
 
-    if {$_pav(initialcolor) eq ""} {
+    if {$_pav(initialcolor) eq "" && $::tcl_platform(platform) eq "unix"} {
       source [file join $::apave::apaveDir pickers color clrpick.tcl]
     }
     if {[set _ [string trim [set $tvar]]] ne ""} {
-      set _pav(initialcolor) $_
+      set ic $_
+      set _ [. cget -background]
+      if {[catch {. configure -background $ic}]} {
+        set ic "#$ic"
+        if {[catch {. configure -background $ic}]} {set ic black}
+      }
+      set _pav(initialcolor) $ic
+      . configure -background $_
     } else {
       set _pav(initialcolor) black
     }

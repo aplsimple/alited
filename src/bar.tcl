@@ -27,14 +27,16 @@ proc bar::FillBar {wframe {newproject no}} {
   set lab1 [msgcat::mc "... Visible"]
   set lab2 [msgcat::mc "... All at Left"]
   set lab3 [msgcat::mc "... All at Right"]
+  set lab4 [msgcat::mc "... All"]
   set bar1Opts [list -wbar $wframe -wbase $wbase -lablen 16 -pady 2 -scrollsel no \
     -lifo yes -lowlist $al(FONTSIZE,small) -tiplen $al(INI,bartiplen) \
     -menu [list \
       sep \
       "com {$lab0} {::alited::bar::SelTab %t} {} {}" \
       "com {$lab1} {::alited::bar::SelTabVis} {} {}" \
-      "com {$lab2} {::alited::bar::SelTabLeft %t} {} {{\[::alited::bar::IsTabLeft %t]}}" \
-      "com {$lab3} {::alited::bar::SelTabRight %t} {} {{\[::alited::bar::IsTabRight %t]}}"] \
+      "com {$lab2} {::alited::bar::SelTabLeft %t} {} {{\[::alited::bar::IsTabLeft %t\]}}" \
+      "com {$lab3} {::alited::bar::SelTabRight %t} {} {{\[::alited::bar::IsTabRight %t\]}}" \
+      "com {$lab4} {::alited::bar::SelTabAll} {} {}"] \
     -separator no -font apaveFontDefTypedsmall \
     -csel2 {alited::bar::OnTabSelection %t} \
     -cdel {alited::file::CloseFile %t} \
@@ -86,10 +88,11 @@ proc bar::UniqueListTab {fname} {
 
 # ________________________ Menu additions _________________________ #
 
-proc bar::SelTab {tab} {
-  if {$tab in [BAR cget -select]} {
+proc bar::SelTab {tab {mode -1}} {
+  set selected [BAR cget -select]
+  if {$mode == 1 || $tab in $selected} {
     BAR unselectTab $tab
-  } else {
+  } elseif {$mode == 0 || $tab ni $selected} {
     BAR selectTab $tab
   }
 }
@@ -97,6 +100,13 @@ proc bar::SelTab {tab} {
 proc bar::SelTabVis {} {
   foreach tab [BAR listFlag v] {
     SelTab $tab
+  }
+}
+
+proc bar::SelTabAll {} {
+  set mode [expr {[llength [BAR cget -select]]>0}]
+  foreach tab [BAR listTab] {
+    SelTab [lindex $tab 0] $mode
   }
 }
 

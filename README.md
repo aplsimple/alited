@@ -12,6 +12,8 @@ Edited by *alited* are Tcl/Tk files. The C code might be a next target of *alite
 
 The *alited* facilitates the development and the maintenance of Tcl/Tk code, partly because of the unit tree being a sort of documentation.
 
+In fact, *alited* has been developed by its own means since v0.2. Inspite of inevitable overheads of this way and the raw state of *alited*, it turned out to be amazingly productive. Even famous *Geany IDE* yields to *alited* in the Tcl/Tk development, though some features of *alited* (often being enhanced) stem from *Geany*.
+
 Below is a screenshot of *alited v0.6*:
 
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited-en.png" class="media" alt="">

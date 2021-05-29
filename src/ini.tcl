@@ -567,11 +567,11 @@ proc ini::_init {} {
   # here, the order of icons defines their order in the toolbar
   foreach {icon} {gulls heart add change delete up down plus minus \
   retry misc previous next folder file OpenFile box SaveFile saveall \
-  undo redo help replace run e_menu ok} {
+  undo redo help replace run e_menu other ok color} {
     set img alimg_$icon
     catch {image create photo $img-big -data [::apave::iconData $icon]}
     catch {image create photo $img -data [::apave::iconData $icon small]}
-    if {$icon in {"file" OpenFile box SaveFile saveall help ok \
+    if {$icon in {"file" OpenFile box SaveFile saveall help ok color other \
     replace e_menu run undo redo}} {
       append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4} "
       switch $icon {
@@ -609,8 +609,14 @@ proc ini::_init {} {
           image create photo $img-big -data $alited::img::_AL_IMG(e_menu)
           append al(atools) "-com alited::tool::e_menu\}"
         }
+        other {
+          append al(atools) "-command alited::tool::tkcon\} h_ 2 sev 4"
+        }
         ok {
           append al(atools) "-com alited::check::_run\}"
+        }
+        color {
+          append al(atools) "-command alited::tool::ColorPicker\}"
         }
       }
     }
