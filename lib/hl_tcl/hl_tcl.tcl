@@ -6,7 +6,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide hl_tcl 0.9.1
+package provide hl_tcl 0.9.3
 
 # _______________ Common data of ::hl_tcl:: namespace ______________ #
 
@@ -180,11 +180,11 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
     for {set i [set dl2 $dl]} {$i<$slen} {} {
       incr i
       set ch [string index $st $i]
-      if {[string is wordchar $ch]} {
+      if {[string is wordchar $ch] || $ch eq {:}} {
         set dl2 $i
         continue
-      } elseif {$ch eq "("} {
-        if {[set br2 [string first ")" $st $i+1]]>-1} {
+      } elseif {$ch eq {(}} {
+        if {[set br2 [string first {)} $st $i+1]]>-1} {
           set dl2 $br2
         }
       }
@@ -196,9 +196,9 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
   }
   # -options
   set dl -1
-  while {[set dl [string first "-" $st [incr dl]]]>-1} {
+  while {[set dl [string first - $st [incr dl]]]>-1} {
     if {[string index $st $dl-1] ni $data(S_SPACE)} continue
-    if {[string index $st $dl+1] eq "-"} {
+    if {[string index $st $dl+1] eq {-}} {
       incr dl ;# for --longoption
     }
     set i $dl
@@ -210,7 +210,7 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
     while {$i<$slen} {
       incr i
       set ch [string index $st $i]
-      if {![string is wordchar $ch] && $ch ne "-"} break
+      if {![string is wordchar $ch] && $ch ne {-}} break
       set dl2 $i
     }
     if {$dl2>-1} {
@@ -1066,15 +1066,17 @@ proc ::hl_tcl::hl_line {txt} {
   # Updates a current line's highlighting.
   #   txt - text's path
 
-  set ln [expr {int([$txt index insert])}]
-  set tSTR [$txt tag ranges tagSTR]
-  set tCMN [$txt tag ranges tagCMN]
-  if {$ln==1} {
-    set currQtd 0
-  } else {
-    set currQtd [::hl_tcl::my::LineState $txt $tSTR $tCMN "$ln.0 -1 chars"]
+  if {!$::hl_tcl::my::data(PLAINTEXT,$txt)} {
+    set ln [expr {int([$txt index insert])}]
+    set tSTR [$txt tag ranges tagSTR]
+    set tCMN [$txt tag ranges tagCMN]
+    if {$ln==1} {
+      set currQtd 0
+    } else {
+      set currQtd [::hl_tcl::my::LineState $txt $tSTR $tCMN "$ln.0 -1 chars"]
+    }
+    ::hl_tcl::my::HighlightLine $txt $ln $currQtd
   }
-  ::hl_tcl::my::HighlightLine $txt $ln $currQtd
   ::hl_tcl::my::MemPos $txt
 }
 

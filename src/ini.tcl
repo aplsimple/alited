@@ -32,6 +32,7 @@ namespace eval ::alited {
   set al(INI,save_onsave) yes
   set al(INI,maxfind) 16
   set al(INI,bartiplen) 32
+  set al(INI,confirmexit) 1
   set al(RE,branch) {^\s*(#+) [_]+\s+([^_]+[^[:blank:]]*)\s+[_]+ (#+)$}         ;#  # _ lev 1 _..
   set al(RE,leaf) {^\s*##\s*[-]*([^-]*)\s*[-]*$}   ;#  # --  / # -- abc / # --abc--
   set al(RE,proc) {^\s*(((proc|method)\s+([^[:blank:]]+))|((constructor|destructor)))\s.+}
@@ -51,8 +52,7 @@ namespace eval ::alited {
   set al(TPL,%a) "  #   %a - \\n"
   set al(KEYS,bind) [list]
   set al(EM,geometry) "240x1+10+10"
-  set al(EM,save) yes
-  set al(EM,saveall) no
+  set al(EM,save) ""
   set al(EM,PD=) "~/PG/e_menu_PD.txt"
   set al(EM,h=) "~/DOC/www.tcl.tk/man/tcl8.6"
   set al(EM,tt=) "xterm -fs 12 -geometry 90x30+1+1"
@@ -173,6 +173,7 @@ proc ini::ReadIniOptions {nam val} {
     indent        {set al(ED,indent) $val}
     EOL           {set al(ED,EOL) $val}
     maxfind       {set al(INI,maxfind) $val}
+    confirmexit   {set al(INI,confirmexit) $val}
   }
 }
 
@@ -204,7 +205,6 @@ proc ini::ReadIniEM {nam val} {
   switch -exact $nam {
     emgeometry {set al(EM,geometry) $val}
     emsave     {set al(EM,save) $val}
-    emsaveall  {set al(EM,saveall) $val}
     emPD       {set al(EM,PD=) $val}
     emh        {set al(EM,h=) $val}
     emtt       {set al(EM,tt=) $val}
@@ -347,6 +347,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "indent=$al(ED,indent)"
   puts $chan "EOL=$al(ED,EOL)"
   puts $chan "maxfind=$al(INI,maxfind)"
+  puts $chan "confirmexit=$al(INI,confirmexit)"
   puts $chan ""
   puts $chan {[Templates]}
   foreach t $al(TPL,list) {
@@ -363,7 +364,6 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan ""
   puts $chan {[EM]}
   puts $chan "emsave=$al(EM,save)"
-  puts $chan "emsaveall=$al(EM,saveall)"
   puts $chan "emPD=$al(EM,PD=)"
   puts $chan "emh=$al(EM,h=)"
   puts $chan "emtt=$al(EM,tt=)"
@@ -419,7 +419,7 @@ proc ini::SaveIniPrj {newproject} {
     if {!$newproject} {
       set TID [lindex $tab 0]
       set tab [alited::bar::FileName $TID]
-      if {$tab eq ""} continue
+      if {[alited::file::IsNoName $tab]} continue
       if {$TID eq $TIDcur} {
         set pos [$wtxt index insert]
       } else {
@@ -431,7 +431,9 @@ proc ini::SaveIniPrj {newproject} {
     puts $chan "tab=$tab"
   }
   foreach rf $al(RECENTFILES) {
-    puts $chan "recent=$rf"
+    if {![alited::file::IsNoName $rf]} {
+      puts $chan "recent=$rf"
+    }
   }
   puts $chan ""
   puts $chan {[Options]}

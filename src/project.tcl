@@ -111,7 +111,7 @@ proc project::Ok {args} {
     $obDl2 res $win 0
     return
   }
-  set pname $al(prjname)
+  set pname [string trim $al(prjname)]
   set fname [ProjectFileName $pname]
   RestoreSettings
   alited::ini::SaveIni
@@ -194,6 +194,7 @@ proc project::GetProjectOpts {fname} {
   variable prjlist
   variable prjinfo
   variable OPTS
+  variable data
   set pname [ProjectName $fname]
   # save project names to 'prjlist' variable to display it by treeview widget
   lappend prjlist $pname
@@ -206,16 +207,53 @@ proc project::GetProjectOpts {fname} {
   set prjinfo($pname,prjname) $pname
   set prjinfo($pname,prjdirign) ".git .bak"
   set prjinfo($pname,tablist) [list]
-  foreach line [split $filecont \n] {
+  if {[set currentprj [expr {$data(prjname) eq $pname}]]} {
+    foreach tab [alited::bar::BAR listTab] {
+      set tid [lindex $tab 0]
+      lappend prjinfo($pname,tablist) [alited::bar::BAR $tid cget -tip]
+    }
+  }
+  foreach line [::apave::textsplit $filecont] {
     lassign [GetOptVal $line] opt val
     if {[lsearch $OPTS $opt]>-1} {
       set prjinfo($pname,$opt) [ProcEOL $val in]
-    } elseif {$opt eq "tab"} {
+    } elseif {$opt eq "tab" && !$currentprj} {
       lappend prjinfo($pname,tablist) $val
     }
   }
   set al(tablist) $prjinfo($pname,tablist)
   return $pname
+}
+
+proc project::PutProjectOpts {fname oldname} {
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjinfo
+  variable OPTS
+  set filecont [::apave::readTextFile $oldname]
+  set newcont ""
+  foreach line [::apave::textsplit $filecont] {
+    lassign [GetOptVal $line] opt val
+    if {$line eq {[Tabs]}} {
+      foreach tab $al(tablist) {
+        append line \n "tab=$tab"
+      }
+    } elseif {$opt in [list tab {*}$OPTS]} {
+      continue
+    } elseif {$opt in {curtab}} {
+      # 
+    } elseif {$line eq {[Options]}} {
+      foreach opt $OPTS {
+        if {$opt ni {prjname tablist}} {
+          set val [set alited::al($opt)]
+          append line \n $opt= $val
+          set prjinfo($al(prjname),$opt) [ProcEOL $val in]
+        }
+      }
+    }
+    append newcont $line \n
+  }
+  ::apave::writeTextFile $fname newcont
+  if {$oldname ne $fname} {catch {file delete $oldname}}
 }
 
 proc project::GetProjects {} {
@@ -312,8 +350,8 @@ proc project::ProjectName {fname} {
 
 proc project::ProjectFileName {name} {
   namespace upvar ::alited al al PRJDIR PRJDIR PRJEXT PRJEXT
-  set name [file rootname [file tail $name]]
-  return [file normalize [file join $PRJDIR $name$PRJEXT]]
+  set name [ProjectName [string trim $name]]
+  return [file normalize [file join $PRJDIR "$name$PRJEXT"]]
 }
 
 proc project::ValidProject {} {
@@ -343,37 +381,6 @@ proc project::ValidProject {} {
     set res yes
   }
   return $res
-}
-
-proc project::PutProjectOpts {fname oldname} {
-  namespace upvar ::alited al al obDl2 obDl2
-  variable prjinfo
-  variable OPTS
-  set filecont [::apave::readTextFile $oldname]
-  set newcont ""
-  foreach line [split $filecont \n] {
-    lassign [GetOptVal $line] opt val
-    if {$line eq {[Tabs]}} {
-      foreach tab $al(tablist) {
-        append line \n "tab=$tab"
-      }
-    } elseif {$opt in [list tab {*}$OPTS]} {
-      continue
-    } elseif {$opt in {curtab}} {
-      # 
-    } elseif {$line eq {[Options]}} {
-      foreach opt $OPTS {
-        if {$opt ni {prjname tablist}} {
-          set val [set alited::al($opt)]
-          append line \n $opt= $val
-          set prjinfo($al(prjname),$opt) [ProcEOL $val in]
-        }
-      }
-    }
-    append newcont $line \n
-  }
-  ::apave::writeTextFile $fname newcont
-  if {$oldname ne $fname} {catch {file delete $oldname}}
 }
 
 proc project::Add {} {

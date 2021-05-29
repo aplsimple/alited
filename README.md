@@ -179,7 +179,9 @@ Press Ctrl-Tab to switch between *last two* edited files.
 
 "Last visited is most needed."
 
-The F1 key is used to call a context Tcl/Tk help. Set the cursor on a Tcl/Tk command and press F1 and you'll get the help on the command. Still, for this you should download the Tcl/Tk help into ~/DOC directory by the commands:
+The F1 key is used to call a context Tcl/Tk help. Set the cursor on a Tcl/Tk command and press F1 and you'll get the help on the command.
+
+Still to have this, you should download the Tcl/Tk help into ~/DOC directory by the commands:
 
     mkdir ~/DOC
     cd ~/DOC
@@ -203,6 +205,18 @@ Being written in pure Tcl/Tk 8.6, the *alited* needs only the core Tcl/Tk packag
 
 If you are a novice to Tcl/Tk 8.6, try and install it. Then try and install the  *alited* and its dependencies, noticing the messages of CLI. Let the installations be a sort of exercise in Tcl/Tk.
 
+Still in Windows, it's enough to install [ActiveTcl](https://www.activestate.com/products/tcl) or [Magicsplat](https://www.magicsplat.com/tcl-installer) distribution.
+
+In Linux, possibly you need to install the packages:
+
+    tcl8.6
+    tcllib
+    tk8.6
+    tklib
+    tcl-tls
+    tcl-vfs
+    tclx8.4
+
 As noticed above, the *alited is born for Tcl/Tk development only*, so it requires a basic Tcl/Tk knowledge and the installed Tcl/Tk packages.
 
 No need for a stand-alone *alited executable*. Also, the open sources of *alited* may be used for a further customization.
@@ -211,7 +225,7 @@ No need for a stand-alone *alited executable*. Also, the open sources of *alited
 
 The *alited* project started 1 March 2021 and as such isn't complete, perfect etc. And in no way and in no time it will be so.
 
-In a sense, *alited* goes Tcl/Tk way, i.e. *nothing of greatness but all you need*.
+In a sense, *alited* goes Tcl/Tk way, i.e. *not greatness but simple elegance*. As for programming, of course.
 
 For now (15 May 2021), it's of version 0.6, which means 40% to its full aged v1.0.
 
@@ -223,3 +237,20 @@ As [Vasily Shukshin](https://en.wikipedia.org/wiki/Vasily_Shukshin)'s film says:
     - Да.
     - Процентов сорок.
     - Ого!
+
+----
+
+ROAD MAP of alited from v0.6 to v1.0:
+
+    + recent files
+    + go to line
+    + for selected tabs: find/replace
+    + for selected tabs: e_menu items (fossil.mnu, grep.mnu etc.)
+    + general help in "Help" menu
+    - "e_menu items for toolbar" options
+    - "backup to <dir>" option of project
+    - all options of Preferences & Projects
+    - fossil/git diff of a file
+    - C syntax
+    - comments & units
+    - index.html on Github

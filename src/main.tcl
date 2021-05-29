@@ -209,11 +209,11 @@ proc main::CurrentWTXT {} {
   return [lindex [alited::bar::GetBarState] 2]
 }
 
-proc main::ShowHeader {} {
+proc main::ShowHeader {{doit no}} {
   namespace upvar ::alited al al
   if {[alited::file::IsModified]} {set modif "*"} {set modif " "}
   set TID [alited::bar::CurrentTabID]
-  if {"$modif$TID" ne [alited::bar::BAR cget -ALmodif]} {
+  if {$doit || "$modif$TID" ne [alited::bar::BAR cget -ALmodif]} {
     alited::bar::BAR configure -ALmodif "$modif$TID"
     set f [alited::bar::CurrentTab 1]
     set d [file normalize [file dirname [alited::bar::CurrentTab 2]]]

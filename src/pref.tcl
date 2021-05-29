@@ -1,8 +1,11 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The Settings procedures.
-# _______________________________________________________________________ #
+###########################################################
+# Name:    pref.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    05/25/2021
+# Brief:   Handles "Preferences".
+# License: MIT.
+###########################################################
 
 namespace eval pref {
   variable win $::alited::al(WIN).fraPref
@@ -17,12 +20,13 @@ namespace eval pref {
   variable oldTab ""
   variable opcColors [list]
   variable opcc ""
+  variable opcc2 ""
   variable stdkeys
   set stdkeys [dict create \
      0 [list "Save File" F2] \
      1 [list "Save File as" Control-S] \
      2 [list "Run e_menu" F4] \
-     3 [list "Run file" F5] \
+     3 [list "Run File" F5] \
      4 [list "Double Selection" Control-D] \
      5 [list "Delete Line" Control-Y] \
      6 [list "Indent" Control-I] \
@@ -39,16 +43,6 @@ namespace eval pref {
     17 [list "Go to Line" Control-G] \
   ]
   variable stdkeysSize [dict size $stdkeys]
-}
-
-proc pref::EditPreferences {} {
-  # Direct editing of the settings file. Just for completeness.
-  namespace upvar ::alited al al obPav obPav
-  set filecont [::apave::readTextFile $al(INI)]
-  $obPav vieweditFile $al(INI) "" -ro 0 -h 25
-  if {$filecont ne [::apave::readTextFile $al(INI)]} {
-    alited::Exit - 2
-  }
 }
 
 # ________________________ Common procedures _________________________ #
@@ -131,13 +125,16 @@ proc pref::MainFrame {} {
 proc pref::Ok {args} {
   namespace upvar ::alited al al obDl2 obDl2
   variable opcc
+  variable opcc2
   variable win
   set ans [alited::msg yesnocancel info [msgcat::mc "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?"] YES -geometry root=$win]
   if {$ans in {1 2}} {
     set al(INI,CS) [scan $opcc %d:]
-    if {![string is digit -strict $al(INI,CS)]} {set al(INI,CS) -1}
+    if {![string is integer -strict $al(INI,CS)]} {set al(INI,CS) -1}
+    set al(EM,CS)  [scan $opcc2 %d:]
+    if {![string is integer -strict $al(EM,CS)]} {set al(EM,CS) -1}
     $obDl2 res $win 1
-    if {$ans == 1} {alited::Exit - 1}
+    if {$ans == 1} {alited::Exit - 1 no}
   }
 }
 
@@ -215,7 +212,7 @@ proc pref::opcToolPre {args} {
 
 proc pref::General_Tab2 {} {
   return {
-    {v_ - - 1 10}
+    {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labEOL - - 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
     {.cbxEOL fra1.labEOL L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,EOL) -values {{} LF CR CRLF} -w 5 -state readonly}}
@@ -223,10 +220,9 @@ proc pref::General_Tab2 {} {
     {.spXIndent fra1.labIndent L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,indent) -w 3 -from 2 -to 8 -justify center}}
     {.labMult fra1.labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
     {.chbMult fra1.labMult L 1 1 {-st sw -pady 5 -padx 3} {-var alited::al(ED,multiline) -tip {$alited::al(MC,notrecomm)}}}
-    {#.labFlist fra2.labMult T 1 1 {-pady 5 -padx 3} {-t "List of files:"}}
-    {#fraFlist fra2.labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
-    {#.LbxFlist - - - - {pack -side left -fill both -expand 1}}
-    {#.sbvFlist fraFlist.lbxFlist L - - {pack -side left}}
+    {lfr fra1 T 1 2 {-st ew -cw 1 -pady 5 -padx 5} {-t Confirmations}}
+    {.labConf - - 1 1 {-st w -pady 1 -padx 3} {-t "Confirm exit:"}}
+    {.chbConf lfr.labConf L 1 1 {-st sw -pady 5 -padx 3} {-var alited::al(INI,confirmexit)}}
   }
 }
 
@@ -379,6 +375,33 @@ proc pref::TODO_Tab {} {
   }
 }
 
+proc pref::Emenu_Tab {} {
+  set alited::al(EM,menu) [file join $alited::al(EM,menudir) \
+    [file tail $alited::al(EM,menu)]]
+  return {
+    {v_ - - 1 1}
+    {fra v_ T 1 2 {-st nsew -cw 1}}
+    {.labDir - - 1 1 {-st w -pady 1 -padx 3} {-t "Directory of menus:"}}
+    {.dirEM fra.labDir L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,menudir) -w 50}}
+    {.labMenu fra.labDir T 1 1 {-st w -pady 1 -padx 3} {-t "Main menu:"}}
+    {.filMenu fra.labMenu L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,menu) -w 50 -filetypes {{{Menus} .mnu} {{All files} .* }}}}
+    {.labPD fra.labMenu T 1 1 {-st w -pady 1 -padx 3} {-t "Projects (%PD wildcard):"}}
+    {.filPD fra.labPD L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,PD=) -w 50}}
+    {.labSave fra.labPD T 1 1 {-st w -pady 1 -padx 3} {-t "Save files before run:"}}
+    {.cbxSave fra.labSave L 1 1 {-st sw -pady 5} {-values {"" "Current" "All"} -tvar alited::al(EM,save) -state readonly -w 10}}
+    {.labTT fra.labSave T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
+    {.entTT fra.labTT L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,tt=) -w 50}}
+    {.labDoc fra.labTT T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl8.6:"}}
+    {.dirDoc fra.labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 50}}
+    {.labGeo fra.labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
+    {.entGeo fra.labGeo L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,geometry) -w 30}}
+    {.labCS fra.labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
+    {.opc fra.labCS L 1 1 {-st sw -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 20} {alited::pref::opcToolPre %a}}}
+    {.labExe fra.labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Run as external app:"}}
+    {.chbExe fra.labExe L 1 1 {-st sw -pady 5} {-var alited::al(EM,exec) -onvalue yes -offvalue no}}
+  }
+}
+
 # ________________________ GUI procs _________________________ #
 proc pref::_create {} {
 
@@ -401,7 +424,7 @@ proc pref::_create {} {
     $win.fraR.nbk4.f1 [Template_Tab1] \
     $win.fraR.nbk5.f1 [Keys_Tab1] \
     $win.fraR.nbk6.f1 [TODO_Tab] \
-    $win.fraR.nbk6.f2 [TODO_Tab]
+    $win.fraR.nbk6.f2 [Emenu_Tab]
   if {$minsize eq ""} {      ;# save default min.sizes
     after idle [list after 100 {
       set ::alited::pref::minsize "-minsize {[winfo width $::alited::pref::win] [winfo height $::alited::pref::win]}"
@@ -430,18 +453,18 @@ proc pref::_init {} {
   namespace upvar ::alited al al
   variable opcColors
   variable opcc
+  variable opcc2
   variable curTab
   SaveSettings
   set curTab "nbk"
-  set opcc [msgcat::mc {Color schemes}]
+  set opcc [set opcc2 [msgcat::mc {Color schemes}]]
   set opcColors [list "{$opcc}"]
   for {set i -1; set n [apave::cs_MaxBasic]} {$i<=$n} {incr i} {
     if {(($i+2) % ($n/2+2)) == 0} {lappend opcColors "|"}
     set csname [::apave::obj csGetName $i]
     lappend opcColors [list $csname]
-    if {$i == $al(INI,CS)} {
-      set opcc $csname
-    }
+    if {$i == $al(INI,CS)} {set opcc $csname}
+    if {$i == $al(EM,CS)} {set opcc2 $csname}
   }
   IniKeys
 }

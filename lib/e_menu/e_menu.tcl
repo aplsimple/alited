@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.3.3b2"
+  variable em_version "e_menu 3.3.3b4"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -68,7 +68,7 @@ if {$::em::solo} {set ::em::ncolor 0}
 #   IF - conditional execution
 #   EXIT - close menu
 
-proc M {cme args} {
+proc ::M {cme args} {
   if {[regexp "^-centerme " $cme]} {
     set msg ""
   } else {
@@ -79,16 +79,16 @@ proc M {cme args} {
   foreach a $args {append msg "$a "}
   ::em::em_message $msg ok Info -ontop $ontop {*}$cme
 }
-proc Q {ttl mes {typ okcancel} {icon warn} {defb OK} args} {
+proc ::Q {ttl mes {typ okcancel} {icon warn} {defb OK} args} {
   if {[lsearch $args -centerme]<0} {lappend args -centerme .em}
   if {[set ontop [::apave::getOption -ontop {*}$args]] eq {}} {set ontop $::em::ontop}
   return [set ::em::Q [::em::em_question $ttl $mes $typ $icon $defb {*}$args -ontop $ontop]]
 }
-proc T {args} {
+proc ::T {args} {
   set cc ""; foreach c $args {set cc "$cc$c "}
   ::em::shell_run "Nobutt" "S:" shell1 - "&" [string map {"\\n" "\r"} $cc]
 }
-proc S {incomm} {
+proc ::S {incomm} {
   foreach comm [split [string map {\\n \n} $incomm] \n] {
     if {[set comm [string trim $comm]] ne ""} {
       set comm [string map {\\\\n \\n} $comm]
@@ -104,7 +104,7 @@ proc S {incomm} {
     }
   }
 }
-proc EXIT {} {::em::on_exit}
+proc ::EXIT {} {::em::on_exit}
 
 # *******************************************************************
 # e_menu's procedures

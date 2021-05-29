@@ -42,7 +42,12 @@ namespace eval ::alited {
     "Run" "Запуск"
     "Moving" "Перемещение"
     "Help of alited" "Справка alited"
-    "Color picker" "Выбор цвета"
+    "Color Picker" "Выбор цвета"
+    "Screen Loupe" "Экранная лупа"
+    "Confirmations" "Подтверждения"
+    "Confirm exit:" "Подтверждать выход:"
+    "Quit alited?" "Выйти из alited?"
+    "Don't ask again" "Больше не спрашивать"
   }
 
   ::msgcat::mcmset ru {
@@ -245,7 +250,7 @@ namespace eval ::alited {
     "\"%f\" removed to \"%d\"" "\"%f\" удален в \"%d\""
     "File name:" "Имя файла:"
     "Directory" "Каталог"
-    "The file \"%f\"\nseems to be not of types\n%s.\n\nStill do you want to open it?" "Файл \"%f\",\nпохоже, не типа\n%s.\n\nВсё-таки открыть его?"
+    "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?" "Файл \"%f\", похоже, не типа\n%s.\n\nВсё-таки открыть его?"
   }
 
   # checking ini directory
@@ -283,7 +288,7 @@ namespace eval ::alited {
     "Save File" "Сохранить файл"
     "Save File as" "Сохранить файл как"
     "Run e_menu" "Запуск e_menu"
-    "Run file" "Запуск файла"
+    "Run File" "Запуск файла"
     "Double Selection" "Дублировать выделение"
     "Delete Line" "Удалить строку"
     "Highlight First" "Выделить первое"
@@ -298,6 +303,14 @@ namespace eval ::alited {
     "Login:" "Логин:"
     "Date format:" "Формат даты:"
     "Time format:" "Формат времени:"
+    "Directory of menus:" "Каталог меню:"
+    "Main menu:" "Главное меню:"
+    "Projects (%PD wildcard):" "Проекты (%PD токен):"
+    "Save files before run:" "Сохранять файлы при вызове:"
+    "Linux terminal:" "Терминал Linux:"
+    "Path to man/tcl8.6:" "Путь к man/tcl8.6:"
+    "Geometry:" "Геометрия:"
+    "Run as external app:" "Как отдельное приложение:"
   }
 
   # Checks

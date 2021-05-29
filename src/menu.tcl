@@ -65,9 +65,9 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,clallleft) -command {alited::file::CloseAll 2}
   $m add command -label $al(MC,clallright) -command {alited::file::CloseAll 3}
   $m add separator
-  $m add command -label $al(MC,restart) -command {alited::Exit - 1}
+  $m add command -label $al(MC,restart) -command {alited::Exit - 1 no}
   $m add separator
-  $m add command -label $al(MC,quit) -command alited::Exit
+  $m add command -label $al(MC,quit) -command {alited::Exit - 0 no}
 
 ## ________________________ Edit _________________________ ##
   set m [set al(MENUEDIT) $al(WIN).menu.edit]
@@ -91,8 +91,12 @@ proc menu::FillMenu {} {
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label $al(MC,run) -command alited::tool::_run -accelerator $al(acc_3)
   $m add command -label "e_menu" -command alited::tool::e_menu -accelerator $al(acc_2)
+  $m add command -label "tkcon" -command alited::tool::tkcon
+  $m add separator
   $m add command -label $al(MC,checktcl) -command alited::check::_run
-  $m add command -label [msgcat::mc "Color picker"] -command alited::tool::ColorPicker
+  $m add separator
+  $m add command -label [msgcat::mc "Color Picker"] -command alited::tool::ColorPicker
+  $m add command -label [msgcat::mc "Screen Loupe"] -command alited::tool::Loupe
 
 ## ________________________ Setup _________________________ ##
   set m [set al(SETUP) $al(WIN).menu.setup]

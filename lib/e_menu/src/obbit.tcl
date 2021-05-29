@@ -526,6 +526,15 @@ proc ::apave::error {{fileName ""}} {
 
 ###########################################################################
 
+proc ::apave::textsplit {textcont} {
+  # Splits a text's contents by EOLs. Those inventors of EOLs...
+  #   textcont - text's contents
+
+  return [split [string map [list \r\n \n \r \n] $textcont] \n]
+}
+
+###########################################################################
+
 proc ::apave::textEOL {{EOL "-"}} {
   # Gets/sets End-of-Line for text reqding/writing.
   #   EOL - LF, CR, CRLF or {}

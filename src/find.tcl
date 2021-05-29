@@ -213,6 +213,7 @@ proc find::Search {wtxt} {
   $wtxt tag lower fndTag
   if {[catch {set fnd [$wtxt search {*}$options -count alited::find::counts -all -- $findstr 1.0]} err]} {
     alited::msg ok err $err -ontop yes -parent $win
+    set data(_ERR_) yes
     return {}
   }
   set i 0
@@ -328,10 +329,12 @@ proc find::FindInText {} {
 
 proc find::FindInSession {{tagme "add"}} {
   namespace upvar ::alited al al
+  variable data
   alited::info::Clear
   alited::info::Put $al(MC,wait) "" yes
   update
   set allfnd [list]
+  set data(_ERR_) no
   foreach tab [SessionList] {
     set TID [lindex $tab 0]
     if {![info exist al(_unittree,$TID)]} {
@@ -339,6 +342,7 @@ proc find::FindInSession {{tagme "add"}} {
     }
     lassign [alited::main::GetText $TID] curfile wtxt
     lappend allfnd {*}[FindAll $wtxt $TID $tagme]
+    if {$data(_ERR_)} break
   }
   alited::info::Clear 0
   ShowResults1 $allfnd
@@ -418,6 +422,7 @@ proc find::ReplaceInText {} {
   if {![CheckData repl]} return
   set fname [file tail [alited::bar::FileName]]
   set msg [string map [list %f $fname %s $data(en1) %r $data(en2)] $al(MC,frdoit1)]
+  set msg [string map [list \\ \\\\] $msg]
   if {![alited::msg yesno warn $msg NO -ontop $data(c5)]} {
     return ""
   }
@@ -432,11 +437,13 @@ proc find::ReplaceInSession {} {
   variable data
   if {![CheckData repl]} return
   set msg [string map [list %s $data(en1) %r $data(en2)] $al(MC,frdoit2)]
+  set msg [string map [list \\ \\\\] $msg]
   if {![alited::msg yesno warn $msg NO -ontop $data(c5)]} {
     return ""
   }
   set currTID [alited::bar::CurrentTabID]
   set rn 0
+  set data(_ERR_) no
   foreach tab [SessionList] {
     set TID [lindex $tab 0]
     if {![info exist al(_unittree,$TID)]} {
@@ -447,6 +454,7 @@ proc find::ReplaceInSession {} {
       ShowResults2 $rdone $alited::al(MC,frres2) $TID
       incr rn $rdone
     }
+    if {$data(_ERR_)} break
   }
   ShowResults2 $rn $alited::al(MC,frres3)
   UpdateAfterReplace

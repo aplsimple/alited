@@ -225,7 +225,9 @@ proc tree::ShowPopupMenu {ID X Y} {
       $popm add command {*}[$obPav iconA none] -label $al(MC,copydecl) \
         -command "clipboard clear ; clipboard append {$header}"
     }
-  } elseif {!$isfile} {
+  } else {
+    if {$isfile} {set fname [file dirname $fname]}
+    set sname [file tail $fname]
     $popm add separator
     set msg [string map [list %n $sname] $al(MC,openofdir)]
     $popm add command {*}[$obPav iconA OpenFile] -label $msg \
@@ -449,15 +451,20 @@ proc tree::GetDirectoryContents {dirname} {
 
 proc tree::IgnoredDir {dir} {
   namespace upvar ::alited al al
-  set dir [file tail $dir]
+  set res no
+  set dir [string toupper [file tail $dir]]
   catch {    ;# there might be an incorrect list -> catch it
     foreach d $al(prjdirign) {
-      set d [string trim $d \"]
-      if {$dir eq $d} {return yes}
+      set d [string toupper [string trim $d \"]]
+      if {$dir eq $d} {
+        set res yes
+        break
+      }
     }
   }
-  return no
+  return $res
 }
+
 proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
 
   namespace upvar ::alited al al
@@ -465,14 +472,18 @@ proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
   if {[catch {set dcont [lsort -dictionary [glob [file join $dirname *]]]}]} {
     set dcont [list]
   }
-  # firstly directories
+  # firstly directories:
+  # 1. skip the ignored ones
+  for {set i [llength $dcont]} {$i} {} {
+    incr i -1
+    if {[IgnoredDir [lindex $dcont $i]]} {
+      set dcont [lreplace $dcont $i $i]
+    }
+  }
+  # 2. put the directories to the beginning of the file list
   set i 0
   foreach fname $dcont {
     if {[file isdirectory $fname]} {
-      if {[IgnoredDir $fname]} {
-        set dcont [lreplace $dcont $i $i]
-        continue
-      }
       set dcont [lreplace $dcont $i $i [list $fname "y"]]
       set nroot [AddToDirContents $lev 0 $fname $iroot]
       if {[llength $al(_dirtree)] < $al(MAXFILES)} {

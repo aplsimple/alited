@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.7
+package provide alited 0.7.6
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -14,10 +14,11 @@ catch {package require comm}  ;# Generic message transport
 
 namespace eval alited {
 
+  variable al; array set al [list]
+  set al(DEBUG) no
+
   proc raise_window {} {
     # Raises the app's window.
-
-    variable al
 
     if {$::tcl_platform(platform) eq "windows"} {
       #wm attributes . -alpha 1.0
@@ -42,19 +43,29 @@ if {$::tcl_platform(platform) eq "windows"} {
 } else {
   wm withdraw .
 }
+set ALITED_NOSEND no
+if {"NOSEND" eq [lindex $::argv 0]} {
+  set ::argv [lreplace $::argv 0 0]
+  incr ::argc -1
+  set ALITED_NOSEND yes
+}
 if {"DEBUG" eq [lindex $::argv 0]} {
+  set alited::al(DEBUG) yes
   set ::argv [lreplace $::argv 0 0]
   incr ::argc -1
 } elseif {$::tcl_platform(platform) eq "unix"} {
-  set port 48784
-  if {[catch {::comm::comm config -port $port}] && \
-  ![catch {::comm::comm send $port ::alited::run_remote ::alited::raise_window }]} {
-    destroy .
-    exit
+  if {!$ALITED_NOSEND} {
+    set port 48784
+    if {[catch {::comm::comm config -port $port}] && \
+    ![catch {::comm::comm send $port ::alited::run_remote ::alited::raise_window }]} {
+      destroy .
+      exit
+    }
   }
 } else {
   after idle ::alited::raise_window
 }
+unset ALITED_NOSEND
 
 # ________________________ Main variables _________________________ #
 
@@ -109,7 +120,6 @@ namespace eval alited {
   msgcat::mcload $MSGSDIR
 
   # main data of alited (others are in ini.tcl)
-  variable al; array set al [list]
   set al(WIN) .alwin
   set al(prjname) ""
   set al(prjfile) ""
@@ -155,6 +165,7 @@ namespace eval alited {
         default {set title $al(MC,info)}
      }
     }
+    set message [string map [list \\ \\\\] $message]
     set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
     after idle {catch alited::main::UpdateGutter}
     return [lindex $res 0]
@@ -237,13 +248,16 @@ namespace eval alited {
     return [list $fg $fgbold]
   }
 
-  proc Exit {{w ""} {res 0}} {
+  proc Exit {{w ""} {res 0} {ask yes}} {
     variable al
     variable obPav
-    if {[alited::file::AllSaved]} {
-      $obPav res $al(WIN) $res
-      alited::find::_close
-      alited::tool::_close
+    if {!$ask || !$al(INI,confirmexit) || \
+    [msg yesno ques [msgcat::mc "Quit alited?"]]} {
+      if {[alited::file::AllSaved]} {
+        $obPav res $al(WIN) $res
+        alited::find::_close
+        alited::tool::_close
+      }
     }
   }
 
@@ -286,8 +300,10 @@ if {[package versions alited] eq ""} {
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
   if {[alited::main::_run]} {     ;# run the main form
+    # restarting
     cd $alited::SRCDIR
-    exec tclsh $alited::SCRIPT {*}$::argv &
+    if {$alited::al(DEBUG)} {set ::argv [linsert $::argv 0 DEBUG]}
+    exec tclsh $alited::SCRIPT NOSEND {*}$::argv &
   }
   exit
 }

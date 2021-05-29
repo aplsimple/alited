@@ -8,7 +8,16 @@ namespace eval file {}
 
 proc file::IsModified {{TID ""}} {
   if {$TID eq ""} {set TID [alited::bar::CurrentTabID]}
-  return [expr {[lsearch -index 0 [alited::bar::BAR listFlag "m"] $TID]>-1}]
+  return [expr {[lsearch -index 0 [alited::bar::BAR listFlag m] $TID]>-1}]
+}
+
+proc file::IsNoName {fname} {
+
+  namespace upvar ::alited al al
+  if {[file tail $fname] in [list $al(MC,nofile) {No name} {}]} {
+    return yes
+  }
+  return no
 }
 
 proc file::IsSaved {TID} {
@@ -30,11 +39,11 @@ proc file::OutwardChange {TID {docheck yes}} {
   if {[file exists $fname]} {
     set curtime [file mtime $fname]
   } elseif {$fname ne $al(MC,nofile)} {
-    set curtime "?"
+    set curtime ?
   } else {
-    set curtime ""
+    set curtime {}
   }
-  if {$docheck && $mtime ne "" && $curtime ne $mtime && $fname eq $mtimefile} {
+  if {$docheck && $mtime ne {} && $curtime ne $mtime && $fname eq $mtimefile} {
     set isfile [file exists $fname]
     if {$isfile} {
       set msg [string map [list %f [file tail $fname]] $al(MC,modiffile)]
@@ -56,11 +65,11 @@ proc file::OutwardChange {TID {docheck yes}} {
 }
 
 proc file::MakeThemReload {{tabs ""}} {
-  if {$tabs eq ""} {
+  if {$tabs eq {}} {
     set tabs [alited::bar::BAR listTab]
   }
   foreach tab $tabs {
-    alited::bar::BAR [lindex $tab 0] configure --reload "yes"
+    alited::bar::BAR [lindex $tab 0] configure --reload yes
   }
 }
 
@@ -81,7 +90,7 @@ proc file::DisplayFile {TID curfile wtxt} {
 proc file::NewFile {} {
 
   namespace upvar ::alited al al
-  if {[set TID [alited::bar::FileTID $al(MC,nofile)]] eq ""} {
+  if {[set TID [alited::bar::FileTID $al(MC,nofile)]] eq {}} {
     set TID [alited::bar::InsertTab $al(MC,nofile) $al(MC,nofile)]
   }
   alited::bar::BAR $TID show
@@ -90,17 +99,17 @@ proc file::NewFile {} {
 proc file::OpenFile {{fname ""} {reload no}} {
 
   namespace upvar ::alited al al obPav obPav
-  set al(filename) ""
+  set al(filename) {}
   set chosen no
-  if {$fname eq ""} {
+  if {$fname eq {}} {
     set chosen yes
     set fname [$obPav chooser tk_getOpenFile alited::al(filename) \
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
   }
   if {[file exists $fname]} {
-    set exts "tcl, tm, msg, c, h, cc, cpp, hpp, html, css, md, txt, ini"
-    set ext [string tolower [string trim [file extension $fname] "."]]
-    if {!$reload && $ext ni [split [string map {" " ""} $exts] ","]} {
+    set exts {tcl, tm, msg, c, h, cc, cpp, hpp, html, css, md, txt, ini}
+    set ext [string tolower [string trim [file extension $fname] .]]
+    if {!$reload && $ext ni [split [string map {{ } {}} $exts] ,]} {
       set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
       if {![alited::msg yesno warn $msg NO]} {
         return ""
@@ -138,7 +147,7 @@ proc file::OpenOfDir {dname} {
 }
 
 proc file::IsTcl {fname} {
-  if {[string tolower [file extension $fname]] in {.tcl .tm .msg {}}} {
+  if {[string tolower [file extension $fname]] in {.tcl .tm .msg}} {
     return yes
   }
   return no
@@ -322,6 +331,7 @@ proc file::MoveExternal {f1112} {
   DoMoveFile $fname $al(prjroot) $f1112
   return yes
 }
+
 proc file::MoveFile {wtree to itemID f1112} {
 
   set tree [alited::tree::GetTree]
@@ -334,14 +344,14 @@ proc file::MoveFile {wtree to itemID f1112} {
   set curdir [file dirname $curfile]
   set selfile [lindex [$wtree item $itemID -values] 1]
   set selparent [$wtree parent $itemID]
-  set dirname ""
-  set increment [expr {$to eq "up" ? -1 : 1}]
+  set dirname {}
+  set increment [expr {$to eq {up} ? -1 : 1}]
   for {set i $idx} {1} {incr i $increment} {
     lassign [lindex $tree $i 4] files fname isfile id
-    if {$fname eq ""} break
+    if {$fname eq {}} break
     if {$isfile} {
       set parent [$wtree parent $id]
-      if {$parent ne $selparent && $parent ne ""} {
+      if {$parent ne $selparent && $parent ne {} && [file dirname $fname] ne $curdir} {
         lassign [$wtree item $parent -values] files fname isfile id
         set dirname $fname
         break
@@ -360,6 +370,7 @@ proc file::MoveFile {wtree to itemID f1112} {
     }
   }
   DoMoveFile $curfile $dirname $f1112
+  alited::main::ShowHeader yes
 }
 
 proc file::RemoveFile {fname dname mode} {
@@ -402,8 +413,10 @@ proc file::DoMoveFile {fname dname f1112} {
     set geo "-geometry pointer+10+10"
   }
   set msg [string map [list %f $tailname %d $dname] $al(MC,movefile)]
-  if {![alited::msg yesno ques $msg $defb -title $al(MC,moving) {*}$geo]} {
-    return
+  if {![info exists al(_ANS_MOVE_)] || $al(_ANS_MOVE_)!=11} {
+    set al(_ANS_MOVE_) [alited::msg yesno ques $msg \
+      $defb -title $al(MC,moving) {*}$geo -ch "Don't ask again"]
+    if {!$al(_ANS_MOVE_)} return
   }
   RemoveFile $fname $dname move
 }
@@ -464,11 +477,15 @@ proc file::Delete {ID wtree} {
 
 proc file::InsertRecent {fname pos} {
   namespace upvar ::alited al al
-  if {[set i [lsearch $al(RECENTFILES) $fname]]>-1} {
-    set al(RECENTFILES) [lreplace $al(RECENTFILES) $i $i]
+  if {![IsNoName $fname]} {
+    if {[set i [lsearch $al(RECENTFILES) $fname]]>-1} {
+      set al(RECENTFILES) [lreplace $al(RECENTFILES) $i $i]
+    }
+    set al(RECENTFILES) [linsert $al(RECENTFILES) $pos $fname]
+    catch {
+      set al(RECENTFILES) [lreplace $al(RECENTFILES) $al(INI,RECENTFILES) end]
+    }
   }
-  set al(RECENTFILES) [linsert $al(RECENTFILES) $pos $fname]
-  set al(RECENTFILES) [lreplace $al(RECENTFILES) $al(INI,RECENTFILES) end]
 }
 
 proc file::AddRecent {fname} {

@@ -189,7 +189,7 @@ namespace eval ::alited {
   set al(MC,removed)     [msgcat::mc "\"%f\" removed to \"%d\""]
   set al(MC,filename)    [msgcat::mc "File name:"]
   set al(MC,directory)   [msgcat::mc "Directory"]
-  set al(MC,nottoopen)   [msgcat::mc "The file \"%f\"\nseems to be not of types\n%s.\n\nStill do you want to open it?"]
+  set al(MC,nottoopen)   [msgcat::mc "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?"]
 
 # checking ini directory
   set al(MC,chini1)      [msgcat::mc "Choosing Directory for Settings"]

@@ -235,7 +235,7 @@ namespace eval ::apave {
          return $w1
        }
      } else {
-       set _AP_VARS(MODALWIN) [lreplace $_AP_VARS(MODALWIN) $i $i]
+       catch {set _AP_VARS(MODALWIN) [lreplace $_AP_VARS(MODALWIN) $i $i]}
      }
    }
    return ""
@@ -2385,7 +2385,7 @@ oo::class create ::apave::APave {
         foreach v $vars {
           foreach t [trace info variable $v] {
             lassign $t o c
-            trace remove variable ::alited::pref::opcc $o $c
+            trace remove variable $v $o $c
           }
         }
         set ::apave::_AP_VARS($lst) [list]
