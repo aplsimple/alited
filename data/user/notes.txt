@@ -7,7 +7,7 @@ alited from v0.6 to v1.0:
   + for selected tabs: e_menu items (fossil.mnu, grep.mnu etc.)
   + general help in "Help" menu
   + move tree items by dnd
-  - e_menu items for toolbar/menu
+  + e_menu items for toolbar/menu
   - "backup to <dir>" option of project
   - all options of Preferences & Projects
   - fossil/git diff of a file
