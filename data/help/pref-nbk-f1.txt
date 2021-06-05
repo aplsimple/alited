@@ -4,7 +4,9 @@
  The negative values mean "darker", the positive
  values mean "lighter".
 
- E.g. you might try "African 1" and "Tint" -10.
+ E.g. you might try the themes and the tints:
+   "15: African1" and -10
+   "24: Dark" and 10
 
  The font sizes will touch the following widgets:
  - small font : lists, tabs, info and status bars

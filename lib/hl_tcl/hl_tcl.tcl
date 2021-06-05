@@ -6,7 +6,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide hl_tcl 0.9.3
+package provide hl_tcl 0.9.5
 
 # _______________ Common data of ::hl_tcl:: namespace ______________ #
 
@@ -69,6 +69,7 @@ namespace eval ::hl_tcl {
   set data(S_RIGHT) [list "\}" "\]"]
   # allowed edges of string (as one or both)
   set data(S_SPACE) [list "" " " "\t" ";"]
+  set data(S_SPACE2) [concat $data(S_SPACE) [list "\{"]]
   set data(S_BOTH) [concat $data(S_SPACE) [list "\"" "="]]
 
   set data(RE0) {(^|\[|\{|\}|;)+\s*([:_[:alpha:]])+}
@@ -197,7 +198,7 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
   # -options
   set dl -1
   while {[set dl [string first - $st [incr dl]]]>-1} {
-    if {[string index $st $dl-1] ni $data(S_SPACE)} continue
+    if {[string index $st $dl-1] ni $data(S_SPACE2)} continue
     if {[string index $st $dl+1] eq {-}} {
       incr dl ;# for --longoption
     }
@@ -994,7 +995,7 @@ proc ::hl_tcl::hl_text {txt} {
   $txt tag configure tagPROC -font "$font1" -foreground $clrPROC
   $txt tag configure tagOPT -font "$font0" -foreground $clrOPT
   $txt tag configure tagBRACKET -font "$font0" -foreground $clrBRA
-  $txt tag configure tagBRACKETERR -font "$font1" -foreground white -background red
+  $txt tag configure tagBRACKETERR -font "$font0" -foreground white -background red
   $txt tag configure tagCURLINE -background $clrCURL
   $txt tag raise sel
   $txt tag raise tagBRACKETERR

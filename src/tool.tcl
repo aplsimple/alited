@@ -133,9 +133,13 @@ proc tool::EM_Structure {mnu} {
   return $res
 }
 
-proc tool::EM_AllStructure {mnu lev} {
+proc tool::EM_HotKey {idx} {
+  set hk {0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,./}
+  return [string index $hk $idx]
+}
 
-  set hk "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,./"
+proc tool::EM_AllStructure1 {mnu lev} {
+
   foreach mit [EM_Structure $mnu] {
     incr i
     lassign $mit mnu item h
@@ -143,19 +147,25 @@ proc tool::EM_AllStructure {mnu lev} {
       if {[lsearch -exact -index end $alited::al(EM_STRUCTURE) $item]>-1} {
         continue ;# to avoid infinite cycle
       }
-      set lev [EM_AllStructure [string range $item 2 end] [incr lev]]
+      set lev [EM_AllStructure1 [string range $item 2 end] [incr lev]]
     } else {
-      lappend alited::al(EM_STRUCTURE) [list $lev $mnu $h[string index $hk $i] $item]
+      lappend alited::al(EM_STRUCTURE) [list $lev $mnu $h[EM_HotKey $i] $item]
     }
   }
   return [incr lev -1]
 }
 
+proc tool::EM_AllStructure {mnu} {
+
+  EM_AllStructure1 $mnu 0
+  return $alited::al(EM_STRUCTURE)
+}
+
 proc tool::EM_SaveFiles {} {
   namespace upvar ::alited al al
-  if {$al(EM,save) eq "All"} {
+  if {$al(EM,save) in {All yes}} {
     alited::file::SaveAll
-  } elseif {$al(EM,save) eq "Current"} {
+  } elseif {$al(EM,save) eq {Current}} {
     if {[alited::file::IsModified]} {
       alited::file::SaveFile
     }
@@ -164,7 +174,7 @@ proc tool::EM_SaveFiles {} {
 ## ________________________ run/close _________________________ ##
 
 proc tool::e_menu {args} {
-  if {"ex=Help" ni $args} EM_SaveFiles
+  if {{ex=Help} ni $args} EM_SaveFiles
   if {$alited::al(EM,exec)} {
     e_menu1 $args
   } else {
@@ -196,7 +206,7 @@ proc tool::_run {{what ""}} {
   if {[winfo exists .em] && [winfo ismapped .em]} {
     bell
   }
-  if {$what eq ""} {set what "1"} ;# 'Run me' e_menu item
+  if {$what eq {}} {set what 1} ;# 'Run me' e_menu item
   e_menu "ex=$what"
 }
 

@@ -23,6 +23,7 @@ proc keys::ReservedList {} {
     Control-X \
     Control-Z \
     Control-Shift-Z \
+    Control-Shift-F \
     Alt-Up \
     Alt-Down \
     Alt-Left \
@@ -80,6 +81,7 @@ proc keys::EngagedList {{type ""} {mode "keyscont"}} {
 proc keys::ReservedAdd {wtxt} {
   namespace upvar ::alited obPav obPav
   Add action "find-replace" Control-F {alited::find::_run; break}
+  Add action "find-unit"    Shift-Control-F {::alited::find::FindUnit; break}
   Add action "new-file"     Control-N {::alited::file::NewFile; break}
   Add action "open-file"    Control-O {::alited::file::OpenFile; break}
   Add action "save-all"     Shift-Control-S {::alited::file::SaveAll; break}

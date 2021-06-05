@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.4.3
+package provide bartabs 1.4.4
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -781,7 +781,7 @@ method OnButtonMotion {wb wb1 x y} {
     set movX [expr {[winfo pointerx .]-$x}]
     set movY0 [expr {[winfo pointery .]-$y}]
     label $movWin.label -text [$wb1 cget -text] -relief solid \
-      -foreground black -background #FBFB95  {*}[my Tab_Font $BID]
+      -foreground black -background #7eeeee  {*}[my Tab_Font $BID]
     pack $movWin.label -expand 1 -fill both -ipadx 1
     wm minsize $movWin [winfo reqwidth $movWin.label] [winfo reqheight $wb1]
     set againstLooseFocus "[self] $BID DestroyMoveWindow"

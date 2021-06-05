@@ -4,8 +4,10 @@
 # The list of alited's localized messages.
 # _______________________________________________________________________ #
 
+  # ________________________ alited _________________________ #
 namespace eval ::alited {
 
+  ## _ common _ ##
   set al(MC,nofile)      [msgcat::mc "No name"]
   set al(MC,about)       [msgcat::mc "About"]
   set al(MC,error)       [msgcat::mc "Error"]
@@ -85,7 +87,7 @@ namespace eval ::alited {
   set al(MC,Col:)        [msgcat::mc " Col: "]
   set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
 
-  # messages for templates
+  ## _ templates _ ##
   set al(MC,tpl)         [msgcat::mc "Templates"]
   set al(MC,tpl4)        [msgcat::mc "Current template:"]
   set al(MC,tpl5)        [msgcat::mc "New template:"]
@@ -113,7 +115,7 @@ namespace eval ::alited {
   set al(MC,tplttloc4)   [msgcat::mc "Inserts a template after 1st line of a file\n(License, Introduction etc.)"]
   set al(MC,tpldelq)     [msgcat::mc "Delete a template #%n ?"]
 
-  # messages for projects
+  ## _ projects _ ##
   set al(MC,projects)    [msgcat::mc "Projects"]
   set al(MC,prjgoing)    [msgcat::mc "You are going to %n!"]
   set al(MC,prjadd)      [msgcat::mc "Add a project"]
@@ -134,7 +136,7 @@ namespace eval ::alited {
   set al(MC,prjdelq)     [msgcat::mc "Delete a project \"%n\" ?"]
   set al(MC,prjexists)   [msgcat::mc "A project \"%n\" already exists."]
 
-  # messages for favorites
+  ## _ favorites _ ##
   set al(MC,fav3)        [msgcat::mc "Lists of favorites:"]
   set al(MC,fav4)        [msgcat::mc "Current list of favorites:"]
   set al(MC,fav5)        [msgcat::mc "New list of favorites:"]
@@ -159,7 +161,7 @@ namespace eval ::alited {
   set al(MC,favdelq)     [msgcat::mc "Delete a favorites' list #%n ?"]
   set al(MC,favinit)     [msgcat::mc "Back"]
 
-# find-replace dialogue
+  ## _ find-replace dialogue _ ##
   set al(MC,frfind)  [msgcat::mc "Find: "]
   set al(MC,frrepl)  [msgcat::mc "Replace: "]
   set al(MC,frmatch) [msgcat::mc "Match: "]
@@ -191,7 +193,7 @@ namespace eval ::alited {
   set al(MC,directory)   [msgcat::mc "Directory"]
   set al(MC,nottoopen)   [msgcat::mc "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?"]
 
-# checking ini directory
+ ## _ checking ini directory _ ##
   set al(MC,chini1)      [msgcat::mc "Choosing Directory for Settings"]
   set al(MC,chini2)      [msgcat::mc "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n"]
   set al(MC,chini3)      [msgcat::mc "Choose a directory"]
@@ -204,7 +206,7 @@ namespace eval ::alited {
   set al(makeroot)       [msgcat::mc "Directory \"%d\"\ndoesn't exist.\n\nCreate it?"]
 
 
-# icons of toolbar
+  ## _ icons of toolbar _ ##
   set al(MC,icofile)     [msgcat::mc "Create a file\nCtrl+N"]
   set al(MC,icoOpenFile) [msgcat::mc "Open a file\nCtrl+O"]
   set al(MC,icoSaveFile) [msgcat::mc "Save the file\nF2"]
@@ -213,13 +215,19 @@ namespace eval ::alited {
   set al(MC,icoreplace)  [msgcat::mc "Find / Replace\nCtrl+F"]
   set al(MC,icook)       $al(MC,checktcl)
   set al(MC,icocolor)    $al(MC,colorpicker)
-  set al(MC,icoother)    [msgcat::mc tkcon]
+  set al(MC,icoother)    tkcon
   set al(MC,icorun)      [msgcat::mc "Run the file\nF5"]
   set al(MC,icoe_menu)   [msgcat::mc "Run e_menu\nF4"]
   set al(MC,icoundo)     [msgcat::mc "Undo changes\nCtrl+Z"]
   set al(MC,icoredo)     [msgcat::mc "Redo changes\nCtrl+Shift+Z"]
   set al(MC,icobox)      [msgcat::mc "Projects"]
 
+  ## _ find units _ ##
+  set al(MC,findunit)    [msgcat::mc "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored."]
+
+# ________________________ end of alited _________________________ #
+
 }
+
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl DEBUG

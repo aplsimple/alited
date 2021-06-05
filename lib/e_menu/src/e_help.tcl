@@ -55,8 +55,8 @@ proc ::eh::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {
 }
 #=== get terminal's name
 proc ::eh::get_tty {inconsole} {
-  if {$inconsole ne ""} {set tty $inconsole} \
-  elseif {[::iswindows]} {set tty "cmd.exe /K"} \
+  if {[::iswindows]} {set tty "cmd.exe /K"} \
+  elseif {$inconsole ne ""} {set tty $inconsole} \
   elseif {[auto_execok lxterminal] ne ""} {set tty lxterminal} \
   else {set tty xterm}
   return $tty
@@ -122,22 +122,10 @@ proc ::eh::center_window {win {ornament 1} {winwidth 0} {winheight 0}} {
   update
 }
 #=== check and correct (if necessary) the geometry of window
-proc ::eh::checkgeometry {} {
-  set scrw [expr [winfo screenwidth .] - 12]
-  set scrh [expr {[winfo screenheight .] - 36}]
-  lassign [split [wm geometry .] x+] w h x y
-  set necessary 0
-  if {($x + $w) > $scrw } {
-    set x [expr {$scrw - $w}]
-    set necessary 1
-  }
-  if {($y + $h) > $scrh } {
-    set y [expr {$scrh - $h}]
-    set necessary 1
-  }
-  if {$necessary} {
-    wm geometry . ${w}x${h}+${x}+${y}
-  }
+proc ::eh::checkgeometry {{win .}} {
+  lassign [split [winfo geometry $win] x+] w h x y
+  set newgeo [::apave::obj checkXY $w $h $x $y]
+  if {$newgeo ne "+$x+$y"} {wm geometry $win $newgeo}
 }
 #=== off ctrl/alt modificators of keystrokes
 proc ::eh::ctrl_alt_off {cmd} {

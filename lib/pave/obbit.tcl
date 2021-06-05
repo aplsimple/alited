@@ -14,6 +14,8 @@ package require Tk
 namespace eval ::apave {
 
   # variables global to apave objects:
+  set ::apave::FGMAIN #000000
+  set ::apave::BGMAIN #d9d9d9
 
   # - common options/constants of apave utils
   variable _PU_opts;       array set _PU_opts [list -NONE =NONE=]
@@ -808,6 +810,7 @@ oo::class create ::apave::ObjectTheming {
       my basicFontSize 10 ;# initialize main font size
       my basicTextFont $::apave::_CS_(textFont) ;# initialize main font for text
       my ColorScheme  ;# initialize default colors
+      my untouchWidgets *_untouch_*
       set ::apave::_CS_(initall) 0
     }
     return
@@ -1152,6 +1155,8 @@ oo::class create ::apave::ObjectTheming {
       my UpdateColors
       my initTooltip
     }
+    set ::apave::FGMAIN $fg
+    set ::apave::BGMAIN $bg
     return [list $fg $bg $fE $bE $fS $bS $hh $grey $cc $ht $tfgI $tbgI $fM $bM $tfgW $tbgW $tHL2 $res3 $res4 $res5 $res6 $res7]
   }
 

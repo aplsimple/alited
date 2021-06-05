@@ -312,7 +312,7 @@ proc tree::ButtonMotion {but x y X Y} {
       wm overrideredirect $al(movWin) 1
     }
     label $al(movWin).label -text [$wtree item $al(movID) -text] -relief solid \
-      -foreground black -background #ff95ff
+      -foreground black -background #7eeeee
     pack $al(movWin).label -expand 1 -fill both -ipadx 1
   }
   set ID [$wtree identify item $x $y]

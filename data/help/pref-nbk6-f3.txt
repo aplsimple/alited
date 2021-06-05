@@ -1,0 +1,20 @@
+ You can add new items to the toolbar and "Tools" menu.
+
+ The items' lines contain the following:
+
+   [+] and [x] buttons to insert or delete a line
+
+   "separator" checkbox for a separator of toolbar/menu
+
+   "icons" list to set an icon of command
+
+   "button" to select e_menu's command
+
+ If you want an item be present in the toolbar, select
+ an icon for it. If the item should be in the "Tools"
+ menu only, leave the icon blank or select "none" icon.
+
+ Press a right button to select a command of e_menu.
+
+ While selecting a command from e_menu, use Escape key
+ or popup menu's Exit to cancel the selection.

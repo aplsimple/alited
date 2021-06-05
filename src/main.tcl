@@ -4,7 +4,9 @@
 # The main form of alited.
 # _______________________________________________________________________ #
 
-namespace eval main {}
+namespace eval main {
+  variable findunits 1
+}
 
 proc main::GetText {TID {doshow no}} {
   namespace upvar ::alited al al obPav obPav
@@ -17,7 +19,7 @@ proc main::GetText {TID {doshow no}} {
   if {$TIDold eq "-1"} {
     ;# first text to edit in original Text widget: create its scrollbar
     BindsForText $TID $wtxt
-  } elseif {[alited::bar::GetTabState $TID --wtxt] ne ""} {
+  } elseif {[GetWTXT $TID] ne {}} {
     # edited text: get its widgets' data
     lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
     set doinit [expr {[alited::bar::BAR $TID cget --reload] ne ""}]
@@ -199,6 +201,7 @@ proc main::BindsForText {TID wtxt} {
   bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
   bind $wtxt <Control-Shift-ButtonRelease-1> "::alited::find::SearchWordInSession ; break"
   bind $wtxt <Control-Tab> "::alited::bar::ControlTab ; break"
+  bind $wtxt <Control-Insert> "::alited::main::InsertLine ; break"
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action
   alited::keys::BindKeys $wtxt template
@@ -207,6 +210,10 @@ proc main::BindsForText {TID wtxt} {
 
 proc main::CurrentWTXT {} {
   return [lindex [alited::bar::GetBarState] 2]
+}
+
+proc main::GetWTXT {TID} {
+  return [alited::bar::GetTabState $TID --wtxt]
 }
 
 proc main::ShowHeader {{doit no}} {
@@ -228,6 +235,22 @@ proc main::CursorPos {wtxt args} {
   lassign [split [$wtxt index insert] .] r c
   [$obPav Labstat1] configure -text "$r / [expr {int([lindex $args 0])}]"
   [$obPav Labstat2] configure -text [incr c]
+}
+
+proc main::InsertLine {} {
+  set wtxt [CurrentWTXT]
+  set ln [expr {int([$wtxt index insert])}]
+  if {$ln==1} {
+    $wtxt insert $ln.0 \n
+    set pos 1.0
+  } else {
+    set ln0 [expr {$ln-1}]
+    set line [$wtxt get $ln0.0 $ln0.end]
+    set leadsp [::apave::obj leadingSpaces $line]
+    $wtxt insert $ln.0 "[string repeat { } $leadsp]\n"
+    set pos $ln.$leadsp
+  }
+  ::tk::TextSetCursor $wtxt $pos
 }
 
 proc main::GotoLine {} {
@@ -277,7 +300,6 @@ proc main::UpdateProjectInfo {} {
 proc main::_create {} {
 
   namespace upvar ::alited al al obPav obPav
-
   lassign [$obPav csGet] - - ::alited::FRABG - - - - - bclr
   ttk::style configure TreeNoHL {*}[ttk::style configure Treeview] -borderwidth 0
   ttk::style map TreeNoHL {*}[ttk::style map Treeview] \
@@ -285,7 +307,7 @@ proc main::_create {} {
     -lightcolor [list focus $::alited::FRABG active $::alited::FRABG] \
     -darkcolor [list focus $::alited::FRABG active $::alited::FRABG]
   ttk::style layout    TreeNoHL [ttk::style layout Treeview]
-  $obPav untouchWidgets *.frAText *.fraBot.fra.lbxInfo
+  $obPav untouchWidgets *.frAText *.fraBot.fra.lbxInfo *.entFind
   # make the main apave object and populate it
   $obPav makeWindow $al(WIN).fra alited
   $obPav paveWindow $al(WIN).fra {
@@ -340,20 +362,20 @@ proc main::_create {} {
     {.fraTop - - - - {add}}
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
     {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3} {alited::bar::FillBar %w}}
-    {#TODO
-to hide the header 'FraHead', use:
-pack forget [$obPav FraHead]
-to show, use:
-pack [$obPav FraHead] -side top -fill x -after [$obPav BtsBar]
-    }
-    {.fraTop.panTop.FraHead  - - - - {pack forget -fill x}}
-    {.fraTop.panTop.fraHead.BuTtmp - - - - {pack -side left} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_folder -command {alited::tree::SwitchTree}}}
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both} {}}
     {.fraTop.panTop.CanDiff - - - - {pack -side left -expand 0 -fill y} {-w 4}}
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both} {-background $::alited::FRABG}}
     {.fraTop.panTop.frAText.Text - - - - {pack forget -side left -expand 1 -fill both} {-borderwidth 0 -w 2 -h 20 -gutter GutText -gutterwidth 5 -guttershift 4 $alited::al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
     {.fraTop.panTop.fraSbv.SbvText .fraTop.panTop.frAText.text L - - {pack -fill y}}
+    {.fraTop.FraHead  - - - - {pack forget -side bottom -fill x} {-padding {4 4 4 4} -relief groove}}
+    {.fraTop.fraHead.labFind - - - - {pack -side left} {-t "    Unit: "}}
+    {.fraTop.fraHead.EntFindSTD - - - - {pack -side left} {-tvar alited::al(findunit) -w 30 -tip {$al(MC,findunit)}}}
+    {.fraTop.fraHead.buT - - - - {pack -side left -padx 4} {-t Find: -relief flat -com alited::find::DoFindUnit -takefocus 0 -bd 0 -highlightthickness 0}}
+    {.fraTop.fraHead.rad1 - - - - {pack -side left} {-takefocus 0 -var alited::main::findunits -t {in all} -value 1}}
+    {.fraTop.fraHead.rad2 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in current} -value 2}}
+    {.fraTop.fraHead.h_ - - - - {pack -side left -fill x -expand 1}}
+    {.fraTop.fraHead.buTno - - - - {pack -side left} {-relief flat -highlightthickness 0 -takefocus 0 -command {alited::find::HideFindUnit}}}
     {.fraBot - - - - {add}}
     {.fraBot.fra - - - - {pack -fill both -expand 1}}
     {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1} {-h 1 -w 40 -lvar ::alited::info::list -font $alited::al(FONT,defsmall) -takefocus 0}}

@@ -83,6 +83,7 @@ proc ini::ReadIni {{projectfile ""}} {
   set al(KEYS,bind) [list]
   set al(FAV,current) [list]
   set al(FAV,visited) [list]
+  set em_i 0
   lassign "" ::alited::Pan_wh ::alited::PanL_wh ::alited::PanR_wh \
     ::alited::PanBM_wh ::alited::PanTop_wh ::alited::al(GEOM)
   catch {
@@ -106,7 +107,7 @@ proc ini::ReadIni {{projectfile ""}} {
         {[Options]}   {ReadIniOptions $nam $val}
         {[Templates]} {ReadIniTemplates $nam $val}
         {[Keys]}      {ReadIniKeys $nam $val}
-        {[EM]}        {ReadIniEM $nam $val}
+        {[EM]}        {ReadIniEM $nam $val em_i}
         {[Misc]}      {ReadIniMisc $nam $val}
       }
     }
@@ -199,9 +200,12 @@ proc ini::ReadIniKeys {nam val} {
   }
 }
 
-proc ini::ReadIniEM {nam val} {
+proc ini::ReadIniEM {nam val emiName} {
   # Gets e_menu options of alited.
   namespace upvar ::alited al al
+  namespace upvar ::alited::pref em_Num em_Num \
+    em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
+  upvar $emiName em_i
   switch -exact $nam {
     emgeometry {set al(EM,geometry) $val}
     emsave     {set al(EM,save) $val}
@@ -212,6 +216,13 @@ proc ini::ReadIniEM {nam val} {
     emmenudir  {set al(EM,menudir) $val}
     emcs       {set al(EM,CS) $val}
     emexec     {set al(EM,exec) $val}
+    em_run {
+      if {$em_i < $em_Num} {
+        lassign [split $val \t] em_sep($em_i) em_ico($em_i) em_inf($em_i)
+        set em_mnu($em_i) [lindex $em_inf($em_i) end]
+      }
+      incr em_i
+    }
   }
 }
 
@@ -332,6 +343,7 @@ proc ini::SaveCurrentIni {{saveon yes} {doit no}} {
 proc ini::SaveIni {{newproject no}} {
 
   namespace upvar ::alited al al obPav obPav
+  namespace upvar ::alited::pref em_Num em_Num em_sep em_sep em_ico em_ico em_inf em_inf
   namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo OPTS OPTS
   puts "alited storing: $al(INI)"
 #  catch {file mkdir [file dirname $al(INI)]}
@@ -372,6 +384,13 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "emcs=$al(EM,CS)"
   puts $chan "emgeometry=$al(EM,geometry)"
   puts $chan "emexec=$al(EM,exec)"
+  for {set i 0} {$i<$em_Num} {incr i} {
+    if {[info exists em_sep($i)]} {
+      set em_run $em_sep($i)
+      append em_run \t $em_ico($i) \t $em_inf($i)
+      puts $chan "em_run=$em_run"
+    }
+  }
   # save the geometry options
   puts $chan ""
   puts $chan {[Geometry]}
@@ -526,6 +545,12 @@ proc ini::CreateUserDirs {} {
   }
 }
 
+proc ini::CreateIcon {icon} {
+  set img alimg_$icon
+  catch {image create photo $img-big -data [::apave::iconData $icon]}
+  catch {image create photo $img -data [::apave::iconData $icon small]}
+  return $img
+}
 # ________________________ Main (+ bar) _________________________ #
 
 proc ini::InitGUI {} {
@@ -541,6 +566,8 @@ proc ini::_init {} {
 
   namespace upvar ::alited al al \
     obPav obPav obDlg obDlg obDl2 obDl2 obDl3 obDl3 obFND obFND
+  namespace upvar ::alited::pref em_Num em_Num \
+    em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
   ::apave::initWM
   ::apave::iconImage -init $al(INI,ICONS)
@@ -565,12 +592,12 @@ proc ini::_init {} {
   ::apave::APaveInput create $obFND $al(WIN)
 
   # here, the order of icons defines their order in the toolbar
-  foreach {icon} {gulls heart add change delete up down plus minus \
+  set listIcons [::apave::iconImage]
+  # the below icons' order defines their order in the toolbar
+  foreach {icon} {none gulls heart add change delete up down plus minus \
   retry misc previous next folder file OpenFile box SaveFile saveall \
-  undo redo help replace run e_menu other ok color} {
-    set img alimg_$icon
-    catch {image create photo $img-big -data [::apave::iconData $icon]}
-    catch {image create photo $img -data [::apave::iconData $icon small]}
+  undo redo help replace ok color run other e_menu} {
+    set img [CreateIcon $icon]
     if {$icon in {"file" OpenFile box SaveFile saveall help ok color other \
     replace e_menu run undo redo}} {
       append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4} "
@@ -600,24 +627,46 @@ proc ini::_init {} {
           append al(atools) "-com alited::tool::Help\}"
         }
         replace {
-          append al(atools) "-com alited::find::_run\} h_ 2 sev 4"
-        }
-        run {
-          append al(atools) "-com alited::tool::_run\}"
-        }
-        e_menu {
-          image create photo $img-big -data $alited::img::_AL_IMG(e_menu)
-          append al(atools) "-com alited::tool::e_menu\}"
-        }
-        other {
-          append al(atools) "-command alited::tool::tkcon\} h_ 2 sev 4"
+          append al(atools) "-com alited::find::_run\}"
         }
         ok {
           append al(atools) "-com alited::check::_run\}"
         }
         color {
-          append al(atools) "-command alited::tool::ColorPicker\}"
+          append al(atools) "-command alited::tool::ColorPicker\} h_ 2 sev 4"
         }
+        run {
+          append al(atools) "-com alited::tool::_run\}"
+        }
+        other {
+          append al(atools) "-command alited::tool::tkcon\}"
+        }
+        e_menu {
+          image create photo $img-big -data $alited::img::_AL_IMG(e_menu)
+          append al(atools) "-com alited::tool::e_menu\}"
+        }
+      }
+    }
+  }
+  for {set i [set was 0]} {$i<$em_Num} {incr i} {
+    if {[info exists em_ico($i)] && ($em_ico($i) ni {none {}} || $em_sep($i))} {
+      if {[incr was]==1 && !$em_sep($i)} {
+        append al(atools) " h_ 2 sev 4"
+      }
+      if {$em_sep($i)} {
+        append al(atools) " h_ 2 sev 4"
+      } else {
+        if {[string length $em_ico($i)]==1} {
+          set img _$em_ico($i)
+          set txt "-t $em_ico($i)"
+        } else {
+          set img [CreateIcon $em_ico($i)]-big
+          set txt {}
+        }
+        append al(atools) " $img \{{} -tip {$em_mnu($i)@@ -under 4} $txt "
+        lassign $em_inf($i) mnu idx
+        set ex "ex=[alited::tool::EM_HotKey $idx]"
+        append al(atools) "-com {alited::tool::e_menu \"m=$mnu\" $ex}\}"
       }
     }
   }

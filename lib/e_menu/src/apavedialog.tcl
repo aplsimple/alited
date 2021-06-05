@@ -826,7 +826,7 @@ oo::class create ::apave::APaveDialog {
     set focusback [focus]
     set focusmatch ""
     # options of dialog
-    lassign "" chmsg geometry optsLabel optsMisc optsFont optsFontM root ontop \
+    lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM root ontop \
                rotext head optsHead hsz binds postcom onclose timeout
     set modal yes
     set tags ""
@@ -922,9 +922,10 @@ oo::class create ::apave::APaveDialog {
       set optsFont "-font \{-size $fs\}"
       set optsFontM "-size $fs"
     }
-    set msgonly [expr {$readonly || $hidefind || $chmsg ne ""}]
+    set msgonly [expr {$readonly || $hidefind || $chmsg ne {}}]
     if {!$textmode || $msgonly} {
       set textfont "-family {[my basicDefFont]}"
+      set msg [string map [list \\ \\\\ \{ \\\\\{ \} \\\\\}] $msg]
     }
     set optsFontM [string trim $optsFontM]
     set optsFontM "-font \{$optsFontM $textfont\}"

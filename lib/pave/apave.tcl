@@ -561,7 +561,7 @@ oo::class create ::apave::APave {
 
   #########################################################################
 
-  method CheckXY {w h x y} {
+  method checkXY {w h x y} {
     # Checks the coordinates of window (against the screen).
     #   w - width of window
     #   h - height of window
@@ -596,7 +596,7 @@ oo::class create ::apave::APave {
 
     set x [expr {max(0, $rx + ($rw - $w) / 2)}]
     set y [expr {max(0,$ry + ($rh - $h) / 2)}]
-    return [my CheckXY $w $h $x $y]
+    return [my checkXY $w $h $x $y]
   }
 
   #########################################################################
@@ -764,6 +764,7 @@ oo::class create ::apave::APave {
       } else {
         set retval {}
         foreach ln [split [::apave::readTextFile $fname "" 1] \n] {
+          set ln [string map [list \\ \\\\ \{ \\\{ \} \\\}] $ln]
           if {$ln ne {}} {lappend retval $ln}
         }
       }
@@ -1319,7 +1320,11 @@ oo::class create ::apave::APave {
       set it [my optionCascadeText $it]
       set $vname $it
     }
+    lassign [::apave::extractOptions mbopts -tip {}] tip
     ttk::menubutton $w -menu $w.m -text [set $vname] {*}$mbopts
+    if {$tip ne {}} {
+      catch {::baltip tip $w $tip}
+    }
     menu $w.m -tearoff 0
     my OptionCascade_add $w.m $vname $items $precom {*}$args
     trace var $vname w \
@@ -1341,17 +1346,18 @@ oo::class create ::apave::APave {
 
     set n [set colbreak 0]
     foreach arg $argl {
-      if {$arg eq "--"} {
+      if {$arg eq {--}} {
         $w add separator
-      } elseif {$arg eq "|"} {
-        if {[tk windowingsystem] ne "aqua"} { set colbreak 1 }
+      } elseif {$arg eq {|}} {
+        if {[tk windowingsystem] ne {aqua}} { set colbreak 1 }
         continue
       } elseif {[llength $arg] == 1} {
         set label [my optionCascadeText [join $arg]]
-        if {$precom eq ""} {
-          set adds ""
+        if {$precom eq {}} {
+          set adds {}
         } else {
-          set adds [eval {*}[string map [list %a $label] $precom]]
+          set adds [eval {*}[string map [list \$ \\\$ \[ \\\[] \
+            [string map [list %a $label] $precom]]]
         }
         $w add radiobutton -label $label -variable $vname {*}$args {*}$adds
       } else {
@@ -1956,7 +1962,15 @@ oo::class create ::apave::APave {
             } else {
               set but BuT
             }
-            set v2 "-image $v1 -command $v2 -relief flat -highlightthickness 0 -takefocus 0"
+            if {[string match _* $v1]} {
+              set font [my boldTextFont 16]
+              lassign [my csGet] - fg - bg
+              set img "-font {$font} -foreground $fg -background $bg"
+              set v1 _untouch_$v1
+            } else {
+              set img "-image $v1"
+            }
+            set v2 "$img -command $v2 -relief flat -highlightthickness 0 -takefocus 0"
             set v1 [my Transname $but _$v1]
           }
         }
@@ -3234,7 +3248,7 @@ oo::class create ::apave::APave {
     } else {
       lassign [lrange [split $inpgeom +] end-1 end] x y
       if {$x ne "" && $y ne "" && [string first x $inpgeom]<0} {
-        set inpgeom [my CheckXY $w $h $x $y]
+        set inpgeom [my checkXY $w $h $x $y]
       }
       wm geometry $win $inpgeom
     }

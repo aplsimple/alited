@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.7.7
+package provide alited 0.8.0.2
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -73,7 +73,7 @@ namespace eval alited {
 
   variable tcltk_version "Tcl/Tk [package versions Tk]"
 
-  variable SCRIPT [info script]
+  variable SCRIPT [file normalize [info script]]
   variable DIR [file normalize [file join [file dirname $SCRIPT] ..]]
 
   # directories of sources

@@ -143,6 +143,7 @@ proc file::OpenOfDir {dname} {
         OpenFile $fname
       }
     }
+    after idle alited::file::RecreateFileTree ;# to update "colored" open files
   }
 }
 
@@ -155,7 +156,7 @@ proc file::IsTcl {fname} {
 
 proc file::SaveFileByName {TID fname} {
   # Saves the current file.
-  set wtxt [alited::bar::GetTabState $TID --wtxt]
+  set wtxt [alited::main::GetWTXT $TID]
   set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
   if {![::apave::writeTextFile $fname fcont]} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1

@@ -1,364 +1,386 @@
+# ________________________ alited NS _________________________ #
 namespace eval ::alited {
+
+  ## ________________________ Common _________________________ ##
+
   ::msgcat::mcmset ru {
-    "No name" "Без имени"
-    "Saving" "Сохранение"
-    "\"%f\" wasn't saved.\n\nSave it?" "\"%f\" не сохранен.\n\nСохранить?"
-    "About" "О программе"
-    "About..." "О программе..."
-    "Error" "Ошибка"
-    "Warning" "Предупреждение"
-    "Question" "Вопрос"
-    "Information" "Информация"
-    "File" "Файл"
-    "Edit" "Правка"
-    "Tools" "Инструменты"
-    "Setup" "Опции"
-    "Help" "Справка"
-    "Yes" "Да"
-    "No" "Нет"
-    "Cancel" "Отмена"
-    "Close" "Закрыть"
-    "New" "Новый"
-    "Open..." "Открыть..."
-    "Recent Files" "Недавние файлы"
-    "Save" "Сохранить"
-    "Save as..." "Сохранить как..."
-    "Save All" "Сохранить все"
-    "... All" "... все"
-    "... All at Left" "... все слева"
-    "... All at Right" "... все справа"
-    "Preferences" "Настройки"
-    "Preferences..." "Настройки..."
-    "Restart" "Перезапуск"
-    "Quit" "Выход"
-    "Indent" "Добавить отступ"
-    "Unindent" "Убрать отступ"
-    "Comment" "Закомментировать"
-    "Comment" "Закомментировать"
-    "Uncomment" "Раскомментировать"
-    "Find Next" "Искать дальше"
-    "Look for Declaration" "Искать объявление"
-    "Look for Word" "Искать слово"
-    "Run" "Запуск"
-    "Moving" "Перемещение"
-    "Help of alited" "Справка alited"
-    "Color Picker" "Выбор цвета"
-    "tkcon" "Консоль tkcon"
-    "Screen Loupe" "Экранная лупа"
-    "Confirmations" "Подтверждения"
-    "Confirm exit:" "Подтверждать выход:"
-    "Quit alited?" "Выйти из alited?"
-    "Don't ask again" "Больше не спрашивать"
+    {No name} {Без имени}
+    {Saving} {Сохранение}
+    {\"%f\" wasn't saved.\n\nSave it?} {\"%f\" не сохранен.\n\nСохранить?}
+    {About} {О программе}
+    {About...} {О программе...}
+    {Error} {Ошибка}
+    {Warning} {Предупреждение}
+    {Question} {Вопрос}
+    {Information} {Информация}
+    {File} {Файл}
+    {Edit} {Правка}
+    {Tools} {Инструменты}
+    {Setup} {Опции}
+    {Help} {Справка}
+    {Yes} {Да}
+    {No} {Нет}
+    {Cancel} {Отмена}
+    {Close} {Закрыть}
+    {New} {Новый}
+    {Open...} {Открыть...}
+    {Recent Files} {Недавние файлы}
+    {Save} {Сохранить}
+    {Save as...} {Сохранить как...}
+    {Save All} {Сохранить все}
+    {... All} {... все}
+    {... All at Left} {... все слева}
+    {... All at Right} {... все справа}
+    {Preferences} {Настройки}
+    {Preferences...} {Настройки...}
+    {Restart} {Перезапуск}
+    {Quit} {Выход}
+    {Add Line} {Добавить строку}
+    {Indent} {Добавить отступ}
+    {Unindent} {Убрать отступ}
+    {Comment} {Закомментировать}
+    {Comment} {Закомментировать}
+    {Uncomment} {Раскомментировать}
+    {Find Next} {Искать дальше}
+    {Look for Declaration} {Искать объявление}
+    {Look for Word} {Искать слово}
+    {Run} {Запуск}
+    {Moving} {Перемещение}
+    {Help of alited} {Справка alited}
+    {Color Picker} {Выбор цвета}
+    {Screen Loupe} {Экранная лупа}
+    {Confirmations} {Подтверждения}
+    {Confirm exit:} {Подтверждать выход:}
+    {Quit alited?} {Выйти из alited?}
+    {Don't ask again} {Больше не спрашивать}
+    {Wait a little ...} {Ожидайте ...}
   }
 
   ::msgcat::mcmset ru {
-    "Select" "Выбор"
-    "Saving" "Сохранение"
-    "\"%f\" wasn't saved.\n\nSave it?" "\"%f\" не сохранен.\n\nСохранить?"
-    "Save as" "Сохранить как"
-    "Files" "Файлы"
-    "Line" "№ ст."
-    "Lines" "Строки"
-    "All of \"%f\"" "Всё из \"%f\""
-    "Not recommended!" "Не рекомендуется!"
-    "Move Unit Up" "Поднять блок"
-    "Move Unit Down" "Опустить блок"
-    "Move File Up" "Переместить файл вверх"
-    "Move File Down" "Переместить файл вниз"
-    "Only files are moved by alited." "Только файлы перемещает alited."
-    "Lists of Favorites" "Списки избранного"
-    "Last Visited" "Последние посещения"
-    "Switch to Unit Tree" "Перейти на список блоков"
-    "Switch to File Tree" "Перейти на список файлов"
-    "Create File" "Создать файл"
-    "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Введите имя файла, создаваемого в:\n%d\n\nЕсли это каталог, включите опцию \"Каталог\".\nКаталог может включать подкаталоги (a/b/c)."
-    "Delete File" "Удалить файл"
-    "File %f already exists in\n%d" "Файл %f уже существует в\n%d"
-    "Add Unit by Template" "Добавить блок по шаблону"
-    "Remove Unit(s)" "Удалить блок(и)"
-    "Add to Favorites" "Добавить в Избранное"
-    "Remove from Favorites" "Удалить из Избранного"
-    "No item selected." "Запись не выбрана."
-    "Update Tree" "Обновить список"
-    "Contract All" "Свернуть всё"
-    "Expand All" "Развернуть всё"
-    "Move %f\nto\n%d\n?" "Переместить %f\nв\n%d\n?"
-    "Go to Line" "Перейти на строку"
-    "Line number:" "Номер строки:"
-    "\"%n\" contains unbalanced \{\}: %1!=%2" "\"%n\" имеет несогласованные \{\}: %1!=%2"
+    {Select} {Выбор}
+    {Saving} {Сохранение}
+    {\"%f\" wasn't saved.\n\nSave it?} {\"%f\" не сохранен.\n\nСохранить?}
+    {Save as} {Сохранить как}
+    {Files} {Файлы}
+    {Line} {№ ст.}
+    {Lines} {Строки}
+    {All of \"%f\"} {Всё из \"%f\"}
+    {Not recommended!} {Не рекомендуется!}
+    {Move Unit Up} {Поднять блок}
+    {Move Unit Down} {Опустить блок}
+    {Move File Up} {Переместить файл вверх}
+    {Move File Down} {Переместить файл вниз}
+    {Only files are moved by alited.} {Только файлы перемещает alited.}
+    {Lists of Favorites} {Списки избранного}
+    {Last Visited} {Последние посещения}
+    {Switch to Unit Tree} {Перейти на список блоков}
+    {Switch to File Tree} {Перейти на список файлов}
+    {Create File} {Создать файл}
+    {Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c).} {Введите имя файла, создаваемого в:\n%d\n\nЕсли это каталог, включите опцию \"Каталог\".\nКаталог может включать подкаталоги (a/b/c).}
+    {Delete File} {Удалить файл}
+    {File %f already exists in\n%d} {Файл %f уже существует в\n%d}
+    {Add Unit by Template} {Добавить блок по шаблону}
+    {Remove Unit(s)} {Удалить блок(и)}
+    {Add to Favorites} {Добавить в Избранное}
+    {Remove from Favorites} {Удалить из Избранного}
+    {No item selected.} {Запись не выбрана.}
+    {Update Tree} {Обновить список}
+    {Contract All} {Свернуть всё}
+    {Expand All} {Развернуть всё}
+    {Move %f\nto\n%d\n?} {Переместить %f\nв\n%d\n?}
+    {Go to Line} {Перейти на строку}
+    {Line number:} {Номер строки:}
+    {\"%n\" contains unbalanced {}: %1!=%2} {\"%n\" имеет несогласованные {}: %1!=%2}
+    {Back} {Откат}
   }
 
-  # when trying to move a first unit up
+  ## _ Moving a first unit up _ ##
   ::msgcat::mcmset ru {
-    "First Lines" "Первые строки"
-    "Can't touch the first %n lines." "Первые %n строк неподвижны."
+    {First Lines} {Первые строки}
+    {Can't touch the first %n lines.} {Первые %n строк неподвижны.}
   }
 
+  ## _ Tree _ ##
   ::msgcat::mcmset ru {
-    "Favorites" "Избранное"
-    "Add \"%n\" of %f\nto the favorites?" "Добавить \"%n\" файла %f\nв Избранное?"
-    "Item \"%n\" of %f\nis already in the favorites." "Блок \"%n\" из %f\nуже есть в Избранном."
-    "Remove \"%n\" of %f\nfrom the favorites?" "Удалить \"%n\" файла %f\nиз Избранного?"
-    "Click \"%t\"" "Кликните \"%t\""
-    "Copy Declaration" "Копировать объявление"
-    "Open all Tcl files of \"%n\"" "Открыть все файлы Tcl из \"%n\""
-    "Remove \"%n\"\nfrom \"%f\"?" "Удалить \"%n\"\nиз \"%f\"?"
-    "Delete \"%f\"?" "Удалить \"%f\"?"
-    "An open file can not be deleted." "Невозможно удалить открытый файл."
-    "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" был изменен другим приложением.\n\nОтменить вашу редакцию и перезагрузить файл?"
-    "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" был удален другим приложением.\n\nСохранить файл?"
-    "Wait a little ..." "Ожидайте ..."
+    {Click \"%t\"} {Кликните \"%t\"}
+    {Copy Declaration} {Копировать объявление}
+    {Open all Tcl files of \"%n\"} {Открыть все файлы Tcl из \"%n\"}
+    {Remove \"%n\"\nfrom \"%f\"?} {Удалить \"%n\"\nиз \"%f\"?}
+    {Delete \"%f\"?} {Удалить \"%f\"?}
+    {An open file can not be deleted.} {Невозможно удалить открытый файл.}
+    {File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?} {Файл \"%f\" был изменен другим приложением.\n\nОтменить вашу редакцию и перезагрузить файл?}
+    {File \"%f\" was deleted by some application.\n\nSave the file?} {Файл \"%f\" был удален другим приложением.\n\nСохранить файл?}
   }
 
-  # messages for templates
+  ## _ Templates _ ##
   ::msgcat::mcmset ru {
-    "Template" "Шаблон"
-    "Templates" "Шаблоны"
-    "Current template:" "Текущий шаблон:"
-    "New template:" "Новый шаблон:"
-    "Hot keys" "Клавиши"
-    "Add a template" "Добавить шаблон"
-    "Change a template" "Изменить шаблон"
-    "Delete a template" "Удалить шаблон"
-    "Click a template" "Выберите какой-нибудь шаблон"
-    "The template #%n added" "Шаблон #%n добавлен"
-    "The template #%n updated" "Шаблон #%n изменен"
-    "The template #%n removed" "Шаблон #%n удален"
-    "Enter a name of the template" "Введите название шаблона"
-    "Enter a text of the template" "Введите текст шаблона"
-    "Choose a hot key combination\nfor the template insertion." "Выберите комбинацию клавиш\nдля вставки шаблона."
-    "A template with the attribute(s) already exists." "Шаблон с такими атрибутами уже существует."
-    "Place after:" "Вставить за:"
-    "line" "строка"
-    "unit" "блок"
-    "cursor" "курсор"
-    "file's beginning" "начало файла"
-    "Inserts a template\nbelow a current line" "Вставить шаблон\nследом за текущей строкой"
-    "Inserts a template\nbelow a current unit" "Вставить шаблон\nследом за текущим блоком"
-    "Inserts a template at the cursor\n(good for one-liners)" "Вставить шиблон в позиции курсора\n(годится для однострочных шаблонов)"
-    "Inserts a template after 1st line of a file\n(License, Introduction etc.)" "Вставить шаблон в начало файла\n(Лицензия, Вступление и пр.)"
-    "Delete a template #%n ?" "Удалить шаблон #%n ?"
+    {Template} {Шаблон}
+    {Templates} {Шаблоны}
+    {Current template:} {Текущий шаблон:}
+    {New template:} {Новый шаблон:}
+    {Hot keys} {Клавиши}
+    {Add a template} {Добавить шаблон}
+    {Change a template} {Изменить шаблон}
+    {Delete a template} {Удалить шаблон}
+    {Click a template} {Выберите какой-нибудь шаблон}
+    {The template #%n added} {Шаблон #%n добавлен}
+    {The template #%n updated} {Шаблон #%n изменен}
+    {The template #%n removed} {Шаблон #%n удален}
+    {Enter a name of the template} {Введите название шаблона}
+    {Enter a text of the template} {Введите текст шаблона}
+    {Choose a hot key combination\nfor the template insertion.} {Выберите комбинацию клавиш\nдля вставки шаблона.}
+    {A template with the attribute(s) already exists.} {Шаблон с такими атрибутами уже существует.}
+    {Place after:} {Вставить за:}
+    {line} {строка}
+    {unit} {блок}
+    {cursor} {курсор}
+    {file's beginning} {начало файла}
+    {Inserts a template\nbelow a current line} {Вставить шаблон\nследом за текущей строкой}
+    {Inserts a template\nbelow a current unit} {Вставить шаблон\nследом за текущим блоком}
+    {Inserts a template at the cursor\n(good for one-liners)} {Вставить шиблон в позиции курсора\n(годится для однострочных шаблонов)}
+    {Inserts a template after 1st line of a file\n(License, Introduction etc.)} {Вставить шаблон в начало файла\n(Лицензия, Вступление и пр.)}
+    {Delete a template #%n ?} {Удалить шаблон #%n ?}
   }
 
-  # messages for projects
+  ## _ Projects _ ##
   ::msgcat::mcmset ru {
-    "Projects" "Проекты"
-    "You are going to %n!" "Вы собираетесь %n!"
-    "Add a project" "Добавить проект"
-    "Change a project" "Изменить проект"
-    "Delete a project" "Удалить проект"
-    "Don't delete the current project!" "Не удаляйте текущий проект!"
-    "The project \"%n\" added" "Пооект \"%n\" добавлен"
-    "The project \"%n\" updated" "Проект \"%n\" изменен"
-    "The project \"%n\" removed" "Проект \"%n\" удален"
-    "Options" "Опции"
-    "Project name:" "Название проекта:"
-    "Root directory:" "Корневой каталог:"
-    "Skip subdirectories:" "Пропускать подкаталоги:"
-    "Description:" "Описание:"
-    "Indentation:" "Пробелов отступа:"
-    "End of line:" "Концы строк:"
-    "Multi-line strings:" "Многострочные string:"
-    "List of files:" "Список файлов:"
-    "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n" "Вы можете\n  - добавить текущие закладки файлов в\n  - заменить текущими закладками\n  - удалить\n  - не изменять\nсписок закладок файлов в проекте.\n"
-    "Add" "Добавить"
-    "Substitute" "Заменить"
-    "Delete" "Удалить"
-    "Don't change" "Не изменять"
-    "Click a project" "Выберите проект"
-    "Delete a project \"%n\" ?" "Удалить проект \"%n\" ?"
-    "A project \"%n\" already exists." "Проект \"%n\" уже существует."
-    "All modified files will be saved.\n\nDo you agree?" "Все измененные файлы будут сохранены.\n\nСогласны?"
-    "Directory \"%d\"\ndoesn't exist.\n\nCreate it?" "Каталог \"%d\"\nне существует.\n\nСоздать его?"
-    "Checking %d. Wait a little..." "Проверка %d. Ожидайте..."
-    "Too big directory for a project: %n files or more." "Слишком велик каталог проекта: %n файлов или более."
+    {Projects} {Проекты}
+    {You are going to %n!} {Вы собираетесь %n!}
+    {Add a project} {Добавить проект}
+    {Change a project} {Изменить проект}
+    {Delete a project} {Удалить проект}
+    {Don't delete the current project!} {Не удаляйте текущий проект!}
+    {The project \"%n\" added} {Пооект \"%n\" добавлен}
+    {The project \"%n\" updated} {Проект \"%n\" изменен}
+    {The project \"%n\" removed} {Проект \"%n\" удален}
+    {Options} {Опции}
+    {Project name:} {Название проекта:}
+    {Root directory:} {Корневой каталог:}
+    {Skip subdirectories:} {Пропускать подкаталоги:}
+    {Description:} {Описание:}
+    {Indentation:} {Пробелов отступа:}
+    {End of line:} {Концы строк:}
+    {Multi-line strings:} {Многострочные string:}
+    {List of files:} {Список файлов:}
+    {You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n} {Вы можете\n  - добавить текущие закладки файлов в\n  - заменить текущими закладками\n  - удалить\n  - не изменять\nсписок закладок файлов в проекте.\n}
+    {Add} {Добавить}
+    {Substitute} {Заменить}
+    {Delete} {Удалить}
+    {Don't change} {Не изменять}
+    {Click a project} {Выберите проект}
+    {Delete a project \"%n\" ?} {Удалить проект \"%n\" ?}
+    {A project \"%n\" already exists.} {Проект \"%n\" уже существует.}
+    {All modified files will be saved.\n\nDo you agree?} {Все измененные файлы будут сохранены.\n\nСогласны?}
+    {Directory \"%d\"\ndoesn't exist.\n\nCreate it?} {Каталог \"%d\"\nне существует.\n\nСоздать его?}
+    {Checking %d. Wait a little...} {Проверка %d. Ожидайте...}
+    {Too big directory for a project: %n files or more.} {Слишком велик каталог проекта: %n файлов или более.}
   }
 
-  # messages for favorites
+  ## _ Favorites _ ##
   ::msgcat::mcmset ru {
-    "Lists of favorites:" "Списки Избранного"
-    "Current list of favorites:" "Текущий список Избранного"
-    "New list of favorites:" "Новый список Избранного:"
-    "Add a list of favorites" "Добавить список Избранного"
-    "Change a list of favorites" "Изменить список Избранного"
-    "Delete a list of favorites" "Удалить список Избранного"
-    "Click a list of favorites" "Выберите какой-нибудь список"
-    "The list #%n added" "Спиков #%n добавлен"
-    "The list #%n updated" "Спиков #%n изменен"
-    "The list #%n removed" "Спиков #%n удален"
-    "Enter a name of the list" "Введите название списка"
-    "Favorites of the current list" "Избранное текущего списка"
-    "The current list is empty!" "Текущий список пуст!"
-    "This list already exists" "Этот список уже существует"
-    "This list not saved to\n\"%f\"." "Этот список не сохранен в\n\"%f\"."
-    "Non-favorite files to be:" "Файлы не Избранного должны"
-    "kept" "остаться"
-    "closed" "закрыться"
-    "Doesn't close any tab without favorites\nat choosing the favorites' list" "Не закрывать \"неизбранные\" закладки\nпри выборе списка Избранного"
-    "Closes all tabs without favorites\nat choosing the favorites' list" "Закрывать \"неизбранные\" закладки\nпри выборе списка Избранного"
-    "Sets a list of favorites\nthat was active initially." "Восстанавливает список Избранного,\nдействовавший вначале."
-    "Delete a favorites' list #%n ?" "Удалить список Избранного #%n ?"
-    "Back" "Откат"
+    {Lists of favorites:} {Списки Избранного}
+    {Current list of favorites:} {Текущий список Избранного}
+    {New list of favorites:} {Новый список Избранного:}
+    {Add a list of favorites} {Добавить список Избранного}
+    {Change a list of favorites} {Изменить список Избранного}
+    {Delete a list of favorites} {Удалить список Избранного}
+    {Click a list of favorites} {Выберите какой-нибудь список}
+    {The list #%n added} {Спиков #%n добавлен}
+    {The list #%n updated} {Спиков #%n изменен}
+    {The list #%n removed} {Спиков #%n удален}
+    {Enter a name of the list} {Введите название списка}
+    {Favorites of the current list} {Избранное текущего списка}
+    {The current list is empty!} {Текущий список пуст!}
+    {This list already exists} {Этот список уже существует}
+    {This list not saved to\n\"%f\".} {Этот список не сохранен в\n\"%f\".}
+    {Non-favorite files to be:} {Файлы не Избранного должны}
+    {kept} {остаться}
+    {closed} {закрыться}
+    {Doesn't close any tab without favorites\nat choosing the favorites' list} {Не закрывать \"неизбранные\" закладки\nпри выборе списка Избранного}
+    {Closes all tabs without favorites\nat choosing the favorites' list} {Закрывать \"неизбранные\" закладки\nпри выборе списка Избранного}
+    {Sets a list of favorites\nthat was active initially.} {Восстанавливает список Избранного,\nдействовавший вначале.}
+    {Delete a favorites' list #%n ?} {Удалить список Избранного #%n ?}
+    {Favorites} {Избранное}
+    {Add \"%n\" of %f\nto the favorites?} {Добавить \"%n\" файла %f\nв Избранное?}
+    {Item \"%n\" of %f\nis already in the favorites.} {Блок \"%n\" из %f\nуже есть в Избранном.}
+    {Remove \"%n\" of %f\nfrom the favorites?} {Удалить \"%n\" файла %f\nиз Избранного?}
   }
 
-  # icons of toolbar: tips
+  ## _ Icons of toolbar: tips _ ##
   ::msgcat::mcmset ru {
-    "Create a file\nCtrl+N" "Создать файл\nCtrl+N"
-    "Open a file\nCtrl+O" "Открыть файл\nCtrl+O"
-    "Save the file\nF2" "Сохранить файлe\nF2"
-    "Save all files\nCtrl+Shift+S" "Сохранить все файлы\nCtrl+Shift+S"
-    "Tcl/Tk help on the selection\nF1" "Контекстная справка по Tcl/Tk\nF1"
-    "Find / Replace" "Поиск / Замена"
-    "Find / Replace\nCtrl+F" "Поиск / Замена\nCtrl+F"
-    "Run the file\nF5" "Выполнить файл\nF5"
-    "Run e_menu\nF4" "Вызов e_menu\nF4"
-    "Undo changes\nCtrl+Z" "Отмена изменений\nCtrl+Z"
-    "Redo changes\nCtrl+Shift+Z" "Переотмена изменений\nCtrl+Shift+Z"
+    {Create a file\nCtrl+N} {Создать файл\nCtrl+N}
+    {Open a file\nCtrl+O} {Открыть файл\nCtrl+O}
+    {Save the file\nF2} {Сохранить файлe\nF2}
+    {Save all files\nCtrl+Shift+S} {Сохранить все файлы\nCtrl+Shift+S}
+    {Tcl/Tk help on the selection\nF1} {Контекстная справка по Tcl/Tk\nF1}
+    {Find / Replace} {Поиск / Замена}
+    {Find / Replace\nCtrl+F} {Поиск / Замена\nCtrl+F}
+    {Run the file\nF5} {Выполнить файл\nF5}
+    {Run e_menu\nF4} {Вызов e_menu\nF4}
+    {Undo changes\nCtrl+Z} {Отмена изменений\nCtrl+Z}
+    {Redo changes\nCtrl+Shift+Z} {Переотмена изменений\nCtrl+Shift+Z}
   }
 
-  # find-replace dialogue
+  ## _ Find-replace dialogue _ ##
   ::msgcat::mcmset ru {
-    "Find: " "Искать: "
-    "Replace: " "Заменить: "
-    "Match: " "Совпадение: "
-    "Exact" "Точное"
-    "Match whole word only" "Только целые слова"
-    "Match case" "Учет регистра букв"
-    "Wrap around" "По кругу"
-    "Replace by blank" "Пустые замены"
-    "Direction:" "Направление:"
-    "Down" "Вниз"
-    "Up" "Вверх"
-    "Stay on top" "Поверх всех окон"
-    "Find" "Поиск"
-    "Replace" "Замена"
-    "All in Text" "Все в тексте"
-    "All in Session" "Все в сеансе"
-    "All in %n Files" "Все в %n файлах"
-    "Allows to use *, ?, \[ and \]\nin \"find\" string." "Позволяет использовать *, ?, \[, \]\nв строке поиска."
-    "Allows to use the regular expressions\nin \"find\" string." "Позволяет использовать регулярные выражения\nв строке поиска."
-    "Allows replacements by the empty string,\nin fact, to erase the found ones." "Разрешает пустые замены,\nт.е. просто удаление строк поиска."
-    "Keeps the dialogue above other windows." "Отображает диалог поиска\nповерх других окон."
-    "Found %n matches for \"%s\"." "Найдено %n искомых \"%s\"."
-    "Made %n replacements of \"%s\" with \"%r\" in \"%f\"." "Сделано %n замен \"%s\" на \"%r\" в \"%f\"."
-    "Made %n replacements of \"%s\" with \"%r\" in all of session." "Сделано %n замен \"%s\" на \"%r\" во всём сеансе."
-    "Replace all of \"%s\" with \"%r\"\nin \"%f\"?" "Заменить все \"%s\" на \"%r\"\nв \"%f\"?"
-    "Replace all of \"%s\" with \"%r\"\nin all texts?" "Заменить все \"%s\" на \"%r\"\nво всех текстах?"
+    {Find:} {Искать:}
+    {Replace:} {Заменить:}
+    {Match:} {Совпадение:}
+    {Exact} {Точное}
+    {Match whole word only} {Только целые слова}
+    {Match case} {Учет регистра букв}
+    {Wrap around} {По кругу}
+    {Replace by blank} {Пустые замены}
+    {Direction:} {Направление:}
+    {Down} {Вниз}
+    {Up} {Вверх}
+    {Stay on top} {Поверх всех окон}
+    {Find} {Поиск}
+    {Replace} {Замена}
+    {All in Text} {Все в тексте}
+    {All in Session} {Все в сеансе}
+    {All in %n Files} {Все в %n файлах}
+    {Allows to use *, ?, \[ and \]\nin \"find\" string.} {Позволяет использовать *, ?, \[, \]\nв строке поиска.}
+    {Allows to use the regular expressions\nin \"find\" string.} {Позволяет использовать регулярные выражения\nв строке поиска.}
+    {Allows replacements by the empty string,\nin fact, to erase the found ones.} {Разрешает пустые замены,\nт.е. просто удаление строк поиска.}
+    {Keeps the dialogue above other windows.} {Отображает диалог поиска\nповерх других окон.}
+    {Found %n matches for \"%s\".} {Найдено %n искомых \"%s\".}
+    {Made %n replacements of \"%s\" with \"%r\" in \"%f\".} {Сделано %n замен \"%s\" на \"%r\" в \"%f\".}
+    {Made %n replacements of \"%s\" with \"%r\" in all of session.} {Сделано %n замен \"%s\" на \"%r\" во всём сеансе.}
+    {Replace all of \"%s\" with \"%r\"\nin \"%f\"?} {Заменить все \"%s\" на \"%r\"\nв \"%f\"?}
+    {Replace all of \"%s\" with \"%r\"\nin all texts?} {Заменить все \"%s\" на \"%r\"\nво всех текстах?}
   }
 
-  #################
+  ## _ Checking ini directory _ ##
   ::msgcat::mcmset ru {
-    "Can't backup \"%f\" to\n\"%d\"!\n\nDelete it anyway?" "Не могу сделать копию \"%f\" в\n\"%d\"!\n\nУдалить этот файл по-любому?"
-    "\"%f\" removed to \"%d\"" "\"%f\" удален в \"%d\""
-    "File name:" "Имя файла:"
-    "Directory" "Каталог"
-    "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?" "Файл \"%f\", похоже, не типа\n%s.\n\nВсё-таки открыть его?"
+    {Choosing Directory for Settings} {Выбор каталога для настроек}
+    {\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n} {\n Программе \"alited\" нужно указать каталог для сохранения своих настроек.\n Вы можете задавать его как аргумент при вызове alited.\n\n По умолчанию, каталог сохранения настроек - \"%d\".\n Это рекомендуемый каталог, позволяющий вызывать \"alited\" без аргументов.\n}
+    {Choose a directory} {Выбор каталога}
   }
 
-  # checking ini directory
+  ## _ {About} dialogue _ ##
   ::msgcat::mcmset ru {
-    "Choosing Directory for Settings" "Выбор каталога для настроек"
-    "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" "\n Программе \"alited\" нужно указать каталог для сохранения своих настроек.\n Вы можете задавать его как аргумент при вызове alited.\n\n По умолчанию, каталог сохранения настроек - \"%d\".\n Это рекомендуемый каталог, позволяющий вызывать \"alited\" без аргументов.\n"
-    "Choose a directory" "Выбор каталога"
+    {stands for} {означает}
+    {Written in pure Tcl/Tk.} {Сделан на чистом Tcl/Tk.}
+    {And well fit for programming with it.} {И годен для программирования на нём.}
+    {Details:} {Подробности:}
+    {Authors:} {Авторы:}
+    {License:} {Лицензия:}
   }
 
-  # "About" dialogue
+  ## _ Preferences _ ##
   ::msgcat::mcmset ru {
-    "stands for" "означает"
-    "Written in pure Tcl/Tk." "Сделан на чистом Tcl/Tk."
-    "And well fit for programming with it." "И годен для программирования на нём."
-    "Details:" "Подробности:"
-    "Authors:" "Авторы:"
-    "License:" "Лицензия:"
+    {Color scheme:} {Цветовая схема:}
+    {Tint:} {Оттенок:}
+    {For the settings to be active\nthe application should be restarted.\n\nRestart it just now?} {Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?}
+    {General} {Общее}
+    {Editor} {Редактор}
+    {Units} {Блоки}
+    {Keys} {Клавиши}
+    {Misc.} {Разное}
+    {View} {Вид}
+    {Syntax} {Синтаксис}
+    {Small font's size:} {Размер малого шрифта:}
+    {Middle font's size:} {Размер среднего шрифта:}
+    {Large font's size:} {Размер крупного шрифта:}
+    {Save File} {Сохранить файл}
+    {Save File as} {Сохранить файл как}
+    {Run e_menu} {Запуск e_menu}
+    {Run File} {Запуск файла}
+    {Double Selection} {Дублировать выделение}
+    {Delete Line} {Удалить строку}
+    {Highlight First} {Выделить первое}
+    {Highlight Last} {Выделить последнее}
+    {Find Next Match} {Найти следующее}
+    {Item up} {Поднять элемент}
+    {Item down} {Опустить элемент}
+    {Notes:} {Заметки:}
+    {Sort of diary.\nList of TODOs etc.} {Типа дневника.\nСписок TODO и пр.}
+    {Enter %U, %u, %m, %w, %d, %t wildcards of templates:} {Введите токены  %U, %u, %m, %w, %d, %t для шаблонов:}
+    {User name:} {Имя пользователя:}
+    {Login:} {Логин:}
+    {Date format:} {Формат даты:}
+    {Time format:} {Формат времени:}
+    {Directory of menus:} {Каталог меню:}
+    {Main menu:} {Главное меню:}
+    {Projects (%PD wildcard):} {Проекты (%PD токен):}
+    {Save files before run:} {Сохранять файлы при вызове:}
+    {Linux terminal:} {Терминал Linux:}
+    {Path to man/tcl8.6:} {Путь к man/tcl8.6:}
+    {Geometry:} {Геометрия:}
+    {Run as external app:} {Как отдельное приложение:}
   }
 
-  # Preferences
+  ## _ Checks _ ##
   ::msgcat::mcmset ru {
-    "Color scheme:" "Цветовая схема:"
-    "Tint:" "Оттенок:"
-    "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?"
-    "General" "Общее"
-    "Editor" "Редактор"
-    "Units" "Блоки"
-    "Keys" "Клавиши"
-    "Misc." "Разное"
-    "View" "Вид"
-    "Syntax" "Синтаксис"
-    "Small font's size:" "Размер малого шрифта:"
-    "Middle font's size:" "Размер среднего шрифта:"
-    "Large font's size:" "Размер крупного шрифта:"
-    "Save File" "Сохранить файл"
-    "Save File as" "Сохранить файл как"
-    "Run e_menu" "Запуск e_menu"
-    "Run File" "Запуск файла"
-    "Double Selection" "Дублировать выделение"
-    "Delete Line" "Удалить строку"
-    "Highlight First" "Выделить первое"
-    "Highlight Last" "Выделить последнее"
-    "Find Next Match" "Найти следующее"
-    "Item up" "Поднять элемент"
-    "Item down" "Опустить элемент"
-    "Notes:" "Заметки:"
-    "Sort of diary.\nList of TODOs etc." "Типа дневника.\nСписок TODO и пр."
-    "Enter %U, %u, %m, %w, %d, %t wildcards of templates:" "Введите токены  %U, %u, %m, %w, %d, %t для шаблонов:"
-    "User name:" "Имя пользователя:"
-    "Login:" "Логин:"
-    "Date format:" "Формат даты:"
-    "Time format:" "Формат времени:"
-    "Directory of menus:" "Каталог меню:"
-    "Main menu:" "Главное меню:"
-    "Projects (%PD wildcard):" "Проекты (%PD токен):"
-    "Save files before run:" "Сохранять файлы при вызове:"
-    "Linux terminal:" "Терминал Linux:"
-    "Path to man/tcl8.6:" "Путь к man/tcl8.6:"
-    "Geometry:" "Геометрия:"
-    "Run as external app:" "Как отдельное приложение:"
+    {Check of Tcl} {Проверка Tcl}
+    {Check} {Проверка}
+    {Check:} {Проверить:}
+    {Checks available:} {Возможные проверки:}
+    {Consistency of {}} {Соответствие {}}
+    {Consistency of \[\]} {Соответствие \[\]}
+    {Consistency of ()} {Соответствие ()}
+    {all of session files} {все файлы сессии}
+    {current file} {текущий файл}
+    {Found %f file error(s), %u unit error(s).} {Найдено ошибок: %f файлов, %u блоков.}
+    {No errors found.} {Ошибок не найдено.}
   }
 
-  # Checks
+  ## _ Misc. _ ##
   ::msgcat::mcmset ru {
-    "Check of Tcl" "Проверка Tcl"
-    "Check" "Проверка"
-    "Check:" "Проверить:"
-    "Checks available:" "Возможные проверки:"
-    "Consistency of \{\}" "Соответствие \{\}"
-    "Consistency of \[\]" "Соответствие \[\]"
-    "Consistency of ()" "Соответствие ()"
-    "all of session files" "все файлы сессии"
-    "current file" "текущий файл"
-    "Found %f file error(s), %u unit error(s)." "Найдено ошибок: %f файлов, %u блоков."
-    "No errors found." "Ошибок не найдено."
+    {Can't backup \"%f\" to\n\"%d\"!\n\nDelete it anyway?} {Не могу сделать копию \"%f\" в\n\"%d\"!\n\nУдалить этот файл по-любому?}
+    {\"%f\" removed to \"%d\"} {\"%f\" удален в \"%d\"}
+    {File name:} {Имя файла:}
+    {Directory} {Каталог}
+    {The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?} {Файл \"%f\", похоже, не типа\n%s.\n\nВсё-таки открыть его?}
   }
 
-  # bar of tabs
+  ## _ Find units _ ##
   ::msgcat::mcmset ru {
-    "(Un)Select" "Выделить / нет"
-    "... Visible" "... видимые"
-    "... All at Left" "... все слева"
-    "... All at Right" "... все справа"
-    "... All" "... все"
+    {Find Unit} {Искать блок}
+    {in all} {во всех}
+    {in current} {в текущем}
+    {Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored.} {Используйте шаблон glob для поиска блоков:\nнапример, \"s*rt\" найдет \"start\" и \"insert\".\nРегистр букв не учитывается.}
   }
 
-  # Abbreviations etc.
+  ## _ Abbreviations etc. _ ##
   #   Line - 2nd column's title of unit tree
   #   ind = indentation
   ::msgcat::mcmset ru {
-    "ind" "отс"
-    "Row" "Стр."
-    "Row: " "Стр: "
-    " Col: " " Поз: "
+    {ind} {отс}
+    {Row} {Стр.}
+    {Row: } {Стр: }
+    { Col: } { Поз: }
+    {    Unit: } {   Блок: }
   }
+
+  ## _ Bar of tabs _ ##
+  ::msgcat::mcmset ru {
+    {(Un)Select} {Выделить / нет}
+    {... Visible} {... видимые}
+    {... All at Left} {... все слева}
+    {... All at Right} {... все справа}
+    {... All} {... все}
+  }
+
+  ## ________________________ ---- End of alited NS _________________________ ##
 }
 
+# _ bartabs NS _ #
 namespace eval ::bartabs {
+
+  ## ________________________ Popup menu _________________________ ##
+
   ::msgcat::mcmset ru {
-    "List" "Список"
-    "behind" "следом за"
-    "Close" "Закрыть"
-    "... All" "... все"
-    "... All at Left" "... все слева"
-    "... All at Right" "... все справа"
+    {List} {Список}
+    {behind} {следом за}
+    {Close} {Закрыть}
+    {... All} {... все}
+    {... All at Left} {... все слева}
+    {... All at Right} {... все справа}
   }
+
+  ## ________________________ ---- End of bartabs NS _________________________ ##
 }
 
 # _________________________________ EOF _________________________________ #

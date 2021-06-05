@@ -142,7 +142,7 @@ proc ::em::matchedBrackets {inplist curpos schar dchar dir} {
   }
   return $retpos
 }
-#=== make popup menu
+#___ make popup menu
 proc ::em::iconA {{icon none}} {
   return "-image [::apave::iconImage $icon] -compound left"
 }
@@ -175,7 +175,7 @@ proc ::em::createpopup {} {
     -label "Exit" -command ::em::on_exit
   .em.emPopupMenu configure -tearoff 0
 }
-#=== call the e_menu's popup menu
+#___ call the e_menu's popup menu
 proc ::em::popup {X Y} {
     set ::em::skipfocused 1
     if {[winfo exist .em.emPopupMenu]} {destroy .em.emPopupMenu}
@@ -183,7 +183,7 @@ proc ::em::popup {X Y} {
     ::apave::obj themePopup .em.emPopupMenu
     tk_popup .em.emPopupMenu $X $Y
 }
-#=== highlights R/S/M in menu's text
+#___ highlights R/S/M in menu's text
 proc ::em::menuTextModified {w bfont} {
 
   # Handles modifications of menu's text: highlights R/S/M
@@ -222,7 +222,7 @@ proc ::em::menuTextModified {w bfont} {
     }
   }
 }
-#=== bindings to highlight brackets
+#___ bindings to highlight brackets
 proc ::em::menuTextBrackets {w fg boldfont} {
 
   # Makes bindings to highlight brackets of menu's text: {}()[]
@@ -273,7 +273,7 @@ proc ::em::highlightBrackets {w fg boldfont} {
     $w tag add tagBRACKETERR $curpos
   }
 }
-#=== edit file(s)
+#___ edit file(s)
 proc ::em::edit {fname {prepost ""}} {
   set fname [string trim $fname]
   if {$::em::editor eq ""} {
@@ -294,7 +294,7 @@ to edit $fname.\n\nCurrent directory is [pwd]\n\nMaybe $::em::editor\n is worth 
   }
   return true
 }
-#=== pre and post for edit (e.g. get/set position of cursor)
+#___ pre and post for edit (e.g. get/set position of cursor)
 proc ::em::prepost_edit {refdata {txt ""}} {
   upvar 1 $refdata data
   set opt [set i 0]
@@ -327,7 +327,7 @@ proc ::em::prepost_edit {refdata {txt ""}} {
     set data [join $datalist \n]
   }
 }
-#=== edit current menu
+#___ edit current menu
 proc ::em::edit_menu {} {
   if {[::em::edit $::em::menufilename ::em::prepost_edit]} {
     # colors can be changed, so "reread_menu" with setting colors
@@ -343,7 +343,7 @@ proc ::em::edit_menu {} {
     repaintForWindows
   }
 }
-#=== help
+#___ help
 proc ::em::about {} {
   set textTags [list [list "red" " -font {-weight bold -size 12} \
     -foreground $::em::clractf -background $::em::clractb"] \
@@ -367,11 +367,11 @@ proc ::em::about {} {
   if {[lindex $res 0]} {::eh::browse $doc}
   repaintForWindows
 }
-#=== check if it's s_menu
+#___ check if it's s_menu
 proc ::em::is_s_menu {} {
   return [expr {[file rootname [file tail $::em::Argv0]] eq "s_menu"}]
 }
-#=== restart the app
+#___ restart the app
 proc ::em::restart_e_menu {} {
   if {[is_s_menu] && [file extension $::em::Argv0] ne ".tcl"} {
     exec $::em::Argv0 {*}$::em::Argv &
@@ -380,13 +380,13 @@ proc ::em::restart_e_menu {} {
   }
   on_exit
 }
-#=== reread and autorun
+#___ reread and autorun
 proc ::em::reread_init {} {
   reread_menu $::em::lasti
   set ::em::filecontent {}
   initauto
 }
-#=== destroy all e_menu apps
+#___ destroy all e_menu apps
 proc ::em::destroy_emenus {} {
   if {[em_question "Clearance - $::em::appname" \
   "\n  Destroy all e_menu applications?  \n"]} {
@@ -402,7 +402,7 @@ proc ::em::destroy_emenus {} {
   }
   repaintForWindows
 }
-#=== get color scheme's attributes for 'Project...' dialog
+#___ get color scheme's attributes for 'Project...' dialog
 proc ::em::change_PD_Spx {} {
   lassign [::apave::obj csGet $::em::ncolor] - fg - bg
   set labmsg [dialog LabMsg]
@@ -413,7 +413,7 @@ proc ::em::change_PD_Spx {} {
   $labmsg configure -foreground $fg -background $bg -font $font \
     -padding {16 5 16 5} -text $txt
 }
-#=== change a project's directory and other parameters
+#___ change a project's directory and other parameters
 proc ::em::change_PD {} {
   if {![file isfile $::em::PD]} {
     set em_message "  WARNING:
@@ -558,7 +558,7 @@ proc ::em::change_PD {} {
   repaintForWindows
   return
 }
-#=== Input dialog for getting data
+#___ Input dialog for getting data
 proc ::em::input {cmd} {
   set dialog [::apave::APaveInput new]
   set dp [string last " == " $cmd]
@@ -575,12 +575,20 @@ proc ::em::input {cmd} {
   set r [lindex $res 0]
   if {$r && $data ne ""} {
     lassign $res -> {*}$data
+    foreach n [split $data " "] {
+      catch {
+        set value [set $n]
+        set value [string map [list \n \\n \\ \\\\ \} \\\} \{ \\\{] $value]
+        set $n $value
+        set ::em::saveddata($n) $value ;# for next possible input dialogue
+      }
+    }
     ::em::save_menuvars
   }
   repaintForWindows
   return $r
 }
-#=== incr/decr window width
+#___ incr/decr window width
 proc ::em::win_width {inc} {
   set inc [expr $inc*$::em::incwidth]
   lassign [split [wm geometry .em] +x] newwidth height
@@ -589,7 +597,7 @@ proc ::em::win_width {inc} {
     wm geometry .em ${newwidth}x${height}
   }
 }
-#=== get and save a writeable command
+#___ get and save a writeable command
 proc ::em::writeable_command {cmd} {
   # cmd's contents:
   #   0 .. 2   - a unique mark (e.g. %#A for 'A' mark)
@@ -649,7 +657,7 @@ proc ::em::writeable_command {cmd} {
   ::em::focused_win 1
   return $cmd
 }
-#=== start subtask(s)
+#___ start subtask(s)
 proc ::em::start_sub {ind istart ipos sub typ c1 sel} {
   set ::em::ipos $ipos
   if {$ipos == 0 || $sub eq ""} {
@@ -660,11 +668,11 @@ proc ::em::start_sub {ind istart ipos sub typ c1 sel} {
   }
   return false
 }
-#=== get subtask info
+#___ get subtask info
 proc ::em::get_subtask {linf ipos} {
   return [split [lindex $linf $ipos] ":"]
 }
-#=== start timed task(s)
+#___ start timed task(s)
 proc ::em::start_timed {{istart -1}} {
   set istarted 0
   for {set repeat 1} {$repeat} {} {
@@ -722,7 +730,7 @@ proc ::em::start_timed {{istart -1}} {
   after [expr $::em::inttimer * 1000] ::em::start_timed
   return $istarted
 }
-#=== time task
+#___ time task
 proc ::em::ttask {oper ind {inf 0} {typ 0} {c1 0} {sel 0} {tsec 0} {ipos 0} {iN 0}
 {started 0}} {
 
@@ -747,7 +755,7 @@ proc ::em::ttask {oper ind {inf 0} {typ 0} {c1 0} {sel 0} {tsec 0} {ipos 0} {iN 
   }
   return [list $ind $started]
 }
-#=== push/pop timed task
+#___ push/pop timed task
 proc ::em::set_timed {from inf typ c1 inpsel} {
   set ::em::TN 1
   lassign [split $inf /] timer
@@ -764,7 +772,7 @@ proc ::em::set_timed {from inf typ c1 inpsel} {
   }
   return [expr !$started && $startnow]  ;# true if start now, repeat after
 }
-#=== create file.mnu template
+#___ create file.mnu template
 proc ::em::create_template {fname} {
   set res no
   if {[em_question "Menu isn't open" \
@@ -783,7 +791,7 @@ proc ::em::create_template {fname} {
   }
   return $res
 }
-#=== process %IF wildcard
+#___ process %IF wildcard
 proc ::em::IF {sel {callcommName ""}} {
   set sel [string range $sel 4 end]
   set pthen [string first " %THEN " $sel]
@@ -847,3 +855,4 @@ proc ::em::IF {sel {callcommName ""}} {
   return true
 }
 # *****************************   EOF   *****************************
+#RUNF1: ../../../src/alited.tcl DEBUG

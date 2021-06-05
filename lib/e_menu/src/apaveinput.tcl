@@ -34,7 +34,7 @@
 
 package require Tk
 
-package provide apave 3.3.3b6
+package provide apave 3.3.3b10
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -182,7 +182,7 @@ oo::class create ::apave::APaveInput {
       if {$typ ni {fc te la}} {
         # curr.value can be set with a variable, so 'subst' is applied
         set vsel [lindex $valopts 0]
-        catch {set vsel [subst -nocommands -noback $vsel]}
+        catch {set vsel [subst -nocommands -nobackslashes $vsel]}
         set vlist [lrange $valopts 1 end]
       }
       if {[set msgLab [::apave::getOption -msgLab {*}$attrs]] ne ""} {

@@ -48,6 +48,8 @@ proc menu::FillMenu {} {
   # Populates alited's main menu.
 
   namespace upvar ::alited al al
+  namespace upvar ::alited::pref em_Num em_Num \
+    em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
 ## ________________________ File _________________________ ##
   set m [set al(MENUFILE) $al(WIN).menu.file]
@@ -74,6 +76,7 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,moveupU) -command {alited::main::MoveItem up yes} -accelerator $al(acc_15)
   $m add command -label $al(MC,movedownU) -command {alited::main::MoveItem down yes} -accelerator $al(acc_16)
   $m add separator
+  $m add command -label [msgcat::mc {Add Line}] -command alited::main::InsertLine -accelerator Ctrl+Insert
   $m add command -label $al(MC,indent) -command alited::unit::Indent -accelerator $al(acc_6)
   $m add command -label $al(MC,unindent) -command alited::unit::UnIndent -accelerator $al(acc_7)
   $m add separator
@@ -82,21 +85,45 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label $al(MC,findreplace) -command alited::find::_run -accelerator Ctrl+F
   $m add command -label $al(MC,findnext) -command alited::find::Next -accelerator $al(acc_12)
-  $m add command -label [msgcat::mc "Look for Declaration"] -command alited::find::SearchUnit -accelerator $al(acc_13)
-  $m add command -label [msgcat::mc "Look for Word"] -command alited::find::SearchWordInSession -accelerator $al(acc_14)
+  $m add command -label [msgcat::mc {Look for Declaration}] -command alited::find::SearchUnit -accelerator $al(acc_13)
+  $m add command -label [msgcat::mc {Look for Word}] -command alited::find::SearchWordInSession -accelerator $al(acc_14)
+  $m add command -label [msgcat::mc {Find Unit}] -command alited::find::FindUnit -accelerator Ctrl+Shift+F
   $m add separator
-  $m add command -label [msgcat::mc "Go to Line"] -command alited::main::GotoLine -accelerator $al(acc_17)
+  $m add command -label [msgcat::mc {Go to Line}] -command alited::main::GotoLine -accelerator $al(acc_17)
 
 ## ________________________ Tools _________________________ ##
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label $al(MC,run) -command alited::tool::_run -accelerator $al(acc_3)
-  $m add command -label "e_menu" -command alited::tool::e_menu -accelerator $al(acc_2)
-  $m add command -label "tkcon" -command alited::tool::tkcon
+  $m add command -label e_menu -command alited::tool::e_menu -accelerator $al(acc_2)
+  $m add command -label tkcon -command alited::tool::tkcon
   $m add separator
   $m add command -label $al(MC,checktcl) -command alited::check::_run
   $m add separator
   $m add command -label $al(MC,colorpicker) -command alited::tool::ColorPicker
-  $m add command -label [msgcat::mc "Screen Loupe"] -command alited::tool::Loupe
+  $m add command -label [msgcat::mc {Screen Loupe}] -command alited::tool::Loupe
+
+### ________________________ Runs _________________________ ###
+
+  for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
+    if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
+      if {[incr emwas]==1} {
+        menu $m.runs -tearoff 0
+        $m add cascade -label [msgcat::mc Misc.] -menu $m.runs
+      }
+      if {$em_sep($i)} {
+        $m.runs add separator
+      } else {
+        if {[string length $em_ico($i)]==1} {
+          set txt $em_ico($i)
+        } else {
+          set txt $em_mnu($i)
+        }
+        lassign $em_inf($i) mnu idx
+        set ex "ex=[alited::tool::EM_HotKey $idx]"
+        $m.runs add command -label $txt -command "alited::tool::e_menu \"m=$mnu\" $ex"
+      }
+    }
+  }
 
 ## ________________________ Setup _________________________ ##
   set m [set al(SETUP) $al(WIN).menu.setup]

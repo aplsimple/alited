@@ -16,70 +16,126 @@ namespace eval pref {
   variable prevkeys; array set prevkeys [list]
   variable savekeys; array set savekeys [list]
   variable arrayTab; array set arrayTab [list]
-  variable curTab "nbk"
-  variable oldTab ""
+  variable curTab nbk
+  variable oldTab {}
   variable opcColors [list]
-  variable opcc ""
-  variable opcc2 ""
+  variable opcc {}
+  variable opcc2 {}
+  variable em_Num 16
+  variable em_mnu; array set em_mnu [list]
+  variable em_ico; array set em_ico [list]
+  variable em_sep; array set em_sep [list]
+  variable em_inf; array set em_inf [list]
+  variable em_Menus [list]
+  variable em_Icons [list]
+  variable listIcons [list]
+  variable listMenus [list]
   variable stdkeys
   set stdkeys [dict create \
-     0 [list "Save File" F2] \
-     1 [list "Save File as" Control-S] \
-     2 [list "Run e_menu" F4] \
-     3 [list "Run File" F5] \
-     4 [list "Double Selection" Control-D] \
-     5 [list "Delete Line" Control-Y] \
-     6 [list "Indent" Control-I] \
-     7 [list "Unindent" Control-U] \
-     8 [list "Comment" Control-bracketleft] \
-     9 [list "Uncomment" Control-bracketright] \
-    10 [list "Highlight First" Alt-Q] \
-    11 [list "Highlight Last" Alt-W] \
-    12 [list "Find Next Match" F3] \
-    13 [list "Look for Declaration" Control-L] \
-    14 [list "Look for Word" Control-Shift-L] \
-    15 [list "Item up" F11] \
-    16 [list "Item down" F12] \
-    17 [list "Go to Line" Control-G] \
+     0 [list {Save File} F2] \
+     1 [list {Save File as} Control-S] \
+     2 [list {Run e_menu} F4] \
+     3 [list {Run File} F5] \
+     4 [list {Double Selection} Control-D] \
+     5 [list {Delete Line} Control-Y] \
+     6 [list {Indent} Control-I] \
+     7 [list {Unindent} Control-U] \
+     8 [list {Comment} Control-bracketleft] \
+     9 [list {Uncomment} Control-bracketright] \
+    10 [list {Highlight First} Alt-Q] \
+    11 [list {Highlight Last} Alt-W] \
+    12 [list {Find Next Match} F3] \
+    13 [list {Look for Declaration} Control-L] \
+    14 [list {Look for Word} Control-Shift-L] \
+    15 [list {Item up} F11] \
+    16 [list {Item down} F12] \
+    17 [list {Go to Line} Control-G] \
   ]
   variable stdkeysSize [dict size $stdkeys]
 }
 
 # ________________________ Common procedures _________________________ #
 
+proc pref::fetchVars {} {
+  uplevel 1 {
+    namespace upvar ::alited al al obDl2 obDl2
+    variable win
+    variable geo
+    variable minsize
+    variable data
+    variable keys
+    variable prevkeys
+    variable savekeys
+    variable arrayTab
+    variable curTab
+    variable oldTab
+    variable opcColors
+    variable opcc
+    variable opcc2
+    variable em_Num
+    variable em_mnu
+    variable em_ico
+    variable em_sep
+    variable em_inf
+    variable em_Menus
+    variable em_Icons
+    variable listIcons
+    variable listMenus
+    variable stdkeys
+    variable stdkeysSize
+  }
+}
+
 proc pref::SavedOptions {} {
-  namespace upvar ::alited al al
+  fetchVars
   return [array name al]
 }
 
 proc pref::SaveSettings {} {
-  namespace upvar ::alited al al
-  variable data
+  fetchVars
   foreach o [SavedOptions] {
     set data($o) $al($o)
+  }
+  for {set i 0} {$i<$em_Num} {incr i} {
+    catch {
+      set data(em_mnu,$i) $em_mnu($i)
+      set data(em_ico,$i) $em_ico($i)
+      set data(em_sep,$i) $em_sep($i)
+      set data(em_inf,$i) $em_inf($i)
+    }
   }
 }
 
 proc pref::RestoreSettings {} {
-  namespace upvar ::alited al al
-  variable data
-  variable keys
-  variable stdkeys
-  variable savekeys
-  variable prevkeys
+  fetchVars
   foreach o [SavedOptions] {
-    set al($o) $data($o)
+    catch {set al($o) $data($o)}
   }
   dict for {k info} $stdkeys {
     set keys($k) $savekeys($k)
     SelectKey $k
   }
+  for {set i 0} {$i<$em_Num} {incr i} {
+    catch {
+      set em_mnu($i) $data(em_mnu,$i)
+      set em_ico($i) $data(em_ico,$i)
+      set em_sep($i) $data(em_sep,$i)
+      set em_inf($i) $data(em_inf,$i)
+    }
+  }
 }
 
+proc pref::TextIcons {} {
+  return ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*=
+}
+
+proc pref::ReservedIcons {} {
+  return [list file OpenFile box SaveFile saveall undo redo help replace run other ok color]
+}
 # ________________________ Main Frame _________________________ #
 
 proc pref::MainFrame {} {
-  namespace upvar ::alited al al obDl2 obDl2
+
   return {
     {fraL - - 1 1 {-st nws -rw 2}}
     {.ButHome - - 1 1 {-st we} {-t "General" -com "alited::pref::Tab nbk" -style TButtonWest}}
@@ -91,27 +147,27 @@ proc pref::MainFrame {} {
     {.v_  fraL.butTools T 1 1 {-st ns} {-h 30}}
     {fraR fraL L 1 1 {-st nsew -cw 1}}
     {fraR.Nbk - - - - {pack -side top -expand 1 -fill both} {
-      f1 {-t "View"}
-      f2 {-t "Options"}
+      f1 {-t View}
+      f2 {-t Options}
       -traverse yes -select f1
     }}
     {fraR.nbk2 - - - - {pack forget -side top} {
-      f1 {-t "View"}
-      f2 {-t "Syntax"}
-      -tr {just to test "-tr*" to call ttk::notebook::enableTraversal}
+      f1 {-t View}
+      f2 {-t Syntax}
     }}
     {fraR.nbk3 - - - - {pack forget -side top} {
-      f1 {-t "Units"}
+      f1 {-t Units}
     }}
     {fraR.nbk4 - - - - {pack forget -side top} {
-      f1 {-t "Templates"}
+      f1 {-t Templates}
     }}
     {fraR.nbk5 - - - - {pack forget -side top} {
-      f1 {-t "Keys"}
+      f1 {-t Keys}
     }}
     {fraR.nbk6 - - - - {pack forget -side top} {
-      f1 {-t "Tools"}
-      f2 {-t "e_menu"}
+      f1 {-t e_menu}
+      f2 {-t tkcon}
+      f3 {-t Misc.}
     }}
     {#LabMess fraL T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fraB fraL T 1 2 {-st nsew} {-padding {5 5 5 5} -relief groove}}
@@ -123,10 +179,7 @@ proc pref::MainFrame {} {
 }
 
 proc pref::Ok {args} {
-  namespace upvar ::alited al al obDl2 obDl2
-  variable opcc
-  variable opcc2
-  variable win
+  fetchVars
   set ans [alited::msg yesnocancel info [msgcat::mc "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?"] YES -geometry root=$win]
   if {$ans in {1 2}} {
     set al(INI,CS) [scan $opcc %d:]
@@ -139,8 +192,7 @@ proc pref::Ok {args} {
 }
 
 proc pref::Cancel {args} {
-  namespace upvar ::alited obDl2 obDl2
-  variable win
+  fetchVars
   RestoreSettings
   $obDl2 res $win 0
 }
@@ -148,9 +200,7 @@ proc pref::Cancel {args} {
 proc pref::Tab {tab {nt ""} {doit no} {dotip no}} {
   # changing the current tab: we need to save the old tab's selection
   # in order to restore the selection at the tab's return.
-  variable arrayTab
-  variable curTab
-  variable win
+  fetchVars
   if {$tab ne $curTab || $doit} {
     if {$curTab ne ""} {
       set arrayTab($curTab) [$win.fraR.$curTab select]
@@ -166,8 +216,7 @@ proc pref::Tab {tab {nt ""} {doit no} {dotip no}} {
 }
 
 proc pref::Help {} {
-  variable curTab
-  variable win
+  fetchVars
   set sel [lindex [split [$win.fraR.$curTab select] .] end]
   alited::Help $win "-${curTab}-$sel"
 }
@@ -177,6 +226,16 @@ proc pref::Help {} {
 ## ________________________ General / View _________________________ ##
 
 proc pref::General_Tab1 {} {
+  fetchVars
+  set opcc [set opcc2 [msgcat::mc {Color schemes}]]
+  set opcColors [list "{$opcc}"]
+  for {set i -1; set n [apave::cs_MaxBasic]} {$i<=$n} {incr i} {
+    if {(($i+2) % ($n/2+2)) == 0} {lappend opcColors |}
+    set csname [::apave::obj csGetName $i]
+    lappend opcColors [list $csname]
+    if {$i == $al(INI,CS)} {set opcc $csname}
+    if {$i == $al(EM,CS)} {set opcc2 $csname}
+  }
   return {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
@@ -289,8 +348,7 @@ proc pref::Keys_Tab1 {} {
 }
 
 proc pref::RegisterKeys {} {
-  variable keys
-  variable stdkeysSize
+  fetchVars
   alited::keys::Delete preference
   for {set k 0} {$k<$stdkeysSize} {incr k} {
     alited::keys::Add preference $k [set keys($k)] "alited::pref::BindKey $k {%k}"
@@ -298,15 +356,13 @@ proc pref::RegisterKeys {} {
 }
 
 proc pref::GetKeyList {nk} {
-  namespace upvar ::alited obDl2 obDl2
+  fetchVars
   RegisterKeys
   [$obDl2 CbxKey$nk] configure -values [alited::keys::VacantList]
 }
 
 proc pref::SelectKey {nk} {
-  namespace upvar ::alited obDl2 obDl2
-  variable keys
-  variable prevkeys
+  fetchVars
   alited::keys::Delete "" $prevkeys($nk)
   set prevkeys($nk) $keys($nk)
   GetKeyList $nk
@@ -318,15 +374,14 @@ proc pref::KeyAccelerator {nk defk} {
 }
 
 proc pref::KeyAccelerators {} {
-  namespace upvar ::alited al al
-  variable stdkeys
+  fetchVars
   dict for {k info} $stdkeys {
     set al(acc_$k) [KeyAccelerator $k [lindex $info 1]]
   }
 }
 
 proc pref::BindKey {nk {key ""} {defk ""}} {
-  variable keys
+  fetchVars
   if {$key eq "-"} {
     if {[info exists keys($nk)]} {
       return $keys($nk)
@@ -351,10 +406,7 @@ proc pref::BindKey {nk {key ""} {defk ""}} {
 }
 
 proc pref::IniKeys {} {
-  variable keys
-  variable prevkeys
-  variable savekeys
-  variable stdkeys
+  fetchVars
   # default settings
   dict for {k info} $stdkeys {
     set keys($k) [set prevkeys($k) [set savekeys($k) [lindex $info 1]]]
@@ -368,12 +420,6 @@ proc pref::IniKeys {} {
 }
 
 # ________________________ Tab "Tools" _________________________ #
-
-proc pref::TODO_Tab {} {
-  return {
-    {buT - - 1 1 {pack -fill both -expand 1} {-t TODO}}
-  }
-}
 
 proc pref::Emenu_Tab {} {
   set alited::al(EM,menu) [file join $alited::al(EM,menudir) \
@@ -402,17 +448,172 @@ proc pref::Emenu_Tab {} {
   }
 }
 
+proc pref::TODO_Tab {} {
+  return {
+    {buT - - 1 1 {pack -fill both -expand 1} {-t TODO}}
+  }
+}
+
+proc pref::Runs_Tab {} {
+  
+  fetchVars
+  set listIcons [::apave::iconImage]
+  set em_Icons [list]
+  set n [llength $listIcons]
+  set icr 0
+  set ncr 0
+  for {set i 0} {$i<($n+43)} {incr i} {
+    if {$icr && ($icr % 13) == 0} {lappend em_Icons |}
+    set ii [expr {$icr-$ncr}]
+    if {$i<$n} {
+      set ico [lindex $listIcons $i]
+      if {$ico in [ReservedIcons]} continue
+      lappend em_Icons $ico
+      incr ncr
+    } elseif {$ii<10} {
+      lappend em_Icons $ii
+    } else {
+      lappend em_Icons [string index [TextIcons] [expr {$ii -10}]]
+    }
+    incr icr
+  }
+  EmSeparators no
+  set em_Menus {}
+  set curmenu menu.mnu
+  set curlev 0
+  set listMenus [alited::tool::EM_AllStructure $curmenu]
+  foreach mit $listMenus {
+    lassign $mit lev mnu hk item
+    set item [string map [list \{ \\\{ \} \\\} \" \\\" \$ \\\$] $item]
+    if {$lev>$curlev} {
+      append em_Menus " \{$mnu"
+    } elseif {$lev<$curlev} {
+      append em_Menus "\} \"$item\""
+    } else {
+      append em_Menus " \"$item\""
+    }
+    set curlev $lev
+  }
+  append em_Menus [string repeat \} $curlev]
+  return {
+    {v_ - - 1 1}
+    {fra v_ T 1 2 {-st nsew -cw 1} {-afteridle {::alited::pref::EmSeparators yes}}}
+    {tcl {
+      set prt "- -"
+      for {set i 0} {$i<$::alited::pref::em_Num} {incr i} {
+        set nit [expr {$i+1}]
+        set lwid ".buTAdd$i $prt 1 1 {-padx 0} {-tip {Inserts a new line.} -com {::alited::pref::EmAddLine $i} -takefocus 0 -relief flat -image alimg_add}"
+        %C $lwid
+        set lwid ".buTDel$i fra.buTAdd$i L 1 1 {-padx 1} {-tip {Deletes a line.} -com {::alited::pref::EmDelLine $i} -takefocus 0 -relief flat -image alimg_delete}"
+        %C $lwid
+        set lwid ".lab$i fra.buTDel$i L 1 1 {-st e -padx 3} {-t {Item$nit: }}"
+        %C $lwid
+        set lwid ".ChbMT$i fra.lab$i L 1 1 {-padx 10} {-t separator -var ::alited::pref::em_sep($i) -tip {If 'yes', means a separator of the toolbar.} -com {::alited::pref::EmSeparators yes}}"
+        %C $lwid
+        set lwid ".OpcIco$i fra.ChbMT$i L 1 1 {-st nsw} {::alited::pref::em_ico($i) alited::pref::em_Icons {-width 10 -tip {An icon includes the run into the toolbar.\nBlank or 'none' excludes it from the toolbar.}} {alited::pref::opcIcoPre %a}}"
+        %C $lwid
+        set lwid ".ButMnu$i fra.OpcIco$i L 1 1 {-st sw -pady 1 -padx 10} {-t {$::alited::pref::em_mnu($i)} -com {alited::pref::PickMenuItem $i} -tip {The run item for the menu and/or the toolbar.\nSelect it from the e_menu items.}}"
+        %C $lwid
+        set prt "fra.buTAdd$i T"
+      }}
+    }
+  }
+}
+
+proc pref::EmAddLine {idx} {
+  fetchVars
+  for {set i $em_Num} {$i>$idx} {} {
+    incr i -1
+    if {$i==$idx} {
+      lassign {} em_mnu($i) em_ico($i) em_inf($i)
+      set em_sep($i) 0
+    } else {
+      set ip [expr {$i-1}]
+      set em_sep($i) $em_sep($ip)
+      set em_ico($i) $em_ico($ip)
+      set em_mnu($i) $em_mnu($ip)
+      set em_inf($i) $em_inf($ip)
+    }
+  }
+  EmSeparators yes
+}
+
+proc pref::EmDelLine {idx} {
+  fetchVars
+  for {set i $idx} {$i<$em_Num} {incr i} {
+    if {$i==($em_Num-1)} {
+      lassign {} em_mnu($i) em_ico($i) em_inf($i)
+      set em_sep($i) 0
+    } else {
+      set ip [expr {$i+1}]
+      set em_sep($i) $em_sep($ip)
+      set em_ico($i) $em_ico($ip)
+      set em_mnu($i) $em_mnu($ip)
+      set em_inf($i) $em_inf($ip)
+    }
+  }
+  EmSeparators yes
+}
+
+proc pref::EmSeparators {upd} {
+  fetchVars
+  for {set i 0} {$i<$em_Num} {incr i} {
+    if {![info exists em_sep($i)]} {
+      lassign {} em_inf($i) em_mnu($i) em_ico($i) em_sep($i)
+    }
+    set em_sep($i) [string is true -strict $em_sep($i)]
+    if {$em_sep($i)} {
+      lassign {} em_inf($i) em_mnu($i) em_ico($i)
+    }
+    if {$upd} {
+      if {$em_sep($i)} {set state disabled} {set state normal}
+      [$obDl2 ButMnu$i] configure -text $em_mnu($i) -state $state
+      [$obDl2 OpcIco$i] configure -state $state
+    }
+  }  
+}
+
+proc pref::PickMenuItem {it} {
+  fetchVars
+  if {![info exists ::em::geometry]} {
+    source [file join $::e_menu_dir e_menu.tcl]
+  }
+  set w [$obDl2 ButMnu$it]
+  set X [winfo rootx $w]
+  set Y [winfo rooty $w]
+  set res [::em::main -prior 1 -modal 1 -remain 0 -noCS 1 \
+    {*}[alited::tool::EM_Options "pk=yes dk=dock o=0 t=1 g=+[incr X 5]+[incr Y 25]"]]
+  lassign $res menu idx
+  if {$idx ne {}} {
+    set i [lindex [alited::tool::EM_Structure $menu] $idx-1 1]
+    set item [string range $i [string first - $i]+1 end]
+    $w configure -text $item
+    set em_mnu($it) $item
+    set em_inf($it) [list [file tail $menu] $idx $item]
+  }
+}
+proc pref::opcIcoPre {args} {
+  fetchVars
+  lassign $args a
+  if {[set i [lsearch $listIcons $a]]>-1} {
+    set img [::apave::iconImage [lindex $listIcons $i]]
+    set res "-image $img"
+  } else {
+    set res "-image alimg_none"
+  }
+  append res " -compound left -label $a"
+}
+
+proc pref::opcMnuPre {args} {
+  fetchVars
+  lassign $args a b c
+  return "-label $args"
+}
+
 # ________________________ GUI procs _________________________ #
 proc pref::_create {} {
 
-  namespace upvar ::alited al al obDl2 obDl2
-  variable win
-  variable geo
-  variable minsize
-  variable prjlist
-  variable arrayTab
-  variable curTab
-  variable oldTab
+  fetchVars
   $obDl2 makeWindow $win "$al(MC,pref) :: $::alited::USERDIR"
   $obDl2 paveWindow \
     $win [MainFrame] \
@@ -423,8 +624,9 @@ proc pref::_create {} {
     $win.fraR.nbk3.f1 [TODO_Tab] \
     $win.fraR.nbk4.f1 [Template_Tab1] \
     $win.fraR.nbk5.f1 [Keys_Tab1] \
-    $win.fraR.nbk6.f1 [TODO_Tab] \
-    $win.fraR.nbk6.f2 [Emenu_Tab]
+    $win.fraR.nbk6.f1 [Emenu_Tab] \
+    $win.fraR.nbk6.f2 [TODO_Tab] \
+    $win.fraR.nbk6.f3 [Runs_Tab]
   if {$minsize eq ""} {      ;# save default min.sizes
     after idle [list after 100 {
       set ::alited::pref::minsize "-minsize {[winfo width $::alited::pref::win] [winfo height $::alited::pref::win]}"
@@ -450,22 +652,9 @@ proc pref::_create {} {
 }
 
 proc pref::_init {} {
-  namespace upvar ::alited al al
-  variable opcColors
-  variable opcc
-  variable opcc2
-  variable curTab
+  fetchVars
   SaveSettings
   set curTab "nbk"
-  set opcc [set opcc2 [msgcat::mc {Color schemes}]]
-  set opcColors [list "{$opcc}"]
-  for {set i -1; set n [apave::cs_MaxBasic]} {$i<=$n} {incr i} {
-    if {(($i+2) % ($n/2+2)) == 0} {lappend opcColors "|"}
-    set csname [::apave::obj csGetName $i]
-    lappend opcColors [list $csname]
-    if {$i == $al(INI,CS)} {set opcc $csname}
-    if {$i == $al(EM,CS)} {set opcc2 $csname}
-  }
   IniKeys
 }
 
