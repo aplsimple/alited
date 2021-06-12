@@ -242,10 +242,9 @@ proc ::apave::initWM {args} {
     cursorwidth theme buttonwidth buttonborder labelborder padding
   set ::apave::_CS_(initWM) 0
   set ::apave::_CS_(CURSORWIDTH) $cursorwidth
+  wm withdraw .
   if {$::tcl_platform(platform) eq "windows"} {
     wm attributes . -alpha 0.0
-  } else {
-    wm withdraw .
   }
   # only most common settings, independent on themes (or no theme)
   ttk::style map "." \

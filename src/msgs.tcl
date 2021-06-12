@@ -9,22 +9,13 @@ namespace eval ::alited {
 
   ## _ common _ ##
   set al(MC,nofile)      [msgcat::mc "No name"]
-  set al(MC,about)       [msgcat::mc "About"]
-  set al(MC,error)       [msgcat::mc "Error"]
   set al(MC,warning)     [msgcat::mc "Warning"]
-  set al(MC,question)    [msgcat::mc "Question"]
   set al(MC,info)        [msgcat::mc "Information"]
   set al(MC,wait)        [msgcat::mc "Wait a little ..."]
   set al(MC,help)        [msgcat::mc "Help"]
-  set al(MC,mnufile)     [msgcat::mc "File"]
-  set al(MC,mnuedit)     [msgcat::mc "Edit"]
-  set al(MC,mnutools)    [msgcat::mc "Tools"]
-  set al(MC,mnusetup)    [msgcat::mc "Setup"]
-  set al(MC,mnuhelp)     [msgcat::mc "Help"]
   set al(MC,select)      [msgcat::mc "Select"]  ;# verb
   set al(MC,notsaved)    [msgcat::mc "\"%f\" wasn't saved.\n\nSave it?"]
   set al(MC,saving)      [msgcat::mc "Saving"]
-  set al(MC,saveas)      [msgcat::mc "Save as"]
   set al(MC,files)       [msgcat::mc "Files"]
   set al(MC,moving)      [msgcat::mc "Moving"]
   set al(MC,run)         [msgcat::mc "Run"]
@@ -204,7 +195,6 @@ namespace eval ::alited {
   set al(checkroot)      [msgcat::mc "Checking %d. Wait a little..."]
   set al(badroot)        [msgcat::mc "Too big directory for a project: %n files or more."]
   set al(makeroot)       [msgcat::mc "Directory \"%d\"\ndoesn't exist.\n\nCreate it?"]
-
 
   ## _ icons of toolbar _ ##
   set al(MC,icofile)     [msgcat::mc "Create a file\nCtrl+N"]

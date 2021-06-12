@@ -105,6 +105,11 @@ proc main::UpdateText {args} {
   ::hl_tcl::hl_text $wtxt
 }
 
+proc main::UpdateTextAndGutter {} {
+  UpdateGutter
+  UpdateText
+}
+
 proc main::FocusText {args} {
 
   namespace upvar ::alited al al obPav obPav
@@ -147,6 +152,9 @@ proc main::GutterAttrs {} {
 
 proc main::HighlightText {TID curfile wtxt} {
   namespace upvar ::alited al al obPav obPav
+  set clrnams [::hl_tcl::hl_colorNames]
+  foreach nam $clrnams {lappend colors $al(ED,$nam)}
+  lappend colors [lindex [$obPav csGet] 16]
   set ext [string tolower [file extension $curfile]]
   if {![info exists al(HL,$wtxt)] || $al(HL,$wtxt) ne $ext} {
     switch -- $ext {
@@ -165,7 +173,8 @@ proc main::HighlightText {TID curfile wtxt} {
           -cmd "::alited::unit::Modified $TID" \
           -cmdpos "::alited::main::CursorPos" \
           -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)" \
-          -plaintext [expr {![alited::file::IsTcl $curfile]}]
+          -plaintext [expr {![alited::file::IsTcl $curfile]}] \
+          -colors $colors
         ::hl_tcl::hl_text $wtxt
       }
     }
@@ -194,14 +203,12 @@ proc main::FocusInText {TID wtxt} {
 }
 
 proc main::BindsForText {TID wtxt} {
-
   if {[alited::bar::BAR isTab $TID]} {
     bind $wtxt <FocusIn> [list after 200 "::alited::main::FocusInText $TID $wtxt"]
   }
   bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
   bind $wtxt <Control-Shift-ButtonRelease-1> "::alited::find::SearchWordInSession ; break"
   bind $wtxt <Control-Tab> "::alited::bar::ControlTab ; break"
-  bind $wtxt <Control-Insert> "::alited::main::InsertLine ; break"
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action
   alited::keys::BindKeys $wtxt template
@@ -312,11 +319,11 @@ proc main::_create {} {
   $obPav makeWindow $al(WIN).fra alited
   $obPav paveWindow $al(WIN).fra {
     {Menu - - - - - {-array {
-      file $alited::al(MC,mnufile)
-      edit $alited::al(MC,mnuedit)
-      tool $alited::al(MC,mnutools)
-      setup $alited::al(MC,mnusetup)
-      help $alited::al(MC,mnuhelp)
+      file File
+      edit Edit
+      tool Tools
+      setup Setup
+      help Help
     }} alited::menu::FillMenu}
     {frat - - - - {pack -fill both}}
     {frat.ToolTop - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::al(atools)}}}
@@ -371,8 +378,8 @@ proc main::_create {} {
     {.fraTop.FraHead  - - - - {pack forget -side bottom -fill x} {-padding {4 4 4 4} -relief groove}}
     {.fraTop.fraHead.labFind - - - - {pack -side left} {-t "    Unit: "}}
     {.fraTop.fraHead.EntFindSTD - - - - {pack -side left} {-tvar alited::al(findunit) -w 30 -tip {$al(MC,findunit)}}}
-    {.fraTop.fraHead.buT - - - - {pack -side left -padx 4} {-t Find: -relief flat -com alited::find::DoFindUnit -takefocus 0 -bd 0 -highlightthickness 0}}
-    {.fraTop.fraHead.rad1 - - - - {pack -side left} {-takefocus 0 -var alited::main::findunits -t {in all} -value 1}}
+    {.fraTop.fraHead.buT - - - - {pack -side left -padx 4} {-t Find: -relief flat -com alited::find::DoFindUnit -takefocus 0 -bd 0 -highlightthickness 0 -w 8 -anchor e}}
+    {.fraTop.fraHead.rad1 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in all} -value 1}}
     {.fraTop.fraHead.rad2 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in current} -value 2}}
     {.fraTop.fraHead.h_ - - - - {pack -side left -fill x -expand 1}}
     {.fraTop.fraHead.buTno - - - - {pack -side left} {-relief flat -highlightthickness 0 -takefocus 0 -command {alited::find::HideFindUnit}}}
@@ -396,6 +403,7 @@ proc main::_create {} {
   bind $lbxi <FocusIn> "pack $sbhi -side bottom -before $lbxi -fill both"
   bind $lbxi <FocusOut> "pack forget $sbhi"
   bind $lbxi <<ListboxSelect>> {alited::info::ListboxSelect %W}
+  bind [$obPav ToolTop] <ButtonPress-3> "::alited::tool::PopupBar %X %Y"
 }
 
 proc main::_run {} {

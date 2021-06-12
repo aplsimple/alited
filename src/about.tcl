@@ -22,26 +22,20 @@ namespace eval about {
       [list "linkapl" "::apave::openDoc %t@@https://github.com/aplsimple/@@"] \
       [list "linkMIT" "::apave::openDoc %t@@https://en.wikipedia.org/wiki/MIT_License@@"] \
       ]
-    ::alited::msg ok {} "  <red>alited v[package require alited]</red> [msgcat::mc {stands for}] \"a lite editor\".
-
-  [msgcat::mc {Written in pure Tcl/Tk.}]
-  [msgcat::mc {And well fit for programming with it.}]
-
-  [msgcat::mc {Details:}] \
-
-    \u2022 <link1>aplsimple.github.io/en/tcl/alited</link1>
-
-  [msgcat::mc {Authors:}] \
-
-    \u2022 <linkapl>Alex Plotnikov</linkapl>
-
-  [msgcat::mc {License:}] <linkMIT>MIT</linkMIT>
-  __________________________________________
-
-  <red> $alited::tcltk_version </red> <link3></link3>
-
-  <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>
-" -title $al(MC,about) -t 1 -w 46 -scroll 0 \
+    ::alited::msg ok {} "  <red>alited v[package require alited]</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
+  [msgcat::mc {Written in pure Tcl/Tk.}] \n \
+  [msgcat::mc {And well fit for programming with it.}]\n\n \
+  [msgcat::mc {Details:}] \n\n \
+    \u2022 <link1>aplsimple.github.io/en/tcl/alited</link1>\n\n \
+  [msgcat::mc {Authors:}] \n\n \
+    \u2022 <linkapl>Alex Plotnikov</linkapl>\n\n \
+  [msgcat::mc {License:}] <linkMIT>MIT</linkMIT>\n \
+  __________________________________________\n \
+\n \
+  <red> $alited::tcltk_version </red> <link3></link3>\n \
+\n \
+  <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>\n" \
+-title [msgcat::mc About] -t 1 -w 46 -scroll 0 \
 -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}"
   }
 

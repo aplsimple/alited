@@ -504,6 +504,16 @@ proc unit::UnIndent {} {
   }
 }
 
+proc unit::NormIndent {} {
+  if {![namespace exists alited::indent]} {
+    namespace eval alited {
+      source [file join $alited::SRCDIR indent.tcl]
+    }
+  }
+  alited::indent::normalize
+  alited::main::UpdateTextAndGutter
+}
+
 proc unit::Comment {} {
   lassign [SelectedLines] wtxt l1 l2
   for {set l $l1} {$l<=$l2} {incr l} {

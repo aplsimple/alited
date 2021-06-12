@@ -96,6 +96,7 @@ namespace eval ::apave {
     "sbH" {{-sticky ew} {-orient horizontal -takefocus 0}} \
     "sbv" {{-sticky ns} {-orient vertical -takefocus 0}} \
     "sbV" {{-sticky ns} {-orient vertical -takefocus 0}} \
+    "scf" {{} {}} \
     "seh" {{-sticky ew} {-orient horizontal -takefocus 0}} \
     "sev" {{-sticky ns} {-orient vertical -takefocus 0}} \
     "siz" {{} {}} \
@@ -1118,6 +1119,15 @@ oo::class create ::apave::APave {
       "sbH" {set widget "scrollbar"}
       "sbv" {set widget "ttk::scrollbar"}
       "sbV" {set widget "scrollbar"}
+      "scf" {
+        if {![namespace exists ::apave::sframe]} {
+          namespace eval ::apave {
+            source [file join $::apave::apaveDir sframe.tcl]
+          }
+        }
+        ;# scrolledFrame - example of "my method" widget
+        set widget "my scrolledFrame"
+      }
       "seh" {set widget "ttk::separator"}
       "sev" {set widget "ttk::separator"}
       "siz" {set widget "ttk::sizegrip"}
@@ -1175,7 +1185,7 @@ oo::class create ::apave::APave {
     #   msg - the message
 
     # to use a preset namespace name, we need a fully qualified variable
-    set ::apave::_MC_TEXT_ $msg
+    set ::apave::_MC_TEXT_ [string trim $msg \{\}]
     if {$::apave::MC_NS ne ""} {
       namespace eval $::apave::MC_NS {
         set ::apave::_MC_TEXT_ [msgcat::mc $::apave::_MC_TEXT_]
@@ -1320,9 +1330,11 @@ oo::class create ::apave::APave {
       set it [my optionCascadeText $it]
       set $vname $it
     }
-    lassign [::apave::extractOptions mbopts -tip {}] tip
+    lassign [::apave::extractOptions mbopts -tip {} -tooltip {}] tip tip2
+    if {$tip eq {}} {set tip $tip2}
     ttk::menubutton $w -menu $w.m -text [set $vname] {*}$mbopts
     if {$tip ne {}} {
+      set tip [my MC $tip]
       catch {::baltip tip $w $tip}
     }
     menu $w.m -tearoff 0
@@ -1371,6 +1383,18 @@ oo::class create ::apave::APave {
       }
     }
     return
+  }
+
+  #########################################################################
+
+  method scrolledFrame {w args} {
+
+    lassign [::apave::extractOptions args -toplevel no -anchor center -mode both] tl anc mode
+    ::apave::sframe new $w -toplevel $tl -anchor $anc -mode $mode
+
+    # Retrieve the path where the scrollable contents go.
+    set path [::apave::sframe content $w]
+    return $path
   }
 
   #########################################################################
@@ -1544,12 +1568,12 @@ oo::class create ::apave::APave {
     # Returns a selected value.
 
     set isfilename 0
-    lassign [::apave::extractOptions args -ftxvar ""] ftxvar
+    lassign [::apave::extractOptions args -ftxvar {} -tname {}] ftxvar tname
     lassign [::apave::getProperty DirFilGeoVars] dirvar filvar
     set vargeo [set dirgeo [set filgeo ""]]
     set parent [my ParentOpt]
-    if {$dirvar ne ""} {set dirgeo [set $dirvar]}
-    if {$filvar ne ""} {set filgeo [set $filvar]}
+    if {$dirvar ne {}} {set dirgeo [set $dirvar]}
+    if {$filvar ne {}} {set filgeo [set $filvar]}
     if {$nchooser eq "ftx_OpenFile"} {
       set nchooser "tk_getOpenFile"
     }
@@ -1592,10 +1616,15 @@ oo::class create ::apave::APave {
       }
       set $tvar $res
     }
-    if {$vargeo ne "" && $widname ne "" && [::islinux]} {
+    if {$vargeo ne {} && $widname ne {} && [::islinux]} {
       catch {
         set $vargeo [list $widname [wm geometry $widname]]  ;# 1st item for possible usage only
       }
+    }
+    if {$tname ne {}} {
+      set tname [my [my ownWName $tname]]
+      focus $tname
+      after idle [$tname selection range 0 end]
     }
     return $res
   }
@@ -1779,16 +1808,21 @@ oo::class create ::apave::APave {
           append addattrs " -t {[set $tvar]}"
         }
         set an "tex"
+        set txtnam [my Transname $an $name]
       }
       "clr*" { set chooser "colorChooser"
-        set wpar "-parent $w" ;# specific for color chooser (gets parent of $w)
+        set wpar "-parent $w" ;# specific for color chooser (parent of $w)
       }
       default {
         return $args
       }
     }
-    my MakeWidgetName $w $name $an
+    set inname [my MakeWidgetName $w $name $an]
     set name $n
+    if {$view ne {}} {
+      set tvname $inname
+      set inname [my WidgetNameFull $w $name]
+    }
     set tvar [set vv [set addopt ""]]
     set attmp [list]
     foreach {nam val} $attrs1 {
@@ -1816,33 +1850,33 @@ oo::class create ::apave::APave {
       set args [list $name $neighbor $posofnei $rowspan $colspan "-st ew" $addattrs]
     }
     lset lwidgets $i $args
-    if {$view ne ""} {
+    if {$view ne {}} {
       append attrs1 " -callF2 $w.[my Transname buT $name]"
-      set txtnam [my Transname tex $name]
       set tvar [::apave::getOption -tvar {*}$attrs1]
       set attrs1 [::apave::removeOptions $attrs1 -tvar]
-      if {$tvar ne "" && [file exist [set $tvar]]} {
-        set tcont [my SetContentVariable $tvar $w.$txtnam $name]
+      if {$tvar ne {} && [file exist [set $tvar]]} {
+        set tcont [my SetContentVariable $tvar $tvname [my ownWName $name]]
         set wpar "-ftxvar $tcont"
         set $tcont [::apave::readTextFile [set $tvar]]
         set attrs1 [::apave::putOption -rotext $tcont {*}$attrs1]
       }
-      set entf [list $txtnam - - - - "pack -side left -expand 1 -fill both -in $w.$name" "$attrs1"]
+      set entf [list $txtnam - - - - "pack -side left -expand 1 -fill both -in $inname" "$attrs1"]
     } else {
       set tname [my Transname Ent $name]
       if {$entname ne ""} {append entname $tname}
       append attrs1 " -callF2 {.ent .buT}"
-      set entf [list $tname - - - - "pack -side left -expand 1 -fill x -in $w.$name" "$attrs1 $tvar"]
+      append wpar " -tname $tname"
+      set entf [list $tname - - - - "pack -side left -expand 1 -fill x -in $inname" "$attrs1 $tvar"]
     }
     set icon "folder"
     foreach ic {OpenFile SaveFile font color date} {
       if {[string first $ic $chooser] >= 0} {set icon $ic; break}
     }
     set com "[self] chooser $chooser \{$vv\} $addopt $wpar $addattrs2 $entname"
-    set butf [list [my Transname buT $name] - - - - "pack -side right -anchor n -in $w.$name -padx 1" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
-    if {$view ne ""} {
-      set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $w.$name" ""]
-      set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $w.$name" ""]
+    set butf [list [my Transname buT $name] - - - - "pack -side right -anchor n -in $inname -padx 1" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
+    if {$view ne {}} {
+      set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $inname" ""]
+      set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname" ""]
       set lwidgets [linsert $lwidgets [expr {$i+1}] $butf]
       set lwidgets [linsert $lwidgets [expr {$i+2}] $entf]
       set lwidgets [linsert $lwidgets [expr {$i+3}] $scrolv]
@@ -1896,6 +1930,7 @@ oo::class create ::apave::APave {
         foreach {v1 v2} $val {
           catch {set v1 [subst -nocommand -nobackslash $v1]}
           catch {set v2 [subst -nocommand -nobackslash $v2]}
+          if {$name eq {menu}} {set v2 [list [my MC $v2]]}
           lappend namvar [namespace current]::$typ[incr ind] $v1 $v2
         }
       } else {
@@ -1965,7 +2000,7 @@ oo::class create ::apave::APave {
             if {[string match _* $v1]} {
               set font [my boldTextFont 16]
               lassign [my csGet] - fg - bg
-              set img "-font {$font} -foreground $fg -background $bg"
+              set img "-font {$font} -foreground $fg -background $bg -width 2 -bd 0 -pady 0 -padx 2"
               set v1 _untouch_$v1
             } else {
               set img "-image $v1"
@@ -1991,7 +2026,7 @@ oo::class create ::apave::APave {
         }
         set menuitem [my MakeWidgetName $menupath $v1]
         menu $menuitem -tearoff 0
-        set ampos [string first & $v2]
+        set ampos [string first & [string trimleft $v2  \{]]
         set v2 [string map {& ""} $v2]
         $menupath add cascade -label [lindex $v2 0] {*}[lrange $v2 1 end] -menu $menuitem -underline $ampos
         continue
@@ -2059,6 +2094,26 @@ oo::class create ::apave::APave {
 
   #########################################################################
 
+  method WidgetNameFull {w name {an {}}} {
+    # Gets a full name of a widget.
+    #   w - name of root widget
+    #   name - name of widget
+    #   an - additional prefix for name
+    set wn [string trim [my parentWName $name].$an[my ownWName $name] .]
+    set wnamefull $w.$wn
+    if {[set i1 [string first .scf $wnamefull]]>0 && \
+    [set i2 [string first . $wnamefull $i1+1]]>0 && \
+    [string first .canvas.container.content. $wnamefull]<0} {
+      # insert a container's name into a scrolled frame's child
+      set wend [string range $wnamefull $i2 end]
+      set wnamefull [string range $wnamefull 0 $i2]
+      append wnamefull canvas.container.content $wend
+    }
+    return $wnamefull
+  }
+
+  #########################################################################
+
   method MakeWidgetName {w name {an {}}} {
 
     # Makes an exported method named after root widget, if it's uppercased.
@@ -2072,14 +2127,16 @@ oo::class create ::apave::APave {
     #   ...
     #   my Entry1  ;# instead of .win.fra1.fra2.fra3.Entry1
 
-    set root1 [string index [my ownWName $name] 0]
+    set wnamefull [my WidgetNameFull $w $name $an]
+    set method [my ownWName $name]
+    set root1 [string index $method 0]
     if {[string is upper $root1]} {
-      lassign [my LowercaseWidgetName $name] name method
-      oo::objdefine [self] "
-        method $method {} {return $w.$an$name}
+      lassign [my LowercaseWidgetName $wnamefull] wnamefull
+      oo::objdefine [self] " \
+        method $method {} {return $wnamefull} ; \
         export $method"
     }
-    return [set ${_pav(ns)}PN::wn $w.$name]
+    return [set ${_pav(ns)}PN::wn $wnamefull]
   }
 
   #########################################################################
@@ -3013,16 +3070,17 @@ oo::class create ::apave::APave {
         # for scrollbars - set up the scrolling commands
         if {$widget in {"ttk::scrollbar" "scrollbar"}} {
           set neighbor [lindex [my LowercaseWidgetName $neighbor] 0]
+          set wneigb [my WidgetNameFull $w $neighbor]
           if {$posofnei eq "L"} {
-            $w.$neighbor config -yscrollcommand "$wname set"
-            set attrs "$attrs -com \\\{$w.$neighbor yview\\\}"
-            append options " -side right -fill y" ;# -after $w.$neighbor"
+            $wneigb config -yscrollcommand "$wname set"
+            set attrs "$attrs -com \\\{$wneigb yview\\\}"
+            append options " -side right -fill y" ;# -after $wneigb"
           } elseif {$posofnei eq "T"} {
-            $w.$neighbor config -xscrollcommand "$wname set"
-            set attrs "$attrs -com \\\{$w.$neighbor xview\\\}"
-            append options " -side bottom -fill x" ;# -before $w.$neighbor"
+            $wneigb config -xscrollcommand "$wname set"
+            set attrs "$attrs -com \\\{$wneigb xview\\\}"
+            append options " -side bottom -fill x" ;# -before $wneigb"
           }
-          set options [string map [list %w $w.$neighbor] $options]
+          set options [string map [list %w $wneigb] $options]
         }
         #% doctest 1
         #%   set a "123 \\\\\\\\ 45"
@@ -3034,7 +3092,7 @@ oo::class create ::apave::APave {
         set addcomms [my AdditionalCommands $w $wname attrs]
         eval $widget $wname {*}$attrs
         my Post $wname $attrs
-        foreach acm $addcomms { eval {*}$acm }
+        foreach acm $addcomms {{*}$acm}
         # for buttons and entries - set up the hotkeys (Up/Down etc.)
         my DefineWidgetKeys $wname $widget
       }
@@ -3190,16 +3248,23 @@ oo::class create ::apave::APave {
     }
     if {[set ontop [::apave::getOption -ontop {*}$args]] eq {}} {
       set ontop no
+      catch {
+        set wpar [winfo parent $win]
+        set ontop [wm attributes $wpar -topmost]
+      }
     }
     if {[set modal [::apave::getOption -modal {*}$args]] eq {}} {
       set modal yes
     }
     set minsize [::apave::getOption -minsize {*}$args]
     set args [::apave::removeOptions $args -centerme -ontop -modal -minsize]
-    array set opt [list -focus "" -onclose "" -geometry "" -decor 0 \
+    array set opt [list -focus "" -onclose "" -geometry "" -decor 1 \
       -root $root -resizable "" -variable "" -escape 1 {*}$args]
     lassign [split [wm geometry $root] x+] rw rh rx ry
-    if {! $opt(-decor)} {
+    if {[winfo parent $win] ni {{} .}} {
+      set opt(-decor) 0
+    }
+    if {!$opt(-decor)} {
       wm transient $win $root
     }
     if {$opt(-onclose) eq ""} {

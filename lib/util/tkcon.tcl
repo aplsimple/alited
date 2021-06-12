@@ -336,6 +336,7 @@ proc ::tkcon::Init {args} {
 		    break
 		}
 		-color-*	{ set COLOR([string range $arg 7 end]) $val }
+		-apl-*	{ set OPT([string range $arg 5 end]) $val }
 		-exec		{ set OPT(exec) $val }
 		-main - -e - -eval	{ append OPT(maineval) \n$val\n }
 		-package - -load	{
@@ -634,8 +635,9 @@ proc ::tkcon::InitUI {title} {
     }
     set PRIV(base) $w
 
-    catch {font create tkconfixed -family "Monospace" -size -13} ;# apl
-    catch {font create tkconfixedbold -family Courier -size -13 -weight bold}
+    if {[info exists OPT(fsize)]} {set fsize $OPT(fsize)} {set fsize 13} ;# apl
+    catch {font create tkconfixed {*}[font actual TkFixedFont] -size -$fsize}
+    catch {font create tkconfixedbold {*}[font actual TkFixedFont] -size -$fsize -weight bold}
 
     set PRIV(statusbar) [set sbar [frame $w.fstatus]]
     set PRIV(tabframe)  [frame $sbar.tabs]
@@ -732,8 +734,14 @@ proc ::tkcon::InitUI {title} {
     if {$OPT(gc-delay)} {
 	after $OPT(gc-delay) ::tkcon::GarbageCollect
     }
-    wm geometry $root "+843+835"  ;# apl
-    wm attributes $root -topmost 1  ;# apl
+    if {[info exists OPT(geo)]} {
+      catch {wm geometry $root $OPT(geo)}  ;# apl
+    } else {
+      wm geometry $root "+100+100"
+    }
+    if {[info exists OPT(topmost)]} {
+      wm attributes $root -topmost $OPT(topmost)  ;# apl
+    }
 }
 
 # Hunt around the XDG defined directories for the icon.

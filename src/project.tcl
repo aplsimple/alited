@@ -10,7 +10,7 @@
 # _________________________ Code of project ________________________ #
 
 namespace eval project {
-  variable win $::alited::al(WIN).fraPrj
+  variable win $::alited::al(WIN).diaPrj
   variable OPTS [list prjname prjroot prjdirign prjEOL prjindent prjmultiline]
   variable prjlist [list]
   variable tablist [list]
@@ -476,7 +476,7 @@ proc project::MainFrame {} {
   return {
     {fraTreePrj - - 10 1 {-st nswe -pady 4 -rw 1} {}}
     {.TreePrj - - - - {pack -side left -expand 1 -fill both} {-h 16 -show headings -columns {C1} -displaycolumns {C1}}}
-    {.sbvPrjs fraTreePrj.TreePrj L - - {pack -side left -fill both}}
+    {.sbvPrjs .TreePrj L - - {pack -side left -fill both}}
     {fraR fraTreePrj L 10 1 {-st nsew -cw 1 -pady 4}}
     {fraR.Nbk - - - - {pack -side top -expand 1 -fill both} {
       f1 {-text {$al(MC,info)}}
@@ -501,15 +501,15 @@ proc project::Tab1 {} {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labName - - 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,prjName)}}}
-    {.EntName fra1.labName L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 50}}
-    {.labDir fra1.labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
-    {.Dir fra1.labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 50}}
-    {.labIgn fra1.labDir T 1 1 {-st w -pady 8 -padx 3} {-t "Skip subdirectories:"}}
-    {.entIgn fra1.labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 50}}
+    {.EntName .labName L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 50}}
+    {.labDir .labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
+    {.Dir .labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 50}}
+    {.labIgn .labDir T 1 1 {-st w -pady 8 -padx 3} {-t "Skip subdirectories:"}}
+    {.entIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 50}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 lab T 1 2 {-st nsew -rw 1 -cw 1}}
     {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fraB2.butOK -tip {$alited::al(MC,notes)}}}
-    {.sbv fra2.TexPrj L - - {pack -side left}}
+    {.sbv .TexPrj L - - {pack -side left}}
   }
 }
 
@@ -518,15 +518,15 @@ proc project::Tab2 {} {
     {v_ - - 1 10}
     {fra2 v_ T 1 2 {-st nsew -cw 1}}
     {.labEOL - - 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
-    {.cbxEOL fra2.labEOL L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 5 -state readonly}}
-    {.labIndent fra2.labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
-    {.spXIndent fra2.labIndent L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjindent) -w 3 -from 2 -to 8 -justify center}}
-    {.labMult fra2.labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
-    {.chbMult fra2.labMult L 1 1 {-st sw -pady 5 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
-    {.labFlist fra2.labMult T 1 1 {-pady 5 -padx 3} {-t "List of files:"}}
-    {fraFlist fra2.labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
+    {.cbxEOL .labEOL L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 5 -state readonly}}
+    {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
+    {.spXIndent .labIndent L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjindent) -w 3 -from 2 -to 8 -justify center}}
+    {.labMult .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
+    {.chbMult .labMult L 1 1 {-st sw -pady 5 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
+    {.labFlist .labMult T 1 1 {-pady 5 -padx 3} {-t "List of files:"}}
+    {fraFlist .labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1}}
-    {.sbvFlist fraFlist.lbxFlist L - - {pack -side left}}
+    {.sbvFlist .lbxFlist L - - {pack -side left}}
   }
 }
 

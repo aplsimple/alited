@@ -1,5 +1,14 @@
 The e_menu main options are following:
 
+ - "Run as external app" if on runs e_menu as external application;
+   this is a bit slower than "internal one", still more secure and
+   themed by "Color scheme"; also running it external you wouldn't
+   await for time-wasting actions like a backup
+
+ - "Color scheme" is used when the e_menu is run as external app
+
+ - "Geometry" sets a geometry of the main menu at starting e_menu
+
  - "Directory of menus" contains .mnu files to be used by e_menu
 
  - "Main menu" is a menu file to be shown at starting e_menu
@@ -19,11 +28,3 @@ The e_menu main options are following:
    the help contents can be downloaded with the command:
     wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\\.6.+ \\
       https://www.tcl.tk/man/tcl8.6/
-
- - "Geometry" sets a geometry of the main menu at starting e_menu
-
- - "Color scheme" is used when the e_menu is run as external app
-
- - "Run as external app" if on runs e_menu as external application;
-   this is a bit slower than "internal one", still more secure and
-   themed by "Color scheme" 

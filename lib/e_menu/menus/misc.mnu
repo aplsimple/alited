@@ -20,7 +20,7 @@ in=1.0
 ::EMENU7ZCNT=3
 ::EMENU7ZCOM=zip -r
 ::EMENU7ZARC=~/PG/github/apl-github
-::EMENU7ZDIR=~/PG/github/pave/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/bartabs/*\n~/PG/github/doctest/*\n~/PG/github/booksum/*\n~/PG/github/trimmer/*\n~/PG/github/baltip/*\n~/PG/github/mulster/*\n~/PG/github/transpops/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/aplited/*\n~/PG/github/aplsimple.github.io/*
+::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/pave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*
 ::EMENU7ZSKIP=
 ::EMENU7ZBAK=/media/apl/KINGSTON/
 ::EMENU7ZGIT=1
@@ -131,7 +131,7 @@ SW: Freewrap Tcl SW: tclsh mulster.tcl -b 0 tasks/mulster-freewrap
 R: R: 3
 
 SW:Save your stuff SW: cd %PD
- R:Save your stuff R: %C set ::EMENU7ZCNT [expr {($::EMENU7ZCNT+1)%4}]
+ R:Save your stuff R: %C set ::EMENU7ZCNT [expr {($::EMENU7ZCNT+1)%8}]
  R:Save your stuff R: %I {} "BACKUP" { \
    ent1 {{Archive command:}} {"$::EMENU7ZCOM"} \
    chb1 {{   Include .git:}} {"$::EMENU7ZGIT"} \
@@ -143,8 +143,8 @@ SW:Save your stuff SW: cd %PD
    seh2 {{} {-pady 7} {}} {} \
    dir3 {{        Save to:}} {"$::EMENU7ZBAK"} \
    } -head {\n This creates a backup of your directories.\n } -weight bold == ::EMENU7ZCOM ::EMENU7ZGIT ::EMENU7ZARC ::EMENU7ZSUFF ::EMENU7ZDIR ::EMENU7ZSKIP ::EMENU7ZBAK
- R:Save your stuff R: %C set ::EMENUTMP "$::EMENU7ZARC-$::EMENU7ZSUFF-$::EMENU7ZCNT-N.zip"
- R:Save your stuff R: %C \
+ RW:Save your stuff RW: %C set ::EMENUTMP "$::EMENU7ZARC-$::EMENU7ZSUFF-$::EMENU7ZCNT-N.zip"
+ RW:Save your stuff RW: %C \
   file delete "$::EMENUTMP" ; \
   set ::EMENU7ZDIR_LIST "" ; \
   set flist [string map {\\n \n} $::EMENU7ZDIR] ; \

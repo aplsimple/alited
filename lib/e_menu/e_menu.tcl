@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.3.3b11"
+  variable em_version "e_menu 3.4a6"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -173,7 +173,7 @@ namespace eval ::em {
   variable commands [list]
   variable pause 0
   variable appN 0
-  variable tasks [list] taski [list] ex [list] ipos 0 TN 0
+  variable tasks [list] taski [list] ex {} EX {} ipos 0 TN 0
   variable isep 0
   variable start0 1
   variable prjset 0
@@ -663,7 +663,7 @@ proc ::em::term {sel amp {term ""}} {
 }
 #___ exec for ex= parameter
 proc ::em::execcom {args} {
-  if {$::em::ex eq ""} {
+  if {$::em::EX eq {}} {
     exec -ignorestderr {*}$args
   } else {
     catch {
@@ -850,6 +850,15 @@ proc ::em::update_buttons_dt {} {
 proc ::em::repeate_update_buttons {} {
   after [expr $::em::timeafter * 1000] ::em::update_buttons_dt
 }
+#___ select item from a menu
+proc ::em::Select_Item {{ib {}}} {
+  if {$ib eq {}} {set ib $::em::lasti}
+  set butt .em.fr.win.fr$ib.butt
+  if {$::eh::pk ne {} && [winfo exists $butt]} {
+    set ::eh::retval [list $::em::menufilename $ib [string trim [$butt cget -text]]]
+    ::em::on_exit 1
+  }
+}
 #___ run/shell
 proc ::em::shell_run {from typ c1 s1 amp {inpsel ""}} {
   set cpwd [pwd]
@@ -857,8 +866,7 @@ proc ::em::shell_run {from typ c1 s1 amp {inpsel ""}} {
   set butt .em.fr.win.fr$ib.butt
   if {$::eh::pk ne {} && [winfo exists $butt]} {
     # e_menu was called to pick an item
-    set ::eh::retval [list $::em::menufilename $ib [string trim [$butt cget -text]]]
-    ::em::on_exit 1
+    ::em::Select_Item $ib
     return
   }
   set inc 1
@@ -963,7 +971,8 @@ proc ::em::callmenu {typ s1 {amp ""} {from ""}} {
     lassign [split $geo +] -> x y
     set geo +[expr 20+$x]+[expr 30+$y]
   }
-  set pars "g=$geo $pars"
+  if {$::em::ex eq {}} {set pars "g=$geo $pars"}
+  append pars " ex= EX="
   prepr_1 pars "in" [string range $s1 1 end]  ;# %in is menu's index
   set sel "\"$::em::Argv0\""
   prepr_win sel "M/"  ;# force converting
@@ -1845,7 +1854,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         z0= z1= z2= z3= z4= z5= z6= z7= z8= z9= \
         a= d= e= f= p= l= h= b= cs= c= t= g= n= \
         fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= cc= gr= ht= hh= rt= \
-        m= om= ts= TF= yn= in= ex= ls=} { ;# the processing order is important
+        m= om= ts= TF= yn= in= ex= EX= ls=} { ;# the processing order is important
     if {($s1 in {o= s= m=}) && !($s1 in $osm)} {
       continue
     }
@@ -1967,8 +1976,11 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           set ::em::$s01 [::apave::getN $seltd [set ::em::$s01]]
         }
         ed= {set ::em::editor $seltd}
-        tg= - om= - dk= - ex= - ls= {
+        tg= - om= - dk= - ls= {
           set ::em::$s01 $seltd
+        }
+        ex= - EX= {
+          set ::em::$s01 [set ::em::ex $seltd]
         }
         pk= {set ::eh::$s01 $seltd}
         md= {set ::em::basedir $seltd}
@@ -2437,7 +2449,9 @@ proc ::em::initbegin {} {
 nD2xAAAAfklEQVRYw+3YsQ2AMAxEUcMGlpjgsgFMgMT+MyFRAIpEkNPETu5XFK80V0RgStJmaJUk
 hsgr+KRZofhyvHLAd9VR+JPGupmsQP8q+f2tP7nkM4CLoxB5G+70Zj44V4y8742UQuRtuNOb4UaS
 cyNjDMdA3NXNcCP747a3VJg6ATkQ0OkoHNcZAAAAAElFTkSuQmCC}
-  ::apave::setAppIcon .em $e_menu_icon
+  if {$::em::solo} {
+    ::apave::setAppIcon .em $e_menu_icon
+  }
 }
 #___ end up inits
 proc ::em::initend {} {

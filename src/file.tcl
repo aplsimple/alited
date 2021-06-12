@@ -148,7 +148,7 @@ proc file::OpenOfDir {dname} {
 }
 
 proc file::IsTcl {fname} {
-  if {[string tolower [file extension $fname]] in {.tcl .tm .msg}} {
+  if {[string tolower [file extension $fname]] in $alited::al(TclExtensions)} {
     return yes
   }
   return no
@@ -181,6 +181,7 @@ proc file::SaveFile {{TID ""}} {
   }
   set res [SaveFileByName $TID $fname]
   alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)"
+  alited::main::ShowHeader yes
   return $res
 }
 
@@ -195,11 +196,12 @@ proc file::SaveFileAs {{TID ""}} {
     set alited::al(filename) ""
   }
   set fname [$obPav chooser tk_getSaveFile alited::al(filename) -title \
-    $al(MC,saveas) -initialdir [file dirname $fname] -parent $al(WIN)]
+    [msgcat::mc "Save as"] -initialdir [file dirname $fname] -parent $al(WIN)]
   if {$fname in [list "" $al(MC,nofile)]} {
     set res 0
   } elseif {[set res [SaveFileByName $TID $fname]]} {
     RenameFile $TID $fname
+    alited::main::ShowHeader yes
   }
   return $res
 }

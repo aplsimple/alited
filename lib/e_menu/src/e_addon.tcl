@@ -148,8 +148,13 @@ proc ::em::iconA {{icon none}} {
 }
 proc ::em::createpopup {} {
   menu .em.emPopupMenu
-  .em.emPopupMenu add command {*}[iconA folder] -accelerator Ctrl+P \
-    -label "Project..." -command {::em::change_PD}
+  if {$::eh::pk ne {}} {
+    .em.emPopupMenu add command {*}[iconA ok] \
+      -label "Select" -command {::em::Select_Item}
+  } else {
+    .em.emPopupMenu add command {*}[iconA folder] -accelerator Ctrl+P \
+      -label "Project..." -command {::em::change_PD}
+  }
   .em.emPopupMenu add separator
   .em.emPopupMenu add command {*}[iconA change] -accelerator Ctrl+E \
     -label "Edit the menu" -command {after 50 ::em::edit_menu}
@@ -281,6 +286,7 @@ proc ::em::edit {fname {prepost ""}} {
     set dialog [::apave::APaveInput new]
     set res [$dialog editfile $fname $::em::clrtitf $::em::clrinab $::em::clrtitf \
       $prepost {*}[::em::theming_pave] -w {80 100} -h {10 24} -ro 0 -centerme .em \
+      -ontop $::em::ontop \
       -myown [list my TextCommandForChange %w "::em::menuTextModified %w {$bfont}"\
        true "::em::menuTextBrackets %w magenta {$bfont}"]]
     $dialog destroy
@@ -362,7 +368,7 @@ proc ::em::about {} {
   <link>chiselapp.com/user/aplsimple</link> \n" "{Help:: $doc } 1 Close 0" \
     0 -t 1 -w $width -scroll 0 -tags textTags -head \
     "\n Menu system for editors and file managers. \n" \
-    -centerme .em {*}[theming_pave]]
+    -ontop $::em::ontop -centerme .em {*}[theming_pave]]
   $dialog destroy
   if {[lindex $res 0]} {::eh::browse $doc}
   repaintForWindows
@@ -564,11 +570,11 @@ proc ::em::input {cmd} {
   set dp [string last " == " $cmd]
   if {$dp < 0} {set dp 999999}
   set data [string range $cmd $dp+4 end]
-  set cmd "$dialog input [string range $cmd 2 $dp-1] -centerme .em"
+  set cmd "$dialog input [string range $cmd 2 $dp-1] -centerme .em -ontop $::em::ontop"
   catch {set cmd [subst $cmd]}
   if {[set lb [countCh $cmd \{]] != [set rb [countCh $cmd \}]]} {
     dialog_box ERROR " Number of left braces : $lb\n Number of right braces: $rb \
-      \n\n     are not equal!" ok err OK -centerme .em
+      \n\n     are not equal!" ok err OK -centerme .em -ontop $::em::ontop
   }
   set res [eval $cmd [::em::theming_pave]]
   $dialog destroy

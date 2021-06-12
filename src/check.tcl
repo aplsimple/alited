@@ -9,7 +9,7 @@
 # _________________________ Variables ________________________ #
 
 namespace eval check {
-  variable win $::alited::al(WIN).fraCheck
+  variable win $::alited::al(WIN).diaCheck
   variable chBrace 1
   variable chBracket 1
   variable chParenthesis 1
@@ -169,9 +169,9 @@ proc check::_create {} {
   $obDl2 paveWindow $win {
     {v_ - -}
     {labHead v_ T 1 1 {-st w -pady 4 -padx 8} {-t "Checks available:"}}
-    {chb1 labHead T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chBrace -t "Consistency of \{\}"}}
-    {chb2 chb1 T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chBracket -t "Consistency of \[\]"}}
-    {chb3 chb2 T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chParenthesis -t "Consistency of ()"}}
+    {chb1 labHead T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chBrace -t {Consistency of {} }}}
+    {chb2 chb1 T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chBracket -t {Consistency of []}}}
+    {chb3 chb2 T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chParenthesis -t {Consistency of ()}}}
     {v_2 chb3 T}
     {fra v_2 T 1 1 {-st nsew -pady 0 -padx 3} {-padding {5 5 5 5} -relief groove}}
     {fra.lab - - - - {pack -side left} {-t "Check:"}}
@@ -183,7 +183,7 @@ proc check::_create {} {
     {.ButOK - - - - {pack -side left -padx 2} {-t "Check" -command ::alited::check::Ok}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::check::Cancel}}
   }
-  set res [$obDl2 showModal $win -decor 1 -resizable {0 0} -focus [$obDl2 ButOK] \
+  set res [$obDl2 showModal $win -resizable {0 0} -focus [$obDl2 ButOK] \
     -onclose alited::check::Cancel]
   destroy $win
   return $res

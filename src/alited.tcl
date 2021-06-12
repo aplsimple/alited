@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.8.0.2
+package provide alited 0.8.7
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -20,7 +20,7 @@ namespace eval alited {
   proc raise_window {} {
     # Raises the app's window.
 
-    if {$::tcl_platform(platform) eq "windows"} {
+    if {$::tcl_platform(platform) eq {windows}} {
       #wm attributes . -alpha 1.0
     } else {
       catch {wm deiconify . ; raise .}
@@ -38,22 +38,23 @@ namespace eval alited {
   }
 }
 
-if {$::tcl_platform(platform) eq "windows"} {
+## ________________________ Initialize GUI _________________________ ##
+
+wm withdraw .
+if {$::tcl_platform(platform) eq {windows}} {
   wm attributes . -alpha 0.0
-} else {
-  wm withdraw .
 }
 set ALITED_NOSEND no
-if {"NOSEND" eq [lindex $::argv 0]} {
+if {{NOSEND} eq [lindex $::argv 0]} {
   set ::argv [lreplace $::argv 0 0]
   incr ::argc -1
   set ALITED_NOSEND yes
 }
-if {"DEBUG" eq [lindex $::argv 0]} {
+if {{DEBUG} eq [lindex $::argv 0]} {
   set alited::al(DEBUG) yes
   set ::argv [lreplace $::argv 0 0]
   incr ::argc -1
-} elseif {$::tcl_platform(platform) eq "unix"} {
+} elseif {$::tcl_platform(platform) eq {unix}} {
   if {!$ALITED_NOSEND} {
     set port 48784
     if {[catch {::comm::comm config -port $port}] && \
@@ -109,11 +110,11 @@ namespace eval alited {
   variable obFND ::alited::alitedFND
 
   # misc. vars
-  variable DirGeometry ""
-  variable FilGeometry ""
+  variable DirGeometry {}
+  variable FilGeometry {}
 
   # misc. consts
-  variable PRJEXT ".ale"
+  variable PRJEXT .ale
   variable EOL {@~}  ;# "end of line" for ini-files
 
   # load localized messages
@@ -121,13 +122,14 @@ namespace eval alited {
 
   # main data of alited (others are in ini.tcl)
   set al(WIN) .alwin
-  set al(prjname) ""
-  set al(prjfile) ""
-  set al(prjroot) ""
+  set al(prjname) {}
+  set al(prjfile) {}
+  set al(prjroot) {}
   set al(prjindent) 2
   set al(prjmultiline) 0
   set al(prjEOL) {}
-  set al(TITLE) "%f :: %d :: %p - alited"
+  set al(TITLE) {%f :: %d :: %p - alited}
+  set al(TclExtensions) {.tcl .tm .msg}
 }
 
 # _____________________________ Packages used __________________________ #
@@ -152,20 +154,20 @@ namespace eval alited {
 
     variable obDlg
     variable al
-    if {$type eq "ok"} {
+    if {$type eq {ok}} {
       set args [linsert $args 0 $defb]
-      set defb ""
+      set defb {}
     }
-    lassign [::apave::extractOptions args -title ""] title
-    if {$title eq ""} {
+    lassign [::apave::extractOptions args -title {} -noesc 0] title noesc
+    if {$title eq {}} {
       switch $icon {
-        "warn" {set title $al(MC,warning)}
-        "err" {set title $al(MC,error)}
-        "ques" {set title $al(MC,question)}
+        warn {set title $al(MC,warning)}
+        err {set title [msgcat::mc Error]}
+        ques {set title [msgcat::mc Question]}
         default {set title $al(MC,info)}
      }
     }
-    set message [string map [list \\ \\\\] $message]
+    #TODO: if {!$noesc} {set message [string map [list \\ \\\\] $message]}
     set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
     after idle {catch alited::main::UpdateGutter}
     return [lindex $res 0]
@@ -232,6 +234,8 @@ namespace eval alited {
 
   proc Help {win {suff ""}} {
     variable DATADIR
+    variable al
+    variable obDlg
     set fname [lindex [split [dict get [info frame -1] proc] :] end-2]
     set fname [file join [file join $DATADIR help] $fname$suff.txt]
     if {[file exists $fname]} {
@@ -239,7 +243,10 @@ namespace eval alited {
     } else {
       set msg "Here should be a text of\n\"$fname\""
     }
-    msg ok "" $msg -title Help -text 1 -geometry root=$win -scroll no
+    if {$alited::al(DEBUG)} {
+      after idle [list baltip::tip .alwin.diaaliteddlg1.fra.butOK $fname]
+    }
+    msg ok {} $msg -title Help -text 1 -geometry root=$win -scroll no -noesc 1
   }
 
   proc FgFgBold {} {

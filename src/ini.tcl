@@ -11,7 +11,9 @@ namespace eval ::alited {
   set al(ED,multiline) 0 ;# "true" only for projects of small modules
   set al(ED,EOL) {}
   set al(ED,indent) 2
-  set al(TEXT,opts) "-padx 3 -spacing1 1"
+  set al(ED,sp1) 1
+  set al(ED,sp2) 0
+  set al(ED,sp3) 0
   set al(TREE,isunits) yes
   set al(TREE,units) no
   set al(TREE,files) no
@@ -78,6 +80,7 @@ proc ini::ReadIni {{projectfile ""}} {
   namespace upvar ::alited al al
   namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo
 #TODO  set prjinfo [list]
+  alited::pref::Tkcon_Default
   set prjlist [list]
   set al(TPL,list) [list]
   set al(KEYS,bind) [list]
@@ -94,7 +97,7 @@ proc ini::ReadIni {{projectfile ""}} {
     while {![eof $chan]} {
       set stini [string trim [gets $chan]]
       switch -exact $stini {
-        {[Geometry]} - {[Options]} - {[Projects]} - {[Templates]} - {[Keys]} - {[EM]} - {[Misc]} {
+        {[Geometry]} - {[Options]} - {[Projects]} - {[Templates]} - {[Keys]} - {[EM]} - {[Tkcon]} - {[Misc]} {
           set mode $stini
           continue
         }
@@ -108,6 +111,7 @@ proc ini::ReadIni {{projectfile ""}} {
         {[Templates]} {ReadIniTemplates $nam $val}
         {[Keys]}      {ReadIniKeys $nam $val}
         {[EM]}        {ReadIniEM $nam $val em_i}
+        {[Tkcon]}     {ReadIniTkcon $nam $val}
         {[Misc]}      {ReadIniMisc $nam $val}
       }
     }
@@ -129,6 +133,7 @@ proc ini::ReadIni {{projectfile ""}} {
   ReadIniPrj
   ::apave::setTextIndent $al(prjindent)
   ::apave::textEOL $al(prjEOL)
+  set al(TEXT,opts) "-padx 3 -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3)"
 }
 
 proc ini::ReadIniGeometry {nam val} {
@@ -160,6 +165,11 @@ proc ini::ReadIniGeometry {nam val} {
 proc ini::ReadIniOptions {nam val} {
   # Gets other options of alited.
   namespace upvar ::alited al al
+  set clrnames [::hl_tcl::hl_colorNames]
+  if {[set i [lsearch $clrnames $nam]]>-1} {
+    set al(ED,[lindex $clrnames $i]) $val
+    return
+  }
   switch -exact $nam {
     project {
       set al(prjfile) $val
@@ -175,6 +185,12 @@ proc ini::ReadIniOptions {nam val} {
     EOL           {set al(ED,EOL) $val}
     maxfind       {set al(INI,maxfind) $val}
     confirmexit   {set al(INI,confirmexit) $val}
+    spacing1      {set al(ED,sp1) $val}
+    spacing2      {set al(ED,sp2) $val}
+    spacing3      {set al(ED,sp3) $val}
+    clrDark       {set al(ED,Dark) $val}
+    save_onadd - save_onclose - save_onsave {set al(INI,$nam) $val}
+    TclExts       {set al(TclExtensions) $val}
   }
 }
 
@@ -224,6 +240,11 @@ proc ini::ReadIniEM {nam val emiName} {
       incr em_i
     }
   }
+}
+proc ini::ReadIniTkcon {nam val} {
+  # Gets tkcon options of alited.
+  namespace upvar ::alited al al
+  set al(tkcon,$nam) $val
 }
 
 proc ini::ReadIniMisc {nam val} {
@@ -360,6 +381,16 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "EOL=$al(ED,EOL)"
   puts $chan "maxfind=$al(INI,maxfind)"
   puts $chan "confirmexit=$al(INI,confirmexit)"
+  puts $chan "spacing1=$al(ED,sp1)"
+  puts $chan "spacing2=$al(ED,sp2)"
+  puts $chan "spacing3=$al(ED,sp3)"
+  set clrnams [::hl_tcl::hl_colorNames]
+  foreach nam $clrnams {puts $chan "$nam=$al(ED,$nam)"}
+  puts $chan "clrDark=$al(ED,Dark)"
+  puts $chan "save_onadd=$al(INI,save_onadd)"
+  puts $chan "save_onclose=$al(INI,save_onclose)"
+  puts $chan "save_onsave=$al(INI,save_onsave)"
+  puts $chan "TclExts=$al(TclExtensions)"
   puts $chan ""
   puts $chan {[Templates]}
   foreach t $al(TPL,list) {
@@ -390,6 +421,11 @@ proc ini::SaveIni {{newproject no}} {
       append em_run \t $em_ico($i) \t $em_inf($i)
       puts $chan "em_run=$em_run"
     }
+  }
+  puts $chan ""
+  puts $chan {[Tkcon]}
+  foreach k [lsort [array names al tkcon,*]] {
+    puts $chan "[string range $k 6 end]=$al($k)"
   }
   # save the geometry options
   puts $chan ""
@@ -551,6 +587,7 @@ proc ini::CreateIcon {icon} {
   catch {image create photo $img -data [::apave::iconData $icon small]}
   return $img
 }
+
 # ________________________ Main (+ bar) _________________________ #
 
 proc ini::InitGUI {} {
@@ -560,6 +597,16 @@ proc ini::InitGUI {} {
   ::apave::obj basicFontSize $al(FONTSIZE,std)
   ::apave::obj csSet $al(INI,CS) . -doit
   if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE)}
+  set clrnams [::hl_tcl::hl_colorNames]
+  set Dark [::apave::obj csDarkEdit]
+  if {![info exists al(ED,clrCOM)] || ![info exists al(ED,Dark)] || \
+  $al(ED,Dark) != $Dark} {
+    set clrvals [::hl_tcl::hl_colors {} $Dark]
+    foreach nam $clrnams val $clrvals {
+      set al(ED,$nam) $val
+    }
+    set al(ED,Dark) $Dark
+  }
 }
 
 proc ini::_init {} {
@@ -609,19 +656,19 @@ proc ini::_init {} {
           append al(atools) "-com alited::file::OpenFile\}"
         }
         box {
-          append al(atools) "-com alited::project::_run\} h_ 2 sev 4"
+          append al(atools) "-com alited::project::_run\} sev 6"
         }
         SaveFile {
           append al(atools) "-com alited::file::SaveFile -state disabled\}"
         }
         saveall {
-          append al(atools) "-com alited::file::SaveAll -state disabled\} h_ 2 sev 4"
+          append al(atools) "-com alited::file::SaveAll -state disabled\} sev 6"
         }
         undo {
           append al(atools) "-com alited::tool::Undo -state disabled\}"
         }
         redo {
-          append al(atools) "-com alited::tool::Redo -state disabled\} h_ 2 sev 4"
+          append al(atools) "-com alited::tool::Redo -state disabled\} sev 6"
         }
         help {
           append al(atools) "-com alited::tool::Help\}"
@@ -633,7 +680,7 @@ proc ini::_init {} {
           append al(atools) "-com alited::check::_run\}"
         }
         color {
-          append al(atools) "-command alited::tool::ColorPicker\} h_ 2 sev 4"
+          append al(atools) "-command alited::tool::ColorPicker\} sev 6"
         }
         run {
           append al(atools) "-com alited::tool::_run\}"
@@ -651,10 +698,10 @@ proc ini::_init {} {
   for {set i [set was 0]} {$i<$em_Num} {incr i} {
     if {[info exists em_ico($i)] && ($em_ico($i) ni {none {}} || $em_sep($i))} {
       if {[incr was]==1 && !$em_sep($i)} {
-        append al(atools) " h_ 2 sev 4"
+        append al(atools) { sev 6}
       }
       if {$em_sep($i)} {
-        append al(atools) " h_ 2 sev 4"
+        append al(atools) { sev 6}
       } else {
         if {[string length $em_ico($i)]==1} {
           set img _$em_ico($i)
@@ -664,9 +711,7 @@ proc ini::_init {} {
           set txt {}
         }
         append al(atools) " $img \{{} -tip {$em_mnu($i)@@ -under 4} $txt "
-        lassign $em_inf($i) mnu idx
-        set ex "ex=[alited::tool::EM_HotKey $idx]"
-        append al(atools) "-com {alited::tool::e_menu \"m=$mnu\" $ex}\}"
+        append al(atools) "-com {[alited::tool::EM_command $i]}\}"
       }
     }
   }

@@ -6,7 +6,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide hl_tcl 0.9.5
+package provide hl_tcl 0.9.6
 
 # _______________ Common data of ::hl_tcl:: namespace ______________ #
 
@@ -1043,6 +1043,14 @@ proc ::hl_tcl::hl_all {args} {
     }
   }
 }
+#_____
+
+proc ::hl_tcl::hl_colorNames {} {
+  # Returns a list of color names for syntax highlighting.
+
+  return [list clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT clrBRA]
+}
+
 #_____
 
 proc ::hl_tcl::hl_colors {txt {dark ""}} {

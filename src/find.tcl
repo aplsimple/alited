@@ -405,11 +405,6 @@ proc find::SetCursor {wtxt idx1} {
   ::alited::main::CursorPos $wtxt
 }
 
-proc find::UpdateAfterReplace {} {
-  alited::main::UpdateGutter
-  alited::main::UpdateText
-}
-
 proc find::Replace {} {
   namespace upvar ::alited al al
   variable data
@@ -422,7 +417,7 @@ proc find::Replace {} {
     SetCursor $wtxt $idx1
     set msg [string map [list %n 1 %s $data(en1) %r $data(en2)] $alited::al(MC,frres2)]
     ShowResults $msg 3
-    UpdateAfterReplace
+    alited::main::UpdateTextAndGutter
   }
 }
 
@@ -451,7 +446,7 @@ proc find::ReplaceInText {} {
   set wtxt [alited::main::CurrentWTXT]
   set rn [ReplaceAll $wtxt [Search $wtxt]]
   ShowResults2 $rn $alited::al(MC,frres2)
-  UpdateAfterReplace
+  alited::main::UpdateTextAndGutter
 }
 
 proc find::ReplaceInSession {} {
@@ -478,7 +473,7 @@ proc find::ReplaceInSession {} {
     if {$data(_ERR_)} break
   }
   ShowResults2 $rn $alited::al(MC,frres3)
-  UpdateAfterReplace
+  alited::main::UpdateTextAndGutter
 }
 
 proc find::Next {} {
@@ -605,7 +600,6 @@ proc find::_create {} {
       {.rad1 - - - - {pack -anchor w -padx 5} {-t {$alited::al(MC,frup)} -image alimg_up -compound left -var ::alited::find::data(v2) -value 1 -style TRadiobuttonFS}}
       {.rad2 - - - - {pack -anchor w -padx 5} {-t {$alited::al(MC,frdown)} -image alimg_down -compound left -var ::alited::find::data(v2) -value 2 -style TRadiobuttonFS}}
       {.chb4 - - - - {pack -anchor sw} {-t {$alited::al(MC,frwrap)} -var ::alited::find::data(c4) -style TCheckbuttonFS}}
-      {#chb5 fralabB3 T 1 1 {-st sw} {-t {$alited::al(MC,frontop)} -var ::alited::find::data(c5) -tip {$alited::al(MC,frtip4)} -com "$::alited::obFND res $::alited::find::win -1" -style TCheckbuttonFS}}
       {sev2 cbx1 L 10 1 }
       {but1 sev2 L 1 1 {-st we} {-t Find -com "::alited::find::Find" -style TButtonWestBoldFS}}
       {but2 but1 T 1 1 {-st we} {-t {$alited::al(MC,frfind2)} -com "::alited::find::FindInText" -style TButtonWestFS}}
@@ -614,8 +608,6 @@ proc find::_create {} {
       {but4 h_3 T 1 1 {-st we} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
       {but5 but4 T 1 1 {-st nwe} {-t {$alited::al(MC,frfind2)} -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
       {But6 but5 T 1 1 {-st nwe} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
-      {#h_4 but6 T 1 1}
-      {#but0 h_4 T 1 1 {-st swe} {-t Close -com ::alited::find::_close -style TButtonWestBoldFS}}
     }
     SessionButtons
     bind $win.cbx1 <Return> "$win.but1 invoke"  ;# hot in comboboxes
@@ -642,11 +634,10 @@ proc find::_run {} {
     SessionButtons
     wm withdraw $win
     wm deiconify $win
-    if {[set foc [focus -lastfor $win]] ne ""} {
-      focus $foc
-    } else {
-      focus [$obFND Cbx1]
-    }
+    set cbx [$obFND Cbx1]
+    focus $cbx
+    $cbx selection clear
+    after idle "$cbx selection range 0 end"
   } else {
     _create
   }

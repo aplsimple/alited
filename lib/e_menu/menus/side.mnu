@@ -1,4 +1,5 @@
 [OPTIONS]
+g=166x953+1502+20
 #dk=dock
 in=1.0
 o=0
@@ -12,7 +13,7 @@ pos=205.7
 ::EMENU7ZCNT=1
 ::EMENU7ZCOM=zip -r
 ::EMENU7ZARC=~/PG/github/apl-github
-::EMENU7ZDIR=~/PG/github/pave/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/bartabs/*\n~/PG/github/doctest/*\n~/PG/github/booksum/*\n~/PG/github/trimmer/*\n~/PG/github/baltip/*\n~/PG/github/mulster/*\n~/PG/github/transpops/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/aloupe/*\n~/PG/github/alited/*\n~/PG/github/aplsimple.github.io/*
+::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/pave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*
 ::EMENU7ZSKIP=
 ::EMENU7ZBAK=/media/apl/KINGSTON/
 ::EMENU7ZGIT=1
@@ -208,6 +209,5 @@ SW:Save your stuff SW: $::EMENU7ZCOM $::EMENUTMP $::EMENU7ZDIR_LIST ; mplayer %m
 RW: 7. APLinkee      RW: sleep 3
  R: 7. APLinkee      R: python3 /home/apl/PROGRAMS/run_APLinkee/run_APLinkee.py /media/windows/APLinkee.Shk/APLinkee.arli /media/apl/KINGSTON/APLinkee.Shk/APLinkee.arli 10
  R: 8. caja          R: caja -g +0+0 /home/apl/PG/github
-RW: 9. alited        RW: sleep 5
- R: 9. alited        R: tclsh ~/PG/github/alited.release/src/alited.tcl ~/.config/alited/rel
-
+RW: 9. alited        RW: sleep 9
+ R: 9. alited        R: tclsh /home/apl/PG/github/alited.release/src/alited.tcl /home/apl/.config/alited.release

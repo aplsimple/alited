@@ -39,7 +39,7 @@ proc tool::ColorPicker {} {
     set alited::al(chosencolor) $color
   }
   set res [::apave::obj chooser colorChooser alited::al(chosencolor)]
-  if {$res ne ""} {
+  if {$res ne {}} {
     set alited::al(chosencolor) $res
     set wtxt [alited::main::CurrentWTXT]
     $wtxt insert [$wtxt index insert] $res
@@ -51,7 +51,14 @@ proc tool::Loupe {} {
 }
 
 proc tool::tkcon {} {
-  exec tclsh [file join $::alited::LIBDIR util tkcon.tcl] &
+  namespace upvar ::alited al al
+  foreach opt [array names al tkcon,clr*] {
+    lappend opts -color-[string range $opt 9 end] $al($opt)
+  }
+  foreach opt {rows cols fsize geo topmost} {
+    lappend opts -apl-$opt $al(tkcon,$opt)
+  }
+  exec tclsh [file join $::alited::LIBDIR util tkcon.tcl] {*}$opts &
 }
 
 
@@ -82,11 +89,21 @@ proc tool::EM_Options {opts} {
     o=-1 om=0 g=$al(EM,geometry) {*}$ls {*}$opts]
 }
 
+proc tool::EM_dir {} {
+  namespace upvar ::alited al al
+  if {$al(EM,menudir) eq {}} {
+    return $::e_menu_dir
+  }
+  return [file dirname $al(EM,menudir)]
+}
+
 proc tool::EM_Structure {mnu} {
   namespace upvar ::alited al al
-  set mnu [string trim $mnu {" }]
-  set fname [file join $::e_menu_dir menus [file tail $mnu]]
-  if {[catch {set fcont [::apave::readTextFile $fname]}]} {return [list]}
+  set mnu [string trim $mnu "\" "]
+  set fname [file join [EM_dir] menus [file tail $mnu]]
+  if {[catch {set fcont [::apave::readTextFile $fname {} 1]}]} {
+    return [list]
+  }
   set res [list]
   set prname {}
   set mmarks [list S: R: M: S/ R/ M/ SE: RE: ME: SE/ RE/ ME/ SW: RW: MW: SW/ RW/ MW/ I:]
@@ -157,6 +174,7 @@ proc tool::EM_AllStructure1 {mnu lev} {
 
 proc tool::EM_AllStructure {mnu} {
 
+  set alited::al(EM_STRUCTURE) [list]
   EM_AllStructure1 $mnu 0
   return $alited::al(EM_STRUCTURE)
 }
@@ -171,10 +189,40 @@ proc tool::EM_SaveFiles {} {
     }
   }
 }
+proc tool::PopupBar {X Y} {
+  namespace upvar ::alited al al obPav obPav
+  set popm $al(WIN).popupBar
+  catch {destroy $popm}
+  menu $popm -tearoff 0
+  $popm add command -label [msgcat::mc {Open bar/menu settings}] \
+    -command "alited::pref::_run Emenu_Tab"
+  $obPav themePopup $popm
+  tk_popup $popm $X $Y
+}
+
+proc tool::EM_command {im} {
+  namespace upvar ::alited::pref em_inf em_inf
+  lassign $em_inf($im) mnu idx item
+  if {$idx eq {-} || [regexp {^[^[:blank:].]+[.]mnu: } $item]} {
+    # open a menu
+    set mnu [string range $item 0 [string first : $item]-1]
+    set ex {ex= o=0}
+  } else {
+    # call a command
+    set ex "ex=[alited::tool::EM_HotKey $idx]"
+  }
+  return "alited::tool::e_menu \"m=$mnu\" $ex"
+}
+
 ## ________________________ run/close _________________________ ##
 
 proc tool::e_menu {args} {
-  if {{ex=Help} ni $args} EM_SaveFiles
+  if {{ex=Help} ni $args} {
+    EM_SaveFiles
+    if {[lsearch -glob -nocase $args EX=*]>-1} {
+      append args " g="  ;# should be last, to override previous settings
+    }
+  }
   if {$alited::al(EM,exec)} {
     e_menu1 $args
   } else {
@@ -207,7 +255,7 @@ proc tool::_run {{what ""}} {
     bell
   }
   if {$what eq {}} {set what 1} ;# 'Run me' e_menu item
-  e_menu "ex=$what"
+  e_menu "EX=$what"
 }
 
 proc tool::_close {{fname ""}} {

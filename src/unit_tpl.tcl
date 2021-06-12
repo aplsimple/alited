@@ -319,8 +319,8 @@ proc unit_tpl::_create {} {
     {.sbvTpls fraTreeTpl.TreeTpl L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
     {.labTpl - - 1 1 {-st we} {-anchor center -t "$alited::al(MC,tpl4)"}}
-    {.EntTpl fra1.labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {$alited::al(MC,tplent1)}}}
-    {.CbxKey fra1.EntTpl L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {$alited::al(MC,tplcbx)}}}
+    {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {$alited::al(MC,tplent1)}}}
+    {.CbxKey .EntTpl L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {$alited::al(MC,tplcbx)}}}
     {fra1.fratex fra1.labTpl T 10 10 {-st nsew} {}}
     {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip {$alited::al(MC,tplent2)}}}
     {.sbvTpl .TexTpl L - - {pack -side left -fill both} {}}
