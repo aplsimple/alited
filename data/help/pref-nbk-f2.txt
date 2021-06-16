@@ -1,23 +1,25 @@
- Use drop-down list to select End-of-Line for your texts.
- "LF" fits Linux, "CR" - Mac, "CRLF" - Windows. The empty
- value means "auto".
+ Switch "Confirm exit" on to secure alited against
+ an unintended quit, i.e. at clicking [x] button or
+ pressing Ctrl+F4.
 
- The alited application provides a space indentation only.
- No "smart", "auto", "tab replacements" etc.
+ You may wish to save alited's configuration on:
+   - opening a file
+   - closing a file
+   - saving a file
 
- Select the indentation length for your projects.
+ The last option can work along with the option
+   "Save before bar/menu runs"
+ which means that at running a bar/menu action
+ the current or all files can be saved.
 
- The "multiline strings" option should be set carefully.
- Its "on" value would highlight all Tcl strings properly,
- including the multi-line ones.
+ See also "Preferences/Tools/bar/menu" settings.
 
- However, its "on" value is NOT recommended for large files
- or/and poor hardware, because it would drasticly slow the
- editing.
+ Other options restrict a number of:
 
- On the other hand, having granular projects with a lot of
- small Tcl modules, you can try and switch this option on.
+   - files in 'Files/Recent Files' menu item
 
- Also note that using "\" as string continuations and "\\n"
- as line cutters you can easily avoid issues with multiline
- strings, even with the "multiline strings" option off.
+   - items in 'Last Visited' list of units
+
+   - project files: this is important in order to
+     secure against choosing a giant directory
+     (like /home) for a project

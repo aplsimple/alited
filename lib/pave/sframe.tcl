@@ -27,7 +27,7 @@ namespace eval sframe {
     } else {
       ttk::frame $path
     }
-    
+
     # Create a scrollable canvas with scrollbars which will always be the same size as the main frame.
     set mode both
     if { [dict exists $args -mode] } {
@@ -51,16 +51,16 @@ namespace eval sframe {
         return -code error "-mode option is invalid: \"$mode\" (valid are x, y, xy, yx, both)"
       }
     }
-    
-    # Create a container frame which will always be the same size as the canvas or content, whichever is greater. 
+
+    # Create a container frame which will always be the same size as the canvas or content, whichever is greater.
     # This allows the child content frame to be properly packed and also is a surefire way to use the proper ttk background.
     set container [ttk::frame $canvas.container]
     pack propagate $container 0
-    
-    # Create the content frame. Its size will be determined by its contents. This is useful for determining if the 
+
+    # Create the content frame. Its size will be determined by its contents. This is useful for determining if the
     # scrollbars need to be shown.
     set content [ttk::frame $container.content]
-    
+
     # Pack the content frame and place the container as a canvas item.
     set anchor "n"
     if { [dict exists $args -anchor] } {
@@ -68,19 +68,19 @@ namespace eval sframe {
     }
     pack $content -fill both -expand 1 -anchor $anchor
     $canvas create window 0 0 -window $container -anchor nw
-    
+
     # Grid the scrollable canvas sans scrollbars within the main frame.
     grid $canvas   -row 0 -column 0 -sticky nsew
     grid rowconfigure    $path 0 -weight 1
     grid columnconfigure $path 0 -weight 1
-    
+
     # Make adjustments when the sframe is resized or the contents change size.
     bind $path.canvas <Configure> [list [namespace current]::resize $path]
-    
+
     # Mousewheel bindings for scrolling.
     bind [winfo toplevel $path] <MouseWheel>       [list +[namespace current] scroll $path yview %W %D]
     bind [winfo toplevel $path] <Shift-MouseWheel> [list +[namespace current] scroll $path xview %W %D]
-    
+
     return $path
   }
 
@@ -100,7 +100,7 @@ namespace eval sframe {
     # Set the size of the container. At a minimum use the same width & height as the canvas.
     set width  [winfo width $canvas]
     set height [winfo height $canvas]
-    
+
     # If the requested width or height of the content frame is greater then use that width or height.
     if { [winfo reqwidth $content] > $width } {
       set width [winfo reqwidth $content]
@@ -133,8 +133,7 @@ namespace eval sframe {
     return
   }
 
-
-  # Handle mousewheel scrolling.    
+  # Handle mousewheel scrolling.
   proc scroll {path view W D} {
     if { [winfo exists $path.canvas]  &&  [string match $path.canvas* $W] } {
       $path.canvas $view scroll [expr {-$D}] units

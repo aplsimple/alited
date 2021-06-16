@@ -154,6 +154,13 @@ proc file::IsTcl {fname} {
   return no
 }
 
+proc file::IsClang {fname} {
+  if {[string tolower [file extension $fname]] in $alited::al(ClangExtensions)} {
+    return yes
+  }
+  return no
+}
+
 proc file::SaveFileByName {TID fname} {
   # Saves the current file.
   set wtxt [alited::main::GetWTXT $TID]

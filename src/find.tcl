@@ -86,14 +86,13 @@ proc find::GetFindEntry {} {
     set line [$wtxt get "$idx linestart" "$idx lineend"]
     set sel [GetWordOfLine $line $idx]
   }
-  set sel [string trim $sel]
-  if {$sel ne ""} {set data(en1) $sel}
+  if {$sel ne {}} {set data(en1) $sel}
 }
 
 proc find::SearchThisUnit {com1 TID isNS} {
   namespace upvar ::alited al al
   set found {}
-  set withNS [expr {[string first ":" $com1]>-1}]
+  set withNS [expr {[string first : $com1]>-1}]
   foreach unit $al(_unittree,$TID) {
     lassign $unit - - - comm l1 l2
     # well, this works only for 'normal' names, without glob chars
@@ -211,6 +210,17 @@ proc find::CheckWord {wtxt index1 index2} {
   return yes
 }
 
+proc find::Search1 {wtxt pos} {
+  variable win
+  lassign [FindOptions $wtxt] findstr options
+  if {[catch {set fnd [$wtxt search {*}$options -count alited::find::counts -all -- $findstr $pos]} err]} {
+    alited::msg ok err $err -ontop yes -parent $win
+    set data(_ERR_) yes
+    return [list 1 {}]
+  }
+  return [list 0 $fnd]
+}
+
 proc find::Search {wtxt} {
   namespace upvar ::alited obPav obPav
   variable data
@@ -229,11 +239,8 @@ proc find::Search {wtxt} {
   }
   $wtxt tag configure fndTag -borderwidth 1 -relief raised -foreground $fg -background $bg
   $wtxt tag lower fndTag
-  if {[catch {set fnd [$wtxt search {*}$options -count alited::find::counts -all -- $findstr 1.0]} err]} {
-    alited::msg ok err $err -ontop yes -parent $win
-    set data(_ERR_) yes
-    return {}
-  }
+  lassign [Search1 $wtxt 1.0] err fnd
+  if {$err} {return {}}
   set i 0
   set res [list]
   foreach index1 $fnd {
@@ -409,8 +416,21 @@ proc find::Replace {} {
   namespace upvar ::alited al al
   variable data
   if {![CheckData repl]} return
-  Find
   set wtxt [alited::main::CurrentWTXT]
+  set pos [$wtxt index insert]
+  set isset no
+  lassign [$wtxt tag ranges sel] idx1 idx2
+  if {$pos eq $idx1} {
+    lassign [Search1 $wtxt $pos] err fnd
+    if {$err} return
+    foreach index1 $fnd {
+      if {$index1 eq $pos} {
+        set isset yes
+        break
+      }
+    }
+  }
+  if {!$isset} Find
   lassign [$wtxt tag ranges sel] idx1 idx2
   if {$idx1 ne "" && $idx2 ne ""} {
     $wtxt replace $idx1 $idx2 $data(en2)
@@ -419,6 +439,7 @@ proc find::Replace {} {
     ShowResults $msg 3
     alited::main::UpdateTextAndGutter
   }
+  Find
 }
 
 proc find::ReplaceAll {wtxt allfnd} {

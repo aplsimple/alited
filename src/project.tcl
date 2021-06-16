@@ -344,6 +344,15 @@ proc project::ProcEOL {val mode} {
   }
 }
 
+proc project::CheckProjectName {} {
+  namespace upvar ::alited al al
+  set oldname $al(prjname)
+  set al(prjname) [string map [list \
+    * _ ? _ ~ _ . _ / _ \\ _ \{ _ \} _ \[ _ \] _ \t _ \n _ \r _ \
+    | _ < _ > _ & _ , _ : _ \; _ \" _ ' _ ` _] $al(prjname)]
+  return [expr {$oldname eq $al(prjname)}]
+}
+
 proc project::ProjectName {fname} {
   return [file rootname [file tail $fname]]
 }
@@ -357,7 +366,7 @@ proc project::ProjectFileName {name} {
 proc project::ValidProject {} {
   namespace upvar ::alited al al obDl2 obDl2
   variable win
-  if {[string trim $al(prjname)] eq ""} {
+  if {[string trim $al(prjname)] eq {} || ![CheckProjectName]} {
     bell
     focus [$obDl2 EntName]
     return no

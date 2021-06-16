@@ -28,8 +28,8 @@ proc bar::FillBar {wframe {newproject no}} {
   set lab2 [msgcat::mc "... All at Left"]
   set lab3 [msgcat::mc "... All at Right"]
   set lab4 [msgcat::mc "... All"]
-  set bar1Opts [list -wbar $wframe -wbase $wbase -lablen 16 -pady 2 -scrollsel no \
-    -lifo yes -lowlist $al(FONTSIZE,small) -tiplen $al(INI,bartiplen) \
+  set bar1Opts [list -wbar $wframe -wbase $wbase -pady 2 -scrollsel no -lifo yes \
+    -lowlist $al(FONTSIZE,small) -lablen $al(INI,barlablen) -tiplen $al(INI,bartiplen) \
     -menu [list \
       sep \
       "com {$lab0} {::alited::bar::SelTab %t} {} {}" \

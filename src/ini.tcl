@@ -24,8 +24,6 @@ namespace eval ::alited {
   set al(FONTSIZE,txt) 12
   set al(INI,CS) -1
   set al(INI,HUE) 0
-  set al(INI,LINES1) 10
-  set al(INI,LEAF) 0
   set al(INI,ICONS) "middle icons"
   set al(INI,save_onselect) no
   set al(INI,save_onadd) no
@@ -33,17 +31,20 @@ namespace eval ::alited {
   set al(INI,save_onclose) no
   set al(INI,save_onsave) yes
   set al(INI,maxfind) 16
+  set al(INI,barlablen) 16
   set al(INI,bartiplen) 32
   set al(INI,confirmexit) 1
+  set al(INI,LINES1) 10
+  set al(INI,LEAF) 0
   set al(RE,branch) {^\s*(#+) [_]+\s+([^_]+[^[:blank:]]*)\s+[_]+ (#+)$}         ;#  # _ lev 1 _..
   set al(RE,leaf) {^\s*##\s*[-]*([^-]*)\s*[-]*$}   ;#  # --  / # -- abc / # --abc--
   set al(RE,proc) {^\s*(((proc|method)\s+([^[:blank:]]+))|((constructor|destructor)))\s.+}
-  set al(RE,leaf2) {[_]+}                       ;#  # _  / # _ abc
+  set al(RE,leaf2) {^\s*(#+) [_]+}                 ;#  # _  / # _ abc
   set al(RE,proc2) {^\s*(proc|method|constructor|destructor)\s+} ;# proc abc {}...
   set al(FAV,current) [list]
   set al(FAV,visited) [list]
   set al(FAV,IsFavor) yes
-  set al(FAV,MaxLast) 16
+  set al(FAV,MAXLAST) 32
   set al(TPL,list) [list]
   set al(TPL,%d) "%D"
   set al(TPL,%t) "%T"
@@ -191,6 +192,19 @@ proc ini::ReadIniOptions {nam val} {
     clrDark       {set al(ED,Dark) $val}
     save_onadd - save_onclose - save_onsave {set al(INI,$nam) $val}
     TclExts       {set al(TclExtensions) $val}
+    ClangExts     {set al(ClangExtensions) $val}
+    REbranch      {set al(RE,branch) $val}
+    REproc        {set al(RE,proc) $val}
+    REproc2       {set al(RE,proc2) $val}
+    REleaf        {set al(RE,leaf) $val}
+    REleaf2       {set al(RE,leaf2) $val}
+    UseLeaf       {set al(INI,LEAF) $val}
+    Lines1        {set al(INI,LINES1) $val}
+    RecentFiles   {set al(INI,RECENTFILES) $val}
+    MaxLast       {set al(FAV,MAXLAST) $val}
+    MaxFiles      {set al(MAXFILES) $val}
+    barlablen     {set al(INI,barlablen) $val}
+    bartiplen     {set al(INI,bartiplen) $val}
   }
 }
 
@@ -391,6 +405,20 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "save_onclose=$al(INI,save_onclose)"
   puts $chan "save_onsave=$al(INI,save_onsave)"
   puts $chan "TclExts=$al(TclExtensions)"
+  puts $chan "ClangExts=$al(ClangExtensions)"
+  puts $chan "REbranch=$al(RE,branch)"
+  puts $chan "REproc=$al(RE,proc)"
+  puts $chan "REproc2=$al(RE,proc2)"
+  puts $chan "REleaf=$al(RE,leaf)"
+  puts $chan "REleaf2=$al(RE,leaf2)"
+  puts $chan "UseLeaf=$al(INI,LEAF)"
+  puts $chan "Lines1=$al(INI,LINES1)"
+  puts $chan "RecentFiles=$al(INI,RECENTFILES)"
+  puts $chan "MaxLast=$al(FAV,MAXLAST)"
+  puts $chan "MaxFiles=$al(MAXFILES)"
+  puts $chan "barlablen=$al(INI,barlablen)"
+  puts $chan "bartiplen=$al(INI,bartiplen)"
+
   puts $chan ""
   puts $chan {[Templates]}
   foreach t $al(TPL,list) {
@@ -597,15 +625,10 @@ proc ini::InitGUI {} {
   ::apave::obj basicFontSize $al(FONTSIZE,std)
   ::apave::obj csSet $al(INI,CS) . -doit
   if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE)}
-  set clrnams [::hl_tcl::hl_colorNames]
   set Dark [::apave::obj csDarkEdit]
   if {![info exists al(ED,clrCOM)] || ![info exists al(ED,Dark)] || \
   $al(ED,Dark) != $Dark} {
-    set clrvals [::hl_tcl::hl_colors {} $Dark]
-    foreach nam $clrnams val $clrvals {
-      set al(ED,$nam) $val
-    }
-    set al(ED,Dark) $Dark
+    alited::pref::TclSyntax_Default
   }
 }
 

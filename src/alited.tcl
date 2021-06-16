@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.8.7
+package provide alited 0.8.9
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -130,6 +130,7 @@ namespace eval alited {
   set al(prjEOL) {}
   set al(TITLE) {%f :: %d :: %p - alited}
   set al(TclExtensions) {.tcl .tm .msg}
+  set al(ClangExtensions) {.c .h .cpp .hpp}
 }
 
 # _____________________________ Packages used __________________________ #

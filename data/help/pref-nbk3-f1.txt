@@ -1,0 +1,18 @@
+ Fill the following fields to handle the units:
+ 
+ "Branch's regexp" - a comment that defines a branch's beginning
+ "Proc's regexp" - a comment that defines a proc's (method's) beginning
+
+ "Check branch's regexp" - a regexp by which a branch change is detected
+ "Check proc's regexp" - a regexp by which a proc change is detected
+
+ "Use leaf's regexp" - allows an additional regexp for leaves
+ "Leaf's regexp" - an additional regexp for leaves
+ 
+ "Untouched top lines" - a number of lines untouched by unit moves
+
+ The additional leaf's regexp is useful when you use the header comments
+ before proc/method declaration. By default alited checks for the header
+ comments below a proc/method declaration.
+
+ Use "Default" button to set default settings.

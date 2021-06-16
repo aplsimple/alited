@@ -1,23 +1,12 @@
- Use drop-down list to select End-of-Line for your texts.
- "LF" fits Linux, "CR" - Mac, "CRLF" - Windows. The empty
- value means "auto".
+  Choose a font size for the edited texts.
 
- The alited application provides a space indentation only.
- No "smart", "auto", "tab replacements" etc.
+  Set at need the following options for the texts:
 
- Select the indentation length for your projects.
+    "Space above lines" is an additional space above each text line
+    "Space below lines" is an additional space below each text line
+    "Space between wraps" is a space between lines that are wrapped
 
- The "multiline strings" option should be set carefully.
- Its "on" value would highlight all Tcl strings properly,
- including the multi-line ones.
+  The following options define the bar tab's view:
 
- However, its "on" value is NOT recommended for large files
- or/and poor hardware, because it would drasticly slow the
- editing.
-
- On the other hand, having granular projects with a lot of
- small Tcl modules, you can try and switch this option on.
-
- Also note that using "\" as string continuations and "\\n"
- as line cutters you can easily avoid issues with multiline
- strings, even with the "multiline strings" option off.
+    "Tab bar label's length" - a restriction for long file names
+    "Tab bar tip's length" - a restriction for long file lists

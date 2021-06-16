@@ -1,0 +1,9 @@
+
+ In the "Tcl files' extensions" field, you can set any
+ additional extensions for the Tcl files you use.
+
+ Also, you can set your own colors to highlight the
+ appropriate constructs of Tcl.
+
+ Use "Default" button to restore the default colors
+ for highlighting.

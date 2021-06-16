@@ -7,6 +7,7 @@
 namespace eval ::alited::info {
   variable list [list]
   variable info [list]
+  variable focustext yes
 }
 
 proc info::Get {i} {
@@ -45,6 +46,7 @@ proc info::Clear {{i -1}} {
 
 proc info::ListboxSelect {w} {
   variable info
+  variable focustext
   set sel [lindex [$w curselection] 0]
   if {[string is digit -strict $sel]} {
     lassign [lindex $info $sel] TID line
@@ -52,10 +54,48 @@ proc info::ListboxSelect {w} {
       if {$TID ne [alited::bar::CurrentTabID]} {
         alited::bar::BAR $TID show
       }
-      after idle "alited::main::FocusText $TID $line.0 ; \
+      after idle " \
+        alited::main::FocusText $TID $line.0 ; \
         alited::tree::NewSelection {} $line.0 yes"
+      if {!$focustext} {
+        after 100 "focus $w"
+      }
     }
   }
+}
+
+proc info::FocusIn {sbhi lbxi} {
+  if {![winfo ismapped $sbhi]} {
+    pack $sbhi -side bottom -before $lbxi -fill both
+  }
+}
+
+proc info::FocusOut {sbhi} {
+  variable focustext
+  if {$focustext} {
+    pack forget $sbhi
+  }
+}
+
+proc info::SwitchFocustext {} {
+  variable focustext
+  if {$focustext} {set focustext 0} {set focustext 1}
+}
+
+proc info::PopupMenu {X Y} {
+  namespace upvar ::alited al al obPav obPav
+  variable focustext
+  set popm $al(WIN).popupInfo
+  catch {destroy $popm}
+  menu $popm -tearoff 0
+  if {$focustext} {
+    set msg [msgcat::mc {Don't focus a text after selecting in infobar}]
+  } else {
+    set msg [msgcat::mc {Focus a text after selecting in infobar}]
+  }
+  $popm add command -label $msg -command "alited::info::SwitchFocustext"
+  $obPav themePopup $popm
+  tk_popup $popm $X $Y
 }
 
 # _________________________________ EOF _________________________________ #

@@ -773,18 +773,18 @@ oo::class create ::apave::APaveDialog {
     if {!$pos} return
     my set_HighlightedString $sel
     switch $mode {
-      0 { # backward
+      0 { ;# backward
         set nc [expr {[string length $sel] - 1}]
         set pos [$txt index "$pos - $nc chars"]
         set pos [$txt search -backwards -- $sel $pos 1.0]
       }
-      1 { # forward
+      1 { ;# forward
         set pos [$txt search -- $sel $pos2 end]
       }
-      2 { # to first
+      2 { ;# to first
         set pos [$txt search -- $sel 1.0 end]
       }
-      3 { # to last
+      3 { ;# to last
         set pos [$txt search -backwards -- $sel end 1.0]
       }
     }

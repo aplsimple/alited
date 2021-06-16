@@ -37,7 +37,7 @@ proc favor::LastVisited {item header} {
   }
   set al(FAV,visited) [linsert $al(FAV,visited) 0 [list - - - - [list $name $fname $header]]]
   # delete last items if the list's limit is exceeded
-  catch {set al(FAV,visited) [lreplace $al(FAV,visited) $al(FAV,MaxLast) end]}
+  catch {set al(FAV,visited) [lreplace $al(FAV,visited) $al(FAV,MAXLAST) end]}
   # update the tree widget
   if {!$al(FAV,IsFavor)} {
     SetFavorites $al(FAV,visited)

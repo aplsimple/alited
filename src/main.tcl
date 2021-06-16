@@ -99,10 +99,15 @@ proc main::UpdateGutter {args} {
   after idle "$obPav fillGutter $wtxt"
 }
 
-proc main::UpdateText {args} {
+proc main::UpdateText {{wtxt {}} {curfile {}}} {
   namespace upvar ::alited obPav obPav
-  set wtxt [CurrentWTXT]
-  ::hl_tcl::hl_text $wtxt
+  if {$wtxt eq {}} {set wtxt [CurrentWTXT]}
+  if {$curfile eq {}} {set curfile [alited::bar::FileName]}
+  if {[alited::file::IsClang $curfile]} {
+    ::hl_c::hl_text $wtxt
+  } else {
+    ::hl_tcl::hl_text $wtxt
+  }
 }
 
 proc main::UpdateTextAndGutter {} {
@@ -157,28 +162,26 @@ proc main::HighlightText {TID curfile wtxt} {
   lappend colors [lindex [$obPav csGet] 16]
   set ext [string tolower [file extension $curfile]]
   if {![info exists al(HL,$wtxt)] || $al(HL,$wtxt) ne $ext} {
-    switch -- $ext {
-      .c {
-# TODO
-#        ::hl_c::hl_init $wtxt -dark [$obPav csDarkEdit] \
-          -multiline $al(prjmultiline) \
-          -cmd "::alited::unit::Modified $TID" \
-          -cmdpos "::alited::main::CursorPos" \
-          -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)"
-#        ::hl_c::hl_text $wtxt
+    if {[alited::file::IsClang $curfile]} {
+      if {![namespace exists ::hl_c]} {
+        source [file join $alited::HLDIR hl_c.tcl]
       }
-      default {
-        ::hl_tcl::hl_init $wtxt -dark [$obPav csDarkEdit] \
-          -multiline $al(prjmultiline) \
-          -cmd "::alited::unit::Modified $TID" \
-          -cmdpos "::alited::main::CursorPos" \
-          -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)" \
-          -plaintext [expr {![alited::file::IsTcl $curfile]}] \
-          -colors $colors
-        ::hl_tcl::hl_text $wtxt
-      }
+      ::hl_c::hl_init $wtxt -dark [$obPav csDarkEdit] \
+        -multiline 0 \
+        -cmdpos "::alited::main::CursorPos" \
+        -cmd "::alited::unit::Modified $TID" \
+        -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)"
+    } else {
+      ::hl_tcl::hl_init $wtxt -dark [$obPav csDarkEdit] \
+        -multiline $al(prjmultiline) \
+        -cmd "::alited::unit::Modified $TID" \
+        -cmdpos "::alited::main::CursorPos" \
+        -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)" \
+        -plaintext [expr {![alited::file::IsTcl $curfile]}] \
+        -colors $colors
     }
   }
+  UpdateText $wtxt $curfile
   set al(HL,$wtxt) $ext
 }
 
@@ -385,7 +388,7 @@ proc main::_create {} {
     {.fraTop.fraHead.buTno - - - - {pack -side left} {-relief flat -highlightthickness 0 -takefocus 0 -command {alited::find::HideFindUnit}}}
     {.fraBot - - - - {add}}
     {.fraBot.fra - - - - {pack -fill both -expand 1}}
-    {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1} {-h 1 -w 40 -lvar ::alited::info::list -font $alited::al(FONT,defsmall) -takefocus 0}}
+    {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1} {-h 1 -w 40 -lvar ::alited::info::list -font $alited::al(FONT,defsmall) -highlightthickness 0}}
     {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - {pack}}
     {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
@@ -400,9 +403,10 @@ proc main::_create {} {
   set sbhi [$obPav SbhInfo]
   set lbxi [$obPav LbxInfo]
   pack forget $sbhi
-  bind $lbxi <FocusIn> "pack $sbhi -side bottom -before $lbxi -fill both"
-  bind $lbxi <FocusOut> "pack forget $sbhi"
+  bind $lbxi <FocusIn> "alited::info::FocusIn $sbhi $lbxi"
+  bind $lbxi <FocusOut> "alited::info::FocusOut $sbhi"
   bind $lbxi <<ListboxSelect>> {alited::info::ListboxSelect %W}
+  bind $lbxi <ButtonPress-3> {alited::info::PopupMenu %X %Y}
   bind [$obPav ToolTop] <ButtonPress-3> "::alited::tool::PopupBar %X %Y"
 }
 

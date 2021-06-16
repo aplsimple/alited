@@ -11,4 +11,7 @@
  The font sizes will touch the following widgets:
  - small font : lists, tabs, info and status bars
  - middle font: menus, labels
- - large font : editor's texts
+
+ The Notes field includes arbitrary ideas, todos
+ etc. for all projects. The projects are supplied
+ with their own notes in "Setup/Projects".
