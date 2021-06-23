@@ -1,8 +1,11 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The menu procedures.
-# _______________________________________________________________________ #
+###########################################################
+# Name:    menu.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    06/20/2021
+# Brief:   Handles menus.
+# License: MIT.
+###########################################################
 
 namespace eval menu {}
 
@@ -73,8 +76,8 @@ proc menu::FillMenu {} {
 
 ## ________________________ Edit _________________________ ##
   set m [set al(MENUEDIT) $al(WIN).menu.edit]
-  $m add command -label $al(MC,moveupU) -command {alited::main::MoveItem up yes} -accelerator $al(acc_15)
-  $m add command -label $al(MC,movedownU) -command {alited::main::MoveItem down yes} -accelerator $al(acc_16)
+  $m add command -label $al(MC,moveupU) -command {alited::tree::MoveItem up yes} -accelerator $al(acc_15)
+  $m add command -label $al(MC,movedownU) -command {alited::tree::MoveItem down yes} -accelerator $al(acc_16)
   $m add separator
   $m add command -label $al(MC,indent) -command alited::unit::Indent -accelerator $al(acc_6)
   $m add command -label $al(MC,unindent) -command alited::unit::UnIndent -accelerator $al(acc_7)

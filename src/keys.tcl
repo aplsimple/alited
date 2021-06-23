@@ -99,8 +99,8 @@ proc keys::ReservedAdd {wtxt} {
   Add action "find-next"    [alited::pref::BindKey 12 - F3] "$obPav findInText 1 $wtxt"
   Add action "look-declaration"    [alited::pref::BindKey 13 - Control-L] "::alited::find::SearchUnit $wtxt ; break"
   Add action "look-word"    [alited::pref::BindKey 14 - Control-Shift-L] "::alited::find::SearchWordInSession ; break"
-  Add action "item-up"      [alited::pref::BindKey 15 - F11] {+ ::alited::main::MoveItem up yes}
-  Add action "item-down"    [alited::pref::BindKey 16 - F12] {+ ::alited::main::MoveItem down yes}
+  Add action "item-up"      [alited::pref::BindKey 15 - F11] {+ ::alited::tree::MoveItem up yes}
+  Add action "item-down"    [alited::pref::BindKey 16 - F12] {+ ::alited::tree::MoveItem down yes}
   Add action "goto-line"    [alited::pref::BindKey 17 - Control-G] {alited::main::GotoLine; break}
   Add action "insert-line"    [alited::pref::BindKey 18 - Control-P] {alited::main::InsertLine; break}
 }

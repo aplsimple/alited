@@ -1,19 +1,52 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The main form of alited.
-# _______________________________________________________________________ #
+###########################################################
+# Name:    main.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    06/20/2021
+# Brief:   Handles the main form of alited.
+# License: MIT.
+###########################################################
+
+# _________________________ variables ________________________ #
 
 namespace eval main {
-  variable findunits 1
+  variable findunits 1  ;# where to find units: 1 current file, 2 all
 }
 
+# ________________________ common _________________________ #
+
+proc main::CurrentWTXT {} {
+  # Gets a current text widget's path.
+
+  return [lindex [alited::bar::GetBarState] 2]
+}
+#_______________________
+
+proc main::GetWTXT {TID} {
+  # Gets a text widget's path of a tab.
+  #   TID - ID of the tab
+
+  return [alited::bar::GetTabState $TID --wtxt]
+}
+
+# ________________________ get and show text widget _________________________ #
+
 proc main::GetText {TID {doshow no}} {
+  # Creates or gets a text widget for a tab.
+  #   TID - tab's ID
+  #   doshow - flag "this widget should be displayed"
+  # Returns a list of: curfile (current file name),
+  # wtxt (text's path), wsbv (scrollbar's path),
+  # pos (cursor's position), doinit (flag "initialized")
+  # dopack (flag "packed")
+
   namespace upvar ::alited al al obPav obPav
   set curfile [alited::bar::BAR $TID cget -tip]
+  # initial text and its scrollbar:
   set wtxt [$obPav Text]
   set wsbv [$obPav SbvText]
   set doinit yes
+  # get data of the current tab
   lassign [alited::bar::GetBarState] TIDold fileold wold1 wold2
   lassign [alited::bar::GetTabState $TID --pos] pos
   if {$TIDold eq "-1"} {
@@ -59,20 +92,25 @@ proc main::GetText {TID {doshow no}} {
     alited::bar::SetBarState [alited::bar::CurrentTabID] $curfile $wtxt $wsbv
   }
   if {$doinit} {
+    # if the file isn't read yet, read it and initialize its highlighting
     alited::file::DisplayFile $TID $curfile $wtxt
     HighlightText $TID $curfile $wtxt
   }
   if {[winfo exists $wold1]} {
+    # previous text: save its state
     alited::bar::SetTabState $TIDold --pos [$wold1 index insert]
     if {$dopack && $doshow} {
+      # hide both previous
       pack forget $wold1  ;# a text
       pack forget $wold2  ;# a scrollbar
     }
   }
   return [list $curfile $wtxt $wsbv $pos $doinit $dopack]
 }
+#_______________________
 
 proc main::ShowText {} {
+  # Displays a current text.
 
   namespace upvar ::alited al al obPav obPav
   set TID [alited::bar::CurrentTabID]
@@ -81,25 +119,45 @@ proc main::ShowText {} {
     PackTextWidgets $wtxt $wsbv
   }
   if {$doinit || $dopack} {
+    # for newly displayed text: create also its unit tree
     set al(TREE,units) no
     alited::tree::Create
   }
   FocusText $TID $pos
-  if {[set itemID [alited::tree::NewSelection]] ne ""} {
+  if {[set itemID [alited::tree::NewSelection]] ne {}} {
+    # if a new unit is selected, show it in the unit tree
     [$obPav Tree] see $itemID
   }
-  alited::menu::CheckMenuItems
   focus $wtxt
+  # update "File" menu and app's header
+  alited::menu::CheckMenuItems
   ShowHeader
 }
 
-proc main::UpdateGutter {args} {
+# ________________________ updating gutter & text _________________________ #
+
+proc main::UpdateGutter {} {
+  # Redraws the gutter.
+
   namespace upvar ::alited obPav obPav
   set wtxt [CurrentWTXT]
   after idle "$obPav fillGutter $wtxt"
 }
+#_______________________
+
+proc main::GutterAttrs {} {
+  # Returns list of gutter's data (canvas widget, width, shift)
+
+  namespace upvar ::alited al al obPav obPav
+  return [list [$obPav GutText] $al(ED,gutterwidth) $al(ED,guttershift)]
+}
+#_______________________
 
 proc main::UpdateText {{wtxt {}} {curfile {}}} {
+  # Redraws a text.
+  #   wtxt - the text widget's path
+  #   curfile - file name of the text
+
   namespace upvar ::alited obPav obPav
   if {$wtxt eq {}} {set wtxt [CurrentWTXT]}
   if {$curfile eq {}} {set curfile [alited::bar::FileName]}
@@ -109,13 +167,21 @@ proc main::UpdateText {{wtxt {}} {curfile {}}} {
     ::hl_tcl::hl_text $wtxt
   }
 }
+#_______________________
 
 proc main::UpdateTextAndGutter {} {
+  # Redraws both a text and a gutter
+
   UpdateGutter
   UpdateText
 }
 
+# ________________________ focus _________________________ #
+
+
 proc main::FocusText {args} {
+  # Sets a focus on a current text.
+  #   args - contains tab's ID and a cursor positition.
 
   namespace upvar ::alited al al obPav obPav
   lassign $args TID pos
@@ -124,6 +190,7 @@ proc main::FocusText {args} {
     set TID [alited::bar::CurrentTabID]
     set pos [$wtxt index insert]
   }
+  # find a current unit/file in the tree
   set alited::tree::doFocus no
   set wtree [$obPav Tree]
   catch {
@@ -140,64 +207,23 @@ proc main::FocusText {args} {
       }
     }
   }
+  # display a current item of the tree
   catch {
     if {$itemID ni [$wtree selection]} {$wtree selection set $itemID}
     if {$itemID ne ""} {after 10 "catch {$wtree see $itemID}"}
   }
+  # focus on the text
   catch {::tk::TextSetCursor $wtxt $pos}
   catch {focus $wtxt}
   after idle {set ::alited::tree::doFocus yes}
 }
-
-proc main::GutterAttrs {} {
-  # Returns list of gutter's data (canvas widget, width, shift)
-  namespace upvar ::alited obPav obPav
-  return [list [$obPav GutText] 5 4]
-}
-
-proc main::HighlightText {TID curfile wtxt} {
-  namespace upvar ::alited al al obPav obPav
-  set clrnams [::hl_tcl::hl_colorNames]
-  foreach nam $clrnams {lappend colors $al(ED,$nam)}
-  lappend colors [lindex [$obPav csGet] 16]
-  set ext [string tolower [file extension $curfile]]
-  if {![info exists al(HL,$wtxt)] || $al(HL,$wtxt) ne $ext} {
-    if {[alited::file::IsClang $curfile]} {
-      if {![namespace exists ::hl_c]} {
-        source [file join $alited::HLDIR hl_c.tcl]
-      }
-      ::hl_c::hl_init $wtxt -dark [$obPav csDarkEdit] \
-        -multiline 0 \
-        -cmdpos "::alited::main::CursorPos" \
-        -cmd "::alited::unit::Modified $TID" \
-        -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)"
-    } else {
-      ::hl_tcl::hl_init $wtxt -dark [$obPav csDarkEdit] \
-        -multiline $al(prjmultiline) \
-        -cmd "::alited::unit::Modified $TID" \
-        -cmdpos "::alited::main::CursorPos" \
-        -font "-family {[$obPav basicTextFont]} -size $al(FONTSIZE,txt)" \
-        -plaintext [expr {![alited::file::IsTcl $curfile]}] \
-        -colors $colors
-    }
-  }
-  UpdateText $wtxt $curfile
-  set al(HL,$wtxt) $ext
-}
-
-proc main::PackTextWidgets {wtxt wsbv} {
-
-  namespace upvar ::alited al al obPav obPav
-  lassign [GutterAttrs] canvas width shift
-  # widgets created outside apave require the theming:
-  $obPav csSet [$obPav csCurrent] $al(WIN) -doit
-  pack $wtxt -side left -expand 1 -fill both
-  pack $wsbv -fill y -expand 1
-  set bind [list $obPav fillGutter $wtxt $canvas $width $shift]
-  {*}$bind
-}
+#_______________________
 
 proc main::FocusInText {TID wtxt} {
+  # Processes <FocusIn> event on the text.
+  #   TID - tab's ID
+  #   wtxt - text widget's path
+
   namespace upvar ::alited obPav obPav
   if {![alited::bar::BAR isTab $TID]} return
   ::alited::main::CursorPos $wtxt
@@ -205,49 +231,77 @@ proc main::FocusInText {TID wtxt} {
   alited::file::OutwardChange $TID
 }
 
-proc main::BindsForText {TID wtxt} {
-  if {[alited::bar::BAR isTab $TID]} {
-    bind $wtxt <FocusIn> [list after 200 "::alited::main::FocusInText $TID $wtxt"]
+# ________________________ highlights _________________________ #
+
+proc main::HighlightText {TID curfile wtxt} {
+  # Highlights a file's syntax constructs.
+  #   TID - tab's ID
+  #   curfile - file name
+  #   wtxt - text widget's path
+  # Depending on a file name, Tcl or C highlighter is called.
+
+  namespace upvar ::alited al al obPav obPav
+  set clrnams [::hl_tcl::hl_colorNames]
+  set clrCURL [lindex [$obPav csGet] 16]
+  # get a color list for the highlighting Tcl and C
+  foreach lng {{} C} {
+    foreach nam $clrnams {
+      lappend "${lng}colors" $al(ED,${lng}$nam)
+    }
+    lappend "${lng}colors" $clrCURL
   }
-  bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
-  bind $wtxt <Control-Shift-ButtonRelease-1> "::alited::find::SearchWordInSession ; break"
-  bind $wtxt <Control-Tab> "::alited::bar::ControlTab ; break"
-  alited::keys::ReservedAdd $wtxt
-  alited::keys::BindKeys $wtxt action
-  alited::keys::BindKeys $wtxt template
-  alited::keys::BindKeys $wtxt preference
+  # the language (Tcl or C) is defined by the file's extension
+  set ext [string tolower [file extension $curfile]]
+  if {![info exists al(HL,$wtxt)] || $al(HL,$wtxt) ne $ext} {
+    if {[alited::file::IsClang $curfile]} {
+      ::hl_c::hl_init $wtxt -dark [$obPav csDarkEdit] \
+        -multiline 1 -keywords $al(ED,CKeyWords) \
+        -cmd "::alited::unit::Modified $TID" \
+        -cmdpos ::alited::main::CursorPos \
+        -font $al(FONT,txt) -colors $Ccolors
+    } else {
+      ::hl_tcl::hl_init $wtxt -dark [$obPav csDarkEdit] \
+        -multiline $al(prjmultiline) \
+        -cmd "::alited::unit::Modified $TID" \
+        -cmdpos ::alited::main::CursorPos \
+        -plaintext [expr {![alited::file::IsTcl $curfile]}] \
+        -font $al(FONT,txt) -colors $colors
+    }
+  }
+  UpdateText $wtxt $curfile
+  set al(HL,$wtxt) $ext
 }
+#_______________________
 
-proc main::CurrentWTXT {} {
-  return [lindex [alited::bar::GetBarState] 2]
-}
+proc main::HighlightLine {} {
+  # Highlights a current line of a current text.
 
-proc main::GetWTXT {TID} {
-  return [alited::bar::GetTabState $TID --wtxt]
-}
-
-proc main::ShowHeader {{doit no}} {
-  namespace upvar ::alited al al
-  if {[alited::file::IsModified]} {set modif "*"} {set modif " "}
-  set TID [alited::bar::CurrentTabID]
-  if {$doit || "$modif$TID" ne [alited::bar::BAR cget -ALmodif]} {
-    alited::bar::BAR configure -ALmodif "$modif$TID"
-    set f [alited::bar::CurrentTab 1]
-    set d [file normalize [file dirname [alited::bar::CurrentTab 2]]]
-    set ttl [string map [list %f $f %d $d %p $al(prjname)] $al(TITLE)]
-    wm title $al(WIN) [string trim "$modif$ttl"]
+  set wtxt [alited::main::CurrentWTXT]
+  if {[alited::file::IsClang [alited::bar::FileName]]} {
+    ::hl_c::hl_line $wtxt
+  } else {
+    ::hl_tcl::hl_line $wtxt
   }
 }
+
+# ________________________ line _________________________ #
 
 proc main::CursorPos {wtxt args} {
+  # Displays a current text's row and column in the status bar.
+  #   wtxt - text widget's path
+  #   args - contains a cursor position,
+
   namespace upvar ::alited obPav obPav
-  if {$args eq ""} {set args [$wtxt index "end -1 char"]}
+  if {$args eq {}} {set args [$wtxt index {end -1 char}]}
   lassign [split [$wtxt index insert] .] r c
   [$obPav Labstat1] configure -text "$r / [expr {int([lindex $args 0])}]"
   [$obPav Labstat2] configure -text [incr c]
 }
+#_______________________
 
 proc main::InsertLine {} {
+  # Puts a new line into a text, attentive to a previous line's indentation.
+
   set wtxt [CurrentWTXT]
   set ln [expr {int([$wtxt index insert])}]
   if {$ln==1} {
@@ -262,8 +316,11 @@ proc main::InsertLine {} {
   }
   ::tk::TextSetCursor $wtxt $pos
 }
+#_______________________
 
 proc main::GotoLine {} {
+  # Processes Ctrl+G keypressing: "go to a line".
+
   namespace upvar ::alited al al obDl2 obDl2
   set head [msgcat::mc "Go to Line"]
   set prompt [msgcat::mc "Line number:"]
@@ -275,39 +332,78 @@ proc main::GotoLine {} {
   ]] res ln
   if {$res} {
     ::tk::TextSetCursor $wtxt $ln.0
-    ::hl_tcl::hl_line $wtxt
+    HighlightLine
   }
 }
 
-proc main::MoveItem {to {f1112 no}} {
-  namespace upvar ::alited al al obPav obPav
-  if {!$al(TREE,isunits) && [alited::file::MoveExternal $f1112]} return
-  set wtree [$obPav Tree]
-  set itemID [$wtree selection]
-  if {$itemID eq ""} {
-    set itemID [$wtree focus]
-  }
-  if {$itemID eq ""} {
-    if {$f1112} {set geo ""} {set geo "-geometry pointer+10+10"}
-    alited::Message "No item selected." 4
-    return
-  }
-  if {$al(TREE,isunits)} {
-    alited::unit::MoveUnits $wtree $to $itemID $f1112
-  } else {
-    alited::file::MoveFile $wtree $to $itemID $f1112
+# ________________________ GUI _________________________ #
+
+proc main::ShowHeader {{doit no}} {
+  # Displays a file's name and modification flag (*) in alited's title.
+  #   doit - if yes, displays unconditionally.
+  # If *doit* is *no*, displays only at changing a file name or a flag.
+
+  namespace upvar ::alited al al
+  if {[alited::file::IsModified]} {set modif "*"} {set modif " "}
+  set TID [alited::bar::CurrentTabID]
+  if {$doit || "$modif$TID" ne [alited::bar::BAR cget -ALmodif]} {
+    alited::bar::BAR configure -ALmodif "$modif$TID"
+    set f [alited::bar::CurrentTab 1]
+    set d [file normalize [file dirname [alited::bar::CurrentTab 2]]]
+    set ttl [string map [list %f $f %d $d %p $al(prjname)] $al(TITLE)]
+    wm title $al(WIN) [string trim "$modif$ttl"]
   }
 }
+#_______________________
 
 proc main::UpdateProjectInfo {} {
+  # Displays a project settings in the status bar.
+
   namespace upvar ::alited al al obPav obPav
   if {$al(prjroot) ne ""} {set stsw normal} {set stsw disabled}
   [$obPav BuTswitch] configure -state $stsw
   if {[set eol $al(prjEOL)] eq ""} {set eol auto}
   [$obPav Labstat4] configure -text "eol=$eol, [msgcat::mc ind]=$al(prjindent)"
 }
+#_______________________
+
+proc main::BindsForText {TID wtxt} {
+  # Sets bindings for a text.
+  #   TID - tab's ID
+  #   wtxt - text widget's path
+
+  if {[alited::bar::BAR isTab $TID]} {
+    bind $wtxt <FocusIn> [list after 200 "::alited::main::FocusInText $TID $wtxt"]
+  }
+  bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
+  bind $wtxt <Control-Shift-ButtonRelease-1> "::alited::find::SearchWordInSession ; break"
+  bind $wtxt <Control-Tab> "::alited::bar::ControlTab ; break"
+  alited::keys::ReservedAdd $wtxt
+  alited::keys::BindKeys $wtxt action
+  alited::keys::BindKeys $wtxt template
+  alited::keys::BindKeys $wtxt preference
+}
+#_______________________
+
+proc main::PackTextWidgets {wtxt wsbv} {
+  # Packs a text and its scrollbar.
+  #   wtxt - text widget's path
+  #   wsbv - scrollbar widget's path
+
+  namespace upvar ::alited al al obPav obPav
+  lassign [GutterAttrs] canvas width shift
+  # widgets created outside apave require the theming:
+  $obPav csSet [$obPav csCurrent] $al(WIN) -doit
+  pack $wtxt -side left -expand 1 -fill both
+  pack $wsbv -fill y -expand 1
+  set bind [list $obPav fillGutter $wtxt $canvas $width $shift]
+  {*}$bind
+}
+
+# ________________________ main _________________________ #
 
 proc main::_create {} {
+  # Creates a main form of the alited.
 
   namespace upvar ::alited al al obPav obPav
   lassign [$obPav csGet] - - ::alited::FRABG - - - - - bclr
@@ -316,7 +412,7 @@ proc main::_create {} {
     -bordercolor [list focus $bclr active $bclr] \
     -lightcolor [list focus $::alited::FRABG active $::alited::FRABG] \
     -darkcolor [list focus $::alited::FRABG active $::alited::FRABG]
-  ttk::style layout    TreeNoHL [ttk::style layout Treeview]
+  ttk::style layout TreeNoHL [ttk::style layout Treeview]
   $obPav untouchWidgets *.frAText *.fraBot.fra.lbxInfo *.entFind
   # make the main apave object and populate it
   $obPav makeWindow $al(WIN).fra alited
@@ -341,14 +437,14 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.BuTUpdT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_retry -tip {$alited::al(MC,updtree)}
     -command alited::tree::RecreateTree}}
     {.fraBot.panBM.fraTree.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
-    {.fraBot.panBM.fraTree.fra1.BuTUp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_up -command {alited::main::MoveItem up}}}
-    {.fraBot.panBM.fraTree.fra1.BuTDown - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_down -command {alited::main::MoveItem down}}}
+    {.fraBot.panBM.fraTree.fra1.BuTUp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_up -command {alited::tree::MoveItem up}}}
+    {.fraBot.panBM.fraTree.fra1.BuTDown - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_down -command {alited::tree::MoveItem down}}}
     {.fraBot.panBM.fraTree.fra1.sev2 - - - - {pack -side left -fill y -padx 5}}
     {.fraBot.panBM.fraTree.fra1.BuTAddT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -command alited::tree::AddItem}}
     {.fraBot.panBM.fraTree.fra1.BuTDelT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -command alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
-    {.fraBot.panBM.fraTree.fra1.buTCtr - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -command {alited::tree::ExpandTree Tree no} -tip {$alited::al(MC,ctrtree)}}}
-    {.fraBot.panBM.fraTree.fra1.buTExp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus -command {alited::tree::ExpandTree Tree} -tip {$alited::al(MC,exptree)}}}
+    {.fraBot.panBM.fraTree.fra1.buTCtr - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -command {alited::tree::ExpandContractTree Tree no} -tip {$alited::al(MC,ctrtree)}}}
+    {.fraBot.panBM.fraTree.fra1.buTExp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus -command {alited::tree::ExpandContractTree Tree} -tip {$alited::al(MC,exptree)}}}
     {.fraBot.panBM.fraTree.fra1.sev3 - - - - {pack -side right -fill y -padx 0}}
     {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1} 
@@ -372,16 +468,16 @@ proc main::_create {} {
     {.fraTop - - - - {add}}
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
     {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3} {alited::bar::FillBar %w}}
-    {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both} {}}
-    {.fraTop.panTop.CanDiff - - - - {pack -side left -expand 0 -fill y} {-w 4}}
+    {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
+    {#.fraTop.panTop.CanDiff - - - - {pack -side left -expand 0 -fill y} {-w 4}}
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both} {-background $::alited::FRABG}}
-    {.fraTop.panTop.frAText.Text - - - - {pack forget -side left -expand 1 -fill both} {-borderwidth 0 -w 2 -h 20 -gutter GutText -gutterwidth 5 -guttershift 4 $alited::al(TEXT,opts)}}
+    {.fraTop.panTop.frAText.Text - - - - {pack forget -side left -expand 1 -fill both} {-borderwidth 0 -w 2 -h 20 -gutter GutText -gutterwidth $::alited::al(ED,gutterwidth) -guttershift $::alited::al(ED,guttershift) $alited::al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
     {.fraTop.panTop.fraSbv.SbvText .fraTop.panTop.frAText.text L - - {pack -fill y}}
     {.fraTop.FraHead  - - - - {pack forget -side bottom -fill x} {-padding {4 4 4 4} -relief groove}}
     {.fraTop.fraHead.labFind - - - - {pack -side left} {-t "    Unit: "}}
     {.fraTop.fraHead.EntFindSTD - - - - {pack -side left} {-tvar alited::al(findunit) -w 30 -tip {$al(MC,findunit)}}}
-    {.fraTop.fraHead.buT - - - - {pack -side left -padx 4} {-t Find: -relief flat -com alited::find::DoFindUnit -takefocus 0 -bd 0 -highlightthickness 0 -w 8 -anchor e}}
+    {.fraTop.fraHead.buT - - - - {pack -side left -padx 4} {-t "Find: " -relief flat -com alited::find::DoFindUnit -takefocus 0 -bd 0 -highlightthickness 0 -w 8 -anchor e}}
     {.fraTop.fraHead.rad1 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in all} -value 1}}
     {.fraTop.fraHead.rad2 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in current} -value 2}}
     {.fraTop.fraHead.h_ - - - - {pack -side left -fill x -expand 1}}
@@ -409,15 +505,22 @@ proc main::_create {} {
   bind $lbxi <ButtonPress-3> {alited::info::PopupMenu %X %Y}
   bind [$obPav ToolTop] <ButtonPress-3> "::alited::tool::PopupBar %X %Y"
 }
+#_______________________
 
 proc main::_run {} {
+  # Runs the alited, displaying its main form with attributes
+  # 'modal', 'not closed by Esc', 'decorated with Contract/Expand buttons',
+  # 'minimal sizes' and 'saved geometry'.
+  #
+  # After closing the alited, saves its settings (geometry etc.).
 
   namespace upvar ::alited al al obPav obPav
   ::apave::setAppIcon $al(WIN) $::alited::img::_AL_IMG(ale)
   ::apave::setProperty DirFilGeoVars [list ::alited::DirGeometry ::alited::FilGeometry]
   set ans [$obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
     -onclose alited::Exit {*}$al(GEOM)]
-  if {$ans ne "2"} {alited::ini::SaveIni}
+  # ans==2 means 'no saves of settings' (imaginary mode)
+  if {$ans ne {2}} {alited::ini::SaveIni}
   destroy $al(WIN)
   $obPav destroy
   return $ans

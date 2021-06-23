@@ -14,12 +14,14 @@
 
  See also "Preferences/Tools/bar/menu" settings.
 
- Other options restrict a number of:
-
+ The following options restrict a number of:
    - files in 'Files/Recent Files' menu item
-
    - items in 'Last Visited' list of units
-
    - project files: this is important in order to
      secure against choosing a giant directory
      (like /home) for a project
+
+ The "Back up files..." option allows to save a
+ file's original version just before its change,
+ in a project's subdirectory hidden for SCM. Set
+ it blank to disable the backup.

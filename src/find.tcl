@@ -89,58 +89,48 @@ proc find::GetFindEntry {} {
   if {$sel ne {}} {set data(en1) $sel}
 }
 
-proc find::SearchThisUnit {com1 TID isNS} {
-  namespace upvar ::alited al al
-  set found {}
-  set withNS [expr {[string first : $com1]>-1}]
-  foreach unit $al(_unittree,$TID) {
-    lassign $unit - - - comm l1 l2
-    # well, this works only for 'normal' names, without glob chars
-    if {$com1 eq $comm || $withNS && [string match "*::$comm" $com1]} {
-      set found $l1
-      break
-    }
-    if {!$isNS && [string match "*::$com1" $comm]} {
-      set found $l1
-      break
-    }
-  }
-  return $found
-}
-
 proc find::SearchUnit1 {wtxt isNS} {
+
   namespace upvar ::alited al al
   if {$wtxt eq ""} {set wtxt [alited::main::CurrentWTXT]}
   lassign [GetCommandOfText $wtxt] com1 idx
-  if {$com1 eq {}} {return {}}
+  if {$com1 eq {}} {bell; return {}}
   set com2 $com1
   set withNS [expr {[set i [string last ":" $com1]]>-1}]
   if {!$isNS} {
     # try to find the pure (not qualified) name
-    set com1 [set com2 [string range $com1 $i+1 end]]
+    set com2 [string range $com1 $i+1 end]
   } elseif {!$withNS} {
     # try to get the current unit's namespace
     set curr [lindex [alited::tree::CurrentItemByLine $idx yes] 4]
     set com2 [string cat [string range $curr 0 [string last ":" $curr]] $com1]
   }
-  set TID [alited::bar::CurrentTabID]
-  if {[set found [SearchThisUnit $com1 $TID $isNS]] eq {} && ($com1 eq $com2 || \
-  [set found [SearchThisUnit $com2 $TID $isNS]] eq {})} {
-    foreach tab [alited::bar::BAR listTab] {
-      set TID [lindex $tab 0]
-      if {![info exist al(_unittree,$TID)]} {
-        alited::file::ReadFile $TID [alited::bar::FileName $TID]
-      }
-      if {[set found [SearchThisUnit $com1 $TID $isNS]] ne {} || ($com1 ne $com2 && \
-      [set found [SearchThisUnit $com2 $TID $isNS]] eq {})} {
-        break
+  if {$isNS} {
+    set tabs [SessionList]
+    set what "*$com2"
+  } else {
+    set what "*::$com2"
+    set tabs [alited::bar::CurrentTabID]  ;# not qualified
+  }
+  foreach tab $tabs {
+    set TID [lindex $tab 0]
+    if {![info exist al(_unittree,$TID)]} {
+      alited::file::ReadFile $TID [alited::bar::FileName $TID]
+    }
+    foreach it $al(_unittree,$TID) {
+      lassign $it lev leaf fl1 ttl l1 l2
+      if {[string match $what $ttl] || [string match "*::$ttl" $com2] || $com2 eq $ttl} {
+        return [list $l1 $TID]
       }
     }
   }
-  return [list $found $TID]
+  return {}
 }
 
 proc find::SearchUnit {{wtxt ""}} {
+
+  namespace upvar ::alited al al obPav obPav
+  if {!$al(TREE,isunits)} alited::tree::SwitchTree
   lassign [SearchUnit1 $wtxt yes] found TID
   if {$found eq {}} {
     # if the qualified not found, try to find the non-qualified (first encountered)
@@ -148,8 +138,11 @@ proc find::SearchUnit {{wtxt ""}} {
   }
   if {$found ne {}} {
     alited::bar::BAR $TID show
-    alited::main::FocusText $TID $found.0
-    after idle alited::tree::NewSelection
+    after idle " \
+      alited::main::FocusText $TID $found.0 ; \
+      alited::tree::NewSelection"
+  } else {
+    bell
   }
 }
 
@@ -212,6 +205,7 @@ proc find::CheckWord {wtxt index1 index2} {
 
 proc find::Search1 {wtxt pos} {
   variable win
+  variable data
   lassign [FindOptions $wtxt] findstr options
   if {[catch {set fnd [$wtxt search {*}$options -count alited::find::counts -all -- $findstr $pos]} err]} {
     alited::msg ok err $err -ontop yes -parent $win
@@ -253,9 +247,10 @@ proc find::Search {wtxt} {
   return $res
 }
 
-proc find::Find {} {
+proc find::Find {{inv -1}} {
   namespace upvar ::alited obFND obFND
   variable data
+  if {$inv>-1} {set data(lastinvoke) $inv}
   set wtxt [alited::main::CurrentWTXT]
   $wtxt tag remove sel 1.0 end
   set fndlist [Search $wtxt]
@@ -284,7 +279,7 @@ proc find::Find {} {
     $wtxt tag add sel $indexprev $indp2
 
   } elseif {$data(c4) && $data(v2)==2}  {  ;# search forward & wrap around
-    if {!$indexnext || [lindex $fndlist end 0]==$indexnext} {
+    if {!$indexnext || ([lindex $fndlist end 0]==$indexnext && [$wtxt compare $indexnext == $index])} {
       lassign [lindex $fndlist 0] indexnext indn2
     }
     ::tk::TextSetCursor $wtxt $indexnext
@@ -307,6 +302,7 @@ proc find::Find {} {
     }
   }
   ::alited::main::CursorPos $wtxt
+  if {$inv>-1} alited::main::HighlightLine
 }
 
 proc find::FindAll {wtxt TID {tagme "add"}} {
@@ -352,16 +348,19 @@ proc find::InitShowResults {} {
   update
 }
 
-proc find::FindInText {} {
+proc find::FindInText {{inv -1}} {
+  variable data
+  if {$inv>-1} {set data(lastinvoke) $inv}
   alited::info::Clear
   set wtxt [alited::main::CurrentWTXT]
   set TID [alited::bar::CurrentTabID]
   ShowResults1 [FindAll $wtxt $TID]
 }
 
-proc find::FindInSession {{tagme "add"}} {
+proc find::FindInSession {{tagme "add"} {inv -1}} {
   namespace upvar ::alited al al
   variable data
+  if {$inv>-1} {set data(lastinvoke) $inv}
   InitShowResults
   set allfnd [list]
   set data(_ERR_) no
@@ -551,8 +550,8 @@ proc find::FindUnit {} {
   if {![info exist al(isfindunit)] || !$al(isfindunit)} {
     set al(isfindunit) true
     pack [$obPav FraHead] -side bottom -fill x -pady 3 -after [$obPav GutText]
+    foreach k {f F} {bind $ent <Shift-Control-$k> {alited::find::DoFindUnit; break}}
     bind $ent <Return> alited::find::DoFindUnit
-    bind $ent <Shift-Control-F> {::alited::find::FindUnit; break}
     bind $ent <Escape> {::alited::find::HideFindUnit; break}
   }
   focus $ent
@@ -585,6 +584,12 @@ proc find::SessionButtons {} {
   [$obFND But6] configure -text $btext
 }
 
+proc find::LastInvoke {} {
+  namespace upvar ::alited obFND obFND
+  variable data
+  [$obFND But$data(lastinvoke)] invoke
+}
+
 proc find::_close {} {
   namespace upvar ::alited obFND obFND
   catch {$obFND res $::alited::find::win 0}
@@ -597,6 +602,7 @@ proc find::_create {} {
   variable geo
   variable minsize
   variable data
+  set data(lastinvoke) 1
   set res 1
   while {$res} {
     $obFND makeWindow $win $al(MC,findreplace)
@@ -622,15 +628,16 @@ proc find::_create {} {
       {.rad2 - - - - {pack -anchor w -padx 5} {-t {$alited::al(MC,frdown)} -image alimg_down -compound left -var ::alited::find::data(v2) -value 2 -style TRadiobuttonFS}}
       {.chb4 - - - - {pack -anchor sw} {-t {$alited::al(MC,frwrap)} -var ::alited::find::data(c4) -style TCheckbuttonFS}}
       {sev2 cbx1 L 10 1 }
-      {but1 sev2 L 1 1 {-st we} {-t Find -com "::alited::find::Find" -style TButtonWestBoldFS}}
-      {but2 but1 T 1 1 {-st we} {-t {$alited::al(MC,frfind2)} -com "::alited::find::FindInText" -style TButtonWestFS}}
-      {But3 but2 T 1 1 {-st we} {-com "::alited::find::FindInSession" -style TButtonWestFS}}
+      {But1 sev2 L 1 1 {-st we} {-t Find -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
+      {But2 but1 T 1 1 {-st we} {-t {$alited::al(MC,frfind2)} -com "::alited::find::FindInText 2" -style TButtonWestFS}}
+      {But3 but2 T 1 1 {-st we} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
       {h_3 but3 T 2 1}
       {but4 h_3 T 1 1 {-st we} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
       {but5 but4 T 1 1 {-st nwe} {-t {$alited::al(MC,frfind2)} -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
       {But6 but5 T 1 1 {-st nwe} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
     }
     SessionButtons
+    foreach k {f F} {bind $win.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}
     bind $win.cbx1 <Return> "$win.but1 invoke"  ;# hot in comboboxes
     bind $win.cbx2 <Return> "$win.but4 invoke"
     if {$minsize eq ""} {      ;# save default min.sizes

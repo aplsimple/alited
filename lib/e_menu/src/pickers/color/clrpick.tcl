@@ -92,8 +92,10 @@ proc ::tk::dialog::color:: {args} {
   # so we know how big it wants to be, then center the window in the
   # display (Motif style) and de-iconify it.
 
+  wm withdraw $w
   ::tk::PlaceWindow $w widget $data(-parent)
   wm title $w $data(-title)
+  wm deiconify $w
 
   # 6. Set a grab and claim the focus too.
 

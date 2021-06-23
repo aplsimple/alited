@@ -1,27 +1,29 @@
 #! /usr/bin/env tclsh
-# ___________________________ Description _________________________ #
-
+###########################################################
 # Name:    project.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
 # Date:    04/28/2021
-# Brief:   Handles projects.
+# Brief:   Handles project settings.
 # License: MIT.
+###########################################################
 
-# _________________________ Code of project ________________________ #
+# _________________________ Variables ________________________ #
 
 namespace eval project {
   variable win $::alited::al(WIN).diaPrj
-  variable OPTS [list prjname prjroot prjdirign prjEOL prjindent prjmultiline]
+  variable OPTS [list prjname prjroot prjdirign prjEOL prjindent prjredunit prjmultiline]
   variable prjlist [list]
   variable tablist [list]
   variable geo root=$::alited::al(WIN)
-  variable minsize ""
+  variable minsize {}
   variable ilast -1
-  variable oldTab ""
+  variable oldTab {}
   variable prjinfo; array set prjinfo [list]
   variable data; array set data [list]
-  variable fnotes ""
+  variable fnotes {}
 }
+
+# ________________________ Common _________________________ #
 
 proc project::TabFileInfo {} {
   namespace upvar ::alited al al obDl2 obDl2
@@ -99,7 +101,7 @@ proc project::Ok {args} {
   variable prjlist
   variable prjinfo
   variable data
-  if {[set isel [Selected index]] eq ""} {
+  if {[set isel [Selected index]] eq {} || ![ValidProject]} {
     focus [$obDl2 TreePrj]
     return
   }
@@ -379,6 +381,8 @@ proc project::ValidProject {} {
     }
     file mkdir $al(prjroot)
   }
+  if {$al(prjindent)<2 || $al(prjindent)>8} {set al(prjindent) 2}
+  if {$al(prjredunit)<10 || $al(prjredunit)>100} {set al(prjredunit) 20}
   set msg [string map [list %d $al(prjroot)] $al(checkroot)]
   alited::Message2 $msg 5
   if {[llength [alited::tree::GetDirectoryContents $al(prjroot)]] >= $al(MAXFILES)} {
@@ -527,12 +531,14 @@ proc project::Tab2 {} {
     {v_ - - 1 10}
     {fra2 v_ T 1 2 {-st nsew -cw 1}}
     {.labEOL - - 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
-    {.cbxEOL .labEOL L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 5 -state readonly}}
+    {.cbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 5 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
-    {.spXIndent .labIndent L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjindent) -w 3 -from 2 -to 8 -justify center}}
-    {.labMult .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
-    {.chbMult .labMult L 1 1 {-st sw -pady 5 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
-    {.labFlist .labMult T 1 1 {-pady 5 -padx 3} {-t "List of files:"}}
+    {.spXIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 3 -from 2 -to 8 -justify center}}
+    {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Unit lines per 1 red bar:"}}
+    {.spXRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 3 -from 10 -to 100 -justify center}}
+    {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
+    {.chbMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
+    {.labFlist .labMult T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
     {fraFlist .labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1}}
     {.sbvFlist .lbxFlist L - - {pack -side left}}

@@ -453,10 +453,10 @@ proc file::DoMoveFile {fname dname f1112} {
 
 proc file::Add {ID} {
   namespace upvar ::alited al al obPav obPav obDl2 obDl2
-  if {$ID eq ""} {set ID [alited::tree::CurrentItem]}
+  if {$ID eq {}} {set ID [alited::tree::CurrentItem]}
   set dname [lindex [[$obPav Tree] item $ID -values] 1]
   if {[file isdirectory $dname]} {
-    set fname ""
+    set fname {}
   } else {
     set fname [file tail $dname]
     set dname [file dirname $dname]

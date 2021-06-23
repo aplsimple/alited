@@ -1,14 +1,15 @@
-# ____________________________ highlight tcl ____________________________ #
-#
-# Highlighting Tcl code.
-#
-# Scripted by Alex Plotnikov.
+#! /usr/bin/env tclsh
+###########################################################
+# Name:    hl_tcl.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    06/16/2021
+# Brief:   Handles highlighting Tcl code.
 # License: MIT.
-# _______________________________________________________________________ #
+###########################################################
 
-package provide hl_tcl 0.9.6
+package provide hl_tcl 0.9.8
 
-# _______________ Common data of ::hl_tcl:: namespace ______________ #
+# ______________________ Common data ____________________ #
 
 namespace eval ::hl_tcl {
 
@@ -18,7 +19,7 @@ namespace eval ::hl_tcl {
 
   # Tcl commands
   set data(PROC_TCL) [lsort [list \
-    proc return method self my coroutine yield yieldto constructor destructor \
+    return proc method self my coroutine yield yieldto constructor destructor \
     oo::define oo::class oo::objdefine oo::object
   ]]
   set data(CMD_TCL) [lsort [list \
@@ -403,6 +404,7 @@ proc ::hl_tcl::my::ShowCurrentLine {txt} {
   # Shows the current line.
   #   txt - text widget's path
 
+  variable data
   set ln [$txt index insert]
   if {![info exists data(CURPOS,$txt)] || int($data(CURPOS,$txt))!=int($ln)} {
     $txt tag remove tagCURLINE 1.0 end
@@ -1064,7 +1066,7 @@ proc ::hl_tcl::hl_colors {txt {dark ""}} {
   }
   if {$dark eq ""} {set dark $::hl_tcl::my::data(DARK,$txt)}
   if {$dark} {
-    return [list orange #ff7e00 lightgreen #f1b479 #76a396 #d485d4 #b9b96e cyan]
+    return [list orange #ff7e00 lightgreen #f1b479 #76a396 #d485d4 #b9b96e #ff33ff]
   } else {
     return [list "#923B23" #7d1c00 #035103 #4A181B #505050 #A106A1 #463e11 #FF0000]
   }

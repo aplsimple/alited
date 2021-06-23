@@ -14,6 +14,9 @@ namespace eval ::alited {
   set al(ED,sp1) 1
   set al(ED,sp2) 0
   set al(ED,sp3) 0
+  set al(ED,CKeyWords) {}
+  set al(ED,gutterwidth) 5
+  set al(ED,guttershift) 4
   set al(TREE,isunits) yes
   set al(TREE,units) no
   set al(TREE,files) no
@@ -21,7 +24,7 @@ namespace eval ::alited {
   set al(TREE,cw1) 70
   set al(FONTSIZE,small) 10
   set al(FONTSIZE,std) 11
-  set al(FONTSIZE,txt) 12
+  set al(FONT,txt) {}
   set al(INI,CS) -1
   set al(INI,HUE) 0
   set al(INI,ICONS) "middle icons"
@@ -46,32 +49,34 @@ namespace eval ::alited {
   set al(FAV,IsFavor) yes
   set al(FAV,MAXLAST) 32
   set al(TPL,list) [list]
-  set al(TPL,%d) "%D"
-  set al(TPL,%t) "%T"
-  set al(TPL,%u) "aplsimple"
-  set al(TPL,%U) "Alex Plotnikov"
-  set al(TPL,%m) "aplsimple@gmail.com"
-  set al(TPL,%w) "https://aplsimple.github.io"
-  set al(TPL,%a) "  #   %a - \\n"
+  set al(TPL,%d) %D
+  set al(TPL,%t) %T
+  set al(TPL,%u) aplsimple
+  set al(TPL,%U) {Alex Plotnikov}
+  set al(TPL,%m) aplsimple@gmail.com
+  set al(TPL,%w) https://aplsimple.github.io
+  set al(TPL,%a) {  #   %a - \\n}
   set al(KEYS,bind) [list]
-  set al(EM,geometry) "240x1+10+10"
-  set al(EM,save) ""
-  set al(EM,PD=) "~/PG/e_menu_PD.txt"
-  set al(EM,h=) "~/DOC/www.tcl.tk/man/tcl8.6"
-  set al(EM,tt=) "xterm -fs 12 -geometry 90x30+1+1"
-  set al(EM,menu) "menu.mnu"
-  set al(EM,menudir) ""
+  set al(EM,geometry) 240x1+10+10
+  set al(EM,save) {}
+  set al(EM,PD=) ~/PG/e_menu_PD.txt
+  set al(EM,h=) ~/DOC/www.tcl.tk/man/tcl8.6
+  set al(EM,tt=) {xterm -fs 12 -geometry 90x30+1+1}
+  set al(EM,menu) menu.mnu
+  set al(EM,menudir) {}
   set al(EM,CS) 33
   set al(EM,exec) no
+  set al(EM,DiffTool) kdiff3
   set al(tablist) [list]
   set al(RECENTFILES) [list]
   set al(INI,RECENTFILES) 16
   set al(closefunc) 0
   set alited::al(chosencolor) green
+  set al(BACKUP) .backup
 }
 
 namespace eval ini {
-  variable afterID ""
+  variable afterID {}
 }
 
 # ________________________ read common settings _________________________ #
@@ -88,6 +93,8 @@ proc ini::ReadIni {{projectfile ""}} {
   set al(FAV,current) [list]
   set al(FAV,visited) [list]
   set em_i 0
+  set fontsize [expr {$al(FONTSIZE,std)+1}]
+  set al(FONT,txt) "-family {[::apave::obj basicTextFont]} -size $fontsize"
   lassign "" ::alited::Pan_wh ::alited::PanL_wh ::alited::PanR_wh \
     ::alited::PanBM_wh ::alited::PanTop_wh ::alited::al(GEOM)
   catch {
@@ -167,9 +174,12 @@ proc ini::ReadIniOptions {nam val} {
   # Gets other options of alited.
   namespace upvar ::alited al al
   set clrnames [::hl_tcl::hl_colorNames]
-  if {[set i [lsearch $clrnames $nam]]>-1} {
-    set al(ED,[lindex $clrnames $i]) $val
-    return
+  foreach lng {{} C} {
+    set nam1 [string range $nam [string length $lng] end]
+    if {[lsearch $clrnames $nam1]>-1} {
+      set al(ED,$nam) $val
+      return
+    }
   }
   switch -exact $nam {
     project {
@@ -180,7 +190,7 @@ proc ini::ReadIniOptions {nam val} {
     hue           {set al(INI,HUE) $val}
     smallfontsize {set al(FONTSIZE,small) $val}
     stdfontsize   {set al(FONTSIZE,std) $val}
-    txtfontsize   {set al(FONTSIZE,txt) $val}
+    txtfont       {set al(FONT,txt) $val}
     multiline     {set al(ED,multiline) $val}
     indent        {set al(ED,indent) $val}
     EOL           {set al(ED,EOL) $val}
@@ -189,6 +199,7 @@ proc ini::ReadIniOptions {nam val} {
     spacing1      {set al(ED,sp1) $val}
     spacing2      {set al(ED,sp2) $val}
     spacing3      {set al(ED,sp3) $val}
+    CKeyWords     {set al(ED,CKeyWords) $val}
     clrDark       {set al(ED,Dark) $val}
     save_onadd - save_onclose - save_onsave {set al(INI,$nam) $val}
     TclExts       {set al(TclExtensions) $val}
@@ -205,6 +216,9 @@ proc ini::ReadIniOptions {nam val} {
     MaxFiles      {set al(MAXFILES) $val}
     barlablen     {set al(INI,barlablen) $val}
     bartiplen     {set al(INI,bartiplen) $val}
+    backup        {set al(BACKUP) $val}
+    gutterwidth   {set al(ED,gutterwidth) $val}
+    guttershift   {set al(ED,guttershift) $val}
   }
 }
 
@@ -246,6 +260,7 @@ proc ini::ReadIniEM {nam val emiName} {
     emmenudir  {set al(EM,menudir) $val}
     emcs       {set al(EM,CS) $val}
     emexec     {set al(EM,exec) $val}
+    emdiff     {set al(EM,DiffTool) $val}
     em_run {
       if {$em_i < $em_Num} {
         lassign [split $val \t] em_sep($em_i) em_ico($em_i) em_inf($em_i)
@@ -381,7 +396,6 @@ proc ini::SaveIni {{newproject no}} {
   namespace upvar ::alited::pref em_Num em_Num em_sep em_sep em_ico em_ico em_inf em_inf
   namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo OPTS OPTS
   puts "alited storing: $al(INI)"
-#  catch {file mkdir [file dirname $al(INI)]}
   set chan [open $::alited::al(INI) w]
   puts $chan {[Options]}
   puts $chan "project=$al(prjfile)"
@@ -389,7 +403,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "hue=$al(INI,HUE)"
   puts $chan "smallfontsize=$al(FONTSIZE,small)"
   puts $chan "stdfontsize=$al(FONTSIZE,std)"
-  puts $chan "txtfontsize=$al(FONTSIZE,txt)"
+  puts $chan "txtfont=$al(FONT,txt)"
   puts $chan "multiline=$al(ED,multiline)"
   puts $chan "indent=$al(ED,indent)"
   puts $chan "EOL=$al(ED,EOL)"
@@ -398,8 +412,11 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "spacing1=$al(ED,sp1)"
   puts $chan "spacing2=$al(ED,sp2)"
   puts $chan "spacing3=$al(ED,sp3)"
+  puts $chan "CKeyWords=$al(ED,CKeyWords)"
   set clrnams [::hl_tcl::hl_colorNames]
-  foreach nam $clrnams {puts $chan "$nam=$al(ED,$nam)"}
+  foreach lng {{} C} {
+    foreach nam $clrnams {puts $chan "$lng$nam=$al(ED,$lng$nam)"}
+  }
   puts $chan "clrDark=$al(ED,Dark)"
   puts $chan "save_onadd=$al(INI,save_onadd)"
   puts $chan "save_onclose=$al(INI,save_onclose)"
@@ -418,6 +435,9 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "MaxFiles=$al(MAXFILES)"
   puts $chan "barlablen=$al(INI,barlablen)"
   puts $chan "bartiplen=$al(INI,bartiplen)"
+  puts $chan "backup=$al(BACKUP)"
+  puts $chan "gutterwidth=$al(ED,gutterwidth)"
+  puts $chan "guttershift=$al(ED,guttershift)"
 
   puts $chan ""
   puts $chan {[Templates]}
@@ -443,6 +463,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "emcs=$al(EM,CS)"
   puts $chan "emgeometry=$al(EM,geometry)"
   puts $chan "emexec=$al(EM,exec)"
+  puts $chan "emdiff=$al(EM,DiffTool)"
   for {set i 0} {$i<$em_Num} {incr i} {
     if {[info exists em_sep($i)]} {
       set em_run $em_sep($i)
@@ -616,7 +637,7 @@ proc ini::CreateIcon {icon} {
   return $img
 }
 
-# ________________________ Main (+ bar) _________________________ #
+# ________________________ Main (+ tool bar) _________________________ #
 
 proc ini::InitGUI {} {
   # Initializes GUI.
@@ -626,9 +647,10 @@ proc ini::InitGUI {} {
   ::apave::obj csSet $al(INI,CS) . -doit
   if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE)}
   set Dark [::apave::obj csDarkEdit]
-  if {![info exists al(ED,clrCOM)] || ![info exists al(ED,Dark)] || \
-  $al(ED,Dark) != $Dark} {
+  if {![info exists al(ED,clrCOM)] || ![info exists al(ED,CclrCOM)] || \
+  ![info exists al(ED,Dark)] || $al(ED,Dark) != $Dark} {
     alited::pref::TclSyntax_Default
+    alited::pref::CSyntax_Default
   }
 }
 
@@ -733,7 +755,8 @@ proc ini::_init {} {
           set img [CreateIcon $em_ico($i)]-big
           set txt {}
         }
-        append al(atools) " $img \{{} -tip {$em_mnu($i)@@ -under 4} $txt "
+        set tip [string map {% %%} $em_mnu($i)]
+        append al(atools) " $img \{{} -tip {$tip@@ -under 4} $txt "
         append al(atools) "-com {[alited::tool::EM_command $i]}\}"
       }
     }

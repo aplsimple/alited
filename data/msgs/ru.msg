@@ -68,21 +68,21 @@ namespace eval ::alited {
     {Lines} {Строки}
     "All of \"%f\"" "Всё из \"%f\""
     {Not recommended!} {Не рекомендуется!}
-    {Move Unit Up} {Поднять блок}
-    {Move Unit Down} {Опустить блок}
+    {Move Unit Up} {Поднять юнит}
+    {Move Unit Down} {Опустить юнит}
     {Move File Up} {Переместить файл вверх}
     {Move File Down} {Переместить файл вниз}
     {Only files are moved by alited.} {Только файлы перемещает alited.}
     {Lists of Favorites} {Списки избранного}
     {Last Visited} {Последние посещения}
-    {Switch to Unit Tree} {Перейти на список блоков}
+    {Switch to Unit Tree} {Перейти на список юнитов}
     {Switch to File Tree} {Перейти на список файлов}
     {Create File} {Создать файл}
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Введите имя файла, создаваемого в:\n%d\n\nЕсли это каталог, включите опцию \"Каталог\".\nКаталог может включать подкаталоги (a/b/c)."
     {Delete File} {Удалить файл}
     "File %f already exists in\n%d" "Файл %f уже существует в\n%d"
-    {Add Unit by Template} {Добавить блок по шаблону}
-    {Remove Unit(s)} {Удалить блок(и)}
+    {Add Unit by Template} {Добавить юнит по шаблону}
+    {Remove Unit(s)} {Удалить юнит(ы)}
     {Add to Favorites} {Добавить в Избранное}
     {Remove from Favorites} {Удалить из Избранного}
     {No item selected.} {Запись не выбрана.}
@@ -134,11 +134,11 @@ namespace eval ::alited {
     {A template with the attribute(s) already exists.} {Шаблон с такими атрибутами уже существует.}
     {Place after:} {Вставить за:}
     {line} {строка}
-    {unit} {блок}
+    {unit} {юнит}
     {cursor} {курсор}
     {file's beginning} {начало файла}
     "Inserts a template\nbelow a current line" "Вставить шаблон\nследом за текущей строкой"
-    "Inserts a template\nbelow a current unit" "Вставить шаблон\nследом за текущим блоком"
+    "Inserts a template\nbelow a current unit" "Вставить шаблон\nследом за текущим юнитом"
     "Inserts a template at the cursor\n(good for one-liners)" "Вставить шиблон в позиции курсора\n(годится для однострочных шаблонов)"
     "Inserts a template after 1st line of a file\n(License, Introduction etc.)" "Вставить шаблон в начало файла\n(Лицензия, Вступление и пр.)"
     {Delete a template #%n ?} {Удалить шаблон #%n ?}
@@ -163,6 +163,7 @@ namespace eval ::alited {
     {Indentation:} {Пробелов отступа:}
     {End of line:} {Концы строк:}
     {Multi-line strings:} {Многострочные string:}
+    {Unit lines per 1 red bar:} {Строк юнита на 1 красную полосу:}
     {List of files:} {Список файлов:}
     "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n" "Вы можете\n  - добавить текущие закладки файлов в\n  - заменить текущими закладками\n  - удалить\n  - не изменять\nсписок закладок файлов в проекте.\n"
     {Add} {Добавить}
@@ -204,7 +205,7 @@ namespace eval ::alited {
     {Delete a favorites' list #%n ?} {Удалить список Избранного #%n ?}
     {Favorites} {Избранное}
     "Add \"%n\" of %f\nto the favorites?" "Добавить \"%n\" файла %f\nв Избранное?"
-    "Item \"%n\" of %f\nis already in the favorites." "Блок \"%n\" из %f\nуже есть в Избранном."
+    "Item \"%n\" of %f\nis already in the favorites." "Юнит \"%n\" из %f\nуже есть в Избранном."
     "Remove \"%n\" of %f\nfrom the favorites?" "Удалить \"%n\" файла %f\nиз Избранного?"
   }
 
@@ -225,9 +226,9 @@ namespace eval ::alited {
 
   ## _ Find-replace dialogue _ ##
   ::msgcat::mcmset ru {
-    {Find:} {Искать:}
-    {Replace:} {Заменить:}
-    {Match:} {Совпадение:}
+    {Find: } {Искать: }
+    {Replace: } {Заменить: }
+    {Match: } {Совпадение: }
     {Exact} {Точное}
     {Match whole word only} {Только целые слова}
     {Match case} {Учет регистра букв}
@@ -280,16 +281,18 @@ namespace eval ::alited {
     "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?"
     {General} {Общее}
     {Editor} {Редактор}
-    {Units} {Блоки}
+    {Units} {Юниты}
     {Keys} {Клавиши}
     {Misc.} {Разное}
     {Saving} {Сохранение}
     {Open bar/menu settings} {Открыть настройки bar/menu}
     {Tcl syntax} {Синтаксис Tcl}
-    {C syntax} {Синтаксис C}
+    {C/C++ syntax} {Синтаксис C/C++}
     {Tcl files' extensions:} {Расширения файлов Tcl:}
+    {C/C++ files' extensions:} {Расширения файлов C/C++:}
     {Small font size:} {Размер малого шрифта:}
     {Middle font size:} {Размер среднего шрифта:}
+    {Font:} {Шрифт:}
     {Font size:} {Размер шрифта:}
     {Save File} {Сохранить файл}
     {Save File as} {Сохранить файл как}
@@ -319,6 +322,7 @@ namespace eval ::alited {
     {'Last Visited' length:} {Длина списка 'Последние посещения':}
     {Maximum of project files:} {Число файлов проекта не более:}
     {Linux terminal:} {Терминал Linux:}
+    {Diff tool:} {Команда diff:}
     {Path to man/tcl8.6:} {Путь к man/tcl8.6:}
     {Geometry:} {Геометрия:}
     {Run as external app:} {Как отдельное приложение:}
@@ -335,7 +339,13 @@ namespace eval ::alited {
     {Color of proc/methods:} {Цвет процедур/методов:}
     {Color of options:} {Цвет опций:}
     {Color of brackets:} {Цвет скобок:}
+    {Color of C key words:} {Цвет ключевых слов C:}
+    {Color of C++ key words:} {Цвет ключевых слов C++:}
+    {Color of punctuation:} {Цвет знаков препинания:}
+    {Color of return/goto:} {Цвет return/goto:}
+    {Color of your key words:} {Цвет ваших ключевых слов:}
     {Colors} {Цвета}
+    {Your key words:} {Ваши ключевые слова:}
     {Rows:} {Строк:}
     {Columns:} {Колонок:}
     {Confirm exit:} {Подтверждать выход:}
@@ -355,6 +365,10 @@ namespace eval ::alited {
     {Untouched top lines:} {Статичных начальных строк:}
     {Tab bar label's length:} {Длина имен панели файлов:}
     {Tab bar tip's length:} {Длина подсказок панели файлов:}
+    {Back up files to a project's subdirectory:} {Резервные копии в подкаталоге проекта:}
+    "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." "Подкаталог проекта, где сохранятся копии файлов.\nЕсли это поле пустое, копирования не будет."
+    {Gutter's width:} {Ширина желобка}
+    {Gutter's shift from text:} {Смещение желобка от текста:}
   }
 
   ## _ Checks _ ##
@@ -368,7 +382,7 @@ namespace eval ::alited {
     {Consistency of ()} {Соответствие ()}
     {all of session files} {все файлы сессии}
     {current file} {текущий файл}
-    {Found %f file error(s), %u unit error(s).} {Найдено ошибок: %f файлов, %u блоков.}
+    {Found %f file error(s), %u unit error(s).} {Найдено ошибок: %f файлов, %u юнитов.}
     {No errors found.} {Ошибок не найдено.}
   }
 
@@ -383,10 +397,10 @@ namespace eval ::alited {
 
   ## _ Find units _ ##
   ::msgcat::mcmset ru {
-    {Find Unit} {Искать блок}
+    {Find Unit} {Искать юнит}
     {in all} {во всех}
     {in current} {в текущем}
-    "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored." "Используйте шаблон glob для поиска блоков:\nнапример, \"s*rt\" найдет \"start\" и \"insert\".\nРегистр букв не учитывается."
+    "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored." "Используйте шаблон glob для поиска юнитов:\nнапример, \"s*rt\" найдет \"start\" и \"insert\".\nРегистр букв не учитывается."
   }
 
   ## _ Abbreviations etc. _ ##
@@ -397,7 +411,7 @@ namespace eval ::alited {
     {Row} {Стр.}
     {Row: } {Стр: }
     { Col: } { Поз: }
-    {    Unit: } {   Блок: }
+    {    Unit: } {   Юнит: }
   }
 
   ## _ Bar of tabs _ ##
@@ -409,7 +423,7 @@ namespace eval ::alited {
     {... All} {... все}
   }
 
-  ## ________________________ ==> End of alited NS _________________________ ##
+  ## ________________________ --EONS-- _________________________ ##
 }
 
 # _ bartabs NS _ #
@@ -427,7 +441,7 @@ namespace eval ::bartabs {
     {... All at Right} {... все справа}
   }
 
-  ## ________________________ ==> End of bartabs NS _________________________ ##
+  ## ________________________ --EONS-- _________________________ ##
 }
 
 # _________________________________ EOF _________________________________ #

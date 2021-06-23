@@ -1,0 +1,11 @@
+ In the "C/C++ files' extensions" field, you can set any
+ additional extensions for the C/C++ files you use.
+
+ Also, you can set your own colors to highlight the
+ appropriate constructs of C/C++.
+
+ Use "Default" button to restore the default colors
+ for highlighting.
+
+ At need, you can enter your own key words to highlight,
+ in the text field.

@@ -533,19 +533,41 @@ proc unit::UnComment {} {
   }
 }
 
+proc unit::BackupFile {TID} {
+  namespace upvar ::alited al al
+  if {$al(BACKUP) ne {}} {
+    set fname [alited::bar::FileName $TID]
+    set dir [file join $al(prjroot) $al(BACKUP)]
+    set fname2 [file join $dir [file tail $fname]]
+    if {![file exists $dir] && [catch {file mkdir $dir} err]} {
+      alited::msg ok err $err
+    }
+    if {[file exists $dir] && [catch {file copy -force $fname $fname2} err]} {
+      alited::msg ok err $err
+    }
+  }
+}
+
 proc unit::CheckUndoRedoIcons {wtxt TID} {
+  set TIDundo [alited::bar::BAR cget --TIDundo]
   set oldundo [alited::bar::BAR $TID cget --undo]
-  set oldredo [alited::bar::BAR $TID cget --undo]
+  set oldredo [alited::bar::BAR $TID cget --redo]
   set newundo [$wtxt edit canundo]
   set newredo [$wtxt edit canredo]
-  if {$oldundo ne $newundo} {
+  if {$TIDundo ne $TID || $oldundo ne $newundo} {
     if {$newundo} {set stat normal} {set stat disabled}
     [ToolButName undo] configure -state $stat
+    alited::bar::BAR $TID configure --undo $newundo
   }
-  if {$oldredo ne $newredo} {
+  if {$TIDundo ne $TID || $oldredo ne $newredo} {
     if {$newredo} {set stat normal} {set stat disabled}
     [ToolButName redo] configure -state $stat
+    alited::bar::BAR $TID configure --redo $newredo
   }
+  if {$oldundo ne {} && !$oldundo && !$oldredo && $newundo} {
+    BackupFile $TID
+  }
+  alited::bar::BAR configure --TIDundo $TID
 }
 
 proc unit::CheckSaveIcons {modif} {
@@ -581,17 +603,25 @@ proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
       CheckSaveIcons $new
     }
     CheckUndoRedoIcons $wtxt $TID
-    if {$al(TREE,isunits) && (![info exists al(RECREATE)] || $al(RECREATE))} {
-      if {$l1<$l2 || $al(INI,LEAF) && [regexp $al(RE,leaf2) $args] || \
-      !$al(INI,LEAF) && [regexp $al(RE,proc2) $args]} {
-        alited::tree::RecreateTree
-      } elseif {[lsearch -index 4 $al(_unittree,$TID) $l1]>-1} {
-        alited::tree::RecreateTree
-      } else {
-        set line [$wtxt get $l1.0 $l1.end]
-        if {$al(INI,LEAF) && [regexp $al(RE,leaf) $line] || \
-        !$al(INI,LEAF) && [regexp $al(RE,proc) $line] || [regexp $al(RE,branch) $line]} {
+    if {$al(TREE,isunits)} {
+      if {![info exists al(RECREATE)] || $al(RECREATE)} {
+        set doit no
+        if {[set llen [llength $al(_unittree,$TID)]]>1} {
+          set itl1 [lindex $al(_unittree,$TID) 1 4]
+          set doit [expr {$l1<$itl1}]
+        }
+        if {$l1<$l2 || $al(INI,LEAF) && [regexp $al(RE,leaf2) $args] || \
+        !$al(INI,LEAF) && [regexp $al(RE,proc2) $args]} {
           alited::tree::RecreateTree
+        } elseif {[lsearch -index 4 $al(_unittree,$TID) $l1]>-1} {
+          alited::tree::RecreateTree
+        } else {
+          set line [$wtxt get $l1.0 $l1.end]
+          if {$al(INI,LEAF) && [regexp $al(RE,leaf) $line] || \
+          !$al(INI,LEAF) && [regexp $al(RE,proc) $line] || \
+          [regexp $al(RE,branch) $line] || $doit} {
+            alited::tree::RecreateTree
+          }
         }
       }
     }

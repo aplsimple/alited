@@ -1873,7 +1873,8 @@ oo::class create ::apave::APave {
       if {[string first $ic $chooser] >= 0} {set icon $ic; break}
     }
     set com "[self] chooser $chooser \{$vv\} $addopt $wpar $addattrs2 $entname"
-    set butf [list [my Transname buT $name] - - - - "pack -side right -anchor n -in $inname -padx 1" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
+    if {$view ne {}} {set anc n} {set anc center}
+    set butf [list [my Transname buT $name] - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
     if {$view ne {}} {
       set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $inname" ""]
       set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname" ""]
@@ -2702,22 +2703,22 @@ oo::class create ::apave::APave {
     switch -exact $K {
       Return {
         # at pressing Enter key, indent (and possibly add the right brace)
-        set idx1 [$w index "insert linestart"]
-        set idx2 [$w index "insert lineend"]
+        set idx1 [$w index {insert linestart}]
+        set idx2 [$w index {insert lineend}]
         set line [$w get $idx1 $idx2]
         set nchars [my leadingSpaces $line]
         set indent [string range $line 0 [expr {$nchars-1}]]
         set ch [string index $line end]
-        if {$indent ne "" || $ch eq "\{"} {
-          set idx1 [$w index "insert"]
+        if {$indent ne {} || $ch eq "\{"} {
+          set idx1 [$w index insert]
           set idx2 [$w index "$idx1 +1 line"]
           set st1 [$w get "$idx1" "$idx1 lineend"]
-          if {[string index $st1 0] in {"\t" " "}} {
-            # only cut without indenting, if space(s) are at the right
-            $w insert [$w index "$idx1"] \n
-            set nchars [my leadingSpaces $st1]
+          if {[string index $st1 0] in [list \t { }]} {
+            # if space(s) are at the right, remove them at cutting
+            set n1 [my leadingSpaces $st1]
+            $w delete [$w index $idx1] [$w index "$idx1 +$n1 char"]
           } else {
-            if {$ch eq "\{" && $st1 eq ""} {
+            if {$ch eq "\{" && $st1 eq {}} {
               set st2 [string trim [$w get "$idx2 linestart" "$idx2 lineend"]]
               if {$st2 eq ""} {
                 append indent $::apave::_AP_VARS(INDENT) \n $indent "\}"
@@ -2726,8 +2727,8 @@ oo::class create ::apave::APave {
               }
               incr nchars $lindt
             }
-            $w insert [$w index "$idx1"] \n$indent
           }
+          $w insert [$w index $idx1] \n$indent
           ::tk::TextSetCursor $w [$w index "$idx2 linestart +$nchars char"]
           return -code break
         }

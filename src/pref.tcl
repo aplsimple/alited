@@ -185,11 +185,10 @@ proc pref::Ok {args} {
   set ans [alited::msg yesnocancel info [msgcat::mc "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?"] YES -geometry root=$win]
   if {$ans in {1 2}} {
     GetEmSave out
-    # check options that can make alited unusable    
+    # check options that can make alited unusable
     if {$al(INI,HUE)<-40 || $al(INI,HUE)>40} {set al(INI,HUE) 0}
     if {$al(FONTSIZE,small)<8 || $al(FONTSIZE,small)>14} {set al(FONTSIZE,small) 10}
     if {$al(FONTSIZE,std)<9 || $al(FONTSIZE,std)>18} {set al(FONTSIZE,std) 11}
-    if {$al(FONTSIZE,txt)<10 || $al(FONTSIZE,txt)>24} {set al(FONTSIZE,txt) 12}
     if {$al(INI,RECENTFILES)<10 || $al(INI,RECENTFILES)>50} {set al(INI,RECENTFILES) 16}
     if {$al(FAV,MAXLAST)<10 || $al(FAV,MAXLAST)>100} {set al(FAV,MAXLAST) 100}
     if {$al(MAXFILES)<1000 || $al(MAXFILES)>9999} {set al(MAXFILES) 2000}
@@ -199,6 +198,9 @@ proc pref::Ok {args} {
     if {![string is integer -strict $al(INI,CS)]} {set al(INI,CS) -1}
     set al(EM,CS)  [scan $opcc2 %d:]
     if {![string is integer -strict $al(EM,CS)]} {set al(EM,CS) -1}
+    set al(ED,CKeyWords) [[$obDl2 TexCKeys] get 1.0 {end -1c}]
+    set al(ED,CKeyWords) [string map [list \n { }] $al(ED,CKeyWords)]
+    set al(BACKUP) [string trim $al(BACKUP)]
     $obDl2 res $win 1
     if {$ans == 1} {alited::Exit - 1 no}
   }
@@ -293,6 +295,9 @@ proc pref::General_Tab2 {} {
     {.spxMaxLast .labMaxLast L 1 1 {-st sw -pady 1} {-tvar alited::al(FAV,MAXLAST) -from 10 -to 100 -justify center -w 3}}
     {.labMaxFiles .labMaxLast T 1 1 {-st w -pady 1 -padx 3} {-t "Maximum of project files:"}}
     {.spxMaxFiles .labMaxFiles L 1 1 {-st sw -pady 1} {-tvar alited::al(MAXFILES) -from 1000 -to 9999 -justify center -w 5}}
+    {.seh4 .labMaxFiles T 1 2 {-st ew -pady 5}}
+    {.labBackup .seh4 T 1 1 {-st w -pady 1 -padx 3} {-t "Back up files to a project's subdirectory:"}}
+    {.entBackup .labBackup L 1 1 {-st sw -pady 1} {-tvar alited::al(BACKUP) -w 20 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup."}}
   }
 }
 
@@ -331,9 +336,9 @@ proc pref::Edit_Tab1 {} {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
-    {.labFsz3 - - 1 1 {-st w -pady 8 -padx 3} {-t "Font size:"}}
-    {.spxFsz3 .labFsz3 L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(FONTSIZE,txt) -from 10 -to 24 -justify center -w 3}}
-    {.labSp1 .labFsz3 T 1 1 {-st w -pady 1 -padx 3} {-t "Space above lines:"}}
+    {.labFon - - 1 1 {-st w -pady 8 -padx 3} {-t "Font:"}}
+    {.fonTxt .labFon L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(FONT,txt) -w 40}}
+    {.labSp1 .labFon T 1 1 {-st w -pady 1 -padx 3} {-t "Space above lines:"}}
     {.spxSp1 .labSp1 L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp1) -from 0 -to 16 -justify center -w 3}}
     {.labSp2 .labSp1 T 1 1 {-st w -pady 1 -padx 3} {-t "Space between wraps:"}}
     {.spxSp2 .labSp2 L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp2) -from 0 -to 16 -justify center -w 3}}
@@ -344,6 +349,11 @@ proc pref::Edit_Tab1 {} {
     {.spxLl .labLl L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(INI,barlablen) -from 10 -to 100 -justify center -w 3}}
     {.labTl .labLl T 1 1 {-st w -pady 1 -padx 3} {-t "Tab bar tip's length:"}}
     {.spxTl .labTl L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(INI,bartiplen) -from 10 -to 100 -justify center -w 3}}
+    {.seh2 .labTl T 1 2 {-pady 3}}
+    {.labGW .seh2 T 1 1 {-st w -pady 1 -padx 3} {-t "Gutter's width:"}}
+    {.spxGW .labGW L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,gutterwidth) -from 3 -to 7 -justify center -w 3}}
+    {.labGS .labGW T 1 1 {-st w -pady 1 -padx 3} {-t "Gutter's shift from text:"}}
+    {.spxGS .labGS L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,guttershift) -from 0 -to 10 -justify center -w 3}}
   }
 }
 
@@ -382,6 +392,28 @@ proc pref::Edit_Tab3 {} {
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "C/C++ files' extensions:"}}
     {.entExt .labExt L 1 3 {-st sw -pady 3} {-tvar alited::al(ClangExtensions) -w 30}}
+    {.labCOM .labExt T 1 1 {-st w -pady 3 -padx 3} {-t "Color of C key words:"}}
+    {.clrCOM .labCOM L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrCOM) -w 20}}
+    {.labCOMTK .labCOM T 1 1 {-st w -pady 3 -padx 3} {-t "Color of C++ key words:"}}
+    {.clrCOMTK .labCOMTK L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrCOMTK) -w 20}}
+    {.labSTR .labCOMTK T 1 1 {-st w -pady 3 -padx 3} {-t "Color of strings:"}}
+    {.clrSTR .labSTR L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrSTR) -w 20}}
+    {.labVAR .labSTR T 1 1 {-st w -pady 3 -padx 3} {-t "Color of punctuation:"}}
+    {.clrVAR .labVAR L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrVAR) -w 20}}
+    {.labCMN .labVAR T 1 1 {-st w -pady 3 -padx 3} {-t "Color of comments:"}}
+    {.clrCMN .labCMN L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrCMN) -w 20}}
+    {.labPROC .labCMN T 1 1 {-st w -pady 3 -padx 3} {-t "Color of return/goto:"}}
+    {.clrPROC .labPROC L 1 1 {-st sw -pady } {-tvar alited::al(ED,CclrPROC) -w 20}}
+    {.labOPT .labPROC T 1 1 {-st w -pady 3 -padx 3} {-t "Color of your key words:"}}
+    {.clrOPT .labOPT L 1 1 {-st sw -pady } {-tvar alited::al(ED,CclrOPT) -w 20}}
+    {.labBRA .labOPT T 1 1 {-st w -pady 3 -padx 3} {-t "Color of brackets:"}}
+    {.clrBRA .labBRA L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrBRA) -w 20}}
+    {.seh .labBRA T 1 2 {-pady 3}}
+    {.but .seh T 1 1 {-st w} {-t Default -com alited::pref::CSyntax_Default}}
+    {.seh2 .but T 1 2 {-pady 10}}
+    {fra.scf.fra2 .seh2 T 1 2 {-st nsew}}
+    {.labAddKeys - - 1 1 {-st nw -pady 3} {-t "Your key words:"}}
+    {.TexCKeys .labAddKeys L 1 1 {-st new} {-h 7 -w 40 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
   }
 }
 
@@ -394,6 +426,16 @@ proc pref::TclSyntax_Default {} {
     set al(ED,$nam) $val
   }
   set al(ED,Dark) $Dark
+}
+
+proc pref::CSyntax_Default {} {
+  fetchVars
+  set Dark [::apave::obj csDarkEdit]
+  set clrnams [::hl_tcl::hl_colorNames]
+  set clrvals [::hl_c::hl_colors {} $Dark]
+  foreach nam $clrnams val $clrvals {
+    set al(ED,C$nam) $val
+  }
 }
 
 # ________________________ Tab "Template" _________________________ #
@@ -585,6 +627,8 @@ proc pref::Emenu_Tab {} {
     {.dirDoc .labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 40}}
     {.labTT .labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
     {.entTT .labTT L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,tt=) -w 40}}
+    {.labDF .labTT T 1 1 {-st w -pady 1 -padx 3} {-t "Diff tool:"}}
+    {.entDF .labDF L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 40}}
   }
 }
 
@@ -850,6 +894,7 @@ proc pref::_create {tab} {
   if {[file exists $fnotes]} {
     [$obDl2 TexNotes] insert end [::apave::readTextFile $fnotes]
   }
+  [$obDl2 TexCKeys] insert end $al(ED,CKeyWords)
   if {$tab ne {}} {
     switch -exact $tab {
       Emenu_Tab {

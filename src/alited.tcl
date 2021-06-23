@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.8.9
+package provide alited 0.9a7
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -87,7 +87,6 @@ namespace eval alited {
   variable BARSDIR [file join $LIBDIR bartabs]
   variable HLDIR   [file join $LIBDIR hl_tcl]
   variable BALTDIR [file join $LIBDIR baltip]
-  lappend ::auto_path $PAVEDIR $BARSDIR $HLDIR $BALTDIR
 
   set ::e_menu_dir [file join $LIBDIR e_menu]
   variable MNUDIR "$::e_menu_dir/menus"
@@ -128,6 +127,7 @@ namespace eval alited {
   set al(prjindent) 2
   set al(prjmultiline) 0
   set al(prjEOL) {}
+  set al(prjredunit) 20
   set al(TITLE) {%f :: %d :: %p - alited}
   set al(TclExtensions) {.tcl .tm .msg}
   set al(ClangExtensions) {.c .h .cpp .hpp}
@@ -135,10 +135,11 @@ namespace eval alited {
 
 # _____________________________ Packages used __________________________ #
 
-package require bartabs
-package require apave
-package require hl_tcl
-package require baltip
+  source [file join $::alited::BALTDIR baltip.tcl]
+  source [file join $::alited::BARSDIR bartabs.tcl]
+  source [file join $::alited::PAVEDIR apaveinput.tcl]
+  source [file join $::alited::HLDIR  hl_tcl.tcl]
+  source [file join $::alited::HLDIR  hl_c.tcl]
 
 # __________________________ Common procs ________________________ #
 

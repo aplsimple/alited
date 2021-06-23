@@ -82,6 +82,7 @@ proc tool::EM_Options {opts} {
   } else {
     set ls "ls="
   }
+  if {$al(EM,DiffTool) ne {}} {append ls " DF=$al(EM,DiffTool)"}
   set l [[alited::main::CurrentWTXT] index insert]
   set l [expr {int($l)}]
   return [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" "l=$l" \

@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4a6"
+  variable em_version "e_menu 3.4b2"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -191,6 +191,7 @@ namespace eval ::em {
   variable empool [list]
   variable hili no
   variable ls {} pk {}
+  variable DF kdiff3
 }
 #___ creates an item for the menu pool
 proc ::em::pool_item_create {} {
@@ -1253,6 +1254,7 @@ proc ::em::init_swc {} {
 proc ::em::prepr_pn {refpn {dt 0}} {
   upvar $refpn pn
   prepr_idiotic pn 1
+  prepr_1 pn "DF" $::em::DF           ;# %DF is a name of diff tool
   foreach n [array names ::em::ar_geany] {
     set v $::em::ar_geany($n)
     if {$n in {f d}} {
@@ -1853,7 +1855,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         y0= y1= y2= y3= y4= y5= y6= y7= y8= y9= \
         z0= z1= z2= z3= z4= z5= z6= z7= z8= z9= \
         a= d= e= f= p= l= h= b= cs= c= t= g= n= \
-        fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= cc= gr= ht= hh= rt= \
+        fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= cc= gr= ht= hh= rt= DF= \
         m= om= ts= TF= yn= in= ex= EX= ls=} { ;# the processing order is important
     if {($s1 in {o= s= m=}) && !($s1 in $osm)} {
       continue
@@ -1976,7 +1978,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           set ::em::$s01 [::apave::getN $seltd [set ::em::$s01]]
         }
         ed= {set ::em::editor $seltd}
-        tg= - om= - dk= - ls= {
+        tg= - om= - dk= - ls= - DF= {
           set ::em::$s01 $seltd
         }
         ex= - EX= {

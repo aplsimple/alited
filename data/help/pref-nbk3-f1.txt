@@ -1,10 +1,12 @@
  Fill the following fields to handle the units:
  
  "Branch's regexp" - a comment that defines a branch's beginning
- "Proc's regexp" - a comment that defines a proc's (method's) beginning
+ "Proc's regexp" - a regexp that defines a proc's (method's) beginning
 
  "Check branch's regexp" - a regexp by which a branch change is detected
  "Check proc's regexp" - a regexp by which a proc change is detected
+ (These two REs serve as helpers at modifying a line, to decide if
+ the unit tree should be updated.)
 
  "Use leaf's regexp" - allows an additional regexp for leaves
  "Leaf's regexp" - an additional regexp for leaves
