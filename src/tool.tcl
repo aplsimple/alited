@@ -34,6 +34,7 @@ proc tool::Redo {} {
 # ________________________ Various tools _________________________ #
 
 proc tool::ColorPicker {} {
+  # Calls a color picker passing to it and getting from it a color.
 
   if {[set color [alited::find::GetWordOfText]] ne {}} {
     set alited::al(chosencolor) $color
@@ -45,12 +46,18 @@ proc tool::ColorPicker {} {
     $wtxt insert [$wtxt index insert] $res
   }
 }
+#_______________________
 
 proc tool::Loupe {} {
+  # Calls a screen loupe.
+
   exec tclsh [file join $::alited::PAVEDIR pickers color aloupe aloupe.tcl] &
 }
+#_______________________
 
 proc tool::tkcon {} {
+  # Calls Tkcon application.
+
   namespace upvar ::alited al al
   foreach opt [array names al tkcon,clr*] {
     lappend opts -color-[string range $opt 9 end] $al($opt)
@@ -60,19 +67,25 @@ proc tool::tkcon {} {
   }
   exec tclsh [file join $::alited::LIBDIR util tkcon.tcl] {*}$opts &
 }
-
+#_______________________
 
 proc tool::Help {} {
+  # Calls a help on alited.
+
   _run Help
 }
 
 # ________________________ emenu support _________________________ #
 
 proc tool::EM_Options {opts} {
+  # Returns e_menu's general options.
+
   namespace upvar ::alited al al
   set sel [alited::find::GetWordOfText]
   set f [alited::bar::FileName]
   set d [file dirname $f]
+  # get a list of selected tabs (i.e. their file names):
+  # it's used as %ls wildcard in grep.mnu ("SEARCH EXACT LS=")
   set tabs [alited::bar::BAR listFlag s]
   if {[llength $tabs]>1} {
     foreach tab $tabs {
@@ -86,19 +99,26 @@ proc tool::EM_Options {opts} {
   set l [[alited::main::CurrentWTXT] index insert]
   set l [expr {int($l)}]
   return [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" "l=$l" \
-    "PD=$al(EM,PD=)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
+    "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
     o=-1 om=0 g=$al(EM,geometry) {*}$ls {*}$opts]
 }
+#_______________________
 
 proc tool::EM_dir {} {
+  # Returns a directory of e_menu's menus.
+
   namespace upvar ::alited al al
   if {$al(EM,menudir) eq {}} {
     return $::e_menu_dir
   }
   return [file dirname $al(EM,menudir)]
 }
+#_______________________
 
 proc tool::EM_Structure {mnu} {
+  # Gets a menu's items.
+  #   mnu - the menu's file name
+
   namespace upvar ::alited al al
   set mnu [string trim $mnu "\" "]
   set fname [file join [EM_dir] menus [file tail $mnu]]
@@ -150,13 +170,20 @@ proc tool::EM_Structure {mnu} {
   }
   return $res
 }
+#_______________________
 
 proc tool::EM_HotKey {idx} {
+  # Returns e_menu's hotkeys which numerate menu items.
+
   set hk {0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,./}
   return [string index $hk $idx]
 }
+#_______________________
 
 proc tool::EM_AllStructure1 {mnu lev} {
+  # Gets recursively all items of all menus.
+  #   mnu - a current menu's file name
+  #   lev - a current level of menu
 
   foreach mit [EM_Structure $mnu] {
     incr i
@@ -172,15 +199,20 @@ proc tool::EM_AllStructure1 {mnu lev} {
   }
   return [incr lev -1]
 }
+#_______________________
 
 proc tool::EM_AllStructure {mnu} {
+  # Gets all items of all menus.
+  #   mnu - a root menu's file name
 
   set alited::al(EM_STRUCTURE) [list]
   EM_AllStructure1 $mnu 0
   return $alited::al(EM_STRUCTURE)
 }
+#_______________________
 
 proc tool::EM_SaveFiles {} {
+  # Saves all files before running e_menu, if this mode is set in "Preferences".
   namespace upvar ::alited al al
   if {$al(EM,save) in {All yes}} {
     alited::file::SaveAll
@@ -190,7 +222,13 @@ proc tool::EM_SaveFiles {} {
     }
   }
 }
+#_______________________
+
 proc tool::PopupBar {X Y} {
+  # Opens a popup menu in the tool bar, to enter e_menu's preferences.
+  #   X - x-coordinate of clicking on the tool bar
+  #   Y - y-coordinate of clicking on the tool bar
+
   namespace upvar ::alited al al obPav obPav
   set popm $al(WIN).popupBar
   catch {destroy $popm}
@@ -200,8 +238,12 @@ proc tool::PopupBar {X Y} {
   $obPav themePopup $popm
   tk_popup $popm $X $Y
 }
+#_______________________
 
 proc tool::EM_command {im} {
+  # Gets e_menu command.
+  #   im - index of the command in em_inf array
+
   namespace upvar ::alited::pref em_inf em_inf
   lassign $em_inf($im) mnu idx item
   if {$idx eq {-} || [regexp {^[^[:blank:].]+[.]mnu: } $item]} {
@@ -218,6 +260,11 @@ proc tool::EM_command {im} {
 ## ________________________ run/close _________________________ ##
 
 proc tool::e_menu {args} {
+  # Runs e_menu.
+  #   args - arguments of e_menu
+  # The e_menu is run as an external application or an internal procedure,
+  # depending on e_menu's preferences.
+
   if {{ex=Help} ni $args} {
     EM_SaveFiles
     if {[lsearch -glob -nocase $args EX=*]>-1} {
@@ -230,20 +277,34 @@ proc tool::e_menu {args} {
     e_menu2 $args
   }
 }
+#_______________________
 
 proc tool::e_menu1 {opts} {
+  # Runs e_menu.
+  #   opts - options of e_menu
+  # The e_menu is run as an external application.
+
   exec tclsh [file join $::e_menu_dir e_menu.tcl] {*}[EM_Options $opts] c=$alited::al(EM,CS) &
 }
+#_______________________
 
 proc tool::e_menu2 {opts} {
+  # Runs e_menu.
+  #   opts - options of e_menu
+  # The e_menu is run as an internal procedure.
+
   if {![info exists ::em::geometry]} {
     source [file join $::e_menu_dir e_menu.tcl]
   }
   ::em::main -prior 1 -modal 0 -remain 0 -noCS 1 {*}[EM_Options $opts]
   set alited::al(EM,geometry) $::em::geometry
 }
+#_______________________
 
 proc tool::_run {{what ""}} {
+  # Runs e_menu's item of menu.mnu.
+  #   what - the item (by default, "Run me")
+
   namespace upvar ::alited al al
   set fpid [file join $al(EM,menudir) .pid~]
   if {!$al(DEBUG) && [file exists $fpid]} {
@@ -258,8 +319,11 @@ proc tool::_run {{what ""}} {
   if {$what eq {}} {set what 1} ;# 'Run me' e_menu item
   e_menu "EX=$what"
 }
+#_______________________
 
 proc tool::_close {{fname ""}} {
+  # Closes e_menu (being an internal procedure) by force.
+
   catch {destroy .em}
 }
 

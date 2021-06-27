@@ -50,6 +50,7 @@ proc keys::UserList {} {
   }
   lappend res Control-bracketleft
   lappend res Control-bracketright
+  lappend res Tab
   return $res
 }
 
@@ -102,7 +103,8 @@ proc keys::ReservedAdd {wtxt} {
   Add action "item-up"      [alited::pref::BindKey 15 - F11] {+ ::alited::tree::MoveItem up yes}
   Add action "item-down"    [alited::pref::BindKey 16 - F12] {+ ::alited::tree::MoveItem down yes}
   Add action "goto-line"    [alited::pref::BindKey 17 - Control-G] {alited::main::GotoLine; break}
-  Add action "insert-line"    [alited::pref::BindKey 18 - Control-P] {alited::main::InsertLine; break}
+  Add action "insert-line"  [alited::pref::BindKey 18 - Control-P] {alited::main::InsertLine; break}
+  Add action "autocomplete" [alited::pref::BindKey 19 - Tab] {alited::complete::AutoCompleteCommand; break}
 }
 
 proc keys::Add {type name keys cont} {

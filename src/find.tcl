@@ -1,8 +1,13 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The find/replace procedures of alited.
-# _______________________________________________________________________ #
+###########################################################
+# Name:    find.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    06/25/2021
+# Brief:   Handles find/replace procedures of alited.
+# License: MIT.
+###########################################################
+
+# ________________________ Variables _________________________ #
 
 namespace eval find {
   variable win $::alited::al(WIN).winFind
@@ -28,7 +33,15 @@ namespace eval find {
   variable counts {}
 }
 
-proc find::GetCommandOfLine {line idx {delim ""}} {
+# ________________________ Words / commands from text _________________________ #
+
+proc find::GetCommandOfLine {line idx {delim ""} {mode ""}} {
+  # Gets a command from a line.
+  #   line - the line
+  #   idx - a column of the line
+  #   delim - list of word delimiters
+  #   mode - if it ends with "2", the result includes a range of found string.
+
   variable ldelim
   variable rdelim
   if {$delim ne {}} {
@@ -53,43 +66,57 @@ proc find::GetCommandOfLine {line idx {delim ""}} {
       break
     }
   }
-  return [string trim [string range $line $i1 $i2]]
+  set res [string trim [string range $line $i1 $i2]]
+  if {[string index $mode end] eq "2"} {
+    lappend res $i1 $i2
+  }
+  return $res
 }
+#_______________________
 
-proc find::GetWordOfLine {line idx} {
+proc find::GetWordOfLine {line idx {mode ""}} {
+  # Gets a word from a line.
+  #   line - the line
+  #   idx - a column of the line
+  #   mode - if it ends with "2", the result includes a range of found string.
+
   variable adelim
-  return [GetCommandOfLine $line $idx $adelim]
+  return [GetCommandOfLine $line $idx $adelim $mode]
 }
+#_______________________
 
-proc find::GetCommandOfText {wtxt} {
+proc find::GetCommandOfText {wtxt {mode ""}} {
+  # Gets a command of text under the cursor.
+  #   wtxt - text widget's path
+  #   mode - if it ends with "2", the result includes a range of found string.
+
   set idx [$wtxt index insert]
   set line [$wtxt get "$idx linestart" "$idx lineend"]
-  return [list [GetCommandOfLine $line $idx] $idx]
+  return [list [GetCommandOfLine $line $idx "" $mode] $idx]
 }
+#_______________________
 
 proc find::GetWordOfText {{mode ""}} {
+  # Gets a word of text under the cursor.
+  #   mode - if "select", try to get the word from a line with a selection
+  #  If 'mode' ends with "2", the result includes a range of found string.
+
   set wtxt [alited::main::CurrentWTXT]
-  if {$mode eq "noselect" || \
+  if {$mode in {noselect noselect2} || \
   [catch {set sel [$wtxt get sel.first sel.last]}]} {
     set idx [$wtxt index insert]
     set line [$wtxt get "$idx linestart" "$idx lineend"]
-    set sel [GetWordOfLine $line $idx]
+    set sel [GetWordOfLine $line $idx $mode]
   }
   return $sel
 }
 
-proc find::GetFindEntry {} {
-  variable data
-  set wtxt [alited::main::CurrentWTXT]
-  if {[catch {set sel [$wtxt get sel.first sel.last]}]} {
-    set idx [$wtxt index insert]
-    set line [$wtxt get "$idx linestart" "$idx lineend"]
-    set sel [GetWordOfLine $line $idx]
-  }
-  if {$sel ne {}} {set data(en1) $sel}
-}
+# ________________________ Search units (Ctrl-Shift-F) _________________________ #
 
 proc find::SearchUnit1 {wtxt isNS} {
+  # Searches units in a text.
+  #   wtxt - the text's path
+  #   isNS - flag "search a qualified unit name"
 
   namespace upvar ::alited al al
   if {$wtxt eq ""} {set wtxt [alited::main::CurrentWTXT]}
@@ -126,10 +153,14 @@ proc find::SearchUnit1 {wtxt isNS} {
   }
   return {}
 }
+#_______________________
 
 proc find::SearchUnit {{wtxt ""}} {
+  # Prepares and runs searching units in a text.
+  #   wtxt - the text's path
 
   namespace upvar ::alited al al obPav obPav
+  # switch to the unit tree: 1st to enable the search, 2nd to show units found & selected
   if {!$al(TREE,isunits)} alited::tree::SwitchTree
   lassign [SearchUnit1 $wtxt yes] found TID
   if {$found eq {}} {
@@ -145,15 +176,134 @@ proc find::SearchUnit {{wtxt ""}} {
     bell
   }
 }
+#_______________________
+
+proc find::DoFindUnit {} {
+  # Runs searching units in current text / all texts.
+
+  namespace upvar ::alited al al obPav obPav
+  set ent [$obPav EntFindSTD]
+  set what [string trim [$ent get]]
+  if {$what eq {}} {
+    bell
+    return
+  }
+  InitShowResults
+  set n 0
+  if {$alited::main::findunits==1} {
+    set tabs [SessionList]
+  } else {
+    set tabs [alited::bar::CurrentTabID]
+  }
+  foreach tab $tabs {
+    set TID [lindex $tab 0]
+    if {![info exist al(_unittree,$TID)]} {
+      alited::file::ReadFile $TID [alited::bar::FileName $TID]
+    }
+    foreach it $al(_unittree,$TID) {
+      lassign $it lev leaf fl1 title l1 l2
+      set ttl [string range $title [string last : $title]+1 end] ;# pure name, no NS
+      if {[string match -nocase "*$what*" $ttl]} {
+        set fname [alited::bar::BAR $TID cget -text]
+        alited::info::Put "$fname:$l1: $title" [list $TID $l1]
+        incr n
+      }
+    }
+  }
+  alited::info::Clear 0
+  ShowResults [string map [list %n $n %s $what] $al(MC,frres1)] 3
+}
+#_______________________
+
+proc find::FindUnit {} {
+  # Displays "Find unit" frame.
+
+  namespace upvar ::alited al al obPav obPav
+  set ent [$obPav EntFindSTD]
+  if {[set word [GetWordOfText]] ne {}} {
+    set alited::al(findunit) $word
+  }
+  if {![info exist al(isfindunit)] || !$al(isfindunit)} {
+    set al(isfindunit) true
+    pack [$obPav FraHead] -side bottom -fill x -pady 3 -after [$obPav GutText]
+    foreach k {f F} {bind $ent <Shift-Control-$k> {alited::find::DoFindUnit; break}}
+    bind $ent <Return> alited::find::DoFindUnit
+    bind $ent <Escape> {::alited::find::HideFindUnit; break}
+  }
+  focus $ent
+  after idle "$ent selection range 0 end"
+}
+#_______________________
+
+proc find::HideFindUnit {} {
+  # Hides "Find unit" frame.
+
+  namespace upvar ::alited al al obPav obPav
+  set al(isfindunit) no
+  pack forget [$obPav FraHead]
+  focus [alited::main::CurrentWTXT]
+}
+
+# ________________________ Find word in a session (Ctrl-L) _________________________ #
+
+proc find::SearchWordInSession {} {
+  variable data
+  set saven1 $data(en1)  ;# field "Find"
+  set savv1 $data(v1)    ;# rad "Exact"
+  set savc1 $data(c1)    ;# chb "Word only"
+  set savc2 $data(c2)    ;# chb "Case Sensitive"
+  if {[set data(en1) [GetWordOfText select]] eq ""} {
+    bell
+  } else {
+    set wtxt [alited::main::CurrentWTXT]
+    if {[catch {set sel [$wtxt get sel.first sel.last]}] || $sel eq ""} {
+      set data(c1) 1
+    } else {
+      set data(c1) 0  ;# if selected, let it be looked for (at "not word only")
+    }
+    set data(v1) 1
+    set data(c2) 1
+    set data(docheck) no  ;# no checks - no usage of the dialogue's widgets
+    FindInSession notag
+    set data(docheck) yes
+  }
+  set data(en1) $saven1
+  set data(v1) $savv1
+  set data(c1) $savc1
+  set data(c2) $savc2
+}
+
+# ________________________ Get data for search _________________________ #
+
+proc find::GetFindEntry {} {
+  # Puts a current selection of text to the "Find:" field
+
+  variable data
+  set wtxt [alited::main::CurrentWTXT]
+  if {[catch {set sel [$wtxt get sel.first sel.last]}]} {
+    set idx [$wtxt index insert]
+    set line [$wtxt get "$idx linestart" "$idx lineend"]
+    set sel [GetWordOfLine $line $idx]
+  }
+  if {$sel ne {}} {set data(en1) $sel}
+}
+#_______________________
 
 proc find::CheckData {op} {
+  # Checks if the find/replace data are valid.
+  #   op - if "repl", checks for "Replace" operation
+  # Return "yes", if the input data are valid.
+
   namespace upvar ::alited al al
   variable win
   variable data
+  # this means "no checks when used outside of the dialogue":
   if {!$data(docheck)} {return yes}
-  set foc ""
+  # search input data in arrays of combobox values:
+  # if not found, save the data to the arrays
+  set foc {}
   foreach i {2 1} {
-    if {[set data(en$i)] ne ""} {
+    if {[set data(en$i)] ne {}} {
       if {[set f [lsearch -exact [set data(vals$i)] [set data(en$i)]]]>-1} {
         set data(vals$i) [lreplace [set data(vals$i)] $f $f]
       }
@@ -164,20 +314,26 @@ proc find::CheckData {op} {
       set foc $win.cbx$i
     }
   }
-  if {$foc ne ""} {
+  if {$foc ne {}} {
+    # if find/replace field is empty, let the bell tolls for him
     bell
     focus $foc
     return no
   }
   return yes
 }
+#_______________________
 
 proc find::FindOptions {wtxt} {
+  # Gets options of search, according to the dialogue's fields.
+  #   wtxt - text widget's path
+
   variable data
-  $wtxt tag remove fndTag 1.0 end
+  $wtxt tag remove fndTag 1.0 end  ;# clear the text off the find tag
   set options [set stopidx ""]
   set findstr $data(en1)
   if {!$data(c2)} {append options "-nocase "}
+  # glob search - through its regexp
   switch $data(v1) {
     2 {
       append options "-regexp "
@@ -191,7 +347,63 @@ proc find::FindOptions {wtxt} {
   return [list $findstr [string trim $options] $stopidx]
 }
 
+# ________________________ Show results _________________________ #
+
+proc find::ShowResults {msg {mode 2} {TID ""}} {
+  # Display a message containing results of a search.
+  #   msg - the message
+  #   mode - mode for alited::Message
+  #   TID - tab's ID where the searches were performed in
+
+  set fname [file tail [alited::bar::FileName $TID]]
+  set msg [string map [list %f $fname] $msg]
+  # results in info list:
+  alited::info::Put $msg {} yes
+  # results in status bar:
+  alited::Message "$msg [string repeat { } 40]" $mode
+}
+#_______________________
+
+proc find::ShowResults1 {allfnd} {
+  # Shows a message of all found strings.
+  #   allfnd - list of search results
+
+  namespace upvar ::alited al al
+  variable data
+  ShowResults [string map [list %n [llength $allfnd] %s $data(en1)] $alited::al(MC,frres1)]
+}
+#_______________________
+
+proc find::ShowResults2 {rn msg {TID ""}} {
+  # Shows a message of number of found strings.
+  #   rn - number of found strings
+  #   msg - messsage's template
+  #   TID - tab's ID where the searches were performed in
+
+  namespace upvar ::alited al al
+  variable data
+  ShowResults [string map [list %n $rn %s $data(en1) %r $data(en2)] $msg] 3 $TID
+}
+#_______________________
+
+proc find::InitShowResults {} {
+  # Clears the info list before any search.
+
+  namespace upvar ::alited al al
+  alited::info::Clear
+  alited::info::Put $al(MC,wait) "" yes
+  update
+}
+
+# ________________________ Do search _________________________ #
+
 proc find::CheckWord {wtxt index1 index2} {
+  # Check if the found string is a word, at searching by words, 
+  #   wtxt - text widget's path
+  #   index1 - first index of the found string
+  #   index2 - last index of the found string
+  # Returns "yes" if the found string is a word.
+
   variable adelim
   variable data
   if {$data(c1)} {
@@ -202,8 +414,13 @@ proc find::CheckWord {wtxt index1 index2} {
   }
   return yes
 }
+#_______________________
 
 proc find::Search1 {wtxt pos} {
+  # Searches a text from a position for a string to find.
+  #   wtxt - text widget's path
+  #   pos - position to start searching from
+
   variable win
   variable data
   lassign [FindOptions $wtxt] findstr options
@@ -214,8 +431,12 @@ proc find::Search1 {wtxt pos} {
   }
   return [list 0 $fnd]
 }
+#_______________________
 
 proc find::Search {wtxt} {
+  # Searches a text for a string to find.
+  #   wtxt - text widget's path
+
   namespace upvar ::alited obPav obPav
   variable data
   variable counts
@@ -247,10 +468,15 @@ proc find::Search {wtxt} {
   return $res
 }
 
+# _______________________ "Find" buttons _______________________ #
+
 proc find::Find {{inv -1}} {
+  # Searches one string in a current text.
+  #   inv - index of a button that was hit (1 means "Find" button)
+
   namespace upvar ::alited obFND obFND
   variable data
-  if {$inv>-1} {set data(lastinvoke) $inv}
+  if {$inv>-1} {set data(lastinvoke) $inv}  ;# save the hit button's index
   set wtxt [alited::main::CurrentWTXT]
   $wtxt tag remove sel 1.0 end
   set fndlist [Search $wtxt]
@@ -304,8 +530,14 @@ proc find::Find {{inv -1}} {
   ::alited::main::CursorPos $wtxt
   if {$inv>-1} alited::main::HighlightLine
 }
+#_______________________
 
 proc find::FindAll {wtxt TID {tagme "add"}} {
+  # Searches all strings in a text.
+  #   wtxt - text widget's path
+  #   TID - tyab's ID
+  #   tagme - if "add", means "add find tag to the found strings of the text"
+
   set fname [file tail [alited::bar::FileName $TID]]
   set l1 -1
   set allfnd [Search $wtxt]
@@ -321,34 +553,12 @@ proc find::FindAll {wtxt TID {tagme "add"}} {
   }
   return $allfnd
 }
-
-proc find::ShowResults {msg {mode 2} {TID ""}} {
-  set fname [file tail [alited::bar::FileName $TID]]
-  set msg [string map [list %f $fname] $msg]
-  alited::info::Put $msg "" yes
-  alited::Message "$msg [string repeat { } 40]" $mode
-}
-
-proc find::ShowResults1 {allfnd} {
-  namespace upvar ::alited al al
-  variable data
-  ShowResults [string map [list %n [llength $allfnd] %s $data(en1)] $alited::al(MC,frres1)]
-}
-
-proc find::ShowResults2 {rn msg {TID ""}} {
-  namespace upvar ::alited al al
-  variable data
-  ShowResults [string map [list %n $rn %s $data(en1) %r $data(en2)] $msg] 3 $TID
-}
-
-proc find::InitShowResults {} {
-  namespace upvar ::alited al al
-  alited::info::Clear
-  alited::info::Put $al(MC,wait) "" yes
-  update
-}
+#_______________________
 
 proc find::FindInText {{inv -1}} {
+  # Searches all strings in a current text.
+  #   inv - index of a button that was hit (2 means "All in Text" button)
+
   variable data
   if {$inv>-1} {set data(lastinvoke) $inv}
   alited::info::Clear
@@ -356,8 +566,13 @@ proc find::FindInText {{inv -1}} {
   set TID [alited::bar::CurrentTabID]
   ShowResults1 [FindAll $wtxt $TID]
 }
+#_______________________
 
 proc find::FindInSession {{tagme "add"} {inv -1}} {
+  # Searches all strings in a session.
+  #   tagme - if "add", means "add find tag to the found strings of the text"
+  #   inv - index of a button that was hit (3 means "All in Session" button)
+
   namespace upvar ::alited al al
   variable data
   if {$inv>-1} {set data(lastinvoke) $inv}
@@ -377,39 +592,7 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
   ShowResults1 $allfnd
 }
 
-proc find::SearchWordInSession {} {
-  variable data
-  set saven1 $data(en1)  ;# field "Find"
-  set savv1 $data(v1)    ;# rad "Exact"
-  set savc1 $data(c1)    ;# chb "Word only"
-  set savc2 $data(c2)    ;# chb "Case Sensitive"
-  if {[set data(en1) [GetWordOfText select]] eq ""} {
-    bell
-  } else {
-    set wtxt [alited::main::CurrentWTXT]
-    if {[catch {set sel [$wtxt get sel.first sel.last]}] || $sel eq ""} {
-      set data(c1) 1
-    } else {
-      set data(c1) 0  ;# if selected, let it be looked for (at "not word only")
-    }
-    set data(v1) 1
-    set data(c2) 1
-    set data(docheck) no  ;# no checks - no usage of the dialogue's widgets
-    FindInSession notag
-    set data(docheck) yes
-  }
-  set data(en1) $saven1
-  set data(v1) $savv1
-  set data(c1) $savc1
-  set data(c2) $savc2
-}
-
-proc find::SetCursor {wtxt idx1} {
-  variable data
-  set len [string length $data(en2)]
-  ::tk::TextSetCursor $wtxt [$wtxt index "$idx1 + ${len}c"]
-  ::alited::main::CursorPos $wtxt
-}
+# _______________________ "Replace" buttons _______________________ #
 
 proc find::Replace {} {
   namespace upvar ::alited al al
@@ -440,6 +623,7 @@ proc find::Replace {} {
   }
   Find
 }
+#_______________________
 
 proc find::ReplaceAll {wtxt allfnd} {
   variable data
@@ -453,6 +637,7 @@ proc find::ReplaceAll {wtxt allfnd} {
   if {$rn} {SetCursor $wtxt [lindex $allfnd end 0]}
   return $rn
 }
+#_______________________
 
 proc find::ReplaceInText {} {
   namespace upvar ::alited al al
@@ -468,6 +653,7 @@ proc find::ReplaceInText {} {
   ShowResults2 $rn $alited::al(MC,frres2)
   alited::main::UpdateTextAndGutter
 }
+#_______________________
 
 proc find::ReplaceInSession {} {
   namespace upvar ::alited al al
@@ -496,69 +682,18 @@ proc find::ReplaceInSession {} {
   alited::main::UpdateTextAndGutter
 }
 
+# ________________________ Helpers _________________________ #
+
 proc find::Next {} {
-  catch {event generate [alited::main::CurrentWTXT] <F3>}
-}
+  # Generate F3 key pressing event.
 
-proc find::DoFindUnit {} {
-  namespace upvar ::alited al al obPav obPav
-  set ent [$obPav EntFindSTD]
-  set what [string trim [$ent get]]
-  if {$what eq {}} {
-    bell
-    return
-  }
-  InitShowResults
-  set n 0
-  if {$alited::main::findunits==1} {
-    set tabs [SessionList]
-  } else {
-    set tabs [alited::bar::CurrentTabID]
-  }
-  foreach tab $tabs {
-    set TID [lindex $tab 0]
-    if {![info exist al(_unittree,$TID)]} {
-      alited::file::ReadFile $TID [alited::bar::FileName $TID]
-    }
-    foreach it $al(_unittree,$TID) {
-      lassign $it lev leaf fl1 title l1 l2
-      set ttl [string range $title [string last : $title]+1 end] ;# pure name, no NS
-      if {[string match -nocase "*$what*" $ttl]} {
-        set fname [alited::bar::BAR $TID cget -text]
-        alited::info::Put "$fname:$l1: $title" [list $TID $l1]
-        incr n
-      }
-    }
-  }
-  alited::info::Clear 0
-  ShowResults [string map [list %n $n %s $what] $al(MC,frres1)] 3
+  catch {event generate [alited::main::CurrentWTXT] <[alited::pref::BindKey 12 - F3]>}
 }
-
-proc find::HideFindUnit {} {
-  namespace upvar ::alited al al obPav obPav
-  set al(isfindunit) no
-  pack forget [$obPav FraHead]
-  focus [alited::main::CurrentWTXT]
-}
-
-proc find::FindUnit {} {
-  namespace upvar ::alited al al obPav obPav
-  set ent [$obPav EntFindSTD]
-  if {[set word [GetWordOfText]] ne {}} {
-    set alited::al(findunit) $word
-  }
-  if {![info exist al(isfindunit)] || !$al(isfindunit)} {
-    set al(isfindunit) true
-    pack [$obPav FraHead] -side bottom -fill x -pady 3 -after [$obPav GutText]
-    foreach k {f F} {bind $ent <Shift-Control-$k> {alited::find::DoFindUnit; break}}
-    bind $ent <Return> alited::find::DoFindUnit
-    bind $ent <Escape> {::alited::find::HideFindUnit; break}
-  }
-  focus $ent
-  after idle "$ent selection range 0 end"
-}
+#_______________________
 
 proc find::ClearTags {} {
+  # Clears all find tags in a current text, if Find/Replace dialogue was closed.
+
   variable win
   catch {
     if {![winfo exists $win]} {
@@ -566,14 +701,20 @@ proc find::ClearTags {} {
     }
   }
 }
+#_______________________
 
 proc find::SessionList {} {
+  # Returns a list of all tabs or selected tabs (if set).
+
   set res [alited::bar::BAR listFlag s]
   if {[llength $res]==1} {set res [alited::bar::BAR listTab]}
   return $res
 }
+#_______________________
 
 proc find::SessionButtons {} {
+  # Prepares buttons' label ("in all/selected tabs").
+
   namespace upvar ::alited al al obFND obFND
   if {[set llen [llength [alited::bar::BAR listFlag s]]]>1} {
     set btext [string map [list %n $llen] [msgcat::mc "All in %n Files"]]
@@ -583,20 +724,44 @@ proc find::SessionButtons {} {
   [$obFND But3] configure -text $btext
   [$obFND But6] configure -text $btext
 }
+#_______________________
+
+proc find::SetCursor {wtxt idx1} {
+  # Sets the cursor in a text after a replacement made.
+  #   wtxt - text's path
+  #   idx1 - starting index of the replacement
+
+  variable data
+  set len [string length $data(en2)]
+  ::tk::TextSetCursor $wtxt [$wtxt index "$idx1 + ${len}c"]
+  ::alited::main::CursorPos $wtxt
+}
+#_______________________
 
 proc find::LastInvoke {} {
+  # Invokes last find button that was poressed.
+  # If Ctrl-F is pressed inside Find/Replace dialogue, the last
+  # pressed Find button will be invoked.
+
   namespace upvar ::alited obFND obFND
   variable data
   [$obFND But$data(lastinvoke)] invoke
 }
 
+# ________________________ Main _________________________ #
+
 proc find::_close {} {
+  # Closes Find/Replace dialogue.
+
   namespace upvar ::alited obFND obFND
   catch {$obFND res $::alited::find::win 0}
   ClearTags
 }
+#_______________________
 
 proc find::_create {} {
+  #$ Creates Find/Replace dialogue.
+
   namespace upvar ::alited al al obFND obFND
   variable win
   variable geo
@@ -653,8 +818,11 @@ proc find::_create {} {
   }
   focus -force [alited::main::CurrentWTXT]
 }
+#_______________________
 
 proc find::_run {} {
+  # Runs Find/Replace dialogue.
+
   namespace upvar ::alited obFND obFND
   variable win
   GetFindEntry
@@ -670,5 +838,6 @@ proc find::_run {} {
     _create
   }
 }
+
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl DEBUG

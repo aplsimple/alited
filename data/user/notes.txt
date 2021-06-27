@@ -7,10 +7,11 @@ alited from v0.6 to v1.0:
   + for selected tabs: e_menu items (fossil.mnu, grep.mnu etc.)
   + general help in "Help" menu
   + move tree items by dnd
+  + command completion
   + e_menu items for toolbar/menu
   + "backup to <project subdir>" option
-  + all options of Preferences & Projects
-  - fossil/git diff of a file
+  + fossil/git diff of a file
   + C syntax
-  - comments & units
+  + all options of Preferences & Projects
+  - comments & tree units for code of alited
   - index.html on Github

@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 0.9a7
+package provide alited 1.0a1
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -291,6 +291,7 @@ namespace eval alited {
   source [file join $SRCDIR pref.tcl]
   source [file join $SRCDIR project.tcl]
   source [file join $SRCDIR check.tcl]
+  source [file join $SRCDIR complete.tcl]
 }
 
 # ____________ TO COMMENT ______________ #

@@ -1908,8 +1908,10 @@ oo::class create ::apave::APave {
     # Bar widgets should contain N fields of appropriate type
 
     upvar 1 $r0 w $r1 i $r2 lwlen $r3 lwidgets
+    if {[catch {set winname [winfo toplevel $w]}]} {
+      return $args
+    }
     lassign $args name neighbor posofnei rowspan colspan options1 attrs1
-    set winname [winfo toplevel $w]
     my MakeWidgetName $w $name
     set name [lindex [my LowercaseWidgetName $name] 0]
     set wpar ""

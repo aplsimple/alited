@@ -26,6 +26,8 @@ namespace eval project {
 # ________________________ Common _________________________ #
 
 proc project::TabFileInfo {} {
+  # Fills a listbox with a list of project files.
+
   namespace upvar ::alited al al obDl2 obDl2
   set lbx [$obDl2 LbxFlist]
   $lbx delete 0 end
@@ -34,8 +36,15 @@ proc project::TabFileInfo {} {
     $lbx insert end $fname
   }
 }
+#_______________________
 
 proc project::SaveCurrFileList {title {isnew no}} {
+  # Actions with a file list of project.
+  #   title - title of the message box "What to do"
+  #   isnew - yes, if it's a new project to be added
+  # A result of action is saved to al(tablist).
+  # Returns yes, if an action is chosen, no - if canceled.
+
   namespace upvar ::alited al al obDl3 obDl3
   variable win
   set asks [list $al(MC,prjaddfl) add $al(MC,prjsubstfl) change $al(MC,prjdelfl) delete \
@@ -80,22 +89,413 @@ proc project::SaveCurrFileList {title {isnew no}} {
   }
   return yes
 }
+#_______________________
+
+proc project::ProjectName {fname} {
+  # Gets a project name from its file name.
+
+  return [file rootname [file tail $fname]]
+}
+#_______________________
+
+proc project::ProjectFileName {name} {
+  # Gets a project file name from a project's name.
+
+  namespace upvar ::alited al al PRJDIR PRJDIR PRJEXT PRJEXT
+  set name [ProjectName [string trim $name]]
+  return [file normalize [file join $PRJDIR "$name$PRJEXT"]]
+}
+#_______________________
+
+proc project::CheckProjectName {} {
+  # Removes spec.characters from a project name (sort of normalizing it).
+
+  namespace upvar ::alited al al
+  set oldname $al(prjname)
+  set al(prjname) [string map [list \
+    * _ ? _ ~ _ . _ / _ \\ _ \{ _ \} _ \[ _ \] _ \t _ \n _ \r _ \
+    | _ < _ > _ & _ , _ : _ \; _ \" _ ' _ ` _] $al(prjname)]
+  return [expr {$oldname eq $al(prjname)}]
+}
+#_______________________
+
+proc project::GetProjects {} {
+  # Reads settings of all projects.
+
+  namespace upvar ::alited al al PRJEXT PRJEXT
+  variable prjlist
+  variable ilast
+  set prjlist [list]
+  set i [set ilast 0]
+  foreach finfo [alited::tree::GetDirectoryContents $::alited::PRJDIR] {
+    set fname [lindex $finfo 2]
+    if {[file extension $fname] eq $PRJEXT} {
+      if {[GetProjectOpts $fname] eq $al(prjname)} {
+        set ilast $i
+      }
+      incr i
+    }
+  }
+}
+
+# ________________________ Ini _________________________ #
+
+proc project::SaveData {} {
+  # Saves some data.
+
+  variable ilast
+  set ilast [Selected index no]
+}
+#_______________________
+
+proc project::GetOptVal {line} {
+  # Gets a name and a value from a line of form "name=value".
+  #   line - the line
+
+  if {[set i [string first "=" $line]]>-1} {
+    return [list [string range $line 0 $i-1] [string range $line $i+1 end]]
+  }
+  return [list]
+}
+#_______________________
+
+proc project::ProcEOL {val mode} {
+  # Transforms \n to "EOL chars" and vise versa.
+  #   val - string to transform
+  #   mode - if "in", gets \n-value; if "out", gets EOL-value.
+
+  if {$mode eq "in"} {
+    return [string map [list $::alited::EOL \n] $val]
+  } else {
+    return [string map [list \n $::alited::EOL] $val]
+  }
+}
+#_______________________
+
+proc project::SaveSettings {} {
+  # Saves project settings to a data array.
+
+  namespace upvar ::alited al al
+  variable data
+  variable OPTS
+  foreach v $OPTS {
+    set data($v) $al($v)
+  }
+  set data(prjfile) $al(prjfile)
+}
+#_______________________
+
+proc project::RestoreSettings {} {
+  # Restores project settings from a data array.
+
+  namespace upvar ::alited al al
+  variable data
+  variable OPTS
+  foreach v $OPTS {
+    set al($v) $data($v)
+  }
+  set al(prjfile) $data(prjfile)
+  TabFileInfo
+}
+#_______________________
+
+proc project::GetProjectOpts {fname} {
+  # Reads a project's settings from a project settings file.
+  #   fname - the project settings file's name
+
+  namespace upvar ::alited al al
+  variable prjlist
+  variable prjinfo
+  variable OPTS
+  variable data
+  set pname [ProjectName $fname]
+  # save project names to 'prjlist' variable to display it by treeview widget
+  lappend prjlist $pname
+  # save project files' settings in prjinfo array
+  set filecont [::apave::readTextFile $fname]
+  foreach opt $OPTS {
+    catch {set prjinfo($pname,$opt) $al($opt)}  ;#defaults
+  }
+  set prjinfo($pname,prjfile) $fname
+  set prjinfo($pname,prjname) $pname
+  set prjinfo($pname,prjdirign) ".git .bak"
+  set prjinfo($pname,tablist) [list]
+  if {[set currentprj [expr {$data(prjname) eq $pname}]]} {
+    foreach tab [alited::bar::BAR listTab] {
+      set tid [lindex $tab 0]
+      lappend prjinfo($pname,tablist) [alited::bar::BAR $tid cget -tip]
+    }
+  }
+  foreach line [::apave::textsplit $filecont] {
+    lassign [GetOptVal $line] opt val
+    if {[lsearch $OPTS $opt]>-1} {
+      set prjinfo($pname,$opt) [ProcEOL $val in]
+    } elseif {$opt eq "tab" && !$currentprj} {
+      lappend prjinfo($pname,tablist) $val
+    }
+  }
+  set al(tablist) $prjinfo($pname,tablist)
+  return $pname
+}
+#_______________________
+
+proc project::PutProjectOpts {fname oldname} {
+  # Writes a project's settings to a project settings file.
+  #   fname - the project settings file's name
+  #   oldname - old name of the project file
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjinfo
+  variable OPTS
+  set filecont [::apave::readTextFile $oldname]
+  set newcont {}
+  foreach line [::apave::textsplit $filecont] {
+    lassign [GetOptVal $line] opt val
+    if {$line eq {[Tabs]}} {
+      foreach tab $al(tablist) {
+        append line \n "tab=$tab"
+      }
+    } elseif {$opt in [list tab {*}$OPTS]} {
+      continue
+    } elseif {$opt in {curtab}} {
+      # 
+    } elseif {$line eq {[Options]}} {
+      foreach opt $OPTS {
+        if {$opt ni {prjname tablist}} {
+          set val [set alited::al($opt)]
+          append line \n $opt= $val
+          set prjinfo($al(prjname),$opt) [ProcEOL $val in]
+        }
+      }
+    }
+    append newcont $line \n
+  }
+  ::apave::writeTextFile $fname newcont
+  if {$oldname ne $fname} {catch {file delete $oldname}}
+}
+#_______________________
+
+proc project::SaveNotes {} {
+  # Saves a file of notes.
+
+  namespace upvar ::alited obDl2 obDl2
+  variable fnotes
+  if {$fnotes ne ""} {
+    set fcont [[$obDl2 TexPrj] get 1.0 "end -1c"]
+    ::apave::writeTextFile $fnotes fcont
+  }
+}
+
+# ________________________ GUI helpers _________________________ #
+
+proc project::UpdateTree {} {
+  # Fills a list of projects.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  variable prjinfo
+  set tree [$obDl2 TreePrj]
+  $tree delete [$tree children {}]
+  foreach prj $prjlist {
+    set prjinfo($prj,ID) [$tree insert {} end -values [list $prj]]
+  }
+}
+#_______________________
+
+proc project::ValidProject {} {
+  # Checks if a project's options are valid.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable win
+  if {[string trim $al(prjname)] eq {} || ![CheckProjectName]} {
+    bell
+    focus [$obDl2 EntName]
+    return no
+  }
+  set al(prjroot) [file nativename $al(prjroot)]
+  if {![file exists $al(prjroot)]} {
+    set msg [string map [list %d $al(prjroot)] $al(makeroot)]
+    if {![alited::msg yesno ques $msg NO -geometry root=$win]} {
+      return no
+    }
+    file mkdir $al(prjroot)
+  }
+  if {$al(prjindent)<2 || $al(prjindent)>8} {set al(prjindent) 2}
+  if {$al(prjredunit)<10 || $al(prjredunit)>100} {set al(prjredunit) 20}
+  set msg [string map [list %d $al(prjroot)] $al(checkroot)]
+  alited::Message2 $msg 5
+  if {[llength [alited::tree::GetDirectoryContents $al(prjroot)]] >= $al(MAXFILES)} {
+    set msg [string map [list %n $al(MAXFILES)] $al(badroot)]
+    alited::Message2 $msg 4
+    set res no
+  } else {
+    alited::Message2 {} 5
+    set res yes
+  }
+  return $res
+}
+#_______________________
 
 proc project::Selected {what {domsg yes}} {
+  # Gets a currently selected project's index.
+  #   what - if "index", selected item's index is returned
+  #   domsg - if "no", no message displayed if there is no selected project
+
   namespace upvar ::alited al al obDl2 obDl2
   variable prjlist
   set tree [$obDl2 TreePrj]
-  if {[set isel [$tree selection]] eq "" && [set isel [$tree focus]] eq "" \
+  if {[set isel [$tree selection]] eq {} && [set isel [$tree focus]] eq "" \
   && $domsg} {
     alited::Message2 $al(MC,prjsel) 4
   }
-  if {$isel ne "" && $what eq "index"} {
+  if {$isel ne {} && $what eq {index}} {
     set isel [$tree index $isel]
   }
   return $isel
 }
+#_______________________
+
+proc project::Select {{item ""}} {
+  # Handles a selection in a list of projects.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  variable prjinfo 
+  variable OPTS
+  variable fnotes
+  if {$item eq {}} {set item [Selected item no]}
+  if {$item ne {}} {
+    set tree [$obDl2 TreePrj]
+    if {[string is digit $item]} {  ;# the item is an index
+      if {$item<0 || $item>=[llength $prjlist]} return
+      set prj [lindex $prjlist $item]
+      set item $prjinfo($prj,ID)
+    } elseif {![$tree exists $item]} {
+      return
+    }
+    set isel [$tree index $item]
+    set prj [lindex $prjlist $isel]
+    set fnotes [file join $::alited::PRJDIR $prj-notes.txt]
+    set wtxt [$obDl2 TexPrj]
+    $wtxt delete 1.0 end
+    if {[file exists $fnotes]} {
+      $wtxt insert end [::apave::readTextFile $fnotes]
+    }
+    foreach opt $OPTS {
+      set al($opt) $prjinfo($prj,$opt)
+    }
+    set al(tablist) $prjinfo($prj,tablist)
+    TabFileInfo
+    if {[$tree selection] ne $item} {
+      $tree selection set $item
+    }
+    $tree see $item
+  }
+}
+
+# ________________________ Buttons for project list _________________________ #
+
+proc project::Add {} {
+  # "Add project" button's handler.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  variable prjinfo
+  variable OPTS
+  if {![ValidProject]} return
+  set pname $al(prjname)
+  if {[lsearch -exact $prjlist $pname]>-1} {
+    focus [$obDl2 EntName]
+    set msg [string map [list %n $pname] $al(MC,prjexists)]
+    alited::Message2 $msg 4
+    return
+  }
+  if {![SaveCurrFileList $al(MC,prjadd) yes]} return
+  set al(tabs) $al(tablist)
+  set al(prjfile) [ProjectFileName $pname]
+  alited::ini::SaveIni yes  ;# to initialize ini-file
+  foreach opt $OPTS {
+    set prjinfo($pname,$opt) $al($opt)
+  }
+  PutProjectOpts $al(prjfile) $al(prjfile)
+  GetProjects
+  UpdateTree
+  Select $prjinfo($pname,ID)
+  alited::Message2 [string map [list %n $pname] $al(MC,prjnew)]
+}
+#_______________________
+
+proc project::Change {{askappend yes} {isel -1}} {
+  # "Change project" button's handler.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable data
+  variable prjlist
+  variable prjinfo
+  if {$isel==-1 && [set isel [Selected index]] eq ""} return
+  if {![ValidProject]} return
+  for {set i 0} {$i<[llength $prjlist]} {incr i} {
+    if {$i!=$isel && [lindex $prjlist $i] eq $al(prjname)} {
+      set msg [string map [list %n $al(prjname)] $al(MC,prjexists)]
+      alited::Message2 $msg 4
+      return
+    }
+  }
+  if {$askappend && ![SaveCurrFileList $al(MC,prjchg)]} return
+  set oldprj [lindex $prjlist $isel]
+  set newprj $al(prjname)
+  catch {unset prjinfo($oldprj,tablist)}
+  set prjinfo($newprj,tablist) $al(tablist)
+  set oldname [ProjectFileName $oldprj]
+  set prjlist [lreplace $prjlist $isel $isel $newprj]
+  set fname [ProjectFileName $newprj]
+  if {$newprj eq $data(prjname)} SaveSettings
+  PutProjectOpts $fname $oldname
+  GetProjects
+  UpdateTree
+  Select $prjinfo($newprj,ID)
+  alited::Message2 [string map [list %n [lindex $prjlist $isel]] $al(MC,prjupd)]
+}
+#_______________________
+
+proc project::Delete {} {
+  # "Delete project" button's handler.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  variable prjinfo
+  variable win
+  variable data
+  if {[set isel [Selected index]] eq ""} return
+  set geo "-geometry root=$win"
+  set nametodel [lindex $prjlist $isel]
+  if {$nametodel eq $data(prjname)} {
+    alited::msg ok err $al(MC,prjcantdel) {*}$geo
+    return
+  }
+  set msg [string map [list %n $nametodel] $al(MC,prjdelq)]
+  if {![alited::msg yesno ques $msg NO {*}$geo]} {
+    return
+  }
+  if {[catch {file delete [ProjectFileName $nametodel]} err]} {
+    alited::msg ok err $err {*}$geo
+    return
+  }    
+  if {[set llen [llength $prjlist]] && $isel>=$llen} {
+    set isel [incr llen -1]
+  }
+  GetProjects
+  UpdateTree
+  Select $isel
+  alited::Message2 [string map [list %n $nametodel] $al(MC,prjrem)]
+}
+
+# ________________________ Buttons _________________________ #
 
 proc project::Ok {args} {
+  # 'OK' button handler.
+  #   args - possible arguments
+
   namespace upvar ::alited al al obDl2 obDl2 obPav obPav
   variable win
   variable prjlist
@@ -131,359 +531,32 @@ proc project::Ok {args} {
   after idle alited::main::ShowText
   return
 }
+#_______________________
 
 proc project::Cancel {args} {
+  # 'Cancel' button handler.
+  #   args - possible arguments
+
   namespace upvar ::alited obDl2 obDl2
   variable win
-  SaveIni
+  SaveData
   RestoreSettings
   $obDl2 res $win 0
 }
+#_______________________
 
 proc project::Help {} {
+  # 'Help' button handler.
+
   variable win
   alited::Help $win
 }
-proc project::ReadIni {} {
-  ProcEOL $::alited::EOL \n
-}
 
-proc project::SaveIni {} {
-  variable ilast
-  ProcEOL \n $::alited::EOL
-  set ilast [Selected index no]
-}
-
-proc project::SaveSettings {} {
-  namespace upvar ::alited al al
-  variable data
-  variable OPTS
-  foreach v $OPTS {
-    set data($v) $al($v)
-  }
-  set data(prjfile) $al(prjfile)
-}
-
-proc project::RestoreSettings {} {
-  namespace upvar ::alited al al
-  variable data
-  variable OPTS
-  foreach v $OPTS {
-    set al($v) $data($v)
-  }
-  set al(prjfile) $data(prjfile)
-  TabFileInfo
-}
-
-proc project::CurrentFileList {} {
-  namespace upvar ::alited al al
-  variable OPTS
-  set al(tablist) ""
-  foreach tab [alited::bar::BAR listTab] {
-    if {$al(tablist) ne ""} {append al(tablist) $alited::EOL}
-    set TID [lindex $tab 0]
-    append al(tablist) [alited::bar::BAR $TID cget -tip]
-  }
-}
-
-proc project::PutMiscOpts {fname} {
-  GetProjectOpts $fname
-  PutProjectOpts $fname $fname
-}
-
-proc project::GetProjectOpts {fname} {
-  namespace upvar ::alited al al
-  variable prjlist
-  variable prjinfo
-  variable OPTS
-  variable data
-  set pname [ProjectName $fname]
-  # save project names to 'prjlist' variable to display it by treeview widget
-  lappend prjlist $pname
-  # save project files' settings in prjinfo array
-  set filecont [::apave::readTextFile $fname]
-  foreach opt $OPTS {
-    catch {set prjinfo($pname,$opt) $al($opt)}  ;#defaults
-  }
-  set prjinfo($pname,prjfile) $fname
-  set prjinfo($pname,prjname) $pname
-  set prjinfo($pname,prjdirign) ".git .bak"
-  set prjinfo($pname,tablist) [list]
-  if {[set currentprj [expr {$data(prjname) eq $pname}]]} {
-    foreach tab [alited::bar::BAR listTab] {
-      set tid [lindex $tab 0]
-      lappend prjinfo($pname,tablist) [alited::bar::BAR $tid cget -tip]
-    }
-  }
-  foreach line [::apave::textsplit $filecont] {
-    lassign [GetOptVal $line] opt val
-    if {[lsearch $OPTS $opt]>-1} {
-      set prjinfo($pname,$opt) [ProcEOL $val in]
-    } elseif {$opt eq "tab" && !$currentprj} {
-      lappend prjinfo($pname,tablist) $val
-    }
-  }
-  set al(tablist) $prjinfo($pname,tablist)
-  return $pname
-}
-
-proc project::PutProjectOpts {fname oldname} {
-  namespace upvar ::alited al al obDl2 obDl2
-  variable prjinfo
-  variable OPTS
-  set filecont [::apave::readTextFile $oldname]
-  set newcont ""
-  foreach line [::apave::textsplit $filecont] {
-    lassign [GetOptVal $line] opt val
-    if {$line eq {[Tabs]}} {
-      foreach tab $al(tablist) {
-        append line \n "tab=$tab"
-      }
-    } elseif {$opt in [list tab {*}$OPTS]} {
-      continue
-    } elseif {$opt in {curtab}} {
-      # 
-    } elseif {$line eq {[Options]}} {
-      foreach opt $OPTS {
-        if {$opt ni {prjname tablist}} {
-          set val [set alited::al($opt)]
-          append line \n $opt= $val
-          set prjinfo($al(prjname),$opt) [ProcEOL $val in]
-        }
-      }
-    }
-    append newcont $line \n
-  }
-  ::apave::writeTextFile $fname newcont
-  if {$oldname ne $fname} {catch {file delete $oldname}}
-}
-
-proc project::GetProjects {} {
-  namespace upvar ::alited al al PRJEXT PRJEXT
-  variable prjlist
-  variable ilast
-  set prjlist [list]
-  set i [set ilast 0]
-  foreach finfo [alited::tree::GetDirectoryContents $::alited::PRJDIR] {
-    set fname [lindex $finfo 2]
-    if {[file extension $fname] eq $PRJEXT} {
-      if {[GetProjectOpts $fname] eq $al(prjname)} {
-        set ilast $i
-      }
-      incr i
-    }
-  }
-}
-
-proc project::SaveNotes {} {
-  namespace upvar ::alited obDl2 obDl2
-  variable fnotes
-  if {$fnotes ne ""} {
-    set fcont [[$obDl2 TexPrj] get 1.0 "end -1c"]
-    ::apave::writeTextFile $fnotes fcont
-  }
-}
-
-proc project::Select {{item ""}} {
-  namespace upvar ::alited al al obDl2 obDl2
-  variable prjlist
-  variable prjinfo 
-  variable OPTS
-  variable fnotes
-  if {$item eq ""} {set item [Selected item no]}
-  if {$item ne ""} {
-    set tree [$obDl2 TreePrj]
-    if {[string is digit $item]} {  ;# the item is an index
-      if {$item<0 || $item>=[llength $prjlist]} return
-      set prj [lindex $prjlist $item]
-      set item $prjinfo($prj,ID)
-    } elseif {![$tree exists $item]} {
-      return
-    }
-    set isel [$tree index $item]
-    set prj [lindex $prjlist $isel]
-    set fnotes [file join $::alited::PRJDIR $prj-notes.txt]
-    set wtxt [$obDl2 TexPrj]
-    $wtxt delete 1.0 end
-    if {[file exists $fnotes]} {
-      $wtxt insert end [::apave::readTextFile $fnotes]
-    }
-    foreach opt $OPTS {
-      set al($opt) $prjinfo($prj,$opt)
-    }
-    set al(tablist) $prjinfo($prj,tablist)
-    TabFileInfo
-    if {[$tree selection] ne $item} {
-      $tree selection set $item
-    }
-    $tree see $item
-  }
-}
-
-proc project::UpdateTree {} {
-  namespace upvar ::alited al al obDl2 obDl2
-  variable prjlist
-  variable prjinfo
-  set tree [$obDl2 TreePrj]
-  $tree delete [$tree children {}]
-  foreach prj $prjlist {
-    set prjinfo($prj,ID) [$tree insert {} end -values [list $prj]]
-  }
-}
-
-proc project::GetOptVal {line} {
-  if {[set i [string first "=" $line]]>-1} {
-    return [list [string range $line 0 $i-1] [string range $line $i+1 end]]
-  }
-  return [list]
-}
-
-proc project::ProcEOL {val mode} {
-  if {$mode eq "in"} {
-    return [string map [list $::alited::EOL \n] $val]
-  } else {
-    return [string map [list \n $::alited::EOL] $val]
-  }
-}
-
-proc project::CheckProjectName {} {
-  namespace upvar ::alited al al
-  set oldname $al(prjname)
-  set al(prjname) [string map [list \
-    * _ ? _ ~ _ . _ / _ \\ _ \{ _ \} _ \[ _ \] _ \t _ \n _ \r _ \
-    | _ < _ > _ & _ , _ : _ \; _ \" _ ' _ ` _] $al(prjname)]
-  return [expr {$oldname eq $al(prjname)}]
-}
-
-proc project::ProjectName {fname} {
-  return [file rootname [file tail $fname]]
-}
-
-proc project::ProjectFileName {name} {
-  namespace upvar ::alited al al PRJDIR PRJDIR PRJEXT PRJEXT
-  set name [ProjectName [string trim $name]]
-  return [file normalize [file join $PRJDIR "$name$PRJEXT"]]
-}
-
-proc project::ValidProject {} {
-  namespace upvar ::alited al al obDl2 obDl2
-  variable win
-  if {[string trim $al(prjname)] eq {} || ![CheckProjectName]} {
-    bell
-    focus [$obDl2 EntName]
-    return no
-  }
-  set al(prjroot) [file nativename $al(prjroot)]
-  if {![file exists $al(prjroot)]} {
-    set msg [string map [list %d $al(prjroot)] $al(makeroot)]
-    if {![alited::msg yesno ques $msg NO -geometry root=$win]} {
-      return no
-    }
-    file mkdir $al(prjroot)
-  }
-  if {$al(prjindent)<2 || $al(prjindent)>8} {set al(prjindent) 2}
-  if {$al(prjredunit)<10 || $al(prjredunit)>100} {set al(prjredunit) 20}
-  set msg [string map [list %d $al(prjroot)] $al(checkroot)]
-  alited::Message2 $msg 5
-  if {[llength [alited::tree::GetDirectoryContents $al(prjroot)]] >= $al(MAXFILES)} {
-    set msg [string map [list %n $al(MAXFILES)] $al(badroot)]
-    alited::Message2 $msg 4
-    set res no
-  } else {
-    alited::Message2 {} 5
-    set res yes
-  }
-  return $res
-}
-
-proc project::Add {} {
-  namespace upvar ::alited al al obDl2 obDl2
-  variable prjlist
-  variable prjinfo
-  variable OPTS
-  if {![ValidProject]} return
-  set pname $al(prjname)
-  if {[lsearch -exact $prjlist $pname]>-1} {
-    focus [$obDl2 EntName]
-    set msg [string map [list %n $pname] $al(MC,prjexists)]
-    alited::Message2 $msg 4
-    return
-  }
-  if {![SaveCurrFileList $al(MC,prjadd) yes]} return
-  set al(tabs) $al(tablist)
-  set al(prjfile) [ProjectFileName $pname]
-  alited::ini::SaveIni yes  ;# to initialize ini-file
-  foreach opt $OPTS {
-    set prjinfo($pname,$opt) $al($opt)
-  }
-  PutProjectOpts $al(prjfile) $al(prjfile)
-  GetProjects
-  UpdateTree
-  Select $prjinfo($pname,ID)
-  alited::Message2 [string map [list %n $pname] $al(MC,prjnew)]
-}
-
-proc project::Change {{askappend yes} {isel -1}} {
-  namespace upvar ::alited al al obDl2 obDl2
-  variable data
-  variable prjlist
-  variable prjinfo
-  if {$isel==-1 && [set isel [Selected index]] eq ""} return
-  if {![ValidProject]} return
-  for {set i 0} {$i<[llength $prjlist]} {incr i} {
-    if {$i!=$isel && [lindex $prjlist $i] eq $al(prjname)} {
-      set msg [string map [list %n $al(prjname)] $al(MC,prjexists)]
-      alited::Message2 $msg 4
-      return
-    }
-  }
-  if {$askappend && ![SaveCurrFileList $al(MC,prjchg)]} return
-  set oldprj [lindex $prjlist $isel]
-  set newprj $al(prjname)
-  catch {unset prjinfo($oldprj,tablist)}
-  set prjinfo($newprj,tablist) $al(tablist)
-  set oldname [ProjectFileName $oldprj]
-  set prjlist [lreplace $prjlist $isel $isel $newprj]
-  set fname [ProjectFileName $newprj]
-  if {$newprj eq $data(prjname)} SaveSettings
-  PutProjectOpts $fname $oldname
-  GetProjects
-  UpdateTree
-  Select $prjinfo($newprj,ID)
-  alited::Message2 [string map [list %n [lindex $prjlist $isel]] $al(MC,prjupd)]
-}
-
-proc project::Delete {} {
-  namespace upvar ::alited al al obDl2 obDl2
-  variable prjlist
-  variable prjinfo
-  variable win
-  variable data
-  if {[set isel [Selected index]] eq ""} return
-  set geo "-geometry root=$win"
-  set nametodel [lindex $prjlist $isel]
-  if {$nametodel eq $data(prjname)} {
-    alited::msg ok err $al(MC,prjcantdel) {*}$geo
-    return
-  }
-  set msg [string map [list %n $nametodel] $al(MC,prjdelq)]
-  if {![alited::msg yesno ques $msg NO {*}$geo]} {
-    return
-  }
-  if {[catch {file delete [ProjectFileName $nametodel]} err]} {
-    alited::msg ok err $err {*}$geo
-    return
-  }    
-  if {[set llen [llength $prjlist]] && $isel>=$llen} {
-    set isel [incr llen -1]
-  }
-  GetProjects
-  UpdateTree
-  Select $isel
-  alited::Message2 [string map [list %n $nametodel] $al(MC,prjrem)]
-}
+# ________________________ GUI _________________________ #
 
 proc project::MainFrame {} {
+  # Creates a main frame of "Project" dialogue.
+
   namespace upvar ::alited al al obDl2 obDl2
   variable win
   return {
@@ -508,8 +581,11 @@ proc project::MainFrame {} {
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::project::Cancel}}
   }
 }
+#_______________________
 
 proc project::Tab1 {} {
+  # Creates a main tab of "Project".
+
   return {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
@@ -525,8 +601,11 @@ proc project::Tab1 {} {
     {.sbv .TexPrj L - - {pack -side left}}
   }
 }
+#_______________________
 
 proc project::Tab2 {} {
+  # Creates Options tab of "Project".
+
   return {
     {v_ - - 1 10}
     {fra2 v_ T 1 2 {-st nsew -cw 1}}
@@ -545,7 +624,10 @@ proc project::Tab2 {} {
   }
 }
 
+# ________________________ Main _________________________ #
+
 proc project::_create {} {
+  # Creates and opens "Projects" dialogue.
 
   namespace upvar ::alited al al obDl2 obDl2
   variable win
@@ -584,8 +666,10 @@ proc project::_create {} {
   destroy $win
   return $res
 }
+#_______________________
 
 proc project::_run {} {
+  # Runs "Projects" dialogue.
 
   SaveSettings
   GetProjects

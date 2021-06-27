@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4b2"
+  variable em_version "e_menu 3.4b3"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -134,7 +134,7 @@ namespace eval ::em {
   variable hotsall \
     {0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,./}
   variable hotkeys $::em::hotsall
-  variable workdir {} PD {} prjname {} PN2 {} prjdirlist [list]
+  variable workdir {} PD {} pd {} prjname {} PN2 {} prjdirlist [list]
   variable ornament 1  ;# 1 - header only; 2 - prompt only; 3 - both; 0 - none; -1 - no hint
   variable inttimer 1  ;# interval to check the timed tasks
   variable bd 1 b0 0 b1 0 b2 1 b3 1 b4 1
@@ -1254,7 +1254,11 @@ proc ::em::init_swc {} {
 proc ::em::prepr_pn {refpn {dt 0}} {
   upvar $refpn pn
   prepr_idiotic pn 1
-  prepr_1 pn "DF" $::em::DF           ;# %DF is a name of diff tool
+  # these replacements go before geany's to avoid replacing %D, %l
+  prepr_1 pn "DF" $::em::DF                 ;# %DF is a name of diff tool
+  prepr_1 pn "pd" $::em::pd                 ;# %pd is a project directory
+  prepr_1 pn "lg" [::eh::get_language]      ;# %lg is a locale (e.g. ru_RU.utf8)
+  prepr_1 pn "ls" [nativePathes $::em::ls]  ;# %ls is a list of files
   foreach n [array names ::em::ar_geany] {
     set v $::em::ar_geany($n)
     if {$n in {f d}} {
@@ -1278,8 +1282,6 @@ proc ::em::prepr_pn {refpn {dt 0}} {
   prepr_1 pn "qq" $::em::qseltd ;# %qq is %s with quotes escaped
   prepr_1 pn "dd" $::em::dseltd ;# %dd is %s with special simbols deleted
   prepr_1 pn "ss" $::em::sseltd ;# %ss is %s trimmed
-  prepr_1 pn "lg" [::eh::get_language] ;# %lg is a locale (e.g. ru_RU.utf8)
-  prepr_1 pn "ls" [nativePathes $::em::ls]  ;# %ls is a list of files
   lassign [get_AR] AR RF
   prepr_1 pn "AR" $AR                 ;# %AR is contents of #ARGS..: line
   prepr_1 pn "RF" $RF                 ;# %RF is contents of #RUNF..: line
@@ -1831,6 +1833,7 @@ proc ::em::prepare_main_wilds {{doit false}} {
     if {$c eq "D"} {set from [file tail $::em::ar_geany(f)]}
   }
   set ::em::ar_geany(F_) [::eh::get_underlined_name $::em::ar_geany(F)]
+  if {$::em::pd eq {}} {set ::em::pd $::em::ar_geany(d)}
 }
 #___ gets the menu's title
 proc ::em::get_menutitle {} {
@@ -1855,7 +1858,8 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         y0= y1= y2= y3= y4= y5= y6= y7= y8= y9= \
         z0= z1= z2= z3= z4= z5= z6= z7= z8= z9= \
         a= d= e= f= p= l= h= b= cs= c= t= g= n= \
-        fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= cc= gr= ht= hh= rt= DF= \
+        fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= \
+        cc= gr= ht= hh= rt= DF= pd= \
         m= om= ts= TF= yn= in= ex= EX= ls=} { ;# the processing order is important
     if {($s1 in {o= s= m=}) && !($s1 in $osm)} {
       continue
@@ -1978,7 +1982,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           set ::em::$s01 [::apave::getN $seltd [set ::em::$s01]]
         }
         ed= {set ::em::editor $seltd}
-        tg= - om= - dk= - ls= - DF= {
+        tg= - om= - dk= - ls= - DF= - pd= {
           set ::em::$s01 $seltd
         }
         ex= - EX= {

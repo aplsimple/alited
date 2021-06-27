@@ -51,6 +51,7 @@ namespace eval pref {
     16 [list {Item down} F12] \
     17 [list {Go to Line} Control-G] \
     18 [list {Put New Line} Control-P] \
+    19 [list {Complete Commands} Tab] \
   ]
   variable stdkeysSize [dict size $stdkeys]
 }

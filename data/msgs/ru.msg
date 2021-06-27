@@ -276,24 +276,57 @@ namespace eval ::alited {
 
   ## _ Preferences _ ##
   ::msgcat::mcmset ru {
-    {Color scheme:} {Цветовая схема:}
-    {Tint:} {Оттенок:}
-    "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?"
     {General} {Общее}
     {Editor} {Редактор}
     {Units} {Юниты}
     {Keys} {Клавиши}
     {Misc.} {Разное}
     {Saving} {Сохранение}
-    {Open bar/menu settings} {Открыть настройки bar/menu}
-    {Tcl syntax} {Синтаксис Tcl}
-    {C/C++ syntax} {Синтаксис C/C++}
-    {Tcl files' extensions:} {Расширения файлов Tcl:}
-    {C/C++ files' extensions:} {Расширения файлов C/C++:}
+  }
+
+  ### ________________________ General _________________________ ###
+  ::msgcat::mcmset ru {
+    {Color scheme:} {Цветовая схема:}
+    {Tint:} {Оттенок:}
+    "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?"
     {Small font size:} {Размер малого шрифта:}
     {Middle font size:} {Размер среднего шрифта:}
+    {Notes:} {Заметки:}
+    "Sort of diary.\nList of TODOs etc." "Типа дневника.\nСписок TODO и пр."
+  }
+
+  ### ________________________ Editor _________________________ ###
+  ::msgcat::mcmset ru {
     {Font:} {Шрифт:}
     {Font size:} {Размер шрифта:}
+    {Gutter's width:} {Ширина желобка}
+    {Gutter's shift from text:} {Смещение желобка от текста:}
+    {Space above lines:} {Отступ выше строк:}
+    {Space below lines:} {Отступ ниже строк:}
+    {Space between wraps:} {Отступ сворачиваемых строк:}
+    {Tab bar label's length:} {Длина имен панели файлов:}
+    {Tab bar tip's length:} {Длина подсказок панели файлов:}
+  }
+
+  ### ________________________ Saving _________________________ ###
+  ::msgcat::mcmset ru {
+    {Save before bar/menu runs:} {Сохранять при вызовах bar/menu:}
+    {Current file} {Текущий файл}
+    {All files} {Все файлы}
+    {'Recent Files' length:} {Длина списка 'Недавние файлы':}
+    {'Last Visited' length:} {Длина списка 'Последние посещения':}
+    {Maximum of project files:} {Число файлов проекта не более:}
+    {Confirm exit:} {Подтверждать выход:}
+    {Save configuration on} {Сохранять конфигурацию при}
+    {opening a file:} {открытии файла:}
+    {closing a file:} {закрытии файла:}
+    {saving a file:} {сохранении файла:}
+    {Back up files to a project's subdirectory:} {Резервные копии в каталоге проекта:}
+    "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." "Подкаталог проекта, где сохранятся копии файлов.\nЕсли это поле пустое, копирования не будет."
+  }
+
+  ### ________________________ Keys _________________________ ###
+  ::msgcat::mcmset ru {
     {Save File} {Сохранить файл}
     {Save File as} {Сохранить файл как}
     {Run e_menu} {Запуск e_menu}
@@ -305,32 +338,24 @@ namespace eval ::alited {
     {Find Next Match} {Найти следующее}
     {Item up} {Поднять элемент}
     {Item down} {Опустить элемент}
-    {Notes:} {Заметки:}
-    "Sort of diary.\nList of TODOs etc." "Типа дневника.\nСписок TODO и пр."
+    {Complete Commands} {Дополнение команд}
+  }
+
+  ### ________________________ Templates _________________________ ###
+  ::msgcat::mcmset ru {
     {Enter %U, %u, %m, %w, %d, %t wildcards of templates:} {Введите токены  %U, %u, %m, %w, %d, %t для шаблонов:}
     {User name:} {Имя пользователя:}
     {Login:} {Логин:}
     {Date format:} {Формат даты:}
     {Time format:} {Формат времени:}
-    {Directory of menus:} {Каталог меню:}
-    {Main menu:} {Главное меню:}
-    {Projects (%PD wildcard):} {Проекты (%PD токен):}
-    {Save before bar/menu runs:} {Сохранять при вызовах bar/menu:}
-    {Current file} {Текущий файл}
-    {All files} {Все файлы}
-    {'Recent Files' length:} {Длина списка 'Недавние файлы':}
-    {'Last Visited' length:} {Длина списка 'Последние посещения':}
-    {Maximum of project files:} {Число файлов проекта не более:}
-    {Linux terminal:} {Терминал Linux:}
-    {Diff tool:} {Команда diff:}
-    {Path to man/tcl8.6:} {Путь к man/tcl8.6:}
-    {Geometry:} {Геометрия:}
-    {Run as external app:} {Как отдельное приложение:}
-    {Inserts a new line.} {Добавляет строку.}
-    {Deletes a line.} {Удаляет строку.}
-    {If 'yes', means a separator of the toolbar/menu.} {Если включено, означает разделитель в строке/меню.}
-    "An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar." "Иконка включит запуск в тулбар.\nПустая или 'none' иконка исключит запуск из тулбара."
-    "The run item for the menu and/or the toolbar.\nSelect it from the e_menu items." "Вызов команды для меню и/или тулбара.\nВыберите ее из команд e_menu."
+  }
+
+  ### ________________________ Syntax _________________________ ###
+  ::msgcat::mcmset ru {
+    {Tcl syntax} {Синтаксис Tcl}
+    {C/C++ syntax} {Синтаксис C/C++}
+    {Tcl files' extensions:} {Расширения файлов Tcl:}
+    {C/C++ files' extensions:} {Расширения файлов C/C++:}
     {Color of Tcl commands:} {Цвет команд Tcl:}
     {Color of Tk commands:} {Цвет команд Tk:}
     {Color of strings:} {Цвет значений строк:}
@@ -346,16 +371,10 @@ namespace eval ::alited {
     {Color of your key words:} {Цвет ваших ключевых слов:}
     {Colors} {Цвета}
     {Your key words:} {Ваши ключевые слова:}
-    {Rows:} {Строк:}
-    {Columns:} {Колонок:}
-    {Confirm exit:} {Подтверждать выход:}
-    {Save configuration on} {Сохранять конфигурацию при}
-    {opening a file:} {открытии файла:}
-    {closing a file:} {закрытии файла:}
-    {saving a file:} {сохранении файла:}
-    {Space above lines:} {Отступ выше строк:}
-    {Space below lines:} {Отступ ниже строк:}
-    {Space between wraps:} {Отступ сворачиваемых строк:}
+  }
+
+  ### ________________________ Units _________________________ ###
+  ::msgcat::mcmset ru {
     {Branch's regexp:} {RE для ветки:}
     {Proc's regexp:} {RE для функции:}
     {Check branch's regexp:} {Проверка на ветку:}
@@ -363,12 +382,26 @@ namespace eval ::alited {
     {Use leaf's regexp:} {Использовать RE листа:}
     {Leaf's regexp:} {RE листа:}
     {Untouched top lines:} {Статичных начальных строк:}
-    {Tab bar label's length:} {Длина имен панели файлов:}
-    {Tab bar tip's length:} {Длина подсказок панели файлов:}
-    {Back up files to a project's subdirectory:} {Резервные копии в подкаталоге проекта:}
-    "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." "Подкаталог проекта, где сохранятся копии файлов.\nЕсли это поле пустое, копирования не будет."
-    {Gutter's width:} {Ширина желобка}
-    {Gutter's shift from text:} {Смещение желобка от текста:}
+  }
+
+  ### ________________________ Tools _________________________ ###
+  ::msgcat::mcmset ru {
+    {Open bar/menu settings} {Открыть настройки bar/menu}
+    "An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar." "Иконка включит запуск в тулбар.\nПустая или 'none' иконка исключит запуск из тулбара."
+    "The run item for the menu and/or the toolbar.\nSelect it from the e_menu items." "Вызов команды для меню и/или тулбара.\nВыберите ее из команд e_menu."
+    {Directory of menus:} {Каталог меню:}
+    {Main menu:} {Главное меню:}
+    {Projects (%PD wildcard):} {Проекты (%PD токен):}
+    {Linux terminal:} {Терминал Linux:}
+    {Diff tool:} {Команда diff:}
+    {Path to man/tcl8.6:} {Путь к man/tcl8.6:}
+    {Rows:} {Строк:}
+    {Columns:} {Колонок:}
+    {Geometry:} {Геометрия:}
+    {Run as external app:} {Как отдельное приложение:}
+    {Inserts a new line.} {Добавляет строку.}
+    {Deletes a line.} {Удаляет строку.}
+    {If 'yes', means a separator of the toolbar/menu.} {Если включено, означает разделитель в строке/меню.}
   }
 
   ## _ Checks _ ##

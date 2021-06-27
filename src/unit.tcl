@@ -165,6 +165,10 @@ proc unit::TemplateData {wtxt l1 tpldata} {
 
 proc unit::InsertTemplate {tpldata} {
 
+  # for noname file - save it beforehand, as templates refer to a file name
+  if {[alited::file::IsNoName [alited::bar::FileName]]} {
+    if {![alited::file::SaveFile]} return
+  }
   set wtxt [alited::main::CurrentWTXT]
   lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - - l1 l2
   lassign [TemplateData $wtxt $l1 $tpldata] tex pos place
@@ -265,12 +269,13 @@ proc unit::MoveL1L2 {wtxt i1 i2 io} {
   return $io
 }
 
-proc unit::MoveUnit {wtree to itemID headers f1112} {
+proc unit::MoveUnit {wtree to hd headers f1112} {
 
   namespace upvar ::alited al al
   set wtxt [alited::main::CurrentWTXT]
   set tree [alited::tree::GetTree]
-  set newparent [set oldparent ""]
+  set itemID [SearchByHeader $hd]
+  set newparent [set oldparent {}]
   set newlev [set oldlev [set iold -1]]
   set i1 [set i2 [set io 0]]
   foreach item $tree {
@@ -293,9 +298,11 @@ proc unit::MoveUnit {wtree to itemID headers f1112} {
     alited::msg ok err $msg -title $al(MC,introln1) {*}$geo
     return no
   }
-  if {[set pos [MoveL1L2 $wtxt $i1 $i2 $io]] ne ""} {
+  if {[set pos [MoveL1L2 $wtxt $i1 $i2 $io]] ne {}} {
     ::tk::TextSetCursor $wtxt [expr {int($pos)}].0
     alited::tree::RecreateTree $wtree $headers
+  } else {
+    return no
   }
   return yes
 }
@@ -324,9 +331,9 @@ proc unit::MoveUnit1 {wtree fromID toID} {
 }
 
 proc unit::MoveUnits {wtree to itemIDs f1112} {
-  # save the headers of moved items (as unique references)
+
   namespace upvar ::alited al al
-  # firstly, check fo consistency of braces
+  # firstly, check the moved units for the consistency of braces
   set wtxt [alited::main::CurrentWTXT]
   foreach ID $itemIDs {
     lassign [$wtree item $ID -values] l1 l2 - id
@@ -356,17 +363,11 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
       set headers [linsert $headers 0 $hd]
     }
   }
-  # find the item IDs (by headers) and move items one by one
-  set ok yes
+  # move items one by one, by their headers
   foreach hd $headers {
-    foreach item [alited::tree::GetTree] {
-      lassign $item lev cnt ID
-      if {[GetHeader $wtree $ID] eq $hd} {
-        set ok [MoveUnit $wtree $to $ID $headers $f1112]
-        break
-      }
+    if {![MoveUnit $wtree $to $hd $headers $f1112]} {
+      break
     }
-    if {!$ok} break
   }
   after idle "set alited::al(RECREATE) 1 ; alited::tree::RecreateTree"
   if {[set sel [$wtree selection]] ne ""} {
@@ -441,7 +442,7 @@ proc unit::SearchByHeader {header} {
     set header2 [GetHeader $wtree $ID]
     if {$header eq $header2} {return $ID}
   }
-  return ""
+  return {}
 }
 
 proc unit::SelectByHeader {header line} {
@@ -542,8 +543,8 @@ proc unit::BackupFile {TID} {
     if {![file exists $dir] && [catch {file mkdir $dir} err]} {
       alited::msg ok err $err
     }
-    if {[file exists $dir] && [catch {file copy -force $fname $fname2} err]} {
-      alited::msg ok err $err
+    if {[file exists $dir]} {
+      catch {file copy -force $fname $fname2}
     }
   }
 }
