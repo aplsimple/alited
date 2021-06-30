@@ -2150,22 +2150,23 @@ oo::class create ::apave::APave {
     #   wt - the text's path
 
     if {[bind $wt <<Paste>>] eq ""} {
-      set res "
-      bind $wt <<Paste>> {+ [self] pasteText $wt}
-      bind $wt <Return> {+ [self] onKeyTextM $wt %K}
+      set res " \
+      bind $wt <<Paste>> {+ [self] pasteText $wt} ;\
+      bind $wt <KP_Enter> {+ [self] onKeyTextM $wt %K %s} ;\
+      bind $wt <Return> {+ [self] onKeyTextM $wt %K %s} ;\
       catch {bind $wt <braceright> {+ [self] onKeyTextM $wt %K}}"
     }
     foreach k [::apave::getTextHotkeys CtrlD] {
-      append res "
+      append res " ;\
       bind $wt <$k> {[self] doubleText $wt}"
     }
     foreach k [::apave::getTextHotkeys CtrlY] {
-      append res "
+      append res " ;\
       bind $wt <$k> {[self] deleteLine $wt}"
     }
-    append res "
-      bind $wt <Alt-Up> {[self] linesMove $wt -1}
-      bind $wt <Alt-Down> {[self] linesMove $wt +1}
+    append res " ;\
+      bind $wt <Alt-Up> {[self] linesMove $wt -1} ;\
+      bind $wt <Alt-Down> {[self] linesMove $wt +1} ;\
       bind $wt <Control-a> \"$wt tag add sel 1.0 end; break\""
     return $res
   }
@@ -2696,22 +2697,23 @@ oo::class create ::apave::APave {
 
   #########################################################################
 
-  method onKeyTextM {w K} {
+  method onKeyTextM {w K {s {}}} {
     # Processes indents and braces at pressing keys.
     #   w - text's path
     #   K - key's name
+    #   s - key's state
 
     set lindt [string length $::apave::_AP_VARS(INDENT)]
     switch -exact $K {
-      Return {
+      Return - KP_Enter {
         # at pressing Enter key, indent (and possibly add the right brace)
         set idx1 [$w index {insert linestart}]
         set idx2 [$w index {insert lineend}]
         set line [$w get $idx1 $idx2]
-        set nchars [my leadingSpaces $line]
+        set nchars [expr {$s ? 0 : [my leadingSpaces $line]}]
         set indent [string range $line 0 [expr {$nchars-1}]]
         set ch [string index $line end]
-        if {$indent ne {} || $ch eq "\{"} {
+        if {$indent ne {} || $s || $ch eq "\{" || $K eq {KP_Enter}} {
           set idx1 [$w index insert]
           set idx2 [$w index "$idx1 +1 line"]
           set st1 [$w get "$idx1" "$idx1 lineend"]

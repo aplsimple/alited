@@ -72,8 +72,7 @@ proc unit_tpl::Selected {what {domsg yes}} {
   namespace upvar ::alited al al obDl2 obDl2
   variable tpllist
   set tree [$obDl2 TreeTpl]
-  if {[set isel [$tree selection]] eq "" && [set isel [$tree focus]] eq "" \
-  && $domsg} {
+  if {[set isel [$tree selection]] eq {} && [set isel [$tree focus]] eq {} && $domsg} {
     alited::Message2 $al(MC,tplsel) 4
   }
   if {$isel ne "" && $what eq "index"} {
@@ -312,24 +311,24 @@ proc unit_tpl::_create {} {
   $obDl2 paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip {$alited::al(MC,tpladd)} -image alimg_add-big}}
-    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip {$alited::al(MC,tplchg)} -image alimg_change-big}}
-    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip {$alited::al(MC,tpldel)} -image alimg_delete-big}}
+    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
+    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
+    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big}}
     {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 7 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-stretch 0}"}}
     {.sbvTpls fraTreeTpl.TreeTpl L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
-    {.labTpl - - 1 1 {-st we} {-anchor center -t "$alited::al(MC,tpl4)"}}
+    {.labTpl - - 1 1 {-st we} {-anchor center -t "Current template:"}}
     {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {$alited::al(MC,tplent1)}}}
-    {.CbxKey .EntTpl L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {$alited::al(MC,tplcbx)}}}
+    {.CbxKey .EntTpl L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip "Choose a hot key combination\nfor the template insertion."}}
     {fra1.fratex fra1.labTpl T 10 10 {-st nsew} {}}
     {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip {$alited::al(MC,tplent2)}}}
     {.sbvTpl .TexTpl L - - {pack -side left -fill both} {}}
     {fra2 fra1 T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
-    {.labBA - - - - {pack -side left} {-t {$alited::al(MC,tplloc)}}}
-    {.radA - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc1)} -var ::alited::unit_tpl::place -value 1 -tip {$al(MC,tplttloc1)}}}
-    {.radB - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc2)} -var ::alited::unit_tpl::place -value 2 -tip {$al(MC,tplttloc2)}}}
-    {.radC - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc3)} -var ::alited::unit_tpl::place -value 3 -tip {$al(MC,tplttloc3)}}}
-    {.radD - - - - {pack -side left -padx 8}  {-t {$alited::al(MC,tplloc4)} -var ::alited::unit_tpl::place -value 4 -tip {$al(MC,tplttloc4)}}}
+    {.labBA - - - - {pack -side left} {-t "Place after:"}}
+    {.radA - - - - {pack -side left -padx 8}  {-t "line" -var ::alited::unit_tpl::place -value 1 -tip "Inserts a template\nbelow a current line"}}
+    {.radB - - - - {pack -side left -padx 8}  {-t "unit" -var ::alited::unit_tpl::place -value 2 -tip "Inserts a template\nbelow a current unit"}}
+    {.radC - - - - {pack -side left -padx 8}  {-t "cursor" -var ::alited::unit_tpl::place -value 3 -tip "Inserts a template at the cursor\n(good for one-liners)"}}
+    {.radD - - - - {pack -side left -padx 8}  {-t "file's beginning" -var ::alited::unit_tpl::place -value 4 -tip "Inserts a template after 1st line of a file\n(License, Introduction etc.)"}}
     {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 labMess T 1 10 {-st nsew}}
     {.butHelp - - - - {pack -side left} {-t "$alited::al(MC,help)" -command ::alited::unit_tpl::Help}}
@@ -338,8 +337,8 @@ proc unit_tpl::_create {} {
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::unit_tpl::Cancel}}
   }
   set tree [$obDl2 TreeTpl]
-  $tree heading C1 -text $al(MC,tplhd1)
-  $tree heading C2 -text $al(MC,tplhd2)
+  $tree heading C1 -text [msgcat::mc "Template"]
+  $tree heading C2 -text [msgcat::mc "Hot keys"]
   UpdateTree
   Select
   set wtxt [$obDl2 TexTpl]

@@ -4,7 +4,7 @@ t4==%b-%Y/%U-week
 u=%s
 o=0
 in=1.0
-pos=122.116
+pos=25.38
 ::FSLUSER=aplsimple
 ::FSLBRANCH=TclOO forced
 ::FSLBRANCHCOLOR=#fe95ca
@@ -21,7 +21,8 @@ pos=122.116
 %C if {![info exist ::EMENUCOMMIT2]} {set ::EMENUCOMMIT2 ""}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
-%C set ::FILETAIL \"[file tail {$::EMENUFILE}]\"
+%C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
+%C set ::FILETAIL {"$::EMENUFILETAIL"}
 
 [MENU]
  S:fossil status %PD S: cd %PD

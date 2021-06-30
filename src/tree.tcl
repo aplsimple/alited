@@ -35,7 +35,7 @@ proc tree::SwitchTree {} {
 #_______________________
 
 proc tree::MoveItem {to {f1112 no}} {
-  # Moves items of the tree (units opr files)
+  # Moves items of the tree (units or files)
   #   to - direction ("up" or "down")
   #   f1112 - true, if started by keypressing (false, if by mouse)
 

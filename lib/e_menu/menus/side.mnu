@@ -3,14 +3,15 @@ g=166x953+1502+20
 #dk=dock
 in=1.0
 o=0
-pos=205.7
+pos=13.38
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT [set ::EMENUCOMMIT2 ""]}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
 %C if {![info exist ::EMENUGREP]} {set ::EMENUGREP ""}
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
-%C set ::FILETAIL \"[file tail {$::EMENUFILE}]\"
-::EMENU7ZCNT=1
+%C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
+%C set ::FILETAIL {"$::EMENUFILETAIL"}
+::EMENU7ZCNT=0
 ::EMENU7ZCOM=zip -r
 ::EMENU7ZARC=~/PG/github/apl-github
 ::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/pave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*

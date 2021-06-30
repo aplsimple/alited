@@ -30,8 +30,11 @@ proc menu::CheckMenuItems {} {
     $al(MENUFILE) entryconfigure $idx {*}$state
   }
 }
+#_______________________
 
 proc menu::FillRecent {} {
+  # Creates "Recent Files" menu items.
+
   namespace upvar ::alited al al
   set m $al(MENUFILE).recentfiles
   $m delete 0 end
@@ -46,6 +49,7 @@ proc menu::FillRecent {} {
     $al(MENUFILE) entryconfigure 2 -state disabled
   }
 }
+#_______________________
 
 proc menu::FillMenu {} {
   # Populates alited's main menu.

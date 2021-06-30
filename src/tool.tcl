@@ -8,6 +8,15 @@
 
 namespace eval tool {
 }
+#_______________________
+
+proc tool::ToolButName {img} {
+  # Helper procedure to get a name of toolbar button.
+  #   img - name of icon
+
+  namespace upvar ::alited obPav obPav
+  return [$obPav ToolTop].buT_alimg_$img-big
+}
 
 # ________________________ Edit functions _________________________ #
 

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.8
+package provide hl_tcl 0.9.9
 
 # ______________________ Common data ____________________ #
 
@@ -405,12 +405,13 @@ proc ::hl_tcl::my::ShowCurrentLine {txt} {
   #   txt - text widget's path
 
   variable data
-  set ln [$txt index insert]
-  if {![info exists data(CURPOS,$txt)] || int($data(CURPOS,$txt))!=int($ln)} {
+  set pos [$txt index insert]
+  lassign [split $pos .] ln cn
+  if {![info exists data(CURPOS,$txt)] || int($data(CURPOS,$txt))!=$ln || $cn<2} {
     $txt tag remove tagCURLINE 1.0 end
-    $txt tag add tagCURLINE [list $ln linestart] [list $ln lineend]+1displayindices
+    $txt tag add tagCURLINE [list $pos linestart] [list $pos lineend]+1displayindices
   }
-  return $ln
+  return $pos
 }
 #_____
 

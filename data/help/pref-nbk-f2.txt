@@ -1,8 +1,8 @@
  Switch "Confirm exit" on to secure alited against
  an unintended quit, i.e. at clicking [x] button or
- pressing Ctrl+F4.
+ pressing Alt+F4.
 
- You may wish to save alited's configuration on:
+ You can save a current alited configuration on:
    - opening a file
    - closing a file
    - saving a file
@@ -12,7 +12,7 @@
  which means that at running a bar/menu action
  the current or all files can be saved.
 
- See also "Preferences/Tools/bar/menu" settings.
+ See also "Preferences / Tools / bar/menu" tab.
 
  The following options restrict a number of:
    - files in 'Files/Recent Files' menu item

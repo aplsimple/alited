@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 1.0a1
+package provide alited 1.0a4
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -45,12 +45,12 @@ if {$::tcl_platform(platform) eq {windows}} {
   wm attributes . -alpha 0.0
 }
 set ALITED_NOSEND no
-if {{NOSEND} eq [lindex $::argv 0]} {
+if {[lindex $::argv 0] eq {NOSEND}} {
   set ::argv [lreplace $::argv 0 0]
   incr ::argc -1
   set ALITED_NOSEND yes
 }
-if {{DEBUG} eq [lindex $::argv 0]} {
+if {[lindex $::argv 0] eq {DEBUG}} {
   set alited::al(DEBUG) yes
   set ::argv [lreplace $::argv 0 0]
   incr ::argc -1
@@ -59,7 +59,7 @@ if {{DEBUG} eq [lindex $::argv 0]} {
     set port 48784
     if {[catch {::comm::comm config -port $port}] && \
     ![catch {::comm::comm send $port ::alited::run_remote ::alited::raise_window }]} {
-      destroy .
+      catch {destroy .}
       exit
     }
   }
@@ -145,6 +145,31 @@ namespace eval alited {
 
 namespace eval alited {
 
+  proc p+ {p1 p2} {
+    # Sums two text positions straightforward: lines & columns separately.
+    #   p1 - 1st position
+    #   p2 - 2nd position
+    # The lines may be with "-".
+
+    lassign [split $p1 .] l11 c11
+    lassign [split $p2 .] l21 c21
+    foreach n {l11 c11 l21 c21} {
+      if {![string is digit -strict [string trimleft [set $n] -]]} {set $n 0}
+    }
+    return "[incr l11 $l21].[incr c11 $c21]"
+  }
+  #_______________________
+
+  proc FgFgBold {} {
+    # Gets foregrounds of normal and colored text of current color scheme.
+
+    variable obPav
+    lassign [$obPav csGet] - fg - - - - - - - fgbold
+    return [list $fg $fgbold]
+  }
+
+  #_______________________
+
   proc msg {type icon message {defb ""} args} {
     # Shows a message and asks for an answer.
     #   type - ok/yesno/okcancel/yesnocancel
@@ -174,8 +199,15 @@ namespace eval alited {
     after idle {catch alited::main::UpdateGutter}
     return [lindex $res 0]
   }
+  #_______________________
 
   proc Message {msg {mode 1} {lab ""} {first yes}} {
+    # Displays a message in statusbar.
+    #   msg - message
+    #   mode - 1: simple; 2: bold; 3: bold colored; 4: bold colored bell; 5: static
+    #   lab - label's name to display the message in
+    #   first - serves to recursively erase the message
+
     variable al
     variable obPav
     lassign [FgFgBold] fg fgbold
@@ -207,34 +239,39 @@ namespace eval alited {
       set al(afterID) [after $msec [list ::alited::Message $msg $mode $lab no]]
     }
   }
+  #_______________________
 
   proc Message2 {msg {first 1}} {
+    # Displays a message in statusbar of secondary dialogue ($obDl2).
+    #   msg - message
+    #   first - mode of Message
+    # See also: Message
+
     variable obDl2
-    alited::Message $msg $first [$obDl2 LabMess]
+    Message $msg $first [$obDl2 LabMess]
   }
-
-  proc p+ {p1 p2} {
-    # Sums two text positions straightforward: lines & columns separately.
-    # The lines may be with "-".
-
-    lassign [split $p1 .] l11 c11
-    lassign [split $p2 .] l21 c21
-    foreach n {l11 c11 l21 c21} {
-      if {![string is digit -strict [string trimleft [set $n] -]]} {set $n 0}
-    }
-    return "[incr l11 $l21].[incr c11 $c21]"
-  }
+  #_______________________
 
   proc HelpAbout {} {
+    # Shows "About..." dialogue.
+
     source [file join $alited::SRCDIR about.tcl]
     about::About
   }
+  #_______________________
 
   proc HelpAlited {} {
+    # Shows a main help of alited.
+
     Help $alited::al(WIN)
   }
+  #_______________________
 
   proc Help {win {suff ""}} {
+    # Reads and shows a help file.
+    #   win - currently active window
+    #   suff - suffix for a help file's name
+
     variable DATADIR
     variable al
     variable obDlg
@@ -250,14 +287,14 @@ namespace eval alited {
     }
     msg ok {} $msg -title Help -text 1 -geometry root=$win -scroll no -noesc 1
   }
-
-  proc FgFgBold {} {
-    variable obPav
-    lassign [$obPav csGet] - fg - - - - - - - fgbold
-    return [list $fg $fgbold]
-  }
+  #_______________________
 
   proc Exit {{w ""} {res 0} {ask yes}} {
+    # Closes alited application.
+    #   w - not used
+    #   res - result of running of main window
+    #   ask - if "yes", requests the confirmation of the exit
+
     variable al
     variable obPav
     if {!$ask || !$al(INI,confirmexit) || \
@@ -295,6 +332,7 @@ namespace eval alited {
 }
 
 # ____________ TO COMMENT ______________ #
+# It's a temporary code, to make demos.
 
 catch {
   source /home/apl/PG/github/transpops/transpops.tcl
@@ -305,7 +343,7 @@ catch {
 # _________________________ Run the app _________________________ #
 
 # this "if" satisfies the Ruff doc generator "package require":
-if {[package versions alited] eq ""} {
+if {[package versions alited] eq {}} {
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites

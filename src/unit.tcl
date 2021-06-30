@@ -1,21 +1,67 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The unit procedures of alited.
-# _______________________________________________________________________ #
+###########################################################
+# Name:    unit.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    06/30/2021
+# Brief:   Handles units (branches and leaves).
+# License: MIT.
+###########################################################
 
 namespace eval unit {
 }
 
-proc unit::SelectUnit {} {
+# ________________________ Common _________________________ #
+
+proc unit::GetHeader {wtree ID {NC ""}} {
+  # Gets a header of unit: declaration + initial comments.
+  #   wtree - unit tree widget
+  #   ID - ID of item in the unit tree
+  #   NC - index of column of the unit tree
 
   namespace upvar ::alited al al
-  set TID [alited::bar::CurrentTabID]
-  lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
-  pack forget $wtxt
-  pack forget $wsbv
-  alited::main::ShowText
+  set tip [$wtree item $ID -text]
+  lassign [$wtree item $ID -values] l1 l2 - id
+  if {$NC eq "#1"} {
+    set tip "[string map {al #} $id]\n$l1 - $l2"
+    set ID ""
+  } else {
+    catch {
+      set wtxt [alited::main::CurrentWTXT]
+      set tip2 [string trim [$wtxt get $l1.0 $l1.end]]
+      if {[string match "*\{" $tip2]} {
+        set tip [string trim $tip2 " \{"]
+      }
+      if {$NC eq ""} {
+        return $tip  ;# returns a declaration only
+      }
+      # find first commented line, after the proc/method declaration
+      for {} {$l1<$l2} {} {
+        incr l1
+        set line [string trim [$wtxt get $l1.0 $l1.end]]
+        if {[string index $line end] ni [list \\ \{] && \
+        $line ni {"" "#"} && ![regexp $al(RE,proc) $line]} {
+          if {[string match "#*" $line]} {
+            append tip \n [string trim [string range $line 1 end]]
+          }
+          break
+        }
+      }
+    }
+  }
+  return $tip
 }
+#_______________________
+
+proc unit::BranchLines {ID} {
+  # Gets a line range of a branch.
+  #   ID - ID of the branch
+
+  set branch [alited::tree::GetTree $ID]
+  set l1 [lindex $branch 0 4 0]
+  set l2 [lindex $branch end 4 1]
+  return [list $l1 $l2]
+}
+#_______________________
 
 proc unit::GetUnits {TID textcont} {
   # Gets a unit structure from a text.
@@ -114,11 +160,19 @@ proc unit::GetUnits {TID textcont} {
   return $retlist
 }
 
+# ________________________ Templates _________________________ #
+
 proc unit::TemplateData {wtxt l1 tpldata} {
+  # Replaces the template wildcards with data of current text and unit.
+  #   wtxt - text's path
+  #   l1 - 1st line of current unit
+  #   tpldata - template
+
   namespace upvar ::alited al al
   lassign $tpldata tex pos place
   set sec [clock seconds]
   set fname [alited::bar::FileName]
+  # fill the common wildcards
   set tex [string map [list \
     %d [clock format $sec -format $al(TPL,%d)] \
     %t [clock format $sec -format $al(TPL,%t)] \
@@ -162,8 +216,11 @@ proc unit::TemplateData {wtxt l1 tpldata} {
   }
   return [list $tex $pos $place]
 }
+#_______________________
 
 proc unit::InsertTemplate {tpldata} {
+  # Inserts a template into a current text.
+  #   tpldata - template
 
   # for noname file - save it beforehand, as templates refer to a file name
   if {[alited::file::IsNoName [alited::bar::FileName]]} {
@@ -204,8 +261,11 @@ proc unit::InsertTemplate {tpldata} {
   $wtxt insert $pos0 $tex
   ::tk::TextSetCursor $wtxt $pos
 }
+#_______________________
 
 proc unit::Add {} {
+  # Runs a dialog "Add Template" and adds a chosen template to a text.
+
   set res [::alited::unit_tpl::_run]
   if {$res ne ""} {
     InsertTemplate $res
@@ -213,7 +273,13 @@ proc unit::Add {} {
   alited::keys::BindKeys [alited::main::CurrentWTXT] template
 }
 
+# ________________________ Moving units _________________________ #
+
 proc unit::Delete {wtree fname} {
+  # Deletes a unit from a text.
+  #   wtree - unit tree's path
+  #   fname - file name
+
   namespace upvar ::alited al al
   set wtxt [alited::main::CurrentWTXT]
   set selection [$wtree selection]
@@ -237,6 +303,7 @@ proc unit::Delete {wtree fname} {
     }
   }
 }
+#_______________________
 
 proc unit::MoveL1L2 {wtxt i1 i2 io} {
   # Moves a text lines to other location.
@@ -268,8 +335,15 @@ proc unit::MoveL1L2 {wtxt i1 i2 io} {
   }
   return $io
 }
+#_______________________
 
 proc unit::MoveUnit {wtree to hd headers f1112} {
+  # Moves a unit up/down the unit tree.
+  #   wtree - unit tree's path
+  #   to - direction (up/down)
+  #   hd - header of the moved unit
+  #   headers - headers of all selected units
+  #   f1112 - yes, if run by F11/F12 keys
 
   namespace upvar ::alited al al
   set wtxt [alited::main::CurrentWTXT]
@@ -306,8 +380,14 @@ proc unit::MoveUnit {wtree to hd headers f1112} {
   }
   return yes
 }
+#_______________________
 
 proc unit::MoveUnit1 {wtree fromID toID} {
+  # Moves a unit from one location in the unit tree to other.
+  #   wtree - unit tree's path
+  #   fromID - ID of tree item "to move from"
+  #   toID - ID of tree item "to move to"
+
   if {$fromID eq $toID} return
   set wtxt [alited::main::CurrentWTXT]
   set tree [alited::tree::GetTree]
@@ -329,11 +409,19 @@ proc unit::MoveUnit1 {wtree fromID toID} {
     }
   }
 }
+#_______________________
 
 proc unit::MoveUnits {wtree to itemIDs f1112} {
+  # Moves selected units up/down the unit tree.
+  #   wtree - unit tree's path
+  #   to - direction (up/down)
+  #   itemIDs - tree item IDs of selected units
+  #   f1112 - yes, if run by F11/F12 keys
 
   namespace upvar ::alited al al
-  # firstly, check the moved units for the consistency of braces
+  # update the unit tree, to act for sure
+  alited::tree::RecreateTree
+  # check the moved units for the consistency of braces
   set wtxt [alited::main::CurrentWTXT]
   foreach ID $itemIDs {
     lassign [$wtree item $ID -values] l1 l2 - id
@@ -375,50 +463,7 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
   }
 }
 
-proc unit::GetHeader {wtree ID {NC ""}} {
-
-  namespace upvar ::alited al al
-  set tip [$wtree item $ID -text]
-  lassign [$wtree item $ID -values] l1 l2 - id
-  if {$NC eq "#1"} {
-    set tip "[string map {al #} $id]\n$l1 - $l2"
-    set ID ""
-  } else {
-    catch {
-      set wtxt [alited::main::CurrentWTXT]
-      set tip2 [string trim [$wtxt get $l1.0 $l1.end]]
-      if {[string match "*\{" $tip2]} {
-        set tip [string trim $tip2 " \{"]
-      }
-      if {$NC eq ""} {
-        return $tip  ;# returns a declaration only
-      }
-      # find first commented line, after the proc/method declaration
-      for {} {$l1<$l2} {} {
-        incr l1
-        set line [string trim [$wtxt get $l1.0 $l1.end]]
-        if {[string index $line end] ni [list \\ \{] && \
-        $line ni {"" "#"} && ![regexp $al(RE,proc) $line]} {
-          if {[string match "#*" $line]} {
-            append tip \n [string trim [string range $line 1 end]]
-          }
-          break
-        }
-      }
-    }
-  }
-  return $tip
-}
-
-proc unit::BranchLines {ID} {
-  # Gets a line range of a branch.
-  #   ID - ID of the branch
-
-  set branch [alited::tree::GetTree $ID]
-  set l1 [lindex $branch 0 4 0]
-  set l2 [lindex $branch end 4 1]
-  return [list $l1 $l2]
-}
+# ________________________ Search _________________________ #
 
 proc unit::SearchInBranch {unit {branch {}}} {
   # Checks whether a unit is in a branch.
@@ -433,8 +478,11 @@ proc unit::SearchInBranch {unit {branch {}}} {
   }
   return [lsearch -exact -index 2 $branch $unit]
 }
+#_______________________
 
 proc unit::SearchByHeader {header} {
+  # Gets tree item ID of a units by its header (declaration+initial comment).
+
   namespace upvar ::alited obPav obPav
   set wtree [$obPav Tree]
   foreach item [alited::tree::GetTree] {
@@ -444,19 +492,23 @@ proc unit::SearchByHeader {header} {
   }
   return {}
 }
+#_______________________
 
 proc unit::SelectByHeader {header line} {
+  # Selects a unit in the text, by the unit's header.
+  #   header - unit's header (declaration+initial comment)
+  #   line - relational line number inside the unit
+
   if {[set ID [SearchByHeader $header]] ne ""} {
     after idle "alited::tree::NewSelection $ID $line"
   }
 }
 
-proc unit::ToolButName {img} {
-  namespace upvar ::alited obPav obPav
-  return [$obPav ToolTop].buT_alimg_$img-big
-}
+# ________________________ Indent _________________________ #
 
 proc unit::SelectedLines {} {
+  # Gets a range of lines of text that are selected at least partly.
+
   set wtxt [alited::main::CurrentWTXT]
   lassign [$wtxt tag ranges sel] pos1 pos2
   if {$pos1 eq ""} {
@@ -471,8 +523,11 @@ proc unit::SelectedLines {} {
   set l2 [expr {int($pos2)}]
   return [list $wtxt $l1 $l2]
 }
+#_______________________
 
 proc unit::Indent {} {
+  # Indent selected lines of text.
+
   lassign [SelectedLines] wtxt l1 l2
   set indent $::apave::_AP_VARS(INDENT)
   set len [string length $::apave::_AP_VARS(INDENT)]
@@ -489,8 +544,11 @@ proc unit::Indent {} {
     $wtxt insert $l.0 $ind
   }
 }
+#_______________________
 
 proc unit::UnIndent {} {
+  # Unindent selected lines of text.
+
   lassign [SelectedLines] wtxt l1 l2
   set len [string length $::apave::_AP_VARS(INDENT)]
   for {set l $l1} {$l<=$l2} {incr l} {
@@ -504,8 +562,11 @@ proc unit::UnIndent {} {
     }
   }
 }
+#_______________________
 
 proc unit::NormIndent {} {
+  # Normalizes a current text's indenting.
+
   if {![namespace exists alited::indent]} {
     namespace eval alited {
       source [file join $alited::SRCDIR indent.tcl]
@@ -515,14 +576,21 @@ proc unit::NormIndent {} {
   alited::main::UpdateTextAndGutter
 }
 
+# ________________________ Comment in / out _________________________ #
+
 proc unit::Comment {} {
+  # Comments selected lines of text.
+
   lassign [SelectedLines] wtxt l1 l2
   for {set l $l1} {$l<=$l2} {incr l} {
     $wtxt insert $l.0 #
   }
 }
+#_______________________
 
 proc unit::UnComment {} {
+  # Uncomments selected lines of text.
+
   namespace upvar ::alited obPav obPav
   lassign [SelectedLines] wtxt l1 l2
   for {set l $l1} {$l<=$l2} {incr l} {
@@ -534,7 +602,12 @@ proc unit::UnComment {} {
   }
 }
 
+# ________________________ Modified _________________________ #
+
 proc unit::BackupFile {TID} {
+  # Makes a backup copy of a file after the first modification of it.
+  #   TID - tab's ID of the file
+
   namespace upvar ::alited al al
   if {$al(BACKUP) ne {}} {
     set fname [alited::bar::FileName $TID]
@@ -548,8 +621,13 @@ proc unit::BackupFile {TID} {
     }
   }
 }
+#_______________________
 
 proc unit::CheckUndoRedoIcons {wtxt TID} {
+  # Checks for states of undo/redo button for a file being modified.
+  #   wtxt - text's path
+  #   TID - tab's ID of the file
+
   set TIDundo [alited::bar::BAR cget --TIDundo]
   set oldundo [alited::bar::BAR $TID cget --undo]
   set oldredo [alited::bar::BAR $TID cget --redo]
@@ -557,12 +635,12 @@ proc unit::CheckUndoRedoIcons {wtxt TID} {
   set newredo [$wtxt edit canredo]
   if {$TIDundo ne $TID || $oldundo ne $newundo} {
     if {$newundo} {set stat normal} {set stat disabled}
-    [ToolButName undo] configure -state $stat
+    [alited::tool::ToolButName undo] configure -state $stat
     alited::bar::BAR $TID configure --undo $newundo
   }
   if {$TIDundo ne $TID || $oldredo ne $newredo} {
     if {$newredo} {set stat normal} {set stat disabled}
-    [ToolButName redo] configure -state $stat
+    [alited::tool::ToolButName redo] configure -state $stat
     alited::bar::BAR $TID configure --redo $newredo
   }
   if {$oldundo ne {} && !$oldundo && !$oldredo && $newundo} {
@@ -570,15 +648,19 @@ proc unit::CheckUndoRedoIcons {wtxt TID} {
   }
   alited::bar::BAR configure --TIDundo $TID
 }
+#_______________________
 
 proc unit::CheckSaveIcons {modif} {
+  # Checks for states of save buttons at modifications of files.
+  #   modif - yes, if a file has been modified
+
   namespace upvar ::alited al al
   set marked [alited::bar::BAR listFlag "m"]
-  set b_save [ToolButName SaveFile]
-  set b_saveall [ToolButName saveall]
+  set b_save [alited::tool::ToolButName SaveFile]
+  set b_saveall [alited::tool::ToolButName saveall]
   if {![llength $marked]} {
     foreach but {SaveFile saveall} {
-      [ToolButName $but] configure -state disabled
+      [alited::tool::ToolButName $but] configure -state disabled
     }
   } else {
     if {$modif} {set stat normal} {set stat disabled}
@@ -588,8 +670,14 @@ proc unit::CheckSaveIcons {modif} {
   $al(MENUFILE) entryconfigure 4 -state [$b_save cget -state]
   $al(MENUFILE) entryconfigure 6 -state [$b_saveall cget -state]
 }
+#_______________________
 
 proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
+  # Handles a modification of file, recreating the unit tree at need.
+  #   TID - tab's ID
+  #   wtxt - text's path
+  #   l1 - 1st line of unit
+  #   l2 - last line of unit
 
   namespace upvar ::alited al al
   if {[alited::bar::BAR isTab $TID]} {
@@ -607,9 +695,9 @@ proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
     if {$al(TREE,isunits)} {
       if {![info exists al(RECREATE)] || $al(RECREATE)} {
         set doit no
-        if {[set llen [llength $al(_unittree,$TID)]]>1} {
-          set itl1 [lindex $al(_unittree,$TID) 1 4]
-          set doit [expr {$l1<$itl1}]
+        if {[set llen [llength $al(_unittree,$TID)]]} {
+          set lastrow [lindex $al(_unittree,$TID) $llen-1 5]
+          set doit [expr {$lastrow != int([$wtxt index "end -1c"])}]
         }
         if {$l1<$l2 || $al(INI,LEAF) && [regexp $al(RE,leaf2) $args] || \
         !$al(INI,LEAF) && [regexp $al(RE,proc2) $args]} {

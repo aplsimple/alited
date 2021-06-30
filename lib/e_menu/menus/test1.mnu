@@ -20,7 +20,8 @@ o=0
 w=45
 rt=2/5
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
-%C set ::FILETAIL \"[file tail {$::EMENUFILE}]\"
+%C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
+%C set ::FILETAIL {"$::EMENUFILETAIL"}
 
 [MENU]
  R: Doctest Safe: $::FILETAIL R: cd %d

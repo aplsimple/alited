@@ -1,10 +1,13 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The ini-files procedures of alited.
-# _______________________________________________________________________ #
+###########################################################
+# Name:    ini.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    06/30/2021
+# Brief:   Handles settings (of alited and projects).
+# License: MIT.
+###########################################################
 
-# default settings of alited app:
+# ___________ Default settings of alited app ____________ #
 
 namespace eval ::alited {
   set al(MAXFILES) 2000 ;# maximum size of file tree (max size of project)
@@ -75,17 +78,20 @@ namespace eval ::alited {
   set al(BACKUP) .backup
 }
 
+# ________________________ Variables _________________________ #
+
 namespace eval ini {
   variable afterID {}
 }
 
-# ________________________ read common settings _________________________ #
+# ________________________ Reading common settings _________________________ #
 
 proc ini::ReadIni {{projectfile ""}} {
+  # Reads alited application's and project's settings.
+  #   projectfile - project file's name
 
   namespace upvar ::alited al al
   namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo
-#TODO  set prjinfo [list]
   alited::pref::Tkcon_Default
   set prjlist [list]
   set al(TPL,list) [list]
@@ -110,28 +116,29 @@ proc ini::ReadIni {{projectfile ""}} {
           continue
         }
       }
-      set i [string first = $stini]
-      set nam [string range $stini 0 $i-1]
-      set val [string range $stini $i+1 end]
-      switch -exact $mode {
-        {[Geometry]}  {ReadIniGeometry $nam $val}
-        {[Options]}   {ReadIniOptions $nam $val}
-        {[Templates]} {ReadIniTemplates $nam $val}
-        {[Keys]}      {ReadIniKeys $nam $val}
-        {[EM]}        {ReadIniEM $nam $val em_i}
-        {[Tkcon]}     {ReadIniTkcon $nam $val}
-        {[Misc]}      {ReadIniMisc $nam $val}
+      if {[set i [string first = $stini]]>0} {
+        set nam [string range $stini 0 $i-1]
+        set val [string range $stini $i+1 end]
+        switch -exact $mode {
+          {[Geometry]}  {ReadIniGeometry $nam $val}
+          {[Options]}   {ReadIniOptions $nam $val}
+          {[Templates]} {ReadIniTemplates $nam $val}
+          {[Keys]}      {ReadIniKeys $nam $val}
+          {[EM]}        {ReadIniEM $nam $val em_i}
+          {[Tkcon]}     {ReadIniTkcon $nam $val}
+          {[Misc]}      {ReadIniMisc $nam $val}
+        }
       }
     }
   }
   catch {close $chan}
   # some options may be active outside of any project; they are set by default values
-  if {$projectfile eq "" && $al(prjfile) eq ""} {
+  if {$projectfile eq {} && $al(prjfile) eq {}} {
     set al(prjmultiline) $al(ED,multiline)
     set al(prjindent) $al(ED,indent)
     set al(prjEOL) $al(ED,EOL)
   } else {
-    if {$projectfile eq ""} {
+    if {$projectfile eq {}} {
       set projectfile $al(prjfile)
     } else {
       set al(prjfile) $projectfile
@@ -143,9 +150,12 @@ proc ini::ReadIni {{projectfile ""}} {
   ::apave::textEOL $al(prjEOL)
   set al(TEXT,opts) "-padx 3 -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3)"
 }
+#_______________________
 
 proc ini::ReadIniGeometry {nam val} {
   # Gets the geometry options of alited.
+  #   nam - name of option
+  #   val - value of option
 
   namespace upvar ::alited al al
   switch -glob $nam {
@@ -169,9 +179,13 @@ proc ini::ReadIniGeometry {nam val} {
     treecw1        {set al(TREE,cw1) $val}
   }
 }
+#_______________________
 
 proc ini::ReadIniOptions {nam val} {
-  # Gets other options of alited.
+  # Gets various options of alited.
+  #   nam - name of option
+  #   val - value of option
+
   namespace upvar ::alited al al
   set clrnames [::hl_tcl::hl_colorNames]
   foreach lng {{} C} {
@@ -221,12 +235,24 @@ proc ini::ReadIniOptions {nam val} {
     guttershift   {set al(ED,guttershift) $val}
   }
 }
+#_______________________
 
 proc ini::ReadIniTemplates {nam val} {
-  # Gets other options of alited.
+  # Gets templates options of alited.
+  #   nam - name of option
+  #   val - value of option
+
   namespace upvar ::alited al al
   switch -exact $nam {
-    tpl {lappend al(TPL,list) $val}
+    tpl {
+      lappend al(TPL,list) $val
+      # key bindings
+      lassign $val tplname tplkey
+      if {$tplkey ne {}} {
+        set kbval "template {$tplname} $tplkey {[lrange $val 2 end]}"
+        lappend al(KEYS,bind) $kbval
+      }
+    }
   }
   foreach n {%d %t %u %U %m %w %a} {
     if {$n eq $nam} {
@@ -235,17 +261,26 @@ proc ini::ReadIniTemplates {nam val} {
     }
   }
 }
+#_______________________
 
 proc ini::ReadIniKeys {nam val} {
   # Gets keys options of alited.
+  #   nam - name of option
+  #   val - value of option
+
   namespace upvar ::alited al al
   switch -exact $nam {
     key {lappend al(KEYS,bind) $val}
   }
 }
+#_______________________
 
 proc ini::ReadIniEM {nam val emiName} {
   # Gets e_menu options of alited.
+  #   nam - name of option
+  #   val - value of option
+  #   emiName - name of em_i (index in arrays of e_menu data)
+
   namespace upvar ::alited al al
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
@@ -270,14 +305,23 @@ proc ini::ReadIniEM {nam val emiName} {
     }
   }
 }
+#_______________________
+
 proc ini::ReadIniTkcon {nam val} {
   # Gets tkcon options of alited.
+  #   nam - name of option
+  #   val - value of option
+
   namespace upvar ::alited al al
   set al(tkcon,$nam) $val
 }
+#_______________________
 
 proc ini::ReadIniMisc {nam val} {
   # Gets miscellaneous options of alited.
+  #   nam - name of option
+  #   val - value of option
+
   namespace upvar ::alited al al
   switch -exact $nam {
     isfavor {set al(FAV,IsFavor) $val}
@@ -285,9 +329,10 @@ proc ini::ReadIniMisc {nam val} {
   }
 }
 
-# _______________________ read project settings _________________________ #
+# _______________________ Reading project settings _________________________ #
 
 proc ini::ReadIniPrj {} {
+  # Reads a project's settings.
 
   namespace upvar ::alited al al
   set al(tabs) [list]
@@ -333,9 +378,13 @@ proc ini::ReadIniPrj {} {
     set al(curtab) 0
   }
 }
+#_______________________
 
 proc ini::ReadPrjTabs {nam val} {
   # Gets tabs of project.
+  #   nam - name of option
+  #   val - value of option
+
   namespace upvar ::alited al al
   if {[string trim $val] ne ""} {
     switch -exact $nam {
@@ -344,25 +393,37 @@ proc ini::ReadPrjTabs {nam val} {
     }
   }
 }
+#_______________________
 
 proc ini::ReadPrjOptions {nam val} {
   # Gets options of project.
+  #   nam - name of option
+  #   val - value of option
+
   if {$nam in {"" "prjfile"}} return ;# to avoid resetting the current project file name
   namespace upvar ::alited al al
   set al($nam) $val
 }
+#_______________________
 
 proc ini::ReadPrjFavorites {nam val} {
   # Gets favorites of project.
+  #   nam - name of option
+  #   val - value of option
+
   namespace upvar ::alited al al
   switch -exact $nam {
     current - visited {lappend al(FAV,$nam) $val}
     saved   {alited::favor_ls::GetIni $val}
   }
 }
+#_______________________
 
 proc ini::ReadPrjMisc {nam val} {
   # Gets favorites of project.
+  #   nam - name of option
+  #   val - value of option
+
   namespace upvar ::alited al al
   switch -exact $nam {
     datafind {
@@ -375,10 +436,14 @@ proc ini::ReadPrjMisc {nam val} {
   }
 }
 
-# ____________________________ save settings ____________________________ #
+# ____________________________ Saving settings ____________________________ #
 
 proc ini::SaveCurrentIni {{saveon yes} {doit no}} {
-  ;# for sessions to come
+  # Saves a current configuration of alited on various events.
+  #   saveon - flag "save on event"
+  #   doit - serves to run this procedure after idle
+
+  # for sessions to come
   if {![expr $saveon]} return
   variable afterID
   # run this code after updating GUI
@@ -389,8 +454,11 @@ proc ini::SaveCurrentIni {{saveon yes} {doit no}} {
     set afterID [after idle ::alited::ini::SaveCurrentIni yes yes]
   }
 }
+#_______________________
 
 proc ini::SaveIni {{newproject no}} {
+  # Saves a current configuration of alited.
+  #   newproject - flag "for a new project"
 
   namespace upvar ::alited al al obPav obPav
   namespace upvar ::alited::pref em_Num em_Num em_sep em_sep em_ico em_ico em_inf em_inf
@@ -450,7 +518,9 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan ""
   puts $chan {[Keys]}
   foreach k $al(KEYS,bind) {
-    puts $chan "key=$k"
+    if {![string match template* $k] && ![string match action* $k]} {
+      puts $chan "key=$k"
+    }
   }
   puts $chan ""
   puts $chan {[EM]}
@@ -506,8 +576,11 @@ proc ini::SaveIni {{newproject no}} {
   close $chan
   SaveIniPrj $newproject
 }
+#_______________________
 
 proc ini::SaveIniPrj {newproject} {
+  # Saves settings of project.
+  #   newproject - flag "for a new project"
 
   namespace upvar ::alited al al obPav obPav
   set tabs $al(tabs)
@@ -569,10 +642,10 @@ proc ini::SaveIniPrj {newproject} {
   close $chan
 }
 
-# ______________________ initializing alited app ______________________ #
+# ______________________ Initializing alited app ______________________ #
 
 proc ini::CheckIni {} {
-  # 
+  # Checks if the configuration directory exists and if not asks for it.
 
   namespace upvar ::alited al al
   if {[file exists $::alited::INIDIR] && [file exists $::alited::PRJDIR]} {
@@ -588,8 +661,11 @@ proc ini::CheckIni {} {
   if {!$ok} exit
   CreateUserDirs
 }
+#_______________________
 
 proc ini::GetUserDirs {} {
+  # Gets names of main directories for settings.
+
   namespace upvar ::alited al al
   set ::alited::USERDIR [file join $::alited::USERDIRROOT alited]
   set ::alited::INIDIR [file join $::alited::USERDIR ini]
@@ -607,8 +683,11 @@ proc ini::GetUserDirs {} {
   }
   set al(INI) [file join $::alited::INIDIR alited.ini]
 }
+#_______________________
 
 proc ini::CreateUserDirs {} {
+  # Creates main directories for settings.
+
   namespace upvar ::alited al al DATADIR DATADIR USERDIR USERDIR INIDIR INIDIR PRJDIR PRJDIR MNUDIR MNUDIR BAKDIR BAKDIR
   GetUserDirs
   foreach dir {USERDIR INIDIR PRJDIR} {
@@ -629,12 +708,25 @@ proc ini::CreateUserDirs {} {
     file copy [file join [file dirname $MNUDIR] em_projects] $emdir
   }
 }
+#_______________________
 
 proc ini::CreateIcon {icon} {
+  # Create an icon (of normal and big size).
+  #   icon - name of icon
+
   set img alimg_$icon
   catch {image create photo $img-big -data [::apave::iconData $icon]}
   catch {image create photo $img -data [::apave::iconData $icon small]}
   return $img
+}
+#_______________________
+
+proc ini::EditSettings {} {
+  # Displays the settings file, just to look behind the wall.
+
+  namespace upvar ::alited al al obPav obPav
+  set filecont [::apave::readTextFile $al(INI)]
+  $obPav vieweditFile $al(INI) {} -rotext 1 -h 25
 }
 
 # ________________________ Main (+ tool bar) _________________________ #
@@ -653,8 +745,10 @@ proc ini::InitGUI {} {
     alited::pref::CSyntax_Default
   }
 }
+#_______________________
 
 proc ini::_init {} {
+  # Initializes alited app.
 
   namespace upvar ::alited al al \
     obPav obPav obDlg obDlg obDl2 obDl2 obDl3 obDl3 obFND obFND

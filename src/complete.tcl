@@ -20,7 +20,9 @@ proc complete::TextCursorCoordinates {wtxt} {
   #   wtxt - text's path
   # Returns a list of X and Y coordinates.
 
-  lassign [$wtxt bbox [$wtxt index {insert -1c}]] X Y w h
+  set ch [$wtxt get [$wtxt index insert] [$wtxt index {insert +1c}]]
+  if {[string trim $ch] eq {}} {set pos {insert -1c}} {set pos insert}
+  lassign [$wtxt bbox [$wtxt index $pos]] X Y w h
   incr X $w
   incr Y $h
   set p [winfo parent $wtxt]
@@ -143,8 +145,6 @@ proc complete::AutoCompleteCommand {} {
     $wtxt delete $row.$idx1 $row.[incr idx2]
     set pos $row.$idx1
     $wtxt insert $pos $com
-    incr idx1 [string length $com]
-    update
   }
   focus -force $wtxt
 }

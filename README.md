@@ -8,11 +8,11 @@ The main features of *alited* are:
   * easy access to the code
   * born for Tcl/Tk development only
 
-Edited by *alited* are Tcl/Tk files. The C code might be a next target of *alited*, still for *Tcl/Tk development only* all the same.
+Edited by *alited* are Tcl/Tk files. The C/C++ code is another target of *alited*, still for *Tcl/Tk development only* all the same.
 
-The *alited* facilitates the development and the maintenance of Tcl/Tk code, partly because of the unit tree being a sort of documentation.
+The *alited* facilitates the development and the maintenance of Tcl/Tk code, particularly because of the unit tree being a sort of documentation.
 
-In fact, *alited* has been developed by its own means since v0.2. Inspite of inevitable overheads of this way and the raw state of *alited*, it turned out to be amazingly productive. Even famous *Geany IDE* yields to *alited* in the Tcl/Tk development, though some features of *alited* (often being enhanced) stem from *Geany*.
+In fact, *alited* has been developed by its own means since v0.2. Inspite of inevitable overheads of this way and the raw state of *alited*, it turned out to be amazingly productive, more and more in the course of time. The time of rawness expires somehow at a little bit of efforts, huh.
 
 Below is a screenshot of *alited v0.6*:
 
@@ -56,7 +56,22 @@ The unit separation is carried out with the hierarchical comments as follows:
         ### __ NAME (3rd level) __ ###
         ...
 
-These comments are customized (TODO for now), e.g. #=== NAME ===  may be used instead.
+These comments are customized, e.g. #=== NAME ===  may be used instead.
+
+**Note:** The first # characters define the unit tree's level: # means 1, ## means 2, ### means 3 etc. It isn't reasonable to customize and use # NAME # and ## NAME ## and ### NAME ### etc. for the unit tree's levels, because of any comment beginning with # would be treated as a unit.
+
+Still, if you want to use # alone (without adding _ = - + ~ * . : etc.), you can customize alited so that ## will mean 1st level, ### 2nd level, #### 3rd level etc., using a branch regexp like this:
+
+    ^\s*#(#+)\s+([^_]+[^[:blank:]]*)
+
+thus allowing the tree comments as follows:
+
+    ## Initialize GUI
+      ...some code
+      ### This widget group
+        ... this code
+      ### That widget group
+        ... that code
 
 The *alited* recognizes the units by these comments and presents them as a tree.
 
@@ -149,15 +164,28 @@ And here the *alited* comes to help.
 
 At adding a unit, a template can be selected from a list of customized templates.
 
-A long unit can be detected by its "red bar" icon in the unit tree, as seen in the screenshots above. The "redness" is customized (TODO for now). I.e. when a unit is too long, it's marked red.
+A long unit can be detected by its "red bar" icon in the unit tree, as seen in the screenshots above. I.e. when a unit is too long, it's marked red. The "redness" is customized.
+
+A unit or a group of units can be moved up/down a unit tree. A group of units is selected by Ctrl+Click on the unit tree. Also, a unit can be moved by drag-and-drop in the unit tree. This highly facilitates the *code gardening*, compared to the cut-paste method when an origin and a target of the cut-pasting aren't so much close.
 
 The *alited* allows to check code units (procedures and methods) for a consistency of braces etc. By clicking a line in the list of errors, you can go to the appropriate unit.
 
 In a session, the cursor's position of a unit is saved by *alited*, so that when you return to the unit, the cursor is at the saved position and you can continue to solve a problem of this unit.
 
-Press Ctrl-Click on a word to go a proc/method declaration.
+Press Ctrl-Click on a word to go a proc/method declaration. It will be searched in a current session's files.
 
-Press Ctrl-Shift-Click on a word to look for the word instances around the session.
+Press Ctrl-Shift-Click on a word to look for a word under cursor (or a selected string) instances around the session.
+
+Another useful search is performed with Ctrl+Shift+F which means "Search a unit". It will scan all session files (or a current file) for a glob pattern, case insensible at that. E.g. when you enter "put" to find some unit, you would possibly find these units:
+
+    InputData
+    common::io::PutData
+    out::Put
+    Output of module
+
+where the last found unit is obviously a branch of some level. This search mode is *very useful* when you remember only a part of the unit's name to find. Use any glob characters inside your pattern, e.g. setting it like `a*b*c` or `a[bcd]e`.
+
+To find a proc/method by auto completion, try to press Tab at the initial characters of this proc/method which would bring up a list of all procs/methods in a current session whose names are beginning with those characters. The Tab key is a customized option of "Preferences/Keys".
 
 The *branches* and *leaves* of the unit tree are supplied with balloon tips to view their contents (declarations). These tips can be copied to the clipboard with the popup menu.
 
@@ -189,6 +217,8 @@ Still to have this, you should download the Tcl/Tk help into ~/DOC directory by 
     cd ~/DOC
     wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6/
 
+A great deal of other tools are available through "Tools" menu, alited's toolbar and "Preferences/Tools" options. They are highly customized due to [e_menu](https://aplsimple.github.io/en/tcl/e_menu) application which is closely bound to the alited environment. At least 11 actions of alited's toolbar are provided by [e_menu](https://aplsimple.github.io/en/tcl/e_menu) as default, and you can select/ change/ add your own ones, not to mention running [e_menu](https://aplsimple.github.io/en/tcl/e_menu) by itself. This provides a lot of utilities supporting Tcl/Tk development.
+
 # How that's installed
 
 The installation of *alited* is straightforward:
@@ -202,6 +232,12 @@ The installation of *alited* is straightforward:
     wish ~/PG/alited/src/alited.tcl
 
 In Linux, you can run *tclsh* instead of *wish*.
+
+At the first start, *alited* offers selecting a configuration directory to hold its settings. By default, it is `~/.config`, where *alited* will create its `alited` subdirectory. This choice is recommended, because *alited* would not ask it again when started without an argument. Otherwise, the configuration directory should be passed to *alited* as an argument, this way:
+
+    wish ~/PG/alited/src/alited.tcl ~/myconfig
+
+... so that you can have a batch of configurations of *alited* at one machine, per each type of projects: public, private, protected...
 
 Being written in pure Tcl/Tk 8.6, the *alited* needs only the core Tcl/Tk packages.
 
@@ -250,10 +286,11 @@ ROAD MAP of alited from v0.6 to v1.0:
     + for selected tabs: e_menu items (fossil.mnu, grep.mnu etc.)
     + general help in "Help" menu
     + move tree items by dnd
+    + command completion
     + e_menu items for toolbar/menu
-    - "backup to <dir>" option of project
-    - all options of Preferences & Projects
-    - fossil/git diff of a file
-    - C syntax
-    - comments & units
+    + "backup to <project subdir>" option
+    + fossil/git diff of a file
+    + C syntax
+    + all options of Preferences & Projects
+    - comments & unit tree for code of alited
     - index.html on Github

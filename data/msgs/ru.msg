@@ -78,7 +78,7 @@ namespace eval ::alited {
     {Switch to Unit Tree} {Перейти на список юнитов}
     {Switch to File Tree} {Перейти на список файлов}
     {Create File} {Создать файл}
-    "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Введите имя файла, создаваемого в:\n%d\n\nЕсли это каталог, включите опцию \"Каталог\".\nКаталог может включать подкаталоги (a/b/c)."
+    "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Введите имя файла, создаваемого в:\n%d\n\nЕсли это каталог, включите опцию 'Каталог'.\nКаталог может включать подкаталоги (a/b/c)."
     {Delete File} {Удалить файл}
     "File %f already exists in\n%d" "Файл %f уже существует в\n%d"
     {Add Unit by Template} {Добавить юнит по шаблону}
@@ -234,7 +234,7 @@ namespace eval ::alited {
     {Match case} {Учет регистра букв}
     {Wrap around} {По кругу}
     {Replace by blank} {Пустые замены}
-    {Direction:} {Направление:}
+    {    Direction:} {    Направление:}
     {Down} {Вниз}
     {Up} {Вверх}
     {Stay on top} {Поверх всех окон}
@@ -401,6 +401,8 @@ namespace eval ::alited {
     {Run as external app:} {Как отдельное приложение:}
     {Inserts a new line.} {Добавляет строку.}
     {Deletes a line.} {Удаляет строку.}
+    {separator} {разделитель}
+    {Item} {Пункт}
     {If 'yes', means a separator of the toolbar/menu.} {Если включено, означает разделитель в строке/меню.}
   }
 

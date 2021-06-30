@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4b3"
+  variable em_version "e_menu 3.4b4"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -586,6 +586,7 @@ proc ::em::checkForWilds {rsel} {
         }
       }
       if {![catch {Q $ttl $mes $typ $icon $defb {*}$argums {*}$cme} e]} {
+        if {[string is true $e]} ::em::save_menuvars
         return [list true $e]
       }
     }
@@ -741,7 +742,7 @@ proc ::em::run_Tcl_code {sel {dosubst false}} {
       }
     } e]} {
       em_message "ERROR of running\n\n$sel\n\n$e"
-      ::em::addon restart_e_menu
+      return false
     }
     return true
   }

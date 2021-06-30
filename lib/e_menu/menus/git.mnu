@@ -3,14 +3,15 @@
 [OPTIONS]
 in=1.0
 o=0
-pos=45.90
+pos=14.38
 w=35
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT ""}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
 %C if {![info exist ::EMENUGREP]} {set ::EMENUGREP ""}
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
-%C set ::FILETAIL \"[file tail {$::EMENUFILE}]\"
+%C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
+%C set ::FILETAIL {"$::EMENUFILETAIL"}
 
 [MENU]
  R:git status R: cd %PD

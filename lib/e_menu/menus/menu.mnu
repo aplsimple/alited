@@ -3,15 +3,15 @@ g=+0+27
 in=4.3
 bd=1
 w=25
-pos=78.0
+pos=11.38
 ::EMENUTMPFILE=%mn.tmp~
 #%C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
 %C set ::EMENUFILE "%f"
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
-%C set ::FILETAIL \"$::EMENUFILETAIL\"
+%C set ::FILETAIL {"$::EMENUFILETAIL"}
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
 %C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT ""}
-::EMENUBAKCNT=1
+::EMENUBAKCNT=0
 
 [MENU]
 
@@ -55,7 +55,7 @@ pos=78.0
 
 
  R: Backup of $::FILETAIL R: %C set ::EMENUBAKCNT [expr {($::EMENUBAKCNT+1)%4}]
- R: Backup of $::FILETAIL R: %C set ::EMENUBAK [file join "%PD" .bak "[string trim $::FILETAIL \"]-$::EMENUBAKCNT.bak"]
+ R: Backup of $::FILETAIL R: %C set ::EMENUBAK [file join "%PD" .bak "$::EMENUFILETAIL-$::EMENUBAKCNT.bak"]
  R: Backup of $::FILETAIL R: %q "BACKUP" "The backup of\n\n$::EMENUFILE\n\nwould be saved to\n\n$::EMENUBAK"
  R: Backup of $::FILETAIL R: %C file mkdir [file join "%PD" .bak]
  RE: Backup of $::FILETAIL RE: %IF [::iswindows] %THEN copy /Y "$::EMENUFILE" "$::EMENUBAK" %ELSE cp -f "$::EMENUFILE" "$::EMENUBAK"

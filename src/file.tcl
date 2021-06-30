@@ -1,17 +1,28 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The file procedures.
-# _______________________________________________________________________ #
+###########################################################
+# Name:    file.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    06/29/2021
+# Brief:   Handles files and file tree.
+# License: MIT.
+###########################################################
 
 namespace eval file {}
 
+# _________________________ Common ________________________ #
+
 proc file::IsModified {{TID ""}} {
+  # Checks if a text of tab is modified.
+  #   TID - ID of tab
+
   if {$TID eq ""} {set TID [alited::bar::CurrentTabID]}
   return [expr {[lsearch -index 0 [alited::bar::BAR listFlag m] $TID]>-1}]
 }
+#_______________________
 
 proc file::IsNoName {fname} {
+  # Checks if a file name is "No name".
+  #   fname - file name
 
   namespace upvar ::alited al al
   if {[file tail $fname] in [list $al(MC,nofile) {No name} {}]} {
@@ -19,8 +30,12 @@ proc file::IsNoName {fname} {
   }
   return no
 }
+#_______________________
 
 proc file::IsSaved {TID} {
+  # Checks if a file is modified and if yes, offers to save it.
+  #   TID - ID of tab
+  # Returns 1 for "yes, needs saving", 2 for "needs no saving", 0 for "cancel".
 
   namespace upvar ::alited al al
   if {[IsModified $TID]} {
@@ -31,8 +46,27 @@ proc file::IsSaved {TID} {
   }
   return 2  ;# as if "No" chosen
 }
+#_______________________
+
+proc file::MakeThemReload {{tabs ""}} {
+  # Set flag "reload file(s) anyway".
+  #   tabs - list of tabs to set the flag for
+  # Useful when you need update the files' text buffers.
+
+  if {$tabs eq {}} {
+    set tabs [alited::bar::BAR listTab]
+  }
+  foreach tab $tabs {
+    alited::bar::BAR [lindex $tab 0] configure --reload yes
+  }
+}
+#_______________________
 
 proc file::OutwardChange {TID {docheck yes}} {
+  # Checks for change of file by an external application.
+  #   TID - ID of tab
+  #   docheck - yes for "do check", no for "just save the file's mtime"
+
   namespace upvar ::alited al al
   set fname [alited::bar::FileName $TID]
   lassign [alited::bar::BAR $TID cget --mtime --mtimefile] mtime mtimefile
@@ -63,174 +97,30 @@ proc file::OutwardChange {TID {docheck yes}} {
   }
   alited::bar::BAR $TID configure --mtime $curtime --mtimefile $fname
 }
-
-proc file::MakeThemReload {{tabs ""}} {
-  if {$tabs eq {}} {
-    set tabs [alited::bar::BAR listTab]
-  }
-  foreach tab $tabs {
-    alited::bar::BAR [lindex $tab 0] configure --reload yes
-  }
-}
-
-proc file::ReadFile {TID curfile} {
-  namespace upvar ::alited al al
-  set filecont [::apave::readTextFile $curfile]
-  set al(_unittree,$TID) [alited::unit::GetUnits $TID $filecont]
-  return $filecont
-}
-
-proc file::DisplayFile {TID curfile wtxt} {
-  namespace upvar ::alited al al obPav obPav
-  set filecont [ReadFile $TID $curfile]
-  $obPav displayText $wtxt $filecont
-  $obPav makePopup $wtxt no yes
-}
-
-proc file::NewFile {} {
-
-  namespace upvar ::alited al al
-  if {[set TID [alited::bar::FileTID $al(MC,nofile)]] eq {}} {
-    set TID [alited::bar::InsertTab $al(MC,nofile) $al(MC,nofile)]
-  }
-  alited::bar::BAR $TID show
-}
-
-proc file::OpenFile {{fname ""} {reload no}} {
-
-  namespace upvar ::alited al al obPav obPav
-  set al(filename) {}
-  set chosen no
-  if {$fname eq {}} {
-    set chosen yes
-    set fname [$obPav chooser tk_getOpenFile alited::al(filename) \
-      -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
-  }
-  if {[file exists $fname]} {
-    set exts {tcl, tm, msg, c, h, cc, cpp, hpp, html, css, md, txt, ini}
-    set ext [string tolower [string trim [file extension $fname] .]]
-    if {!$reload && $ext ni [split [string map {{ } {}} $exts] ,]} {
-      set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
-      if {![alited::msg yesno warn $msg NO]} {
-        return ""
-      }
-    }
-    if {[set TID [alited::bar::FileTID $fname]] eq ""} {
-      # close  "no name" tab if it's the only one and not changed
-      set tabs [alited::bar::BAR listTab]
-      set tabm [alited::bar::BAR listFlag "m"]
-      if {[llength $tabs]==1 && [llength $tabm]==0} {
-        set tid [lindex $tabs 0 0]
-        if {[alited::bar::FileName $tid] eq $al(MC,nofile)} {
-          alited::bar::BAR $tid close
-        }
-      }
-      # open new tab
-      set tab [alited::bar::UniqueListTab $fname]
-      set TID [alited::bar::InsertTab $tab $fname]
-    }
-    alited::file::AddRecent $fname
-    alited::bar::BAR $TID show
-    return $TID
-  }
-  return ""
-}
-
-proc file::OpenOfDir {dname} {
-  if {![catch {set flist [glob -directory $dname *]}]} {
-    foreach fname [lsort -decreasing $flist] {
-      if {[file isfile $fname] && [IsTcl $fname]} {
-        OpenFile $fname
-      }
-    }
-    after idle alited::file::RecreateFileTree ;# to update "colored" open files
-  }
-}
+#_______________________
 
 proc file::IsTcl {fname} {
+  # Checks if a file is of Tcl.
+  #   fname - file name
+
   if {[string tolower [file extension $fname]] in $alited::al(TclExtensions)} {
     return yes
   }
   return no
 }
+#_______________________
 
 proc file::IsClang {fname} {
+  # Checks if a file is of C/C++.
+  #   fname - file name
+
   if {[string tolower [file extension $fname]] in $alited::al(ClangExtensions)} {
     return yes
   }
   return no
 }
 
-proc file::SaveFileByName {TID fname} {
-  # Saves the current file.
-  set wtxt [alited::main::GetWTXT $TID]
-  set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
-  if {![::apave::writeTextFile $fname fcont]} {
-    alited::msg ok err [::apave::error $fname] -w 50 -text 1
-    return 0
-  }
-  $wtxt edit modified no
-  alited::unit::Modified $TID $wtxt
-  alited::main::HighlightText $TID $fname $wtxt
-  OutwardChange $TID no
-  RecreateFileTree
-  return 1
-}
-
-proc file::SaveFile {{TID ""}} {
-  # Saves the current file.
-
-  namespace upvar ::alited al al
-  if {$TID eq ""} {set TID [alited::bar::CurrentTabID]}
-  set fname [alited::bar::FileName $TID]
-  if {$fname in [list "" $al(MC,nofile)]} {
-    return [SaveFileAs $TID]
-  }
-  set res [SaveFileByName $TID $fname]
-  alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)"
-  alited::main::ShowHeader yes
-  return $res
-}
-
-proc file::SaveFileAs {{TID ""}} {
-  # Saves the current file "as".
-
-  namespace upvar ::alited al al obPav obPav
-  if {$TID eq ""} {set TID [alited::bar::CurrentTabID]}
-  set fname [alited::bar::FileName $TID]
-  set alited::al(filename) [file tail $fname]
-  if {$alited::al(filename) in [list "" $al(MC,nofile)]} {
-    set alited::al(filename) ""
-  }
-  set fname [$obPav chooser tk_getSaveFile alited::al(filename) -title \
-    [msgcat::mc "Save as"] -initialdir [file dirname $fname] -parent $al(WIN)]
-  if {$fname in [list "" $al(MC,nofile)]} {
-    set res 0
-  } elseif {[set res [SaveFileByName $TID $fname]]} {
-    RenameFile $TID $fname
-    alited::main::ShowHeader yes
-  }
-  return $res
-}
-
-proc file::SaveFileAndClose {} {
-  # Saves and closes the current file.
-
-  if {[IsModified] && ![SaveFile]} return
-  alited::bar::BAR [alited::bar::CurrentTabID] close
-}
-
-proc file::SaveAll {} {
-  # Saves all files.
-
-  foreach tab [alited::bar::BAR listTab] {
-    set TID [lindex $tab 0]
-    if {[IsModified $TID]} {
-      if {![SaveFile $TID]} {return no}
-    }
-  }
-  return yes
-}
+# ________________________ Helpers _________________________ #
 
 proc file::AllSaved {} {
   # Checks whether all files are saved. Saves them if not.
@@ -248,9 +138,12 @@ proc file::AllSaved {} {
   }
   return yes
 }
+#_______________________
 
 proc file::RenameFile {TID fname} {
   # Renames a file.
+  #   TID - ID of tab
+  #   fname - file name
 
   alited::bar::SetTabState $TID --fname $fname
   alited::bar::BAR $TID configure -text "" -tip ""
@@ -258,8 +151,12 @@ proc file::RenameFile {TID fname} {
   alited::bar::BAR $TID configure -text $tab -tip $fname
   alited::bar::BAR $TID show
 }
+#_______________________
 
 proc file::CheckForNew {{docheck no}} {
+  # Checks if there is a file in bar of tabs and creates "No name" tab, if no tab exists.
+  #   docheck - if yes, does checking, if no - run itself with docheck=yes
+
   if {$docheck} {
     if {![llength [alited::bar::BAR listTab]]} {
       alited::file::NewFile
@@ -269,8 +166,176 @@ proc file::CheckForNew {{docheck no}} {
   }
 }
 
+# ________________________ "File" menu _________________________ #
+
+proc file::ReadFile {TID fname} {
+  # Reads a file, creates its unit tree.
+  #   TID - ID of tab
+  #   fname - file name
+  # Returns the file's contents.
+
+  namespace upvar ::alited al al
+  set filecont [::apave::readTextFile $fname]
+  set al(_unittree,$TID) [alited::unit::GetUnits $TID $filecont]
+  return $filecont
+}
+#_______________________
+
+proc file::DisplayFile {TID fname wtxt} {
+  # Displays a file's contents.
+  #   TID - ID of tab
+  #   fname - file name
+  #   wtxt - text widget's path
+
+  namespace upvar ::alited al al obPav obPav
+  set filecont [ReadFile $TID $fname]
+  $obPav displayText $wtxt $filecont
+  $obPav makePopup $wtxt no yes
+}
+#_______________________
+
+proc file::NewFile {} {
+  # Handles "New file" menu item.
+
+  namespace upvar ::alited al al
+  if {[set TID [alited::bar::FileTID $al(MC,nofile)]] eq {}} {
+    set TID [alited::bar::InsertTab $al(MC,nofile) $al(MC,nofile)]
+  }
+  alited::bar::BAR $TID show
+}
+#_______________________
+
+proc file::OpenFile {{fname ""} {reload no}} {
+  # Handles "Open file" menu item.
+  #   fname - file name (if not set, asks for it
+  #   reload - if yes, loads the file even if it has a "strange" extension
+  # Returns the file's tab ID if it's loaded, or {} if not loaded.
+
+  namespace upvar ::alited al al obPav obPav
+  set al(filename) {}
+  set chosen no
+  if {$fname eq {}} {
+    set chosen yes
+    set fname [$obPav chooser tk_getOpenFile alited::al(filename) \
+      -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
+  }
+  if {[file exists $fname]} {
+    set exts {tcl, tm, msg, c, h, cc, cpp, hpp, html, css, md, txt, ini}
+    set ext [string tolower [string trim [file extension $fname] .]]
+    if {!$reload && $ext ni [split [string map {{ } {}} $exts] ,]} {
+      set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
+      if {![alited::msg yesno warn $msg NO]} {
+        return {}
+      }
+    }
+    if {[set TID [alited::bar::FileTID $fname]] eq {}} {
+      # close  "no name" tab if it's the only one and not changed
+      set tabs [alited::bar::BAR listTab]
+      set tabm [alited::bar::BAR listFlag m]
+      if {[llength $tabs]==1 && [llength $tabm]==0} {
+        set tid [lindex $tabs 0 0]
+        if {[alited::bar::FileName $tid] eq $al(MC,nofile)} {
+          alited::bar::BAR $tid close
+        }
+      }
+      # open new tab
+      set tab [alited::bar::UniqueListTab $fname]
+      set TID [alited::bar::InsertTab $tab $fname]
+    }
+    alited::file::AddRecent $fname
+    alited::bar::BAR $TID show
+    return $TID
+  }
+  return {}
+}
+#_______________________
+
+proc file::SaveFileByName {TID fname} {
+  # Saves a file.
+  #   TID - ID of tab
+  #   fname - file name
+
+  set wtxt [alited::main::GetWTXT $TID]
+  set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
+  if {![::apave::writeTextFile $fname fcont]} {
+    alited::msg ok err [::apave::error $fname] -w 50 -text 1
+    return 0
+  }
+  $wtxt edit modified no
+  alited::unit::Modified $TID $wtxt
+  alited::main::HighlightText $TID $fname $wtxt
+  OutwardChange $TID no
+  RecreateFileTree
+  return 1
+}
+#_______________________
+
+proc file::SaveFile {{TID ""}} {
+  # Saves the current file.
+  #   TID - ID of tab
+
+  namespace upvar ::alited al al
+  if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
+  set fname [alited::bar::FileName $TID]
+  if {$fname in [list {} $al(MC,nofile)]} {
+    return [SaveFileAs $TID]
+  }
+  set res [SaveFileByName $TID $fname]
+  alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)"
+  alited::main::ShowHeader yes
+  return $res
+}
+#_______________________
+
+proc file::SaveFileAs {{TID ""}} {
+  # Saves the current file "as".
+  #   TID - ID of tab
+
+  namespace upvar ::alited al al obPav obPav
+  if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
+  set fname [alited::bar::FileName $TID]
+  set alited::al(filename) [file tail $fname]
+  if {$alited::al(filename) in [list {} $al(MC,nofile)]} {
+    set alited::al(filename) {}
+  }
+  set fname [$obPav chooser tk_getSaveFile alited::al(filename) -title \
+    [msgcat::mc {Save as}] -initialdir [file dirname $fname] -parent $al(WIN)]
+  if {$fname in [list {} $al(MC,nofile)]} {
+    set res 0
+  } elseif {[set res [SaveFileByName $TID $fname]]} {
+    RenameFile $TID $fname
+    alited::main::ShowHeader yes
+  }
+  return $res
+}
+#_______________________
+
+proc file::SaveFileAndClose {} {
+  # Saves and closes the current file.
+  # This handles pressing Ctrl+W.
+
+  if {[IsModified] && ![SaveFile]} return
+  alited::bar::BAR [alited::bar::CurrentTabID] close
+}
+#_______________________
+
+proc file::SaveAll {} {
+  # Saves all files.
+
+  foreach tab [alited::bar::BAR listTab] {
+    set TID [lindex $tab 0]
+    if {[IsModified $TID]} {
+      if {![SaveFile $TID]} {return no}
+    }
+  }
+  return yes
+}
+# _______________________ Close file(s) _______________________ #
+
 proc file::CloseFile {{TID ""} {checknew yes}} {
   # Closes a file.
+  #   TID - tab's ID
+  #   checknew - if yes, checks if new file's tab should be created
 
   namespace upvar ::alited al al obPav obPav
   set res 1
@@ -302,15 +367,7 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
   }
   return $res
 }
-
-proc file::RecreateFileTree {} {
-
-  namespace upvar ::alited al al obPav obPav
-  if {!$al(TREE,isunits)} {
-    catch {after cancel $al(_AFT_RECR_)}
-    set al(_AFT_RECR_) [after 100 ::alited::tree::RecreateTree]
-  }
-}
+#_______________________
 
 proc file::CloseFileMenu {} {
   # Closes the current file from the menu.
@@ -319,6 +376,7 @@ proc file::CloseFileMenu {} {
     alited::bar::BAR $TID close
   }
 }
+#_______________________
 
 proc file::CloseAll {func} {
   # Closes files.
@@ -332,17 +390,54 @@ proc file::CloseAll {func} {
   return [expr {[llength [alited::bar::BAR listFlag "m"]]==0}]
 }
 
+# ________________________ File tree _________________________ #
+
+proc file::RecreateFileTree {} {
+  # Creates the file tree.
+
+  namespace upvar ::alited al al obPav obPav
+  if {!$al(TREE,isunits)} {
+    catch {after cancel $al(_AFT_RECR_)}
+    set al(_AFT_RECR_) [after 100 ::alited::tree::RecreateTree]
+  }
+}
+#_______________________
+
+proc file::OpenOfDir {dname} {
+  # Opens all Tcl files of a directory.
+  #   dname - directory's name
+
+  if {![catch {set flist [glob -directory $dname *]}]} {
+    foreach fname [lsort -decreasing $flist] {
+      if {[file isfile $fname] && [IsTcl $fname]} {
+        OpenFile $fname
+      }
+    }
+    after idle alited::file::RecreateFileTree ;# to update "colored" open files
+  }
+}
+#_______________________
+
 proc file::MoveExternal {f1112} {
+  # Moves an external file to a project's directory.
+  #   f1112 - yes, if run by F11/F12 keys
+
   namespace upvar ::alited al al
   set fname [alited::bar::FileName]
-  if {$al(prjroot) eq "" || [string first $al(prjroot) $fname]==0} {
+  if {$al(prjroot) eq {} || [string first $al(prjroot) $fname]==0} {
     return no  ;# no project directory or the file is inside it
   }
   DoMoveFile $fname $al(prjroot) $f1112
   return yes
 }
+#_______________________
 
 proc file::MoveFile1 {wtree fromID toID} {
+  # Moves a file from a tree position to another tree position.
+  #   wtree - file tree widget
+  #   fromID - tree ID to move the file from
+  #   toID - tree ID to move the file to
+
   if {![$wtree exists $fromID] || ![$wtree exists $toID]} return
   set curfile [lindex [$wtree item $fromID -values] 1]
   set dirname [lindex [$wtree item $toID -values] 1]
@@ -361,8 +456,15 @@ proc file::MoveFile1 {wtree fromID toID} {
     alited::main::ShowHeader yes
   }
 }
+#_______________________
 
 proc file::MoveFile {wtree to itemID f1112} {
+  # Moves  file(s).
+  #   wtree - file tree widget
+  #   to - "move", "up" or "down" (direction of moving)
+  #   itemID - file's tree ID to be moved
+  #   f1112 - yes for pressing F11/F12 or file's tree ID
+  # For to=move, f1112 is a file's ID to be moved to.
 
   set tree [alited::tree::GetTree]
   set idx [alited::unit::SearchInBranch $itemID $tree]
@@ -402,8 +504,14 @@ proc file::MoveFile {wtree to itemID f1112} {
   DoMoveFile $curfile $dirname $f1112
   alited::main::ShowHeader yes
 }
+#_______________________
 
 proc file::RemoveFile {fname dname mode} {
+  # Removes or backups a file, trying to save it in a directory.
+  #   fname - file name
+  #   dname - name of directory
+  #   mode - if "move", then moves a file to a directory, otherwise backups it
+
   namespace upvar ::alited al al
   set ftail [file tail $fname]
   set dtail [file tail $dname]
@@ -430,8 +538,13 @@ proc file::RemoveFile {fname dname mode} {
   }
   alited::tree::RecreateTree
 }
+#_______________________
 
 proc file::DoMoveFile {fname dname f1112} {
+  # Asks and moves a file to a directory.
+  #   fname - file name
+  #   dname - directory name
+  #   f1112 - yes, if run by pressing F11/F12 keys
 
   namespace upvar ::alited al al
   set tailname [file tail $fname]
@@ -450,8 +563,12 @@ proc file::DoMoveFile {fname dname f1112} {
   }
   RemoveFile $fname $dname move
 }
+#_______________________
 
 proc file::Add {ID} {
+  # Creates a file at the file tree.
+  #   ID - tree item's ID
+
   namespace upvar ::alited al al obPav obPav obDl2 obDl2
   if {$ID eq {}} {set ID [alited::tree::CurrentItem]}
   set dname [lindex [[$obPav Tree] item $ID -values] 1]
@@ -465,8 +582,8 @@ proc file::Add {ID} {
   while {1} {
     set res [$obDl2 input "" $al(MC,filesadd) [list \
       seh {{} {-pady 10}} {} \
-      ent "{$al(MC,filename)}" "{$fname}" \
-      chb [list {} {-padx 5} [list -toprev 1 -t $al(MC,directory)]] {0} ] \
+      ent {{File name:} {} {-w 40}} "{$fname}" \
+      chb [list {} {-padx 5} [list -toprev 1 -t "Directory"]] {0} ] \
       -head $head -family "{[::apave::obj basicTextFont]}"]
     if {[lindex $res 0] && $fname eq ""} bell else break
   }
@@ -487,8 +604,13 @@ proc file::Add {ID} {
     }
   }
 }
+#_______________________
 
 proc file::Delete {ID wtree} {
+  # Deletes a file at the file tree.
+  #   ID - tree item's ID
+  #   wtree file tree widget
+
   namespace upvar ::alited al al BAKDIR BAKDIR
   set name [$wtree item $ID -text]
   set fname [lindex [$wtree item $ID -values] 1]
@@ -504,6 +626,9 @@ proc file::Delete {ID wtree} {
     RemoveFile $fname $BAKDIR backup
   }
 }
+
+# ________________________ Recent files _________________________ #
+
 
 proc file::InsertRecent {fname pos} {
   namespace upvar ::alited al al

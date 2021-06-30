@@ -7,6 +7,9 @@
 # License: MIT.
 ###########################################################
 
+
+# ________________________ Variables _________________________ #
+
 namespace eval pref {
   variable win $::alited::al(WIN).diaPref
   variable geo root=$::alited::al(WIN)
@@ -59,6 +62,8 @@ namespace eval pref {
 # ________________________ Common procedures _________________________ #
 
 proc pref::fetchVars {} {
+  # Delivers namespace variables to a caller.
+
   uplevel 1 {
     namespace upvar ::alited al al obDl2 obDl2
     variable win
@@ -87,8 +92,19 @@ proc pref::fetchVars {} {
     variable stdkeysSize
   }
 }
+#_______________________
+
+proc pref::SavedOptions {} {
+  # Returns a list of names of main settings.
+
+  fetchVars
+  return [array name al]
+}
+#_______________________
 
 proc pref::SaveSettings {} {
+  # Saves original settings.
+
   fetchVars
   foreach o [SavedOptions] {
     set data($o) $al($o)
@@ -102,8 +118,11 @@ proc pref::SaveSettings {} {
     }
   }
 }
+#_______________________
 
 proc pref::RestoreSettings {} {
+  # Restores original settings.
+
   fetchVars
   foreach o [SavedOptions] {
     catch {set al($o) $data($o)}
@@ -121,23 +140,25 @@ proc pref::RestoreSettings {} {
     }
   }
 }
-
-proc pref::SavedOptions {} {
-  fetchVars
-  return [array name al]
-}
+#_______________________
 
 proc pref::TextIcons {} {
+  # Returns a list of letters to be toolbar "icons".
+
   return ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*=
 }
+#_______________________
 
 proc pref::ReservedIcons {} {
+  # Returns a list of icons already engaged by alited.
+
   return [list file OpenFile box SaveFile saveall undo redo help replace run other ok color]
 }
 
 # ________________________ Main Frame _________________________ #
 
 proc pref::MainFrame {} {
+  # Creates a main frame of the dialogue.
 
   return {
     {fraL - - 1 1 {-st nws -rw 2}}
@@ -180,8 +201,11 @@ proc pref::MainFrame {} {
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::pref::Cancel}}
   }
 }
+#_______________________
 
 proc pref::Ok {args} {
+  # Handler of "OK" button.
+
   fetchVars
   set ans [alited::msg yesnocancel info [msgcat::mc "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?"] YES -geometry root=$win]
   if {$ans in {1 2}} {
@@ -206,33 +230,44 @@ proc pref::Ok {args} {
     if {$ans == 1} {alited::Exit - 1 no}
   }
 }
+#_______________________
 
 proc pref::Cancel {args} {
+  # Handler of "Cancel" button.
+
   fetchVars
   RestoreSettings
   GetEmSave out
   $obDl2 res $win 0
 }
+#_______________________
 
-proc pref::Tab {tab {nt ""} {doit no} {dotip no}} {
-  # changing the current tab: we need to save the old tab's selection
-  # in order to restore the selection at the tab's return.
+proc pref::Tab {tab {nt ""} {doit no}} {
+  # Handles changing tabs of notebooks.
+  #   tab - name of notebook
+  #   nt - tab of notebook
+  #   doit - if yes, forces changing tabs.
+  # At changing the current notebook: we need to save the old selection
+  # in order to restore the selection at returning to the notebook.
   fetchVars
   if {$tab ne $curTab || $doit} {
-    if {$curTab ne ""} {
+    if {$curTab ne {}} {
       set arrayTab($curTab) [$win.fraR.$curTab select]
       pack forget $win.fraR.$curTab
     }
     set curTab $tab
     pack $win.fraR.$curTab -expand yes -fill both
     catch {
-      if {$nt eq ""} {set nt $arrayTab($curTab)}
+      if {$nt eq {}} {set nt $arrayTab($curTab)}
       $win.fraR.$curTab select $nt
     }
   }
 }
+#_______________________
 
 proc pref::Help {} {
+  # Shows a help on a current tab.
+
   fetchVars
   set sel [lindex [split [$win.fraR.$curTab select] .] end]
   alited::Help $win "-${curTab}-$sel"
@@ -241,6 +276,8 @@ proc pref::Help {} {
 # ________________________ Tabs "General" _________________________ #
 
 proc pref::General_Tab1 {} {
+  # Serves to layout "General" tab.
+
   fetchVars
   set opcc [set opcc2 [msgcat::mc {Color schemes}]]
   set opcColors [list "{$opcc}"]
@@ -268,8 +305,10 @@ proc pref::General_Tab1 {} {
     {.sbv .TexNotes L - - {pack -side left}}
   }
 }
+#_______________________
 
 proc pref::General_Tab2 {} {
+  # Serves to layout "General/Safety" tab.
 
   GetEmSave in
   return {
@@ -301,8 +340,12 @@ proc pref::General_Tab2 {} {
     {.entBackup .labBackup L 1 1 {-st sw -pady 1} {-tvar alited::al(BACKUP) -w 20 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup."}}
   }
 }
+#_______________________
 
 proc pref::opcToolPre {args} {
+  # Gets colors for "Color schemes" items.
+  #   args - a color scheme's index and name, separated by ":"
+
   lassign $args a
   set a [string trim $a ":"]
   if {[string is integer $a]} {
@@ -312,8 +355,12 @@ proc pref::opcToolPre {args} {
     return ""
   }
 }
+#_______________________
 
 proc pref::GetEmSave {to} {
+  # Gets a name of setting "Save before run".
+  #   to - if "in", gets a localized name; if "out", gets English name
+
   fetchVars
   set savcur [msgcat::mc {Current file}]
   set savall [msgcat::mc {All files}]
@@ -333,6 +380,8 @@ proc pref::GetEmSave {to} {
 # ________________________ Tab "Editor" _________________________ #
 
 proc pref::Edit_Tab1 {} {
+  # Serves to layout "Editor" tab.
+
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
@@ -341,11 +390,11 @@ proc pref::Edit_Tab1 {} {
     {.fonTxt .labFon L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(FONT,txt) -w 40}}
     {.labSp1 .labFon T 1 1 {-st w -pady 1 -padx 3} {-t "Space above lines:"}}
     {.spxSp1 .labSp1 L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp1) -from 0 -to 16 -justify center -w 3}}
-    {.labSp2 .labSp1 T 1 1 {-st w -pady 1 -padx 3} {-t "Space between wraps:"}}
-    {.spxSp2 .labSp2 L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp2) -from 0 -to 16 -justify center -w 3}}
-    {.labSp3 .labSp2 T 1 1 {-st w -pady 1 -padx 3} {-t "Space below lines:"}}
+    {.labSp3 .labSp1 T 1 1 {-st w -pady 1 -padx 3} {-t "Space below lines:"}}
     {.spxSp3 .labSp3 L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp3) -from 0 -to 16 -justify center -w 3}}
-    {.seh .labSp3 T 1 2 {-pady 3}}
+    {.labSp2 .labSp3 T 1 1 {-st w -pady 1 -padx 3} {-t "Space between wraps:"}}
+    {.spxSp2 .labSp2 L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp2) -from 0 -to 16 -justify center -w 3}}
+    {.seh .labSp2 T 1 2 {-pady 3}}
     {.labLl .seh T 1 1 {-st w -pady 1 -padx 3} {-t "Tab bar label's length:"}}
     {.spxLl .labLl L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(INI,barlablen) -from 10 -to 100 -justify center -w 3}}
     {.labTl .labLl T 1 1 {-st w -pady 1 -padx 3} {-t "Tab bar tip's length:"}}
@@ -357,8 +406,11 @@ proc pref::Edit_Tab1 {} {
     {.spxGS .labGS L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,guttershift) -from 0 -to 10 -justify center -w 3}}
   }
 }
+#_______________________
 
 proc pref::Edit_Tab2 {} {
+  # Serves to layout "Tcl syntax" tab.
+
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
@@ -385,8 +437,11 @@ proc pref::Edit_Tab2 {} {
     {.but .seh T 1 1 {-st w} {-t Default -com alited::pref::TclSyntax_Default}}
   }
 }
+#_______________________
 
 proc pref::Edit_Tab3 {} {
+  # Serves to layout "C/C++ syntax" tab.
+
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
@@ -417,8 +472,11 @@ proc pref::Edit_Tab3 {} {
     {.TexCKeys .labAddKeys L 1 1 {-st new} {-h 7 -w 40 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
   }
 }
+#_______________________
 
 proc pref::TclSyntax_Default {} {
+  # Sets default colors to highlight Tcl.
+
   fetchVars
   set Dark [::apave::obj csDarkEdit]
   set clrnams [::hl_tcl::hl_colorNames]
@@ -430,6 +488,8 @@ proc pref::TclSyntax_Default {} {
 }
 
 proc pref::CSyntax_Default {} {
+  # Sets default colors to highlight C.
+
   fetchVars
   set Dark [::apave::obj csDarkEdit]
   set clrnams [::hl_tcl::hl_colorNames]
@@ -442,6 +502,7 @@ proc pref::CSyntax_Default {} {
 # ________________________ Tab "Template" _________________________ #
 
 proc pref::Template_Tab {} {
+  # Serves to layout "Template" tab.
 
   return {
     {v_ - - 1 1}
@@ -465,6 +526,8 @@ proc pref::Template_Tab {} {
 # ________________________ Tab "Keys" _________________________ #
 
 proc pref::Keys_Tab1 {} {
+  # Serves to layout "Keys" tab.
+
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
@@ -484,46 +547,74 @@ proc pref::Keys_Tab1 {} {
     }}
   }
 }
+#_______________________
 
 proc pref::RegisterKeys {} {
+  # Adds key bindings to keys array.
+
   fetchVars
   alited::keys::Delete preference
   for {set k 0} {$k<$stdkeysSize} {incr k} {
     alited::keys::Add preference $k [set keys($k)] "alited::pref::BindKey $k {%k}"
   }
 }
+#_______________________
 
 proc pref::GetKeyList {nk} {
+  # Gets a list of available (not engaged) key combinations.
+  #   nk - index of combobox that will get the list as -values option
+
   fetchVars
   RegisterKeys
   [$obDl2 CbxKey$nk] configure -values [alited::keys::VacantList]
 }
+#_______________________
 
 proc pref::SelectKey {nk} {
+  # Handles <<ComboboxSelected>> event on a combobox of keys.
+  #   nk - index of combobox
+
   fetchVars
-  alited::keys::Delete "" $prevkeys($nk)
+  alited::keys::Delete {} $prevkeys($nk)
   set prevkeys($nk) $keys($nk)
   GetKeyList $nk
 }
+#_______________________
 
 proc pref::KeyAccelerator {nk defk} {
+  # Gets a key accelerator for a combobox of keys, bound to an action.
+  #   nk - index of combobox
+  #   defk - default key combination
+
   set acc [BindKey $nk - $defk]
   return [::apave::KeyAccelerator $acc]
 }
+#_______________________
 
 proc pref::KeyAccelerators {} {
+  # Gets a full list of key accelerators,
+
   fetchVars
   dict for {k info} $stdkeys {
     set al(acc_$k) [KeyAccelerator $k [lindex $info 1]]
   }
 }
+#_______________________
 
 proc pref::BindKey {nk {key ""} {defk ""}} {
+  # Binds a key event to a key combination.
+  #   nk - index of combobox corresponding to the event
+  #   key - key combination or "-" (for not engaged keys)
+  #   defk - default key combination
+  # Returns a bound keys for not engaged keys or {} for others.
+
   fetchVars
-  if {$key eq "-"} {
+  if {$key eq {-}} {
+    # not engaged event: bind to a new combination if defined
     if {[info exists keys($nk)]} {
       return $keys($nk)
     }
+    # otherwise bind to the default
     return $defk
   }
   switch $nk {
@@ -540,10 +631,13 @@ proc pref::BindKey {nk {key ""} {defk ""}} {
       ::apave::setTextHotkeys AltW $keys($nk)
     }
   }
-  return ""
+  return {}
 }
+#_______________________
 
 proc pref::IniKeys {} {
+  # Gets key settings at opening "Preferences" dialogue.
+
   fetchVars
   # default settings
   dict for {k info} $stdkeys {
@@ -560,6 +654,8 @@ proc pref::IniKeys {} {
 # ________________________ Units _________________________ #
 
 proc pref::Units_Tab {} {
+  # Serves to layout "Units" tab.
+
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
@@ -585,8 +681,11 @@ proc pref::Units_Tab {} {
     {.but .seh_3 T 1 1 {-st w} {-t Default -com alited::pref::Units_Default}}
   }
 }
+#_______________________
 
 proc pref::Units_Default {} {
+  # Sets the default settings of units.
+
   fetchVars
   set al(INI,LINES1) 10
   set al(INI,LEAF) 0
@@ -596,8 +695,11 @@ proc pref::Units_Default {} {
   set al(RE,leaf2) {^\s*(#+) [_]+}                       ;#  # _  / # _ abc
   set al(RE,proc2) {^\s*(proc|method|constructor|destructor)\s+} ;# proc abc {}...
 }
+#_______________________
 
 proc pref::CheckUseLeaf {} {
+  # Enables/disables the "Regexp of a leaf" field.
+
   fetchVars
   if {$al(INI,LEAF)} {set state normal} {set state disabled}
   [$obDl2 EntLf] configure -state $state
@@ -606,6 +708,8 @@ proc pref::CheckUseLeaf {} {
 # ________________________ Tab "Tools" _________________________ #
 
 proc pref::Emenu_Tab {} {
+  # Serves to layout "Tools" tab.
+
   set alited::al(EM,menu) [file join $alited::al(EM,menudir) \
     [file tail $alited::al(EM,menu)]]
   return {
@@ -632,8 +736,11 @@ proc pref::Emenu_Tab {} {
     {.entDF .labDF L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 40}}
   }
 }
+#_______________________
 
 proc pref::Tkcon_Default {} {
+  # Sets defaults for "Tkcon" tab.
+
   fetchVars
   set al(tkcon,clrbg) #25292b
   set al(tkcon,clrblink) #929281
@@ -651,8 +758,11 @@ proc pref::Tkcon_Default {} {
   set al(tkcon,geo) +300+100
   set al(tkcon,topmost) 1
 }
+#_______________________
 
 proc pref::Tkcon_Tab {} {
+  # Serves to layout "Tkcon" tab.
+
   if {![info exists alited::al(tkcon,clrbg)]} Tkcon_Default
   return {
     {v_ - - 1 1}
@@ -695,10 +805,13 @@ proc pref::Tkcon_Tab {} {
     {fra.scf.but2 - - - - {pack -side left} {-t Test -com alited::tool::tkcon -w 20}}
   }
 }
+#_______________________
 
 proc pref::Runs_Tab {} {
+  # Prepares and layouts "bar/menu" tab.
 
   fetchVars
+  # get a list of all available icons for "bar/menu" actions
   set listIcons [::apave::iconImage]
   set em_Icons [list]
   set n [llength $listIcons]
@@ -720,6 +833,7 @@ proc pref::Runs_Tab {} {
     incr icr
   }
   EmSeparators no
+  # get a full list of actions contained in all e_menu's menus
   set em_Menus {}
   set curmenu menu.mnu
   set curlev 0
@@ -737,6 +851,7 @@ proc pref::Runs_Tab {} {
     set curlev $lev
   }
   append em_Menus [string repeat \} $curlev]
+  # get a layout of "bar/menu" tab
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1} {-afteridle {::alited::pref::EmSeparators yes}}}
@@ -749,7 +864,7 @@ proc pref::Runs_Tab {} {
           %C $lwid
           set lwid ".buTDel$i .buTAdd$i L 1 1 {-padx 1} {-tip {Deletes a line.} -com {::alited::pref::EmDelLine $i} -takefocus 0 -relief flat -image alimg_delete}"
           %C $lwid
-          set lwid ".lab$i .buTDel$i L 1 1 {-st w -padx 3} {-t {Item$nit: }}"
+          set lwid ".lab$i .buTDel$i L 1 1 {-st w -padx 3} {-t {$alited::al(MC,Item)$nit}}"
           %C $lwid
           set lwid ".ChbMT$i .lab$i L 1 1 {-padx 10} {-t separator -var ::alited::pref::em_sep($i) -tip {If 'yes', means a separator of the toolbar/menu.} -com {::alited::pref::EmSeparators yes}}"
           %C $lwid
@@ -762,8 +877,12 @@ proc pref::Runs_Tab {} {
     }
   }
 }
+#_______________________
 
 proc pref::EmAddLine {idx} {
+  # Inserts a new "bar/menu" action before a current one.
+  #   idx - index of a current action
+
   fetchVars
   for {set i $em_Num} {$i>$idx} {} {
     incr i -1
@@ -771,6 +890,7 @@ proc pref::EmAddLine {idx} {
       lassign {} em_mnu($i) em_ico($i) em_inf($i)
       set em_sep($i) 0
     } else {
+      # lower all the rest actions
       set ip [expr {$i-1}]
       set em_sep($i) $em_sep($ip)
       set em_ico($i) $em_ico($ip)
@@ -780,14 +900,19 @@ proc pref::EmAddLine {idx} {
   }
   EmSeparators yes
 }
+#_______________________
 
 proc pref::EmDelLine {idx} {
+  # Deletes a current "bar/menu" action.
+  #   idx - index of a current action
+
   fetchVars
   for {set i $idx} {$i<$em_Num} {incr i} {
     if {$i==($em_Num-1)} {
       lassign {} em_mnu($i) em_ico($i) em_inf($i)
       set em_sep($i) 0
     } else {
+      # make upper all the rest actions
       set ip [expr {$i+1}]
       set em_sep($i) $em_sep($ip)
       set em_ico($i) $em_ico($ip)
@@ -798,8 +923,11 @@ proc pref::EmDelLine {idx} {
   EmSeparators yes
   ScrollRuns
 }
+#_______________________
 
 proc pref::EmSeparators {upd} {
+  # Handles separators of bar/menu.
+  #   upd - if yes, displays the widgets of bar/menu settings.
   fetchVars
   for {set i 0} {$i<$em_Num} {incr i} {
     if {![info exists em_sep($i)]} {
@@ -817,8 +945,12 @@ proc pref::EmSeparators {upd} {
   }
   if {$upd} ScrollRuns
 }
+#_______________________
 
 proc pref::PickMenuItem {it} {
+  # Selects e_menu's action for a "bar/menu" item.
+  #   it - index of "bar/menu" item
+
   fetchVars
   if {![info exists ::em::geometry]} {
     source [file join $::e_menu_dir e_menu.tcl]
@@ -842,15 +974,21 @@ proc pref::PickMenuItem {it} {
     ScrollRuns
   }
 }
+#_______________________
 
 proc pref::ScrollRuns {} {
-  # Updates scrollbars of Runs tab because its contents may have various length.
+  # Updates scrollbars of bar/menu tab because its contents may have various length.
+
   fetchVars
   update
   ::apave::sframe resize [$obDl2 ScfRuns]
 }
+#_______________________
 
 proc pref::opcIcoPre {args} {
+  # Gets an item for icon list of a bar/menu action.
+  #   args - contains a name of current icon
+
   fetchVars
   lassign $args a
   if {[set i [lsearch $listIcons $a]]>-1} {
@@ -862,14 +1000,11 @@ proc pref::opcIcoPre {args} {
   append res " -compound left -label $a"
 }
 
-proc pref::opcMnuPre {args} {
-  fetchVars
-  lassign $args a b c
-  return "-label $args"
-}
-
 # ________________________ GUI procs _________________________ #
+
 proc pref::_create {tab} {
+  # Creates "Preferences" dialogue.
+  #   tab - a tab to open (saved at previous session) or {}
 
   fetchVars
   $obDl2 makeWindow $win "$al(MC,pref) :: $::alited::USERDIR"
@@ -907,6 +1042,7 @@ proc pref::_create {tab} {
   } elseif {$oldTab ne {}} {
     Tab $oldTab $arrayTab($oldTab) yes
   }
+  bind $win <Control-o> alited::ini::EditSettings
   set res [$obDl2 showModal $win -geometry $geo {*}$minsize \
     -onclose ::alited::pref::Cancel]
   set fcont [[$obDl2 TexNotes] get 1.0 {end -1c}]
@@ -918,15 +1054,21 @@ proc pref::_create {tab} {
   destroy $win
   return $res
 }
+#_______________________
 
 proc pref::_init {} {
+  # Initializes "Preferences" dialogue.
+
   fetchVars
   SaveSettings
   set curTab "nbk"
   IniKeys
 }
+#_______________________
 
 proc pref::_run {{tab {}}} {
+  # Runs "Preferences" dialogue.
+  # Returns "true", if settings were saved.
 
   _init
   set res [_create $tab]

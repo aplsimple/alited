@@ -241,18 +241,18 @@ proc main::HighlightText {TID curfile wtxt} {
   # Depending on a file name, Tcl or C highlighter is called.
 
   namespace upvar ::alited al al obPav obPav
-  set clrnams [::hl_tcl::hl_colorNames]
-  set clrCURL [lindex [$obPav csGet] 16]
-  # get a color list for the highlighting Tcl and C
-  foreach lng {{} C} {
-    foreach nam $clrnams {
-      lappend "${lng}colors" $al(ED,${lng}$nam)
-    }
-    lappend "${lng}colors" $clrCURL
-  }
   # the language (Tcl or C) is defined by the file's extension
   set ext [string tolower [file extension $curfile]]
   if {![info exists al(HL,$wtxt)] || $al(HL,$wtxt) ne $ext} {
+    set clrnams [::hl_tcl::hl_colorNames]
+    set clrCURL [lindex [$obPav csGet] 16]
+    # get a color list for the highlighting Tcl and C
+    foreach lng {{} C} {
+      foreach nam $clrnams {
+        lappend "${lng}colors" $al(ED,${lng}$nam)
+      }
+      lappend "${lng}colors" $clrCURL
+    }
     if {[alited::file::IsClang $curfile]} {
       ::hl_c::hl_init $wtxt -dark [$obPav csDarkEdit] \
         -multiline 1 -keywords $al(ED,CKeyWords) \
@@ -267,8 +267,8 @@ proc main::HighlightText {TID curfile wtxt} {
         -plaintext [expr {![alited::file::IsTcl $curfile]}] \
         -font $al(FONT,txt) -colors $colors
     }
+    UpdateText $wtxt $curfile
   }
-  UpdateText $wtxt $curfile
   set al(HL,$wtxt) $ext
 }
 #_______________________
@@ -443,8 +443,8 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.BuTAddT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -command alited::tree::AddItem}}
     {.fraBot.panBM.fraTree.fra1.BuTDelT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -command alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
-    {.fraBot.panBM.fraTree.fra1.buTCtr - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -command {alited::tree::ExpandContractTree Tree no} -tip {$alited::al(MC,ctrtree)}}}
-    {.fraBot.panBM.fraTree.fra1.buTExp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus -command {alited::tree::ExpandContractTree Tree} -tip {$alited::al(MC,exptree)}}}
+    {.fraBot.panBM.fraTree.fra1.buTCtr - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -command {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}
+    {.fraBot.panBM.fraTree.fra1.buTExp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus -command {alited::tree::ExpandContractTree Tree} -tip "Expand All"}}
     {.fraBot.panBM.fraTree.fra1.sev3 - - - - {pack -side right -fill y -padx 0}}
     {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1} 
@@ -491,7 +491,7 @@ proc main::_create {} {
       {{$alited::al(MC,Row:)} -font {-slant italic -size $alited::al(FONTSIZE,small)}} 12
       {{$alited::al(MC,Col:)} -font {-slant italic -size $alited::al(FONTSIZE,small)}} 5
       {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor w -expand 1} 50
-      {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor e} 25
+      {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor e} 18
     }}}
   }
   UpdateProjectInfo
@@ -503,7 +503,7 @@ proc main::_create {} {
   bind $lbxi <FocusOut> "alited::info::FocusOut $sbhi"
   bind $lbxi <<ListboxSelect>> {alited::info::ListboxSelect %W}
   bind $lbxi <ButtonPress-3> {alited::info::PopupMenu %X %Y}
-  bind [$obPav ToolTop] <ButtonPress-3> "::alited::tool::PopupBar %X %Y"
+  bind [$obPav ToolTop] <ButtonPress-3> {::alited::tool::PopupBar %X %Y}
 }
 #_______________________
 

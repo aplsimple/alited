@@ -1,12 +1,18 @@
-  Choose a font size for the edited texts.
+ Choose a font for the edited texts, pressing F2 key in the font
+ field or hitting a button at the right side of it.
 
-  Set at need the following options for the texts:
+ Set at need the following options for the texts:
 
-    "Space above lines" is an additional space above each text line
-    "Space below lines" is an additional space below each text line
-    "Space between wraps" is a space between lines that are wrapped
+   "Space above lines" is an additional space above each text line
+   "Space below lines" is an additional space below each text line
+   "Space between wraps" is a space between lines that are wrapped
 
-  The following options define the bar tab's view:
+ The following options define the bar tab's view:
 
-    "Tab bar label's length" - a restriction for long file names
-    "Tab bar tip's length" - a restriction for long file lists
+   "Tab bar label's length" - a restriction for long file names
+   "Tab bar tip's length" - a restriction for long file lists
+
+ For the gutter of line numbers, you can set:
+
+   "Gutter's width" - a width of the gutter, in characters
+   "Gutter's shift from text" - a space from a text to the gutter

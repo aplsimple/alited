@@ -118,7 +118,7 @@ yROnlsp+4xkRFgAuSmqo6nf+ATq/yK22zWynAAAAAElFTkSuQmCC}
     # Draws all bars. Used at updating themes etc.
     foreach bars $bartabs::BarsList {$bars drawAll}
   }
-  #_____
+  #_______________________
   
   proc messageBox {type ttl msg args} {
     # Runs Tk's or apave's ok/yes/no/cancel dialogue.
@@ -169,21 +169,21 @@ method My {ID} {
   set args \[lreplace \$args 0 0 Tab_\$m\]}
   return \[my {*}\$args\]}"
 }
-#_____
+#_______________________
 
 method ID {} {
 # Gets ID of caller.
 
   return [lindex [uplevel 1 {self caller}] 2]
 }
-#_____
+#_______________________
 
 method IDs {TID} {
 # Returns a pair of TID and BID.
 
   return [list $TID [my $TID cget -BID]]
 }
-#_____
+#_______________________
 
 method Tab_Create {BID TID w text} {
 # Creates a tab widget (frame, label, button).
@@ -224,7 +224,7 @@ method Tab_Create {BID TID w text} {
   }
   return [list $wb $wb1 $wb2]
 }
-#_____
+#_______________________
 
 method Tab_create {tabCom label} {
   # Creates tab method and registers it. Defined by "My".
@@ -237,7 +237,7 @@ method Tab_create {tabCom label} {
   set lObj [my $BID cget -TABCOM]
   my $BID configure -TABCOM [lappend lObj [list $TID $tabCom]]
 }
-#_____
+#_______________________
 
 method Tab_cget {args} {
 # Gets options of tab.
@@ -280,7 +280,7 @@ method Tab_cget {args} {
   if {[llength $args]==1} {return [lindex $res 0]}
   return $res
 }
-#_____
+#_______________________
 
 method Tab_configure {args} {
 # Sets values of options for a tab.
@@ -303,7 +303,7 @@ method Tab_configure {args} {
   set tab [list $TID $data]
   my $BID configure -TABS [lreplace [my $BID cget -TABS] $i $i $tab]
 }
-#_____
+#_______________________
 
 method Tab_DictItem {TID {data ""}} {
 # Gets item data from a tab item (ID + data).
@@ -324,7 +324,7 @@ method Tab_DictItem {TID {data ""}} {
   }
   return $res
 }
-#_____
+#_______________________
 
 method Tab_ItemDict {TID text {wb ""} {wb1 ""} {wb2 ""} {pf ""}} {
 # Gets a tab item (ID + data) from item data.
@@ -337,7 +337,7 @@ method Tab_ItemDict {TID text {wb ""} {wb1 ""} {wb2 ""} {pf ""}} {
 
   return [list $TID [list -text $text -wb $wb -wb1 $wb1 -wb2 $wb2 -pf $pf]]
 }
-#_____
+#_______________________
 
 method Tab_Data {BID text} {
 # Creates data of new tab.
@@ -350,7 +350,7 @@ method Tab_Data {BID text} {
   my My tab[incr bartabs::NewTabID]
   return [my Tab_ItemDict tab$bartabs::NewTabID $text]
 }
-#_____
+#_______________________
 
 method Tab_BID {TID {act ""}} {
 # Gets BID from TID.
@@ -373,7 +373,7 @@ method Tab_BID {TID {act ""}} {
   }
   return [list $BID $i [lindex $tabs $i]]
 }
-#_____
+#_______________________
 
 method Tab_Bindings {BID} {
 # Sets bindings on events of tabs.
@@ -400,7 +400,7 @@ method Tab_Bindings {BID} {
   }
   bind [lindex $wwid 0] <Button-3> "[self] $BID OnPopup %X %Y $BID"
 }
-#_____
+#_______________________
 
 method Tab_Font {BID} {
 # Gets a font attributes for tab label.
@@ -414,7 +414,7 @@ method Tab_Font {BID} {
   }
   return "-font {$font}"
 }
-#_____
+#_______________________
 
 method Tab_MarkAttrs {BID TID {withbg yes} {wb2 ""}} {
 # Gets image & mark attributes of marks.
@@ -456,7 +456,7 @@ method Tab_MarkAttrs {BID TID {withbg yes} {wb2 ""}} {
   }
   return $res
 }
-#_____
+#_______________________
 
 method Tab_SelAttrs {fnt fgsel bgsel} {
 # Gets font attributes of selected tab.
@@ -479,7 +479,7 @@ method Tab_SelAttrs {fnt fgsel bgsel} {
   }
   return "$opt {$val}"
 }
-#_____
+#_______________________
 
 method Tab_MarkBar {BID {TID "-1"}} {
 # Marks the tabs of a bar .
@@ -505,7 +505,7 @@ method Tab_MarkBar {BID {TID "-1"}} {
   }
   my $BID configure -tabcurrent $TID
 }
-#_____
+#_______________________
 
 method Tab_MarkBars {{BID -1} {TID -1}} {
 # Marks the tabs.
@@ -519,7 +519,7 @@ method Tab_MarkBars {{BID -1} {TID -1}} {
     my Tab_MarkBar $BID $TID
   }
 }
-#_____
+#_______________________
 
 method Tab_TextEllipsed {BID text {lneed -1}} {
 # Gets a tab's label and tip
@@ -538,7 +538,7 @@ method Tab_TextEllipsed {BID text {lneed -1}} {
   }
   return [list $text $ttip]
 }
-#_____
+#_______________________
 
 method Tab_Iconic {BID} {
 # Gets a flag "tabs with icons".
@@ -546,7 +546,7 @@ method Tab_Iconic {BID} {
 
   return [expr {![my $BID cget -static]}]
 }
-#_____
+#_______________________
 
 method Tab_Pack {BID TID wb wb1 wb2} {
 
@@ -567,7 +567,7 @@ method Tab_Pack {BID TID wb wb1 wb2} {
   }
   my $TID configure -pf "p"
 }
-#_____
+#_______________________
 
 method Tab_RemoveLinks {BID TID} {
 # Removes a tab's links to lists.
@@ -583,7 +583,7 @@ method Tab_RemoveLinks {BID TID} {
   }
   my Tab_MarkBars $BID
 }
-#_____
+#_______________________
 
 method Tab_Is {wb} {
 # Checks if 'wb' is an existing tab widget.
@@ -591,7 +591,7 @@ method Tab_Is {wb} {
 
   return [expr {$wb ne "" && [winfo exists $wb]}]
 }
-#_____
+#_______________________
 
 method Tab_CloseFew {{TID -1} {left no}} {
 # Closes tabs of bar.
@@ -619,7 +619,7 @@ method Tab_CloseFew {{TID -1} {left no}} {
     }
   }
 }
-#_____
+#_______________________
 
 method PrepareCmd {TID BID opt args} {
 # Prepares a command bound to an action on a tab.
@@ -642,7 +642,7 @@ method PrepareCmd {TID BID opt args} {
   return ""
 }
 
-#_____
+#_______________________
 
 method Tab_Cmd {opt args} {
 # Executes a command bound to an action on a tab.
@@ -660,7 +660,7 @@ method Tab_Cmd {opt args} {
   return 1
 }
 
-#_____
+#_______________________
 
 method Tab_BeCurrent {} {
 # Makes the tab be currently visible.
@@ -676,7 +676,7 @@ method Tab_BeCurrent {} {
   }
   my $BID Bar_Cmd2 -csel2 $TID ;# command after the selection shown
 }
-#_____
+#_______________________
 
 method Disabled {TID} {
   # Checks if the tab is disabled.
@@ -684,7 +684,7 @@ method Disabled {TID} {
   set dsbltabs [my [my $TID cget -BID] cget -disable]
   return [expr {[lsearch $dsbltabs $TID]>-1}]
 }
-#_____
+#_______________________
 
 method Visible {} {
 # Checks if a tab is visible.
@@ -711,7 +711,7 @@ method DestroyMoveWindow {} {
   catch {destroy $movWin}
   my $BID configure -MOVX "" -wb1 ""
 }
-#_____
+#_______________________
 
 method OnEnterTab {TID wb1 wb2 fgo bgo} {
 # Handles the mouse pointer entering a tab.
@@ -722,7 +722,7 @@ method OnEnterTab {TID wb1 wb2 fgo bgo} {
   $wb1 configure -foreground $fgo -background $bgo
   if {[my Tab_Iconic [my ID]]} {$wb2 configure -image bts_ImgClose}
 }
-#_____
+#_______________________
 
 method OnLeaveTab {wb1 wb2} {
 # Handles the mouse pointer leaving a tab.
@@ -739,7 +739,7 @@ method OnLeaveTab {wb1 wb2} {
     $wb2 configure -image bts_ImgNone -style ClButton$BID
   }
 }
-#_____
+#_______________________
 
 method OnButtonPress {TID wb1 x} {
 # Handles the mouse clicking a tab.
@@ -751,7 +751,7 @@ method OnButtonPress {TID wb1 x} {
   set TID [my $BID tabID [$wb1 cget -text]]
   my $TID Tab_BeCurrent
 }
-#_____
+#_______________________
 
 method OnButtonMotion {wb wb1 x y} {
 # Handles the mouse moving over a tab.
@@ -804,7 +804,7 @@ method OnButtonMotion {wb wb1 x y} {
   }
   my $BID configure -MOVX [expr {$movX+$x-$movx}] -MOVX0 $x
 }
-#_____
+#_______________________
 
 method OnButtonRelease {wb1o x} {
 # Handles the mouse releasing a tab.
@@ -867,7 +867,7 @@ method OnButtonRelease {wb1o x} {
     my $BID Bar_Cmd2 -cmov2 $TID ;# command after the action
   }
 }
-#_____
+#_______________________
 
 method OnCtrlClick {} {
 # Handles a selection of tabs with Ctrl+click.
@@ -883,7 +883,7 @@ method OnCtrlClick {} {
   my $BID configure -select $fewsel
   my Tab_MarkBar $BID
 }
-#_____
+#_______________________
 
 method OnPopup {X Y {BID "-1"} {TID "-1"} {textcur ""}} {
 # Handles the mouse right-clicking on a tab.
@@ -1000,7 +1000,7 @@ method show {{anyway yes}} {
   if {$anyway} {my $BID Refill $itab no yes}
   my $TID Tab_BeCurrent
 }
-#_____
+#_______________________
 
 method close {{redraw yes} args} {
 # Closes a tab and updates the bar.
@@ -1111,7 +1111,7 @@ method Bar_Data {barOptions} {
   dict set btData $BID $barOpts
   return $BID
 }
-#_____
+#_______________________
 
 method Bar_DefaultMenu {BID popName} {
 # Creates default menu items.
@@ -1132,7 +1132,7 @@ method Bar_DefaultMenu {BID popName} {
     lappend pop $item
   }
 }
-#_____
+#_______________________
 
 method Bar_MenuList {BID TID popi {ilist ""} {pop ""}} {
 # Tunes "List" menu item for colors & underlining.
@@ -1169,7 +1169,7 @@ method Bar_MenuList {BID TID popi {ilist ""} {pop ""}} {
     $popi entryconfigure $i {*}$opts
   }
 }
-#_____
+#_______________________
 
 method Bar_Cmd2 {comopt2 {TID ""}} {
 # Executes a command after an action.
@@ -1180,7 +1180,7 @@ method Bar_Cmd2 {comopt2 {TID ""}} {
     {*}[string map [list %t $TID] $com2]
   }
 }
-#_____
+#_______________________
 
 method Mc_MenuItems {} {
   # Returns localized menu items' label.
@@ -1195,7 +1195,7 @@ method Mc_MenuItems {} {
   }
 }
 
-#_____
+#_______________________
 
 method InitColors {} {
 # Initializes colors of a bar.
@@ -1222,7 +1222,7 @@ method InitColors {} {
     -FGDSBL $fgdsbl -BGDSBL $bgdsbl -FGOVER $fgo -BGOVER $bgo
   my $BID Style
 }
-#_____
+#_______________________
 
 method Style {} {
 # Sets styles a bar's widgets.
@@ -1235,7 +1235,7 @@ method Style {} {
   ttk::style map ClButton$BID -background [list active $bg]
   ttk::style layout ClButton$BID [ttk::style layout TButton]
 }
-#_____
+#_______________________
 
 method ScrollCurr {dir} {
 # Scrolls the current tab to the left/right.
@@ -1253,7 +1253,7 @@ method ScrollCurr {dir} {
   }
   return no
 }
-#_____
+#_______________________
 
 method ArrowsState {tleft tright sright} {
 # Sets a state of scrolling arrows.
@@ -1318,7 +1318,7 @@ method ArrowsState {tleft tright sright} {
   }
   catch {::baltip::tip $wrarr [string trim $tip]}
 }
-#_____
+#_______________________
 
 method FillMenuList {BID popi {TID -1} {mnu ""}} {
 # Fills "List of tabs" item of popup menu.
@@ -1362,7 +1362,7 @@ method FillMenuList {BID popi {TID -1} {mnu ""}} {
   }
   return $res
 }
-#_____
+#_______________________
 
 method Width {} {
 # Calculates and returns the bar width to place tabs.
@@ -1401,7 +1401,7 @@ method Width {} {
   }
   return $bwidth
 }
-#_____
+#_______________________
 
 method FillFromLeft {{ileft ""} {tright "end"}} {
 # Fills a bar with tabs from the left to the right (as much tabs as possible).
@@ -1420,7 +1420,7 @@ method FillFromLeft {{ileft ""} {tright "end"}} {
   }
   my Aux_EndDraw $BID $tleft $tright $llen
 }
-#_____
+#_______________________
 
 method FillFromRight {tleft tright behind} {
 # Fills a bar with tabs from the right to the left (as much tabs as possible).
@@ -1465,14 +1465,14 @@ method FillFromRight {tleft tright behind} {
   }
   my Aux_EndDraw $BID $tleft $tright $llen
 }
-#_____
+#_______________________
 
 method Locked {BID} {
 # Checks for "draw locked" mode: protects the menu.
 
   return [expr {[my $BID cget -LOCKDRAW] ne ""}]
 }
-#_____
+#_______________________
 
 method Refill {itab left {behind false}} {
 # Fills a bar with tabs.
@@ -1489,7 +1489,7 @@ method Refill {itab left {behind false}} {
     my $BID FillFromRight 0 $itab $behind
   }
 }
-#_____
+#_______________________
 
 method CheckDsblPopup {BID TID mnuit} {
 # Controls disabling of Close* menu items.
@@ -1525,7 +1525,7 @@ method CheckDsblPopup {BID TID mnuit} {
   ]
   return $dsbl
 }
-#_____
+#_______________________
 
 method NeedDraw {} {
 # Redraws a bar at need.
@@ -1571,7 +1571,7 @@ method Aux_WidgetWidth {w} {
   if {$wwidth<2} {set wwidth [winfo reqwidth $w]}
   return $wwidth
 }
-#_____
+#_______________________
 
 method Aux_InitDraw {BID {clearpf yes}} {
 # Auxiliary method used before cycles drawing tabs.
@@ -1591,7 +1591,7 @@ method Aux_InitDraw {BID {clearpf yes}} {
   if {$clearpf} {foreach tab $tabs {my [lindex $tab 0] configure -pf ""}}
   return [list $bwidth $vislen $bd $arrlen $llen $tleft $hidearr $tabs $wframe]
 }
-#_____
+#_______________________
 
 method Aux_CheckTabVisible {wb wb1 wb2 i tleft trightN vislenN llen hidearr arrlen bd bwidth tabsN TID text} {
 # Auxiliary method used to check if a tab is visible.
@@ -1608,7 +1608,7 @@ method Aux_CheckTabVisible {wb wb1 wb2 i tleft trightN vislenN llen hidearr arrl
   my $TID configure -wb $wb -wb1 $wb1 -wb2 $wb2 -pf $pf
   return [string length $pf]
 }
-#_____
+#_______________________
 
 method Aux_EndDraw {BID tleft tright llen} {
 # Auxiliary method used after cycles drawing tabs.
@@ -1618,7 +1618,7 @@ method Aux_EndDraw {BID tleft tright llen} {
   my Tab_Bindings $BID
   my Tab_MarkBar $BID
 }
-#_____
+#_______________________
 
 method Aux_IndexInList {ID lst} {
 # Searches ID in list.
@@ -1657,7 +1657,7 @@ method cget {args} {
   if {[llength $args]==1} {return [lindex $res 0]}
   return $res
 }
-#_____
+#_______________________
 
 method configure {args} {
 # Sets values of options for bars & tabs.
@@ -1671,7 +1671,7 @@ method configure {args} {
   }
   if {[dict exists $args -static]} {my $BID Style}
 }
-#_____
+#_______________________
 
 method draw {{upd yes}} {
 # Draws the bar tabs at slight changes.
@@ -1691,7 +1691,7 @@ method draw {{upd yes}} {
   my Aux_EndDraw $BID $tleft $tright $llen
   my Tab_MarkBar $BID
 }
-#_____
+#_______________________
 
 method update {} {
 # Updates the bar in hard way.
@@ -1700,7 +1700,7 @@ method update {} {
   update
   my $BID Refill 0 yes
 }
-#_____
+#_______________________
 
 method clear {} {
 # Forgets (hides) the shown tabs.
@@ -1716,7 +1716,7 @@ method clear {} {
   }
   if {[llength $wlist]} {pack forget {*}$wlist}
 }
-#_____
+#_______________________
 
 method scrollLeft {} {
   # Scrolls tabs to the left.
@@ -1739,7 +1739,7 @@ method scrollLeft {} {
     if {$dotip} {catch {::baltip::repaint $wlarr}}
   }
 }
-#_____
+#_______________________
 
 method scrollRight {} {
   # Scrolls tabs to the right.
@@ -1762,7 +1762,7 @@ method scrollRight {} {
     if {$dotip} {catch {::baltip::repaint $wrarr}}
   }
 }
-#_____
+#_______________________
 
 method listTab {} {
 # Gets a list of tabs.
@@ -1772,7 +1772,7 @@ method listTab {} {
   foreach tab [my [my ID] cget -TABS] {lappend res [my Tab_DictItem $tab]}
   return $res
 }
-#_____
+#_______________________
 
 method listFlag {{filter ""}} {
 # Gets a list of TID + flags "visible", "marked", "selected", "disabled".
@@ -1797,7 +1797,7 @@ method listFlag {{filter ""}} {
   }
   return $res
 }
-#_____
+#_______________________
 
 method insertTab {txt {pos "end"} {img ""}} {
 # Inserts a new tab into a bar.
@@ -1823,7 +1823,7 @@ method insertTab {txt {pos "end"} {img ""}} {
   my $BID Refill $pos [expr {$pos ne "end"}]
   return [lindex $tab 0]
 }
-#_____
+#_______________________
 
 method tabID {txt} {
 # Gets TID by tab's label.
@@ -1844,7 +1844,7 @@ method tabID {txt} {
   }
   return ""
 }
-#_____
+#_______________________
 
 method popList {X Y} {
 # Shows a menu of tabs.
@@ -1864,7 +1864,7 @@ method popList {X Y} {
     tk_popup $popi $X $Y
   }
 }
-#_____
+#_______________________
 
 method remove {} {
 # Removes a bar.
@@ -1887,7 +1887,7 @@ method remove {} {
   }
   return no
 }
-#_____
+#_______________________
 
 method checkDisabledMenu {BID TID func} {
 # Checks whether the popup menu's items are disabled.
@@ -1907,7 +1907,7 @@ method checkDisabledMenu {BID TID func} {
   }
   return [my CheckDsblPopup $BID $TID $item]
 }
-#_____
+#_______________________
 
 method closeAll {BID TID func args} {
 # Closes tabs of bar.
@@ -1957,7 +1957,7 @@ method Bars_Method {mtd args} {
 
   foreach BID [lsort -decreasing [dict keys $btData]] {my $BID $mtd {*}$args}
 }
-#_____
+#_______________________
 
 method MarkTab {opt args} {
 # Sets option of tab(s).
@@ -1976,7 +1976,7 @@ method MarkTab {opt args} {
   }
   my Tab_MarkBars
 }
-#_____
+#_______________________
 
 method UnmarkTab {opt args} {
 # Unsets option of tab(s).
@@ -2047,14 +2047,14 @@ method create {barCom {barOpts ""} {tab1 ""}} {
   }
   return $BID
 }
-#_____
+#_______________________
 
 method updateAll {} {
 # Updates all bars in hard way.
 
   my Bars_Method Refill 0 yes
 }
-#_____
+#_______________________
 
 method drawAll {{upd yes}} {
 # Redraws all bars.
@@ -2063,14 +2063,14 @@ method drawAll {{upd yes}} {
   if {$upd} update
   my Bars_Method draw no
 }
-#_____
+#_______________________
 
 method removeAll {} {
 # Removes all bars.
 
   my Bars_Method remove
 }
-#_____
+#_______________________
 
 method markTab {args} {
 # Marks tab(s).
@@ -2078,7 +2078,7 @@ method markTab {args} {
 
   my MarkTab -mark {*}$args
 }
-#_____
+#_______________________
 
 method unmarkTab {args} {
 # Unmarks tab(s).
@@ -2086,7 +2086,7 @@ method unmarkTab {args} {
 
   my UnmarkTab -mark {*}$args
 }
-#_____
+#_______________________
 
 method selectTab {args} {
 # Selects tab(s).
@@ -2094,7 +2094,7 @@ method selectTab {args} {
 
   my MarkTab -select {*}$args
 }
-#_____
+#_______________________
 
 method unselectTab {args} {
 # Unselects tab(s).
@@ -2102,7 +2102,7 @@ method unselectTab {args} {
 
   my UnmarkTab -select {*}$args
 }
-#_____
+#_______________________
 
 method enableTab {args} {
 # Enables tab(s).
@@ -2110,7 +2110,7 @@ method enableTab {args} {
 
   my UnmarkTab -disable {*}$args
 }
-#_____
+#_______________________
 
 method disableTab {args} {
 # Disables tab(s).
@@ -2118,7 +2118,7 @@ method disableTab {args} {
 
   my MarkTab -disable {*}$args
 }
-#_____
+#_______________________
 
 method isTab {TID} {
 # Checks if a tab exists.
@@ -2127,7 +2127,7 @@ method isTab {TID} {
 
   return [expr {[my Tab_BID $TID check] ne ""}]
 }
-#_____
+#_______________________
 
 method MoveTab {TID1 TID2} {
 # Changes a tab's position in bar.
@@ -2147,7 +2147,7 @@ method MoveTab {TID1 TID2} {
   }
 }
 
-#_____
+#_______________________
 
 method moveSelTab {TID1 TID2} {
 # Changes a tab's or selected tabs' position in bar.
