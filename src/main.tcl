@@ -11,6 +11,9 @@
 
 namespace eval main {
   variable findunits 1  ;# where to find units: 1 current file, 2 all
+  variable gotoline1 {}
+  variable gotoline2 {}
+  variable gotolineTID {}
 }
 
 # ________________________ common _________________________ #
@@ -323,16 +326,54 @@ proc main::GotoLine {} {
 
   namespace upvar ::alited al al obDl2 obDl2
   set head [msgcat::mc "Go to Line"]
-  set prompt [msgcat::mc "Line number:"]
+  set prompt1 [msgcat::mc "Line number:"]
+  set prompt2 [msgcat::mc "    In unit:"]
   set wtxt [CurrentWTXT]
-  set ln [expr {int([$wtxt index insert])}]
+  set ln 1 ;#[expr {int([$wtxt index insert])}]
   set lmax [expr {int([$wtxt index "end -1c"])}]
-  lassign [$obDl2 input "" $head [list \
-    Spx "{$prompt} {} {-w 6 -justify center -from 1 -to $lmax -selected yes}" "{$ln}" \
-  ]] res ln
+  set units [list]
+  set TID [alited::bar::CurrentTabID]
+  foreach it $al(_unittree,$TID) {
+    lassign $it lev leaf fl1 title l1 l2
+    if {$leaf && [set title [string trim $title]] ne {}} {
+      lappend units $title
+    }
+  }
+  set ::alited::main::gotoline2 [linsert [lsort -nocase $units] 0 {}]
+  if {$::alited::main::gotolineTID ne $TID} {
+    set ::alited::main::gotoline1 {}
+    set ::alited::main::gotolineTID $TID
+  }
+  lassign [$obDl2 input {} $head [list \
+    spx "{$prompt1} {} {-w 6 -justify center -from 1 -to $lmax -selected yes}" "{$ln}" \
+    cbx "{$prompt2} {} {-tvar ::alited::main::gotoline1 -state readonly -h 16 -w 20}" "{$::alited::main::gotoline1} $::alited::main::gotoline2" \
+  ]] res ln unit
   if {$res} {
-    ::tk::TextSetCursor $wtxt $ln.0
-    HighlightLine
+    set ::alited::main::gotoline1 $unit
+    if {$unit ne {}} {
+      # for a chosen unit - a relative line number
+      if {[set it [lsearch -index 3 $al(_unittree,$TID) $unit]] >- 1} {
+        lassign [lindex $al(_unittree,$TID) $it] lev leaf fl1 title l1 l2
+        set l $l1
+        set fst 1
+        foreach line [split [$wtxt get $l1.0 $l2.end] \n] {
+          # gentlemen, use \ for continuation of long lines & strings!
+          set continued [expr {[string index $line end] eq "\\"}]
+          if {!$continued || $fst} {
+            if {$fst} {
+              set l $l1
+              if {[incr ln -1]<1} break
+            }
+            set fst [expr {!$continued}]
+          }
+          incr l1
+        }
+        set ln $l
+      }
+    }
+    after idle " \
+      alited::main::FocusText $TID $ln.0 ; \
+      alited::tree::NewSelection {} $ln.0 yes"
   }
 }
 
@@ -378,6 +419,7 @@ proc main::BindsForText {TID wtxt} {
   bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
   bind $wtxt <Control-Shift-ButtonRelease-1> "::alited::find::SearchWordInSession ; break"
   bind $wtxt <Control-Tab> "::alited::bar::ControlTab ; break"
+  bind $wtxt <<Undo>> "after idle alited::main::HighlightLine"
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action
   alited::keys::BindKeys $wtxt template
@@ -459,6 +501,8 @@ proc main::_create {} {
     {.fraFV.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_heart -tip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
     {.fraFV.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -tip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
     {.fraFV.fra1.BuTDelF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -tip {$alited::al(MC,favordel)} -com alited::favor::Delete}}
+    {.fraFV.fra1.sev12 - - - - {pack -side left -fill y -padx 5}}
+    {.fraFV.fra1.BuTDelAllF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_trash -tip {$alited::al(MC,favordelall)} -com alited::favor::DeleteAll}}
     {.fraFV.fra1.h_2 - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraFV.fra1.sev2 - - - - {pack -side right -fill y -padx 0}}
     {.fraFV.fra - - - - {pack -fill both -expand 1} {}}

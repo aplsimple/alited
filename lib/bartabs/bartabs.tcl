@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.4.4
+package provide bartabs 1.4.5
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -593,21 +593,26 @@ method Tab_Is {wb} {
 }
 #_______________________
 
-method Tab_CloseFew {{TID -1} {left no}} {
+method Tab_CloseFew {{TID -1} {left no} args} {
 # Closes tabs of bar.
 #   TID - ID of the current tab or -1 if to close all
 #   left - "yes" if to close all at left of TID, "no" if at right
+#   args - options (if contains -skipsel, selected tabs aren't closed)
 
   set BID [my ID]
   if {$TID ne "-1"} {lassign [my Tab_BID $TID] BID icur}
   set tabs [my $BID listTab]
+  set skipsel [expr {[lsearch $args -skipsel]>-1}]
+  set seltabs [my $BID cget -select]
   set doupdate no
   for {set i [llength $tabs]} {$i} {} {
     incr i -1
     set tID [lindex $tabs $i 0]
-    if {$TID eq "-1" || ($left && $i<$icur) || (!$left && $i>$icur)} {
-      if {![set res [my $tID close no]]} break
-      if {$res==1} {set doupdate yes}
+    if {!$skipsel || $tID ni $seltabs} {
+      if {$TID eq "-1" || ($left && $i<$icur) || (!$left && $i>$icur)} {
+        if {![set res [my $tID close no]]} break
+        if {$res==1} {set doupdate yes}
+      }
     }
   }
   if {$doupdate} {
@@ -1918,7 +1923,7 @@ method closeAll {BID TID func args} {
 #   3 - for "Close All at Right"
 
   switch $func {
-    1 {my $BID Tab_CloseFew -1   no}
+    1 {my $BID Tab_CloseFew -1   no {*}$args}
     2 {my $BID Tab_CloseFew $TID yes}
     3 {my $BID Tab_CloseFew $TID no}
   }

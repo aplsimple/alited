@@ -19,7 +19,7 @@ namespace eval ::alited {
   set al(ED,sp3) 0
   set al(ED,CKeyWords) {}
   set al(ED,gutterwidth) 5
-  set al(ED,guttershift) 4
+  set al(ED,guttershift) 3
   set al(TREE,isunits) yes
   set al(TREE,units) no
   set al(TREE,files) no
@@ -40,6 +40,7 @@ namespace eval ::alited {
   set al(INI,barlablen) 16
   set al(INI,bartiplen) 32
   set al(INI,confirmexit) 1
+  set al(INI,belltoll) 1
   set al(INI,LINES1) 10
   set al(INI,LEAF) 0
   set al(RE,branch) {^\s*(#+) [_]+\s+([^_]+[^[:blank:]]*)\s+[_]+ (#+)$}         ;#  # _ lev 1 _..
@@ -149,6 +150,9 @@ proc ini::ReadIni {{projectfile ""}} {
   ::apave::setTextIndent $al(prjindent)
   ::apave::textEOL $al(prjEOL)
   set al(TEXT,opts) "-padx 3 -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3)"
+  if {!$al(INI,belltoll)} {
+    proc ::bell args {}  ;# no bells
+  }
 }
 #_______________________
 
@@ -210,6 +214,7 @@ proc ini::ReadIniOptions {nam val} {
     EOL           {set al(ED,EOL) $val}
     maxfind       {set al(INI,maxfind) $val}
     confirmexit   {set al(INI,confirmexit) $val}
+    belltoll      {set al(INI,belltoll) $val}
     spacing1      {set al(ED,sp1) $val}
     spacing2      {set al(ED,sp2) $val}
     spacing3      {set al(ED,sp3) $val}
@@ -477,6 +482,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "EOL=$al(ED,EOL)"
   puts $chan "maxfind=$al(INI,maxfind)"
   puts $chan "confirmexit=$al(INI,confirmexit)"
+  puts $chan "belltoll=$al(INI,belltoll)"
   puts $chan "spacing1=$al(ED,sp1)"
   puts $chan "spacing2=$al(ED,sp2)"
   puts $chan "spacing3=$al(ED,sp3)"
@@ -782,7 +788,7 @@ proc ini::_init {} {
   # the below icons' order defines their order in the toolbar
   foreach {icon} {none gulls heart add change delete up down plus minus \
   retry misc previous next folder file OpenFile box SaveFile saveall \
-  undo redo help replace ok color run other e_menu} {
+  undo redo help replace ok color run other e_menu trash} {
     set img [CreateIcon $icon]
     if {$icon in {"file" OpenFile box SaveFile saveall help ok color other \
     replace e_menu run undo redo}} {

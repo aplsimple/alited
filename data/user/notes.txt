@@ -13,5 +13,5 @@ alited from v0.6 to v1.0:
   + fossil/git diff of a file
   + C syntax
   + all options of Preferences & Projects
-  - comments & unit tree for code of alited
+  + comments & unit tree for code of alited
   - index.html on Github

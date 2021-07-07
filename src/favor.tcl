@@ -1,25 +1,30 @@
 #! /usr/bin/env tclsh
-#
+###########################################################
 # Name:    favor.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
-# Date:    05/13/2021
+# Date:    07/01/2021
 # Brief:   Handles favorites/last visited lists.
 # License: MIT.
+###########################################################
 
-# _________________________ Variables of favor ________________________ #
+# _________________________ Variables ________________________ #
 
 
 namespace eval favor {
-  variable tipID ""
+  variable tipID {}
   variable initialFavs [list]
 }
 
-# ________________________ Main _________________________ #
+# ________________________ Common _________________________ #
 
 proc favor::LastVisited {item header} {
+  # Puts an item to "Last visited" list.
+  #   item - ID of unit tree's item
+  #   header - header of item
+
   namespace upvar ::alited al al obPav obPav
   set name [string trim [lindex $item 1]]
-  if {[string trim $name] eq ""} return
+  if {[string trim $name] eq {}} return
   set fname [alited::bar::FileName] 
   # search an old item
   set found no
@@ -42,13 +47,16 @@ proc favor::LastVisited {item header} {
   if {!$al(FAV,IsFavor)} {
     SetFavorites $al(FAV,visited)
     set wtree [$obPav TreeFavor]
-    if {[set id0 [lindex [$wtree children {}] 0]] ne ""} {
+    if {[set id0 [lindex [$wtree children {}] 0]] ne {}} {
       $wtree see $id0
     }
   }
 }
+#_______________________
 
 proc favor::Select {} {
+  # Handles selecting an item of "Last visited" widget.
+
   namespace upvar ::alited al al obPav obPav
   set msec [clock milliseconds]
   if {[info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<800}]} {
@@ -59,7 +67,7 @@ proc favor::Select {} {
   if {![IsSelected favID name fname sname header line]} {
     return
   }
-  if {[set TID [alited::file::OpenFile $fname]] eq ""} return
+  if {[set TID [alited::file::OpenFile $fname]] eq {}} return
   foreach it [alited::tree::GetTree {} TreeFavor] {
     lassign $it - - ID - values
     lassign $values name2 fname2 header2
@@ -76,21 +84,33 @@ proc favor::Select {} {
     alited::unit::SelectByHeader $header $line
   }
 }
+#_______________________
 
 proc favor::IsSelected {IDN nameN fnameN snameN headerN lineN} {
+  # Gets data of currently selected item of favorites.
+  #   IDN - variable name of item's ID
+  #   nameN - variable name of item's name
+  #   fnameN - variable name of item's file name
+  #   snameN - variable name of item's tail file name
+  #   headerN - variable name of item's header
+  #   lineN - variable name of item's 1st line
+
   namespace upvar ::alited al al obPav obPav
   upvar 1 $IDN ID $nameN name $fnameN fname $snameN sname $headerN header $lineN line
-  if {[set ID [alited::tree::CurrentItem TreeFavor]] eq ""} {return no}
+  if {[set ID [alited::tree::CurrentItem TreeFavor]] eq {}} {return no}
   set wtree [$obPav TreeFavor]
   lassign [$wtree item $ID -values] name fname header line
   set sname [file tail $fname]
   return yes
 }
-# ________________________ Setup _________________________ #
+# ________________________ Set favorites _________________________ #
 
 proc favor::SetAndClose {cont} {
+  # Sets favorites list, opens files from favorites list, closes other files.
+  #   cont - list of favorites
+
   SetFavorites $cont
-  set fnamecont ""
+  set fnamecont {}
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
     set fname [alited::bar::FileName $TID]
@@ -109,15 +129,19 @@ proc favor::SetAndClose {cont} {
   }
   if {![llength [alited::bar::BAR listTab]]} {
     # no tabs open
-    if {$fnamecont ne ""} {
+    if {$fnamecont ne {}} {
       alited::file::OpenFile $fnamecont  ;#  open a file from favorites
     } else {
       alited::file::CheckForNew  ;# ... or create "no name" tab
     }
   }
 }
+#_______________________
 
 proc favor::SetFavorites {cont} {
+  # Sets favorites/last visited list.
+  #   cont - list of favorites/last visited
+
   namespace upvar ::alited al al obPav obPav
   variable initialFavs
   set wtree [$obPav TreeFavor]
@@ -127,15 +151,18 @@ proc favor::SetFavorites {cont} {
   foreach curfav $cont {
     catch {
       lassign $curfav - - - - values
-      if {$values ne ""} {
+      if {$values ne {}} {
         set itemID [$wtree insert {} end -values $values]
         $wtree tag add tagNorm $itemID
       }
     }
   }
 }
+#_______________________
 
 proc favor::Lists {} {
+  # Runs "Lists of Favorites" dialogue, sets a list of favorites at a choice.
+
   variable initialFavs
   if {![llength $initialFavs]} {
     set initialFavs [alited::tree::GetTree {} TreeFavor]
@@ -151,6 +178,8 @@ proc favor::Lists {} {
 # ________________________ Display _________________________ #
 
 proc favor::Show {} {
+  # Shows a list of favorites / last visited units.
+
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav TreeFavor]
   if {$al(FAV,IsFavor)} {
@@ -171,13 +200,16 @@ proc favor::Show {} {
     SetFavorites $al(FAV,visited)
     $wtree heading #1 -text [msgcat::mc $al(MC,lastvisit)]
   }
-  foreach but {BuTListF BuTAddF BuTDelF} {
+  foreach but {BuTListF BuTAddF BuTDelF BuTDelAllF} {
     [$obPav $but] configure -state $state
   }
   baltip::tip [$obPav BuTVisitF] $tip
 }
+#_______________________
 
 proc favor::SwitchFavVisit {} {
+  # Switches favorites / last visited units' view.
+
   namespace upvar ::alited al al obPav obPav
   set al(FAV,IsFavor) [expr {!$al(FAV,IsFavor)}]
   Show
@@ -186,10 +218,13 @@ proc favor::SwitchFavVisit {} {
 # ________________________ Changing lists ________________________ #
 
 proc favor::Add {{undermouse yes}} {
+  # Adds a unit to favorites.
+  #   undermouse - if yes, run by mouse click
+
   namespace upvar ::alited al al obPav obPav
   lassign [CurrentName] itemID name l1 l2
-  if {$name eq ""} return
-  if {$undermouse} {set geo "-geometry pointer+10+-100"} {set geo ""}
+  if {$name eq {}} return
+  if {$undermouse} {set geo {-geometry pointer+10+-100}} {set geo {}}
   set fname [alited::bar::FileName]
   set sname [file tail $fname]
   foreach it [alited::tree::GetTree {} TreeFavor] {
@@ -205,19 +240,23 @@ proc favor::Add {{undermouse yes}} {
     set wtree [$obPav Tree]
     set header [alited::unit::GetHeader [$obPav Tree] $itemID]
     set pos [[alited::main::CurrentWTXT] index insert]
-    set line [expr {($l1 eq "" || $l2 eq "" || $l1>$pos || $l2<$pos) ? 0 : \
+    set line [expr {($l1 eq {} || $l2 eq {} || $l1>$pos || $l2<$pos) ? 0 : \
       [alited::p+ $pos -$l1]}]
     set wt2 [$obPav TreeFavor]
     set ID2 [$wt2 insert {} 0 -values [list $name $fname $header $line]]
     $wt2 tag add tagNorm $ID2
   }
 }
+#_______________________
 
 proc favor::Delete {{undermouse yes}} {
+  # Deletes an item from favorites.
+  #   undermouse - if yes, run by mouse click
+
   namespace upvar ::alited al al obPav obPav
   if {$undermouse} {
     set name [lindex [CurrentName] 1]
-    set favID ""
+    set favID {}
     foreach it [alited::tree::GetTree {} TreeFavor] {
       lassign $it - - ID2 - values
       lassign $values name2 fname header line
@@ -229,25 +268,49 @@ proc favor::Delete {{undermouse yes}} {
   } else {
     if {![IsSelected favID name fname sname header line]} return
   }
-  if {$favID eq ""} {bell; return}
+  if {$favID eq {}} {bell; return}
   set sname [file tail $fname]
   set msg [string map [list %n $name %f $sname] $al(MC,delfavor)]
-  if {$undermouse} {set geo "-geometry pointer+10+-100"} {set geo ""}
+  if {$undermouse} {set geo {-geometry pointer+10+-100}} {set geo {}}
   if {[alited::msg yesno warn $msg NO {*}$geo]} {
     [$obPav TreeFavor] delete $favID
   }
 }
+#_______________________
+
+proc favor::DeleteAll {{undermouse yes}} {
+  # Deletes all items from favorites.
+  #   undermouse - if yes, run by mouse click
+
+  namespace upvar ::alited al al obPav obPav
+  if {$undermouse} {set geo {-geometry pointer+10+-100}} {set geo {}}
+  if {[alited::msg yesno warn [msgcat::mc {Remove all of the favorites?}] \
+  NO {*}$geo -title $al(MC,favordelall)]} {
+    foreach curfav [alited::tree::GetTree {} TreeFavor] {
+      [$obPav TreeFavor] delete [lindex $curfav 2]
+    }
+  }
+}
+#_______________________
 
 proc favor::CurrentName {} {
-  lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - name l1 l2
+  # Gets data of a current unit.
+  # Returns a list of the unit's data: ID, title, 1st line, last line.
+
+  lassign [alited::tree::CurrentItemByLine {} 1] itemID - - - name l1 l2
   set name [string trim $name]
-  if {$name eq ""} bell
+  if {$name eq {}} bell
   return [list $itemID $name $l1 $l2]
 }
 
 # ________________________ Popup menus _________________________ #
 
 proc favor::ShowPopupMenu {ID X Y} {
+  # Displays a popup menu at clicking the favorites / last visited list.
+  #   ID - tree item's ID
+  #   X - x-coordinate of the mouse pointer
+  #   Y - y-coordinate of the mouse pointer
+
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav TreeFavor]
   set popm $wtree.popup
@@ -264,15 +327,18 @@ proc favor::ShowPopupMenu {ID X Y} {
     set lab $al(MC,favorites)
   }
   $popm add command -label $lab {*}[$obPav iconA none] \
-    -command "alited::favor::SwitchFavVisit" -image $img
+    -command alited::favor::SwitchFavVisit -image $img
   $popm add separator
   if {$al(FAV,IsFavor)} {
     $popm add command -label $al(MC,FavLists) {*}[$obPav iconA none] \
-      -command "::alited::favor::Lists" -image alimg_heart
+      -command ::alited::favor::Lists -image alimg_heart
     $popm add command -label $al(MC,favoradd) {*}[$obPav iconA none] \
-      -command "::alited::favor::Add no" -image alimg_add
+      -command {::alited::favor::Add no} -image alimg_add
     $popm add command -label $al(MC,favordel) {*}[$obPav iconA none] \
-      -command "::alited::favor::Delete no" -image alimg_delete
+      -command {::alited::favor::Delete no} -image alimg_delete
+    $popm add separator
+    $popm add command -label $al(MC,favordelall) {*}[$obPav iconA none] \
+      -command {::alited::favor::DeleteAll no} -image alimg_trash
     $popm add separator
   }
   $popm add command -label $al(MC,copydecl) {*}[$obPav iconA none] \
@@ -280,13 +346,20 @@ proc favor::ShowPopupMenu {ID X Y} {
   $obPav themePopup $popm
   tk_popup $popm $X $Y
 }
+#_______________________
 
 proc favor::PopupMenu {x y X Y} {
+  # Prepares and runs a popup menu at clicking the favorites / last visited list.
+  #   x - x-coordinate to identify tree item
+  #   y - y-coordinate to identify tree item
+  #   X - x-coordinate of the mouse pointer
+  #   Y - y-coordinate of the mouse pointer
+
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav TreeFavor]
   set ID [$wtree identify item $x $y]
   if {![$wtree exists $ID]} return
-  if {[set sel [$wtree selection]] ne ""} {
+  if {[set sel [$wtree selection]] ne {}} {
     $wtree selection remove $sel
   }
   $wtree selection add $ID
@@ -296,18 +369,32 @@ proc favor::PopupMenu {x y X Y} {
 # ________________________ Tips _________________________ #
 
 proc favor::CopyDeclaration {wtree ID} {
+  # Copies a current unit's declaration to the clipboard.
+  #   wtree - tree widget's path
+  #   ID - tree item's ID
+
   clipboard clear
   clipboard append [lindex [$wtree item $ID -values] 2]
 }
+#_______________________
 
 proc favor::TooltipOff {} {
+  # Removes a tip of favorite / last visited unit's declaration.
+
   namespace upvar ::alited al al obPav obPav
   variable tipID
   ::baltip hide $al(WIN)
-  set tipID ""
+  set tipID {}
 }
+#_______________________
 
 proc favor::Tooltip {x y X Y} {
+  # Shows a tip of favorite / last visited unit's declaration.
+  #   x - x-coordinate to identify tree item
+  #   y - y-coordinate to identify tree item
+  #   X - x-coordinate of the mouse pointer
+  #   Y - y-coordinate of the mouse pointer
+
   namespace upvar ::alited al al obPav obPav
   variable tipID
   set wtree [$obPav TreeFavor]
@@ -326,6 +413,8 @@ proc favor::Tooltip {x y X Y} {
 # ________________________ Initialization _________________________ #
 
 proc favor::_init {} {
+  # Initializes and shows favorite / last visited units' view.
+
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav TreeFavor]
   alited::tree::AddTags $wtree

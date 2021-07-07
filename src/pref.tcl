@@ -211,7 +211,7 @@ proc pref::Ok {args} {
   if {$ans in {1 2}} {
     GetEmSave out
     # check options that can make alited unusable
-    if {$al(INI,HUE)<-40 || $al(INI,HUE)>40} {set al(INI,HUE) 0}
+    if {$al(INI,HUE)<-50 || $al(INI,HUE)>50} {set al(INI,HUE) 0}
     if {$al(FONTSIZE,small)<8 || $al(FONTSIZE,small)>14} {set al(FONTSIZE,small) 10}
     if {$al(FONTSIZE,std)<9 || $al(FONTSIZE,std)>18} {set al(FONTSIZE,std) 11}
     if {$al(INI,RECENTFILES)<10 || $al(INI,RECENTFILES)>50} {set al(INI,RECENTFILES) 16}
@@ -294,7 +294,7 @@ proc pref::General_Tab1 {} {
     {.labCS - - 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.opc .labCS L 1 1 {-st sw -pady 5} {::alited::pref::opcc alited::pref::opcColors {-width 20} {alited::pref::opcToolPre %a}}}
     {.labHue .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Tint:"}}
-    {.spxHue .labHue L 1 1 {-st sw -pady 5} {-tvar alited::al(INI,HUE) -from -40 -to 40 -justify center -w 3}}
+    {.spxHue .labHue L 1 1 {-st sw -pady 5} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 3}}
     {.labFsz1 .labHue T 1 1 {-st w -pady 8 -padx 3} {-t "Small font size:"}}
     {.spxFsz1 .labFsz1 L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(FONTSIZE,small) -from 8 -to 14 -justify center -w 3}}
     {.labFsz2 .labFsz1 T 1 1 {-st w -pady 8 -padx 3} {-t "Middle font size:"}}
@@ -338,6 +338,8 @@ proc pref::General_Tab2 {} {
     {.seh4 .labMaxFiles T 1 2 {-st ew -pady 5}}
     {.labBackup .seh4 T 1 1 {-st w -pady 1 -padx 3} {-t "Back up files to a project's subdirectory:"}}
     {.entBackup .labBackup L 1 1 {-st sw -pady 1} {-tvar alited::al(BACKUP) -w 20 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup."}}
+    {.labBell .labBackup T 1 1 {-st w -pady 1 -padx 3} {-t "Bell at warnings:"}}
+    {.chbBell .labBell L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,belltoll)}}
   }
 }
 #_______________________

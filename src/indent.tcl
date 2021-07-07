@@ -11,6 +11,10 @@ namespace eval indent {
 }
 
 proc indent::indent {tclcode pad indcnt} {
+  # Indents Tcl code.
+  #   tclcode - text of Tcl code
+  #   pad - string of spaces per 1 indent
+  #   indcnt - initial indent
 
   set lines [split $tclcode \n]
   set out {}
@@ -65,7 +69,7 @@ proc indent::indent {tclcode pad indcnt} {
     set nbbraces [expr {$nl - $nr}]
     incr totalbraces $nbbraces
     if {$totalbraces<0} {
-      set msg [msgcat::mc "The line %n: unbalanced brace!"]
+      set msg [msgcat::mc {The line %n: unbalanced brace!}]
       set msg [string map [list %n $lineindex] $msg]
       alited::msg ok err $msg
       return {}
@@ -85,8 +89,10 @@ proc indent::indent {tclcode pad indcnt} {
   }
   return $out
 }
+#_______________________
 
 proc indent::normalize {} {
+  # Normalizes all indents of the current Tcl text.
 
   set txt [alited::main::CurrentWTXT]
   set pad $alited::al(prjindent)

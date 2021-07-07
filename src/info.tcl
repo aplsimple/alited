@@ -1,8 +1,13 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The info panel.
-# _______________________________________________________________________ #
+###########################################################
+# Name:    info.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    07/03/2021
+# Brief:   Handles the info listbox widget.
+# License: MIT.
+###########################################################
+
+# _________________________ Variables ________________________ #
 
 namespace eval ::alited::info {
   variable list [list]
@@ -10,13 +15,24 @@ namespace eval ::alited::info {
   variable focustext yes
 }
 
+# ________________________ Common _________________________ #
+
 proc info::Get {i} {
+  # Gets a message of the info listbox widget by its index.
+  #   i - index of message
+
   variable list
   variable info
   return list [[lindex $list $i] [lindex $info $i]]
 }
+#_______________________
 
 proc info::Put {msg {inf ""} {bold no}} {
+  # Puts a message to the info listbox widget.
+  #   msg - the message
+  #   inf - additional data for the message (1st line of unit etc.)
+  #   bold - if yes, displays the message bolded
+
   variable list
   variable info
   lappend list $msg
@@ -27,9 +43,12 @@ proc info::Put {msg {inf ""} {bold no}} {
     [$obPav LbxInfo] itemconfigure end -foreground $fgbold
   }
 }
-
+#_______________________
 
 proc info::Clear {{i -1}} {
+  # Clears the info listbox widget and the related data.
+  #   i - index of message (if omitted, clears all messages)
+
   variable list
   variable info
   if {$i == -1} {
@@ -44,7 +63,12 @@ proc info::Clear {{i -1}} {
   }
 }
 
+# ________________________ GUI _________________________ #
+
 proc info::ListboxSelect {w} {
+  # Handles a selection event of the info listbox.
+  #   w - listbox's path
+
   variable info
   variable focustext
   set sel [lindex [$w curselection] 0]
@@ -63,26 +87,43 @@ proc info::ListboxSelect {w} {
     }
   }
 }
+#_______________________
 
 proc info::FocusIn {sbhi lbxi} {
+  # At focusing in the info listbox, shows its scrollbar.
+  #   sbhi - scrollbar's path
+  #   lbxi - listbox's path
+
   if {![winfo ismapped $sbhi]} {
     pack $sbhi -side bottom -before $lbxi -fill both
   }
 }
+#_______________________
 
 proc info::FocusOut {sbhi} {
+  # At focusing out of the info listbox, hides its scrollbar.
+  #   sbhi - scrollbar's path
+
   variable focustext
   if {$focustext} {
     pack forget $sbhi
   }
 }
+#_______________________
 
 proc info::SwitchFocustext {} {
+  # Switches a variable of flag "listbox is focused".
+
   variable focustext
   if {$focustext} {set focustext 0} {set focustext 1}
 }
+#_______________________
 
 proc info::PopupMenu {X Y} {
+  # Runs a popup menu on the info listbox.
+  #   X - x-coordinate of mouse pointer
+  #   Y - y-coordinate of mouse pointer
+
   namespace upvar ::alited al al obPav obPav
   variable focustext
   set popm $al(WIN).popupInfo

@@ -1,10 +1,11 @@
 #! /usr/bin/env tclsh
-#
+###########################################################
 # Name:    check.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
-# Date:    05/13/2021
+# Date:    07/03/2021
 # Brief:   Handles checkings Tcl code.
 # License: MIT.
+###########################################################
 
 # _________________________ Variables ________________________ #
 
@@ -17,28 +18,31 @@ namespace eval check {
   variable errors 0 errors1 0 errors2 0 errors3 0 fileerrors 0
 }
 
-# ________________________ Display _________________________ #
-
-proc check::Help {args} {
-  variable win
-  alited::Help $win
-}
+# ________________________ Checking _________________________ #
 
 proc check::ShowResults {} {
+  # Displays results of checking.
+
   variable errors
   variable fileerrors
   if {$errors || $fileerrors} {
-    set msg [msgcat::mc "Found %f file error(s), %u unit error(s)."]
+    set msg [msgcat::mc {Found %f file error(s), %u unit error(s).}]
     set msg [string map [list %f $fileerrors %u $errors] $msg]
   } else {
-    set msg [msgcat::mc "No errors found."]
+    set msg [msgcat::mc {No errors found.}]
   }
-  alited::info::Put $msg "" yes
+  alited::info::Put $msg {} yes
 }
-
-# ________________________ Checking _________________________ #
+#_______________________
 
 proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""}} {
+  # Checks a unit.
+  #   wtxt - text's path
+  #   pos1 - starting position of the unit in the text
+  #   pos1 - ending position of the unit in the text
+  #   TID - tab's ID
+  #   title - title of the unit
+
   variable chBrace 1
   variable chBracket 1
   variable chParenthesis 1
@@ -61,34 +65,40 @@ proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""}} {
     }
   }
   set err 0
-  if {$TID ne ""} {
+  if {$TID ne {}} {
     set info [list $TID [expr {[string is double -strict $pos1] ? int($pos1) : 1}]]
   }
   if {$cc1 != $cc2} {
     incr err
     incr errors1
-    if {$TID ne ""} {alited::info::Put "$title: inconsistent \{\}: $cc1 != $cc2" $info}
+    if {$TID ne {}} {alited::info::Put "$title: inconsistent \{\}: $cc1 != $cc2" $info}
   }
   if {$ck1 != $ck2} {
     incr err
     incr errors2
-    if {$TID ne ""} {alited::info::Put "$title: inconsistent \[\]: $ck1 != $ck2" $info}
+    if {$TID ne {}} {alited::info::Put "$title: inconsistent \[\]: $ck1 != $ck2" $info}
   }
   if {$cp1 != $cp2} {
     incr err
     incr errors3
-    if {$TID ne ""} {alited::info::Put "$title: inconsistent (): $cp1 != $cp2" $info}
+    if {$TID ne {}} {alited::info::Put "$title: inconsistent (): $cp1 != $cp2" $info}
   }
   return $err
 }
+#_______________________
 
 proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
+  # Checks a file.
+  #   fname - file name
+  #   wtxt - the file's text widget
+  #   TID - the file's tab ID
+
   variable errors
   variable fileerrors
   variable errors1
   variable errors2
   variable errors3
-  if {$fname eq ""} {
+  if {$fname eq {}} {
     set fname [alited::bar::FileName]
     set wtxt [alited::main::CurrentWTXT]
     set TID [alited::bar::CurrentTabID]
@@ -106,7 +116,7 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
   set unittree [alited::unit::GetUnits $TID $textcont]
   foreach item $unittree {
     lassign $item lev leaf fl1 title l1 l2
-    if {!$leaf || $title eq ""} continue
+    if {!$leaf || $title eq {}} continue
     set title "$curfile: $title"
     set err [CheckUnit $wtxt $l1.0 $l2.end $TID $title]
     if {$err} {
@@ -115,7 +125,11 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
     }
   }
 }
+#_______________________
+
 proc check::CheckAll {} {
+  # Checks all files of session.
+
   namespace upvar ::alited al al
   update
   set allfnd [list]
@@ -128,14 +142,17 @@ proc check::CheckAll {} {
     CheckFile $curfile $wtxt $TID
   }
 }
+#_______________________
 
 proc check::Check {} {
+  # Runs checking.
+
   namespace upvar ::alited al al
   variable what
   variable errors
   variable fileerrors
   alited::info::Clear
-  alited::info::Put $al(MC,wait) "" yes
+  alited::info::Put $al(MC,wait) {} yes
   set errors [set fileerrors 0]
   switch $what {
     1 CheckFile
@@ -148,21 +165,36 @@ proc check::Check {} {
 # ________________________ Button handlers _________________________ #
 
 proc check::Ok {args} {
+  # Handles hitting "OK" button.
+
   namespace upvar ::alited obDl2 obDl2
   variable win
   $obDl2 res $win 1
   return
 }
+#_______________________
 
 proc check::Cancel {args} {
+  # Handles hitting "Cancel" button.
+
   namespace upvar ::alited obDl2 obDl2
   variable win
   $obDl2 res $win 0
+}
+#_______________________
+
+proc check::Help {args} {
+  # Handles hitting "Help" button.
+
+  variable win
+  alited::Help $win
 }
 
 # ________________________ Main _________________________ #
 
 proc check::_create {} {
+  # Creates "Checking" dialogue.
+
   namespace upvar ::alited al al obDl2 obDl2
   variable win
   $obDl2 makeWindow $win $al(MC,checktcl)
@@ -190,6 +222,8 @@ proc check::_create {} {
 }
 
 proc check::_run {} {
+  # Runs "Checking" dialogue.
+
   if {[_create]} Check
 }
 # _________________________________ EOF _________________________________ #

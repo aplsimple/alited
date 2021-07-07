@@ -30,7 +30,7 @@ proc complete::TextCursorCoordinates {wtxt} {
     lassign [split [winfo geometry $p] x+] w h x y
     incr X $x
     incr Y $y
-    if {[catch {set p [winfo parent $p]}] || $p eq {.}} break
+    if {[catch {set p [winfo parent $p]}] || $p in {{} {.}}} break
   }
   return [list $X $Y]
 }
@@ -109,8 +109,13 @@ proc complete::PickCommand {wtxt} {
 
   if {![llength $alited::complete::comms]} {return {}}
   set win .pickcommand
-  frame $win
-  wm manage $win
+  catch {destroy $win}
+  if {$::tcl_platform(platform) eq {windows}} {
+    toplevel $win
+  } else {
+    frame $win
+    wm manage $win
+  }
   wm withdraw $win
   wm overrideredirect $win 1
   set obj pavedPickCommand
@@ -121,10 +126,15 @@ proc complete::PickCommand {wtxt} {
   }
   set lbx [$obj LbxPick]
   foreach ev {ButtonPress-1 Return KP_Enter KeyPress-space} {
-    catch {bind $lbx <$ev> "::alited::complete::SelectCommand $win $obj $lbx"}
+    catch {bind $lbx <$ev> "after idle {::alited::complete::SelectCommand $win $obj $lbx}"}
   }
   $lbx selection set 0
   lassign [TextCursorCoordinates $wtxt] X Y
+  if {$::tcl_platform(platform) eq {windows}} {
+    incr X 10
+    incr Y 40
+    after 100 "wm deiconify $win"
+  }
   set res [$obj showModal $win -decor 0 -focus $lbx -geometry +$X+$Y]
   destroy $win
   $obj destroy
@@ -145,6 +155,7 @@ proc complete::AutoCompleteCommand {} {
     $wtxt delete $row.$idx1 $row.[incr idx2]
     set pos $row.$idx1
     $wtxt insert $pos $com
+    ::alited::main::HighlightLine
   }
   focus -force $wtxt
 }

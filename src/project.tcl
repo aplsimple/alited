@@ -505,23 +505,41 @@ proc project::Ok {args} {
     focus [$obDl2 TreePrj]
     return
   }
-  if {[llength [alited::bar::BAR listFlag m]]} {
-    set msg [msgcat::mc "All modified files will be saved.\n\nDo you agree?"]
+  if {[set N [llength [alited::bar::BAR listFlag m]]]} {
+    set msg [msgcat::mc "All modified files (%n) will be saved.\n\nDo you agree?"]
+    set msg [string map [list %n $N] $msg]
     if {![alited::msg yesno ques $msg NO -geometry root=$win]} return
   }
   if {![alited::file::SaveAll]} {
     $obDl2 res $win 0
     return
   }
+  if {[set N [llength [alited::bar::BAR cget -select]]]} {
+    set msg [msgcat::mc "All selected files (%n) will be reopen.\n\nDo you agree?"]
+    set msg [string map [list %n $N] $msg]
+    if {![alited::msg yesno ques $msg NO -geometry root=$win]} return
+  }
   set pname [string trim $al(prjname)]
   set fname [ProjectFileName $pname]
   RestoreSettings
   alited::ini::SaveIni
-  alited::file::CloseAll 1
+  alited::file::CloseAll 1 -skipsel  ;# the selected tabs aren't closed 
+  set selfiles [list]                ;# -> get their file names to reopen afterwards
+  foreach tid [alited::bar::BAR listFlag s] {
+    lappend selfiles [alited::bar::FileName $tid]
+  }
+  alited::file::CloseAll 1           ;# close all tabs
   set al(prjname) $pname
   set al(prjfile) $fname
   alited::ini::ReadIni $fname
   alited::bar::FillBar [$obPav BtsBar]
+  for {set i [llength $selfiles]} {$i} {} { ;# reopen selected files of previous project
+    incr i -1
+    set fname [lindex $selfiles $i]
+    if {[alited::bar::FileTID $fname] eq {}} {
+      alited::file::OpenFile $fname yes
+    }
+  }
   alited::file::MakeThemReload
   set TID [lindex [alited::bar::BAR listTab] $al(curtab) 0]
   catch {alited::bar::BAR $TID show}

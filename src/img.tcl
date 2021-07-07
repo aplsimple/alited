@@ -1,4 +1,13 @@
-# images for alited.tcl (base64)
+#! /usr/bin/env tclsh
+###########################################################
+# Name:    img.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    07/03/2021
+# Brief:   Handles images for alited.tcl (base64).
+# License: MIT.
+###########################################################
+
+# _________________________ proc/method "red bars" ________________________ #
 
 namespace eval img {
 
@@ -26,15 +35,20 @@ AXRSTlMAQObYZgAAABdJREFUCNdjwA9CgYAha9WqRjAB4eIFAB4KBycPp4bQAAAAAElFTkSuQmCC}
 set _AL_IMG(7) {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEUAAAAAtv/tHCS5r+j6AAAA
 AXRSTlMAQObYZgAAABdJREFUCNdjwA9CgYAha9WqlWACwsULACoSB3dYfX36AAAAAElFTkSuQmCC}
 
+# ________________________ Tcl files _________________________ #
+
 set _AL_IMG(Tcl) {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAG1BMVEUAAABEebIcVpN6oMOFqMp5
 nsLb////SUlJbZK4hOm9AAAABnRSTlMA4bzy7uoa1GpmAAAAPklEQVQI12NgdgGCBgYGBtY0IMgA
 MpjTQKABJAIWgomkCQBFIAwSRdLL08vKwCJl6WkgBiuQUVaOokYJDAQAbKolE+c3DpQAAAAASUVO
 RK5CYII=}
 
+# ________________________ e_menu _________________________ #
+
 set _AL_IMG(e_menu) {iVBORw0KGgoAAAANSUhEUgAAABYAAAAcCAMAAABS8b9vAAAAD1BMVEUrRF3Y2tab4+U9Oz4jKjDz
 nD2xAAAAP0lEQVQoz2NgwgoYmBiwAKKEGaEAXZgFDLAIM2ITxm4IcS5hRANgYSYmRkYUL+IVxmEI
 1VyCohav8PByCVYAAFFEAcBPpMHrAAAAAElFTkSuQmCC}
 
+# ________________________ keyboard ("key") _________________________ #
 
 set _AL_IMG(kbd) {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABAlBMVEUAAAAQEBZ9fZsYGCF/f5oa
 GiF/f52AgJ13d5RnZ4l5eZgaGiISEhcNDRCGhqKLi6V7e5pvb45hYYVRUWc5OVMSEhsICAg6OmoZ
@@ -46,6 +60,8 @@ AAAAt0lEQVQY0z3O1XbCQBRA0dtpmra424RgYYjg7u6u//8r3GEx7MfzdADChMhElgmRJMntjwLY
 svXWotmYaIgVnQCu2rJzuOzGuq5rbO4A+K02jte7xnJIXX1hqLQKp45pWpbFaB6DVK2zWV7NIjPO
 g0ehNTrMvFQKGGxl+tHj4a+vxAWjyINRVoQuD16jlBJKTQz/I6q+ZQZtHvRtQpjy4Fvv08ImgeuB
 W/Lj/AgBRIL2b+4H2Z2xJ1dcH5DXF1JFAAAAAElFTkSuQmCC}
+
+# ________________________ Tcl & alited _________________________ #
 
 set _AL_IMG(feather) {iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAh1BMVEX/////SUnrPkHNFB3uSEvb
 JCTmO0LjLTPeMTnOFyLpOjzUGSToMzfUICr99fjsREfdLTfXJS7eJCr/+fnkNz7sQkP3//raKDTg

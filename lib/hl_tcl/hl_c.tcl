@@ -220,7 +220,7 @@ proc ::hl_c::my::CoroHighlightAll {txt} {
       }
     }
   }
-  set ::hl_c::my::data(REG_TXT,$txt) "1"
+  set ::hl_c::my::data(REG_TXT,$txt) {1}
   return
 }
 
@@ -301,20 +301,22 @@ proc ::hl_c::my::MemPos1 {txt {donorm yes} {K ""} {s ""}} {
   return $insLC
 }
 
-proc ::hl_c::my::MemPos {txt} {
+proc ::hl_c::my::MemPos {txt {doit no}} {
   # Remembers the state of current line.
   #   txt - text widget's path
+  #   doit - argument for ShowCurrentLine
+  # See also: ShowCurrentLine
 
   variable data
   set data(_INSPOS_,$txt) [MemPos1 $txt no]
-  set ln [ShowCurrentLine $txt]
+  set ln [ShowCurrentLine $txt $doit]
   set data(CURPOS,$txt) $ln
-  set data(CUR_LEN,$txt) [$txt index "end -1 char"]
+  set data(CUR_LEN,$txt) [$txt index {end -1 char}]
   lassign [CountQSH $txt $ln] \
     data(CNT_QUOTE,$txt) data(CNT_SLASH,$txt) data(CNT_COMMENT,$txt)
-  if {[$txt tag ranges tagBRACKET] ne ""}    {$txt tag remove tagBRACKET 1.0 end}
-  if {[$txt tag ranges tagBRACKETERR] ne ""} {$txt tag remove tagBRACKETERR 1.0 end}
-  if {[set cmd $data(CMDPOS,$txt)] ne ""} {
+  if {[$txt tag ranges tagBRACKET] ne {}}    {$txt tag remove tagBRACKET 1.0 end}
+  if {[$txt tag ranges tagBRACKETERR] ne {}} {$txt tag remove tagBRACKETERR 1.0 end}
+  if {[set cmd $data(CMDPOS,$txt)] ne {}} {
     # run a command after changing position (with the state as arguments)
     append cmd " $txt $data(CUR_LEN,$txt) $ln $data(CNT_QUOTE,$txt) \
       $data(CNT_SLASH,$txt) $data(CNT_COMMENT,$txt)"
@@ -341,7 +343,7 @@ proc ::hl_c::my::Modified {txt oper pos1 args} {
       set pos2 [expr {$pos1 + [llength [split $ar2 \n]]}]
     }
     delete {
-      if {$ar2 eq "" || [catch {set pos2 [$txt index $ar2]}]} {
+      if {$ar2 eq {} || [catch {set pos2 [$txt index $ar2]}]} {
         set pos2 $posins
       }
     }
@@ -353,7 +355,7 @@ proc ::hl_c::my::Modified {txt oper pos1 args} {
 proc ::hl_c::my::CoroRun {txt pos1 pos2 args} {
 
   variable data
-  if {![info exist data(REG_TXT,$txt)] || $data(REG_TXT,$txt) eq "" || \
+  if {![info exist data(REG_TXT,$txt)] || $data(REG_TXT,$txt) eq {} || \
   ![info exist data(CUR_LEN,$txt)]} {
     return  ;# skip changes till the highlighting done
   }
@@ -374,7 +376,7 @@ proc ::hl_c::my::CoroModified {txt {i1 -1} {i2 -1} args} {
   # current line:
   set ln [expr {int([$txt index insert])}]
   # ending line:
-  set endl [expr {int([$txt index "end -1 char"])}]
+  set endl [expr {int([$txt index {end -1 char}])}]
   # range of change:
   if {$i1!=-1} {
     set dl [expr {abs($i2-$i1)}]
@@ -411,6 +413,7 @@ proc ::hl_c::my::CoroModified {txt {i1 -1} {i2 -1} args} {
   }
   if {!$data(PLAINTEXT,$txt)} {
     set lnseen 0
+    $txt tag add tagSTD $ln1.0 $ln2.end
     while {$ln1<=$ln2} {
       if {$ln1==$ln2} {
         set bf2 [LineState $txt $tSTR $tCMN "$ln1.end +1 chars"]
@@ -429,7 +432,7 @@ proc ::hl_c::my::CoroModified {txt {i1 -1} {i2 -1} args} {
       incr ln1
     }
   }
-  if {[set cmd $data(CMD,$txt)] ne ""} {
+  if {[set cmd $data(CMD,$txt)] ne {}} {
     # run a command after changes done (its arguments are txt, ln1, ln2)
     append cmd " $txt $lno1 $lno2 $args"
     {*}$cmd
@@ -448,7 +451,7 @@ proc ::hl_c::my::LineState {txt tSTR tCMN l1} {
   # Returns: a flag of 'quoted' line or -1.
 
   set i1 [$txt index $l1]
-  if {[set prev [string first "-1" $l1]]>-1} {
+  if {[set prev [string first -1 $l1]]>-1} {
     set i1 [$txt index "$i1 -1 chars"]
   }
   if {[::hl_tcl::my::SearchTag $tCMN [$txt index "$i1 -1 chars"]]!=-1} {
@@ -465,14 +468,15 @@ proc ::hl_c::my::LineState {txt tSTR tCMN l1} {
 }
 #_____
 
-proc ::hl_c::my::ShowCurrentLine {txt} {
+proc ::hl_c::my::ShowCurrentLine {txt {doit no}} {
   # Shows the current line.
   #   txt - text widget's path
+  #   doit - if yes, forces updating current line's background
 
   variable data
   set pos [$txt index insert]
   lassign [split $pos .] ln cn
-  if {![info exists data(CURPOS,$txt)] || int($data(CURPOS,$txt))!=$ln || $cn<2} {
+  if {$doit || ![info exists data(CURPOS,$txt)] || int($data(CURPOS,$txt))!=$ln || $cn<2} {
     $txt tag remove tagCURLINE 1.0 end
     $txt tag add tagCURLINE [list $pos linestart] [list $pos lineend]+1displayindices
   }
@@ -492,7 +496,7 @@ proc ::hl_c::hl_readonly {txt {ro -1} {com2 ""}} {
     return [expr {[info exists ::hl_c::my::data(READONLY,$txt)] && $::hl_c::my::data(READONLY,$txt)}]
   }
   set ::hl_c::my::data(READONLY,$txt) $ro
-  if {$com2 ne ""} {set ::hl_c::my::data(CMD,$txt) $com2}
+  if {$com2 ne {}} {set ::hl_c::my::data(CMD,$txt) $com2}
   set newcom "::$txt.internal"
   if {[info commands $newcom] eq ""} {rename $txt $newcom}
   set com "[namespace current]::my::Modified $txt"
@@ -533,11 +537,11 @@ proc ::hl_c::hl_init {txt args} {
   #   -seen - lines seen at start
   # This procedure has to be called before writing a text in the text widget.
 
-  if {[set setonly [expr {[lindex $args 0] eq "--"}]]} {
+  if {[set setonly [expr {[lindex $args 0] eq {--}}]]} {
     set args [lrange $args 1 end]
   }
-  set ::hl_c::my::data(REG_TXT,$txt) ""  ;# disables Modified at changing the text
-  foreach {opt val} {-dark 0 -readonly 0 -cmd "" -cmdpos "" -optRE 1 \
+  set ::hl_c::my::data(REG_TXT,$txt) {}  ;# disables Modified at changing the text
+  foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 \
   -multiline 1 -seen 500 -plaintext no -insertwidth 2 -keywords {}} {
     if {[dict exists $args $opt]} {
       set val [dict get $args $opt]
@@ -552,13 +556,13 @@ proc ::hl_c::hl_init {txt args} {
     set ::hl_c::my::data(SETCOLORS,$txt) 1
   } else {
     if {![info exists ::hl_c::my::data(COLORS,$txt)]}  {
-      set clrCURL ""
+      set clrCURL {}
       catch {set clrCURL [lindex [::apave::obj csGet] 16]}
       if {$::hl_c::my::data(DARK,$txt)} {
-        if {$clrCURL eq ""} {set clrCURL #29383c}
+        if {$clrCURL eq {}} {set clrCURL #29383c}
         set ::hl_c::my::data(COLORS,$txt) [list {*}[hl_colors $txt] $clrCURL]
       } else {
-        if {$clrCURL eq ""} {set clrCURL #efe0cd}
+        if {$clrCURL eq {}} {set clrCURL #efe0cd}
         set ::hl_c::my::data(COLORS,$txt) [list {*}[hl_colors $txt] $clrCURL]
       }
     }
@@ -573,10 +577,10 @@ proc ::hl_c::hl_init {txt args} {
   if {!$setonly || [dict exists $args -readonly]} {
     hl_readonly $txt $::hl_c::my::data(READONLY,$txt)
   }
-  if {[string first "::hl_c::" [bind $txt]]<0} {
+  if {[string first ::hl_c:: [bind $txt]]<0} {
     bind $txt <FocusIn> [list + ::hl_c::my::ShowCurrentLine $txt]
   }
-  set ::hl_c::my::data(_INSPOS_,$txt) ""
+  set ::hl_c::my::data(_INSPOS_,$txt) {}
   my::MemPos $txt
 }
 #_____
@@ -661,11 +665,11 @@ proc ::hl_c::hl_colors {txt {dark ""}} {
   if {[info exists ::hl_c::my::data(COLORS,$txt)]}  {
     return $::hl_c::my::data(COLORS,$txt)
   }
-  if {$dark eq ""} {set dark $::hl_c::my::data(DARK,$txt)}
+  if {$dark eq {}} {set dark $::hl_c::my::data(DARK,$txt)}
   if {$dark} {
     return [list orange #ff7e00 lightgreen #deab41 #76a396 #d485d4 #ff624e #ff33ff]
   } else {
-    return [list "#923B23" #7d1c00 #035103 #5c254e #5f6162 #A106A1 #c82b17 #FF0000]
+    return [list #923B23 #7d1c00 #035103 #5c254e #5f6162 #A106A1 #c82b17 #FF0000]
   }
 }
 #_____
@@ -685,7 +689,7 @@ proc ::hl_c::hl_line {txt} {
     }
     ::hl_c::my::HighlightLine $txt $ln $currQtd
   }
-  ::hl_c::my::MemPos $txt
+  ::hl_c::my::MemPos $txt yes
 }
 
 # _________________________________ EOF _________________________________ #

@@ -57,6 +57,7 @@ namespace eval ::alited {
   set al(MC,unitsdel)    [msgcat::mc {Remove Unit(s)}]
   set al(MC,favoradd)    [msgcat::mc {Add to Favorites}]
   set al(MC,favordel)    [msgcat::mc {Remove from Favorites}]
+  set al(MC,favordelall) [msgcat::mc {Remove All}]
   set al(MC,updtree)     [msgcat::mc {Update Tree}]
   set al(MC,movefile)    [msgcat::mc "Move %f\nto\n%d\n?"]
   set al(MC,introln1)    [msgcat::mc {First Lines}]

@@ -128,7 +128,13 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   set ctab [alited::bar::CurrentTabID]
   set wtree [$obPav Tree]
   # newly selected item
-  if {$itnew eq {}} {set itnew [CurrentItem]}
+  if {$itnew eq {}} {
+    if {$topos} {
+      set itnew [CurrentItemByLine $line]
+    } else {
+      set itnew [CurrentItem]
+    }
+  }
   set header [alited::unit::GetHeader $wtree $itnew]
   lassign [$wtree item $itnew -values] l1 l2 - - - leaf
   if {$leaf ne "" && $leaf} {
@@ -137,6 +143,8 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   # get saved pos
   if {[catch {set pos $al(CPOS,$ctab,$header)} e]} {
     set pos [$wtxt index insert]
+  } else {
+    set pos [expr {$pos+$l1}]
   }
   if {$topos} {
     set pos $line
@@ -162,12 +170,12 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
       set opos [$wtxt index insert]
       if {$o1<=$opos && $opos<($o2+1)} {
         set ohead [alited::unit::GetHeader $wtree $itold]
-        set al(CPOS,$otab,$ohead) "$opos"
+        set al(CPOS,$otab,$ohead) [expr {$opos-$o1}]
       }
     }
   }
   alited::bar::BAR configure --currSelTab $ctab --currSelItem $itnew
-  catch {set al(CPOS,$ctab,$header) "$pos"}
+  catch {set al(CPOS,$ctab,$header) [expr {$pos-$l1}]}
   if {$doFocus} {
     alited::main::FocusText $TID $pos
   }

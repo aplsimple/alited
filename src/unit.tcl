@@ -543,6 +543,7 @@ proc unit::Indent {} {
     }
     $wtxt insert $l.0 $ind
   }
+  alited::main::HighlightLine
 }
 #_______________________
 
@@ -578,12 +579,25 @@ proc unit::NormIndent {} {
 
 # ________________________ Comment in / out _________________________ #
 
+proc unit::CommentChar {} {
+  # Returns the commenting chars for a current file.
+
+  set fname [alited::bar::FileName]
+  if {[alited::file::IsTcl $fname]} {
+    return #
+  } elseif {[alited::file::IsClang $fname]} {
+    return //
+  }
+  return {}
+}
+
 proc unit::Comment {} {
   # Comments selected lines of text.
 
+  if {[set ch [CommentChar]] eq {}} {bell; return}
   lassign [SelectedLines] wtxt l1 l2
   for {set l $l1} {$l<=$l2} {incr l} {
-    $wtxt insert $l.0 #
+    $wtxt insert $l.0 $ch
   }
 }
 #_______________________
@@ -592,12 +606,15 @@ proc unit::UnComment {} {
   # Uncomments selected lines of text.
 
   namespace upvar ::alited obPav obPav
+  if {[set ch [CommentChar]] eq {}} {bell; return}
+  set lch [string length $ch]
+  set lch0 [expr {$lch-1}]
   lassign [SelectedLines] wtxt l1 l2
   for {set l $l1} {$l<=$l2} {incr l} {
     set line [$wtxt get $l.0 $l.end]
     set isp [$obPav leadingSpaces $line]
-    if {[string index $line $isp] eq "#"} {
-      $wtxt delete $l.$isp "$l.$isp + 1c"
+    if {[string range $line $isp $isp+$lch0] eq $ch} {
+      $wtxt delete $l.$isp "$l.$isp + ${lch}c"
     }
   }
 }

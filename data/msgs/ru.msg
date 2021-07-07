@@ -83,8 +83,6 @@ namespace eval ::alited {
     "File %f already exists in\n%d" "Файл %f уже существует в\n%d"
     {Add Unit by Template} {Добавить юнит по шаблону}
     {Remove Unit(s)} {Удалить юнит(ы)}
-    {Add to Favorites} {Добавить в Избранное}
-    {Remove from Favorites} {Удалить из Избранного}
     {No item selected.} {Запись не выбрана.}
     {Update Tree} {Обновить список}
     {Contract All} {Свернуть всё}
@@ -92,6 +90,7 @@ namespace eval ::alited {
     "Move %f\nto\n%d\n?" "Переместить %f\nв\n%d\n?"
     {Go to Line} {Перейти на строку}
     {Line number:} {Номер строки:}
+    {    In unit:} {     В юните:}
     "\"%n\" contains unbalanced \{\}: %1!=%2" "\"%n\" имеет несогласованные \{\}: %1!=%2"
     {Back} {Откат}
   }
@@ -173,7 +172,8 @@ namespace eval ::alited {
     {Click a project} {Выберите проект}
     "Delete a project \"%n\" ?" "Удалить проект \"%n\" ?"
     "A project \"%n\" already exists." "Проект \"%n\" уже существует."
-    "All modified files will be saved.\n\nDo you agree?" "Все измененные файлы будут сохранены.\n\nСогласны?"
+    "All modified files (%n) will be saved.\n\nDo you agree?" "Все измененные файлы (%n) будут сохранены.\n\nСогласны?"
+    "All selected files (%n) will be reopen.\n\nDo you agree?" "Все выделенные файлы (%n) будут переоткрыты.\n\nСогласны?"
     "Directory \"%d\"\ndoesn't exist.\n\nCreate it?" "Каталог \"%d\"\nне существует.\n\nСоздать его?"
     {Checking %d. Wait a little...} {Проверка %d. Ожидайте...}
     {Too big directory for a project: %n files or more.} {Слишком велик каталог проекта: %n файлов или более.}
@@ -207,6 +207,10 @@ namespace eval ::alited {
     "Add \"%n\" of %f\nto the favorites?" "Добавить \"%n\" файла %f\nв Избранное?"
     "Item \"%n\" of %f\nis already in the favorites." "Юнит \"%n\" из %f\nуже есть в Избранном."
     "Remove \"%n\" of %f\nfrom the favorites?" "Удалить \"%n\" файла %f\nиз Избранного?"
+    {Add to Favorites} {Добавить в Избранное}
+    {Remove from Favorites} {Удалить из Избранного}
+    {Remove All} {Удалить всё}
+    {Remove all of the favorites?} {Удалить всё из Избранного?}
   }
 
   ## _ Icons of toolbar: tips _ ##
@@ -287,6 +291,9 @@ namespace eval ::alited {
   ### ________________________ General _________________________ ###
   ::msgcat::mcmset ru {
     {Color scheme:} {Цветовая схема:}
+    {Darker:} {Темнее:}
+    {Lighter:} {Светлее:}
+    {Tint} {Оттенок}
     {Tint:} {Оттенок:}
     "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?"
     {Small font size:} {Размер малого шрифта:}
@@ -323,6 +330,7 @@ namespace eval ::alited {
     {saving a file:} {сохранении файла:}
     {Back up files to a project's subdirectory:} {Резервные копии в каталоге проекта:}
     "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." "Подкаталог проекта, где сохранятся копии файлов.\nЕсли это поле пустое, копирования не будет."
+    {Bell at warnings:} {Звук предупреждений:}
   }
 
   ### ________________________ Keys _________________________ ###

@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 1.0a4
+package provide alited 1.0b4
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -331,22 +331,15 @@ namespace eval alited {
   source [file join $SRCDIR complete.tcl]
 }
 
-# ____________ TO COMMENT ______________ #
-# It's a temporary code, to make demos.
-
-catch {
-  source /home/apl/PG/github/transpops/transpops.tcl
-  #set ::transpops::my::perchars 1.0 ;# for popups to be 12 times longer
-  ::transpops::run /home/apl/PG/github/alited/.bak/transpops.txt {<Alt-t> <Alt-y>} .alwin
-}
-
 # _________________________ Run the app _________________________ #
 
 # this "if" satisfies the Ruff doc generator "package require":
 if {[package versions alited] eq {}} {
+  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
+  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
     cd $alited::SRCDIR

@@ -171,7 +171,7 @@ proc find::SearchUnit {{wtxt ""}} {
     alited::bar::BAR $TID show
     after idle " \
       alited::main::FocusText $TID $found.0 ; \
-      alited::tree::NewSelection"
+      alited::tree::NewSelection {} $found.0 yes"
   } else {
     bell
   }
@@ -361,6 +361,10 @@ proc find::ShowResults {msg {mode 2} {TID ""}} {
   alited::info::Put $msg {} yes
   # results in status bar:
   alited::Message "$msg [string repeat { } 40]" $mode
+  # update line numbers of current file, as they are gone after the search
+  after idle " \
+    alited::main::CursorPos [alited::main::CurrentWTXT] ; \
+    alited::main::UpdateGutter"
 }
 #_______________________
 

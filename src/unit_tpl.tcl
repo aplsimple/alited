@@ -1,8 +1,13 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The unit template procedures.
-# _______________________________________________________________________ #
+###########################################################
+# Name:    unit_tpl.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    07/01/2021
+# Brief:   Handles templates of code.
+# License: MIT.
+###########################################################
+
+# _________________________ Variables ________________________ #
 
 namespace eval ::alited::unit_tpl {
   variable tpllist [list]
@@ -19,36 +24,87 @@ namespace eval ::alited::unit_tpl {
   variable win $::alited::al(WIN).fraTpl
 }
 
-proc unit_tpl::Ok {args} {
-  variable win
-  variable tplpos
-  variable tplcont
-  variable tplpla
-  namespace upvar ::alited al al obDl2 obDl2
-  if {[set isel [Selected index]] eq ""} {
-    focus [$obDl2 TreeTpl]
-    return
+# ________________________ Ini _________________________ #
+
+proc unit_tpl::ReadIni {} {
+  # Gets templates' data from al(TPL,list) saved in alited.ini.
+
+  namespace upvar ::alited al al
+  foreach tv {tpllist tplcont tplkeys tplpos tplpla} {
+    variable $tv
+    set $tv [list]
   }
-  set tex [lindex $tplcont $isel]
-  set pos [lindex $tplpos $isel]
-  set pla [lindex $tplpla $isel]
-  SaveIni
-  $obDl2 res $win [list $tex $pos $pla]
+  foreach lst $al(TPL,list) {
+    if {![catch {lassign $lst tpl key cont pos pla}]} {
+      set cont [string map [list $::alited::EOL \n] $cont]
+      if {$tpl ne {} && $cont ne {} && $pos ne {}} {
+        if {![string is double -strict $pos]} {set pos 1.0}
+        lappend tpllist $tpl
+        lappend tplcont $cont
+        lappend tplkeys $key
+        lappend tplpos $pos
+        lappend tplpla $pla
+      }
+    }
+  }
+}
+#_______________________
+
+proc unit_tpl::SaveIni {} {
+  # Puts templates' data to al(TPL,list) to save in alited.ini.
+
+  variable ilast
+  RegisterKeys
+  set ilast [Selected index no]
 }
 
-proc unit_tpl::Cancel {args} {
-  variable win
+# ________________________ Keys _________________________ #
+
+proc unit_tpl::RegisterKeys {} {
+  # Registers key bindings of templates, to save them to alited.ini afterwards.
+
+  namespace upvar ::alited al al
+  variable tpllist
+  variable tplcont
+  variable tplkeys
+  variable tplpos
+  variable tplpla
+  variable ilast
+  alited::keys::Delete template
+  set al(TPL,list) [list]
+  foreach tpl $tpllist key $tplkeys cont $tplcont pos $tplpos pla $tplpla {
+    set cont [string map [list \n $::alited::EOL] $cont]
+    lappend al(TPL,list) [list $tpl $key $cont $pos $pla]
+    alited::keys::Add template $tpl $key [list $cont $pos $pla]
+  }
+}
+#_______________________
+
+proc unit_tpl::GetKeyList {} {
+  # Creates a key list for "Keys" combobox.
+
   namespace upvar ::alited obDl2 obDl2
-  SaveIni
-  $obDl2 res $win 0
+  RegisterKeys
+  set keys [linsert [alited::keys::VacantList] 0 ""]
+  [$obDl2 CbxKey] configure -values $keys
 }
 
-proc unit_tpl::Help {args} {
-  variable win
-  alited::Help $win
+# ________________________ List _________________________ #
+
+proc unit_tpl::Focus {isel} {
+  # Sets the focus on the template list's item.
+  #   isel - index of item
+
+  namespace upvar ::alited obDl2 obDl2
+  set tree [$obDl2 TreeTpl]
+  $tree selection set $isel
+  $tree see $isel
 }
+#_______________________
 
 proc unit_tpl::UpdateTree {} {
+  # Updates the template list.
+
   namespace upvar ::alited al al obDl2 obDl2
   variable tpllist
   variable tplkeys
@@ -62,49 +118,12 @@ proc unit_tpl::UpdateTree {} {
   }
   ClearCbx
 }
-
-proc unit_tpl::ClearCbx {} {
-  namespace upvar ::alited obDl2 obDl2
-  [$obDl2 CbxKey] selection clear
-}
-
-proc unit_tpl::Selected {what {domsg yes}} {
-  namespace upvar ::alited al al obDl2 obDl2
-  variable tpllist
-  set tree [$obDl2 TreeTpl]
-  if {[set isel [$tree selection]] eq {} && [set isel [$tree focus]] eq {} && $domsg} {
-    alited::Message2 $al(MC,tplsel) 4
-  }
-  if {$isel ne "" && $what eq "index"} {
-    set isel [$tree index $isel]
-  }
-  return $isel
-}
-
-proc unit_tpl::Pos {{pos ""}} {
-  namespace upvar ::alited obDl2 obDl2
-  set wtxt [$obDl2 TexTpl]
-  if {$wtxt eq [focus] || $pos eq ""} {
-    return [$wtxt index insert]
-  }
-  return $pos
-}
-
-proc unit_tpl::Text {} {
-  namespace upvar ::alited obDl2 obDl2
-  return [[$obDl2 TexTpl] get 1.0 "end -1 char"]
-}
-
-proc unit_tpl::InText {wtxt} {
-  variable tplpos
-  namespace upvar ::alited obDl2 obDl2
-  if {[set isel [Selected index no]] ne ""} {
-    set pos [lindex $tplpos $isel]
-    ::tk::TextSetCursor $wtxt $pos
-  }
-}
+#_______________________
 
 proc unit_tpl::Select {{item ""}} {
+  # Selects an item of the template list.
+  #   item - index (ID) of template list
+
   variable tpllist
   variable tplkey
   variable tplkeys
@@ -133,15 +152,112 @@ proc unit_tpl::Select {{item ""}} {
     $tree see $item
   }
 }
+#_______________________
 
-proc unit_tpl::Focus {isel} {
-  namespace upvar ::alited obDl2 obDl2
+proc unit_tpl::Selected {what {domsg yes}} {
+  # Gets ID or index of currently selected item of the template list.
+  #   what - if "index", gets a current item's index
+  #   domsg - if yes, shows a message about the selection
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable tpllist
   set tree [$obDl2 TreeTpl]
-  $tree selection set $isel
-  $tree see $isel
+  if {[set isel [$tree selection]] eq {} && [set isel [$tree focus]] eq {} && $domsg} {
+    alited::Message2 $al(MC,tplsel) 4
+  }
+  if {$isel ne {} && $what eq {index}} {
+    set isel [$tree index $isel]
+  }
+  return $isel
 }
 
+# ________________________ Text of template _________________________ #
+
+proc unit_tpl::Pos {{pos ""}} {
+  # Returns a cursor position in the template's text.
+  #   pos - if not "", it's a position to be returned by default
+
+  namespace upvar ::alited obDl2 obDl2
+  set wtxt [$obDl2 TexTpl]
+  if {$wtxt eq [focus] || $pos eq {}} {
+    return [$wtxt index insert]
+  }
+  return $pos
+}
+#_______________________
+
+proc unit_tpl::Text {} {
+  # Returns the contents of the template's text.
+
+  namespace upvar ::alited obDl2 obDl2
+  return [[$obDl2 TexTpl] get 1.0 {end -1 char}]
+}
+#_______________________
+
+proc unit_tpl::InText {wtxt} {
+  # Goes into the template's text and sets the cursor on it.
+  #   wtxt - text's path
+
+  variable tplpos
+  namespace upvar ::alited obDl2 obDl2
+  if {[set isel [Selected index no]] ne {}} {
+    set pos [lindex $tplpos $isel]
+    ::tk::TextSetCursor $wtxt $pos
+  }
+}
+
+# ________________________ GUI Handlers _________________________ #
+
+proc unit_tpl::Ok {args} {
+  # Handles "OK" button.
+
+  variable win
+  variable tplpos
+  variable tplcont
+  variable tplpla
+  namespace upvar ::alited al al obDl2 obDl2
+  if {[set isel [Selected index]] eq {}} {
+    focus [$obDl2 TreeTpl]
+    return
+  }
+  set tex [lindex $tplcont $isel]
+  set pos [lindex $tplpos $isel]
+  set pla [lindex $tplpla $isel]
+  SaveIni
+  $obDl2 res $win [list $tex $pos $pla]
+}
+#_______________________
+
+proc unit_tpl::Cancel {args} {
+  # Handles "Cancel" button.
+
+  variable win
+  namespace upvar ::alited obDl2 obDl2
+  SaveIni
+  $obDl2 res $win 0
+}
+#_______________________
+
+proc unit_tpl::Help {args} {
+  # Handles "Help" button.
+
+  variable win
+  alited::Help $win
+}
+
+## ________________________ GUI cont. _________________________ ##
+
+proc unit_tpl::ClearCbx {} {
+  # Helper to clear the combobox's selection.
+
+  namespace upvar ::alited obDl2 obDl2
+  [$obDl2 CbxKey] selection clear
+}
+#_______________________
+
 proc unit_tpl::Add {} {
+  # Handles "Add template" button.
+
   namespace upvar ::alited al al obDl2 obDl2
   variable tpllist
   variable tpl
@@ -155,12 +271,12 @@ proc unit_tpl::Add {} {
   set tpl [string trim $tpl]
   set txt [Text]
   set tree [$obDl2 TreeTpl]
-  if {$tplkey ne ""} {
+  if {$tplkey ne {}} {
     set isel2 [lsearch -exact $tplkeys $tplkey]
   } else {
     set isel2 -1
   }
-  if {$tpl ne "" && $txt ne "" && ( \
+  if {$tpl ne {} && $txt ne {} && ( \
   [set isel1 [lsearch -exact $tpllist $tpl]]>-1 || $isel2>-1 ||
   [set isel3 [lsearch -exact $tplcont $txt]]>-1 )} {
     if {$isel1>-1} {
@@ -175,11 +291,11 @@ proc unit_tpl::Add {} {
     }
     alited::Message2 $al(MC,tplexists) 4
     return
-  } elseif {$tpl eq ""} {
+  } elseif {$tpl eq {}} {
     focus [$obDl2 EntTpl]
     alited::Message2 $al(MC,tplent1) 4
     return
-  } elseif {[string trim $txt] eq ""} {
+  } elseif {[string trim $txt] eq {}} {
     focus [$obDl2 TexTpl]
     alited::Message2 $al(MC,tplent2) 4
     return
@@ -197,8 +313,11 @@ proc unit_tpl::Add {} {
   Select [expr {[llength $tplid]-1}]
   alited::Message2 $msg
 }
+#_______________________
 
 proc unit_tpl::Change {} {
+  # Handles "Change template" button.
+
   namespace upvar ::alited obDl2 obDl2
   variable tpllist
   variable tplcont
@@ -209,7 +328,7 @@ proc unit_tpl::Change {} {
   variable tplkey
   variable tpl
   namespace upvar ::alited al al
-  if {[set isel [Selected index]] eq ""} return
+  if {[set isel [Selected index]] eq {}} return
   set tpllist [lreplace $tpllist $isel $isel $tpl]
   set tplcont [lreplace $tplcont $isel $isel [Text]]
   set tplpos [lreplace $tplpos $isel $isel [Pos [lindex $tplpos $isel]]]
@@ -220,8 +339,11 @@ proc unit_tpl::Change {} {
   set msg [string map [list %n [incr isel]] $al(MC,tplupd)]
   alited::Message2 $msg
 }
+#_______________________
 
 proc unit_tpl::Delete {} {
+  # Handles "Delete template" button.
+
   namespace upvar ::alited al al obDl2 obDl2
   variable tpllist
   variable tplcont
@@ -230,7 +352,7 @@ proc unit_tpl::Delete {} {
   variable tplkeys
   variable tplid
   variable win
-  if {[set isel [Selected index]] eq ""} return
+  if {[set isel [Selected index]] eq {}} return
   set nsel [expr {$isel+1}]
   set msg [string map [list %n $nsel] $al(MC,tpldelq)]
   set geo "-geometry root=$win"
@@ -248,65 +370,17 @@ proc unit_tpl::Delete {} {
   alited::Message2 $msg
 }
 
-proc unit_tpl::ReadIni {} {
-  namespace upvar ::alited al al
-  foreach tv {tpllist tplcont tplkeys tplpos tplpla} {
-    variable $tv
-    set $tv [list]
-  }
-  foreach lst $al(TPL,list) {
-    if {![catch {lassign $lst tpl key cont pos pla}]} {
-      set cont [string map [list $::alited::EOL \n] $cont]
-      if {$tpl ne "" && $cont ne "" && $pos ne ""} {
-        if {![string is double -strict $pos]} {set pos 1.0}
-        lappend tpllist $tpl
-        lappend tplcont $cont
-        lappend tplkeys $key
-        lappend tplpos $pos
-        lappend tplpla $pla
-      }
-    }
-  }
-}
-
-proc unit_tpl::RegisterKeys {} {
-  namespace upvar ::alited al al
-  variable tpllist
-  variable tplcont
-  variable tplkeys
-  variable tplpos
-  variable tplpla
-  variable ilast
-  alited::keys::Delete template
-  set al(TPL,list) [list]
-  foreach tpl $tpllist key $tplkeys cont $tplcont pos $tplpos pla $tplpla {
-    set cont [string map [list \n $::alited::EOL] $cont]
-    lappend al(TPL,list) [list $tpl $key $cont $pos $pla]
-    alited::keys::Add template $tpl $key [list $cont $pos $pla]
-  }
-}
-
-proc unit_tpl::GetKeyList {} {
-  namespace upvar ::alited obDl2 obDl2
-  RegisterKeys
-  set keys [linsert [alited::keys::VacantList] 0 ""]
-  [$obDl2 CbxKey] configure -values $keys
-}
-
-proc unit_tpl::SaveIni {} {
-  variable ilast
-  RegisterKeys
-  set ilast [Selected index no]
-}
+# ________________________ Main _________________________ #
 
 proc unit_tpl::_create {} {
+  # Creates "Templates" dialogue.
+
   namespace upvar ::alited al al obDl2 obDl2
   variable win
   variable tpllist
   variable ilast
   variable tplkey
   variable tplKEYS
-#alited::keys::Test [alited::keys::UserList]
   $obDl2 makeWindow $win $al(MC,tpl)
   $obDl2 paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}
@@ -337,26 +411,31 @@ proc unit_tpl::_create {} {
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::unit_tpl::Cancel}}
   }
   set tree [$obDl2 TreeTpl]
-  $tree heading C1 -text [msgcat::mc "Template"]
-  $tree heading C2 -text [msgcat::mc "Hot keys"]
+  $tree heading C1 -text [msgcat::mc Template]
+  $tree heading C2 -text [msgcat::mc {Hot keys}]
   UpdateTree
   Select
   set wtxt [$obDl2 TexTpl]
-  bind $tree <<TreeviewSelect>> "::alited::unit_tpl::Select"
-  bind $tree <Delete> "::alited::unit_tpl::Delete"
-  bind $tree <Double-Button-1> "::alited::unit_tpl::Ok"
-  bind $tree <Return> "::alited::unit_tpl::Ok"
+  bind $tree <<TreeviewSelect>> ::alited::unit_tpl::Select
+  bind $tree <Delete> ::alited::unit_tpl::Delete
+  bind $tree <Double-Button-1> ::alited::unit_tpl::Ok
+  bind $tree <Return> ::alited::unit_tpl::Ok
   bind $wtxt <FocusIn> "::alited::unit_tpl::InText $wtxt"
-  bind [$obDl2 CbxKey] <FocusOut> "::alited::unit_tpl::ClearCbx"
+  bind [$obDl2 CbxKey] <FocusOut> ::alited::unit_tpl::ClearCbx
   if {[llength $tpllist]} {set foc $tree} {set foc [$obDl2 EntTpl]}
-  if {$ilast>-1} {Select $ilast}
+  if {$ilast>-1} {
+    Select $ilast
+    after idle "alited::unit_tpl::Select $ilast"  ;# just to highlight
+  }
   set res [$obDl2 showModal $win -resizable {0 0} \
     -onclose ::alited::unit_tpl::Cancel -focus $foc]
-  if {[llength $res] < 2} {set res ""}
+  if {[llength $res] < 2} {set res {}}
   return $res
 }
+#_______________________
 
 proc unit_tpl::_run {} {
+  # Runs "Templates" dialogue.
 
   variable win
   set wtxt [alited::main::CurrentWTXT]

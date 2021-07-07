@@ -378,14 +378,15 @@ proc file::CloseFileMenu {} {
 }
 #_______________________
 
-proc file::CloseAll {func} {
+proc file::CloseAll {func args} {
   # Closes files.
   #   func - "1/2/3" means closing "all/to left/to right"
+  #   args - may contain -skipsel to not close selected tabs
 
   namespace upvar ::alited al al
   set TID [alited::bar::CurrentTabID]
   set al(closefunc) $func ;# disables "recent files" at closing all
-  alited::bar::BAR closeAll $::alited::al(BID) $TID $func yesnocancel
+  alited::bar::BAR closeAll $::alited::al(BID) $TID $func {*}$args
   set al(closefunc) 0
   return [expr {[llength [alited::bar::BAR listFlag "m"]]==0}]
 }

@@ -51,6 +51,16 @@ proc menu::FillRecent {} {
 }
 #_______________________
 
+proc menu::SetTint {tint} {
+  # Sets a tint of a current color scheme.
+  #   tint - value of the tint
+
+  namespace upvar ::alited al al obPav obPav
+  $obPav csToned $al(INI,CS) $tint
+}
+
+#_______________________
+
 proc menu::FillMenu {} {
   # Populates alited's main menu.
 
@@ -90,6 +100,8 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,comment) -command alited::unit::Comment -accelerator $al(acc_8)
   $m add command -label $al(MC,uncomment) -command alited::unit::UnComment -accelerator $al(acc_9)
   $m add separator
+  $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
+  $m add separator
   $m add command -label $al(MC,findreplace) -command alited::find::_run -accelerator Ctrl+F
   $m add command -label $al(MC,findnext) -command alited::find::Next -accelerator $al(acc_12)
   $m add command -label [msgcat::mc {Look for Declaration}] -command alited::find::SearchUnit -accelerator $al(acc_13)
@@ -97,7 +109,6 @@ proc menu::FillMenu {} {
   $m add command -label [msgcat::mc {Find Unit}] -command alited::find::FindUnit -accelerator Ctrl+Shift+F
   $m add separator
   $m add command -label [msgcat::mc {Go to Line}] -command alited::main::GotoLine -accelerator $al(acc_17)
-  $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
 
 ## ________________________ Tools _________________________ ##
   set m [set al(TOOLS) $al(WIN).menu.tool]
@@ -132,6 +143,23 @@ proc menu::FillMenu {} {
   set m [set al(SETUP) $al(WIN).menu.setup]
   $m add command -label $al(MC,projects) -command alited::project::_run
   $m add command -label $al(MC,tpl) -command alited::unit::Add
+  $m add command -label $alited::al(MC,FavLists) -command alited::favor::Lists
+  $m add separator
+  menu $m.tint -tearoff 0
+  $m add cascade -label [msgcat::mc Tint] -menu $m.tint
+  foreach ti {50 45 40 35 30 25 20 15 10 5 0 -5 -10 -15 -20 -25 -30 -35 -40 -45 -50} {
+    set ti1 [string range "   $ti" end-2 end]
+    if {$ti<0} {
+      set ti2 "[msgcat::mc Darker:] $ti1"
+    } elseif {$ti>0} {
+      set ti2 "[msgcat::mc Lighter:]$ti1"
+    } else {
+      set ti3 [::apave::obj csGetName $al(INI,CS)]
+      set ti2 [msgcat::mc {Color scheme:}]
+      append ti2 { } [string range $ti3 [string first { } $ti3] end]
+    }
+    $m.tint add command -label $ti2 -command "alited::menu::SetTint $ti"
+  }
   $m add separator
   $m add command -label $al(MC,pref...) -command alited::pref::_run
 
