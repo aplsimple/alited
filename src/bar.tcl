@@ -10,7 +10,7 @@
 # _________________________ Variables ________________________ #
 
 namespace eval bar {
-  variable ctrltablist [list]
+  variable ctrltablist [list]  ;# selected tabs (with Ctrl+click)
 }
 
 # _________________________ Main procs ________________________ #

@@ -1,13 +1,15 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The tools' procedures of alited.
-# _______________________________________________________________________ #
-
-# default settings of alited app:
+###########################################################
+# Name:    tool.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    07/13/2021
+# Brief:   Handles tools of alited.
+# License: MIT.
+###########################################################
 
 namespace eval tool {
 }
+
 #_______________________
 
 proc tool::ToolButName {img} {
@@ -266,6 +268,35 @@ proc tool::EM_command {im} {
   return "alited::tool::e_menu \"m=$mnu\" $ex"
 }
 
+## ________________________ before run _________________________ ##
+
+proc tool::BeforeRunDlg {} {
+  # Dialogue to enter a command before running "Tools/Run"
+
+  namespace upvar ::alited al al obDl2 obDl2
+  set head [msgcat::mc "\n Enter a command to be run before running a current file with \"Tools/Run\".\n"]
+  set run [string map [list $alited::EOL \n] $al(prjbeforerun)]
+  lassign [$obDl2 input {} $al(MC,beforerun) [list \
+    tex "{[msgcat::mc Command:]} {} {-w 60 -h 8}" "$run" ] -head $head] res run
+  if {$res} {
+    set al(prjbeforerun) [string map [list \n $alited::EOL] [string trim $run]]
+  }
+}
+#_______________________
+
+proc tool::BeforeRun {} {
+  # Runs a command before running "Tools/Run"
+
+  namespace upvar ::alited al al
+  set runs [string map [list $alited::EOL \n] $al(prjbeforerun)]
+  foreach run [split $runs \n] {
+    if {[set run [string trim $run]] ne {}} {
+      catch {exec {*}$run} e
+      alited::info::Put "$al(MC,beforerun): \"$run\" -> $e"
+    }
+  }
+}
+
 ## ________________________ run/close _________________________ ##
 
 proc tool::e_menu {args} {
@@ -325,7 +356,10 @@ proc tool::_run {{what ""}} {
   if {[winfo exists .em] && [winfo ismapped .em]} {
     bell
   }
-  if {$what eq {}} {set what 1} ;# 'Run me' e_menu item
+  if {$what eq {}} {
+    set what 1 ;# 'Run me' e_menu item
+    BeforeRun
+  }
   e_menu "EX=$what"
 }
 #_______________________

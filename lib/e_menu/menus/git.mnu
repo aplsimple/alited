@@ -8,6 +8,7 @@ w=35
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT ""}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
+%C set ::EMENUFILE [string map {\\ /} "$::EMENUFILE"]
 %C if {![info exist ::EMENUGREP]} {set ::EMENUGREP ""}
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]

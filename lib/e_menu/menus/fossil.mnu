@@ -20,6 +20,7 @@ pos=25.38
 %C if {![info exist ::EMENUCOMMIT1]} {set ::EMENUCOMMIT1 tip}
 %C if {![info exist ::EMENUCOMMIT2]} {set ::EMENUCOMMIT2 ""}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
+%C set ::EMENUFILE [string map {\\ /} "$::EMENUFILE"]
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
 %C set ::FILETAIL {"$::EMENUFILETAIL"}

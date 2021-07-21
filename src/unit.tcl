@@ -19,7 +19,7 @@ proc unit::GetHeader {wtree ID {NC ""}} {
   #   NC - index of column of the unit tree
 
   namespace upvar ::alited al al
-  set tip [$wtree item $ID -text]
+  set tip [string trim [$wtree item $ID -text]]
   lassign [$wtree item $ID -values] l1 l2 - id
   if {$NC eq "#1"} {
     set tip "[string map {al #} $id]\n$l1 - $l2"
@@ -39,9 +39,11 @@ proc unit::GetHeader {wtree ID {NC ""}} {
         incr l1
         set line [string trim [$wtxt get $l1.0 $l1.end]]
         if {[string index $line end] ni [list \\ \{] && \
-        $line ni {"" "#"} && ![regexp $al(RE,proc) $line]} {
+        $line ni {"" "#" "//"} && ![regexp $al(RE,proc) $line]} {
           if {[string match "#*" $line]} {
             append tip \n [string trim [string range $line 1 end]]
+          } elseif {[string match "//*" $line]} {
+            append tip \n [string trim [string range $line 2 end]]
           }
           break
         }
@@ -101,6 +103,9 @@ proc unit::GetUnits {TID textcont} {
   set textcont [split $textcont \n]
   set llen [llength $textcont]
   lappend textcont ""  ;# to save a last unit to the retlist
+  set isLeaf [expr {$al(INI,LEAF) && $al(RE,leaf) ne {}}]
+  set isProc [expr {(!$al(INI,LEAF) || \
+    [alited::file::IsTcl [alited::bar::FileName $TID]]) && $al(RE,proc) ne {}}]
   set i [set lev [set leaf [set icomleaf -1]]]
   foreach line $textcont {
     incr i
@@ -110,10 +115,10 @@ proc unit::GetUnits {TID textcont} {
       set leaf [set icomleaf 0]
       set lev [expr {max(0,[string length $cmn1]-1)}]
     } elseif { \
-    $al(INI,LEAF)  && $al(RE,leaf) ne {} && [regexp $al(RE,leaf) $line -> t1 t2 t3 t4 t5 t6 t7] || \
-    !$al(INI,LEAF) && $al(RE,proc) ne {} && [regexp $al(RE,proc) $line -> t1 t2 t3 t4 t5 t6 t7]} {
-      set title $t2  ;# default title: just after found string
-      foreach t {t7 t6 t5 t4 t3} {
+    $isLeaf && [regexp $al(RE,leaf) $line -> t1 t2 t3 t4 t5 t6 t7] || \
+    $isProc && [regexp $al(RE,proc) $line -> t1 t2 t3 t4 t5 t6 t7]} {
+      set title $t1  ;# default title: just after found string
+      foreach t {t7 t6 t5 t4 t3 t2} {
         if {[set _ [set $t]] ne ""} {
           set title $_  ;# last non-empty group of others is a real title
           break
@@ -717,7 +722,7 @@ proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
           set doit [expr {$lastrow != int([$wtxt index "end -1c"])}]
         }
         if {$l1<$l2 || $al(INI,LEAF) && [regexp $al(RE,leaf2) $args] || \
-        !$al(INI,LEAF) && [regexp $al(RE,proc2) $args]} {
+        [regexp $al(RE,proc2) $args]} {
           alited::tree::RecreateTree
         } elseif {[lsearch -index 4 $al(_unittree,$TID) $l1]>-1} {
           alited::tree::RecreateTree

@@ -11,29 +11,77 @@
 # ________________________ Variables _________________________ #
 
 namespace eval pref {
+
+  # "Preferences" dialogue's path
   variable win $::alited::al(WIN).diaPref
+
+  # geometry for message boxes: to center in "Preferences" dialogue
   variable geo root=$::alited::al(WIN)
-  variable minsize ""
+
+  # saved -minsize option of "Preferences" dialogue
+  variable minsize {}
+
+  # saved data of settings
   variable data; array set data [list]
+
+  # data of keys
   variable keys; array set keys [list]
+
+  # saved data of previous keys
   variable prevkeys; array set prevkeys [list]
+
+  # saved data of keys
   variable savekeys; array set savekeys [list]
+
+  # saved tabs
   variable arrayTab; array set arrayTab [list]
+
+  # current tab
   variable curTab nbk
+
+  # saved tab
   variable oldTab {}
+
+  # list of color schemes
   variable opcColors [list]
+
+  # current CS of alited
   variable opcc {}
+
+  # current CS of e_menu
   variable opcc2 {}
+
+  # number of bar/menu items
   variable em_Num 32
+
+  # bar/e_menu action
   variable em_mnu; array set em_mnu [list]
+
+  # bar/e_menu icon
   variable em_ico; array set em_ico [list]
+
+  # bar/e_menu separator flag
   variable em_sep; array set em_sep [list]
+
+  # bar/e_menu full info
   variable em_inf; array set em_inf [list]
+
+  # list of menus' content
   variable em_Menus [list]
+
+  # list of e_menu icons
   variable em_Icons [list]
+
+  # list of alited icons
   variable listIcons [list]
+
+  # list of e_menu menus
   variable listMenus [list]
+
+  # disctionary of standard keys' data
   variable stdkeys
+
+  # standard keys' data
   set stdkeys [dict create \
      0 [list {Save File} F2] \
      1 [list {Save File as} Control-S] \
@@ -56,6 +104,8 @@ namespace eval pref {
     18 [list {Put New Line} Control-P] \
     19 [list {Complete Commands} Tab] \
   ]
+
+  # size of standard keys' data
   variable stdkeysSize [dict size $stdkeys]
 }
 
@@ -337,7 +387,7 @@ proc pref::General_Tab2 {} {
     {.spxMaxFiles .labMaxFiles L 1 1 {-st sw -pady 1} {-tvar alited::al(MAXFILES) -from 1000 -to 9999 -justify center -w 5}}
     {.seh4 .labMaxFiles T 1 2 {-st ew -pady 5}}
     {.labBackup .seh4 T 1 1 {-st w -pady 1 -padx 3} {-t "Back up files to a project's subdirectory:"}}
-    {.entBackup .labBackup L 1 1 {-st sw -pady 1} {-tvar alited::al(BACKUP) -w 20 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup."}}
+    {.cbxBackup .labBackup L 1 1 {-st sw -pady 1} {-tvar alited::al(BACKUP) -values {{} .bak} -state readonly -w 6 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup."}}
     {.labBell .labBackup T 1 1 {-st w -pady 1 -padx 3} {-t "Bell at warnings:"}}
     {.chbBell .labBell L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,belltoll)}}
   }

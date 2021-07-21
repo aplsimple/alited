@@ -10,11 +10,19 @@
 # _________________________ Variables ________________________ #
 
 namespace eval check {
+
+  # "Check" dialogue's path
   variable win $::alited::al(WIN).diaCheck
+
+  # flags to check braces, brackets, parenthesis
   variable chBrace 1
   variable chBracket 1
   variable chParenthesis 1
+
+  # what to check: 1 - current file, 2 - all files
   variable what 1
+
+  # counts for errors in units and in whole files
   variable errors 0 errors1 0 errors2 0 errors3 0 fileerrors 0
 }
 

@@ -199,9 +199,9 @@ The *alited* allows you to save the current list of favorites to the *lists of f
 
 Thus, you can have *projects inside project*.
 
-The *last visited* list is a comrade of the favorites. It allows fast access to the last visited units (only when they are visited through the unit tree - this is *a restriction for now*).
+The *last visited* list is a comrade of the favorites. It allows fast access to the last visited units. The *last visits* are registered at clicking units in the unit tree or at clicking found lines in the info listbox.
 
-In a session, the visited units are highlighted in the unit tree, so that you can see which of them were visited.
+In a session, the visited units are highlighted in the unit tree, so that you can see which of them were visited. The more observed, the more navigated.
 
 When you select a file to edit, it becomes the first one (if not visible yet) in the bar of file tabs. So that you have the last edited files be first in the bar of files.
 

@@ -10,7 +10,7 @@
 # _________________________ Variables ________________________ #
 
 namespace eval complete {
-  variable comms [list]
+  variable comms [list]  ;# list of available commands
 }
 
 # ________________________ Common _________________________ #

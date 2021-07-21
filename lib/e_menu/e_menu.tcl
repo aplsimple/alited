@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4b4"
+  variable em_version "e_menu 3.4b6"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -1497,6 +1497,7 @@ proc ::em::menuof {commands s1 domenu} {
     set prog [string trimleft [menuit $line $typ 0]]
     prepr_init name
     # prepr_init prog  ;# v1.49: don't preprocess commands till their call
+    prepr_win name "//"  ;# forced 'name' without escapes
     prepr_win prog $typ
     catch {set name [subst $name]}  ;# any substitutions in names
     switch -- $typ {

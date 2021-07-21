@@ -10,14 +10,14 @@
 # _________________________ Variables ________________________ #
 
 namespace eval ::alited::favor_ls {
-  variable favlist [list]
-  variable favlistsaved [list]
-  variable favcont [list]
-  variable favpla  [list]
-  variable currents [list]
-  variable fav {}
-  variable place 1
-  variable win $::alited::al(WIN).fraFavs
+  variable win $::alited::al(WIN).fraFavs  ;# "Favorites' list" dialogue's path
+  variable favlist [list]      ;# list of favorites' lists
+  variable favlistsaved [list] ;# saved list of favorites' lists
+  variable favcont [list]      ;# content of current favorites' list
+  variable favpla  [list]      ;# list of "where to place" of current favorites' list
+  variable currents [list]     ;# content of text (current favorites)
+  variable fav {}              ;# current selection of treeview of list of favorites' lists
+  variable place 1             ;# variable for "where to place"
 }
 
 # ________________________ Form's buttons _________________________ #
@@ -169,7 +169,7 @@ proc favor_ls::Add {} {
   variable currents
   variable fav
   variable place
-  if {[set isel [[$obDl2 LbxFav] curselection]]==""} {
+  if {[set isel [[$obDl2 LbxFav] curselection]] eq {}} {
     set cont $currents
   } else {
     set cont [lindex $favcont $isel]

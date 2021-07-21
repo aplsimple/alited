@@ -10,49 +10,73 @@
 # ___________ Default settings of alited app ____________ #
 
 namespace eval ::alited {
-  set al(MAXFILES) 2000 ;# maximum size of file tree (max size of project)
-  set al(ED,multiline) 0 ;# "true" only for projects of small modules
-  set al(ED,EOL) {}
-  set al(ED,indent) 2
-  set al(ED,sp1) 1
-  set al(ED,sp2) 0
-  set al(ED,sp3) 0
-  set al(ED,CKeyWords) {}
-  set al(ED,gutterwidth) 5
-  set al(ED,guttershift) 3
-  set al(TREE,isunits) yes
-  set al(TREE,units) no
-  set al(TREE,files) no
-  set al(TREE,cw0) 200
-  set al(TREE,cw1) 70
-  set al(FONTSIZE,small) 10
-  set al(FONTSIZE,std) 11
-  set al(FONT,txt) {}
-  set al(INI,CS) -1
-  set al(INI,HUE) 0
-  set al(INI,ICONS) "middle icons"
-  set al(INI,save_onselect) no
-  set al(INI,save_onadd) no
-  set al(INI,save_onmove) no
-  set al(INI,save_onclose) no
-  set al(INI,save_onsave) yes
-  set al(INI,maxfind) 16
-  set al(INI,barlablen) 16
-  set al(INI,bartiplen) 32
-  set al(INI,confirmexit) 1
-  set al(INI,belltoll) 1
-  set al(INI,LINES1) 10
+  set al(MAXFILES) 2000     ;# maximum size of file tree (max size of project)
+  set al(ED,multiline) 0    ;# "true" only for projects of small modules
+  set al(ED,EOL) {}         ;# end of lines for texts
+  set al(ED,indent) 2       ;# indentation for texts
+  set al(ED,sp1) 1          ;# -spacing1 option of texts
+  set al(ED,sp2) 0          ;# -spacing2 option of texts
+  set al(ED,sp3) 0          ;# -spacing3 option of texts
+  set al(ED,CKeyWords) {}   ;# user's key words for C/C++
+  set al(ED,gutterwidth) 5  ;# gutter's windth in chars
+  set al(ED,guttershift) 3  ;# space between gutter and text
+  set al(TREE,isunits) yes  ;# current mode of tree: units/files
+  set al(TREE,units) no     ;# flag "is a unit tree created"
+  set al(TREE,files) no     ;# flag "is a file tree created"
+  set al(TREE,cw0) 200      ;# tree column #0 width
+  set al(TREE,cw1) 70       ;# tree column #1 width
+  set al(FONTSIZE,small) 10 ;# small font size
+  set al(FONTSIZE,std) 11   ;# standard font size
+  set al(FONT,txt) {}       ;# font for edited texts
+  set al(INI,CS) -1         ;# color scheme
+  set al(INI,HUE) 0         ;# tint of color scheme
+  set al(INI,ICONS) "middle icons"  ;# this sets tollbar icons' size as middle
+  set al(INI,save_onselect) no  ;# do saving alited configuration at tab selection
+  set al(INI,save_onadd) no     ;# do saving alited configuration at tab adding
+  set al(INI,save_onmove) no    ;# do saving alited configuration at tab  moving
+  set al(INI,save_onclose) no   ;# do saving alited configuration at tab closing
+  set al(INI,save_onsave) yes   ;# do saving alited configuration at file saving
+  set al(INI,maxfind) 16        ;# size for comboboxes of "Find/Replace" dialogue
+  set al(INI,barlablen) 16      ;# width of tab labels in chars
+  set al(INI,bartiplen) 32      ;# size of tips for tab bar's arrows & of tabs submenu
+  set al(INI,confirmexit) 1     ;# flag "confirm exiting alited"
+  set al(INI,belltoll) 1        ;# flag "bell at warnings"
+  set al(INI,LINES1) 10         ;# number of initial "untouched" lines (to ban moves in it)
+
+  # flag "use special RE for leafs of unit tree"
   set al(INI,LEAF) 0
-  set al(RE,branch) {^\s*(#+) [_]+\s+([^_]+[^[:blank:]]*)\s+[_]+ (#+)$}         ;#  # _ lev 1 _..
-  set al(RE,leaf) {^\s*##\s*[-]*([^-]*)\s*[-]*$}   ;#  # --  / # -- abc / # --abc--
+
+  # RE for branches of unit tree ( # _ lev 1 _..)
+  set al(RE,branch) {^\s*(#+) [_]+\s+([^_]+[^[:blank:]]*)\s+[_]+ (#+)$}
+
+  # special RE for leafs (# --  / # -- abc / # --abc--)
+  set al(RE,leaf) {^\s*##\s*[-]*([^-]*)\s*[-]*$}
+
+  # RE for Tcl leaf units
   set al(RE,proc) {^\s*(((proc|method)\s+([^[:blank:]]+))|((constructor|destructor)))\s.+}
-  set al(RE,leaf2) {^\s*(#+) [_]+}                 ;#  # _  / # _ abc
-  set al(RE,proc2) {^\s*(proc|method|constructor|destructor)\s+} ;# proc abc {}...
+
+  # RE to check for leaf units (# _  / # _ abc)
+  set al(RE,leaf2) {^\s*(#+) [_]+}
+
+  # RE to check for Tcl leaf units (proc abc {}...)
+  set al(RE,proc2) {^\s*(proc|method|constructor|destructor)\s+}
+
+  # list of current favorite units
   set al(FAV,current) [list]
+
+  # list of current visited units
   set al(FAV,visited) [list]
+
+  # flag "is now favorites (not last visited)"
   set al(FAV,IsFavor) yes
+
+  # maximum of "last visited" items
   set al(FAV,MAXLAST) 32
+
+  # templates' list
   set al(TPL,list) [list]
+
+  # wildcards for templates
   set al(TPL,%d) %D
   set al(TPL,%t) %T
   set al(TPL,%u) aplsimple
@@ -60,7 +84,11 @@ namespace eval ::alited {
   set al(TPL,%m) aplsimple@gmail.com
   set al(TPL,%w) https://aplsimple.github.io
   set al(TPL,%a) {  #   %a - \\n}
+
+  # key bindings
   set al(KEYS,bind) [list]
+
+  # e_menu settings and arguments
   set al(EM,geometry) 240x1+10+10
   set al(EM,save) {}
   set al(EM,PD=) ~/PG/e_menu_PD.txt
@@ -71,18 +99,28 @@ namespace eval ::alited {
   set al(EM,CS) 33
   set al(EM,exec) no
   set al(EM,DiffTool) kdiff3
+
+  # data of tabs
   set al(tablist) [list]
+
+  # list "Recent files" and its max length
   set al(RECENTFILES) [list]
   set al(INI,RECENTFILES) 16
+
+  # this is used at closing tabs to disable registering in "Recent files"
   set al(closefunc) 0
+
+  # initial color of "Choose color" dialogue
   set alited::al(chosencolor) green
-  set al(BACKUP) .backup
+
+  # subdirectory of project to backup files at modifications
+  set al(BACKUP) .bak
 }
 
 # ________________________ Variables _________________________ #
 
 namespace eval ini {
-  variable afterID {}
+  variable afterID {}  ;# after ID used by SaveCurrentIni proc
 }
 
 # ________________________ Reading common settings _________________________ #

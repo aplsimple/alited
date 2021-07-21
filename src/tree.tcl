@@ -10,8 +10,8 @@
 # ________________________ Variables _________________________ #
 
 namespace eval tree {
-  variable doFocus yes
-  variable tipID {}
+  variable doFocus yes  ;# flag "set focus on a text"
+  variable tipID {}     ;# tree ID with shown tip
 }
 
 # ________________________ Common _________________________ #
@@ -71,7 +71,7 @@ proc tree::OpenFile {{ID ""}} {
     lassign [$wtree item $ID -values] -> fname isfile
     if {$isfile} {
       alited::file::OpenFile $fname
-      after idle ::alited::tree::RecreateTree
+      alited::tree::UpdateFileTree
     }
   }
 }
@@ -285,7 +285,9 @@ proc tree::CreateFilesTree {wtree} {
   $wtree heading #1 -text $al(MC,files)
   bind $wtree <Return> {::alited::tree::OpenFile}
   set selID ""
-  set selfile [alited::bar::FileName]
+  if {[catch {set selfile [alited::bar::FileName]}]} {
+    set selfile {} ;# at closing by Ctrl+W with file tree open: no current file
+  }
   foreach item [GetDirectoryContents $al(prjroot)] {
     set itemID  [alited::tree::NewItemID [incr iit]]
     lassign $item lev isfile fname fcount iroot
@@ -476,11 +478,14 @@ proc tree::ButtonPress {but x y X Y} {
   #   Y - x-coordinate of the click
 
   namespace upvar ::alited al al obPav obPav
+  TooltipOff
   set wtree [$obPav Tree]
   set ID [$wtree identify item $x $y]
-  if {![$wtree exists $ID]} return
-  TooltipOff
+  set region [$wtree identify region $x $y]
   set al(movID) [set al(movWin) {}]
+  if {![$wtree exists $ID] || $region ne {tree}} {
+    return  ;# only tree items are processed
+  }
   switch $but {
     {3} {
         if {[llength [$wtree selection]]<2} {
@@ -519,7 +524,8 @@ proc tree::ButtonRelease {but x y X Y} {
   set ID [$wtree identify item $x $y]
   DestroyMoveWindow no
   if {[$wtree exists $ID] && [info exists al(movID)] && \
-  $al(movID) ne {} && $ID ne {} && $al(movID) ne $ID} {
+  $al(movID) ne {} && $ID ne {} && $al(movID) ne $ID && \
+  [$wtree identify region $x $y] eq {tree}} {
     if {$al(TREE,isunits)} {
       alited::unit::MoveUnits $wtree move $al(movID) $ID
     } else {
@@ -527,7 +533,6 @@ proc tree::ButtonRelease {but x y X Y} {
     }
   }
   DestroyMoveWindow yes
-  set al(movID) {}
 }
 #_______________________
 
@@ -594,6 +599,10 @@ proc tree::Tooltip {x y X Y} {
   namespace upvar ::alited al al obPav obPav
   variable tipID
   set wtree [$obPav Tree]
+  if {[$wtree identify region $x $y] ni {tree cell}} {
+    TooltipOff
+    return
+  }
   set ID [$wtree identify item $x $y]
   set NC [$wtree identify column $x $y]
   set newTipID "$ID/$NC"
@@ -841,6 +850,31 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
       }
     }
     $wtree selection set $selection
+  }
+}
+#_______________________
+
+proc tree::UpdateFileTree {{doit no}} {
+  # Updates the file tree (colors of files).
+  #   doit - yes, if run after idle
+  # See also: CreateFilesTree
+
+  namespace upvar ::alited al al obPav obPav
+  if {$al(TREE,isunits)} return  ;# no need
+  if {$doit} {
+    set wtree [$obPav Tree]
+    foreach item [GetTree {} Tree] {
+      lassign [lindex $item 4] - fname leaf itemID
+      if {$leaf} {
+        if {[alited::bar::FileTID $fname] ne {}} {
+          $wtree tag add tagBold $itemID
+        } else {
+          $wtree tag remove tagBold $itemID
+        }
+      }
+    }
+  } else {
+    after idle {alited::tree::UpdateFileTree yes}
   }
 }
 

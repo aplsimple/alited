@@ -507,7 +507,7 @@ proc ::em::change_PD {} {
       ::em::save_options dk= $dk
       ::em::save_options t= $chbT
     }
-    if {($fco1 ne "") && ([get_PD] ne $PD)} {
+    if {($fco1 ne {}) && ([get_PD] ne $PD)} {
       set ::em::prjname [file tail $PD]
       set ::em::Argv [::apave::removeOptions $::em::Argv d=* f=*]
       foreach {o v} [list d $PD f "$PD/*"] {lappend ::em::Argv "$o=\"$v\""}

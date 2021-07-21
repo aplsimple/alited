@@ -160,6 +160,7 @@ proc menu::FillMenu {} {
     }
     $m.tint add command -label $ti2 -command "alited::menu::SetTint $ti"
   }
+  $m add command -label [msgcat::mc {Before Run...}] -command alited::tool::BeforeRunDlg
   $m add separator
   $m add command -label $al(MC,pref...) -command alited::pref::_run
 

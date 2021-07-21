@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 1.0b4
+package provide alited 1.0b11
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -14,28 +14,28 @@ catch {package require comm}  ;# Generic message transport
 
 namespace eval alited {
 
+  variable tcltk_version "Tcl/Tk [package versions Tk]"
+
   variable al; array set al [list]
-  set al(DEBUG) no
+  set al(DEBUG) no        ;# debug mode
+  set al(WIN) .alwin      ;# main form's path
 
   proc raise_window {} {
     # Raises the app's window.
 
-    if {$::tcl_platform(platform) eq {windows}} {
-      #wm attributes . -alpha 1.0
-    } else {
-      catch {wm deiconify . ; raise .}
-      wm withdraw $al(WIN)
-      wm deiconify $al(WIN)
-    }
+    variable al
+    wm withdraw $al(WIN)
+    wm deiconify $al(WIN)
   }
 
   proc run_remote {cmd args} {
     # Runs a command that was started by another process.
-
+  
     if {[catch { $cmd {*}$args }]} {
       return -code error
     }
   }
+
 }
 
 ## ________________________ Initialize GUI _________________________ ##
@@ -59,7 +59,7 @@ if {[lindex $::argv 0] eq {DEBUG}} {
     set port 48784
     if {[catch {::comm::comm config -port $port}] && \
     ![catch {::comm::comm send $port ::alited::run_remote ::alited::raise_window }]} {
-      catch {destroy .}
+      destroy .
       exit
     }
   }
@@ -72,14 +72,13 @@ unset ALITED_NOSEND
 
 namespace eval alited {
 
-  variable tcltk_version "Tcl/Tk [package versions Tk]"
+  # main data of alited (others are in ini.tcl)
 
   variable SCRIPT [file normalize [info script]]
   variable DIR [file normalize [file join [file dirname $SCRIPT] ..]]
 
   # directories of sources
   variable SRCDIR [file join $DIR src]
-
   variable LIBDIR [file join $DIR lib]
 
   # directories of required packages
@@ -109,28 +108,28 @@ namespace eval alited {
   variable obFND ::alited::alitedFND
 
   # misc. vars
-  variable DirGeometry {}
-  variable FilGeometry {}
+  variable DirGeometry {}  ;# saved geometry of "Choose Directory" dialogue (for Linux)
+  variable FilGeometry {}  ;# saved geometry of "Choose File" dialogue (for Linux)
 
   # misc. consts
-  variable PRJEXT .ale
-  variable EOL {@~}  ;# "end of line" for ini-files
+  variable PRJEXT .ale     ;# project file's extension
+  variable EOL {@~}        ;# "end of line" for ini-files
 
   # load localized messages
   msgcat::mcload $MSGSDIR
 
-  # main data of alited (others are in ini.tcl)
-  set al(WIN) .alwin
-  set al(prjname) {}
-  set al(prjfile) {}
-  set al(prjroot) {}
-  set al(prjindent) 2
-  set al(prjmultiline) 0
-  set al(prjEOL) {}
-  set al(prjredunit) 20
-  set al(TITLE) {%f :: %d :: %p - alited}
-  set al(TclExtensions) {.tcl .tm .msg}
-  set al(ClangExtensions) {.c .h .cpp .hpp}
+  set al(prjname) {}      ;# current project's name
+  set al(prjfile) {}      ;# current project's file name
+  set al(prjroot) {}      ;# current project's directory name
+  set al(prjindent) 2     ;# current project's indentation
+  set al(prjmultiline) 0  ;# current project's multiline mode
+  set al(prjEOL) {}       ;# current project's end of line
+  set al(prjredunit) 20   ;# current project's unit lines per 1 red bar
+  set al(prjbeforerun) {} ;# a command to be run before "Tools/Run"
+
+  set al(TITLE) {%f :: %d :: %p - alited}     ;# alited title's template
+  set al(TclExtensions) {.tcl .tm .msg}       ;# extensions of Tcl files
+  set al(ClangExtensions) {.c .h .cpp .hpp}   ;# extensions of C/C++ files
 }
 
 # _____________________________ Packages used __________________________ #

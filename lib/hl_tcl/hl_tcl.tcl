@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.10
+package provide hl_tcl 0.9.11
 
 # ______________________ Common data ____________________ #
 
@@ -663,14 +663,15 @@ proc ::hl_tcl::my::LineState {txt tSTR tCMN l1} {
   #   l1 - the line's index
   # Returns: 0 if no tags for the line; 1 if the line is a string's continuation; -1 if the line is a comment's continuation.
 
+  variable data
   set i1 [$txt index $l1]
   if {[set prev [string first -1 $l1]]>-1} {
     set i1 [$txt index "$i1 -1 chars"]
   }
   set ch [$txt get "$i1" "$i1 +1 chars"]
-  if {[SearchTag $tCMN [$txt index "$i1 -1 chars"]]!=-1} {    ;# is a comment continues?
+  if {[SearchTag $tCMN [$txt index "$i1 -1 chars"]]!=-1} {  ;# is a comment continues?
     if {$ch eq "\\"} {return -1}
-  } else {                            ;# is a string continues?
+  } elseif {$data(MULTILINE,$txt) || $ch eq "\\"} {         ;# is a string continues?
     set nl [lindex [split $l1 .] 0]
     if {$prev>-1} {
       # is the start of line quoted?

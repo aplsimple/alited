@@ -745,7 +745,7 @@ oo::class create ::apave::APaveDialog {
       $txt tag add hilited {*}$matches1
       $txt tag add hilited2 {*}$matches2
     }
-    set ::apave::_AP_VARS(HILI) yes
+    set ::apave::_AP_VARS(HILI,$txt) yes
   }
 
   #########################################################################
@@ -754,10 +754,10 @@ oo::class create ::apave::APaveDialog {
     # Unhighlights matches of selected word in a text.
     #   w - path to the text
 
-    if {$::apave::_AP_VARS(HILI)} {
+    if {[info exists ::apave::_AP_VARS(HILI,$txt)] && $::apave::_AP_VARS(HILI,$txt)} {
       $txt tag remove hilited 1.0 end
       $txt tag remove hilited2 1.0 end
-      set ::apave::_AP_VARS(HILI) no
+      set ::apave::_AP_VARS(HILI,$txt) no
     }
   }
 

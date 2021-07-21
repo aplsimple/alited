@@ -125,7 +125,6 @@ namespace eval ::apave {
   set _AP_VARS(TIMW) [list]
   set _AP_VARS(MODALWIN) [list]
   set _AP_VARS(LINKFONT) [list -underline 1]
-  set _AP_VARS(HILI) 0
   set _AP_VARS(INDENT) "  "
   set _AP_VARS(KEY,CtrlD) [list Control-D Control-d]
   set _AP_VARS(KEY,CtrlY) [list Control-Y Control-y]
@@ -2713,24 +2712,31 @@ oo::class create ::apave::APave {
         set nchars [expr {$s ? 0 : [my leadingSpaces $line]}]
         set indent [string range $line 0 [expr {$nchars-1}]]
         set ch [string index $line end]
-        if {$indent ne {} || $s || $ch eq "\{" || $K eq {KP_Enter}} {
-          set idx1 [$w index insert]
-          set idx2 [$w index "$idx1 +1 line"]
+        set idx1 [$w index insert]
+        set idx2 [$w index "$idx1 +1 line"]
+        set st2 [$w get "$idx2 linestart" "$idx2 lineend"]
+        if {$indent ne {} || $s || $ch eq "\{" || $K eq {KP_Enter} || $st2 ne {}} {
           set st1 [$w get "$idx1" "$idx1 lineend"]
           if {[string index $st1 0] in [list \t { }]} {
             # if space(s) are at the right, remove them at cutting
             set n1 [my leadingSpaces $st1]
             $w delete [$w index $idx1] [$w index "$idx1 +$n1 char"]
-          } else {
-            if {$ch eq "\{" && $st1 eq {}} {
-              set st2 [string trim [$w get "$idx2 linestart" "$idx2 lineend"]]
-              if {$st2 eq ""} {
-                append indent $::apave::_AP_VARS(INDENT) \n $indent "\}"
-              } else {
-                append indent $::apave::_AP_VARS(INDENT)
-              }
-              incr nchars $lindt
+          } elseif {$ch eq "\{" && $st1 eq {}} {
+            # indent + closing brace
+            if {$st2 eq {}} {
+              append indent $::apave::_AP_VARS(INDENT) \n $indent "\}"
+            } else {
+              append indent $::apave::_AP_VARS(INDENT)
             }
+            incr nchars $lindt
+          } elseif {!$s && $indent eq {} && $st2 ne {}} {
+            # no indent of previous line, try to get it from the next
+            if {[string trim $st2] eq "\}"} {
+              # add indentation for the next brace
+              set st2 "$::apave::_AP_VARS(INDENT)$st2"
+            }
+            set nchars [my leadingSpaces $st2]
+            set indent [string range $st2 0 [expr {$nchars-1}]]
           }
           $w insert [$w index $idx1] \n$indent
           ::tk::TextSetCursor $w [$w index "$idx2 linestart +$nchars char"]

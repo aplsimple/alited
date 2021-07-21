@@ -79,6 +79,7 @@ namespace eval ::alited {
   set al(MC,Col:)        [msgcat::mc { Col: }]
   set al(MC,Item)        [msgcat::mc Item]
   set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
+  set al(MC,beforerun)   [msgcat::mc {Command before "Run"}]
 
   ## _ templates _ ##
   set al(MC,tpl)         [msgcat::mc Templates]

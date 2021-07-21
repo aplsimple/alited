@@ -11,8 +11,8 @@
 
 
 namespace eval favor {
-  variable tipID {}
-  variable initialFavs [list]
+  variable tipID {}            ;# ID of item a tip is shown for
+  variable initialFavs [list]  ;# favorites that exist at starting "Favorites' list"
 }
 
 # ________________________ Common _________________________ #
@@ -143,7 +143,6 @@ proc favor::SetFavorites {cont} {
   #   cont - list of favorites/last visited
 
   namespace upvar ::alited al al obPav obPav
-  variable initialFavs
   set wtree [$obPav TreeFavor]
   foreach it [alited::tree::GetTree {} TreeFavor] {
     $wtree delete [lindex $it 2]

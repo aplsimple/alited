@@ -10,9 +10,13 @@
 # _________________________ Variables ________________________ #
 
 namespace eval ::alited::info {
-  variable list [list]
-  variable info [list]
-  variable focustext yes
+  variable list [list]   ;# list of listbox items
+  variable info [list]   ;# data of listbox items (file, found position etc.)
+  variable focustext yes ;# if yes, focuses on a text at the listbox selections
+
+  # these two allow to disable text updates at constant key pressings
+  variable selectmsec 0   ;# saved time at key pressing
+  variable selectafter {} ;# saved after ID at key pressing
 }
 
 # ________________________ Common _________________________ #
@@ -65,27 +69,38 @@ proc info::Clear {{i -1}} {
 
 # ________________________ GUI _________________________ #
 
-proc info::ListboxSelect {w} {
+proc info::ListboxSelect {w {checkit no}} {
   # Handles a selection event of the info listbox.
   #   w - listbox's path
+  #   checkit - flag to check for the repeated calls of this procedure
 
   variable info
   variable focustext
-  set sel [lindex [$w curselection] 0]
-  if {[string is digit -strict $sel]} {
-    lassign [lindex $info $sel] TID line
-    if {[alited::bar::BAR isTab $TID]} {
-      if {$TID ne [alited::bar::CurrentTabID]} {
-        alited::bar::BAR $TID show
-      }
-      after idle " \
-        alited::main::FocusText $TID $line.0 ; \
-        alited::tree::NewSelection {} $line.0 yes"
-      if {!$focustext} {
-        after 100 "focus $w"
+  variable selectmsec
+  variable selectafter
+  set msec [clock milliseconds]
+  if {($msec-$selectmsec)<500 && $checkit} {
+    # this disables updating at key pressing, let a user release the key
+    catch {after cancel $selectafter}
+    set selectafter [after idle "alited::info::ListboxSelect $w yes"]
+  } else {
+    set sel [lindex [$w curselection] 0]
+    if {[string is digit -strict $sel]} {
+      update
+      lassign [lindex $info $sel] TID line
+      if {[alited::bar::BAR isTab $TID]} {
+        if {$TID ne [alited::bar::CurrentTabID]} {
+          alited::bar::BAR $TID show
+        }
+        after idle "catch { \
+          alited::main::FocusText $TID $line.0 ; \
+          alited::tree::NewSelection {} $line.0 yes ; \
+          alited::main::HighlightLine}"
+        if {!$focustext} {after 100 "focus $w"}
       }
     }
   }
+  set selectmsec $msec
 }
 #_______________________
 

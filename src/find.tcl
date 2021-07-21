@@ -10,26 +10,56 @@
 # ________________________ Variables _________________________ #
 
 namespace eval find {
+
+  # "Find/Replace" dialogue's path
   variable win $::alited::al(WIN).winFind
+
+  # initial geometry of the dialogue
+  variable geo root=$::alited::al(WIN)
+
+  # -minsize option of the dialogue
+  variable minsize {}
+
+  # common data of procs
   variable data; array set data [list]
+
+  # options of "Find/Replace" dialogue
   set data(c1) 0  ;# words only
   set data(c2) 1  ;# case
   set data(c3) 0  ;# by blank
-  set data(c4) 1  ;# wrap
+  set data(c4) 1  ;# wrap around
   set data(c5) 0  ;# on top
+
+  # lists for find & replace comboboxes
   set data(vals1) [list]
   set data(vals2) [list]
-  set data(v1) 1
-  set data(v2) 2
+
+  # values of find & replace comboboxes
   set data(en1) {}
   set data(en2) {}
+
+  # value for radiobutton "Match"
+  set data(v1) 1
+
+  # value for radiobutton "Direction"
+  set data(v2) 2
+
+  # enables/disables correctness of options (if "no", "Find" is run without dialogue)
   set data(docheck) yes
-  variable geo root=$::alited::al(WIN)
-  variable minsize {}
+
+  # delimiters of words
   variable delim1 [list { } {} {;} \n \t \$ \" ` ' @ # % ^ & * ( ) - + = | \\ / : , . ? ! < >]
+
+  # left delimiters of commands
   variable ldelim [list { } {} \n \t \} \{ \[ # {;} \" \\ (]
+
+  # right delimiters of commands
   variable rdelim [list { } {} \n \t \} \] # {;} \" \\ )]
+
+  # all delimiters of commands
   variable adelim [list \} \{ \[ \] {*}$delim1]
+
+  # variable to count matches
   variable counts {}
 }
 
@@ -355,7 +385,8 @@ proc find::ShowResults {msg {mode 2} {TID ""}} {
   #   mode - mode for alited::Message
   #   TID - tab's ID where the searches were performed in
 
-  set fname [file tail [alited::bar::FileName $TID]]
+  if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
+  set fname [alited::bar::BAR $TID cget -text]
   set msg [string map [list %f $fname] $msg]
   # results in info list:
   alited::info::Put $msg {} yes
@@ -539,10 +570,10 @@ proc find::Find {{inv -1}} {
 proc find::FindAll {wtxt TID {tagme "add"}} {
   # Searches all strings in a text.
   #   wtxt - text widget's path
-  #   TID - tyab's ID
+  #   TID - tab's ID
   #   tagme - if "add", means "add find tag to the found strings of the text"
 
-  set fname [file tail [alited::bar::FileName $TID]]
+  set fname [alited::bar::BAR $TID cget -text]
   set l1 -1
   set allfnd [Search $wtxt]
   foreach idx12 $allfnd {

@@ -10,18 +10,20 @@
 # _________________________ Variables ________________________ #
 
 namespace eval ::alited::unit_tpl {
-  variable tpllist [list]
-  variable tplcont [list]
-  variable tplpos  [list]
-  variable tplpla  [list]
-  variable tplid   [list]
-  variable tplkeys [list]
-  variable tplKEYS [list]
-  variable tplkey ""
-  variable tpl ""
-  variable place 1
-  variable ilast -1
+
+  # "Templates" dialogue's path
   variable win $::alited::al(WIN).fraTpl
+
+  variable tpllist [list]  ;# list of templates' names
+  variable tplcont [list]  ;# list of content of templates
+  variable tplpos  [list]  ;# list of position of cursor for templates
+  variable tplpla  [list]  ;# list of "where to place" of templates
+  variable tplid   [list]  ;# list of IDs of templates (in treeview)
+  variable tplkeys [list]  ;# list of keys of templates
+  variable tplkey {}       ;# current template's keys
+  variable tpl {}          ;# current template's name
+  variable place 1         ;# current template's "where to place"
+  variable ilast -1        ;# last selection in the list of templates
 }
 
 # ________________________ Ini _________________________ #
@@ -380,7 +382,6 @@ proc unit_tpl::_create {} {
   variable tpllist
   variable ilast
   variable tplkey
-  variable tplKEYS
   $obDl2 makeWindow $win $al(MC,tpl)
   $obDl2 paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}

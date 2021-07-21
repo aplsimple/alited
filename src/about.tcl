@@ -10,7 +10,7 @@
 # _________________________ Variables ________________________ #
 
 namespace eval about {
-  variable textTags
+  variable textTags  ;# text tags to highlight strings
 }
 
 # ________________________ Procedures _________________________ #

@@ -10,10 +10,10 @@
 # _________________________ variables ________________________ #
 
 namespace eval main {
-  variable findunits 1  ;# where to find units: 1 current file, 2 all
-  variable gotoline1 {}
-  variable gotoline2 {}
-  variable gotolineTID {}
+  variable findunits 1     ;# where to find units: 1 current file, 2 all
+  variable gotoline1 {}    ;# line number of "Go to Line" dialogue
+  variable gotoline2 {}    ;# units list of "Go to Line" dialogue
+  variable gotolineTID {}  ;# tab ID last used in "Go to Line" dialogue
 }
 
 # ________________________ common _________________________ #
@@ -58,11 +58,11 @@ proc main::GetText {TID {doshow no}} {
   } elseif {[GetWTXT $TID] ne {}} {
     # edited text: get its widgets' data
     lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
-    set doinit [expr {[alited::bar::BAR $TID cget --reload] ne ""}]
+    set doinit [expr {[alited::bar::BAR $TID cget --reload] ne {}}]
     if {$doinit} {
       set al(HL,$wtxt) "" ;# to highlight the loaded text
     }
-    alited::bar::BAR $TID configure --reload ""
+    alited::bar::BAR $TID configure --reload {}
   } else {
     # till now, not edited text: create its own Text/SbvText widgets
     append wtxt "_$TID"  ;# new text
@@ -188,10 +188,12 @@ proc main::FocusText {args} {
 
   namespace upvar ::alited al al obPav obPav
   lassign $args TID pos
-  set wtxt [CurrentWTXT]
-  if {$pos eq ""} {
+  if {$pos eq {}} {
+    set wtxt [CurrentWTXT]
     set TID [alited::bar::CurrentTabID]
     set pos [$wtxt index insert]
+  } else {
+    set wtxt [GetWTXT $TID]
   }
   # find a current unit/file in the tree
   set alited::tree::doFocus no
@@ -216,8 +218,8 @@ proc main::FocusText {args} {
     if {$itemID ne ""} {after 10 "catch {$wtree see $itemID}"}
   }
   # focus on the text
+  catch {focus -force $wtxt}
   catch {::tk::TextSetCursor $wtxt $pos}
-  catch {focus $wtxt}
   after idle {set ::alited::tree::doFocus yes}
 }
 #_______________________
@@ -401,9 +403,9 @@ proc main::UpdateProjectInfo {} {
   # Displays a project settings in the status bar.
 
   namespace upvar ::alited al al obPav obPav
-  if {$al(prjroot) ne ""} {set stsw normal} {set stsw disabled}
+  if {$al(prjroot) ne {}} {set stsw normal} {set stsw disabled}
   [$obPav BuTswitch] configure -state $stsw
-  if {[set eol $al(prjEOL)] eq ""} {set eol auto}
+  if {[set eol $al(prjEOL)] eq {}} {set eol auto}
   [$obPav Labstat4] configure -text "eol=$eol, [msgcat::mc ind]=$al(prjindent)"
 }
 #_______________________
@@ -417,9 +419,9 @@ proc main::BindsForText {TID wtxt} {
     bind $wtxt <FocusIn> [list after 200 "::alited::main::FocusInText $TID $wtxt"]
   }
   bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
-  bind $wtxt <Control-Shift-ButtonRelease-1> "::alited::find::SearchWordInSession ; break"
-  bind $wtxt <Control-Tab> "::alited::bar::ControlTab ; break"
-  bind $wtxt <<Undo>> "after idle alited::main::HighlightLine"
+  bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
+  bind $wtxt <Control-Tab> {::alited::bar::ControlTab ; break}
+  bind $wtxt <<Undo>> {after idle alited::main::HighlightLine}
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action
   alited::keys::BindKeys $wtxt template

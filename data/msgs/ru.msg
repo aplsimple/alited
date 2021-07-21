@@ -173,7 +173,7 @@ namespace eval ::alited {
     "Delete a project \"%n\" ?" "Удалить проект \"%n\" ?"
     "A project \"%n\" already exists." "Проект \"%n\" уже существует."
     "All modified files (%n) will be saved.\n\nDo you agree?" "Все измененные файлы (%n) будут сохранены.\n\nСогласны?"
-    "All selected files (%n) will be reopen.\n\nDo you agree?" "Все выделенные файлы (%n) будут переоткрыты.\n\nСогласны?"
+    "All selected files (%n) will remain open\nin the project you are switching to.\n\nDo you agree?" "Все выделенные файлы (%n) останутся открытыми\nи в выбранном вами проекте.\n\nСогласны?"
     "Directory \"%d\"\ndoesn't exist.\n\nCreate it?" "Каталог \"%d\"\nне существует.\n\nСоздать его?"
     {Checking %d. Wait a little...} {Проверка %d. Ожидайте...}
     {Too big directory for a project: %n files or more.} {Слишком велик каталог проекта: %n файлов или более.}
@@ -412,6 +412,10 @@ namespace eval ::alited {
     {separator} {разделитель}
     {Item} {Пункт}
     {If 'yes', means a separator of the toolbar/menu.} {Если включено, означает разделитель в строке/меню.}
+    {Before Run...} {Перед Запуском...}
+    {Command:} {Команда:}
+    {Command before "Run"} {Команда перед "Запуском"}
+    "\n Enter a command to be run before running a current file with \"Tools/Run\".\n" "\n Введите команду, выполняемую перед \"Инструменты/Запуск\".\n"
   }
 
   ## _ Checks _ ##

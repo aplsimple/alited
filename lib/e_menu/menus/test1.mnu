@@ -20,6 +20,7 @@ o=0
 w=45
 rt=2/5
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
+%C set ::EMENUFILE [string map {\\ /} "$::EMENUFILE"]
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
 %C set ::FILETAIL {"$::EMENUFILETAIL"}
 
@@ -151,5 +152,5 @@ in=1.0
 ::LBX=Big Brother
 ::TBL=ent ttk::entry 212 6
 ::TEX=and	tabs	entered with copy-paste\n1234\n\nsome multi-line text			123
-pos=54.29
+pos=24.38
 %#s geo=969x487+250+140;pos=6.21 # this script is run with %#s wildcard in test1.mnu|!|# it does the same as the previous "Shell script"|!||!|err=1|!|cd ~/FOSSIL|!|while [ $err -eq 1 ];|!|  do repo=$(find *.fossil 2>/dev/null )|!|  err=$?|!|  if [ $? -eq 1 ]; then|!|    if [ $(pwd) = '/' ]; then|!|      echo "repo non esistente" ; break|!|    fi|!|    cd ../|!|  else|!|    echo "$(pwd)/${repo}"|!|  fi|!|done

@@ -5,8 +5,7 @@ bd=1
 w=25
 pos=11.38
 ::EMENUTMPFILE=%mn.tmp~
-#%C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
-%C set ::EMENUFILE "%f"
+%C set ::EMENUFILE [string map {\\ /} "%f"]
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
 %C set ::FILETAIL {"$::EMENUFILETAIL"}
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}

@@ -87,8 +87,14 @@ proc file::OutwardChange {TID {docheck yes}} {
     if {[alited::msg yesno warn $msg YES -title $al(MC,saving)]} {
       # if the answer was "no save", let the text remains a while for further considerations
       if {$isfile} {
+        set wtxt [alited::main::GetWTXT $TID]
+        set pos [$wtxt index insert]
         MakeThemReload $TID
         OpenFile $fname yes
+        catch {
+          ::tk::TextSetCursor $wtxt $pos
+          ::alited::main::CursorPos $wtxt
+        }
       } else {
         SaveFile $TID
         set curtime [file mtime $fname]
@@ -360,7 +366,7 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
     }
     if {$checknew} CheckForNew
     alited::ini::SaveCurrentIni $al(INI,save_onclose)
-    RecreateFileTree
+    alited::tree::UpdateFileTree
   }
   if {$al(closefunc) != 1} {  ;# close func = 1 means "close all"
     alited::file::AddRecent $fname
@@ -414,7 +420,7 @@ proc file::OpenOfDir {dname} {
         OpenFile $fname
       }
     }
-    after idle alited::file::RecreateFileTree ;# to update "colored" open files
+    alited::tree::UpdateFileTree
   }
 }
 #_______________________

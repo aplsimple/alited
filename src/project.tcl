@@ -10,16 +10,36 @@
 # _________________________ Variables ________________________ #
 
 namespace eval project {
+
+  # "Projects" dialogue's path
   variable win $::alited::al(WIN).diaPrj
-  variable OPTS [list prjname prjroot prjdirign prjEOL prjindent prjredunit prjmultiline]
+
+  # project options' names
+  variable OPTS [list \
+    prjname prjroot prjdirign prjEOL prjindent prjredunit prjmultiline prjbeforerun]
+
+  # list of projects
   variable prjlist [list]
-  variable tablist [list]
+
+  # initial geometry of "Projects" dialogue (centered in the main form)
   variable geo root=$::alited::al(WIN)
+
+  # -minsize oprion of "Projects" dialogue
   variable minsize {}
+
+  # saved index of last selected project
   variable ilast -1
+
+  # saved tab of "Projects" dialogue
   variable oldTab {}
+
+  # data of projects
   variable prjinfo; array set prjinfo [list]
+
+  # data of projects top save/restore
   variable data; array set data [list]
+
+  # name of file containing project notes
   variable fnotes {}
 }
 
@@ -280,8 +300,8 @@ proc project::SaveNotes {} {
 
   namespace upvar ::alited obDl2 obDl2
   variable fnotes
-  if {$fnotes ne ""} {
-    set fcont [[$obDl2 TexPrj] get 1.0 "end -1c"]
+  if {$fnotes ne {}} {
+    set fcont [[$obDl2 TexPrj] get 1.0 {end -1c}]
     ::apave::writeTextFile $fnotes fcont
   }
 }
@@ -515,7 +535,7 @@ proc project::Ok {args} {
     return
   }
   if {[set N [llength [alited::bar::BAR cget -select]]]} {
-    set msg [msgcat::mc "All selected files (%n) will be reopen.\n\nDo you agree?"]
+    set msg [msgcat::mc "All selected files (%n) will remain open\nin the project you are switching to.\n\nDo you agree?"]
     set msg [string map [list %n $N] $msg]
     if {![alited::msg yesno ques $msg NO -geometry root=$win]} return
   }
