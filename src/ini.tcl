@@ -25,6 +25,7 @@ namespace eval ::alited {
   set al(TREE,files) no     ;# flag "is a file tree created"
   set al(TREE,cw0) 200      ;# tree column #0 width
   set al(TREE,cw1) 70       ;# tree column #1 width
+  set al(TREE,showinfo) 0   ;# flag "show info on a file in tips"
   set al(FONTSIZE,small) 10 ;# small font size
   set al(FONTSIZE,std) 11   ;# standard font size
   set al(FONT,txt) {}       ;# font for edited texts
@@ -273,7 +274,10 @@ proc ini::ReadIniOptions {nam val} {
     MaxFiles      {set al(MAXFILES) $val}
     barlablen     {set al(INI,barlablen) $val}
     bartiplen     {set al(INI,bartiplen) $val}
-    backup        {set al(BACKUP) $val}
+    backup        {
+      if {$val ne {.bak}} {set val {}}
+      set al(BACKUP) $val
+    }
     gutterwidth   {set al(ED,gutterwidth) $val}
     guttershift   {set al(ED,guttershift) $val}
   }
@@ -369,6 +373,7 @@ proc ini::ReadIniMisc {nam val} {
   switch -exact $nam {
     isfavor {set al(FAV,IsFavor) $val}
     chosencolor {set alited::al(chosencolor) $val}
+    showinfo {set alited::al(TREE,showinfo) $val}
   }
 }
 
@@ -617,6 +622,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan {[Misc]}
   puts $chan "isfavor=$al(FAV,IsFavor)"
   puts $chan "chosencolor=$alited::al(chosencolor)"
+  puts $chan "showinfo=$alited::al(TREE,showinfo)"
   close $chan
   SaveIniPrj $newproject
 }

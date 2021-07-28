@@ -57,7 +57,7 @@ proc file::MakeThemReload {{tabs ""}} {
     set tabs [alited::bar::BAR listTab]
   }
   foreach tab $tabs {
-    alited::bar::BAR [lindex $tab 0] configure --reload yes
+    alited::bar::BAR [lindex $tab 0] configure --reload DORELOAD
   }
 }
 #_______________________
@@ -101,7 +101,8 @@ proc file::OutwardChange {TID {docheck yes}} {
       }
     }
   }
-  alited::bar::BAR $TID configure --mtime $curtime --mtimefile $fname
+  alited::bar::BAR $TID configure --mtime $curtime --mtimefile $fname \
+    -tip [FileStat $fname]
 }
 #_______________________
 
@@ -124,6 +125,68 @@ proc file::IsClang {fname} {
     return yes
   }
   return no
+}
+#_______________________
+
+proc file::ReadFileByTID {TID {getcont no}} {
+  # Reads a file of tab, if needed.
+  #   TID - ID of the tab
+  #   getcont - if yes, returns a content of the file
+
+  namespace upvar ::alited al al
+  if {![info exist al(_unittree,$TID)]} {
+    return [ReadFile $TID [alited::bar::FileName $TID]]
+  }
+  if {$getcont} {
+    set wtxt [alited::main::GetWTXT $TID]
+    return [$wtxt get 1.0 "end - 1 chars"]
+  }
+}
+#_______________________
+
+proc file::FileSize {bsize} {
+  # Formats a file's size.
+  #   bsize - file size in bytes
+
+  set res "$bsize bytes"
+  set bsz $bsize
+  foreach m {Kb Mb Gb Tb} {
+    if {$bsz<1024} break
+    set rsz [expr {$bsz/1024.0}]
+    set res "[format %.1f $rsz] $m ($bsize bytes)"
+    set bsz [expr {int($bsz/1024)}]
+  }
+  return $res
+}
+#_______________________
+
+proc file::FileStat {fname} {
+  # Gets a file's attributes: times & size.
+  #   fname - file name
+  # Returns a string with file name and attributes divided by \n.
+
+  set res {}
+  array set ares {}
+  if {$alited::al(TREE,showinfo) && ![catch {file stat $fname ares}]} {
+    set dtf "%D %T"
+    set res "\n\
+\nCreated: [clock format $ares(ctime) -format $dtf]\
+\nModified: [clock format $ares(mtime) -format $dtf]\
+\nAccessed: [clock format $ares(atime) -format $dtf]\
+\nSize: [FileSize $ares(size)]"
+  }
+  return [append fname $res]
+}
+#_______________________
+
+proc file::UpdateFileStat {} {
+  # Updates tips in tab bar (file info).
+
+  foreach tab [alited::bar::BAR listTab] {
+    set TID [lindex $tab 0]
+    set fname [alited::bar::FileName $TID]
+    alited::bar::BAR $TID configure -tip [FileStat $fname]
+  }
 }
 
 # ________________________ Helpers _________________________ #
@@ -152,9 +215,9 @@ proc file::RenameFile {TID fname} {
   #   fname - file name
 
   alited::bar::SetTabState $TID --fname $fname
-  alited::bar::BAR $TID configure -text "" -tip ""
+  alited::bar::BAR $TID configure -text {} -tip {}
   set tab [alited::bar::UniqueListTab $fname]
-  alited::bar::BAR $TID configure -text $tab -tip $fname
+  alited::bar::BAR $TID configure -text $tab -tip [FileStat $fname]
   alited::bar::BAR $TID show
 }
 #_______________________
@@ -187,14 +250,27 @@ proc file::ReadFile {TID fname} {
 }
 #_______________________
 
-proc file::DisplayFile {TID fname wtxt} {
+proc file::DisplayFile {TID fname wtxt doreload} {
   # Displays a file's contents.
   #   TID - ID of tab
   #   fname - file name
   #   wtxt - text widget's path
+  #   doreload - if yes, forces reloading (at external changes of file)
 
   namespace upvar ::alited al al obPav obPav
-  set filecont [ReadFile $TID $fname]
+  # this is most critical: displayed text should correspond to the tab
+  if {$wtxt ne [alited::main::GetWTXT $TID]} {
+    set errmsg "\n ERROR file::DisplayFile: \
+      \n ($TID) $wtxt != [alited::main::GetWTXT $TID] \
+      \n Please, notify alited's authors!\n"
+    puts $errmsg
+    return -code error $errmsg
+  }
+  # another critical point: read the file only at need
+  if {$doreload || [set filecont [ReadFileByTID $TID yes]] eq {}} {
+    # last check point: 0 bytes of the file => read it anyway
+    set filecont [ReadFile $TID $fname]
+  }
   $obPav displayText $wtxt $filecont
   $obPav makePopup $wtxt no yes
 }
@@ -246,7 +322,7 @@ proc file::OpenFile {{fname ""} {reload no}} {
       }
       # open new tab
       set tab [alited::bar::UniqueListTab $fname]
-      set TID [alited::bar::InsertTab $tab $fname]
+      set TID [alited::bar::InsertTab $tab [FileStat $fname]]
     }
     alited::file::AddRecent $fname
     alited::bar::BAR $TID show
@@ -541,7 +617,7 @@ proc file::RemoveFile {fname dname mode} {
   if {$mode eq "move"} {
     set TID [alited::bar::CurrentTabID]
     alited::bar::SetTabState $TID --fname $fname2
-    alited::bar::BAR $TID configure -tip $fname2
+    alited::bar::BAR $TID configure -tip [FileStat $fname2]
   }
   alited::tree::RecreateTree
 }

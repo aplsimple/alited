@@ -7,7 +7,6 @@
 # License: MIT.
 ###########################################################
 
-
 # ________________________ Variables _________________________ #
 
 namespace eval pref {
@@ -78,7 +77,7 @@ namespace eval pref {
   # list of e_menu menus
   variable listMenus [list]
 
-  # disctionary of standard keys' data
+  # dictionary of standard keys' data
   variable stdkeys
 
   # standard keys' data

@@ -89,7 +89,7 @@ proc project::SaveCurrFileList {title {isnew no}} {
         } else {
           set pos [alited::bar::GetTabState $TID --pos]
         }
-        set fname [set fn [alited::bar::BAR $TID cget -tip]]
+        set fname [set fn [alited::bar::FileName $TID]]
         append fn \t $pos
         if {$fname ne $al(MC,nofile) && [lsearch -exact $al(tablist) $fn]<0} {
           lappend al(tablist) $fn
@@ -172,7 +172,7 @@ proc project::GetOptVal {line} {
   # Gets a name and a value from a line of form "name=value".
   #   line - the line
 
-  if {[set i [string first "=" $line]]>-1} {
+  if {[set i [string first = $line]]>-1} {
     return [list [string range $line 0 $i-1] [string range $line $i+1 end]]
   }
   return [list]
@@ -184,7 +184,7 @@ proc project::ProcEOL {val mode} {
   #   val - string to transform
   #   mode - if "in", gets \n-value; if "out", gets EOL-value.
 
-  if {$mode eq "in"} {
+  if {$mode eq {in}} {
     return [string map [list $::alited::EOL \n] $val]
   } else {
     return [string map [list \n $::alited::EOL] $val]
@@ -243,7 +243,7 @@ proc project::GetProjectOpts {fname} {
   if {[set currentprj [expr {$data(prjname) eq $pname}]]} {
     foreach tab [alited::bar::BAR listTab] {
       set tid [lindex $tab 0]
-      lappend prjinfo($pname,tablist) [alited::bar::BAR $tid cget -tip]
+      lappend prjinfo($pname,tablist) [alited::bar::FileName $tid]
     }
   }
   foreach line [::apave::textsplit $filecont] {

@@ -45,9 +45,7 @@ proc complete::AllSessionCommands {{currentTID ""}} {
   set res [list]
   foreach tab [alited::find::SessionList] {
     set TID [lindex $tab 0]
-    if {![info exist al(_unittree,$TID)]} {
-      alited::file::ReadFile $TID [alited::bar::FileName $TID]
-    }
+    alited::file::ReadFileByTID $TID
     foreach it $al(_unittree,$TID) {
       lassign $it lev leaf fl1 ttl l1 l2
       if {$leaf && [llength $ttl]==1} {

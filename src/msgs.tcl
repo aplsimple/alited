@@ -128,8 +128,8 @@ namespace eval ::alited {
   set al(MC,frres1)  [msgcat::mc "Found %n matches for \"%s\"."]
   set al(MC,frres2)  [msgcat::mc "Made %n replacements of \"%s\" with \"%r\" in \"%f\"."]
   set al(MC,frres3)  [msgcat::mc "Made %n replacements of \"%s\" with \"%r\" in all of session."]
-  set al(MC,frdoit1) [msgcat::mc "Replace all of \"%s\" with \"%r\"\nin \"%f\"?"]
-  set al(MC,frdoit2) [msgcat::mc "Replace all of \"%s\" with \"%r\"\nin all texts?"]
+  set al(MC,frdoit1) [msgcat::mc "Replace all of \"%s\"\n\nwith \"%r\"\n\nin \"%f\" ?"]
+  set al(MC,frdoit2) [msgcat::mc "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all texts?"]
 
   ## _ file & directory _ ##
   set al(MC,errcopy)     [msgcat::mc "Can't backup \"%f\" to\n\"%d\"!\n\nDelete it anyway?"]

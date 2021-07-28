@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 1.0b11
+package provide alited 1.0
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -40,33 +40,35 @@ namespace eval alited {
 
 ## ________________________ Initialize GUI _________________________ ##
 
-wm withdraw .
-if {$::tcl_platform(platform) eq {windows}} {
-  wm attributes . -alpha 0.0
-}
-set ALITED_NOSEND no
-if {[lindex $::argv 0] eq {NOSEND}} {
-  set ::argv [lreplace $::argv 0 0]
-  incr ::argc -1
-  set ALITED_NOSEND yes
-}
-if {[lindex $::argv 0] eq {DEBUG}} {
-  set alited::al(DEBUG) yes
-  set ::argv [lreplace $::argv 0 0]
-  incr ::argc -1
-} elseif {$::tcl_platform(platform) eq {unix}} {
-  if {!$ALITED_NOSEND} {
-    set port 48784
-    if {[catch {::comm::comm config -port $port}] && \
-    ![catch {::comm::comm send $port ::alited::run_remote ::alited::raise_window }]} {
-      destroy .
-      exit
-    }
+# this "if" satisfies the Ruff doc generator "package require":
+if {[package versions alited] eq {}} {
+  wm withdraw .
+  if {$::tcl_platform(platform) eq {windows}} {
+    wm attributes . -alpha 0.0
   }
-} else {
-  after idle ::alited::raise_window
+  set ALITED_NOSEND no
+  if {[lindex $::argv 0] eq {NOSEND}} {
+    set ::argv [lreplace $::argv 0 0]
+    incr ::argc -1
+    set ALITED_NOSEND yes
+  }
+  if {[lindex $::argv 0] eq {DEBUG}} {
+    set alited::al(DEBUG) yes
+    set ::argv [lreplace $::argv 0 0]
+    incr ::argc -1
+  } elseif {$::tcl_platform(platform) eq {unix}} {
+    if {!$ALITED_NOSEND} {
+      set port 48784
+      if {[catch {::comm::comm config -port $port}] && \
+      ![catch {::comm::comm send $port ::alited::run_remote ::alited::raise_window }]} {
+        destroy .
+        exit
+      }
+    }
+  } else {
+    after idle ::alited::raise_window
+  }
 }
-unset ALITED_NOSEND
 
 # ________________________ Main variables _________________________ #
 
@@ -213,6 +215,7 @@ namespace eval alited {
     if {$lab eq ""} {set lab [$obPav Labstat3]}
     set font [[$obPav Labstat2] cget -font]
     set fontB "$font -weight bold"
+    set msg [string range [string map [list \n { } \r {}] $msg] 0 100]
     set slen [string length $msg]
     if {[catch {$lab configure -text $msg}] || !$slen} return
     $lab configure -font $font -foreground $fg
@@ -333,12 +336,13 @@ namespace eval alited {
 # _________________________ Run the app _________________________ #
 
 # this "if" satisfies the Ruff doc generator "package require":
-if {[package versions alited] eq {}} {
-  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+if {[info exists ALITED_NOSEND]} {
+  unset ALITED_NOSEND
+  #catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
-  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+  #catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
     cd $alited::SRCDIR

@@ -93,6 +93,8 @@ namespace eval ::alited {
     {    In unit:} {     В юните:}
     "\"%n\" contains unbalanced \{\}: %1!=%2" "\"%n\" имеет несогласованные \{\}: %1!=%2"
     {Back} {Откат}
+    {File not found: %f} {Файл не найден: %f}
+    {Unit not found: %u} {Юнит не найден: %u}
   }
 
   ## _ Moving a first unit up _ ##
@@ -111,6 +113,7 @@ namespace eval ::alited {
     {An open file can not be deleted.} {Невозможно удалить открытый файл.}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" был изменен другим приложением.\n\nОтменить вашу редакцию и перезагрузить файл?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" был удален другим приложением.\n\nСохранить файл?"
+    {Tip File Info} {Данные о файлах}
   }
 
   ## _ Templates _ ##
@@ -255,8 +258,8 @@ namespace eval ::alited {
     "Found %n matches for \"%s\"." "Найдено %n искомых \"%s\"."
     "Made %n replacements of \"%s\" with \"%r\" in \"%f\"." "Сделано %n замен \"%s\" на \"%r\" в \"%f\"."
     "Made %n replacements of \"%s\" with \"%r\" in all of session." "Сделано %n замен \"%s\" на \"%r\" во всём сеансе."
-    "Replace all of \"%s\" with \"%r\"\nin \"%f\"?" "Заменить все \"%s\" на \"%r\"\nв \"%f\"?"
-    "Replace all of \"%s\" with \"%r\"\nin all texts?" "Заменить все \"%s\" на \"%r\"\nво всех текстах?"
+    "Replace all of \"%s\"\n\nwith \"%r\"\n\nin \"%f\" ?" "Заменить все \"%s\"\n\nна \"%r\"\n\nв \"%f\" ?"
+    "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all texts?" "Заменить все \"%s\"\n\nна \"%r\"\n\nво всех текстах?"
     {Don't focus a text after selecting in infobar} {Не переходить на текст при выборе в инфобаре}
     {Focus a text after selecting in infobar} {Переходить на текст при выборе в инфобаре}
   }

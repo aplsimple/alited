@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4b6"
+  variable em_version "e_menu 3.4b7"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -1102,25 +1102,25 @@ proc ::em::read_f_file {} {
 }
 #___ get contents of #ARGS..: or #RUNF..: line
 proc ::em::get_AR {} {
-  if {$::em::truesel && $::em::seltd ne ""} {
+  if {$::em::truesel && $::em::seltd ne {}} {
     ;# %s is preferrable for ARGS (ts= rules)
     return [list [string map {\n \\n \" \\\"} $::em::seltd]]
   }
   if {[::em::read_f_file]} {
-    set re "^.*#\[ \]?ARGS\[0-9\]+:\[ \]*(.*)"
-    set rf "^.*#\[ \]?RUNF\[0-9\]+:\[ \]*(.*)"
-    set AR [set RF ""]
+    set re {^[[:space:]#/*]*#[ ]?ARGS[0-9]+:[ ]*(.*)}
+    set rf {^[[:space:]#/*]*#[ ]?RUNF[0-9]+:[ ]*(.*)}
+    set AR [set RF {}]
     foreach st $::em::filecontent {
-      if {[regexp $re $st] && $AR eq ""} {
+      if {[regexp $re $st] && $AR eq {}} {
         lassign [regexp -inline $re $st] => AR
-      } elseif {[regexp $rf $st] && $RF eq ""} {
+      } elseif {[regexp $rf $st] && $RF eq {}} {
         lassign [regexp -inline $rf $st] => RF
       }
-      if {$AR ne "" && $RF ne ""} break
+      if {$AR ne {} && $RF ne {}} break
     }
     return [list $AR $RF]
   }
-  return ""
+  return {}
 }
 #___ get contents of %l-th line of %f file
 proc ::em::get_L {} {

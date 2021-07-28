@@ -551,7 +551,10 @@ oo::class create ::apave::APaveDialog {
       set sel [set $varFind]
     }
     if {$donext} {
-      set pos [$txt index "[$txt index insert] + 1 chars"]
+      set pos [$txt index insert]
+      if {{sel} in [$txt tag names $pos]} {
+        set pos [$txt index "$pos + 1 chars"]
+      }
       set pos [$txt search -- $sel $pos end]
     } else {
       set pos ""

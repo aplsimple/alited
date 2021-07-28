@@ -14,7 +14,7 @@ The *alited* facilitates the development and the maintenance of Tcl/Tk code, par
 
 In fact, *alited* has been developed by its own means since v0.2. Inspite of inevitable overheads of this way and the raw state of *alited*, it turned out to be amazingly productive, more and more in the course of time. The time of rawness expires somehow at a little bit of efforts, huh.
 
-Below is a screenshot of *alited v0.6*:
+Below is a screenshot of *alited*:
 
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited-en.png" class="media" alt="">
 
@@ -77,7 +77,7 @@ The *alited* recognizes the units by these comments and presents them as a tree.
 
 This tree of units doesn't means anything like *code folding* or *structured editing* which refer to the Tcl structural commands like *if, switch, foreach, proc* and so on. The *alited* unit tree results from the hierarchical comments only.
 
-The unit tree includes the *code units* as the branches and the *procedures / methods* as the leaves.
+The unit tree includes the *unit comments* as the branches and the *procedures / methods* as the leaves.
 
 # Example
 
@@ -158,7 +158,7 @@ This example is small and easy to observe. Its tree view doesn't differ greatly 
 
 In a *real life*, a code isn't easily observed even with *bird's eye view* or with *code folding*.
 
-And here the *alited* comes to help.
+And here *alited* comes to help.
 
 # Bonuses
 
@@ -292,5 +292,5 @@ ROAD MAP of alited from v0.6 to v1.0:
     + fossil/git diff of a file
     + C syntax
     + all options of Preferences & Projects
-    - comments & unit tree for code of alited
-    - index.html on Github
+    + comments & unit tree for code of alited
+    + index.html on Github

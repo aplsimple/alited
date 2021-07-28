@@ -10,10 +10,11 @@ in=1.0
 %C if {![info exist ::EMENUDIR1]} {set ::EMENUDIR1 "%PD"}
 %C if {![info exist ::EMENUDIR2]} {set ::EMENUDIR2 \
   [file normalize "%PD/../release/[file tail {%PD}]"]}
+%C if {![info exist ::EMENUMULSTERDIR]} {set ::EMENUMULSTERDIR [file normalize ../mulster]}
 ::EMENUOPTS=-r -f
 ::EMENUMULSTER=1
 ::EMENUMULSTRES1=~/PG/github/aplsimple.github.io/en/tcl/
-::EMENUMULSTRES2=~/PG/github/aplsimple.github.io/en/tcl/transpops
+::EMENUMULSTRES2=~/PG/github/aplsimple.github.io/en/tcl/alited
 ::EMENUMULSTRES3=/home/apl/PG/github/aplsimple.github.io/en/tcl
 ::EMENURUFFDIR=~/PG/github/pave apave\n~/PG/github/hl_tcl\n~/PG/github/klnd\n~/PG/github/bartabs\n~/PG/github/trimmer\n~/PG/github/mulster\n~/PG/github/transpops\n~/PG/github/screenshooter\n~/PG/github/baltip\n~/PG/github/aloupe
 ::EMENURUFFIT=~/PG/github/aplsimple.github.io/en/tcl/bartabs/index.html\n~/PG/github/aplsimple.github.io/en/tcl/booksum/index.html\n~/PG/github/aplsimple.github.io/en/tcl/doctest/index.html\n~/PG/github/aplsimple.github.io/en/tcl/pave/index.html
@@ -52,7 +53,7 @@ pos=156.48
  S: Trimmer *.tcl S: tclsh ~/UTILS/trimmer/trim.tcl \
    -i "$::EMENUDIR1" -o "$::EMENUDIR2" $::EMENUOPTS
 
-RE: Ruff! $::EMENUP2 ... RE: cd $::EMENUDIR1
+ R: Ruff! $::EMENUP2 ... R: cd $::EMENUDIR1
  R: Ruff! $::EMENUP2 ... R: %I {} "PROJECT NAME" { \
    v_ {{} {-pady 4}} {} \
    dir1 {{ Project directory:} {} {-w 50 -validate all -validatecommand { \
@@ -60,8 +61,10 @@ RE: Ruff! $::EMENUP2 ... RE: cd $::EMENUDIR1
      set ::EMENUMULSTRES2 $::EMENUMULSTRES1\[file tail {%P}\]; \
      return 1}}} {"$::EMENUDIR1"} \
    ent1 {{      Project name:} {} {-tvar ::EMENUP2}} {"$::EMENUP2"} \
-   v_2 {{} {-pady 4}} {} \
+   v_2 {{} {-pady 6}} {} \
    chb1 {{Mulster afterwards:}} {$::EMENUMULSTER} \
+   dirM {{ Mulster directory:} {} {-tvar ::EMENUMULSTERDIR}} {"$::EMENUMULSTERDIR"} \
+   v_3 {{} {-pady 6}} {} \
    dir2 {{ Copy to directory:} {} {-tvar ::EMENUMULSTRES2}} {"$::EMENUMULSTRES2"} \
    seh {{} {-pady 3} {}} {} \
    } -head {\n This creates Ruff! documentation of Tcl files. \
@@ -71,15 +74,16 @@ SW: Ruff! $::EMENUP2 ... SW: tclsh ~/UTILS/ruff.tcl "$::EMENUP2"
  S: Ruff! $::EMENUP2 ... S: %C set ::EMENUP2html $::EMENUP2.html
  S: Ruff! $::EMENUP2 ... S: %C  \
    if {$::EMENUMULSTER} { \
+     set ::EMENUMULSTERDIR2 [file join $::EMENUMULSTERDIR tasks ruff src] ; \
      if {![file exists $::EMENUP2html]} {set ::EMENUP2html [lindex [glob *.html] 0]} ; \
-     set ::EMTMP "mv -f $::EMENUP2html ../mulster/tasks/ruff/src ; \
-     cd ../mulster ; tclsh mulster.tcl -b 0 tasks/mulster-ruff ; \
+     set ::EMTMP "mv -f $::EMENUP2html $::EMENUMULSTERDIR2 ; \
+     cd $::EMENUMULSTERDIR ; tclsh mulster.tcl -b 0 tasks/mulster-ruff ; \
      cp -f ~/PG/github/mulster/tasks/ruff/mulstered/$::EMENUP2html $::EMENUMULSTRES2" ; \
-     set ::EMENUP2html "$::EMENUMULSTRES2/$::EMENUP2html" \
+     set ::EMENUP2html [file normalize [file join $::EMENUMULSTRES2 $::EMENUP2html]] \
    } else {set ::EMTMP ""}
 SW: Ruff! $::EMENUP2 ... SW: $::EMTMP
  R: Ruff! $::EMENUP2 ... R: tclsh ~/UTILS/highlight_tcl/tcl_html.tcl $::EMENUP2html
-RE: Ruff! $::EMENUP2 ... RE: %B $::EMENUP2html
+ R: Ruff! $::EMENUP2 ... R: %B $::EMENUP2html
 
  R: Ruff! all ... R: %I {} "PROJECT NAME" { \
    v_ {{} {-pady 4}} {} \

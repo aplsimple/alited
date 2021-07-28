@@ -44,7 +44,7 @@ proc main::GetText {TID {doshow no}} {
   # dopack (flag "packed")
 
   namespace upvar ::alited al al obPav obPav
-  set curfile [alited::bar::BAR $TID cget -tip]
+  set curfile [alited::bar::FileName $TID]
   # initial text and its scrollbar:
   set wtxt [$obPav Text]
   set wsbv [$obPav SbvText]
@@ -52,15 +52,17 @@ proc main::GetText {TID {doshow no}} {
   # get data of the current tab
   lassign [alited::bar::GetBarState] TIDold fileold wold1 wold2
   lassign [alited::bar::GetTabState $TID --pos] pos
+  set doreload [expr {[alited::bar::BAR $TID cget --reload] eq {DORELOAD}}]
   if {$TIDold eq "-1"} {
     ;# first text to edit in original Text widget: create its scrollbar
     BindsForText $TID $wtxt
   } elseif {[GetWTXT $TID] ne {}} {
     # edited text: get its widgets' data
     lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
-    set doinit [expr {[alited::bar::BAR $TID cget --reload] ne {}}]
-    if {$doinit} {
-      set al(HL,$wtxt) "" ;# to highlight the loaded text
+    if {$doreload} {
+      set al(HL,$wtxt) {} ;# to highlight the loaded text
+    } else {
+      set doinit no
     }
     alited::bar::BAR $TID configure --reload {}
   } else {
@@ -82,7 +84,7 @@ proc main::GetText {TID {doshow no}} {
     $obPav themeNonThemed [winfo parent $wtxt]
     set bind [list $obPav fillGutter $wtxt $canvas $width $shift]
     bind $wtxt <Configure> $bind
-    if {[trace info execution $wtxt] eq ""} {
+    if {[trace info execution $wtxt] eq {}} {
       trace add execution $wtxt leave $bind
     }
     ttk::scrollbar $wsbv -orient vertical -takefocus 0
@@ -96,7 +98,7 @@ proc main::GetText {TID {doshow no}} {
   }
   if {$doinit} {
     # if the file isn't read yet, read it and initialize its highlighting
-    alited::file::DisplayFile $TID $curfile $wtxt
+    alited::file::DisplayFile $TID $curfile $wtxt $doreload
     HighlightText $TID $curfile $wtxt
   }
   if {[winfo exists $wold1]} {
@@ -513,7 +515,7 @@ proc main::_create {} {
     {fra.pan.PanR - - - - {add} {-orient vertical $alited::PanR_wh}}
     {.fraTop - - - - {add}}
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
-    {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3} {alited::bar::FillBar %w}}
+    {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3} {after 100 {alited::bar::FillBar %w}}}
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
     {#.fraTop.panTop.CanDiff - - - - {pack -side left -expand 0 -fill y} {-w 4}}
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both} {-background $::alited::FRABG}}

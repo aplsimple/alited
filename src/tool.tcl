@@ -299,6 +299,14 @@ proc tool::BeforeRun {} {
 
 ## ________________________ run/close _________________________ ##
 
+proc tool::is_submenu {opts} {
+  # Checks if e_menu's arguments are for submenu
+  #   opts - e_menu's arguments
+
+  return [expr {[lsearch -glob -nocase $opts EX=*] == -1}]
+}
+#_______________________
+
 proc tool::e_menu {args} {
   # Runs e_menu.
   #   args - arguments of e_menu
@@ -307,7 +315,7 @@ proc tool::e_menu {args} {
 
   if {{ex=Help} ni $args} {
     EM_SaveFiles
-    if {[lsearch -glob -nocase $args EX=*]>-1} {
+    if {![is_submenu $args]} {
       append args " g="  ;# should be last, to override previous settings
     }
   }
@@ -336,8 +344,11 @@ proc tool::e_menu2 {opts} {
   if {![info exists ::em::geometry]} {
     source [file join $::e_menu_dir e_menu.tcl]
   }
-  ::em::main -prior 1 -modal 0 -remain 0 -noCS 1 {*}[EM_Options $opts]
-  set alited::al(EM,geometry) $::em::geometry
+  set options [EM_Options $opts]
+  ::em::main -prior 1 -modal 0 -remain 0 -noCS 1 {*}$options
+  if {[is_submenu $options]} {
+    set alited::al(EM,geometry) $::em::geometry
+  }
 }
 #_______________________
 

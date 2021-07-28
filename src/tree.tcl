@@ -616,10 +616,14 @@ proc tree::Tooltip {x y X Y} {
     } else {
       # for files
       lassign [$wtree item $ID -values] -> tip isfile
-      if {$isfile} { ;# tips for directories only
-        ::baltip hide $al(WIN)
-        set tipID $newTipID
-        return
+      if {$isfile} {
+        if {$al(TREE,showinfo)} {
+          set tip [alited::file::FileStat $tip]
+        } else {
+          ::baltip hide $al(WIN)
+          set tipID $newTipID
+          return
+        }
       }
     }
     ::baltip tip $al(WIN) $tip -geometry +$X+$Y -per10 4000 -pause 5 -fade 5

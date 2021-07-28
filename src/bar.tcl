@@ -69,7 +69,7 @@ proc bar::FillBar {wframe {newproject no}} {
   foreach tab $tabs fname $files pos $posis {
     set tid [lindex $tab 0]
     SetTabState $tid --fname $fname --pos $pos
-    BAR $tid configure -tip $fname
+    BAR $tid configure -tip [alited::file::FileStat $fname]
   }
   set curname [lindex $files $al(curtab)]
   SetBarState -1 $curname [$obPav Text] [$obPav SbvText]
@@ -221,7 +221,8 @@ proc bar::FileName {{TID ""}} {
   #   TID - tab's ID
 
   if {$TID eq {}} {set TID [CurrentTabID]}
-  return [BAR $TID cget -tip]
+  set tip [BAR $TID cget -tip]
+  return [lindex [split $tip \n] 0]
 }
 #_______________________
 

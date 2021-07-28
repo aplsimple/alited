@@ -55,7 +55,7 @@ proc favor::LastVisited {item header} {
 #_______________________
 
 proc favor::Select {} {
-  # Handles selecting an item of "Last visited" widget.
+  # Handles selecting an item of "Favorites / Last visited" treeview.
 
   namespace upvar ::alited al al obPav obPav
   set msec [clock milliseconds]
@@ -67,22 +67,27 @@ proc favor::Select {} {
   if {![IsSelected favID name fname sname header line]} {
     return
   }
-  if {[set TID [alited::file::OpenFile $fname]] eq {}} return
-  foreach it [alited::tree::GetTree {} TreeFavor] {
-    lassign $it - - ID - values
-    lassign $values name2 fname2 header2
-    if {$fname eq $fname2 && $header eq $header2} {
-      set favID $ID
-      break
+  if {[set TID [alited::file::OpenFile $fname]] eq {}} {
+    set msg [string map [list %f $fname] [msgcat::mc {File not found: %f}]]
+    alited::Message $msg 4
+    return
+  }
+  foreach it $al(_unittree,$TID) {
+    set ID [alited::tree::NewItemID [incr iit]]
+    lassign $it lev leaf fl1 title l1 l2
+    if {$name eq $title} {
+      set values [$wtree item $favID -values]
+      $wtree delete $favID
+      set favID [$wtree insert {} 0 -values $values]
+      $wtree tag add tagNorm $favID
+      if {int($line)>($l2-$l1)} {set $line 0}
+      set pos [expr {$l1+$line}]
+      alited::main::FocusText $TID $pos
+      return
     }
   }
-  if {[$wtree exists $favID]} {
-    set values [$wtree item $favID -values]
-    $wtree delete $favID
-    set favID [$wtree insert {} 0 -values $values]
-    $wtree tag add tagNorm $favID
-    alited::unit::SelectByHeader $header $line
-  }
+  set msg [string map [list %u $name] [msgcat::mc {Unit not found: %u}]]
+  alited::Message $msg 4
 }
 #_______________________
 
@@ -139,7 +144,7 @@ proc favor::SetAndClose {cont} {
 #_______________________
 
 proc favor::SetFavorites {cont} {
-  # Sets favorites/last visited list.
+  # Sets favorites/last visited list in the treeview.
   #   cont - list of favorites/last visited
 
   namespace upvar ::alited al al obPav obPav

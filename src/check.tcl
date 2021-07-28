@@ -138,14 +138,11 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
 proc check::CheckAll {} {
   # Checks all files of session.
 
-  namespace upvar ::alited al al
   update
   set allfnd [list]
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
-    if {![info exist al(_unittree,$TID)]} {
-      alited::file::ReadFile $TID [alited::bar::FileName $TID]
-    }
+    alited::file::ReadFileByTID $TID
     lassign [alited::main::GetText $TID] curfile wtxt
     CheckFile $curfile $wtxt $TID
   }

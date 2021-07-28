@@ -171,9 +171,7 @@ proc find::SearchUnit1 {wtxt isNS} {
   }
   foreach tab $tabs {
     set TID [lindex $tab 0]
-    if {![info exist al(_unittree,$TID)]} {
-      alited::file::ReadFile $TID [alited::bar::FileName $TID]
-    }
+    alited::file::ReadFileByTID $TID
     foreach it $al(_unittree,$TID) {
       lassign $it lev leaf fl1 ttl l1 l2
       if {[string match $what $ttl] || [string match "*::$ttl" $com2] || $com2 eq $ttl} {
@@ -227,9 +225,7 @@ proc find::DoFindUnit {} {
   }
   foreach tab $tabs {
     set TID [lindex $tab 0]
-    if {![info exist al(_unittree,$TID)]} {
-      alited::file::ReadFile $TID [alited::bar::FileName $TID]
-    }
+    alited::file::ReadFileByTID $TID
     foreach it $al(_unittree,$TID) {
       lassign $it lev leaf fl1 title l1 l2
       set ttl [string range $title [string last : $title]+1 end] ;# pure name, no NS
@@ -360,19 +356,19 @@ proc find::FindOptions {wtxt} {
 
   variable data
   $wtxt tag remove fndTag 1.0 end  ;# clear the text off the find tag
-  set options [set stopidx ""]
+  set options [set stopidx {}]
   set findstr $data(en1)
-  if {!$data(c2)} {append options "-nocase "}
+  if {!$data(c2)} {append options {-nocase }}
   # glob search - through its regexp
   switch $data(v1) {
     2 {
-      append options "-regexp "
+      append options {-regexp }
       set findstr [string map {* .* ? . . \\. \{ \\\{ \} \\\} ( \\( ) \\) ^ \\^ \$ \\\$ - \\- + \\+} $findstr]
     }
     3 {
-      append options "-regexp "}
+      append options {-regexp }}
     default {
-      append options "-exact "}
+      append options {-exact }}
   }
   return [list $findstr [string trim $options] $stopidx]
 }
@@ -578,7 +574,7 @@ proc find::FindAll {wtxt TID {tagme "add"}} {
   set allfnd [Search $wtxt]
   foreach idx12 $allfnd {
     lassign $idx12 index1 index2
-    if {$tagme eq "add"} {$wtxt tag add fndTag $index1 $index2}
+    if {$tagme eq {add}} {$wtxt tag add fndTag $index1 $index2}
     set l2 [expr {int($index1)}]
     if {$l1 != $l2} {
       set line [$wtxt get "$index1 linestart" "$index1 lineend"]
@@ -608,7 +604,6 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
   #   tagme - if "add", means "add find tag to the found strings of the text"
   #   inv - index of a button that was hit (3 means "All in Session" button)
 
-  namespace upvar ::alited al al
   variable data
   if {$inv>-1} {set data(lastinvoke) $inv}
   InitShowResults
@@ -616,9 +611,7 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
   set data(_ERR_) no
   foreach tab [SessionList] {
     set TID [lindex $tab 0]
-    if {![info exist al(_unittree,$TID)]} {
-      alited::file::ReadFile $TID [alited::bar::FileName $TID]
-    }
+    alited::file::ReadFileByTID $TID
     lassign [alited::main::GetText $TID] curfile wtxt
     lappend allfnd {*}[FindAll $wtxt $TID $tagme]
     if {$data(_ERR_)} break
@@ -628,6 +621,16 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
 }
 
 # _______________________ "Replace" buttons _______________________ #
+
+proc find::FindReplStr {str} {
+  # Prepares a string to find/replace for messages.
+  #   str - string to prepare
+
+  set res [string range $str 0 50]
+  if {$res ne $str} {append res { ...}}
+  return $res
+}
+#_______________________
 
 proc find::Replace {} {
   namespace upvar ::alited al al
@@ -649,7 +652,7 @@ proc find::Replace {} {
   }
   if {!$isset} Find
   lassign [$wtxt tag ranges sel] idx1 idx2
-  if {$idx1 ne "" && $idx2 ne ""} {
+  if {$idx1 ne {} && $idx2 ne {}} {
     $wtxt replace $idx1 $idx2 $data(en2)
     SetCursor $wtxt $idx1
     set msg [string map [list %n 1 %s $data(en1) %r $data(en2)] $alited::al(MC,frres2)]
@@ -679,9 +682,10 @@ proc find::ReplaceInText {} {
   variable data
   if {![CheckData repl]} return
   set fname [file tail [alited::bar::FileName]]
-  set msg [string map [list %f $fname %s $data(en1) %r $data(en2)] $al(MC,frdoit1)]
+  set msg [string map [list %f $fname %s [FindReplStr $data(en1)] \
+    %r [FindReplStr $data(en2)]] $al(MC,frdoit1)]
   if {![alited::msg yesno warn $msg NO -ontop $data(c5)]} {
-    return ""
+    return {}
   }
   set wtxt [alited::main::CurrentWTXT]
   set rn [ReplaceAll $wtxt [Search $wtxt]]
@@ -694,9 +698,10 @@ proc find::ReplaceInSession {} {
   namespace upvar ::alited al al
   variable data
   if {![CheckData repl]} return
-  set msg [string map [list %s $data(en1) %r $data(en2)] $al(MC,frdoit2)]
+  set msg [string map [list %s [FindReplStr $data(en1)] \
+    %r [FindReplStr $data(en2)]] $al(MC,frdoit2)]
   if {![alited::msg yesno warn $msg NO -ontop $data(c5)]} {
-    return ""
+    return {}
   }
   set currTID [alited::bar::CurrentTabID]
   set rn 0
@@ -752,9 +757,9 @@ proc find::SessionButtons {} {
 
   namespace upvar ::alited al al obFND obFND
   if {[set llen [llength [alited::bar::BAR listFlag s]]]>1} {
-    set btext [string map [list %n $llen] [msgcat::mc "All in %n Files"]]
+    set btext [string map [list %n $llen] [msgcat::mc {All in %n Files}]]
   } else {
-    set btext [msgcat::mc "All in Session"]
+    set btext [msgcat::mc {All in Session}]
   }
   [$obFND But3] configure -text $btext
   [$obFND But6] configure -text $btext
@@ -774,7 +779,7 @@ proc find::SetCursor {wtxt idx1} {
 #_______________________
 
 proc find::LastInvoke {} {
-  # Invokes last find button that was poressed.
+  # Invokes last Find button that was pressed.
   # If Ctrl-F is pressed inside Find/Replace dialogue, the last
   # pressed Find button will be invoked.
 
