@@ -1,16 +1,14 @@
- Switch "Confirm exit" on to secure alited against
- an unintended quit, i.e. at clicking [x] button or
- pressing Alt+F4.
+ Switch "Confirm exit" on to secure alited against an unintended quit,
+ i.e. at clicking [x] button or pressing Alt+F4.
 
  You can save a current alited configuration on:
    - opening a file
    - closing a file
    - saving a file
 
- The last option can work along with the option
+ The last option can work together with the option
    "Save before bar/menu runs"
- which means that at running a bar/menu action
- the current or all files can be saved.
+ which means saving file(s) at running a bar/menu action.
 
  See also "Preferences / Tools / bar/menu" tab.
 
@@ -21,7 +19,7 @@
      secure against choosing a giant directory
      (like /home) for a project
 
- The "Back up files..." option allows to save a
- file's original version just before its change,
- in a project's subdirectory hidden for SCM. Set
- it blank to disable the backup.
+ The "Back up files..." option allows to save a file's original version
+ just before its change, in a project's subdirectory hidden for SCM. Set
+ it blank to disable the backup. The "Maximum" field allows to backup a
+ few of file copies, named like: file-1.bak, file-2.bak, file-3.bak...

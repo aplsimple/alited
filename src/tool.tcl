@@ -41,6 +41,19 @@ proc tool::Undo {} {
 proc tool::Redo {} {
   catch {event generate [alited::main::CurrentWTXT] <<Redo>>}
 }
+#_______________________
+
+proc tool::InsertInText {str} {
+  # Insert a string into a text possibly instead of its selection.
+  #   str - the string
+
+    set wtxt [alited::main::CurrentWTXT]
+    lassign [$wtxt tag ranges sel] pos1 pos2
+    if {$pos1 ne {}} {
+      $wtxt delete $pos1 $pos2
+    }
+    $wtxt insert [$wtxt index insert] $str
+}
 
 # ________________________ Various tools _________________________ #
 
@@ -53,8 +66,26 @@ proc tool::ColorPicker {} {
   set res [::apave::obj chooser colorChooser alited::al(chosencolor)]
   if {$res ne {}} {
     set alited::al(chosencolor) $res
-    set wtxt [alited::main::CurrentWTXT]
-    $wtxt insert [$wtxt index insert] $res
+    InsertInText $res
+  }
+}
+#_______________________
+
+proc tool::DatePicker {} {
+  # Calls a calendar to pick a date.
+
+  namespace upvar ::alited al al
+  if {[set date [alited::find::GetWordOfText]] ne {} \
+  && ![catch {clock scan $date -format $al(TPL,%d)}]} {
+    set al(klnddate) $date
+  } elseif {![info exists al(klnddate)]} {
+    set al(klnddate) [clock format [clock seconds] -format $al(TPL,%d)]
+  }
+  set res [::apave::obj chooser dateChooser alited::al(klnddate) \
+    -parent $al(WIN) -dateformat $al(TPL,%d)]
+  if {$res ne {}} {
+    set al(klnddate) $res
+    InsertInText $res
   }
 }
 #_______________________
@@ -357,21 +388,23 @@ proc tool::_run {{what ""}} {
   #   what - the item (by default, "Run me")
 
   namespace upvar ::alited al al
-  set fpid [file join $al(EM,menudir) .pid~]
-  if {!$al(DEBUG) && [file exists $fpid]} {
-    catch {
-      set pid [::apave::readTextFile $fpid]
-      exec kill -s SIGINT $pid
-    }
-  }
   if {[winfo exists .em] && [winfo ismapped .em]} {
     bell
   }
+  set opts "EX=$what"
   if {$what eq {}} {
-    set what 1 ;# 'Run me' e_menu item
+    #  it is 'Run me' e_menu item
+    set fpid [file join $al(EM,menudir) .pid~]
+    if {!$al(DEBUG) && [file exists $fpid]} {
+      catch {
+        set pid [::apave::readTextFile $fpid]
+        exec kill -s SIGINT $pid
+      }
+    }
+    set opts {EX=1 PI=1}
     BeforeRun
   }
-  e_menu "EX=$what"
+  e_menu {*}$opts
 }
 #_______________________
 

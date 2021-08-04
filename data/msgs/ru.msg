@@ -1,4 +1,13 @@
-# ________________________ alited NS _________________________ #
+#! /usr/bin/env tclsh
+# ________________________ ru.msg _________________________ #
+# Name:    ru.msg
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    07/29/2021
+# Brief:   Handles Russian localization.
+# License: MIT.
+
+# ________________________  alited NS _________________________ #
+
 namespace eval ::alited {
 
   ## ________________________ Common _________________________ ##
@@ -47,6 +56,7 @@ namespace eval ::alited {
     {Moving} {Перемещение}
     {Help of alited} {Справка alited}
     {Color Picker} {Выбор цвета}
+    {Date Picker} {Выбор даты}
     {Screen Loupe} {Экранная лупа}
     {Quit alited?} {Выйти из alited?}
     {Don't ask again} {Больше не спрашивать}
@@ -56,6 +66,7 @@ namespace eval ::alited {
     {Correct Indentation} {Поправить отступы}
     "Correct the indentation of \"%f\" ?" "Поправить отступы \"%f\" ?"
     {The line %n: unbalanced brace!} {Строка %n: несбалансированная скобка!}
+    {Wrap Lines} {Сворачивать строки}
   }
 
   ::msgcat::mcmset ru {
@@ -97,13 +108,13 @@ namespace eval ::alited {
     {Unit not found: %u} {Юнит не найден: %u}
   }
 
-  ## _ Moving a first unit up _ ##
+  ## ________________________ Moving a first unit up ________________________ ##
   ::msgcat::mcmset ru {
     {First Lines} {Первые строки}
     {Can't touch the first %n lines.} {Первые %n строк неподвижны.}
   }
 
-  ## _ Tree _ ##
+  ## ________________________ Tree ________________________ ##
   ::msgcat::mcmset ru {
     "Click \"%t\"" "Кликните \"%t\""
     {Copy Declaration} {Копировать объявление}
@@ -116,7 +127,7 @@ namespace eval ::alited {
     {Tip File Info} {Данные о файлах}
   }
 
-  ## _ Templates _ ##
+  ## ________________________ Templates ________________________ ##
   ::msgcat::mcmset ru {
     {Template} {Шаблон}
     {Templates} {Шаблоны}
@@ -146,7 +157,7 @@ namespace eval ::alited {
     {Delete a template #%n ?} {Удалить шаблон #%n ?}
   }
 
-  ## _ Projects _ ##
+  ## ________________________ Projects ________________________ ##
   ::msgcat::mcmset ru {
     {Projects} {Проекты}
     {You are going to %n!} {Вы собираетесь %n!}
@@ -182,7 +193,7 @@ namespace eval ::alited {
     {Too big directory for a project: %n files or more.} {Слишком велик каталог проекта: %n файлов или более.}
   }
 
-  ## _ Favorites _ ##
+  ## ________________________ Favorites ________________________ ##
   ::msgcat::mcmset ru {
     {Lists of favorites:} {Списки Избранного}
     {Current list of favorites:} {Текущий список Избранного}
@@ -216,7 +227,7 @@ namespace eval ::alited {
     {Remove all of the favorites?} {Удалить всё из Избранного?}
   }
 
-  ## _ Icons of toolbar: tips _ ##
+  ## ________________________ Icons of toolbar: tips ________________________ ##
   ::msgcat::mcmset ru {
     "Create a file\nCtrl+N" "Создать файл\nCtrl+N"
     "Open a file\nCtrl+O" "Открыть файл\nCtrl+O"
@@ -231,7 +242,7 @@ namespace eval ::alited {
     "Redo changes\nCtrl+Shift+Z" "Переотмена изменений\nCtrl+Shift+Z"
   }
 
-  ## _ Find-replace dialogue _ ##
+  ## ________________________ Find-replace dialogue ________________________ ##
   ::msgcat::mcmset ru {
     {Find: } {Искать: }
     {Replace: } {Заменить: }
@@ -264,14 +275,14 @@ namespace eval ::alited {
     {Focus a text after selecting in infobar} {Переходить на текст при выборе в инфобаре}
   }
 
-  ## _ Checking ini directory _ ##
+  ## ________________________ Checking ini directory ________________________ ##
   ::msgcat::mcmset ru {
     {Choosing Directory for Settings} {Выбор каталога для настроек}
     "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" "\n Программе \"alited\" нужно указать каталог для сохранения своих настроек.\n Вы можете задавать его как аргумент при вызове alited.\n\n По умолчанию, каталог сохранения настроек - \"%d\".\n Это рекомендуемый каталог, позволяющий вызывать \"alited\" без аргументов.\n"
     {Choose a directory} {Выбор каталога}
   }
 
-  ## _ "About" dialogue _ ##
+  ## ________________________ "About" dialogue ________________________ ##
   ::msgcat::mcmset ru {
     {stands for} {означает}
     {Written in pure Tcl/Tk.} {Сделан на чистом Tcl/Tk.}
@@ -281,7 +292,7 @@ namespace eval ::alited {
     {License:} {Лицензия:}
   }
 
-  ## _ Preferences _ ##
+  ## ________________________ Preferences ________________________ ##
   ::msgcat::mcmset ru {
     {General} {Общее}
     {Editor} {Редактор}
@@ -333,6 +344,8 @@ namespace eval ::alited {
     {saving a file:} {сохранении файла:}
     {Back up files to a project's subdirectory:} {Резервные копии в каталоге проекта:}
     "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." "Подкаталог проекта, где сохранятся копии файлов.\nЕсли это поле пустое, копирования не будет."
+    {  Maximum:} {  Максимум:}
+    {Maximum of backup copies per a file} {Максимальное число копий файла}
     {Bell at warnings:} {Звук предупреждений:}
   }
 
@@ -421,7 +434,7 @@ namespace eval ::alited {
     "\n Enter a command to be run before running a current file with \"Tools/Run\".\n" "\n Введите команду, выполняемую перед \"Инструменты/Запуск\".\n"
   }
 
-  ## _ Checks _ ##
+  ## ________________________ Checks ________________________ ##
   ::msgcat::mcmset ru {
     {Check of Tcl} {Проверка Tcl}
     {Check} {Проверка}
@@ -436,7 +449,7 @@ namespace eval ::alited {
     {No errors found.} {Ошибок не найдено.}
   }
 
-  ## _ Misc. _ ##
+  ## ________________________ Misc. ________________________ ##
   ::msgcat::mcmset ru {
     "Can't backup \"%f\" to\n\"%d\"!\n\nDelete it anyway?" "Не могу сделать копию \"%f\" в\n\"%d\"!\n\nУдалить этот файл по-любому?"
     "\"%f\" removed to \"%d\"" "\"%f\" удален в \"%d\""
@@ -445,7 +458,7 @@ namespace eval ::alited {
     "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?" "Файл \"%f\", похоже, не типа\n%s.\n\nВсё-таки открыть его?"
   }
 
-  ## _ Find units _ ##
+  ## ________________________ Find units ________________________ ##
   ::msgcat::mcmset ru {
     {Find Unit} {Искать юнит}
     {in all} {во всех}
@@ -453,7 +466,7 @@ namespace eval ::alited {
     "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored." "Используйте шаблон glob для поиска юнитов:\nнапример, \"s*rt\" найдет \"start\" и \"insert\".\nРегистр букв не учитывается."
   }
 
-  ## _ Abbreviations etc. _ ##
+  ## ________________________ Abbreviations etc. ________________________ ##
   #   Line - 2nd column's title of unit tree
   #   ind = indentation
   ::msgcat::mcmset ru {
@@ -464,7 +477,7 @@ namespace eval ::alited {
     {    Unit: } {   Юнит: }
   }
 
-  ## _ Bar of tabs _ ##
+  ## ________________________ Bar of tabs ________________________ ##
   ::msgcat::mcmset ru {
     {(Un)Select} {Выделить / нет}
     {... Visible} {... видимые}

@@ -115,7 +115,15 @@ namespace eval ::alited {
   set alited::al(chosencolor) green
 
   # subdirectory of project to backup files at modifications
+  # and maximum of backups
   set al(BACKUP) .bak
+  set al(MAXBACKUP) 1
+
+  # enables/disables call of LastVisited in tree::NewSelection
+  set al(dolastvisited) yes
+
+  # current text's wrap words mode
+  set al(wrapwords) 1
 }
 
 # ________________________ Variables _________________________ #
@@ -278,6 +286,7 @@ proc ini::ReadIniOptions {nam val} {
       if {$val ne {.bak}} {set val {}}
       set al(BACKUP) $val
     }
+    maxbackup     {set al(MAXBACKUP) $val}
     gutterwidth   {set al(ED,gutterwidth) $val}
     guttershift   {set al(ED,guttershift) $val}
   }
@@ -553,6 +562,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "barlablen=$al(INI,barlablen)"
   puts $chan "bartiplen=$al(INI,bartiplen)"
   puts $chan "backup=$al(BACKUP)"
+  puts $chan "maxbackup=$al(MAXBACKUP)"
   puts $chan "gutterwidth=$al(ED,gutterwidth)"
   puts $chan "guttershift=$al(ED,guttershift)"
 
@@ -832,9 +842,9 @@ proc ini::_init {} {
   # the below icons' order defines their order in the toolbar
   foreach {icon} {none gulls heart add change delete up down plus minus \
   retry misc previous next folder file OpenFile box SaveFile saveall \
-  undo redo help replace ok color run other e_menu trash} {
+  undo redo help replace ok color date run other e_menu trash} {
     set img [CreateIcon $icon]
-    if {$icon in {"file" OpenFile box SaveFile saveall help ok color other \
+    if {$icon in {"file" OpenFile box SaveFile saveall help ok color date other \
     replace e_menu run undo redo}} {
       append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4} "
       switch $icon {
@@ -869,7 +879,10 @@ proc ini::_init {} {
           append al(atools) "-com alited::check::_run\}"
         }
         color {
-          append al(atools) "-command alited::tool::ColorPicker\} sev 6"
+          append al(atools) "-command alited::tool::ColorPicker\}"
+        }
+        date {
+          append al(atools) "-command alited::tool::DatePicker\} sev 6"
         }
         run {
           append al(atools) "-com alited::tool::_run\}"

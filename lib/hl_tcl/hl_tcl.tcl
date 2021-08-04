@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.11
+package provide hl_tcl 0.9.13
 
 # ______________________ Common data ____________________ #
 
@@ -404,14 +404,24 @@ proc ::hl_tcl::my::ShowCurrentLine {txt {doit no}} {
   # Shows the current line.
   #   txt - text widget's path
   #   doit - if yes, forces updating current line's background
+  # Returns a current position of cursor.
 
   variable data
   set pos [$txt index insert]
+  set nlines [expr {int([$txt index end])}]
   lassign [split $pos .] ln cn
-  if {$doit || ![info exists data(CURPOS,$txt)] || int($data(CURPOS,$txt))!=$ln || $cn<2} {
+  if {[catch {lassign [split $data(CURPOS,$txt) .] ln2 cn2}]} {
+    set ln2 $ln
+    set cn2 $cn
+    set data(CURPOS,$txt) [set data(NLINES,$txt) 0]
+  }
+  if {$doit || int($data(CURPOS,$txt))!=$ln || $data(NLINES,$txt)!=$nlines \
+  || $ln!=$ln2 || abs($cn-$cn2)>1 || $cn<2} {
     $txt tag remove tagCURLINE 1.0 end
     $txt tag add tagCURLINE [list $pos linestart] [list $pos lineend]+1displayindices
   }
+  set data(NLINES,$txt) $nlines
+  set data(CURPOS,$txt) $pos
   return $pos
 }
 #_____
@@ -467,7 +477,6 @@ proc ::hl_tcl::my::MemPos {txt {doit no}} {
   variable data
   set data(_INSPOS_,$txt) [MemPos1 $txt no]
   set ln [ShowCurrentLine $txt $doit]
-  set data(CURPOS,$txt) $ln
   set data(CUR_LEN,$txt) [$txt index {end -1 char}]
   lassign [CountQSH $txt $ln] \
     data(CNT_QUOTE,$txt) data(CNT_SLASH,$txt) data(CNT_COMMENT,$txt)

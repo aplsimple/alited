@@ -141,10 +141,9 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
     $wtree tag add tagBold $itnew
   }
   # get saved pos
-  if {[catch {set pos $al(CPOS,$ctab,$header)} e]} {
+  if {[catch {set pos $al(CPOS,$ctab,$header)}] \
+  || [catch {set pos [expr {$pos+$l1}]}]} {
     set pos [$wtxt index insert]
-  } else {
-    set pos [expr {$pos+$l1}]
   }
   if {$topos} {
     set pos $line
@@ -179,7 +178,7 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   if {$doFocus} {
     alited::main::FocusText $TID $pos
   }
-  if {$al(TREE,isunits)} {
+  if {$al(TREE,isunits) && $al(dolastvisited)} {
     alited::favor::LastVisited [$wtree item $itnew] $header
   }
   alited::main::UpdateGutter
@@ -213,6 +212,17 @@ proc tree::Create {} {
   }
 }
 #_______________________
+#_______________________
+
+proc tree::UnitTitle {title l1 l2} {
+  # Gets a title of a unit (checking for empty string).
+  #   title - original title
+  #   l1 - first line of the unit
+  #   l2 - latst line of the unit
+
+  if {$title eq {}} {set title "[msgcat::mc Lines] $l1-$l2"}
+  return $title
+}
 
 proc tree::CreateUnitsTree {TID wtree} {
   # Creates a unit tree for a tab.
@@ -238,7 +248,7 @@ proc tree::CreateUnitsTree {TID wtree} {
   foreach item $al(_unittree,$TID) {
     set itemID  [alited::tree::NewItemID [incr iit]]
     lassign $item lev leaf fl1 title l1 l2
-    if {$title eq ""} {set title "[msgcat::mc Lines] $l1-$l2"}
+    set title [UnitTitle $title $l1 $l2]
     set lev [expr {min($lev,[llength $parents])}]
     set parent [lindex $parents [expr {$lev-1}]]
     if {$leaf} {
@@ -626,9 +636,18 @@ proc tree::Tooltip {x y X Y} {
         }
       }
     }
-    ::baltip tip $al(WIN) $tip -geometry +$X+$Y -per10 4000 -pause 5 -fade 5
+    set msec [clock milliseconds]
+    if {![info exists al(TREETIP_MSEC)]} {
+      set al(TREETIP_MSEC) 0
+    }
+    if {($msec-$al(TREETIP_MSEC))>200} {
+      ::baltip tip $al(WIN) $tip -geometry +$X+$Y -per10 4000 -pause 5 -fade 5
+      set tipID $newTipID
+    } else {
+      ::baltip hide $al(WIN)
+    }
+    set al(TREETIP_MSEC) $msec
   }
-  set tipID $newTipID
 }
 #_______________________
 

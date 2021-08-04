@@ -366,7 +366,7 @@ proc pref::General_Tab2 {} {
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labConf - - 1 1 {-st w -pady 1 -padx 3} {-t "Confirm exit:"}}
     {.chbConf .labConf L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,confirmexit)}}
-    {.seh1 .labConf T 1 2 {-st ew -pady 5}}
+    {.seh1 .labConf T 1 4 {-st ew -pady 5}}
     {.labS .seh1 T 1 1 {-st w -pady 1 -padx 3} {-t "Save configuration on"}}
     {.labSonadd .labS T 1 1 {-st e -pady 1 -padx 3} {-t "opening a file:"}}
     {.chbOnadd .labSonadd L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,save_onadd)}}
@@ -374,19 +374,21 @@ proc pref::General_Tab2 {} {
     {.chbOnclose .labSonclose L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,save_onclose)}}
     {.labSonsave .labSonclose T 1 1 {-st e -pady 1 -padx 3} {-t "saving a file:"}}
     {.chbOnsave .labSonsave L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,save_onsave)}}
-    {.seh2 .labSonsave T 1 2 {-st ew -pady 5}}
+    {.seh2 .labSonsave T 1 4 {-st ew -pady 5}}
     {.labSave .seh2 T 1 1 {-st w -pady 1 -padx 3} {-t "Save before bar/menu runs:"}}
-    {.cbxSave .labSave L 1 1 {-st sw -pady 1} {-values {$alited::al(pref,saveonrun)} -tvar alited::al(EM,save) -state readonly -w 20}}
-    {.seh3 .labSave T 1 2 {-st ew -pady 5}}
+    {.cbxSave .labSave L 1 2 {-st sw -pady 1} {-values {$alited::al(pref,saveonrun)} -tvar alited::al(EM,save) -state readonly -w 20}}
+    {.seh3 .labSave T 1 4 {-st ew -pady 5}}
     {.labRecnt .seh3 T 1 1 {-st w -pady 1 -padx 3} {-t "'Recent Files' length:"}}
     {.spxRecnt .labRecnt L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,RECENTFILES) -from 10 -to 50 -justify center -w 3}}
     {.labMaxLast .labRecnt T 1 1 {-st w -pady 1 -padx 3} {-t "'Last Visited' length:"}}
     {.spxMaxLast .labMaxLast L 1 1 {-st sw -pady 1} {-tvar alited::al(FAV,MAXLAST) -from 10 -to 100 -justify center -w 3}}
     {.labMaxFiles .labMaxLast T 1 1 {-st w -pady 1 -padx 3} {-t "Maximum of project files:"}}
     {.spxMaxFiles .labMaxFiles L 1 1 {-st sw -pady 1} {-tvar alited::al(MAXFILES) -from 1000 -to 9999 -justify center -w 5}}
-    {.seh4 .labMaxFiles T 1 2 {-st ew -pady 5}}
+    {.seh4 .labMaxFiles T 1 4 {-st ew -pady 5}}
     {.labBackup .seh4 T 1 1 {-st w -pady 1 -padx 3} {-t "Back up files to a project's subdirectory:"}}
-    {.cbxBackup .labBackup L 1 1 {-st sw -pady 1} {-tvar alited::al(BACKUP) -values {{} .bak} -state readonly -w 6 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup."}}
+    {.CbxBackup .labBackup L 1 1 {-st sw -pady 1} {-tvar alited::al(BACKUP) -values {{} .bak} -state readonly -w 6 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." -afteridle alited::pref::CbxBackup -selcombobox alited::pref::CbxBackup}}
+    {.labMaxBak .CbxBackup L 1 1 {-st w -pady 1 -padx 1} {-t "  Maximum:"}}
+    {.SpxMaxBak .labMaxBak L 1 1 {-st sw -pady 1 -padx 1} {-tvar alited::al(MAXBACKUP) -from 1 -to 99 -justify center -w 3 -tip "Maximum of backup copies per a file"}}
     {.labBell .labBackup T 1 1 {-st w -pady 1 -padx 3} {-t "Bell at warnings:"}}
     {.chbBell .labBell L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,belltoll)}}
   }
@@ -398,13 +400,23 @@ proc pref::opcToolPre {args} {
   #   args - a color scheme's index and name, separated by ":"
 
   lassign $args a
-  set a [string trim $a ":"]
+  set a [string trim $a :]
   if {[string is integer $a]} {
     lassign [::apave::obj csGet $a] - fg - bg
     return "-background $bg -foreground $fg"
   } else {
-    return ""
+    return {}
   }
+}
+#_______________________
+
+proc pref::CbxBackup {} {
+  # Check for access to SpxMaxBak field.
+  # If CbxBackup is empty (no backup), SpxMaxBak should be disabled.
+
+  fetchVars
+  if {$alited::al(BACKUP) eq {}} {set state disabled} {set state normal}
+  [$obDl2 SpxMaxBak] configure -state $state
 }
 #_______________________
 

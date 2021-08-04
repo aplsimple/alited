@@ -19,7 +19,7 @@ namespace eval favor {
 
 proc favor::LastVisited {item header} {
   # Puts an item to "Last visited" list.
-  #   item - ID of unit tree's item
+  #   item - list of tree's item data (first two: -text {label})
   #   header - header of item
 
   namespace upvar ::alited al al obPav obPav
@@ -67,23 +67,36 @@ proc favor::Select {} {
   if {![IsSelected favID name fname sname header line]} {
     return
   }
-  if {[set TID [alited::file::OpenFile $fname]] eq {}} {
+  set values [$wtree item $favID -values]
+  set al(dolastvisited) no
+  set TID [alited::file::OpenFile $fname]
+  set al(dolastvisited) yes
+  if {$TID eq {}} {
     set msg [string map [list %f $fname] [msgcat::mc {File not found: %f}]]
     alited::Message $msg 4
     return
   }
-  foreach it $al(_unittree,$TID) {
-    set ID [alited::tree::NewItemID [incr iit]]
-    lassign $it lev leaf fl1 title l1 l2
-    if {$name eq $title} {
-      set values [$wtree item $favID -values]
-      $wtree delete $favID
-      set favID [$wtree insert {} 0 -values $values]
-      $wtree tag add tagNorm $favID
-      if {int($line)>($l2-$l1)} {set $line 0}
-      set pos [expr {$l1+$line}]
-      alited::main::FocusText $TID $pos
-      return
+  # scan the favorites/last-visited tree, to find the selected item
+  # and remake favorites and last visits; then go to the selected unit
+  foreach it1 [$wtree children {}] {
+    if {$name eq [lindex [$wtree item $it1 -values] 0]} {
+      foreach it $al(_unittree,$TID) {
+        lassign $it lev leaf fl1 title l1 l2
+        if {$name eq [alited::tree::UnitTitle $title $l1 $l2]} {
+          if {$al(FAV,IsFavor)} {
+            $wtree delete $it1
+            set favID [$wtree insert {} 0 -values $values]
+            $wtree tag add tagNorm $favID
+          }
+          LastVisited [list -text $name] $header
+          if {![string is double -strict $line] || int($line)>($l2-$l1)} {
+            set line 0.0
+          }
+          alited::main::FocusText $TID [expr {$l1+$line}]
+          return
+        }
+      }
+      break
     }
   }
   set msg [string map [list %u $name] [msgcat::mc {Unit not found: %u}]]
@@ -402,16 +415,30 @@ proc favor::Tooltip {x y X Y} {
   namespace upvar ::alited al al obPav obPav
   variable tipID
   set wtree [$obPav TreeFavor]
-  set ID [$wtree identify item $x $y]
-  if {![$wtree exists $ID]} {
+  if {[$wtree identify region $x $y] ni {tree cell}} {
     TooltipOff
-  } elseif {$tipID ne $ID} {
+    return
+  }
+  set ID [$wtree identify item $x $y]
+  if {[$wtree exists $ID] && $tipID ne $ID} {
+    lassign [$wtree bbox $ID] x2 y2 w2 h2
+    incr X 10
+    if {[catch {incr Y [expr {$y2-$y+$h2}]}]} {incr Y 10}
     set decl [lindex [$wtree item $ID -values] 2]
     set fname [lindex [$wtree item $ID -values] 1]
-   append tip $decl \n $fname
-    ::baltip tip $al(WIN) $tip -geometry +$X+$Y -per10 4000 -pause 5 -fade 5
+    append tip $decl \n $fname
+    set msec [clock milliseconds]
+    if {![info exists al(FAVORTIP_MSEC)]} {
+      set al(FAVORTIP_MSEC) 0
+    }
+    if {($msec-$al(FAVORTIP_MSEC))>200} {
+      ::baltip tip $al(WIN) $tip -geometry +$X+$Y -per10 4000 -pause 5 -fade 5
+      set tipID $ID
+    } else {
+      TooltipOff
+    }
+    set al(FAVORTIP_MSEC) $msec
   }
-  set tipID $ID
 }
 
 # ________________________ Initialization _________________________ #

@@ -9,7 +9,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide baltip 1.0.4
+package provide baltip 1.0.5
 
 package require Tk
 
@@ -216,20 +216,19 @@ proc ::baltip::my::ShowWindow {win} {
       if {![string match $w [winfo containing $px $py]]} break
     }
   }
-  if {$geo eq ""} {
+  if {$geo eq {}} {
     set x [expr {max(1,$px - round($width / 2.0))}]
     set y [expr {$under>=0 ? ($py + $under) : ($py - $under - $ady)}]
   } else {
     lassign [split $geo +] -> x y
     set x [expr [string map "W $width" $x]]  ;# W to shift horizontally
     set y [expr [string map "H $height" $y]] ;# H to shift vertically
-    set py [expr {$y-16}]
   }
   # check for edges of screen incl. decors
   set scrw [winfo screenwidth .]
   set scrh [winfo screenheight .]
   if {($x + $width) > $scrw}  {set x [expr {$scrw - $width - 1}]}
-  if {($y + $height) > ($scrh-36)} {set y [expr {$py - $wheight - $height}]}
+  if {($y + $height) > $scrh} {set y [expr {$py - $height - 16}]}
   wm geometry $win [join  "$width x $height + $x + $y" {}]
   catch {wm deiconify $win ; raise $win}
 }

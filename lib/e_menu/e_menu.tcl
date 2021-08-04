@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4b7"
+  variable em_version "e_menu 3.4.1"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -192,6 +192,7 @@ namespace eval ::em {
   variable hili no
   variable ls {} pk {}
   variable DF kdiff3
+  variable PI 0
 }
 #___ creates an item for the menu pool
 proc ::em::pool_item_create {} {
@@ -665,7 +666,7 @@ proc ::em::term {sel amp {term ""}} {
 }
 #___ exec for ex= parameter
 proc ::em::execcom {args} {
-  if {$::em::EX eq {}} {
+  if {$::em::EX eq {} || [string is false $::em::PI]} {
     exec -ignorestderr {*}$args
   } else {
     catch {
@@ -974,7 +975,7 @@ proc ::em::callmenu {typ s1 {amp ""} {from ""}} {
     set geo +[expr 20+$x]+[expr 30+$y]
   }
   if {$::em::ex eq {}} {set pars "g=$geo $pars"}
-  append pars " ex= EX="
+  append pars " ex= EX= PI=0"
   prepr_1 pars "in" [string range $s1 1 end]  ;# %in is menu's index
   set sel "\"$::em::Argv0\""
   prepr_win sel "M/"  ;# force converting
@@ -1861,8 +1862,8 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         z0= z1= z2= z3= z4= z5= z6= z7= z8= z9= \
         a= d= e= f= p= l= h= b= cs= c= t= g= n= \
         fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= \
-        cc= gr= ht= hh= rt= DF= pd= \
-        m= om= ts= TF= yn= in= ex= EX= ls=} { ;# the processing order is important
+        cc= gr= ht= hh= rt= DF= pd= m= om= ts= \
+        TF= yn= in= ex= EX= PI= ls=} { ;# the processing order is important
     if {($s1 in {o= s= m=}) && !($s1 in $osm)} {
       continue
     }
@@ -1984,7 +1985,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           set ::em::$s01 [::apave::getN $seltd [set ::em::$s01]]
         }
         ed= {set ::em::editor $seltd}
-        tg= - om= - dk= - ls= - DF= - pd= {
+        tg= - om= - dk= - ls= - DF= - pd= - PI= {
           set ::em::$s01 $seltd
         }
         ex= - EX= {

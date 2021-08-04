@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.4.5
+package provide bartabs 1.4.6
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -1128,6 +1128,7 @@ method Bar_DefaultMenu {BID popName} {
   lassign [my Mc_MenuItems] list behind close closeall closeleft closeright
   foreach item [list \
   "m {$list} {} bartabs_cascade" \
+  "s {} {} {} $dsbl" \
   "m {BHND} {} bartabs_cascade2 $dsbl" \
   "s {} {} {} $dsbl" \
   "c {$close} {[self] %t close} {} $dsbl" \

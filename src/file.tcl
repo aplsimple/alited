@@ -188,6 +188,19 @@ proc file::UpdateFileStat {} {
     alited::bar::BAR $TID configure -tip [FileStat $fname]
   }
 }
+#_______________________
+
+proc file::WrapLines {} {
+  # Switches wrap word mode for a current text.
+
+  namespace upvar ::alited al al
+  set wtxt [alited::main::CurrentWTXT]
+  if {[set al(wrapwords) [expr {[$wtxt cget -wrap] ne {word}}]]} {
+    $wtxt configure -wrap word
+  } else {
+    $wtxt configure -wrap none
+  }
+}
 
 # ________________________ Helpers _________________________ #
 

@@ -41,7 +41,7 @@ pos=25.38
  R:  R: 2
 
  R:fossil gdiff $::FILETAIL ? R: cd %PD
-RW:fossil gdiff $::FILETAIL ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
+RW:fossil gdiff $::FILETAIL ? RW: fossil tim -t ci -n 9999 > $::EMENUTMPFILE
  R:fossil gdiff $::FILETAIL ? R: %I {} "GDIFF" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{   File:} {} {}} {"$::EMENUFILE"}\
@@ -50,13 +50,13 @@ RW:fossil gdiff $::FILETAIL ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
    seh {{} {-pady 3} {}} {}\
    texc {{   Hint:} {} {-h 9 -w 60 -ro 1  -tabnext butOK}}\
    {\n Select a version from the combobox to be compared to tip.\n\n If it's blank, the current file is compared to tip.\n\n No response means no differences.\n\n (temp file: $::EMENUTMPFILE)}\
-   } -head {\n This will compare a selected version\n of file to its tip:} -weight bold == ::EMENUFILE ::EMENUCOMMIT
+   } -head {\n This will compare a selected version\n of the chosen file to its tip:} -weight bold == ::EMENUFILE ::EMENUCOMMIT
  R:fossil gdiff $::FILETAIL ? R: %C if {"$::EMENUCOMMIT" eq ""} \
    {set ::EMENUTMP ""} {set ::EMENUTMP "--from $::EMENUCOMMIT --to tip"}
  R:fossil gdiff $::FILETAIL ? R: fossil gdiff $::EMENUTMP "$::EMENUFILE"
 
  S:fossil diff ? S: cd %PD
-RW:fossil diff ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
+RW:fossil diff ? RW: fossil tim -t ci -n 9999 > $::EMENUTMPFILE
  R:fossil diff ? R: %I {} "DIFF" { \
    v_ {{} {-pady 4} {}} {} \
    fco1  {{         From:} {} {-h 10 -state readonly -cbxsel "$::EMENUCOMMIT1"}} \

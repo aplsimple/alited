@@ -1488,9 +1488,12 @@ oo::class create ::apave::APave {
       # imo, it's more effective to source on request than to require on possibility
       source [file join $::apave::apaveDir pickers klnd klnd.tcl]
     }
-    set ent [my [my ownWName [::apave::getOption -entry {*}$args]]]
-    dict set args -entry $ent
-    set res [::klnd::calendar {*}$args -tvar $tvar -parent [winfo toplevel $ent]]
+    if {![catch {set ent [my [my ownWName [::apave::getOption -entry {*}$args]]]}]} {
+      dict set args -entry $ent
+      set res [::klnd::calendar {*}$args -tvar $tvar -parent [winfo toplevel $ent]]
+    } else {
+      set res [::klnd::calendar {*}$args -tvar $tvar]
+    }
     return $res
   }
 

@@ -21,7 +21,7 @@ in=1.0
 ::EMENU7ZCNT=3
 ::EMENU7ZCOM=zip -r
 ::EMENU7ZARC=~/PG/github/apl-github
-::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/pave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*
+::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/pave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*
 ::EMENU7ZSKIP=
 ::EMENU7ZBAK=/media/apl/KINGSTON/
 ::EMENU7ZGIT=1
@@ -29,7 +29,7 @@ in=1.0
 ::EMENU_MULST1=~/TMP/em_mulst.ini
 ::EMENU_MULST2=~/TMP/em_mulst.txt
 ::EMENU_MULST5=regexp--
-pos=156.48
+pos=185.110
 [MENU]
 
  R: Trimmer *.tcl R: cd $::EMENUDIR1
@@ -93,7 +93,7 @@ SW: Ruff! $::EMENUP2 ... SW: $::EMTMP
    seh {{} {-pady 5} {}} {} \
    tex2 {{   Ruff! the files:} {} {-h 8 -tabnext butOK}} {$::EMENURUFFIT} \
    } -head {\n This creates Ruff! documentation of Tcl files. \
-   \n Customize ruff.tcl at need. } -weight bold == ::EMENURUFFDIR ::EMENUMULSTER ::EMENUMULSTRES3 ::EMENURUFFIT
+   \n Customize ruff.tcl at need. } -focus butOK -weight bold == ::EMENURUFFDIR ::EMENUMULSTER ::EMENUMULSTRES3 ::EMENURUFFIT
 SW: Ruff! all ... SW: %C \
    set home [glob ~] ; \
    set plist [string map {\\n \n} $::EMENURUFFDIR] ; \
@@ -137,6 +137,7 @@ R: R: 3
 SW:Save your stuff SW: cd %PD
  R:Save your stuff R: %C set ::EMENU7ZCNT [expr {($::EMENU7ZCNT+1)%8}]
  R:Save your stuff R: %I {} "BACKUP" { \
+   v_ {{} {-pady 4}} {} \
    ent1 {{Archive command:}} {"$::EMENU7ZCOM"} \
    chb1 {{   Include .git:}} {"$::EMENU7ZGIT"} \
    fil1 {{ Archive file-$::EMENU7ZCNT:}} {"$::EMENU7ZARC"} \
@@ -146,7 +147,7 @@ SW:Save your stuff SW: cd %PD
    tex2 {{    Directories \n      postponed:} {} {-h 8 -w 60 -tabnext entdir3}} {$::EMENU7ZSKIP} \
    seh2 {{} {-pady 7} {}} {} \
    dir3 {{        Save to:}} {"$::EMENU7ZBAK"} \
-   } -head {\n This creates a backup of your directories.\n } -weight bold == ::EMENU7ZCOM ::EMENU7ZGIT ::EMENU7ZARC ::EMENU7ZSUFF ::EMENU7ZDIR ::EMENU7ZSKIP ::EMENU7ZBAK
+   } -head {\n This creates a backup of your directories. } -focus butOK -weight bold == ::EMENU7ZCOM ::EMENU7ZGIT ::EMENU7ZARC ::EMENU7ZSUFF ::EMENU7ZDIR ::EMENU7ZSKIP ::EMENU7ZBAK
  RW:Save your stuff RW: %C set ::EMENUTMP "$::EMENU7ZARC-$::EMENU7ZSUFF-$::EMENU7ZCNT-N.zip"
  RW:Save your stuff RW: %C \
   file delete "$::EMENUTMP" ; \
@@ -175,12 +176,13 @@ SW:Save your stuff SW: $::EMENU7ZCOM $::EMENUTMP $::EMENU7ZDIR_LIST ; mplayer %m
 
 SW: Mulster %F SW: cd %PD
  R: Mulster %F R: %I {} "MULSTER" { \
+   v_ {{} {-pady 4}} {} \
    ent1 {{TEMP ini file   :}} {"$::EMENU_MULST1"} \
    ent2 {{TEMP result file:}} {"$::EMENU_MULST2"} \
    tex1 {{Find strings    :} {} {-h 4 -w 60}} {$::EMENU_MULST3} \
    tex2 {{Replace to      :} {} {-h 4 -w 60}} {$::EMENU_MULST4} \
    cbx1 {{Mode            :}} {"$::EMENU_MULST5" exact exact0 glob regexp regexp--} \
-   } -head {\n This replaces multiple strings in your file.\n (exact0 means "without leading/trailing spaces")\n} -weight bold \
+   } -head {\n This replaces multiple strings in your file.\n (exact0 means "without leading/trailing spaces")} -weight bold \
    == ::EMENU_MULST1 ::EMENU_MULST2 ::EMENU_MULST3 ::EMENU_MULST4 ::EMENU_MULST5
  R: Mulster %F R: %C set ch [open $::EMENU_MULST1 w] ; \
   puts $ch "IN=BEGIN" ; \

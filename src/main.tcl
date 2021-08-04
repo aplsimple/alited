@@ -501,11 +501,11 @@ proc main::_create {} {
     {.fraFV.fra1 - - - - {pack -side top -fill x}}
     {.fraFV.fra1.seh - - - - {pack -side top -fill x -expand 1 -pady 0}}
     {.fraFV.fra1.BuTVisitF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_misc -tip {$alited::al(MC,lastvisit)} -com alited::favor::SwitchFavVisit}}
-    {.fraFV.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
+    {.fraFV.fra1.sev0 - - - - {pack -side left -fill y -padx 5}}
     {.fraFV.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_heart -tip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
+    {.fraFV.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
     {.fraFV.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -tip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
     {.fraFV.fra1.BuTDelF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -tip {$alited::al(MC,favordel)} -com alited::favor::Delete}}
-    {.fraFV.fra1.sev12 - - - - {pack -side left -fill y -padx 5}}
     {.fraFV.fra1.BuTDelAllF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_trash -tip {$alited::al(MC,favordelall)} -com alited::favor::DeleteAll}}
     {.fraFV.fra1.h_2 - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraFV.fra1.sev2 - - - - {pack -side right -fill y -padx 0}}

@@ -639,9 +639,36 @@ proc unit::BackupFile {TID} {
       alited::msg ok err $err
     }
     if {[file exists $dir]} {
+      set fname2 [BackupFileName $fname2]
       catch {file copy -force $fname $fname2}
     }
   }
+}
+#_______________________
+
+proc unit::BackupFileName {fname} {
+  # Gets a backup name for a file (checking for backup's maximum).
+  #   fname - name of target file
+
+  namespace upvar ::alited al al
+  if {$al(MAXBACKUP)>1} {
+    if {[catch {set baks [glob ${fname}*]}]} {
+      set nbak 1
+    } else {
+      foreach bak $baks {
+        lappend bakdata [list [file mtime $bak] $bak]
+      }
+      set bakdata [lsort -decreasing $bakdata]
+      set bak1 [lindex $bakdata 0 1]
+      set nbak [lindex [split $bak1 -.] end-1]
+      foreach delbak [lrange $bakdata $al(MAXBACKUP) end] {
+        catch {file delete [lindex $delbak 1]}
+      }
+      if {[catch {incr nbak}] || $nbak>$al(MAXBACKUP)} {set nbak 1}
+    }
+    append fname -$nbak.bak
+  }
+  return $fname
 }
 #_______________________
 

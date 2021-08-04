@@ -5,7 +5,7 @@
 # Contains a batch of alited's common procedures.
 # _______________________________________________________________________ #
 
-package provide alited 1.0
+package provide alited 1.0.1
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -90,7 +90,7 @@ namespace eval alited {
   variable BALTDIR [file join $LIBDIR baltip]
 
   set ::e_menu_dir [file join $LIBDIR e_menu]
-  variable MNUDIR "$::e_menu_dir/menus"
+  variable MNUDIR [file join $::e_menu_dir menus]
 
   # directories of key data
   variable DATADIR [file join $DIR data]
@@ -219,14 +219,14 @@ namespace eval alited {
     set slen [string length $msg]
     if {[catch {$lab configure -text $msg}] || !$slen} return
     $lab configure -font $font -foreground $fg
-    if {$mode in {"2" "3" "4" "5"}} {
+    if {$mode in {2 3 4 5}} {
       $lab configure -font $fontB
-      if {$mode in {"3" "4" "5"}} {
+      if {$mode in {3 4 5}} {
         $lab configure -foreground $fgbold
-        if {$mode eq "4" && $first} bell
+        if {$mode eq {4} && $first} bell
       }
     }
-    if {$mode eq "5"} {
+    if {$mode eq {5}} {
       update
       return
     }
@@ -265,7 +265,7 @@ namespace eval alited {
   proc HelpAlited {} {
     # Shows a main help of alited.
 
-    Help $alited::al(WIN)
+    ::apave::openDoc [file join $alited::DIR doc index.html]
   }
   #_______________________
 
@@ -300,7 +300,7 @@ namespace eval alited {
     variable al
     variable obPav
     if {!$ask || !$al(INI,confirmexit) || \
-    [msg yesno ques [msgcat::mc "Quit alited?"]]} {
+    [msg yesno ques [msgcat::mc {Quit alited?}]]} {
       if {[alited::file::AllSaved]} {
         $obPav res $al(WIN) $res
         alited::find::_close

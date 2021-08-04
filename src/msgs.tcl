@@ -144,6 +144,7 @@ namespace eval ::alited {
   set al(MC,notes)       [msgcat::mc "Sort of diary.\nList of TODOs etc."]
   set al(MC,checktcl)    [msgcat::mc {Check of Tcl}]
   set al(MC,colorpicker) [msgcat::mc {Color Picker}]
+  set al(MC,datepicker)  [msgcat::mc {Date Picker}]
   set al(checkroot)      [msgcat::mc {Checking %d. Wait a little...}]
   set al(badroot)        [msgcat::mc {Too big directory for a project: %n files or more.}]
   set al(makeroot)       [msgcat::mc "Directory \"%d\"\ndoesn't exist.\n\nCreate it?"]
@@ -157,6 +158,7 @@ namespace eval ::alited {
   set al(MC,icoreplace)  [msgcat::mc "Find / Replace\nCtrl+F"]
   set al(MC,icook)       $al(MC,checktcl)
   set al(MC,icocolor)    $al(MC,colorpicker)
+  set al(MC,icodate)     $al(MC,datepicker)
   set al(MC,icoother)    tkcon
   set al(MC,icorun)      [msgcat::mc "Run the file\nF5"]
   set al(MC,icoe_menu)   [msgcat::mc "Run e_menu\nF4"]

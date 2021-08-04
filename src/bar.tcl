@@ -304,6 +304,8 @@ proc bar::OnTabSelection {TID} {
   if {[alited::unit::CommentChar] ne {}} {set cmnst normal} {set cmnst disabled}
   $al(MENUEDIT) entryconfigure 7 -state $cmnst
   $al(MENUEDIT) entryconfigure 8 -state $cmnst
+  set wtxt [alited::main::GetWTXT $TID]
+  set al(wrapwords) [expr {[$wtxt cget -wrap] eq {word}}]
   CurrentControlTab [FileName $TID]
 }
 

@@ -138,6 +138,7 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label $al(MC,colorpicker) -command alited::tool::ColorPicker
   $m add command -label [msgcat::mc {Screen Loupe}] -command alited::tool::Loupe
+  $m add command -label $al(MC,datepicker) -command alited::tool::DatePicker
 
 ## ________________________ Setup _________________________ ##
   set m [set al(SETUP) $al(WIN).menu.setup]
@@ -160,6 +161,8 @@ proc menu::FillMenu {} {
     }
     $m.tint add command -label $ti2 -command "alited::menu::SetTint $ti"
   }
+  $m add checkbutton -label [msgcat::mc {Wrap Lines}] \
+    -variable alited::al(wrapwords) -command alited::file::WrapLines
   $m add checkbutton -label [msgcat::mc {Tip File Info}] \
     -variable alited::al(TREE,showinfo) -command alited::file::UpdateFileStat
   $m add command -label [msgcat::mc {Before Run...}] -command alited::tool::BeforeRunDlg

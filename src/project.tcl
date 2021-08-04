@@ -433,6 +433,7 @@ proc project::Add {} {
   if {![SaveCurrFileList $al(MC,prjadd) yes]} return
   set al(tabs) $al(tablist)
   set al(prjfile) [ProjectFileName $pname]
+  set al(prjbeforerun) {}
   alited::ini::SaveIni yes  ;# to initialize ini-file
   foreach opt $OPTS {
     set prjinfo($pname,$opt) $al($opt)
