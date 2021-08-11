@@ -137,7 +137,7 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   }
   set header [alited::unit::GetHeader $wtree $itnew]
   lassign [$wtree item $itnew -values] l1 l2 - - - leaf
-  if {$leaf ne "" && $leaf} {
+  if {[string is true -strict $leaf]} {
     $wtree tag add tagBold $itnew
   }
   # get saved pos
@@ -183,6 +183,24 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   }
   alited::main::UpdateGutter
   return $itnew
+}
+#_______________________
+
+proc tree::SaveCursorPos {} {
+  # Saves current unit's cursor position.
+
+  namespace upvar ::alited al al obPav obPav
+  set TID [alited::bar::CurrentTabID]
+  set wtxt [alited::main::CurrentWTXT]
+  set pos [$wtxt index insert]
+  # catch is needed at creating text, as the tree doesn't exist
+  catch {
+    set itnew [CurrentItemByLine $pos]
+    set wtree [$obPav Tree]
+    set header [alited::unit::GetHeader $wtree $itnew]
+    set al(CPOS,$TID,$header) $pos
+  }
+  return $pos
 }
 
 # ________________________ Create and handle a tree _________________________ #

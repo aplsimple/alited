@@ -3,7 +3,7 @@ g=+0+27
 in=4.3
 bd=1
 w=25
-pos=11.38
+pos=76.98
 ::EMENUTMPFILE=%mn.tmp~
 %C set ::EMENUFILE [string map {\\ /} "%f"]
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
@@ -73,8 +73,10 @@ pos=11.38
 
  R: Differences of $::FILETAIL (fossil/git) ... R: cd %PD
 RW: Differences of $::FILETAIL (fossil/git) ... RW: fossil tim -t ci -n 11 > $::EMENUTMPFILE
- R: Differences of $::FILETAIL (fossil/git) ... R: %C if {[file exists [set ::EMENUBAKFILE [file join "%pd" .bak $::EMENUFILETAIL]]]} {set ::EMENUCHBSTATE normal} {set ::EMENUCHBSTATE disabled} ; \
- set ::EMENUCHB 0
+ R: Differences of $::FILETAIL (fossil/git) ... R: %C set ::EMENUBAKFILE [file join "%pd" .bak $::EMENUFILETAIL]
+ R: Differences of $::FILETAIL (fossil/git) ... R: %C if {"%BF" ne {}} {set ::EMENUBAKFILE "%BF"}
+ R: Differences of $::FILETAIL (fossil/git) ... R: %C if {[file exists "$::EMENUBAKFILE"]} {set ::EMENUCHBSTATE normal} {set ::EMENUCHBSTATE disabled}
+ R: Differences of $::FILETAIL (fossil/git) ... R: %C set ::EMENUCHB 0
  R: Differences of $::FILETAIL (fossil/git) ... R: %I {} "GDIFF" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{   File:} {} {-w 60}} {"$::EMENUFILE"} \
@@ -86,7 +88,6 @@ RW: Differences of $::FILETAIL (fossil/git) ... RW: fossil tim -t ci -n 11 > $::
    texc {{   Hint:} {} {-h 12 -w 60 -ro 1 -wrap word}} \
    {\n Select a version from the combobox to be compared to tip.\n\n If it's blank, the current file is compared to tip.\n\n No response means no differences.\n\n Or you can compare a current file with its .bak version\n saved in .bak subdirectory of project, before last changes.\n\n (temp file: $::EMENUTMPFILE)} \
    } -head {\n This will compare a selected version of\n     $::EMENUFILE\n to its tip.} -weight bold == ::EMENUFILE ::EMENUCOMMIT ::EMENUCHB
- R: Differences of $::FILETAIL (fossil/git) ... R: %C set ::EMENUBAKFILE [file join "%pd" .bak [file tail "$::EMENUFILE"]]
  R: Differences of $::FILETAIL (fossil/git) ... R: %IF {$::EMENUCHB} %THEN %DF "$::EMENUFILE" "$::EMENUBAKFILE"
  R: Differences of $::FILETAIL (fossil/git) ... R: %C if {"$::EMENUCOMMIT" eq ""} \
    {set ::EMENUTMP ""} {set ::EMENUTMP "--from $::EMENUCOMMIT --to tip"}

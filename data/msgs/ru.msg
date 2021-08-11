@@ -225,6 +225,7 @@ namespace eval ::alited {
     {Remove from Favorites} {Удалить из Избранного}
     {Remove All} {Удалить всё}
     {Remove all of the favorites?} {Удалить всё из Избранного?}
+    {Remove all of the last visited?} {Удалить всё из Последних посещений?}
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##
@@ -312,6 +313,7 @@ namespace eval ::alited {
     "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?"
     {Small font size:} {Размер малого шрифта:}
     {Middle font size:} {Размер среднего шрифта:}
+    {Cursor width:} {Ширина курсора:}
     {Notes:} {Заметки:}
     "Sort of diary.\nList of TODOs etc." "Типа дневника.\nСписок TODO и пр."
   }

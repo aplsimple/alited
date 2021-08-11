@@ -690,6 +690,7 @@ proc ::hl_c::hl_line {txt} {
     ::hl_c::my::HighlightLine $txt $ln $currQtd
   }
   ::hl_c::my::MemPos $txt yes
+  $txt configure -insertwidth $::hl_c::my::data(INSERTWIDTH,$txt)
 }
 
 # _________________________________ EOF _________________________________ #

@@ -54,6 +54,53 @@ proc favor::LastVisited {item header} {
 }
 #_______________________
 
+proc favor::OpenSelectedFile {fname} {
+  # Opens a file from a selected item of favorites/last visited.
+  #   fname - file name
+  # Returns tab's ID, if the file is open successfully.
+
+  namespace upvar ::alited al al
+  set al(dolastvisited) no
+  set TID [alited::file::OpenFile $fname]
+  set al(dolastvisited) yes
+  if {$TID eq {}} {
+    set msg [string map [list %f $fname] [msgcat::mc {File not found: %f}]]
+    alited::Message $msg 4
+  }
+  return $TID
+}
+#_______________________
+
+proc favor::GoToUnit {TID name header {forfavor no} {it1 {}} {values {}}} {
+  # Enters a unit.
+  #   TID - tab's ID
+  #   name - name of the unit
+  #   header - header of the unit
+  #   forfavor - yes, if Favorites list is clicked and must be updated
+  #   it1 - item selected in Favorites (for forfavor=yes)
+  #   values - values of item selected in Favorites (for forfavor=yes)
+  # Returns yes, if the unit is open successfully.
+
+  namespace upvar ::alited al al obPav obPav
+  foreach it $al(_unittree,$TID) {
+    set treeID [alited::tree::NewItemID [incr iit]]
+    lassign $it lev leaf fl1 title l1 l2
+    if {$name eq [alited::tree::UnitTitle $title $l1 $l2]} {
+      if {$forfavor} {
+        set wtree [$obPav TreeFavor]
+        $wtree delete $it1
+        set favID [$wtree insert {} 0 -values $values]
+        $wtree tag add tagNorm $favID
+      }
+      LastVisited [list -text $name] $header
+      after idle "alited::tree::NewSelection $treeID"
+      return yes
+    }
+  }
+  return no
+}
+#_______________________
+
 proc favor::Select {} {
   # Handles selecting an item of "Favorites / Last visited" treeview.
 
@@ -68,34 +115,12 @@ proc favor::Select {} {
     return
   }
   set values [$wtree item $favID -values]
-  set al(dolastvisited) no
-  set TID [alited::file::OpenFile $fname]
-  set al(dolastvisited) yes
-  if {$TID eq {}} {
-    set msg [string map [list %f $fname] [msgcat::mc {File not found: %f}]]
-    alited::Message $msg 4
-    return
-  }
+  if {[set TID [OpenSelectedFile $fname]] eq {}} return
   # scan the favorites/last-visited tree, to find the selected item
   # and remake favorites and last visits; then go to the selected unit
   foreach it1 [$wtree children {}] {
     if {$name eq [lindex [$wtree item $it1 -values] 0]} {
-      foreach it $al(_unittree,$TID) {
-        lassign $it lev leaf fl1 title l1 l2
-        if {$name eq [alited::tree::UnitTitle $title $l1 $l2]} {
-          if {$al(FAV,IsFavor)} {
-            $wtree delete $it1
-            set favID [$wtree insert {} 0 -values $values]
-            $wtree tag add tagNorm $favID
-          }
-          LastVisited [list -text $name] $header
-          if {![string is double -strict $line] || int($line)>($l2-$l1)} {
-            set line 0.0
-          }
-          alited::main::FocusText $TID [expr {$l1+$line}]
-          return
-        }
-      }
+      if {[GoToUnit $TID $name $header $al(FAV,IsFavor) $it1 $values]} return
       break
     }
   }
@@ -217,7 +242,7 @@ proc favor::Show {} {
     SetFavorites $al(FAV,visited)
     $wtree heading #1 -text [msgcat::mc $al(MC,lastvisit)]
   }
-  foreach but {BuTListF BuTAddF BuTDelF BuTDelAllF} {
+  foreach but {BuTListF BuTAddF BuTDelF} {
     [$obPav $but] configure -state $state
   }
   baltip::tip [$obPav BuTVisitF] $tip
@@ -301,11 +326,20 @@ proc favor::DeleteAll {{undermouse yes}} {
 
   namespace upvar ::alited al al obPav obPav
   if {$undermouse} {set geo {-geometry pointer+10+-100}} {set geo {}}
-  if {[alited::msg yesno warn [msgcat::mc {Remove all of the favorites?}] \
-  NO {*}$geo -title $al(MC,favordelall)]} {
-    foreach curfav [alited::tree::GetTree {} TreeFavor] {
+  if {$al(FAV,IsFavor)} {
+    set msg {Remove all of the favorites?}
+    set listvar al(FAV,current)
+  } else {
+    set msg {Remove all of the last visited?}
+    set listvar al(FAV,visited)
+  }
+  set favlist [alited::tree::GetTree {} TreeFavor]
+  if {$favlist eq {}} {bell; return}
+  if {[alited::msg yesno warn [msgcat::mc $msg] NO {*}$geo -title $al(MC,favordelall)]} {
+    foreach curfav $favlist {
       [$obPav TreeFavor] delete [lindex $curfav 2]
     }
+    set $listvar [list]
   }
 }
 #_______________________
@@ -354,10 +388,10 @@ proc favor::ShowPopupMenu {ID X Y} {
     $popm add command -label $al(MC,favordel) {*}[$obPav iconA none] \
       -command {::alited::favor::Delete no} -image alimg_delete
     $popm add separator
-    $popm add command -label $al(MC,favordelall) {*}[$obPav iconA none] \
-      -command {::alited::favor::DeleteAll no} -image alimg_trash
-    $popm add separator
   }
+  $popm add command -label $al(MC,favordelall) {*}[$obPav iconA none] \
+    -command {::alited::favor::DeleteAll no} -image alimg_trash
+  $popm add separator
   $popm add command -label $al(MC,copydecl) {*}[$obPav iconA none] \
     -command "::alited::favor::CopyDeclaration $wtree $ID"
   $obPav themePopup $popm

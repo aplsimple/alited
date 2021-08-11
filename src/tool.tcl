@@ -350,6 +350,13 @@ proc tool::e_menu {args} {
       append args " g="  ;# should be last, to override previous settings
     }
   }
+  if {{m=menu.mnu} in $args && {ex=d} in $args} {
+    # Differences of a file & its backup: get the backup's name
+    set TID [alited::bar::CurrentTabID]
+    lassign [alited::unit::BackupFileNames $TID] dir fname fname2
+    set fname2 [alited::unit::BackupFileName $fname2 0]
+    append args " \"BF=$fname2\""
+  }
   if {$alited::al(EM,exec)} {
     e_menu1 $args
   } else {

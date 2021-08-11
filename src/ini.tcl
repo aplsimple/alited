@@ -124,6 +124,9 @@ namespace eval ::alited {
 
   # current text's wrap words mode
   set al(wrapwords) 1
+
+  # cursor's width
+  set al(CURSORWIDTH) 2
 }
 
 # ________________________ Variables _________________________ #
@@ -289,6 +292,7 @@ proc ini::ReadIniOptions {nam val} {
     maxbackup     {set al(MAXBACKUP) $val}
     gutterwidth   {set al(ED,gutterwidth) $val}
     guttershift   {set al(ED,guttershift) $val}
+    cursorwidth   {set al(CURSORWIDTH) $val}
   }
 }
 #_______________________
@@ -539,6 +543,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "spacing2=$al(ED,sp2)"
   puts $chan "spacing3=$al(ED,sp3)"
   puts $chan "CKeyWords=$al(ED,CKeyWords)"
+  puts $chan "cursorwidth=$al(CURSORWIDTH)"
   set clrnams [::hl_tcl::hl_colorNames]
   foreach lng {{} C} {
     foreach nam $clrnams {puts $chan "$lng$nam=$al(ED,$lng$nam)"}
@@ -815,12 +820,13 @@ proc ini::_init {} {
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
-  ::apave::initWM
+  GetUserDirs
+  ReadIni
+
+  ::apave::initWM -cursorwidth $al(CURSORWIDTH)
   ::apave::iconImage -init $al(INI,ICONS)
   set ::apave::MC_NS ::alited
 
-  GetUserDirs
-  ReadIni
   InitGUI
   CheckIni
   GetUserDirs

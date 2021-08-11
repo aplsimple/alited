@@ -164,6 +164,17 @@ proc unit::GetUnits {TID textcont} {
   }
   return $retlist
 }
+#_______________________
+
+proc unit::SwitchUnits {} {
+  # Switches between last two active units.
+
+  namespace upvar ::alited al al
+  if {[llength $al(FAV,visited)]<2} return
+  lassign [lindex $al(FAV,visited) 1 4] name fname header
+  if {[set TID [alited::favor::OpenSelectedFile $fname]] eq {}} return
+  alited::favor::GoToUnit $TID $name $header
+}
 
 # ________________________ Templates _________________________ #
 
@@ -632,9 +643,7 @@ proc unit::BackupFile {TID} {
 
   namespace upvar ::alited al al
   if {$al(BACKUP) ne {}} {
-    set fname [alited::bar::FileName $TID]
-    set dir [file join $al(prjroot) $al(BACKUP)]
-    set fname2 [file join $dir [file tail $fname]]
+    lassign [BackupFileNames $TID] dir fname fname2
     if {![file exists $dir] && [catch {file mkdir $dir} err]} {
       alited::msg ok err $err
     }
@@ -646,14 +655,30 @@ proc unit::BackupFile {TID} {
 }
 #_______________________
 
-proc unit::BackupFileName {fname} {
+proc unit::BackupFileNames {TID} {
+  # Gets names for backuping: directory's, source file's, target file's
+  #   TID - current tab's ID
+
+  namespace upvar ::alited al al
+  set dir [file join $al(prjroot) $al(BACKUP)]
+  set fname [alited::bar::FileName $TID]
+  set fname2 [file join $dir [file tail $fname]]
+  return [list $dir $fname $fname2]
+}
+#_______________________
+
+proc unit::BackupFileName {fname {iincr 1}} {
   # Gets a backup name for a file (checking for backup's maximum).
   #   fname - name of target file
+  #   iincr - incrementation for backup index
+  # The iincr parameter is used to get the last backup's name:
+  # if no backups, the empty string is returned.
 
   namespace upvar ::alited al al
   if {$al(MAXBACKUP)>1} {
     if {[catch {set baks [glob ${fname}*]}]} {
       set nbak 1
+      if {!$iincr} {return {}} ;# no backups yet
     } else {
       foreach bak $baks {
         lappend bakdata [list [file mtime $bak] $bak]
@@ -664,7 +689,7 @@ proc unit::BackupFileName {fname} {
       foreach delbak [lrange $bakdata $al(MAXBACKUP) end] {
         catch {file delete [lindex $delbak 1]}
       }
-      if {[catch {incr nbak}] || $nbak>$al(MAXBACKUP)} {set nbak 1}
+      if {[catch {incr nbak $iincr}] || $nbak>$al(MAXBACKUP)} {set nbak 1}
     }
     append fname -$nbak.bak
   }

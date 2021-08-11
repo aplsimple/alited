@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.1"
+  variable em_version "e_menu 3.4.2"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -191,7 +191,7 @@ namespace eval ::em {
   variable empool [list]
   variable hili no
   variable ls {} pk {}
-  variable DF kdiff3
+  variable DF kdiff3 BF {}
   variable PI 0
 }
 #___ creates an item for the menu pool
@@ -1258,6 +1258,7 @@ proc ::em::prepr_pn {refpn {dt 0}} {
   prepr_idiotic pn 1
   # these replacements go before geany's to avoid replacing %D, %l
   prepr_1 pn "DF" $::em::DF                 ;# %DF is a name of diff tool
+  prepr_1 pn "BF" $::em::BF                 ;# %BF is a name of backup file
   prepr_1 pn "pd" $::em::pd                 ;# %pd is a project directory
   prepr_1 pn "lg" [::eh::get_language]      ;# %lg is a locale (e.g. ru_RU.utf8)
   prepr_1 pn "ls" [nativePathes $::em::ls]  ;# %ls is a list of files
@@ -1862,7 +1863,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         z0= z1= z2= z3= z4= z5= z6= z7= z8= z9= \
         a= d= e= f= p= l= h= b= cs= c= t= g= n= \
         fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= \
-        cc= gr= ht= hh= rt= DF= pd= m= om= ts= \
+        cc= gr= ht= hh= rt= DF= BF= pd= m= om= ts= \
         TF= yn= in= ex= EX= PI= ls=} { ;# the processing order is important
     if {($s1 in {o= s= m=}) && !($s1 in $osm)} {
       continue
@@ -1985,7 +1986,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           set ::em::$s01 [::apave::getN $seltd [set ::em::$s01]]
         }
         ed= {set ::em::editor $seltd}
-        tg= - om= - dk= - ls= - DF= - pd= - PI= {
+        tg= - om= - dk= - ls= - DF= - BF= - pd= - PI= {
           set ::em::$s01 $seltd
         }
         ex= - EX= {

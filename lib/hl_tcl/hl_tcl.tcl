@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.13
+package provide hl_tcl 0.9.14
 
 # ______________________ Common data ____________________ #
 
@@ -1105,6 +1105,7 @@ proc ::hl_tcl::hl_line {txt} {
     ::hl_tcl::my::HighlightLine $txt $ln $currQtd
   }
   ::hl_tcl::my::MemPos $txt yes
+  $txt configure -insertwidth $::hl_tcl::my::data(INSERTWIDTH,$txt)
 }
 
 # _________________________________ EOF _________________________________ #

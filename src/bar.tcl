@@ -307,6 +307,7 @@ proc bar::OnTabSelection {TID} {
   set wtxt [alited::main::GetWTXT $TID]
   set al(wrapwords) [expr {[$wtxt cget -wrap] eq {word}}]
   CurrentControlTab [FileName $TID]
+  alited::main::HighlightLine
 }
 
 # ________________________ Handle Ctrl+Tab keys ______________________ #
@@ -347,10 +348,14 @@ proc bar::ControlTab {} {
     set ctrltablist [lreplace $ctrltablist 0 0]
   }
   CurrentControlTab $fname
-  if {$found} {
-    # select the first of open files that was next to the current
-    BAR $TID show
+  if {!$found} {
+    # only one tab is open - return to it (possibly not visible in the bar tab)
+    set TID [CurrentTabID]
+    set pos [[alited::main::CurrentWTXT] index insert]
+    after idle [list alited::main::FocusText $TID $pos]
   }
+  # select the first of open files that was next to the current
+  BAR $TID show
 }
 
 # ________________________ Service  _________________________ #

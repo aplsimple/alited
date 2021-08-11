@@ -268,6 +268,7 @@ proc pref::Ok {args} {
     if {$al(MAXFILES)<1000 || $al(MAXFILES)>9999} {set al(MAXFILES) 2000}
     if {$al(INI,barlablen)<10 || $al(INI,barlablen)>100} {set al(INI,barlablen) 16}
     if {$al(INI,bartiplen)<10 || $al(INI,bartiplen)>100} {set al(INI,bartiplen) 32}
+    if {$al(CURSORWIDTH)<1 || $al(CURSORWIDTH)>3} {set al(CURSORWIDTH) 2}
     set al(INI,CS) [scan $opcc %d:]
     if {![string is integer -strict $al(INI,CS)]} {set al(INI,CS) -1}
     set al(EM,CS)  [scan $opcc2 %d:]
@@ -348,6 +349,8 @@ proc pref::General_Tab1 {} {
     {.spxFsz1 .labFsz1 L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(FONTSIZE,small) -from 8 -to 14 -justify center -w 3}}
     {.labFsz2 .labFsz1 T 1 1 {-st w -pady 8 -padx 3} {-t "Middle font size:"}}
     {.spxFsz2 .labFsz2 L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(FONTSIZE,std) -from 9 -to 18 -justify center -w 3}}
+    {.labCurw .labFsz2 T 1 1 {-st w -pady 8 -padx 3} {-t "Cursor width:"}}
+    {.spxCurw .labCurw L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(CURSORWIDTH) -from 1 -to 3 -justify center -w 3}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 lab T 1 2 {-st nsew -rw 1 -cw 1}}
     {.TexNotes - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 90 -wrap word -tabnext $alited::pref::win.fraB.butOK -tip {$alited::al(MC,notes)}}}

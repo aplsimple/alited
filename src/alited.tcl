@@ -1,11 +1,13 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# The starting script of alited.
-# Contains a batch of alited's common procedures.
-# _______________________________________________________________________ #
+###########################################################
+# Name:    alited.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    03/01/2021
+# Brief:   Starting actions, alited's common procedures.
+# License: MIT.
+###########################################################
 
-package provide alited 1.0.1
+package provide alited 1.0.2
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -30,7 +32,7 @@ namespace eval alited {
 
   proc run_remote {cmd args} {
     # Runs a command that was started by another process.
-  
+
     if {[catch { $cmd {*}$args }]} {
       return -code error
     }
@@ -338,11 +340,11 @@ namespace eval alited {
 # this "if" satisfies the Ruff doc generator "package require":
 if {[info exists ALITED_NOSEND]} {
   unset ALITED_NOSEND
-  #catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
-  #catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
     cd $alited::SRCDIR

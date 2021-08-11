@@ -265,14 +265,16 @@ proc main::HighlightText {TID curfile wtxt} {
         -multiline 1 -keywords $al(ED,CKeyWords) \
         -cmd "::alited::unit::Modified $TID" \
         -cmdpos ::alited::main::CursorPos \
-        -font $al(FONT,txt) -colors $Ccolors
+        -font $al(FONT,txt) -colors $Ccolors \
+        -insertwidth $al(CURSORWIDTH)
     } else {
       ::hl_tcl::hl_init $wtxt -dark [$obPav csDarkEdit] \
         -multiline $al(prjmultiline) \
         -cmd "::alited::unit::Modified $TID" \
         -cmdpos ::alited::main::CursorPos \
         -plaintext [expr {![alited::file::IsTcl $curfile]}] \
-        -font $al(FONT,txt) -colors $colors
+        -font $al(FONT,txt) -colors $colors \
+        -insertwidth $al(CURSORWIDTH)
     }
     UpdateText $wtxt $curfile
   }
@@ -303,6 +305,7 @@ proc main::CursorPos {wtxt args} {
   lassign [split [$wtxt index insert] .] r c
   [$obPav Labstat1] configure -text "$r / [expr {int([lindex $args 0])}]"
   [$obPav Labstat2] configure -text [incr c]
+  alited::tree::SaveCursorPos
 }
 #_______________________
 
@@ -423,6 +426,7 @@ proc main::BindsForText {TID wtxt} {
   bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
   bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
   bind $wtxt <Control-Tab> {::alited::bar::ControlTab ; break}
+  bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}
   bind $wtxt <<Undo>> {after idle alited::main::HighlightLine}
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action

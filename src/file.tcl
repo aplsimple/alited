@@ -90,7 +90,7 @@ proc file::OutwardChange {TID {docheck yes}} {
         set wtxt [alited::main::GetWTXT $TID]
         set pos [$wtxt index insert]
         MakeThemReload $TID
-        OpenFile $fname yes
+        alited::bar::BAR $TID show
         catch {
           ::tk::TextSetCursor $wtxt $pos
           ::alited::main::CursorPos $wtxt
@@ -336,9 +336,9 @@ proc file::OpenFile {{fname ""} {reload no}} {
       # open new tab
       set tab [alited::bar::UniqueListTab $fname]
       set TID [alited::bar::InsertTab $tab [FileStat $fname]]
+      alited::file::AddRecent $fname
     }
-    alited::file::AddRecent $fname
-    alited::bar::BAR $TID show
+    if {$TID ne [alited::bar::CurrentTabID]} {alited::bar::BAR $TID show}
     return $TID
   }
   return {}
