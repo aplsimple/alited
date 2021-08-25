@@ -43,12 +43,24 @@ proc tool::Redo {} {
 }
 #_______________________
 
-proc tool::InsertInText {str} {
+proc tool::InsertInText {str {pos1 {}} {pos2 {}} } {
   # Insert a string into a text possibly instead of its selection.
   #   str - the string
+  #   pos1 - starting position in a current line
+  #   pos2 - ending position in a current line
 
     set wtxt [alited::main::CurrentWTXT]
-    lassign [$wtxt tag ranges sel] pos1 pos2
+    if {$pos1 eq {}} {
+      lassign [$wtxt tag ranges sel] pos1 pos2
+    } else {
+      set line [expr {int([$wtxt index insert])}]
+      set prevch [$wtxt get $line.[expr {$pos1-1}] $line.$pos1]
+      if {$prevch eq [string index $str 0]} {
+        incr pos1 -1
+      }
+      set pos1 $line.$pos1
+      set pos2 $line.[incr pos2]
+    }
     if {$pos1 ne {}} {
       $wtxt delete $pos1 $pos2
     }
@@ -60,13 +72,14 @@ proc tool::InsertInText {str} {
 proc tool::ColorPicker {} {
   # Calls a color picker passing to it and getting from it a color.
 
-  if {[set color [alited::find::GetWordOfText]] ne {}} {
+  lassign [alited::find::GetWordOfText 2] color pos1 pos2
+  if {$color ne {}} {
     set alited::al(chosencolor) $color
   }
   set res [::apave::obj chooser colorChooser alited::al(chosencolor)]
   if {$res ne {}} {
     set alited::al(chosencolor) $res
-    InsertInText $res
+    InsertInText $res $pos1 $pos2
   }
 }
 #_______________________
@@ -75,7 +88,8 @@ proc tool::DatePicker {} {
   # Calls a calendar to pick a date.
 
   namespace upvar ::alited al al
-  if {[set date [alited::find::GetWordOfText]] ne {} \
+  lassign [alited::find::GetWordOfText 2] date pos1 pos2
+  if {$date ne {} \
   && ![catch {clock scan $date -format $al(TPL,%d)}]} {
     set al(klnddate) $date
   } elseif {![info exists al(klnddate)]} {
@@ -85,7 +99,7 @@ proc tool::DatePicker {} {
     -parent $al(WIN) -dateformat $al(TPL,%d)]
   if {$res ne {}} {
     set al(klnddate) $res
-    InsertInText $res
+    InsertInText $res $pos1 $pos2
   }
 }
 #_______________________
@@ -305,10 +319,10 @@ proc tool::BeforeRunDlg {} {
   # Dialogue to enter a command before running "Tools/Run"
 
   namespace upvar ::alited al al obDl2 obDl2
-  set head [msgcat::mc "\n Enter a command to be run before running a current file with \"Tools/Run\".\n"]
+  set head [msgcat::mc "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n"]
   set run [string map [list $alited::EOL \n] $al(prjbeforerun)]
   lassign [$obDl2 input {} $al(MC,beforerun) [list \
-    tex "{[msgcat::mc Command:]} {} {-w 60 -h 8}" "$run" ] -head $head] res run
+    tex "{[msgcat::mc Commands:]} {} {-w 60 -h 8}" "$run" ] -head $head] res run
   if {$res} {
     set al(prjbeforerun) [string map [list \n $alited::EOL] [string trim $run]]
   }
@@ -344,18 +358,19 @@ proc tool::e_menu {args} {
   # The e_menu is run as an external application or an internal procedure,
   # depending on e_menu's preferences.
 
+  namespace upvar ::alited al al
   if {{ex=Help} ni $args} {
     EM_SaveFiles
     if {![is_submenu $args]} {
       append args " g="  ;# should be last, to override previous settings
     }
   }
-  if {{m=menu.mnu} in $args && {ex=d} in $args} {
+  if {{m=menu.mnu} in $args && {ex=d} in $args && $al(BACKUP) ne {}} {
     # Differences of a file & its backup: get the backup's name
     set TID [alited::bar::CurrentTabID]
-    lassign [alited::unit::BackupFileNames $TID] dir fname fname2
-    set fname2 [alited::unit::BackupFileName $fname2 0]
-    append args " \"BF=$fname2\""
+    lassign [alited::unit::BackupDirFileNames $TID] dir fname fname2
+    #set fname2 [alited::unit::BackupFileName $fname2 0]
+    append args " \"BF=$fname2\""  ;# version before 1st change
   }
   if {$alited::al(EM,exec)} {
     e_menu1 $args
@@ -422,4 +437,4 @@ proc tool::_close {{fname ""}} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

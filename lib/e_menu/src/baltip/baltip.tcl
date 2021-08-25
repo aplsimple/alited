@@ -9,7 +9,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package provide baltip 1.0.5
+package provide baltip 1.0.6
 
 package require Tk
 
@@ -32,7 +32,7 @@ namespace eval ::baltip {
     set ttdata(padding) 0
     set ttdata(alpha) 1.0
     set ttdata(bell) no
-    set ttdata(font) [font actual TkDefaultFont]
+    set ttdata(font) [font actual TkTooltipFont]
     set ttdata(under) -16
   }
 }

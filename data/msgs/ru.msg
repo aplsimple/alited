@@ -14,7 +14,6 @@ namespace eval ::alited {
 
   ::msgcat::mcmset ru {
     {No name} {Без имени}
-    {Saving} {Сохранение}
     "\"%f\" wasn't saved.\n\nSave it?" "\"%f\" не сохранен.\n\nСохранить?"
     {About} {О программе}
     {About...} {О программе...}
@@ -67,11 +66,11 @@ namespace eval ::alited {
     "Correct the indentation of \"%f\" ?" "Поправить отступы \"%f\" ?"
     {The line %n: unbalanced brace!} {Строка %n: несбалансированная скобка!}
     {Wrap Lines} {Сворачивать строки}
+    {Default values for new projects:} {Опции по умолчанию для проектов:}
   }
 
   ::msgcat::mcmset ru {
     {Select} {Выбор}
-    {Saving} {Сохранение}
     "\"%f\" wasn't saved.\n\nSave it?" "\"%f\" не сохранен.\n\nСохранить?"
     {Save as} {Сохранить как}
     {Files} {Файлы}
@@ -253,7 +252,7 @@ namespace eval ::alited {
     {Match case} {Учет регистра букв}
     {Wrap around} {По кругу}
     {Replace by blank} {Пустые замены}
-    {    Direction:} {    Направление:}
+    {Direction:} {Направление:}
     {Down} {Вниз}
     {Up} {Вверх}
     {Stay on top} {Поверх всех окон}
@@ -301,16 +300,20 @@ namespace eval ::alited {
     {Keys} {Клавиши}
     {Misc.} {Разное}
     {Saving} {Сохранение}
+    {View} {Вид}
   }
 
   ### ________________________ General _________________________ ###
   ::msgcat::mcmset ru {
+    {Ttk theme:} {Тема Ttk:}
     {Color scheme:} {Цветовая схема:}
     {Darker:} {Темнее:}
     {Lighter:} {Светлее:}
     {Tint} {Оттенок}
     {Tint:} {Оттенок:}
     "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?"
+    {Preferable locale:} {Предпочтительная локаль:}
+    "Mostly this is a country code,\nfor example: ru, ua, cz." "Чаще всего это код страны,\nнапример: ru, ua, cz."
     {Small font size:} {Размер малого шрифта:}
     {Middle font size:} {Размер среднего шрифта:}
     {Cursor width:} {Ширина курсора:}
@@ -329,6 +332,7 @@ namespace eval ::alited {
     {Space between wraps:} {Отступ сворачиваемых строк:}
     {Tab bar label's length:} {Длина имен панели файлов:}
     {Tab bar tip's length:} {Длина подсказок панели файлов:}
+    {Color scheme's light changed. Color fields disabled.} {Тон цветовой схемы изменен. Поля цветов недоступны.}
   }
 
   ### ________________________ Saving _________________________ ###
@@ -431,9 +435,9 @@ namespace eval ::alited {
     {Item} {Пункт}
     {If 'yes', means a separator of the toolbar/menu.} {Если включено, означает разделитель в строке/меню.}
     {Before Run...} {Перед Запуском...}
-    {Command:} {Команда:}
+    {Commands:} {Команды:}
     {Command before "Run"} {Команда перед "Запуском"}
-    "\n Enter a command to be run before running a current file with \"Tools/Run\".\n" "\n Введите команду, выполняемую перед \"Инструменты/Запуск\".\n"
+    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Введите команды, выполняемые перед \"Инструменты/Запуск\".\n Это может быть полезно в некоторых проектах. Что-то типа инициализации перед запуском.  \n"
   }
 
   ## ________________________ Checks ________________________ ##
@@ -510,4 +514,4 @@ namespace eval ::bartabs {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: tclsh ../../src/alited.tcl DEBUG
+#RUNF1: tclsh ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

@@ -308,6 +308,7 @@ proc bar::OnTabSelection {TID} {
   set al(wrapwords) [expr {[$wtxt cget -wrap] eq {word}}]
   CurrentControlTab [FileName $TID]
   alited::main::HighlightLine
+  alited::tree::SeeSelection
 }
 
 # ________________________ Handle Ctrl+Tab keys ______________________ #
@@ -367,7 +368,7 @@ proc bar::ColorBar {} {
   namespace upvar ::alited obPav obPav
   set cs [$obPav csCurrent]
   if {$cs>-1} {
-    lassign [$obPav csGet $cs] cfg2 cfg1 cbg2 cbg1 cfhh - - - - fgmark
+    lassign [$obPav csGet $cs] cfg2 cfg1 cbg2 cbg1 cfhh - - - - - - - - - - - - fgmark
     BAR configure -fgmark $fgmark
   }
 }
@@ -387,4 +388,4 @@ proc bar::InsertTab {tab tip} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

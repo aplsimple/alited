@@ -1,17 +1,28 @@
- Use drop-down list to select a color scheme.
+ Use drop-down lists to select a theme and a color scheme.
 
- To tint the scheme's colors, change the "Tint".
- The negative values mean "darker", the positive
- values mean "lighter".
+ Note that "default", "clam", "alt", "classic" are standard Ttk themes.
+ The standard themes may be used with all color schemes.
 
- E.g. you might try the themes and the tints:
-   "15: African1" and -10
-   "24: Dark" and 10
+ But "aw", "azure", "sun-valley", "forest" light / dark themes are only good
+ with light / dark color schemes accordingly.
 
- The font sizes will touch the following widgets:
- - small font : lists, tabs, info and status bars
- - middle font: menus, labels
+ E.g. "azure-dark" theme fits to "AzureDark" color scheme, while "forest-light"
+ is best viewed with "ForestLight" color scheme, "awdark" - with "Darcula" or
+ "Dusk" or "MildDark" etc. The main point is "dark for dark, light for light".
 
- The Notes field includes arbitrary ideas, todos
- etc. for all projects. The projects are supplied
- with their own notes in "Setup/Projects".
+ For "default", "clam", "alt", "classic" and "aw*" themes: you can tint their
+ colors with "Tint" option. The negative values mean "darker", the positive
+ values mean "lighter". These themes are most recommended for their stability.
+ ______________________________________________________________________________
+
+ The "Preferable locale" is mostly a country code, for example: ru, ua, cz, en.
+
+ The "Font" field allows to override Tcl/Tk default font for labels, menus etc.
+
+ Additionally, you can set font sizes that will touch the following widgets:
+ - small font : trees, tabs, tooltips, info & status bar, find/replace dialogue
+ - middle font: labels, menus, buttons, entries
+ ______________________________________________________________________________
+
+ The Notes field includes arbitrary ideas, todos etc. for all projects. The
+ projects are supplied with their own notes in "Setup/Projects".

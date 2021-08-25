@@ -434,6 +434,12 @@ proc project::Add {} {
   set al(tabs) $al(tablist)
   set al(prjfile) [ProjectFileName $pname]
   set al(prjbeforerun) {}
+  if {$al(PRJDEFAULT)} {
+    # use project defaults from "Setup/Common/Projects"
+    foreach opt $OPTS {
+      catch {set al($opt) $al(DEFAULT,$opt)}
+    }
+  }
   alited::ini::SaveIni yes  ;# to initialize ini-file
   foreach opt $OPTS {
     set prjinfo($pname,$opt) $al($opt)
@@ -561,12 +567,12 @@ proc project::Ok {args} {
       alited::file::OpenFile $fname yes
     }
   }
-  alited::file::MakeThemReload
   set TID [lindex [alited::bar::BAR listTab] $al(curtab) 0]
   catch {alited::bar::BAR $TID show}
   alited::main::UpdateProjectInfo
   alited::ini::GetUserDirs
   $obDl2 res $win 1
+  alited::file::MakeThemHighlighted
   after idle alited::main::ShowText
   return
 }
@@ -636,7 +642,7 @@ proc project::Tab1 {} {
     {.entIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 50}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 lab T 1 2 {-st nsew -rw 1 -cw 1}}
-    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fraB2.butOK -tip {$alited::al(MC,notes)}}}
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fraB2.butHelp -tip {$alited::al(MC,notes)}}}
     {.sbv .TexPrj L - - {pack -side left}}
   }
 }
@@ -651,9 +657,9 @@ proc project::Tab2 {} {
     {.labEOL - - 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
     {.cbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 5 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
-    {.spXIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 3 -from 2 -to 8 -justify center}}
+    {.spxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 9 -from 2 -to 8 -justify center}}
     {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Unit lines per 1 red bar:"}}
-    {.spXRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 3 -from 10 -to 100 -justify center}}
+    {.spxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 9 -from 10 -to 100 -justify center}}
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
     {.chbMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labFlist .labMult T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
@@ -717,4 +723,4 @@ proc project::_run {} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

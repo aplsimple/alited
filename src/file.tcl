@@ -48,17 +48,29 @@ proc file::IsSaved {TID} {
 }
 #_______________________
 
-proc file::MakeThemReload {{tabs ""}} {
-  # Set flag "reload file(s) anyway".
+proc file::MakeThemHighlighted {{tabs ""}} {
+  # Sets flag "highlight file(s) anyway".
   #   tabs - list of tabs to set the flag for
-  # Useful when you need update the files' text buffers.
+  # Useful when you need update the files' highlightings.
 
+  namespace upvar ::alited al al
   if {$tabs eq {}} {
     set tabs [alited::bar::BAR listTab]
   }
   foreach tab $tabs {
-    alited::bar::BAR [lindex $tab 0] configure --reload DORELOAD
+    set wtxt [alited::main::GetWTXT [lindex $tab 0]]
+    set al(HL,$wtxt) {..}
   }
+}
+
+#_______________________
+
+proc file::ToBeHighlighted {wtxt} {
+  # Checks flag "highlight text anyway".
+  #   wtxt - text's path
+
+  namespace upvar ::alited al al
+  return [expr {$al(HL,$wtxt) eq {..}}]
 }
 #_______________________
 
@@ -85,17 +97,17 @@ proc file::OutwardChange {TID {docheck yes}} {
       set msg [string map [list %f [file tail $fname]] $al(MC,wasdelfile)]
     }
     if {[alited::msg yesno warn $msg YES -title $al(MC,saving)]} {
-      # if the answer was "no save", let the text remains a while for further considerations
       if {$isfile} {
         set wtxt [alited::main::GetWTXT $TID]
         set pos [$wtxt index insert]
-        MakeThemReload $TID
-        alited::bar::BAR $TID show
+        DisplayFile $TID $fname $wtxt yes
+        alited::main::UpdateAll
         catch {
           ::tk::TextSetCursor $wtxt $pos
           ::alited::main::CursorPos $wtxt
         }
       } else {
+        # if the answer was "no save", let the text remains for further considerations
         SaveFile $TID
         set curtime [file mtime $fname]
       }
@@ -356,6 +368,7 @@ proc file::SaveFileByName {TID fname} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1
     return 0
   }
+  alited::unit::BackupFile $TID
   $wtxt edit modified no
   alited::unit::Modified $TID $wtxt
   alited::main::HighlightText $TID $fname $wtxt
@@ -378,6 +391,7 @@ proc file::SaveFile {{TID ""}} {
   set res [SaveFileByName $TID $fname]
   alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)"
   alited::main::ShowHeader yes
+  alited::tree::RecreateTree
   return $res
 }
 #_______________________
@@ -400,6 +414,7 @@ proc file::SaveFileAs {{TID ""}} {
   } elseif {[set res [SaveFileByName $TID $fname]]} {
     RenameFile $TID $fname
     alited::main::ShowHeader yes
+    alited::tree::RecreateTree
   }
   return $res
 }
@@ -450,8 +465,6 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
       # [$obPav Text] was made by main::_open, let it be alive
       catch {destroy $wtxt}
       catch {destroy $wsbv}
-      catch {destroy "${wtxt}_S2"}
-      catch {destroy "${wsbv}_S2"}
     }
     if {$checknew} CheckForNew
     alited::ini::SaveCurrentIni $al(INI,save_onclose)
@@ -753,4 +766,4 @@ proc file::ChooseRecent {idx} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

@@ -158,4 +158,4 @@ proc complete::AutoCompleteCommand {} {
   focus -force $wtxt
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

@@ -835,7 +835,8 @@ oo::class create ::apave::APaveDialog {
     lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM root ontop \
                rotext head optsHead hsz binds postcom onclose timeout
     set modal yes
-    set tags ""
+    set tags {}
+    set themed 0
     set wasgeo [set textmode 0]
     set cc [set themecolors [set optsGrid [set addpopup ""]]]
     set readonly [set hidefind [set scroll 1]]
@@ -890,6 +891,7 @@ oo::class create ::apave::APaveDialog {
         -modal {set modal $val}
         -popup {set addpopup [string map [list %w $qdlg.fra.texM] "$val"]}
         -scroll {set scroll "$val"}
+        -themed {set themed $val}
         default {
           append optsFont " $opt $val"
           if {$opt ne "-family"} {
@@ -911,7 +913,7 @@ oo::class create ::apave::APaveDialog {
     set optsHeadFont $optsFont
     set fs [my basicFontSize]
     set textfont "-family {[my basicTextFont]}"
-    if {$optsFont ne ""} {
+    if {$optsFont ne {}} {
       if {[string first "-size " $optsFont]<0} {
         append optsFont " -size $fs"
       }
@@ -925,7 +927,7 @@ oo::class create ::apave::APaveDialog {
       }
       append optsFont "\}"
     } else {
-      set optsFont "-font \{-size $fs\}"
+      set optsFont "-font {[font actual apaveFontDef] -size $fs}"
       set optsFontM "-size $fs"
     }
     set msgonly [expr {$readonly || $hidefind || $chmsg ne {}}]
@@ -1182,7 +1184,7 @@ oo::class create ::apave::APaveDialog {
     }
     catch "$binds"
     set args [::apave::removeOptions $args -focus]
-    my showModal $qdlg -themed [string length $themecolors]\
+    my showModal $qdlg -themed $themed \
       -focus $focusnow -geometry $geometry {*}$root {*}$modal {*}$ontop {*}$args
     oo::objdefine [self] unexport InitFindInText Pdg
     set pdgeometry [winfo geometry $qdlg]
@@ -1237,6 +1239,6 @@ oo::class create ::apave::APaveDialog {
 
 }
 # _____________________________ EOF _____________________________________ #
-#RUNF1: ../../src/alited.tcl DEBUG
+#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl -1 9 12 "small icons"
 #RUNF1: ./tests/test_pavedialog.tcl

@@ -29,20 +29,24 @@ proc about::About {} {
     [list "linkapl" "::apave::openDoc %t@@https://github.com/aplsimple/@@"] \
     [list "linkMIT" "::apave::openDoc %t@@https://en.wikipedia.org/wiki/MIT_License@@"] \
     ]
-  ::alited::msg ok {} "  <red>alited v[package require alited]</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
+  set long1 [msgcat::mc {And well fit for programming with it.}]
+  set long2 __________________________________________
+  set msg "  <red>alited v[package require alited]</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
     [msgcat::mc {Written in pure Tcl/Tk.}] \n \
-    [msgcat::mc {And well fit for programming with it.}]\n\n \
+    $long1\n\n \
     [msgcat::mc {Details:}] \n\n \
       \u2022 <link1>aplsimple.github.io/en/tcl/alited</link1>\n\n \
     [msgcat::mc {Authors:}] \n\n \
       \u2022 <linkapl>Alex Plotnikov</linkapl>\n\n \
     [msgcat::mc {License:}] <linkMIT>MIT</linkMIT>\n \
-    __________________________________________\n \
+    $long2\n \
     \n \
     <red> $alited::tcltk_version </red> <link3></link3>\n \
     \n \
-    <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>\n" \
-    -title [msgcat::mc About] -t 1 -w 46 -scroll 0 \
+    <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>\n\n"
+  set wmax [expr {max([string length $long1],[string length $long2])}]
+  ::alited::msg ok {} $msg \
+    -title [msgcat::mc About] -t 1 -w [incr wmax 4] -scroll 0 \
     -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}"
 }
 #_______________________

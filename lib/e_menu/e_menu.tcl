@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.2"
+  variable em_version "e_menu 3.4.4"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -1324,6 +1324,11 @@ proc ::em::prepr_call {refname} { ;# this must be done for e_menu call line only
 #___ toggle 'stay on top' mode
 proc ::em::toggle_ontop {} {
   wm attributes .em -topmost $::em::ontop
+  if {$::em::ontop} {
+    .em.fr.cb configure -fg $::em::clrhelp
+  } else {
+    .em.fr.cb configure -fg $::em::clrinaf
+  }
 }
 #___ get menu item
 proc ::em::menuit {line lt left {a 0}} {
@@ -1643,7 +1648,7 @@ proc ::em::prepare_buttons {refcommands} {
   set ::em::font3a "$::em::font_f2 -size [expr {$::em::fs-1}]"
   label .em.fr.win -bg $::em::clrinab -fg $::em::clrinab -state disabled \
     -takefocus 0
-  checkbutton .em.fr.cb -text "On top" -variable ::em::ontop -fg $::em::clrhotk \
+  checkbutton .em.fr.cb -text "On top" -variable ::em::ontop -fg $::em::clrhelp \
     -bg $::em::clrtitb -takefocus 0 -command {::em::toggle_ontop} \
     -font $::em::font1a
   if {$::eh::pk eq {}} {
@@ -2322,6 +2327,7 @@ proc ::em::initmenu {} {
   grid rowconfigure    .em.fr 1 -weight 1
   grid rowconfigure    .em.fr 2 -weight 1
   grid columnconfigure .em.fr.win 1 -weight 1
+  ::em::toggle_ontop
   update
   set isgeom [string len $::em::geometry]
   wm title .em "${::em::menuttl}"
@@ -2571,5 +2577,5 @@ if {$::em::solo} {
 }
 
 # _____________________________ EOF _____________________________________ #
-#RUNF1: ../../src/alited.tcl DEBUG
+#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ../pave/tests/test2_pave.tcl 8 9 12 'small icons'

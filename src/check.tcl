@@ -129,7 +129,6 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
     set err [CheckUnit $wtxt $l1.0 $l2.end $TID $title]
     if {$err} {
       incr errors $err
-#      alited::info::Put "$title: $err errors" [list $fname $l1 $l2]
     }
   }
 }
@@ -202,8 +201,8 @@ proc check::_create {} {
 
   namespace upvar ::alited al al obDl2 obDl2
   variable win
-  $obDl2 makeWindow $win $al(MC,checktcl)
-  $obDl2 paveWindow $win {
+  $obDl2 makeWindow $win.fra $al(MC,checktcl)
+  $obDl2 paveWindow $win.fra {
     {v_ - -}
     {labHead v_ T 1 1 {-st w -pady 4 -padx 8} {-t "Checks available:"}}
     {chb1 labHead T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chBrace -t {Consistency of {} }}}
@@ -232,4 +231,4 @@ proc check::_run {} {
   if {[_create]} Check
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

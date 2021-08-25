@@ -138,18 +138,21 @@ proc unit::GetUnits {TID textcont} {
         set l1 [expr {[lindex $item 4]-1}]
         if {$l1>0 && ![llength $retlist]} {
           # first found at line>1 => create a starting leaf
-          lappend retlist [list $lev 1 $al(INI,LEAF) "" 1 $l1]
+          set treeID [alited::tree::NewItemID [incr iit]]
+          lappend retlist [list $lev 1 $al(INI,LEAF) "" 1 $l1 $treeID]
         }
-        lassign [lindex $retlist end] levE leafE flE namE l1E
+        lassign [lindex $retlist end] levE leafE flE namE l1E - treeIDE
         lassign $item levC leafC flC namC l1C
         if {$flE eq "1" && $flC eq "0" && $levE==$levC && $leafE==$leafC} {
           # found a named previous leaf
           if {$namE eq ""} {set namE $namC}
           # update the named leaf
           set retlist [lreplace $retlist end end \
-            [list $levE $leafE $flE $namE $l1E $i]]
+            [list $levE $leafE $flE $namE $l1E $i $treeIDE]]
         } else {
-          lappend retlist [lappend item $i]
+          # add l2 (last line of unit), ID of unit
+          set treeID [alited::tree::NewItemID [incr iit]]
+          lappend retlist [lappend item $i $treeID]
         }
       }
       # prepare an item for saving
@@ -160,7 +163,8 @@ proc unit::GetUnits {TID textcont} {
   if {![llength $retlist]} {
     set name [file tail [alited::bar::FileName $TID]]
     set name [string map [list %f $name] $al(MC,alloffile)]
-    lappend retlist [list 1 1 1 $name 1 $llen]
+    set treeID [alited::tree::NewItemID [incr iit]]
+    lappend retlist [list 1 1 1 $name 1 $llen $treeID]
   }
   return $retlist
 }
@@ -637,32 +641,41 @@ proc unit::UnComment {} {
 
 # ________________________ Modified _________________________ #
 
-proc unit::BackupFile {TID} {
+proc unit::BackupFile {TID {mode {}}} {
   # Makes a backup copy of a file after the first modification of it.
   #   TID - tab's ID of the file
+  #   mode - if {orig}, makes an original copy of a file, otherwise makes .bak copy
 
   namespace upvar ::alited al al
-  if {$al(BACKUP) ne {}} {
-    lassign [BackupFileNames $TID] dir fname fname2
-    if {![file exists $dir] && [catch {file mkdir $dir} err]} {
-      alited::msg ok err $err
-    }
-    if {[file exists $dir]} {
+  lassign [BackupDirFileNames $TID] dir fname fname2
+  if {$dir ne {}} {
+    if {$mode eq {}} {
       set fname2 [BackupFileName $fname2]
-      catch {file copy -force $fname $fname2}
+    }
+    catch {
+      file copy -force $fname $fname2
+      ::apave::logMessage "backup $fname -> $fname2"
     }
   }
 }
 #_______________________
 
-proc unit::BackupFileNames {TID} {
-  # Gets names for backuping: directory's, source file's, target file's
+proc unit::BackupDirFileNames {TID} {
+  # Gets directory and file names for backuping.
   #   TID - current tab's ID
+  # Returns a list of names:
+  #   directory, source file, target original file
 
   namespace upvar ::alited al al
+  if {$al(BACKUP) eq {}} {return {}}
   set dir [file join $al(prjroot) $al(BACKUP)]
   set fname [alited::bar::FileName $TID]
   set fname2 [file join $dir [file tail $fname]]
+  if {![file exists $dir] && [catch {file mkdir $dir} err]} {
+    alited::msg ok err $err
+    return {}
+  }
+  set fname3 [file join $dir [file tail $fname]]
   return [list $dir $fname $fname2]
 }
 #_______________________
@@ -718,7 +731,7 @@ proc unit::CheckUndoRedoIcons {wtxt TID} {
     alited::bar::BAR $TID configure --redo $newredo
   }
   if {$oldundo ne {} && !$oldundo && !$oldredo && $newundo} {
-    BackupFile $TID
+    BackupFile $TID orig
   }
   alited::bar::BAR configure --TIDundo $TID
 }
@@ -773,16 +786,17 @@ proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
           set lastrow [lindex $al(_unittree,$TID) $llen-1 5]
           set doit [expr {$lastrow != int([$wtxt index "end -1c"])}]
         }
-        if {$l1<$l2 || $al(INI,LEAF) && [regexp $al(RE,leaf2) $args] || \
+        set l1 [expr {int([$wtxt index insert])}]
+        set notfound [catch {set ifound [lsearch -index 4 $al(_unittree,$TID) $l1]}]
+        if {$doit || (!$notfound && $ifound>-1) || \
+        $al(INI,LEAF) && [regexp $al(RE,leaf2) $args] || \
         [regexp $al(RE,proc2) $args]} {
-          alited::tree::RecreateTree
-        } elseif {[lsearch -index 4 $al(_unittree,$TID) $l1]>-1} {
           alited::tree::RecreateTree
         } else {
           set line [$wtxt get $l1.0 $l1.end]
           if {$al(INI,LEAF) && [regexp $al(RE,leaf) $line] || \
           !$al(INI,LEAF) && [regexp $al(RE,proc) $line] || \
-          [regexp $al(RE,branch) $line] || $doit} {
+          [regexp $al(RE,branch) $line]} {
             alited::tree::RecreateTree
           }
         }
@@ -793,4 +807,4 @@ proc unit::Modified {TID wtxt {l1 0} {l2 0} args} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

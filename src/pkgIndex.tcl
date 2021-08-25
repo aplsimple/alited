@@ -1,4 +1,4 @@
-package ifneeded alited 1.0.2 [list source [file join $dir alited.tcl]]
+package ifneeded alited 1.0.3 [list source [file join $dir alited.tcl]]
 
 namespace eval ::alited {
 
@@ -33,6 +33,7 @@ For a quick acquaintance of *alited*, a few of demo videos are available:
    * [3. Projects](https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.0/3.Projects_alited-1.0.mp4)
    * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.0/4.Find_alited-1.0.mp4)
    * [5. Tools](https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.0/5.Tools_alited-1.0.mp4)
+   * [6. Themes](https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.0.3/6.Themes_alited-1.0.3.mp4)
 
 ## Inevitable blah-blah
 

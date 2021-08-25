@@ -284,7 +284,7 @@ proc ::em::edit {fname {prepost ""}} {
   if {$::em::editor eq ""} {
     set bfont [::apave::obj boldTextFont [::apave::obj basicFontSize]]
     set dialog [::apave::APaveInput new]
-    set res [$dialog editfile $fname $::em::clrtitf $::em::clrinab $::em::clrtitf \
+    set res [$dialog editfile $fname $::em::clrtitf $::em::clrtitb $::em::clrtitf \
       $prepost {*}[::em::theming_pave] -w {80 100} -h {10 24} -ro 0 -centerme .em \
       -ontop $::em::ontop \
       -myown [list my TextCommandForChange %w "::em::menuTextModified %w {$bfont}"\

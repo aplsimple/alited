@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.14
+package provide hl_tcl 0.9.16
 
 # ______________________ Common data ____________________ #
 
@@ -492,6 +492,23 @@ proc ::hl_tcl::my::MemPos {txt {doit no}} {
 }
 #_____
 
+proc ::hl_tcl::my::RunCoroAfterIdle {txt pos1 pos2 wait args} {
+  # Runs a "modified" corotine after idle.
+
+  variable data
+  if {$wait} {
+    catch {
+      after cancel $data(COROAFTER,$txt)
+      if {$data(COROPOS1,$txt) < $pos1} {set pos1 $data(COROPOS1,$txt)}
+      if {$data(COROPOS2,$txt) > $pos2} {set pos2 $data(COROPOS2,$txt)}
+    }
+    set data(COROPOS1,$txt) $pos1
+    set data(COROPOS2,$txt) $pos2
+  }
+  set data(COROAFTER,$txt) [after idle "::hl_tcl::my::CoroRun $txt $pos1 $pos2 $args"]
+}
+#_____
+
 proc ::hl_tcl::my::Modified {txt oper pos1 args} {
   # Handles modifications of text.
   #   txt - text widget's path
@@ -514,7 +531,7 @@ proc ::hl_tcl::my::Modified {txt oper pos1 args} {
       }
     }
   }
-  after idle "::hl_tcl::my::CoroRun $txt $pos1 $pos2 $args"
+  RunCoroAfterIdle $txt $pos1 $pos2 no {*}$args
 }
 #_____
 
@@ -523,7 +540,9 @@ proc ::hl_tcl::my::CoroRun {txt pos1 pos2 args} {
   variable data
   if {![info exist data(REG_TXT,$txt)] || $data(REG_TXT,$txt) eq {} || \
   ![info exist data(CUR_LEN,$txt)]} {
-    return  ;# skip changes till the highlighting done
+    # skip changes till the highlighting done
+    after 10 [list ::hl_tcl::my::RunCoroAfterIdle $txt $pos1 $pos2 yes {*}$args]
+    return
   }
   # let them work one by one
   set i1 [expr {int($pos1)}]
@@ -1071,12 +1090,18 @@ proc ::hl_tcl::hl_colorNames {} {
 
 #_____
 
-proc ::hl_tcl::hl_colors {txt {dark ""}} {
-  # Gets the main colors for highlighting (except for "curr.line").
+proc ::hl_tcl::hl_colors {txt {dark ""} args} {
+  # Gets/sets the main colors for highlighting (except for "curr.line").
   #   txt - text widget's path
+  #   dark - flag "dark scheme"
+  #   args - a list of colors to set for *txt*
   # Returns a list of colors for COM COMTK STR VAR CMN PROC OPT BRAC \
    or, if the colors aren't initialized, "standard" colors.
 
+  if {[llength $args]} {
+    set ::hl_tcl::my::data(COLORS,$txt) $args
+    return
+  }
   if {[info exists ::hl_tcl::my::data(COLORS,$txt)]}  {
     return $::hl_tcl::my::data(COLORS,$txt)
   }
@@ -1109,5 +1134,5 @@ proc ::hl_tcl::hl_line {txt} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: ../../src/alited.tcl DEBUG
+#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 37 9 12

@@ -61,7 +61,7 @@ proc favor::OpenSelectedFile {fname} {
 
   namespace upvar ::alited al al
   set al(dolastvisited) no
-  set TID [alited::file::OpenFile $fname]
+  set TID [alited::file::OpenFile $fname yes]
   set al(dolastvisited) yes
   if {$TID eq {}} {
     set msg [string map [list %f $fname] [msgcat::mc {File not found: %f}]]
@@ -80,6 +80,7 @@ proc favor::GoToUnit {TID name header {forfavor no} {it1 {}} {values {}}} {
   #   it1 - item selected in Favorites (for forfavor=yes)
   #   values - values of item selected in Favorites (for forfavor=yes)
   # Returns yes, if the unit is open successfully.
+  # See also: tree::SaveCursorPos
 
   namespace upvar ::alited al al obPav obPav
   foreach it $al(_unittree,$TID) {
@@ -93,7 +94,9 @@ proc favor::GoToUnit {TID name header {forfavor no} {it1 {}} {values {}}} {
         $wtree tag add tagNorm $favID
       }
       LastVisited [list -text $name] $header
-      after idle "alited::tree::NewSelection $treeID"
+      set pos [lindex $it 7]  ;# saved cursor position
+      if {$pos ne {}} {set pos "$pos yes"}
+      after idle "alited::tree::NewSelection $treeID $pos"
       return yes
     }
   }
@@ -173,7 +176,7 @@ proc favor::SetAndClose {cont} {
   if {![llength [alited::bar::BAR listTab]]} {
     # no tabs open
     if {$fnamecont ne {}} {
-      alited::file::OpenFile $fnamecont  ;#  open a file from favorites
+      alited::file::OpenFile $fnamecont yes ;#  open a file from favorites
     } else {
       alited::file::CheckForNew  ;# ... or create "no name" tab
     }
@@ -494,4 +497,4 @@ proc favor::_init {} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

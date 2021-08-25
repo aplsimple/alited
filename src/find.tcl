@@ -98,7 +98,7 @@ proc find::GetCommandOfLine {line idx {delim ""} {mode ""}} {
   }
   set res [string trim [string range $line $i1 $i2]]
   if {[string index $mode end] eq "2"} {
-    lappend res $i1 $i2
+    set res [list $res $i1 $i2]
   }
   return $res
 }
@@ -137,6 +137,8 @@ proc find::GetWordOfText {{mode ""}} {
     set idx [$wtxt index insert]
     set line [$wtxt get "$idx linestart" "$idx lineend"]
     set sel [GetWordOfLine $line $idx $mode]
+  } elseif {[string index $mode end] eq "2"} {
+    set sel [list $sel]
   }
   return $sel
 }
@@ -327,6 +329,7 @@ proc find::CheckData {op} {
   if {!$data(docheck)} {return yes}
   # search input data in arrays of combobox values:
   # if not found, save the data to the arrays
+  set w $win.fra
   set foc {}
   foreach i {2 1} {
     if {[set data(en$i)] ne {}} {
@@ -335,9 +338,9 @@ proc find::CheckData {op} {
       }
       set data(vals$i) [linsert [set data(vals$i)] 0 [set data(en$i)]]
       catch {set data(vals$i) [lreplace [set data(vals$i)] $al(INI,maxfind) end]}
-      $win.cbx$i configure -values [set data(vals$i)]
+      $w.cbx$i configure -values [set data(vals$i)]
     } elseif {$i==1 || ($op eq "repl" && !$data(c3))} {
-      set foc $win.cbx$i
+      set foc $w.cbx$i
     }
   }
   if {$foc ne {}} {
@@ -611,7 +614,7 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
   set data(_ERR_) no
   foreach tab [SessionList] {
     set TID [lindex $tab 0]
-    alited::file::ReadFileByTID $TID
+#    alited::file::ReadFileByTID $TID
     lassign [alited::main::GetText $TID] curfile wtxt
     lappend allfnd {*}[FindAll $wtxt $TID $tagme]
     if {$data(_ERR_)} break
@@ -633,6 +636,8 @@ proc find::FindReplStr {str} {
 #_______________________
 
 proc find::Replace {} {
+  # Replaces one string and finds next.
+
   namespace upvar ::alited al al
   variable data
   if {![CheckData repl]} return
@@ -663,10 +668,20 @@ proc find::Replace {} {
 }
 #_______________________
 
-proc find::ReplaceAll {wtxt allfnd} {
+proc find::ReplaceAll {TID wtxt allfnd} {
+  # Replaces all found strings in a text.
+  #   TID - tab's ID
+  #   wtxt - text's path
+  #   allfnd - list of found strings data (index1, index2)
+
   variable data
   set rn 0
   for {set i [llength $allfnd]} {$i} {} {
+    if {!$rn} {
+      if {$TID ni [alited::bar::BAR listFlag m]} {
+        alited::unit::BackupFile $TID orig
+      }
+    }
     incr i -1
     lassign [lindex $allfnd $i] idx1 idx2
     $wtxt replace $idx1 $idx2 $data(en2)
@@ -678,6 +693,8 @@ proc find::ReplaceAll {wtxt allfnd} {
 #_______________________
 
 proc find::ReplaceInText {} {
+  # Handles hitting "Replace in Text" button.
+
   namespace upvar ::alited al al
   variable data
   if {![CheckData repl]} return
@@ -688,13 +705,16 @@ proc find::ReplaceInText {} {
     return {}
   }
   set wtxt [alited::main::CurrentWTXT]
-  set rn [ReplaceAll $wtxt [Search $wtxt]]
+  set TID [alited::bar::CurrentTabID]
+  set rn [ReplaceAll $TID $wtxt [Search $wtxt]]
   ShowResults2 $rn $alited::al(MC,frres2)
   alited::main::UpdateTextAndGutter
 }
 #_______________________
 
 proc find::ReplaceInSession {} {
+  # Handles hitting "Replace in Session" button.
+
   namespace upvar ::alited al al
   variable data
   if {![CheckData repl]} return
@@ -708,14 +728,15 @@ proc find::ReplaceInSession {} {
   set data(_ERR_) no
   foreach tab [SessionList] {
     set TID [lindex $tab 0]
-    if {![info exist al(_unittree,$TID)]} {
-      alited::file::ReadFile $TID [alited::bar::FileName $TID]
-    }
+#    if {![info exist al(_unittree,$TID)]} {
+#      alited::file::ReadFile $TID [alited::bar::FileName $TID]
+#    }
     lassign [alited::main::GetText $TID] curfile wtxt
-    if {[set rdone [ReplaceAll $wtxt [Search $wtxt]]]} {
+    if {[set rdone [ReplaceAll $TID $wtxt [Search $wtxt]]]} {
       ShowResults2 $rdone $alited::al(MC,frres2) $TID
       incr rn $rdone
     }
+    alited::file::MakeThemHighlighted $TID
     if {$data(_ERR_)} break
   }
   ShowResults2 $rn $alited::al(MC,frres3)
@@ -809,9 +830,10 @@ proc find::_create {} {
   variable data
   set data(lastinvoke) 1
   set res 1
+  set w $win.fra
   while {$res} {
-    $obFND makeWindow $win $al(MC,findreplace)
-    $obFND paveWindow $win {
+    $obFND makeWindow $w $al(MC,findreplace)
+    $obFND paveWindow $w {
       {labB1 - - 1 1    {-st e}  {-t "Find: " -style TLabelFS}}
       {Cbx1 labB1 L 1 9 {-st wes} {-tvar ::alited::find::data(en1) -values {$::alited::find::data(vals1)}}}
       {labB2 labB1 T 1 1 {-st e}  {-t "Replace: " -style TLabelFS}}
@@ -819,18 +841,17 @@ proc find::_create {} {
       {labBm labB2 T 1 1 {-st e}  {-t "Match: " -style TLabelFS}}
       {radA labBm L 1 1 {-st ws -padx 0}  {-t "Exact" -var ::alited::find::data(v1) -value 1 -style TRadiobuttonFS}}
       {radB radA L 1 1 {-st ws -padx 5}  {-t "Glob" -var ::alited::find::data(v1) -value 2 -tip "Allows to use *, ?, \[ and \]\nin \"find\" string." -style TRadiobuttonFS}}
-      {radC radB L 1 4 {-st ws -padx 0}  {-t "RE" -var ::alited::find::data(v1) -value 3 -tip "Allows to use the regular expressions\nin \"find\" string." -style TRadiobuttonFS}}
-      {h_1 radC L 1 1  {-cw 1}}
+      {radC radB L 1 5 {-st ws -padx 0 -cw 1}  {-t "RE" -var ::alited::find::data(v1) -value 3 -tip "Allows to use the regular expressions\nin \"find\" string." -style TRadiobuttonFS}}
       {h_2 labBm T 1 9  {-st es -rw 1}}
       {seh  h_2 T 1 9  {-st ews}}
       {chb1 seh  T 1 2 {-st w} {-t "Match whole word only" -var ::alited::find::data(c1) -style TCheckbuttonFS}}
       {chb2 chb1 T 1 2 {-st w} {-t "Match case" -var ::alited::find::data(c2) -style TCheckbuttonFS}}
       {chb3 chb2 T 1 2 {-st w} {-t "Replace by blank" -var ::alited::find::data(c3) -tip "Allows replacements by the empty string,\nin fact, to erase the found ones." -style TCheckbuttonFS}}
       {sev1 chb1 L 5 1 }
-      {fralabB3 sev1 L 4 6 {-st nsew} {-borderwidth 1 -relief groove}}
-      {.labB3 - - - - {pack -anchor w} {-t "    Direction:" -style TLabelFS}}
-      {.rad1 - - - - {pack -anchor w -padx 5} {-t "Up" -image alimg_up -compound left -var ::alited::find::data(v2) -value 1 -style TRadiobuttonFS}}
-      {.rad2 - - - - {pack -anchor w -padx 5} {-t "Down" -image alimg_down -compound left -var ::alited::find::data(v2) -value 2 -style TRadiobuttonFS}}
+      {fralabB3 sev1 L 4 6 {-st nsw} {-borderwidth 0 -relief groove -padding {3 3}}}
+      {.labB3 - - - - {pack -anchor w} {-t "Direction:" -style TLabelFS}}
+      {.rad1 - - - - {pack -anchor w -padx 0} {-t "Up" -image alimg_up -compound left -var ::alited::find::data(v2) -value 1 -style TRadiobuttonFS}}
+      {.rad2 - - - - {pack -anchor w -padx 0} {-t "Down" -image alimg_down -compound left -var ::alited::find::data(v2) -value 2 -style TRadiobuttonFS}}
       {.chb4 - - - - {pack -anchor sw} {-t "Wrap around" -var ::alited::find::data(c4) -style TCheckbuttonFS}}
       {sev2 cbx1 L 10 1 }
       {But1 sev2 L 1 1 {-st we} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
@@ -842,16 +863,16 @@ proc find::_create {} {
       {But6 but5 T 1 1 {-st nwe} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
     }
     SessionButtons
-    foreach k {f F} {bind $win.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}
-    bind $win.cbx1 <Return> "$win.but1 invoke"  ;# hot in comboboxes
-    bind $win.cbx2 <Return> "$win.but4 invoke"
+    foreach k {f F} {bind $w.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}
+    bind $w.cbx1 <Return> "$w.but1 invoke"  ;# hot in comboboxes
+    bind $w.cbx2 <Return> "$w.but4 invoke"
     if {$minsize eq ""} {      ;# save default min.sizes
       after idle [list after 100 {
         set ::alited::find::minsize "-minsize {[winfo width $::alited::find::win] [winfo height $::alited::find::win]}"
       }]
     }
-    after idle "$win.cbx1 selection range 0 end"
-    set res [$obFND showModal $win -geometry $geo {*}$minsize -focus $win.cbx1 -modal no -ontop $data(c5)]
+    after idle "$w.cbx1 selection range 0 end"
+    set res [$obFND showModal $win -geometry $geo {*}$minsize -focus $w.cbx1 -modal no]
     set geo [wm geometry $win] ;# save the new geometry of the dialogue
     destroy $win
     ClearTags
@@ -880,4 +901,4 @@ proc find::_run {} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

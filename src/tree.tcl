@@ -30,6 +30,7 @@ proc tree::SwitchTree {} {
     set al(TREE,files) no
     Create
   }
+  alited::main::FocusText
   update idletasks
 }
 #_______________________
@@ -188,6 +189,7 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
 
 proc tree::SaveCursorPos {} {
   # Saves current unit's cursor position.
+  # See also: favor::GoToUnit
 
   namespace upvar ::alited al al obPav obPav
   set TID [alited::bar::CurrentTabID]
@@ -199,8 +201,25 @@ proc tree::SaveCursorPos {} {
     set wtree [$obPav Tree]
     set header [alited::unit::GetHeader $wtree $itnew]
     set al(CPOS,$TID,$header) $pos
+    # save the position to unit tree list, to restore it in favor::GoToUnit
+    set it [lsearch -exact -index 6 $al(_unittree,$TID) $itnew]
+    if {$it>-1} {
+      set item [lindex $al(_unittree,$TID) $it]
+      set item [lreplace $item 7 7 $pos]
+      set al(_unittree,$TID) [lreplace $al(_unittree,$TID) $it $it $item]
+    }
   }
   return $pos
+}
+#_______________________
+
+proc tree::SeeSelection {} {
+  # Sees (makes visible) a current selected item in the tree.
+
+  namespace upvar ::alited al al obPav obPav
+  set wtree [$obPav Tree]
+  set selection [$wtree selection]
+  if {[llength $selection]==1} {$wtree see $selection}
 }
 
 # ________________________ Create and handle a tree _________________________ #
@@ -230,7 +249,6 @@ proc tree::Create {} {
   }
 }
 #_______________________
-#_______________________
 
 proc tree::UnitTitle {title l1 l2} {
   # Gets a title of a unit (checking for empty string).
@@ -241,6 +259,7 @@ proc tree::UnitTitle {title l1 l2} {
   if {$title eq {}} {set title "[msgcat::mc Lines] $l1-$l2"}
   return $title
 }
+#_______________________
 
 proc tree::CreateUnitsTree {TID wtree} {
   # Creates a unit tree for a tab.
@@ -264,6 +283,7 @@ proc tree::CreateUnitsTree {TID wtree} {
   set parent {}
   set levprev -1
   foreach item $al(_unittree,$TID) {
+    if {[llength $item]<3} continue
     set itemID  [alited::tree::NewItemID [incr iit]]
     lassign $item lev leaf fl1 title l1 l2
     set title [UnitTitle $title $l1 $l2]
@@ -365,7 +385,7 @@ proc tree::AddTags {wtree} {
   #   wtree - the tree's path
 
   namespace upvar ::alited al al
-  lassign [::hl_tcl::hl_colors "" [::apave::obj csDarkEdit]] - fgred fgbr
+  lassign [::hl_tcl::hl_colors {-AddTags} [::apave::obj csDarkEdit]] - fgred fgbr
   set fontN "-font $alited::al(FONT,defsmall)"
   append fontB $fontN " -foreground $fgred"
   $wtree tag configure tagNorm {*}$fontN
@@ -920,4 +940,4 @@ proc tree::UpdateFileTree {{doit no}} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

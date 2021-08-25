@@ -26,9 +26,11 @@ namespace eval ::alited {
   set al(TREE,cw0) 200      ;# tree column #0 width
   set al(TREE,cw1) 70       ;# tree column #1 width
   set al(TREE,showinfo) 0   ;# flag "show info on a file in tips"
+  set al(FONT) {}           ;# default font
   set al(FONTSIZE,small) 10 ;# small font size
   set al(FONTSIZE,std) 11   ;# standard font size
   set al(FONT,txt) {}       ;# font for edited texts
+  set al(THEME) clam        ;# ttk theme
   set al(INI,CS) -1         ;# color scheme
   set al(INI,HUE) 0         ;# tint of color scheme
   set al(INI,ICONS) "middle icons"  ;# this sets tollbar icons' size as middle
@@ -48,19 +50,24 @@ namespace eval ::alited {
   set al(INI,LEAF) 0
 
   # RE for branches of unit tree ( # _ lev 1 _..)
-  set al(RE,branch) {^\s*(#+) [_]+\s+([^_]+[^[:blank:]]*)\s+[_]+ (#+)$}
+  set al(RE,branchDEF) {^\s*(#+) [_]+\s+([^_]+[^[:blank:]]*)\s+[_]+ (#+)$}
+  set al(RE,branch) $al(RE,branchDEF)
 
   # special RE for leafs (# --  / # -- abc / # --abc--)
-  set al(RE,leaf) {^\s*##\s*[-]*([^-]*)\s*[-]*$}
+  set al(RE,leafDEF) {^\s*##\s*[-]*([^-]*)\s*[-]*$}
+  set al(RE,leaf) $al(RE,leafDEF)
 
   # RE for Tcl leaf units
-  set al(RE,proc) {^\s*(((proc|method)\s+([^[:blank:]]+))|((constructor|destructor)))\s.+}
+  set al(RE,procDEF) {^\s*(((proc|method)\s+([^[:blank:]]+))|((constructor|destructor)\s+))}
+  set al(RE,proc) $al(RE,procDEF)
 
   # RE to check for leaf units (# _  / # _ abc)
-  set al(RE,leaf2) {^\s*(#+) [_]+}
+  set al(RE,leaf2DEF) {^\s*(#+) [_]+}
+  set al(RE,leaf2) $al(RE,leaf2DEF)
 
   # RE to check for Tcl leaf units (proc abc {}...)
-  set al(RE,proc2) {^\s*(proc|method|constructor|destructor)\s+}
+  set al(RE,proc2DEF) {^\s*(proc|method|constructor|destructor)\s+}
+  set al(RE,proc2) $al(RE,proc2DEF)
 
   # list of current favorite units
   set al(FAV,current) [list]
@@ -127,6 +134,18 @@ namespace eval ::alited {
 
   # cursor's width
   set al(CURSORWIDTH) 2
+
+  # defaults for projects
+  set al(PRJDEFAULT) 1
+  set al(DEFAULT,prjdirign) {.git .bak}
+  set al(DEFAULT,prjEOL) {}
+  set al(DEFAULT,prjindent) 4
+  set al(DEFAULT,prjredunit) 20
+  set al(DEFAULT,prjmultiline) 0
+
+  # use localized messages
+  set al(LOCAL) {}
+  catch {set al(LOCAL) [string range [::msgcat::mclocale] 0 1]}
 }
 
 # ________________________ Variables _________________________ #
@@ -197,8 +216,6 @@ proc ini::ReadIni {{projectfile ""}} {
     ReadIniOptions project $projectfile
   }
   ReadIniPrj
-  ::apave::setTextIndent $al(prjindent)
-  ::apave::textEOL $al(prjEOL)
   set al(TEXT,opts) "-padx 3 -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3)"
   if {!$al(INI,belltoll)} {
     proc ::bell args {}  ;# no bells
@@ -212,7 +229,7 @@ proc ini::ReadIniGeometry {nam val} {
   #   val - value of option
 
   namespace upvar ::alited al al
-  switch -glob $nam {
+  switch -glob -- $nam {
     Pan* {
       lassign [split $val x+] w h
       set ::alited::${nam}_wh "-w $w -h $h"
@@ -249,13 +266,16 @@ proc ini::ReadIniOptions {nam val} {
       return
     }
   }
-  switch -exact $nam {
+  switch -glob -- $nam {
     project {
       set al(prjfile) $val
       set al(prjname) [file tail [file rootname $val]]
     }
+    theme         {set al(THEME) $val}
     cs            {set al(INI,CS) $val}
     hue           {set al(INI,HUE) $val}
+    local         {set al(LOCAL) $val}
+    deffont       {set al(FONT) $val}
     smallfontsize {set al(FONTSIZE,small) $val}
     stdfontsize   {set al(FONTSIZE,std) $val}
     txtfont       {set al(FONT,txt) $val}
@@ -293,6 +313,8 @@ proc ini::ReadIniOptions {nam val} {
     gutterwidth   {set al(ED,gutterwidth) $val}
     guttershift   {set al(ED,guttershift) $val}
     cursorwidth   {set al(CURSORWIDTH) $val}
+    prjdefault    {set al(PRJDEFAULT) $val}
+    DEFAULT,*     {set al($nam) $val}
   }
 }
 #_______________________
@@ -303,7 +325,7 @@ proc ini::ReadIniTemplates {nam val} {
   #   val - value of option
 
   namespace upvar ::alited al al
-  switch -exact $nam {
+  switch -exact -- $nam {
     tpl {
       lappend al(TPL,list) $val
       # key bindings
@@ -329,7 +351,7 @@ proc ini::ReadIniKeys {nam val} {
   #   val - value of option
 
   namespace upvar ::alited al al
-  switch -exact $nam {
+  switch -exact -- $nam {
     key {lappend al(KEYS,bind) $val}
   }
 }
@@ -383,7 +405,7 @@ proc ini::ReadIniMisc {nam val} {
   #   val - value of option
 
   namespace upvar ::alited al al
-  switch -exact $nam {
+  switch -exact -- $nam {
     isfavor {set al(FAV,IsFavor) $val}
     chosencolor {set alited::al(chosencolor) $val}
     showinfo {set alited::al(TREE,showinfo) $val}
@@ -438,6 +460,8 @@ proc ini::ReadIniPrj {} {
   $al(curtab)<0 || $al(curtab)>=[llength $al(tabs)]} {
     set al(curtab) 0
   }
+  ::apave::setTextIndent $al(prjindent)
+  ::apave::textEOL $al(prjEOL)
 }
 #_______________________
 
@@ -448,7 +472,7 @@ proc ini::ReadPrjTabs {nam val} {
 
   namespace upvar ::alited al al
   if {[string trim $val] ne ""} {
-    switch -exact $nam {
+    switch -exact -- $nam {
       tab {lappend al(tabs) $val}
       recent {alited::file::InsertRecent $val end}
     }
@@ -473,7 +497,7 @@ proc ini::ReadPrjFavorites {nam val} {
   #   val - value of option
 
   namespace upvar ::alited al al
-  switch -exact $nam {
+  switch -exact -- $nam {
     current - visited {lappend al(FAV,$nam) $val}
     saved   {alited::favor_ls::GetIni $val}
   }
@@ -486,7 +510,7 @@ proc ini::ReadPrjMisc {nam val} {
   #   val - value of option
 
   namespace upvar ::alited al al
-  switch -exact $nam {
+  switch -exact -- $nam {
     datafind {
       catch {
         array set ::alited::find::data $val
@@ -528,8 +552,11 @@ proc ini::SaveIni {{newproject no}} {
   set chan [open $::alited::al(INI) w]
   puts $chan {[Options]}
   puts $chan "project=$al(prjfile)"
+  puts $chan "theme=$al(THEME)"
   puts $chan "cs=$al(INI,CS)"
   puts $chan "hue=$al(INI,HUE)"
+  puts $chan "local=$al(LOCAL)"
+  puts $chan "deffont=$al(FONT)"
   puts $chan "smallfontsize=$al(FONTSIZE,small)"
   puts $chan "stdfontsize=$al(FONTSIZE,std)"
   puts $chan "txtfont=$al(FONT,txt)"
@@ -570,6 +597,10 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "maxbackup=$al(MAXBACKUP)"
   puts $chan "gutterwidth=$al(ED,gutterwidth)"
   puts $chan "guttershift=$al(ED,guttershift)"
+  puts $chan "prjdefault=$al(PRJDEFAULT)"
+  foreach k [array names al DEFAULT,*] {
+    puts $chan "$k=$al($k)"
+  }
 
   puts $chan ""
   puts $chan {[Templates]}
@@ -607,7 +638,7 @@ proc ini::SaveIni {{newproject no}} {
   }
   puts $chan ""
   puts $chan {[Tkcon]}
-  foreach k [lsort [array names al tkcon,*]] {
+  foreach k [array names al tkcon,*] {
     puts $chan "[string range $k 6 end]=$al($k)"
   }
   # save the geometry options
@@ -806,8 +837,102 @@ proc ini::InitGUI {} {
   set Dark [::apave::obj csDarkEdit]
   if {![info exists al(ED,clrCOM)] || ![info exists al(ED,CclrCOM)] || \
   ![info exists al(ED,Dark)] || $al(ED,Dark) != $Dark} {
-    alited::pref::TclSyntax_Default
-    alited::pref::CSyntax_Default
+    alited::pref::TclSyntax_Default yes
+    alited::pref::CSyntax_Default yes
+  }
+  set clrnams [::hl_tcl::hl_colorNames]
+  set clrvals [list]
+  foreach clr $clrnams {
+    if {[info exists al(ED,$clr)]} {
+      lappend clrvals [set al(ED,$clr)]
+    }
+  }
+  if {[llength $clrvals]==[llength $clrnams]} {
+    ::hl_tcl::hl_colors {-AddTags} $Dark {*}$clrvals
+  }
+}
+#_______________________
+
+proc ini::InitTheme {} {
+  # Initializes alited's theme.
+  # Returns a list of theme name and label's border (for status bar).
+
+  namespace upvar ::alited al al
+  switch -glob -- $al(THEME) {
+    azure* - sun-valley* {
+      set i [string last - $al(THEME)]
+      set name [string range $al(THEME) 0 $i-1]
+      set type [string range $al(THEME) $i+1 end]
+      source [file join $::alited::LIBDIR theme $name $name.tcl]
+      set_theme $type
+      set theme {}
+      set lbd 0
+    }
+    forest* {
+      set i [string last - $al(THEME)]
+      set name [string range $al(THEME) 0 $i-1]
+      set type [string range $al(THEME) $i+1 end]
+      source [file join $::alited::LIBDIR theme $name $al(THEME).tcl]
+      set theme $al(THEME)
+      set lbd 0
+    }
+    awdark - awlight {
+      global auto_path
+      lappend auto_path [file join $alited::LIBDIR theme awthemes-10.4.0]
+      package require awthemes
+      package require ttk::theme::awdark
+      package require ttk::theme::awlight
+      set theme $al(THEME)
+      set lbd 1
+    }
+    default {
+      set theme $al(THEME)
+      set lbd 1
+    }
+  }
+  return [list $theme $lbd]
+}
+#_______________________
+
+proc ini::InitFonts {} {
+  # Loads main fonts for alited to use as default and mono.
+
+  namespace upvar ::alited al al
+#  if {[catch {
+#    package require extrafont
+#    set ttflist [glob [file join $alited::DATADIR fonts *]]
+#  }]} {
+#    set ttflist [list]
+#  }
+#  foreach ttf $ttflist {
+#    catch {extrafont::load $ttf}
+#puts "[incr ::-ALE-] ini::InitFonts $ttf"
+#  }
+#puts "[incr ::-ALE-] ini::InitFonts ....[font families]"
+
+  if {$al(FONT) ne {}} {
+    catch {
+      ::apave::obj basicDefFont [dict get $al(FONT) -family]
+    }
+    set smallfont $al(FONT)
+    catch {
+      set smallfont [dict set smallfont -size $al(FONTSIZE,small)]
+    }
+    foreach font {TkDefaultFont TkMenuFont TkHeadingFont TkCaptionFont} {
+      font configure $font {*}$al(FONT)
+    }
+    foreach font {TkSmallCaptionFont TkIconFont TkTooltipFont} {
+      font configure $font {*}$smallfont
+    }
+    ::baltip::configure -font $smallfont
+  }
+  ::apave::obj basicFontSize $al(FONTSIZE,std)
+  set gl [file join $alited::MSGSDIR $al(LOCAL)]
+  if {[catch {glob "$gl.msg"}]} {set al(LOCAL) en}
+  if {$al(LOCAL) ni {en {}}} {
+    # load localized messages
+    msgcat::mcload $alited::MSGSDIR
+    alited::msgcatMessages
   }
 }
 #_______________________
@@ -822,11 +947,12 @@ proc ini::_init {} {
 
   GetUserDirs
   ReadIni
+  InitFonts
 
-  ::apave::initWM -cursorwidth $al(CURSORWIDTH)
+  lassign [InitTheme] theme lbd
+  ::apave::initWM -cursorwidth $al(CURSORWIDTH) -theme $theme -labelborder $lbd
   ::apave::iconImage -init $al(INI,ICONS)
   set ::apave::MC_NS ::alited
-
   InitGUI
   CheckIni
   GetUserDirs
@@ -939,4 +1065,4 @@ proc ini::_init {} {
      al(FONT,defsmall) al(FONT,monosmall)
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

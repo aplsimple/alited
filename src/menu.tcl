@@ -147,7 +147,8 @@ proc menu::FillMenu {} {
   $m add command -label $alited::al(MC,FavLists) -command alited::favor::Lists
   $m add separator
   menu $m.tint -tearoff 0
-  $m add cascade -label [msgcat::mc Tint] -menu $m.tint
+  if {[::apave::obj apaveTheme]} {set state normal} {set state disabled}
+  $m add cascade -label [msgcat::mc Tint] -menu $m.tint -state $state
   foreach ti {50 45 40 35 30 25 20 15 10 5 0 -5 -10 -15 -20 -25 -30 -35 -40 -45 -50} {
     set ti1 [string range "   $ti" end-2 end]
     if {$ti<0} {
@@ -179,4 +180,4 @@ proc menu::FillMenu {} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

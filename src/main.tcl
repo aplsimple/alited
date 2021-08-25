@@ -48,23 +48,19 @@ proc main::GetText {TID {doshow no}} {
   # initial text and its scrollbar:
   set wtxt [$obPav Text]
   set wsbv [$obPav SbvText]
-  set doinit yes
   # get data of the current tab
   lassign [alited::bar::GetBarState] TIDold fileold wold1 wold2
   lassign [alited::bar::GetTabState $TID --pos] pos
-  set doreload [expr {[alited::bar::BAR $TID cget --reload] eq {DORELOAD}}]
+  set doreload no  ;# obsolete
+  set doinit yes
   if {$TIDold eq "-1"} {
     ;# first text to edit in original Text widget: create its scrollbar
     BindsForText $TID $wtxt
+    ::apave::logMessage "first $curfile"
   } elseif {[GetWTXT $TID] ne {}} {
     # edited text: get its widgets' data
     lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
-    if {$doreload} {
-      set al(HL,$wtxt) {} ;# to highlight the loaded text
-    } else {
-      set doinit no
-    }
-    alited::bar::BAR $TID configure --reload {}
+    set doinit no
   } else {
     # till now, not edited text: create its own Text/SbvText widgets
     append wtxt "_$TID"  ;# new text
@@ -100,6 +96,9 @@ proc main::GetText {TID {doshow no}} {
     # if the file isn't read yet, read it and initialize its highlighting
     alited::file::DisplayFile $TID $curfile $wtxt $doreload
     HighlightText $TID $curfile $wtxt
+  } elseif {[alited::file::ToBeHighlighted $wtxt]} {
+    HighlightText $TID $curfile $wtxt
+    if {$al(TREE,isunits)} alited::tree::RecreateTree
   }
   if {[winfo exists $wold1]} {
     # previous text: save its state
@@ -175,14 +174,22 @@ proc main::UpdateText {{wtxt {}} {curfile {}}} {
 #_______________________
 
 proc main::UpdateTextAndGutter {} {
-  # Redraws both a text and a gutter
+  # Redraws both a text and a gutter.
 
   UpdateGutter
   UpdateText
 }
+#_______________________
+
+proc main::UpdateAll {} {
+  # Updates tree, text and gutter.
+
+  alited::tree::RecreateTree
+  UpdateTextAndGutter
+  HighlightLine
+}
 
 # ________________________ focus _________________________ #
-
 
 proc main::FocusText {args} {
   # Sets a focus on a current text.
@@ -206,9 +213,15 @@ proc main::FocusText {args} {
       set itemID [alited::tree::CurrentItemByLine $pos]
     } else {
       # search the tree for a current file
-      foreach it [alited::tree::GetTree] {
-        if {[lindex $it 4 1] eq [alited::bar::FileName]} {
-          set itemID [lindex $it 2]
+      set fname [alited::bar::FileName]
+      set wtree [$obPav Tree]
+      while {1} {
+        incr iit
+        set ID [alited::tree::NewItemID $iit]
+        if {![$wtree exists $ID]} break
+        lassign [$wtree item $ID -values] -> tip isfile
+        if {$tip eq $fname} {
+          set itemID $ID
           break
         }
       }
@@ -217,7 +230,7 @@ proc main::FocusText {args} {
   # display a current item of the tree
   catch {
     if {$itemID ni [$wtree selection]} {$wtree selection set $itemID}
-    if {$itemID ne ""} {after 10 "catch {$wtree see $itemID}"}
+    after 10 alited::tree::SeeSelection
   }
   # focus on the text
   catch {focus -force $wtxt}
@@ -485,7 +498,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1 - - - - {pack -side top -fill x}}
     {.fraBot.panBM.fraTree.fra1.BuTswitch - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_gulls -command alited::tree::SwitchTree}}
     {.fraBot.panBM.fraTree.fra1.BuTUpdT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_retry -tip {$alited::al(MC,updtree)}
-    -command alited::tree::RecreateTree}}
+    -command alited::main::UpdateAll}}
     {.fraBot.panBM.fraTree.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
     {.fraBot.panBM.fraTree.fra1.BuTUp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_up -command {alited::tree::MoveItem up}}}
     {.fraBot.panBM.fraTree.fra1.BuTDown - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_down -command {alited::tree::MoveItem down}}}
@@ -523,7 +536,7 @@ proc main::_create {} {
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
     {#.fraTop.panTop.CanDiff - - - - {pack -side left -expand 0 -fill y} {-w 4}}
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both} {-background $::alited::FRABG}}
-    {.fraTop.panTop.frAText.Text - - - - {pack forget -side left -expand 1 -fill both} {-borderwidth 0 -w 2 -h 20 -gutter GutText -gutterwidth $::alited::al(ED,gutterwidth) -guttershift $::alited::al(ED,guttershift) $alited::al(TEXT,opts)}}
+    {.fraTop.panTop.frAText.Text - - - - {pack forget -side left -expand 1 -fill both} {-borderwidth 1 -w 2 -h 20 -gutter GutText -gutterwidth $::alited::al(ED,gutterwidth) -guttershift $::alited::al(ED,guttershift) $alited::al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
     {.fraTop.panTop.fraSbv.SbvText .fraTop.panTop.frAText.text L - - {pack -fill y}}
     {.fraTop.FraHead  - - - - {pack forget -side bottom -fill x} {-padding {4 4 4 4} -relief groove}}
@@ -540,10 +553,10 @@ proc main::_create {} {
     {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - {pack}}
     {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
-      {{$alited::al(MC,Row:)} -font {-slant italic -size $alited::al(FONTSIZE,small)}} 12
-      {{$alited::al(MC,Col:)} -font {-slant italic -size $alited::al(FONTSIZE,small)}} 5
-      {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor w -expand 1} 50
-      {"" -font {-slant italic -size $alited::al(FONTSIZE,small)} -anchor e} 18
+      {{$alited::al(MC,Row:)}} 12
+      {{$alited::al(MC,Col:)}} 5
+      {{} -anchor w -expand 1} 50
+      {{} -anchor e} 18
     }}}
   }
   UpdateProjectInfo
@@ -578,4 +591,4 @@ proc main::_run {} {
   return $ans
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

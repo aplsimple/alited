@@ -7,12 +7,12 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.2
+package provide alited 1.0.3
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
 
-# __________________________ Open existing app _________________________ #
+# __________________________ alited NS _________________________ #
 
 namespace eval alited {
 
@@ -20,6 +20,7 @@ namespace eval alited {
 
   variable al; array set al [list]
   set al(DEBUG) no        ;# debug mode
+  set al(LOG) {}          ;# log file in develop mode
   set al(WIN) .alwin      ;# main form's path
 
   proc raise_window {} {
@@ -38,9 +39,11 @@ namespace eval alited {
     }
   }
 
+  ## _ End of alited NS _ ##
+
 }
 
-## ________________________ Initialize GUI _________________________ ##
+# ________________________ Initialize GUI _________________________ #
 
 # this "if" satisfies the Ruff doc generator "package require":
 if {[package versions alited] eq {}} {
@@ -49,15 +52,25 @@ if {[package versions alited] eq {}} {
     wm attributes . -alpha 0.0
   }
   set ALITED_NOSEND no
-  if {[lindex $::argv 0] eq {NOSEND}} {
-    set ::argv [lreplace $::argv 0 0]
-    incr ::argc -1
-    set ALITED_NOSEND yes
+  foreach - {1 2 3} {  ;# for inverted order of these arguments
+    if {[lindex $::argv 0] eq {NOSEND}} {
+      set ::argv [lreplace $::argv 0 0]
+      incr ::argc -1
+      set ALITED_NOSEND yes
+    }
+    if {[string match LOG=* [lindex $::argv 0]]} {
+      set alited::al(LOG) [string range [lindex $::argv 0] 4 end]
+      set ::argv [lreplace $::argv 0 0]
+      incr ::argc -1
+    }
+    if {[lindex $::argv 0] eq {DEBUG}} {
+      set alited::al(DEBUG) yes
+      set ::argv [lreplace $::argv 0 0]
+      incr ::argc -1
+    }
   }
-  if {[lindex $::argv 0] eq {DEBUG}} {
-    set alited::al(DEBUG) yes
-    set ::argv [lreplace $::argv 0 0]
-    incr ::argc -1
+  if {$alited::al(DEBUG)} {
+    # at developing alited
   } elseif {$::tcl_platform(platform) eq {unix}} {
     if {!$ALITED_NOSEND} {
       set port 48784
@@ -119,9 +132,6 @@ namespace eval alited {
   variable PRJEXT .ale     ;# project file's extension
   variable EOL {@~}        ;# "end of line" for ini-files
 
-  # load localized messages
-  msgcat::mcload $MSGSDIR
-
   set al(prjname) {}      ;# current project's name
   set al(prjfile) {}      ;# current project's file name
   set al(prjroot) {}      ;# current project's directory name
@@ -137,6 +147,8 @@ namespace eval alited {
 }
 
 # _____________________________ Packages used __________________________ #
+
+  lappend auto_path $alited::LIBDIR
 
   source [file join $::alited::BALTDIR baltip.tcl]
   source [file join $::alited::BARSDIR bartabs.tcl]
@@ -216,7 +228,7 @@ namespace eval alited {
     lassign [FgFgBold] fg fgbold
     if {$lab eq ""} {set lab [$obPav Labstat3]}
     set font [[$obPav Labstat2] cget -font]
-    set fontB "$font -weight bold"
+    set fontB [list {*}$font -weight bold]
     set msg [string range [string map [list \n { } \r {}] $msg] 0 100]
     set slen [string length $msg]
     if {[catch {$lab configure -text $msg}] || !$slen} return
@@ -316,6 +328,7 @@ namespace eval alited {
   source [file join $SRCDIR ini.tcl]
   source [file join $SRCDIR img.tcl]
   source [file join $SRCDIR msgs.tcl]
+  msgcatMessages
   source [file join $SRCDIR main.tcl]
   source [file join $SRCDIR bar.tcl]
   source [file join $SRCDIR file.tcl]
@@ -340,18 +353,23 @@ namespace eval alited {
 # this "if" satisfies the Ruff doc generator "package require":
 if {[info exists ALITED_NOSEND]} {
   unset ALITED_NOSEND
-#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+  if {$alited::al(LOG) ne {}} {
+    ::apave::logName $alited::al(LOG)
+    ::apave::logMessage {start alited ------------}
+  }
+  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
-#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
     cd $alited::SRCDIR
+    if {$alited::al(LOG) ne {}} {set ::argv [linsert $::argv 0 LOG=$alited::al(LOG)]}
     if {$alited::al(DEBUG)} {set ::argv [linsert $::argv 0 DEBUG]}
     exec tclsh $alited::SCRIPT NOSEND {*}$::argv &
   }
   exit
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

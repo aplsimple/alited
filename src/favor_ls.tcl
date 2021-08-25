@@ -339,7 +339,7 @@ proc favor_ls::_create {} {
     {.labFav - - 1 1 {pack -side left -padx 4} {-t "Current list of favorites:"}}
     {.EntFav fra1.labFav L 1 1 {pack -side left -expand 1 -fill both} {-tvar ::alited::favor_ls::fav -tip {$alited::al(MC,favent1)}}}
     {fra1.fratex fra1.labFav T 1 2 {pack -side bottom}}
-    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 80 -tip "Favorites of the current list" -ro 1}}
+    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 60 -tip "Favorites of the current list" -ro 1}}
     {.sbvFav .TexFav L - - {pack -side left}}
     {fra2 fra1 T 1 2 {-st nswe} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Non-favorite files to be:"}}
@@ -380,4 +380,4 @@ proc favor_ls::_run {} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

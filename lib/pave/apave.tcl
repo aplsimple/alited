@@ -1064,9 +1064,18 @@ oo::class create ::apave::APave {
           set grey [lindex [my csGet] 8]
           set attrs "-foreground $grey $attrs"
         }
-        if {[set cmd [::apave::getOption -link {*}$attrs]] ne ""} {
+        lassign [::apave::parseOptions $attrs -link {} -style {} -font {}] \
+          cmd style font
+        if {$cmd ne {}} {
           set attrs "-linkcom {$cmd} $attrs"
           set attrs [::apave::removeOptions $attrs -link]
+        }
+        if {$style eq {} && $font eq {}} {
+          set attrs "-font {$::apave::FONTMAIN} $attrs"
+        } elseif {$style ne {}} {
+          # some themes stumble at ttk styles, so bring their attrs directly
+          set attrs [::apave::removeOptions $attrs -style]
+          set attrs "[ttk::style configure $style] $attrs"
         }
       }
       laB {set widget label}
@@ -1329,9 +1338,12 @@ oo::class create ::apave::APave {
       set it [my optionCascadeText $it]
       set $vname $it
     }
-    lassign [::apave::extractOptions mbopts -tip {} -tooltip {}] tip tip2
+    lassign [::apave::extractOptions mbopts -tip {} -tooltip {} -com {} -command {}] \
+      tip tip2 com com2
     if {$tip eq {}} {set tip $tip2}
-    ttk::menubutton $w -menu $w.m -text [set $vname] {*}$mbopts
+    if {$com eq {}} {set com $com2}
+    if {$com ne {}} {lappend args -command $com}
+    ttk::menubutton $w -menu $w.m -text [set $vname] -style TMenuButtonWest {*}$mbopts
     if {$tip ne {}} {
       set tip [my MC $tip]
       catch {::baltip tip $w $tip}
@@ -1462,8 +1474,8 @@ oo::class create ::apave::APave {
     proc [namespace current]::applyFont {font} "
       set $tvar \[font actual \$font\]"
     set font [set $tvar]
-    if {$font eq ""} {
-      catch {font create fontchoose {*}[font actual TkDefaultFont]}
+    if {$font eq {}} {
+      catch {font create fontchoose {*}$::apave::FONTMAIN}
     } else {
       catch {font delete fontchoose}
       catch {font create fontchoose {*}[font actual $font]}
@@ -1791,7 +1803,7 @@ oo::class create ::apave::APave {
     set tvar [::apave::getOption -tvar {*}$attrs1]
     set filetypes [::apave::getOption -filetypes {*}$attrs1]
     set takefocus "-takefocus [::apave::parseOptions $attrs1 -takefocus 0]"
-    if {$filetypes ne ""} {
+    if {$filetypes ne {}} {
       set attrs1 [::apave::removeOptions $attrs1 -filetypes -takefocus]
       lset args 6 $attrs1
       append addattrs2 " -filetypes {$filetypes}"
@@ -1812,7 +1824,11 @@ oo::class create ::apave::APave {
         set an tex
         set txtnam [my Transname $an $name]
       }
-      "clr*" { set chooser "colorChooser"
+      "clr*" {
+        set chooser "colorChooser"
+        lassign [::apave::extractOptions attrs1 -showcolor {}] showcolor
+        if {$showcolor eq {}} {set showcolor 1} ;# default is "show color label"
+        set showcolor [string is true -strict $showcolor]
         set wpar "-parent $w" ;# specific for color chooser (parent of $w)
       }
       default {
@@ -1890,10 +1906,38 @@ oo::class create ::apave::APave {
         incr lwlen
       }
     } else {
-      set lwidgets [linsert $lwidgets [expr {$i+1}] $entf $butf]
-      incr lwlen 2
+      if {$chooser eq {colorChooser} && $showcolor} {
+        set f0 [my Transname Lab $name]
+        set labf [list $f0 - - - - "pack -side right -in $inname -padx 2" \
+          "-t \{    \} -relief raised"]
+        lassign $entf f1 - - - - f2 f3
+        set com "[self] validateColorChoice $f0 $f1"
+        append f3 " -afteridle \"$com; bind \[string map \{.entclr .labclr\} %w\] <ButtonPress> \{eval \[string map \{.entclr .buTclr\} %w\] invoke\}\""
+        append f3 " -validate all -validatecommand \{$com\}"
+        set entf [list $f1 - - - - $f2 $f3]
+        set lwidgets [linsert $lwidgets [expr {$i+1}] $entf $butf $labf]
+        incr lwlen 3
+      } else {
+        set lwidgets [linsert $lwidgets [expr {$i+1}] $entf $butf]
+        incr lwlen 2
+      }
     }
     return $args
+  }
+
+  #########################################################################
+
+  method validateColorChoice {lab ent} {
+    # Displays a current color of color chooser's entry.
+    #   lab - label to display
+    #   ent - color chooser's entry
+
+    set ent [my ownWName $ent]
+    set lab [my [my ownWName $lab]]
+    set val [[my $ent] get]
+    set tvar [[my $ent] cget -textvariable]
+    catch {$lab configure -background $val}
+    return yes
   }
 
   #########################################################################
@@ -1979,10 +2023,12 @@ oo::class create ::apave::APave {
         } else {
           set expand ""
         }
+        set font " -font {[font actual TkSmallCaptionFont]}"
         # status prompt
-        set wid1 [list .[my ownWName [my Transname Lab ${name}_[incr j]]] - - - - "pack -side left -in $w.$name" "-t {[lindex $v1 0]} $dattr"]
+        set wid1 [list .[my ownWName [my Transname Lab ${name}_[incr j]]] - - - - "pack -side left -in $w.$name" "-t {[lindex $v1 0]} $font $dattr"]
         # status value
-        set wid2 [list .[my ownWName [my Transname Lab $name$j]] - - - - "pack -side left $expand -in $w.$name" "-style TLabelSTD -relief sunken -w $v2 -t { } $dattr"]
+        if {$::apave::_CS_(LABELBORDER)} {set relief sunken} {set relief flat}
+        set wid2 [list .[my ownWName [my Transname Lab $name$j]] - - - - "pack -side left $expand -in $w.$name" "-style TLabelSTD -relief $relief -w $v2 -t { } $font $dattr"]
       } elseif {$typ eq "toolBar"} {  ;# toolbar
         set packreq ""
         switch -nocase -glob -- $v1 {
@@ -2621,7 +2667,7 @@ oo::class create ::apave::APave {
     }
     $w configure -foreground $fg -background $bg
     if {[set font [$w cget -font]] eq ""} {
-      set font [font actual TkDefaultFont]
+      set font $::apave::FONTMAIN
     } else {
       catch {set font [font actual $font]}
     }
@@ -2709,16 +2755,18 @@ oo::class create ::apave::APave {
     switch -exact $K {
       Return - KP_Enter {
         # at pressing Enter key, indent (and possibly add the right brace)
+        # but shift/ctrl/alt+Enter acts by default - without indenting
+        if {$s} return
         set idx1 [$w index {insert linestart}]
         set idx2 [$w index {insert lineend}]
         set line [$w get $idx1 $idx2]
-        set nchars [expr {$s ? 0 : [my leadingSpaces $line]}]
+        set nchars [my leadingSpaces $line]
         set indent [string range $line 0 [expr {$nchars-1}]]
         set ch [string index $line end]
         set idx1 [$w index insert]
         set idx2 [$w index "$idx1 +1 line"]
         set st2 [$w get "$idx2 linestart" "$idx2 lineend"]
-        if {$indent ne {} || $s || $ch eq "\{" || $K eq {KP_Enter} || $st2 ne {}} {
+        if {$indent ne {} || $ch eq "\{" || $K eq {KP_Enter} || $st2 ne {}} {
           set st1 [$w get "$idx1" "$idx1 lineend"]
           if {[string index $st1 0] in [list \t { }]} {
             # if space(s) are at the right, remove them at cutting
@@ -2732,7 +2780,7 @@ oo::class create ::apave::APave {
               append indent $::apave::_AP_VARS(INDENT)
             }
             incr nchars $lindt
-          } elseif {!$s && $indent eq {} && $st2 ne {}} {
+          } elseif {$indent eq {} && $st2 ne {}} {
             # no indent of previous line, try to get it from the next
             if {[string trim $st2] eq "\}"} {
               # add indentation for the next brace
@@ -3000,6 +3048,19 @@ oo::class create ::apave::APave {
 
   #########################################################################
 
+  method colorWindow {win} {
+    # Initialize colors of a window.
+    #   win - window's path
+
+    if {[my apaveTheme]} {
+      my csSet [my csCurrent] $win -doit
+    } else {
+      my themeNonThemed $win
+    }
+  }
+
+  #########################################################################
+
   method Window {w inplists} {
 
     # Paves the window with widgets.
@@ -3247,9 +3308,9 @@ oo::class create ::apave::APave {
     #   args - attributes of window ("-name value" pairs)
 
     set shal [::apave::shadowAllowed 0]
-    if {[::apave::getOption -themed {*}$args] in {"" "0"} && \
+    if {[::apave::getOption -themed {*}$args] in {{} {0}} && \
     [my csCurrent] != [apave::cs_Non]} {
-      my csSet [my csCurrent] $win -doit
+      my colorWindow $win
     }
     ::apave::setAppIcon $win
     lassign  [my csGet] - - - bg
@@ -3271,7 +3332,7 @@ oo::class create ::apave::APave {
       set modal yes
     }
     set minsize [::apave::getOption -minsize {*}$args]
-    set args [::apave::removeOptions $args -centerme -ontop -modal -minsize]
+    set args [::apave::removeOptions $args -centerme -ontop -modal -minsize -themed]
     array set opt [list -focus "" -onclose "" -geometry "" -decor 1 \
       -root $root -resizable "" -variable "" -escape 1 {*}$args]
     lassign [split [wm geometry $root] x+] rw rh rx ry
@@ -3552,5 +3613,5 @@ oo::class create ::apave::APave {
 
 }
 # _____________________________ EOF _____________________________________ #
-#RUNF1: ../../src/alited.tcl DEBUG
+#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 0 9 12 "middle icons"

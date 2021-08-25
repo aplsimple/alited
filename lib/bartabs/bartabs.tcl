@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.4.6
+package provide bartabs 1.4.8
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -205,8 +205,13 @@ method Tab_Create {BID TID w text} {
     ttk::frame $wb -relief $relief -borderwidth $bd
     ttk::label $wb1 -relief flat -padding "$padx $pady $padx $pady" \
       {*}[my Tab_Font $BID]
-    ttk::button $wb2 -style ClButton$BID -image bts_ImgNone \
-      -command [list [self] $TID close] -takefocus 0
+    if {[my TtkTheme]} {
+      ttk::button $wb2 -style ClButton$BID -image bts_ImgNone \
+        -command [list [self] $TID close] -takefocus 0
+    } else {
+      button $wb2 -borderwidth 0 -highlightthickness 0 -image bts_ImgNone \
+        -command [list [self] $TID close] -takefocus 0
+    }
   } else {
     $wb configure -relief $relief -borderwidth $bd
     $wb1 configure -relief flat -padding "$padx $pady $padx $pady" \
@@ -452,7 +457,10 @@ method Tab_MarkAttrs {BID TID {withbg yes} {wb2 ""}} {
   }
   if {$imagemark ne ""} {
     set res " -image $imagemark -compound left"
-    if {$wb2 ne ""} {$wb2 configure {*}$res -style ClButton$BID}
+    if {$wb2 ne {}} {
+      $wb2 configure {*}$res
+      catch {$wb2 configure -style ClButton$BID}
+    }
   }
   return $res
 }
@@ -487,7 +495,7 @@ method Tab_MarkBar {BID {TID "-1"}} {
 
   lassign [my $BID cget -tabcurrent -fgsel -bgsel -select -FGMAIN -BGMAIN] \
     tID fgs bgs fewsel fgm bgm
-  if {$TID in {"" "-1"}} {set TID $tID}
+  if {$TID in {{} {-1}}} {set TID $tID}
   foreach tab [my $BID listTab] {
     lassign $tab tID text wb wb1 wb2
     if {[my Tab_Is $wb]} {
@@ -496,7 +504,7 @@ method Tab_MarkBar {BID {TID "-1"}} {
       if {$selected} {set font [my Tab_SelAttrs $font $fgs $bgs]}
       $wb1 configure {*}$font
       set attrs [my Tab_MarkAttrs $BID $tID [expr {!$selected}] $wb2]
-      if {$attrs ne "" && "-image" ni $attrs } {
+      if {$attrs ne {} && {-image} ni $attrs } {
         $wb1 configure {*}$attrs
       } elseif {!$selected} {
         $wb1 configure -foreground $fgm -background $bgm
@@ -741,7 +749,8 @@ method OnLeaveTab {wb1 wb2} {
   my Tab_MarkBars $BID
   if {"-image" ni [set attrs [my Tab_MarkAttrs $BID $TID 0 $wb2]] && \
   [my Tab_Iconic $BID]} {
-    $wb2 configure -image bts_ImgNone -style ClButton$BID
+    $wb2 configure -image bts_ImgNone
+    catch {$wb2 configure -style ClButton$BID}
   }
 }
 #_______________________
@@ -1208,8 +1217,12 @@ method InitColors {} {
 
   set fgmain [ttk::style configure . -foreground] ;# all of these are themed &
   set bgmain [ttk::style configure . -background] ;# must be updated each time
-  set fgdsbl [dict get [ttk::style map . -foreground] disabled]
-  set bgdsbl [dict get [ttk::style map . -background] disabled]
+  if {[catch {set fgdsbl [dict get [ttk::style map . -foreground] disabled]}]} {
+    set fgdsbl $fgmain
+  }
+  if {[catch {set bgdsbl [dict get [ttk::style map . -background] disabled]}]} {
+    set bgdsbl $bgmain
+  }
   if {[catch { \
     set bgo [dict get [ttk::style map . -background] active]
     set fgo [ttk::style map TButton -foreground]
@@ -1999,6 +2012,13 @@ method UnmarkTab {opt args} {
   }
   my Tab_MarkBars
 }
+#_______________________
+
+method TtkTheme {} {
+  # Checks if a standard ttk theme is used.
+
+  return [expr {[ttk::style theme use] in {clam alt classic default awdark awlight}}]
+}
 
 # ________________________ Public methods of Bars _______________________ #
 
@@ -2017,10 +2037,17 @@ method create {barCom {barOpts ""} {tab1 ""}} {
   lappend barOpts -WWID [list $wframe $wlarr $wrarr]
   my My [set BID [my Bar_Data $barOpts]]
   my $BID InitColors
-  ttk::button $wlarr -style ClButton$BID -image bts_ImgLeft \
-    -command [list [self] $BID scrollLeft] -takefocus 0
-  ttk::button $wrarr -style ClButton$BID -image bts_ImgRight \
-    -command [list [self] $BID scrollRight] -takefocus 0
+  if {[my TtkTheme]} {
+    ttk::button $wlarr -style ClButton$BID -image bts_ImgLeft \
+      -command [list [self] $BID scrollLeft] -takefocus 0
+    ttk::button $wrarr -style ClButton$BID -image bts_ImgRight \
+      -command [list [self] $BID scrollRight] -takefocus 0
+  } else {
+    button $wlarr -image bts_ImgLeft -borderwidth 0 -highlightthickness 0 \
+      -command [list [self] $BID scrollLeft] -takefocus 0
+    button $wrarr -image bts_ImgRight -borderwidth 0 -highlightthickness 0 \
+      -command [list [self] $BID scrollRight] -takefocus 0
+  }
   ttk::frame $wframe -relief flat
   pack $wlarr -side left -padx 0 -pady 0 -anchor e
   pack $wframe -after $wlarr -side left -padx 0 -pady 0 -fill x -expand 1
@@ -2179,6 +2206,6 @@ method moveSelTab {TID1 TID2} {
 } ;#  bartabs::Bars
 
 # ________________________________ EOF __________________________________ #
-#RUNF1: ../../src/alited.tcl DEBUG
+#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF0: test.tcl
 #RUNF1: ../tests/test2_pave.tcl
