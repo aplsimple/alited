@@ -92,7 +92,6 @@ proc ::tk::dialog::color:: {args} {
   # so we know how big it wants to be, then center the window in the
   # display (Motif style) and de-iconify it.
 
-  wm withdraw $w
   ::tk::PlaceWindow $w widget $data(-parent)
   wm title $w $data(-title)
   wm deiconify $w
@@ -219,6 +218,8 @@ proc ::tk::dialog::color::Config {dataName argList} {
 proc ::tk::dialog::color::BuildDialog {w} {
 
   upvar ::tk::dialog::color::[winfo name $w] data
+
+  wm withdraw $w
 
   # let the dialog's background = the app's
   $w configure -background [ttk::style lookup "." -background]

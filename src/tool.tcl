@@ -72,13 +72,14 @@ proc tool::InsertInText {str {pos1 {}} {pos2 {}} } {
 proc tool::ColorPicker {} {
   # Calls a color picker passing to it and getting from it a color.
 
+  namespace upvar ::alited al al
   lassign [alited::find::GetWordOfText 2] color pos1 pos2
   if {$color ne {}} {
-    set alited::al(chosencolor) $color
+    set al(chosencolor) $color
   }
-  set res [::apave::obj chooser colorChooser alited::al(chosencolor)]
+  set res [::apave::obj chooser colorChooser alited::al(chosencolor) -parent $al(WIN)]
   if {$res ne {}} {
-    set alited::al(chosencolor) $res
+    set al(chosencolor) $res
     InsertInText $res $pos1 $pos2
   }
 }
