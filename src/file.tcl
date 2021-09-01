@@ -108,8 +108,9 @@ proc file::OutwardChange {TID {docheck yes}} {
         }
       } else {
         # if the answer was "no save", let the text remains for further considerations
-        SaveFile $TID
-        set curtime [file mtime $fname]
+        alited::bar::BAR $TID configure --mtime {}
+        SaveFileAs $TID
+        if {[catch {set curtime [file mtime $fname]}]} {set curtime {}}
       }
     }
   }
@@ -312,48 +313,54 @@ proc file::NewFile {} {
 }
 #_______________________
 
-proc file::OpenFile {{fname ""} {reload no}} {
+proc file::OpenFile {{fnames ""} {reload no}} {
   # Handles "Open file" menu item.
-  #   fname - file name (if not set, asks for it
+  #   fnames - file name (if not set, asks for it
   #   reload - if yes, loads the file even if it has a "strange" extension
   # Returns the file's tab ID if it's loaded, or {} if not loaded.
 
   namespace upvar ::alited al al obPav obPav
   set al(filename) {}
   set chosen no
-  if {$fname eq {}} {
+  if {$fnames eq {}} {
     set chosen yes
-    set fname [$obPav chooser tk_getOpenFile alited::al(filename) \
+    set fnames [$obPav chooser tk_getOpenFile alited::al(filename) -multiple 1 \
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
+  } else {
+    set fnames [list $fnames]
   }
-  if {[file exists $fname]} {
-    set exts {tcl, tm, msg, c, h, cc, cpp, hpp, html, css, md, txt, ini}
-    set ext [string tolower [string trim [file extension $fname] .]]
-    if {!$reload && $ext ni [split [string map {{ } {}} $exts] ,]} {
-      set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
-      if {![alited::msg yesno warn $msg NO]} {
-        return {}
-      }
-    }
-    if {[set TID [alited::bar::FileTID $fname]] eq {}} {
-      # close  "no name" tab if it's the only one and not changed
-      set tabs [alited::bar::BAR listTab]
-      set tabm [alited::bar::BAR listFlag m]
-      if {[llength $tabs]==1 && [llength $tabm]==0} {
-        set tid [lindex $tabs 0 0]
-        if {[alited::bar::FileName $tid] eq $al(MC,nofile)} {
-          alited::bar::BAR $tid close
+  set TID {}
+  foreach fname $fnames {
+    if {[file exists $fname]} {
+      set exts {tcl, tm, msg, c, h, cc, cpp, hpp, html, css, md, txt, ini}
+      set ext [string tolower [string trim [file extension $fname] .]]
+      if {!$reload && $ext ni [split [string map {{ } {}} $exts] ,]} {
+        set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
+        if {![alited::msg yesno warn $msg NO]} {
+          break
         }
       }
-      # open new tab
-      set tab [alited::bar::UniqueListTab $fname]
-      set TID [alited::bar::InsertTab $tab [FileStat $fname]]
-      alited::file::AddRecent $fname
+      if {[set TID [alited::bar::FileTID $fname]] eq {}} {
+        # close  "no name" tab if it's the only one and not changed
+        set tabs [alited::bar::BAR listTab]
+        set tabm [alited::bar::BAR listFlag m]
+        if {[llength $tabs]==1 && [llength $tabm]==0} {
+          set tid [lindex $tabs 0 0]
+          if {[alited::bar::FileName $tid] eq $al(MC,nofile)} {
+            alited::bar::BAR $tid close
+          }
+        }
+        # open new tab
+        set tab [alited::bar::UniqueListTab $fname]
+        set TID [alited::bar::InsertTab $tab [FileStat $fname]]
+        alited::file::AddRecent $fname
+      }
     }
-    if {$TID ne [alited::bar::CurrentTabID]} {alited::bar::BAR $TID show}
-    return $TID
   }
-  return {}
+  if {$TID ne {} && $TID ne [alited::bar::CurrentTabID]} {
+    alited::bar::BAR $TID show
+  }
+  return $TID
 }
 #_______________________
 
@@ -368,9 +375,9 @@ proc file::SaveFileByName {TID fname} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1
     return 0
   }
-  alited::unit::BackupFile $TID
+  alited::edit::BackupFile $TID
   $wtxt edit modified no
-  alited::unit::Modified $TID $wtxt
+  alited::edit::Modified $TID $wtxt
   alited::main::HighlightText $TID $fname $wtxt
   OutwardChange $TID no
   RecreateFileTree
@@ -408,7 +415,8 @@ proc file::SaveFileAs {{TID ""}} {
     set alited::al(filename) {}
   }
   set fname [$obPav chooser tk_getSaveFile alited::al(filename) -title \
-    [msgcat::mc {Save as}] -initialdir [file dirname $fname] -parent $al(WIN)]
+    [msgcat::mc {Save as}] -initialdir [file dirname $fname] -parent $al(WIN) \
+    -defaultextension .tcl]
   if {$fname in [list {} $al(MC,nofile)]} {
     set res 0
   } elseif {[set res [SaveFileByName $TID $fname]]} {
@@ -452,7 +460,7 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
   if {$TID eq ""} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
   lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
-  if {$TID ni {"-1" ""} && $wtxt ne ""} {
+  if {$TID ni {{-1} {}} && $wtxt ne {}} {
     switch [IsSaved $TID] {
       0 { ;# "Cancel" chosen for a modified
         return 0
@@ -463,8 +471,8 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
     }
     if {$wtxt ne [$obPav Text]} {
       # [$obPav Text] was made by main::_open, let it be alive
-      catch {destroy $wtxt}
-      catch {destroy $wsbv}
+      destroy $wtxt
+      destroy $wsbv
     }
     if {$checknew} CheckForNew
     alited::ini::SaveCurrentIni $al(INI,save_onclose)

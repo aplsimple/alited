@@ -195,11 +195,11 @@ namespace eval ttk::theme::sun-valley-dark {
 
         ttk::style element create Button.button image \
             [list $images(button-rest) \
-                {selected disabled} $images(button-disabled) \
                 disabled $images(button-disabled) \
-                selected $images(button-rest) \
                 pressed $images(button-pressed) \
-                active $images(button-hover) \
+                focus $images(button-accent-pressed) \
+                {active !selected} $images(button-rest) \
+                {active selected} $images(button-accent-pressed) \
             ] -border 4 -sticky nsew
 
         # Toolbutton
@@ -207,10 +207,11 @@ namespace eval ttk::theme::sun-valley-dark {
 
         ttk::style element create Toolbutton.button image \
             [list $images(empty) \
-                {selected disabled} $images(button-disabled) \
-                selected $images(button-rest) \
+                disabled $images(button-disabled) \
                 pressed $images(button-pressed) \
-                active $images(button-hover) \
+                focus $images(button-accent-pressed) \
+                {active !selected} $images(button-rest) \
+                {active selected} $images(button-accent-pressed) \
             ] -border 4 -sticky nsew
 
         # Menubutton
@@ -220,7 +221,9 @@ namespace eval ttk::theme::sun-valley-dark {
             image [list $images(button-rest) \
                 disabled $images(button-disabled) \
                 pressed $images(button-pressed) \
-                active $images(button-hover) \
+                focus $images(button-accent-pressed) \
+                {active !selected} $images(button-rest) \
+                {active selected} $images(button-accent-pressed) \
             ] -border 4 -sticky nsew
 
         ttk::style element create Menubutton.indicator image $images(arrow-down) -width 28 -sticky {}
@@ -232,7 +235,9 @@ namespace eval ttk::theme::sun-valley-dark {
             image [list $images(button-rest) \
                 disabled $images(button-disabled) \
                 pressed $images(button-pressed) \
-                active $images(button-hover) \
+                focus $images(button-accent-pressed) \
+                {active !selected} $images(button-rest) \
+                {active selected} $images(button-accent-pressed) \
             ] -border 4 -sticky nsew
 
         ttk::style element create OptionMenu.indicator image $images(arrow-down) -width 28 -sticky {}
@@ -266,9 +271,11 @@ namespace eval ttk::theme::sun-valley-dark {
                 alternate $images(check-tri-rest) \
                 {pressed selected} $images(check-hover) \
                 {active selected} $images(check-hover) \
-                selected $images(check-rest) \
-                {pressed !selected} $images(check-unsel-pressed) \
-                active $images(check-unsel-hover) \
+                {active !selected} $images(check-unsel-rest) \
+                {!focus selected} $images(check-hover) \
+                {!focus !selected} $images(check-unsel-rest) \
+                {focus selected} $images(check-sel-hover) \
+                {focus !selected} $images(check-unsel-hover) \
             ] -width 26 -sticky w
 
         # Switch.TCheckbutton
@@ -278,9 +285,12 @@ namespace eval ttk::theme::sun-valley-dark {
                 disabled $images(switch-off-disabled) \
                 {pressed selected} $images(switch-on-pressed) \
                 {active selected} $images(switch-on-hover) \
-                selected $images(switch-on-rest) \
                 {pressed !selected} $images(switch-off-pressed) \
                 active $images(switch-off-hover) \
+                {focus selected} $images(switch-on-hover) \
+                {!focus selected} $images(switch-on) \
+                {focus !selected} $images(switch-off-hover) \
+                {!focus !selected} $images(switch-off) \
             ] -width 46 -sticky w
 
         # Toggle.TButton
@@ -309,25 +319,36 @@ namespace eval ttk::theme::sun-valley-dark {
         ttk::style configure TRadiobutton -padding 4
 
         ttk::style element create Radiobutton.indicator image \
-            [list $images(radio-unsel-rest) \
+            [list $images(radio-unsel) \
                 {selected disabled} $images(radio-disabled) \
                 disabled $images(radio-unsel-disabled) \
-                {pressed selected} $images(radio-pressed) \
-                {active selected} $images(radio-hover) \
-                selected $images(radio-rest) \
-                {pressed !selected} $images(radio-unsel-pressed) \
-                active $images(radio-unsel-hover) \
+                {pressed selected} $images(radio-sel-hover) \
+                {pressed !selected} $images(radio-unsel) \
+                {active !selected} $images(radio-unsel) \
+                {active selected} $images(radio-sel) \
+                {!focus selected} $images(radio-sel) \
+                {focus selected} $images(radio-sel-hover) \
+                {focus !selected} $images(radio-unsel-hover) \
             ] -width 26 -sticky w
 
         # Scrollbar
         ttk::style element create Horizontal.Scrollbar.trough image $images(scroll-hor-trough) -sticky ew -border 6
-        ttk::style element create Horizontal.Scrollbar.thumb image $images(scroll-hor-thumb) -sticky ew -border 3
+        ttk::style element create Horizontal.Scrollbar.thumb image [list $images(scroll-hor-thumb)  \
+                disabled  $images(scroll-hor-thumb) \
+                pressed $images(scroll-hor-hover) \
+                active $images(scroll-hor-hover) \
+            ] \-sticky ew -border 3
 
         ttk::style element create Horizontal.Scrollbar.rightarrow image $images(scroll-right) -sticky {} -width 12
         ttk::style element create Horizontal.Scrollbar.leftarrow image $images(scroll-left) -sticky {} -width 12
 
         ttk::style element create Vertical.Scrollbar.trough image $images(scroll-vert-trough) -sticky ns -border 6
-        ttk::style element create Vertical.Scrollbar.thumb image $images(scroll-vert-thumb) -sticky ns -border 3
+        ttk::style element create Vertical.Scrollbar.thumb image [list $images(scroll-vert-thumb) \
+                disabled  $images(scroll-vert-thumb) \
+                pressed $images(scroll-vert-hover) \
+                active $images(scroll-vert-hover) \
+            ] \
+        -sticky ns -border 3
 
         ttk::style element create Vertical.Scrollbar.uparrow image $images(scroll-up) -sticky {} -height 12
         ttk::style element create Vertical.Scrollbar.downarrow image $images(scroll-down) -sticky {} -height 12
@@ -398,12 +419,11 @@ namespace eval ttk::theme::sun-valley-dark {
             image [list $images(entry-rest) \
                 {readonly disabled} $images(button-disabled) \
                 {readonly pressed} $images(button-pressed) \
-                {readonly hover} $images(button-hover) \
-                readonly $images(button-rest) \
+                {readonly focus} $images(button-hover) \
                 invalid $images(entry-invalid) \
                 disabled $images(entry-disabled) \
-                focus $images(entry-focus) \
-                hover $images(entry-hover) \
+                {!readonly focus} $images(entry-focus) \
+                {!readonly hover} $images(entry-hover) \
             ] -border 5 -padding {8 8 28 8}
 
         ttk::style element create Combobox.arrow image $images(arrow-down) -width 35 -sticky {}
@@ -452,7 +472,8 @@ namespace eval ttk::theme::sun-valley-dark {
 
         ttk::style element create Notebook.tab \
             image [list $images(tab-rest) \
-                selected $images(tab-selected) \
+                {selected focus} $images(tab-sel-focus) \
+                {selected !focus} $images(tab-selected) \
                 active $images(tab-hover) \
             ] -border 13 -padding {16 14 16 6} -height 32
 
@@ -482,3 +503,4 @@ namespace eval ttk::theme::sun-valley-dark {
         ttk::style configure Sash -gripcount 0
     }
 }
+#RUNF1: ../../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

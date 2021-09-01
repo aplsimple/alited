@@ -136,6 +136,7 @@ proc favor_ls::Select {{isel ""}} {
   variable place
   set lbx [$obDl2 LbxFav]
   if {$isel eq {}} {set isel [$lbx curselection]}
+  if {$isel eq {} && [llength $favlist]} {set isel 0}
   if {$isel ne {}} {
     set fav [lindex $favlist $isel]
     set place [lindex $favpla $isel]
@@ -360,12 +361,12 @@ proc favor_ls::_create {} {
   GetCurrentList
   Restore_favlist
   bind $lbx <<ListboxSelect>> ::alited::favor_ls::Select
+  bind $lbx <FocusIn> ::alited::favor_ls::Select
   bind $lbx <Delete> ::alited::favor_ls::Delete
   bind $lbx <Double-Button-1> ::alited::favor_ls::Ok
   bind $lbx <Return> ::alited::favor_ls::Ok
-  if {[llength $favlist]} {set foc $lbx} {set foc [$obDl2 EntFav]}
   set res [$obDl2 showModal $win -resizable {0 0} \
-    -onclose ::alited::favor_ls::Cancel -focus $foc]
+    -onclose ::alited::favor_ls::Cancel -focus [$obDl2 EntFav]]
   return $res
 }
 #_______________________

@@ -23,8 +23,15 @@ proc favor::LastVisited {item header} {
   #   header - header of item
 
   namespace upvar ::alited al al obPav obPav
+  # check for "All of..." - don't save it
+  set allof [string range $al(MC,alloffile) 0 [string first \" $al(MC,alloffile)]]
+  if {[string first $allof $header]==0} return
+  # check for "Lines..." - don't save it
+  if {[regexp "^$al(MC,lines) \\d+-\\d+\$" $header]} return
+  # check for an empty item - don't save it
   set name [string trim [lindex $item 1]]
   if {[string trim $name] eq {}} return
+  # checks done, save this last visit
   set fname [alited::bar::FileName] 
   # search an old item
   set found no

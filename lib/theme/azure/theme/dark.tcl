@@ -32,7 +32,7 @@ namespace eval ttk::theme::azure-dark {
             Button.button -children {
                 Button.padding -children {
                     Button.label -side left -expand true
-                } 
+                }
             }
         }
 
@@ -40,7 +40,7 @@ namespace eval ttk::theme::azure-dark {
             Toolbutton.button -children {
                 Toolbutton.padding -children {
                     Toolbutton.label -side left -expand true
-                } 
+                }
             }
         }
 
@@ -66,7 +66,7 @@ namespace eval ttk::theme::azure-dark {
             AccentButton.button -children {
                 AccentButton.padding -children {
                     AccentButton.label -side left -expand true
-                } 
+                }
             }
         }
 
@@ -92,7 +92,7 @@ namespace eval ttk::theme::azure-dark {
             ToggleButton.button -children {
                 ToggleButton.padding -children {
                     ToggleButton.label -side left -expand true
-                } 
+                }
             }
         }
 
@@ -133,7 +133,7 @@ namespace eval ttk::theme::azure-dark {
                 Spinbox.padding -expand true -sticky nswe -children {
                     Spinbox.textarea -sticky nswe
                 }
-                
+
             }
             Spinbox.button -side right -sticky ns -children {
                 null -side right -children {
@@ -150,13 +150,13 @@ namespace eval ttk::theme::azure-dark {
         ttk::style layout Vertical.TSeparator {
             Vertical.separator -sticky nswe
         }
-        
+
         ttk::style layout Horizontal.Tick.TScale {
             Horizontal.TickScale.trough -sticky ew -children {
                 Horizontal.TickScale.slider -sticky w
             }
         }
-        
+
         ttk::style layout Vertical.Tick.TScale {
             Vertical.TickScale.trough -sticky ns -children {
                 Vertical.TickScale.slider -sticky n
@@ -165,7 +165,7 @@ namespace eval ttk::theme::azure-dark {
 
         ttk::style layout Card.TFrame {
             Card.field {
-                Card.padding -expand 1 
+                Card.padding -expand 1
             }
         }
 
@@ -203,9 +203,11 @@ namespace eval ttk::theme::azure-dark {
             [list $I(rect-basic) \
             	{selected disabled} $I(rect-basic) \
                 disabled $I(rect-basic) \
-                pressed $I(rect-basic) \
                 selected $I(rect-basic) \
-                active $I(button-hover) \
+                pressed $I(rect-pressed) \
+                focus $I(button-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(button-hover) \
             ] -border 4 -sticky ewns
 
         # Toolbutton
@@ -215,9 +217,11 @@ namespace eval ttk::theme::azure-dark {
             [list $I(empty) \
             	{selected disabled} $I(empty) \
                 disabled $I(empty) \
-                pressed $I(rect-basic) \
                 selected $I(rect-basic) \
-                active $I(rect-basic) \
+                pressed $I(rect-pressed) \
+                focus $I(button-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(button-hover) \
             ] -border 4 -sticky ewns
 
         # Menubutton
@@ -226,9 +230,11 @@ namespace eval ttk::theme::azure-dark {
         ttk::style element create Menubutton.button \
             image [list $I(rect-basic) \
                 disabled $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(button-hover) \
-            ] -border 4 -sticky ewns 
+                pressed $I(rect-pressed) \
+                focus $I(button-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(button-hover) \
+            ] -border 4 -sticky ewns
 
         ttk::style element create Menubutton.indicator \
             image [list $I(down) \
@@ -243,9 +249,11 @@ namespace eval ttk::theme::azure-dark {
         ttk::style element create OptionMenu.button \
             image [list $I(rect-basic) \
                 disabled $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(button-hover) \
-            ] -border 4 -sticky ewns 
+                pressed $I(rect-pressed) \
+                focus $I(button-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(button-hover) \
+            ] -border 4 -sticky ewns
 
         ttk::style element create OptionMenu.indicator \
             image [list $I(down) \
@@ -270,7 +278,7 @@ namespace eval ttk::theme::azure-dark {
         ttk::style configure TCheckbutton -padding 4
 
         ttk::style element create Checkbutton.indicator image \
-            [list $I(box-basic) \
+            [list $I(check-unsel) \
                 {alternate disabled} $I(check-tri-basic) \
                 {selected disabled} $I(check-basic) \
                 disabled $I(box-basic) \
@@ -278,10 +286,12 @@ namespace eval ttk::theme::azure-dark {
                 {active alternate} $I(check-tri-hover) \
                 alternate $I(check-tri-accent) \
                 {pressed selected} $I(check-hover) \
-                {active selected} $I(check-hover) \
-                selected $I(check-accent) \
                 {pressed !selected} $I(rect-hover) \
-                active $I(box-hover) \
+                {active selected} $I(check-accent) \
+                {active !selected} $I(check-unsel) \
+                {!focus selected} $I(check-accent) \
+                {focus selected} $I(check-sel-hover) \
+                {focus !selected} $I(check-unsel-hover) \
             ] -width 26 -sticky w
 
         # Switch
@@ -289,11 +299,14 @@ namespace eval ttk::theme::azure-dark {
             [list $I(off-basic) \
                 {selected disabled} $I(on-basic) \
                 disabled $I(off-basic) \
-                {pressed selected} $I(on-basic) \
-                {active selected} $I(on-basic) \
-                selected $I(on-accent) \
-                {pressed !selected} $I(off-basic) \
-                active $I(off-basic) \
+                {pressed selected} $I(on-accent) \
+                {active selected} $I(on-hover) \
+                {pressed !selected} $I(off-accent) \
+                active $I(off-hover) \
+                {focus selected} $I(on-hover) \
+                {!focus selected} $I(on-accent) \
+                {focus !selected} $I(off-hover) \
+                {!focus !selected} $I(off-accent) \
             ] -width 46 -sticky w
 
         # ToggleButton
@@ -314,7 +327,7 @@ namespace eval ttk::theme::azure-dark {
         ttk::style configure TRadiobutton -padding 4
 
         ttk::style element create Radiobutton.indicator image \
-            [list $I(outline-basic) \
+            [list $I(radio-unsel) \
                 {alternate disabled} $I(radio-tri-basic) \
                 {selected disabled} $I(radio-basic) \
                 disabled $I(outline-basic) \
@@ -322,29 +335,30 @@ namespace eval ttk::theme::azure-dark {
                 {active alternate} $I(radio-tri-hover) \
                 alternate $I(radio-tri-accent) \
                 {pressed selected} $I(radio-hover) \
-                {active selected} $I(radio-hover) \
-                selected $I(radio-accent) \
-                {pressed !selected} $I(circle-hover) \
-                active $I(outline-hover) \
+                {pressed !selected} $I(radio-unsel) \
+                {active !selected} $I(radio-unsel) \
+                {active selected} $I(radio-accent) \
+                {!focus selected} $I(radio-accent) \
+                {focus selected} $I(radio-sel-hover) \
+                {focus !selected} $I(radio-unsel-hover) \
             ] -width 26 -sticky w
 
         # Scrollbar
-        ttk::style element create Horizontal.Scrollbar.trough image $I(hor-basic) \
+        ttk::style element create Horizontal.Scrollbar.trough image $I(hor-accent) \
             -sticky ew
+        ttk::style element create Vertical.Scrollbar.trough image $I(vert-accent) \
+            -sticky ns
 
-        ttk::style element create Horizontal.Scrollbar.thumb \
-             image [list $I(hor-accent) \
-                disabled $I(hor-basic) \
+        ttk::style element create Horizontal.Scrollbar.thumb image \
+            [list $I(hor-basic) \
+                disabled $I(hor-accent) \
                 pressed $I(hor-hover) \
                 active $I(hor-hover) \
             ] -sticky ew
 
-        ttk::style element create Vertical.Scrollbar.trough image $I(vert-basic) \
-            -sticky ns
-
-        ttk::style element create Vertical.Scrollbar.thumb \
-            image [list $I(vert-accent) \
-                disabled  $I(vert-basic) \
+        ttk::style element create Vertical.Scrollbar.thumb image \
+            [list $I(vert-basic) \
+                disabled  $I(vert-accent) \
                 pressed $I(vert-hover) \
                 active $I(vert-hover) \
             ] -sticky ns
@@ -369,18 +383,18 @@ namespace eval ttk::theme::azure-dark {
                 pressed $I(circle-hover) \
                 active $I(circle-hover) \
             ] -sticky {}
-            
+
         # Tickscale
         ttk::style element create Horizontal.TickScale.trough image $I(scale-hor) \
             -border 5 -padding 0
-        
+
         ttk::style element create Horizontal.TickScale.slider \
             image [list $I(tick-hor-accent) \
                 disabled $I(tick-hor-basic) \
                 pressed $I(tick-hor-hover) \
                 active $I(tick-hor-hover) \
             ] -sticky {}
-            
+
         ttk::style element create Vertical.TickScale.trough image $I(scale-vert) \
             -border 5 -padding 0
 
@@ -420,7 +434,7 @@ namespace eval ttk::theme::azure-dark {
             {readonly hover} $colors(-selectbg) \
             {readonly focus} $colors(-selectbg) \
         ]
-            
+
         ttk::style map TCombobox -selectforeground [list \
             {!focus} $colors(-selectfg) \
             {readonly hover} $colors(-selectfg) \
@@ -433,7 +447,7 @@ namespace eval ttk::theme::azure-dark {
                 {readonly pressed} $I(rect-basic) \
                 {readonly focus hover} $I(button-hover) \
                 {readonly focus} $I(button-hover) \
-                {readonly hover} $I(button-hover) \
+                {readonly hover} $I(rect-basic) \
                 {focus hover} $I(box-accent) \
                 readonly $I(rect-basic) \
                 invalid $I(box-invalid) \
@@ -441,7 +455,7 @@ namespace eval ttk::theme::azure-dark {
                 focus $I(box-accent) \
                 hover $I(box-hover) \
             ] -border 5 -padding {8}
-            
+
         ttk::style element create Combobox.button \
             image [list $I(combo-button-basic) \
                  {!readonly focus} $I(combo-button-focus) \
@@ -474,7 +488,7 @@ namespace eval ttk::theme::azure-dark {
                 pressed $I(down-accent) \
                 active $I(down-accent) \
             ] -border 4 -width 15 -sticky e
-            
+
         ttk::style element create Spinbox.button \
             image [list $I(combo-button-basic) \
                  {!readonly focus} $I(combo-button-focus) \
@@ -490,7 +504,7 @@ namespace eval ttk::theme::azure-dark {
         ttk::style element create Horizontal.separator image $I(separator)
 
         ttk::style element create Vertical.separator image $I(separator)
-        
+
         # Card
         ttk::style element create Card.field image $I(card) \
             -border 10 -padding 4 -sticky news
@@ -498,14 +512,16 @@ namespace eval ttk::theme::azure-dark {
         # Labelframe
         ttk::style element create Labelframe.border image $I(card) \
             -border 5 -padding 4 -sticky news
-        
+
         # Notebook
         ttk::style element create Notebook.client \
             image $I(notebook) -border 5
 
         ttk::style element create Notebook.tab \
             image [list $I(tab-disabled) \
-                selected $I(tab-basic) \
+                {selected focus} $I(tab-sel-focus) \
+                {selected !focus} $I(tab-sel) \
+                {!selected !focus} $I(tab-unsel) \
                 active $I(tab-hover) \
             ] -border 5 -padding {14 4}
 
@@ -517,7 +533,7 @@ namespace eval ttk::theme::azure-dark {
             image [list $I(tree-basic) \
                 pressed $I(tree-pressed)
             ] -border 5 -padding 4 -sticky ewns
-        
+
         ttk::style element create Treeitem.indicator \
             image [list $I(right) \
                 user2 $I(empty) \
@@ -535,3 +551,4 @@ namespace eval ttk::theme::azure-dark {
         ttk::style configure Sash -gripcount 0
     }
 }
+#RUNF1: ../../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

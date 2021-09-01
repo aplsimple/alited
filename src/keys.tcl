@@ -181,10 +181,10 @@ proc keys::ReservedAdd {wtxt} {
   Add action save-as      [alited::pref::BindKey 1 - Control-S] {::alited::file::SaveFileAs; break}
   Add action e_menu       [alited::pref::BindKey 2 - F4] {alited::tool::e_menu}
   Add action run          [alited::pref::BindKey 3 - F5] {alited::tool::_run}
-  Add action indent       [alited::pref::BindKey 6 - Control-I] {::alited::unit::Indent; break}
-  Add action unindent     [alited::pref::BindKey 7 - Control-U] {::alited::unit::UnIndent; break}
-  Add action comment      [alited::pref::BindKey 8 - Control-bracketleft] {::alited::unit::Comment; break}
-  Add action uncomment    [alited::pref::BindKey 9 - Control-bracketright] {::alited::unit::UnComment; break}
+  Add action indent       [alited::pref::BindKey 6 - Control-I] {::alited::edit::Indent; break}
+  Add action unindent     [alited::pref::BindKey 7 - Control-U] {::alited::edit::UnIndent; break}
+  Add action comment      [alited::pref::BindKey 8 - Control-bracketleft] {::alited::edit::Comment; break}
+  Add action uncomment    [alited::pref::BindKey 9 - Control-bracketright] {::alited::edit::UnComment; break}
   Add action find-next    [alited::pref::BindKey 12 - F3] "$obPav findInText 1 $wtxt"
   Add action look-declaration    [alited::pref::BindKey 13 - Control-L] "::alited::find::SearchUnit $wtxt ; break"
   Add action look-word    [alited::pref::BindKey 14 - Control-Shift-L] "::alited::find::SearchWordInSession ; break"
@@ -193,6 +193,7 @@ proc keys::ReservedAdd {wtxt} {
   Add action goto-line    [alited::pref::BindKey 17 - Control-G] {alited::main::GotoLine; break}
   Add action insert-line  [alited::pref::BindKey 18 - Control-P] {alited::main::InsertLine; break}
   Add action autocomplete [alited::pref::BindKey 19 - Tab] {alited::complete::AutoCompleteCommand; break}
+  Add action goto-bracket [alited::pref::BindKey 20 - Alt-B] {alited::main::GotoBracket; break}
 }
 #_______________________
 

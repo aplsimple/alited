@@ -1,0 +1,16 @@
+ The tkcon options define the appearance of
+ tkcon's window.
+
+ You can set your own colors of tkcon.
+
+ Other options define the size of tkcon's window.
+
+ The geometry is set as "+X+Y" meaning x- and
+ y-coordinates of tkcon's window.
+
+ Set the "topmost" option to have tkcon's
+ window above all other windows on the desktop.
+
+ Use "Default" button to set default settings.
+
+ Use "Test" button to test your options of tkcon.

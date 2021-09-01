@@ -16,7 +16,7 @@ namespace eval project {
 
   # project options' names
   variable OPTS [list \
-    prjname prjroot prjdirign prjEOL prjindent prjredunit prjmultiline prjbeforerun]
+    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun]
 
   # list of projects
   variable prjlist [list]
@@ -71,7 +71,15 @@ proc project::SaveCurrFileList {title {isnew no}} {
     $al(MC,prjnochfl) file Cancel cancel]
   set msg [string map [list %n [string toupper $title]] $al(MC,prjgoing)]
   append msg \n\n $al(MC,prjsavfl)
-  set ans [$obDl3 misc ques $title $msg $asks file]
+  if {[info exists al(ANSWERED,SaveCurrFileList)]} {
+    set ans $al(ANSWERED,SaveCurrFileList)
+  } else {
+    set ans [$obDl3 misc ques $title $msg $asks file -ch {Don't ask anymore}]
+    if {[string last {10} $ans]>-1} {
+      set ans [string map {10 {}} $ans]
+      set al(ANSWERED,SaveCurrFileList) $ans
+    }
+  }
   switch $ans {
     "delete" {
       set al(tablist) [list]
@@ -340,7 +348,7 @@ proc project::ValidProject {} {
     }
     file mkdir $al(prjroot)
   }
-  if {$al(prjindent)<2 || $al(prjindent)>8} {set al(prjindent) 2}
+  if {$al(prjindent)<0 || $al(prjindent)>8} {set al(prjindent) 2}
   if {$al(prjredunit)<10 || $al(prjredunit)>100} {set al(prjredunit) 20}
   set msg [string map [list %d $al(prjroot)] $al(checkroot)]
   alited::Message2 $msg 5
@@ -410,6 +418,7 @@ proc project::Select {{item ""}} {
       $tree selection set $item
     }
     $tree see $item
+    $tree focus $item
   }
 }
 
@@ -655,16 +664,17 @@ proc project::Tab2 {} {
     {v_ - - 1 10}
     {fra2 v_ T 1 2 {-st nsew -cw 1}}
     {.labEOL - - 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
-    {.cbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 5 -state readonly}}
+    {.cbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
     {.spxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 9 -from 2 -to 8 -justify center}}
+    {.chbIndAuto .spxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjindentAuto) -t "Auto detection"}}
     {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Unit lines per 1 red bar:"}}
     {.spxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 9 -from 10 -to 100 -justify center}}
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
-    {.chbMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
+    {.swiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labFlist .labMult T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
     {fraFlist .labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
-    {.LbxFlist - - - - {pack -side left -fill both -expand 1}}
+    {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0}}
     {.sbvFlist .lbxFlist L - - {pack -side left}}
   }
 }

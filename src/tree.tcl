@@ -256,7 +256,7 @@ proc tree::UnitTitle {title l1 l2} {
   #   l1 - first line of the unit
   #   l2 - latst line of the unit
 
-  if {$title eq {}} {set title "[msgcat::mc Lines] $l1-$l2"}
+  if {$title eq {}} {set title "$alited::al(MC,lines) $l1-$l2"}
   return $title
 }
 #_______________________

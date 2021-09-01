@@ -108,7 +108,7 @@ proc tool::DatePicker {} {
 proc tool::Loupe {} {
   # Calls a screen loupe.
 
-  exec tclsh [file join $::alited::PAVEDIR pickers color aloupe aloupe.tcl] &
+  alited::Run [file join $::alited::PAVEDIR pickers color aloupe aloupe.tcl]
 }
 #_______________________
 
@@ -122,7 +122,7 @@ proc tool::tkcon {} {
   foreach opt {rows cols fsize geo topmost} {
     lappend opts -apl-$opt $al(tkcon,$opt)
   }
-  exec tclsh [file join $::alited::LIBDIR util tkcon.tcl] {*}$opts &
+  alited::Run [file join $::alited::LIBDIR util tkcon.tcl] {*}$opts
 }
 #_______________________
 
@@ -369,8 +369,8 @@ proc tool::e_menu {args} {
   if {{m=menu.mnu} in $args && {ex=d} in $args && $al(BACKUP) ne {}} {
     # Differences of a file & its backup: get the backup's name
     set TID [alited::bar::CurrentTabID]
-    lassign [alited::unit::BackupDirFileNames $TID] dir fname fname2
-    #set fname2 [alited::unit::BackupFileName $fname2 0]
+    lassign [alited::edit::BackupDirFileNames $TID] dir fname fname2
+    #set fname2 [alited::edit::BackupFileName $fname2 0]
     append args " \"BF=$fname2\""  ;# version before 1st change
   }
   if {$alited::al(EM,exec)} {
@@ -386,7 +386,7 @@ proc tool::e_menu1 {opts} {
   #   opts - options of e_menu
   # The e_menu is run as an external application.
 
-  exec tclsh [file join $::e_menu_dir e_menu.tcl] {*}[EM_Options $opts] c=$alited::al(EM,CS) &
+  alited::Run [file join $::e_menu_dir e_menu.tcl] {*}[EM_Options $opts] c=$alited::al(EM,CS)
 }
 #_______________________
 

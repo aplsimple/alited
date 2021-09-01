@@ -297,11 +297,11 @@ proc bar::OnTabSelection {TID} {
   alited::main::ShowText
   alited::find::ClearTags
   alited::ini::SaveCurrentIni $al(INI,save_onselect)
-  alited::unit::CheckSaveIcons [alited::file::IsModified $TID]
-  alited::unit::CheckUndoRedoIcons [alited::main::CurrentWTXT] $TID
+  alited::edit::CheckSaveIcons [alited::file::IsModified $TID]
+  alited::edit::CheckUndoRedoIcons [alited::main::CurrentWTXT] $TID
   if {[alited::file::IsTcl [FileName]]} {set indst normal} {set indst disabled}
   $al(MENUEDIT) entryconfigure 5 -state $indst
-  if {[alited::unit::CommentChar] ne {}} {set cmnst normal} {set cmnst disabled}
+  if {[alited::edit::CommentChar] ne {}} {set cmnst normal} {set cmnst disabled}
   $al(MENUEDIT) entryconfigure 7 -state $cmnst
   $al(MENUEDIT) entryconfigure 8 -state $cmnst
   set wtxt [alited::main::GetWTXT $TID]
@@ -309,6 +309,9 @@ proc bar::OnTabSelection {TID} {
   CurrentControlTab [FileName $TID]
   alited::main::HighlightLine
   alited::tree::SeeSelection
+  set indent [alited::main::CalcIndentation]
+  ::apave::setTextIndent $indent
+  if {$al(prjindentAuto)} {alited::main::UpdateProjectInfo $indent}
 }
 
 # ________________________ Handle Ctrl+Tab keys ______________________ #

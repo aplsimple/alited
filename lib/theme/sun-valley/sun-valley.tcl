@@ -14,7 +14,7 @@ proc set_theme {mode} {
 		    -bg             "#1c1c1c"
 		    -disabledfg     "#595959"
 		    -selectfg       "#ffffff"
-		    -selectbg       "#2f60d8"
+		    -selectbg       "#196ebf"
 		}
 
         ttk::style configure . \
@@ -55,7 +55,7 @@ proc set_theme {mode} {
 		    -bg             "#fafafa"
 		    -disabledfg     "#a0a0a0"
 		    -selectfg       "#ffffff"
-		    -selectbg       "#2f60d8"
+		    -selectbg       "#196ebf"
 		}
 
         ttk::style configure . \

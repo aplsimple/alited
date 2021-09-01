@@ -110,6 +110,15 @@ namespace eval ttk::theme::forest-dark {
             }
         }
 
+        ttk::style layout Switch.TCheckbutton {
+            Switch.button -children {
+                Switch.padding -children {
+                    Switch.indicator -side left
+                    Switch.label -side right -expand 1
+                }
+            }
+        }
+
         ttk::style layout Switch {
             Switch.button -children {
                 Switch.padding -children {
@@ -232,8 +241,10 @@ namespace eval ttk::theme::forest-dark {
                 {selected disabled} $I(rect-basic) \
                 disabled $I(rect-basic) \
                 selected $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(rect-hover) \
+                pressed $I(rect-pressed) \
+                focus $I(rect-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(rect-hover) \
             ] -border 4 -sticky nsew
 
         # Toolbutton
@@ -244,8 +255,10 @@ namespace eval ttk::theme::forest-dark {
                 {selected disabled} $I(empty) \
                 disabled $I(empty) \
                 selected $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(rect-basic) \
+                pressed $I(rect-pressed) \
+                focus $I(rect-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(rect-hover) \
             ] -border 4 -sticky nsew
 
         # Menubutton
@@ -254,8 +267,10 @@ namespace eval ttk::theme::forest-dark {
         ttk::style element create Menubutton.button image \
             [list $I(rect-basic) \
                 disabled $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(rect-hover) \
+                pressed $I(rect-pressed) \
+                focus $I(rect-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(rect-hover) \
             ] -border 4 -sticky nsew
 
         ttk::style element create Menubutton.indicator image \
@@ -271,8 +286,10 @@ namespace eval ttk::theme::forest-dark {
         ttk::style element create OptionMenu.button image \
             [list $I(rect-basic) \
                 disabled $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(rect-hover) \
+                pressed $I(rect-pressed) \
+                focus $I(rect-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(rect-hover) \
             ] -border 4 -sticky nsew
 
         ttk::style element create OptionMenu.indicator image \
@@ -306,10 +323,12 @@ namespace eval ttk::theme::forest-dark {
                 {active alternate} $I(check-tri-hover) \
                 alternate $I(check-tri-accent) \
                 {pressed selected} $I(check-hover) \
-                {active selected} $I(check-hover) \
-                selected $I(check-accent) \
                 {pressed !selected} $I(check-unsel-pressed) \
-                active $I(check-unsel-hover) \
+                {active selected} $I(check-accent) \
+                {active !selected} $I(check-unsel-accent) \
+                {!focus selected} $I(check-accent) \
+                {focus selected} $I(check-sel-hover) \
+                {focus !selected} $I(check-unsel-hover) \
             ] -width 26 -sticky w
 
         # Switch
@@ -319,13 +338,21 @@ namespace eval ttk::theme::forest-dark {
                 disabled $I(off-basic) \
                 {pressed selected} $I(on-accent) \
                 {active selected} $I(on-hover) \
-                selected $I(on-accent) \
                 {pressed !selected} $I(off-accent) \
                 active $I(off-hover) \
+                {focus selected} $I(on-hover) \
+                {!focus selected} $I(on-accent) \
+                {focus !selected} $I(off-hover) \
+                {!focus !selected} $I(off-accent) \
             ] -width 46 -sticky w
 
         # ToggleButton
-        ttk::style configure ToggleButton -padding {8 4 8 4} -width -10 -anchor center
+        ttk::style configure ToggleButton -padding {8 4 8 4} -width -10 -anchor center -foregound $colors(-fg)
+
+        ttk::style map ToggleButton -foreground \
+            [list {pressed selected} $colors(-fg) \
+                {pressed !selected} #ffffff \
+                selected #ffffff]
 
         ttk::style element create ToggleButton.button image \
             [list $I(rect-basic) \
@@ -335,7 +362,9 @@ namespace eval ttk::theme::forest-dark {
                 {active selected} $I(rect-accent-hover) \
                 selected $I(rect-accent) \
                 {pressed !selected} $I(rect-accent) \
-                active $I(rect-hover) \
+                focus $I(rect-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(rect-hover) \
             ] -border 4 -sticky nsew
 
         # Radiobutton
@@ -350,29 +379,30 @@ namespace eval ttk::theme::forest-dark {
                 {active alternate} $I(radio-tri-hover) \
                 alternate $I(radio-tri-accent) \
                 {pressed selected} $I(radio-hover) \
-                {active selected} $I(radio-hover) \
-                selected $I(radio-accent) \
                 {pressed !selected} $I(radio-unsel-pressed) \
-                active $I(radio-unsel-hover) \
+                {active !selected} $I(radio-unsel-accent) \
+                {active selected} $I(radio-accent) \
+                {!focus selected} $I(radio-accent) \
+                {focus selected} $I(radio-sel-hover) \
+                {focus !selected} $I(radio-unsel-hover) \
             ] -width 26 -sticky w
 
         # Scrollbar
-        ttk::style element create Horizontal.Scrollbar.trough image $I(hor-basic) \
+        ttk::style element create Horizontal.Scrollbar.trough image $I(hor-accent) \
             -sticky ew
+        ttk::style element create Vertical.Scrollbar.trough image $I(vert-accent) \
+            -sticky ns
 
         ttk::style element create Horizontal.Scrollbar.thumb image \
-            [list $I(hor-accent) \
-                disabled $I(hor-basic) \
+            [list $I(hor-basic) \
+                disabled $I(hor-accent) \
                 pressed $I(hor-hover) \
                 active $I(hor-hover) \
             ] -sticky ew
 
-        ttk::style element create Vertical.Scrollbar.trough image $I(vert-basic) \
-            -sticky ns
-
         ttk::style element create Vertical.Scrollbar.thumb image \
-            [list $I(vert-accent) \
-                disabled  $I(vert-basic) \
+            [list $I(vert-basic) \
+                disabled  $I(vert-accent) \
                 pressed $I(vert-hover) \
                 active $I(vert-hover) \
             ] -sticky ns
@@ -438,11 +468,10 @@ namespace eval ttk::theme::forest-dark {
             [list $I(border-basic) \
                 {readonly disabled} $I(rect-basic) \
                 {readonly pressed} $I(rect-basic) \
-                {readonly focus hover} $I(rect-hover) \
+                {readonly !focus} $I(rect-basic) \
                 {readonly focus} $I(rect-hover) \
-                {readonly hover} $I(rect-hover) \
-                {focus hover} $I(border-accent) \
-                readonly $I(rect-basic) \
+                {readonly !focus hover} $I(rect-basic) \
+                {readonly focus hover} $I(rect-hover) \
                 invalid $I(border-invalid) \
                 disabled $I(border-basic) \
                 focus $I(border-accent) \
@@ -503,8 +532,8 @@ namespace eval ttk::theme::forest-dark {
 
         ttk::style element create Notebook.tab image \
             [list $I(tab-basic) \
-                selected $I(tab-accent) \
-                active $I(tab-hover) \
+                {!focus selected} $I(tab-accent) \
+                {focus selected} $I(tab-hover) \
             ] -border 5 -padding {14 4}
 
         # Treeview
@@ -533,3 +562,4 @@ namespace eval ttk::theme::forest-dark {
         #ttk::style map TPanedwindow -background [list hover $colors(-bg)]
     }
 }
+#RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

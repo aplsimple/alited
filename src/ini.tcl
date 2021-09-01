@@ -11,9 +11,6 @@
 
 namespace eval ::alited {
   set al(MAXFILES) 2000     ;# maximum size of file tree (max size of project)
-  set al(ED,multiline) 0    ;# "true" only for projects of small modules
-  set al(ED,EOL) {}         ;# end of lines for texts
-  set al(ED,indent) 2       ;# indentation for texts
   set al(ED,sp1) 1          ;# -spacing1 option of texts
   set al(ED,sp2) 0          ;# -spacing2 option of texts
   set al(ED,sp3) 0          ;# -spacing3 option of texts
@@ -28,7 +25,7 @@ namespace eval ::alited {
   set al(TREE,showinfo) 0   ;# flag "show info on a file in tips"
   set al(FONT) {}           ;# default font
   set al(FONTSIZE,small) 10 ;# small font size
-  set al(FONTSIZE,std) 11   ;# standard font size
+  set al(FONTSIZE,std) 12   ;# middle font size
   set al(FONT,txt) {}       ;# font for edited texts
   set al(THEME) clam        ;# ttk theme
   set al(INI,CS) -1         ;# color scheme
@@ -100,6 +97,7 @@ namespace eval ::alited {
   set al(EM,geometry) 240x1+10+10
   set al(EM,save) {}
   set al(EM,PD=) ~/PG/e_menu_PD.txt
+  set al(EM,Tcl) {}
   set al(EM,h=) ~/DOC/www.tcl.tk/man/tcl8.6
   set al(EM,tt=) {xterm -fs 12 -geometry 90x30+1+1}
   set al(EM,menu) menu.mnu
@@ -140,12 +138,19 @@ namespace eval ::alited {
   set al(DEFAULT,prjdirign) {.git .bak}
   set al(DEFAULT,prjEOL) {}
   set al(DEFAULT,prjindent) 4
+  set al(DEFAULT,prjindentAuto) 0
   set al(DEFAULT,prjredunit) 20
   set al(DEFAULT,prjmultiline) 0
 
   # use localized messages
   set al(LOCAL) {}
   catch {set al(LOCAL) [string range [::msgcat::mclocale] 0 1]}
+
+  # data for "Search by list"
+  set al(listSBL) {}
+  set al(matchSBL) {}
+  set al(wordonlySBL) 0
+  set al(caseSBL) 1
 }
 
 # ________________________ Variables _________________________ #
@@ -202,11 +207,11 @@ proc ini::ReadIni {{projectfile ""}} {
     }
   }
   catch {close $chan}
-  # some options may be active outside of any project; they are set by default values
   if {$projectfile eq {} && $al(prjfile) eq {}} {
-    set al(prjmultiline) $al(ED,multiline)
-    set al(prjindent) $al(ED,indent)
-    set al(prjEOL) $al(ED,EOL)
+    # some options may be active outside of any project; fill them with defaults
+    foreach opt {multiline indent indentAuto EOL} {
+      set al(prj$opt) $al(DEFAULT,prj$opt)
+    }
   } else {
     if {$projectfile eq {}} {
       set projectfile $al(prjfile)
@@ -279,9 +284,6 @@ proc ini::ReadIniOptions {nam val} {
     smallfontsize {set al(FONTSIZE,small) $val}
     stdfontsize   {set al(FONTSIZE,std) $val}
     txtfont       {set al(FONT,txt) $val}
-    multiline     {set al(ED,multiline) $val}
-    indent        {set al(ED,indent) $val}
-    EOL           {set al(ED,EOL) $val}
     maxfind       {set al(INI,maxfind) $val}
     confirmexit   {set al(INI,confirmexit) $val}
     belltoll      {set al(INI,belltoll) $val}
@@ -371,6 +373,7 @@ proc ini::ReadIniEM {nam val emiName} {
     emgeometry {set al(EM,geometry) $val}
     emsave     {set al(EM,save) $val}
     emPD       {set al(EM,PD=) $val}
+    emTcl      {set al(EM,Tcl) $val}
     emh        {set al(EM,h=) $val}
     emtt       {set al(EM,tt=) $val}
     emmenu     {set al(EM,menu) $val}
@@ -409,6 +412,7 @@ proc ini::ReadIniMisc {nam val} {
     isfavor {set al(FAV,IsFavor) $val}
     chosencolor {set alited::al(chosencolor) $val}
     showinfo {set alited::al(TREE,showinfo) $val}
+    listSBL {set alited::al(listSBL) $val}
   }
 }
 
@@ -460,7 +464,6 @@ proc ini::ReadIniPrj {} {
   $al(curtab)<0 || $al(curtab)>=[llength $al(tabs)]} {
     set al(curtab) 0
   }
-  ::apave::setTextIndent $al(prjindent)
   ::apave::textEOL $al(prjEOL)
 }
 #_______________________
@@ -560,9 +563,6 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "smallfontsize=$al(FONTSIZE,small)"
   puts $chan "stdfontsize=$al(FONTSIZE,std)"
   puts $chan "txtfont=$al(FONT,txt)"
-  puts $chan "multiline=$al(ED,multiline)"
-  puts $chan "indent=$al(ED,indent)"
-  puts $chan "EOL=$al(ED,EOL)"
   puts $chan "maxfind=$al(INI,maxfind)"
   puts $chan "confirmexit=$al(INI,confirmexit)"
   puts $chan "belltoll=$al(INI,belltoll)"
@@ -621,6 +621,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan {[EM]}
   puts $chan "emsave=$al(EM,save)"
   puts $chan "emPD=$al(EM,PD=)"
+  puts $chan "emTcl=$al(EM,Tcl)"
   puts $chan "emh=$al(EM,h=)"
   puts $chan "emtt=$al(EM,tt=)"
   puts $chan "emmenu=$al(EM,menu)"
@@ -667,8 +668,10 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan ""
   puts $chan {[Misc]}
   puts $chan "isfavor=$al(FAV,IsFavor)"
-  puts $chan "chosencolor=$alited::al(chosencolor)"
-  puts $chan "showinfo=$alited::al(TREE,showinfo)"
+  puts $chan "chosencolor=$al(chosencolor)"
+  puts $chan "showinfo=$al(TREE,showinfo)"
+  set al(listSBL) [string map [list \n $alited::EOL] $al(listSBL)]
+  puts $chan "listSBL=$al(listSBL)"
   close $chan
   SaveIniPrj $newproject
 }
@@ -858,22 +861,24 @@ proc ini::InitTheme {} {
   # Returns a list of theme name and label's border (for status bar).
 
   namespace upvar ::alited al al
+  set theme {}
   switch -glob -- $al(THEME) {
     azure* - sun-valley* {
       set i [string last - $al(THEME)]
       set name [string range $al(THEME) 0 $i-1]
       set type [string range $al(THEME) $i+1 end]
-      source [file join $::alited::LIBDIR theme $name $name.tcl]
-      set_theme $type
-      set theme {}
+      catch {source [file join $::alited::LIBDIR theme $name $name.tcl]}
+      catch {set_theme $type}
       set lbd 0
     }
     forest* {
       set i [string last - $al(THEME)]
       set name [string range $al(THEME) 0 $i-1]
       set type [string range $al(THEME) $i+1 end]
-      source [file join $::alited::LIBDIR theme $name $al(THEME).tcl]
-      set theme $al(THEME)
+      catch {
+        source [file join $::alited::LIBDIR theme $name $al(THEME).tcl]
+        set theme $al(THEME)
+      }
       set lbd 0
     }
     awdark - awlight {

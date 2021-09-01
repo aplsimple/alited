@@ -1,8 +1,5 @@
- Try and use buttons under the list to add/change/delete a project.
-
- Try and enter a short name of project, avoiding special characters.
-
- Try and choose a root directory of the project. Supposedly, it should
+ For a new project, enter its name avoiding special characters.
+ Then choose a root directory of the project. Supposedly, it should
  contain all files and subdirectories of the project.
 
  If the project directory contains some subdirectories which should be
@@ -13,11 +10,13 @@
 
  The "Options" tab contains other details of the project:
 
-   - "End of line" - if this field is empty, the EOL for texts would
-     correspond your platform; but if you have some projects with
-     other EOLs, set the field accordingly;
+   - "End of line" - if this field is empty, the EOLs for saved files
+     would correspond your platform; but if you have some projects
+     with other EOLs, set the field accordingly;
 
    - "Indentation" is a number of spaces to indent your texts' lines;
+     if "Auto detection" is on, a text indentation is calculated from
+     its first indented line; for a new file it's set by "Indentation"
 
    - "Unit lines per 1 red bar" is a number of lines to mark a unit
      (proc/method) with 1 red bar in its icon; a fully red icon is bad!
@@ -26,5 +25,6 @@
      granular (with small source files) projects the ON value could be
      a good choice as it can slow your work; use it on your own risk.
 
+ The buttons under the list are used to add / change / delete a project.
  At adding / changing a project, you can choose to include the current
  files into it. Other choices are "replace", "clear" and "don't change".

@@ -1,30 +1,14 @@
-The e_menu main options are following:
+The common options are following:
 
- - "Run as external app" if on runs e_menu as external application;
-   this is a bit slower than "internal one", still more secure and
-   themed by "Color scheme"; also running it external you wouldn't
-   await for time-wasting actions like a backup
+ - "Path to tclsh, wish or tclkit" is a path to Tcl/Tk executable;
+   by default, it is an executable that had run alited.tcl
 
- - "Color scheme" is used when the e_menu is run as external app
-
- - "Geometry" sets a geometry of the main menu at starting e_menu
-
- - "Directory of menus" contains .mnu files to be used by e_menu
-
- - "Main menu" is a menu file to be shown at starting e_menu
-
- - "Projects (%PD wildcard)" refers to a file containing "e_menu
-   projects": directories to be chosen in "Project..." dialogue;
-   many menu items use the chosen directory as %PD wildcard
-
- - "Save files before run" may be useful for some menu items (e.g.
-   for SCM commands) as well as by motives of security; the empty
-   field means "no saving"
+ - "Path to man/tcl8.6" is used at calling Tcl/Tk context help;
+   the help contents can be downloaded with the command:
+    wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ \
+      https://www.tcl.tk/man/tcl8.6/
 
  - "Linux terminal" is for Linux platforms only, fill this field
    with "xterm" (or "lxterminal") command and its options
 
- - "Path to man/tcl8.6" is used at calling Tcl/Tk context help;
-   the help contents can be downloaded with the command:
-    wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\\.6.+ \\
-      https://www.tcl.tk/man/tcl8.6/
+ - "Diff tool" is a command to compare two text files

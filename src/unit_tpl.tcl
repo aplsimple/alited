@@ -101,6 +101,7 @@ proc unit_tpl::Focus {isel} {
   set tree [$obDl2 TreeTpl]
   $tree selection set $isel
   $tree see $isel
+  $tree focus $isel
 }
 #_______________________
 
@@ -111,13 +112,17 @@ proc unit_tpl::UpdateTree {} {
   variable tpllist
   variable tplkeys
   variable tplid
+  variable ilast
   set tree [$obDl2 TreeTpl]
   $tree delete [$tree children {}]
   set tplid [list]
+  set item0 {}
   foreach tpl $tpllist tplkey $tplkeys {
     set item [$tree insert {} end -values [list $tpl $tplkey]]
+    if {$item0 eq {}} {set item0 $item}
     lappend tplid $item
   }
+  if {$item0 ne {} && $ilast<0} {Focus $item0}
   ClearCbx
 }
 #_______________________
@@ -135,8 +140,8 @@ proc unit_tpl::Select {{item ""}} {
   variable tpl
   variable place
   namespace upvar ::alited obDl2 obDl2
-  if {$item eq ""} {set item [Selected item no]}
-  if {$item ne ""} {
+  if {$item eq {}} {set item [Selected item no]}
+  if {$item ne {}} {
     if {[string is digit $item]} {  ;# the item is an index
       set item [lindex $tplid $item]
     }
@@ -152,6 +157,7 @@ proc unit_tpl::Select {{item ""}} {
       $tree selection set $item
     }
     $tree see $item
+    $tree focus $item
   }
 }
 #_______________________

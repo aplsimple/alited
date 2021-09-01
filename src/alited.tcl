@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.3
+package provide alited 1.0.4b1
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -27,23 +27,47 @@ namespace eval alited {
     # Raises the app's window.
 
     variable al
-    wm withdraw $al(WIN)
-    wm deiconify $al(WIN)
+    catch {
+      wm withdraw $al(WIN)
+      wm deiconify $al(WIN)
+    }
+  }
+
+  proc open_files_and_raise {iin args} {
+    # Opens files of CLI.
+    #   iin - count of call
+    #   args - list of file names
+    # See also: bar::FillBar
+
+    if {$iin<10} {
+      # let the tab bar be filled first
+      if {![info exists ::alited::al(BID)]} {
+        after idle [list after 1000 [list ::alited::open_files_and_raise [incr iin] {*}$args]]
+        return
+      }
+      foreach fname [lreverse $args] {
+        if {[file isfile $fname]} {
+          alited::file::OpenFile $fname
+        }
+      }
+    }
+    raise_window
   }
 
   proc run_remote {cmd args} {
     # Runs a command that was started by another process.
 
-    if {[catch { $cmd {*}$args }]} {
+    if {[catch { $cmd {*}$args } err]} {
+      puts $err
       return -code error
     }
   }
 
-  ## _ End of alited NS _ ##
+  ## _ EONS _ ##
 
 }
 
-# ________________________ Initialize GUI _________________________ #
+# ________________________ ::argv, ::argc _________________________ #
 
 # this "if" satisfies the Ruff doc generator "package require":
 if {[package versions alited] eq {}} {
@@ -69,19 +93,34 @@ if {[package versions alited] eq {}} {
       incr ::argc -1
     }
   }
-  if {$alited::al(DEBUG)} {
-    # at developing alited
-  } elseif {$::tcl_platform(platform) eq {unix}} {
-    if {!$ALITED_NOSEND} {
-      set port 48784
-      if {[catch {::comm::comm config -port $port}] && \
-      ![catch {::comm::comm send $port ::alited::run_remote ::alited::raise_window }]} {
-        destroy .
-        exit
+  set fnames {}
+  foreach - $::argv {
+    lappend fnames [file normalize ${-}]
+  }
+  set onfiles [expr {$::argc>1 || ($::argc==1 && [file isfile [lindex $::argv 0]])}]
+
+# ____________________ Open an existing app __________________ #
+
+  if {!$alited::al(DEBUG) && !$ALITED_NOSEND} {
+    # Code borrowed from TKE editor.
+    # Set the comm port that we will use
+    set comm_port 51837
+    # Change our comm port to a known value
+    # (if we fail, the app is already running at that port so connect to it)
+    if {[catch { ::comm::comm config -port $comm_port }]} {
+      # Attempt to add files or raise the existing application
+      if {[llength $fnames]} {
+        if {![catch {::comm::comm send $comm_port ::alited::run_remote ::alited::open_files_and_raise 0 {*}$fnames} rc]} {
+          destroy .
+          exit
+        }
+      } else {
+        if {![catch { ::comm::comm send $comm_port ::alited::run_remote ::alited::::raise_window } rc]} {
+          destroy .
+          exit
+        }
       }
     }
-  } else {
-    after idle ::alited::raise_window
   }
 }
 
@@ -115,7 +154,7 @@ namespace eval alited {
   # directories of user's data
   variable USERDIRSTD [file normalize {~/.config}]
   variable USERDIRROOT $USERDIRSTD
-  if {$::argc} {set USERDIRROOT [lindex $argv 0]}
+  if {$::argc && !$onfiles} {set USERDIRROOT [lindex $::argv 0]}
 
   # two main objects to build forms (just some unique names)
   variable obPav ::alited::alitedpav
@@ -136,6 +175,7 @@ namespace eval alited {
   set al(prjfile) {}      ;# current project's file name
   set al(prjroot) {}      ;# current project's directory name
   set al(prjindent) 2     ;# current project's indentation
+  set al(prjindentAuto) 0 ;# auto detection of indentation
   set al(prjmultiline) 0  ;# current project's multiline mode
   set al(prjEOL) {}       ;# current project's end of line
   set al(prjredunit) 20   ;# current project's unit lines per 1 red bar
@@ -226,7 +266,7 @@ namespace eval alited {
     variable al
     variable obPav
     lassign [FgFgBold] fg fgbold
-    if {$lab eq ""} {set lab [$obPav Labstat3]}
+    if {$lab eq {}} {set lab [$obPav Labstat3]}
     set font [[$obPav Labstat2] cget -font]
     set fontB [list {*}$font -weight bold]
     set msg [string range [string map [list \n { } \r {}] $msg] 0 100]
@@ -257,14 +297,14 @@ namespace eval alited {
   }
   #_______________________
 
-  proc Message2 {msg {first 1}} {
+  proc Message2 {msg {mode 1}} {
     # Displays a message in statusbar of secondary dialogue ($obDl2).
     #   msg - message
-    #   first - mode of Message
+    #   mode - mode of Message
     # See also: Message
 
     variable obDl2
-    Message $msg $first [$obDl2 LabMess]
+    Message $msg $mode [$obDl2 LabMess]
   }
   #_______________________
 
@@ -299,9 +339,23 @@ namespace eval alited {
       set msg "Here should be a text of\n\"$fname\""
     }
     if {$alited::al(DEBUG)} {
-      after idle [list baltip::tip .alwin.diaaliteddlg1.fra.butOK $fname]
+      puts "help file: $fname"
     }
     msg ok {} $msg -title Help -text 1 -geometry root=$win -scroll no -noesc 1
+  }
+  #_______________________
+
+  proc Run {args} {
+    # Runs Tcl/Tk script.
+    #   args - script's name and arguments
+
+    variable al
+    if {$al(EM,Tcl) eq {}} {
+      set Tclexe [info nameofexecutable]
+    } else {
+      set Tclexe $al(EM,Tcl)
+    }
+    exec $Tclexe {*}$args &
   }
   #_______________________
 
@@ -346,6 +400,7 @@ namespace eval alited {
   source [file join $SRCDIR project.tcl]
   source [file join $SRCDIR check.tcl]
   source [file join $SRCDIR complete.tcl]
+  source [file join $SRCDIR edit.tcl]
 }
 
 # _________________________ Run the app _________________________ #
@@ -357,17 +412,24 @@ if {[info exists ALITED_NOSEND]} {
     ::apave::logName $alited::al(LOG)
     ::apave::logMessage {start alited ------------}
   }
-  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+  if {$onfiles} {
+    set ::argc 0
+    set ::argv {}
+    after 10 [list ::alited::open_files_and_raise 0 {*}$fnames]
+  }
+  unset fnames
+  unset onfiles
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
-  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
     cd $alited::SRCDIR
     if {$alited::al(LOG) ne {}} {set ::argv [linsert $::argv 0 LOG=$alited::al(LOG)]}
     if {$alited::al(DEBUG)} {set ::argv [linsert $::argv 0 DEBUG]}
-    exec tclsh $alited::SCRIPT NOSEND {*}$::argv &
+    alited::Run $alited::SCRIPT NOSEND {*}$::argv
   }
   exit
 }

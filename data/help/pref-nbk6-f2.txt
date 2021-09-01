@@ -1,16 +1,18 @@
- The tkcon options define the appearance of
- tkcon's window.
+The e_menu main options are following:
 
- You can set your own colors of tkcon.
+ - "Run as external app" if on runs e_menu as external application;
+   this is a bit slower than "internal one", still more secure and
+   themed by "Color scheme"; also running it external you wouldn't
+   await for time-wasting actions like a backup
 
- Other options define the size of tkcon's window.
+ - "Color scheme" is used when the e_menu is run as external app
 
- The geometry is set as "+X+Y" meaning x- and
- y-coordinates of tkcon's window.
+ - "Geometry" sets a geometry of the main menu at starting e_menu
 
- Set the "topmost" option to have tkcon's
- window above all other windows on the desktop.
+ - "Directory of menus" contains .mnu files to be used by e_menu
 
- Use "Default" button to set default settings.
+ - "Main menu" is a menu file to be shown at starting e_menu
 
- Use "Test" button to test your options of tkcon.
+ - "Projects (%PD wildcard)" refers to a file containing "e_menu
+   projects": directories to be chosen in "Project..." dialogue;
+   many menu items use the chosen directory as %PD wildcard

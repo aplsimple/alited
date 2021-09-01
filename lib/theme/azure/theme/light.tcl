@@ -17,6 +17,8 @@ namespace eval ttk::theme::azure-light {
             }
         }
 
+    # ________________________ load images _________________________ #
+
         load_images [file join [file dirname [info script]] light]
 
         array set colors {
@@ -204,8 +206,10 @@ namespace eval ttk::theme::azure-light {
             	{selected disabled} $I(rect-basic) \
                 disabled $I(rect-basic) \
                 selected $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(button-hover) \
+                pressed $I(rect-pressed) \
+                focus $I(button-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(button-hover) \
             ] -border 4 -sticky ewns
 
         # Toolbutton
@@ -216,8 +220,10 @@ namespace eval ttk::theme::azure-light {
             	{selected disabled} $I(empty) \
                 disabled $I(empty) \
                 selected $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(rect-basic) \
+                pressed $I(rect-pressed) \
+                focus $I(button-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(button-hover) \
             ] -border 4 -sticky ewns
 
         # Menubutton
@@ -226,8 +232,10 @@ namespace eval ttk::theme::azure-light {
         ttk::style element create Menubutton.button \
             image [list $I(rect-basic) \
                 disabled $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(button-hover) \
+                pressed $I(rect-pressed) \
+                focus $I(button-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(button-hover) \
             ] -border 4 -sticky ewns
 
         ttk::style element create Menubutton.indicator \
@@ -243,8 +251,10 @@ namespace eval ttk::theme::azure-light {
         ttk::style element create OptionMenu.button \
             image [list $I(rect-basic) \
                 disabled $I(rect-basic) \
-                pressed $I(rect-basic) \
-                active $I(button-hover) \
+                pressed $I(rect-pressed) \
+                focus $I(button-hover) \
+                {active !selected} $I(rect-basic) \
+                {active selected} $I(button-hover) \
             ] -border 4 -sticky ewns
 
         ttk::style element create OptionMenu.indicator \
@@ -270,7 +280,7 @@ namespace eval ttk::theme::azure-light {
         ttk::style configure TCheckbutton -padding 4
 
         ttk::style element create Checkbutton.indicator image \
-            [list $I(box-basic) \
+            [list $I(check-unsel) \
                 {alternate disabled} $I(check-tri-basic) \
                 {selected disabled} $I(check-basic) \
                 disabled $I(box-basic) \
@@ -278,10 +288,12 @@ namespace eval ttk::theme::azure-light {
                 {active alternate} $I(check-tri-hover) \
                 alternate $I(check-tri-accent) \
                 {pressed selected} $I(check-hover) \
-                {active selected} $I(check-hover) \
-                selected $I(check-accent) \
                 {pressed !selected} $I(rect-hover) \
-                active $I(box-hover) \
+                {active selected} $I(check-accent) \
+                {active !selected} $I(check-unsel) \
+                {!focus selected} $I(check-accent) \
+                {focus selected} $I(check-sel-hover) \
+                {focus !selected} $I(check-unsel-hover) \
             ] -width 26 -sticky w
 
         # Switch
@@ -289,11 +301,14 @@ namespace eval ttk::theme::azure-light {
             [list $I(off-basic) \
                 {selected disabled} $I(on-basic) \
                 disabled $I(off-basic) \
-                {pressed selected} $I(on-hover) \
+                {pressed selected} $I(on-accent) \
                 {active selected} $I(on-hover) \
-                selected $I(on-accent) \
-                {pressed !selected} $I(off-hover) \
+                {pressed !selected} $I(off-accent) \
                 active $I(off-hover) \
+                {focus selected} $I(on-hover) \
+                {!focus selected} $I(on-accent) \
+                {focus !selected} $I(off-hover) \
+                {!focus !selected} $I(off-accent) \
             ] -width 46 -sticky w
 
         # ToggleButton
@@ -314,7 +329,7 @@ namespace eval ttk::theme::azure-light {
         ttk::style configure TRadiobutton -padding 4
 
         ttk::style element create Radiobutton.indicator image \
-            [list $I(outline-basic) \
+            [list $I(radio-unsel) \
                 {alternate disabled} $I(radio-tri-basic) \
                 {selected disabled} $I(radio-basic) \
                 disabled $I(outline-basic) \
@@ -322,10 +337,12 @@ namespace eval ttk::theme::azure-light {
                 {active alternate} $I(radio-tri-hover) \
                 alternate $I(radio-tri-accent) \
                 {pressed selected} $I(radio-hover) \
-                {active selected} $I(radio-hover) \
-                selected $I(radio-accent) \
-                {pressed !selected} $I(circle-hover) \
-                active $I(outline-hover) \
+                {pressed !selected} $I(radio-unsel) \
+                {active !selected} $I(radio-unsel) \
+                {active selected} $I(radio-accent) \
+                {!focus selected} $I(radio-accent) \
+                {focus selected} $I(radio-sel-hover) \
+                {focus !selected} $I(radio-unsel-hover) \
             ] -width 26 -sticky w
 
         # Scrollbar
@@ -433,7 +450,7 @@ namespace eval ttk::theme::azure-light {
                 {readonly pressed} $I(rect-basic) \
                 {readonly focus hover} $I(button-hover) \
                 {readonly focus} $I(button-hover) \
-                {readonly hover} $I(button-hover) \
+                {readonly hover} $I(rect-basic) \
                 {focus hover} $I(box-accent) \
                 readonly $I(rect-basic) \
                 invalid $I(box-invalid) \
@@ -505,7 +522,8 @@ namespace eval ttk::theme::azure-light {
 
         ttk::style element create Notebook.tab \
             image [list $I(tab-disabled) \
-                selected $I(tab-basic) \
+                {selected focus} $I(tab-sel-focus) \
+                {selected !focus} $I(tab-sel) \
                 active $I(tab-hover) \
             ] -border 5 -padding {14 4}
 
@@ -535,3 +553,4 @@ namespace eval ttk::theme::azure-light {
         ttk::style configure Sash -gripcount 0
     }
 }
+#RUNF1: ../../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

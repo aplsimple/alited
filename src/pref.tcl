@@ -106,6 +106,7 @@ namespace eval pref {
     17 [list {Go to Line} Control-G] \
     18 [list {Put New Line} Control-P] \
     19 [list {Complete Commands} Tab] \
+    20 [list {To Matched Bracket} Alt-B] \
   ]
 
   # size of standard keys' data
@@ -245,9 +246,10 @@ proc pref::MainFrame {} {
         f1 {-t Keys}
     }}
     {fraR.nbk6 - - - - {pack forget -side top} {
-        f1 {-t e_menu}
-        f2 {-t tkcon}
+        f1 {-t Common}
+        f2 {-t e_menu}
         f3 {-t bar/menu}
+        f4 {-t tkcon}
     }}
     {#LabMess fraL T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fraB fraL T 1 2 {-st nsew} {-padding {5 5 5 5} -relief groove}}
@@ -268,14 +270,14 @@ proc pref::Ok {args} {
     GetEmSave out
     # check options that can make alited unusable
     if {$al(INI,HUE)<-50 || $al(INI,HUE)>50} {set al(INI,HUE) 0}
-    if {$al(FONTSIZE,small)<8 || $al(FONTSIZE,small)>14} {set al(FONTSIZE,small) 10}
-    if {$al(FONTSIZE,std)<9 || $al(FONTSIZE,std)>18} {set al(FONTSIZE,std) 11}
+    if {$al(FONTSIZE,small)<8 || $al(FONTSIZE,small)>72} {set al(FONTSIZE,small) 10}
+    if {$al(FONTSIZE,std)<9 || $al(FONTSIZE,std)>72} {set al(FONTSIZE,std) 11}
     if {$al(INI,RECENTFILES)<10 || $al(INI,RECENTFILES)>50} {set al(INI,RECENTFILES) 16}
     if {$al(FAV,MAXLAST)<10 || $al(FAV,MAXLAST)>100} {set al(FAV,MAXLAST) 100}
     if {$al(MAXFILES)<1000 || $al(MAXFILES)>9999} {set al(MAXFILES) 2000}
     if {$al(INI,barlablen)<10 || $al(INI,barlablen)>100} {set al(INI,barlablen) 16}
     if {$al(INI,bartiplen)<10 || $al(INI,bartiplen)>100} {set al(INI,bartiplen) 32}
-    if {$al(CURSORWIDTH)<1 || $al(CURSORWIDTH)>3} {set al(CURSORWIDTH) 2}
+    if {$al(CURSORWIDTH)<1 || $al(CURSORWIDTH)>8} {set al(CURSORWIDTH) 2}
     set al(THEME) $opc1
     set al(INI,CS) [GetCS]
     if {![string is integer -strict $al(INI,CS)]} {set al(INI,CS) -1}
@@ -388,7 +390,7 @@ proc pref::General_Tab1 {} {
     {.labCS .labTheme T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.opc2 .labCS L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 20 -com alited::pref::CbxTheme} {alited::pref::opcToolPre %a}}}
     {.labHue .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Tint:"}}
-    {.SpxHue .labHue L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 9}}
+    {.SpxHue .labHue L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 9 -afteridle alited::pref::CbxTheme}}
     {seh_ .labHue T 1 2 {-pady 4}}
     {fra2 seh_ T 1 2 {-st nsew -cw 1}}
     {.labLocal - - 1 1 {-st w -pady 1 -padx 3} {-t "Preferable locale:" -tip {$alited::al(MC,locale)}}}
@@ -396,11 +398,11 @@ proc pref::General_Tab1 {} {
     {.labFon .labLocal T 1 1 {-st w -pady 1 -padx 3} {-t "Font:"}}
     {.fonTxt .labFon L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONT) -w 40}}
     {.labFsz1 .labFon T 1 1 {-st w -pady 1 -padx 3} {-t "Small font size:"}}
-    {.spxFsz1 .labFsz1 L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONTSIZE,small) -from 8 -to 14 -justify center -w 9}}
+    {.spxFsz1 .labFsz1 L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONTSIZE,small) -from 8 -to 72 -justify center -w 9}}
     {.labFsz2 .labFsz1 T 1 1 {-st w -pady 1 -padx 3} {-t "Middle font size:"}}
-    {.spxFsz2 .labFsz2 L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONTSIZE,std) -from 9 -to 18 -justify center -w 9}}
+    {.spxFsz2 .labFsz2 L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONTSIZE,std) -from 9 -to 72 -justify center -w 9}}
     {.labCurw .labFsz2 T 1 1 {-st w -pady 1 -padx 3} {-t "Cursor width:"}}
-    {.spxCurw .labCurw L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(CURSORWIDTH) -from 1 -to 3 -justify center -w 9}}
+    {.spxCurw .labCurw L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(CURSORWIDTH) -from 1 -to 8 -justify center -w 9}}
     {seh_2 fra2 T 1 2 {-pady 4}}
     {lab seh_2 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra3 lab T 1 2 {-st nsew -rw 1 -cw 1}}
@@ -419,15 +421,15 @@ proc pref::General_Tab2 {} {
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labConf - - 1 1 {-st w -pady 1 -padx 3} {-t "Confirm exit:"}}
-    {.chbConf .labConf L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,confirmexit)}}
+    {.swiConf .labConf L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,confirmexit)}}
     {.seh1 .labConf T 1 4 {-st ew -pady 5}}
     {.labS .seh1 T 1 1 {-st w -pady 1 -padx 3} {-t "Save configuration on"}}
     {.labSonadd .labS T 1 1 {-st e -pady 1 -padx 3} {-t "opening a file:"}}
-    {.chbOnadd .labSonadd L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,save_onadd)}}
+    {.swiOnadd .labSonadd L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,save_onadd)}}
     {.labSonclose .labSonadd T 1 1 {-st e -pady 1 -padx 3} {-t "closing a file:"}}
-    {.chbOnclose .labSonclose L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,save_onclose)}}
+    {.swiOnclose .labSonclose L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,save_onclose)}}
     {.labSonsave .labSonclose T 1 1 {-st e -pady 1 -padx 3} {-t "saving a file:"}}
-    {.chbOnsave .labSonsave L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,save_onsave)}}
+    {.swiOnsave .labSonsave L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,save_onsave)}}
     {.seh2 .labSonsave T 1 4 {-st ew -pady 5}}
     {.labSave .seh2 T 1 1 {-st w -pady 1 -padx 3} {-t "Save before bar/menu runs:"}}
     {.cbxSave .labSave L 1 2 {-st sw -pady 1} {-values {$alited::al(pref,saveonrun)} -tvar alited::al(EM,save) -state readonly -w 20}}
@@ -444,7 +446,7 @@ proc pref::General_Tab2 {} {
     {.labMaxBak .CbxBackup L 1 1 {-st w -pady 1 -padx 1} {-t "  Maximum:"}}
     {.SpxMaxBak .labMaxBak L 1 1 {-st sw -pady 1 -padx 1} {-tvar alited::al(MAXBACKUP) -from 1 -to 99 -justify center -w 9 -tip "Maximum of backup copies per a file"}}
     {.labBell .labBackup T 1 1 {-st w -pady 1 -padx 3} {-t "Bell at warnings:"}}
-    {.chbBell .labBell L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,belltoll)}}
+    {.swiBell .labBell L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,belltoll)}}
   }
 }
 #_______________________
@@ -456,7 +458,7 @@ proc pref::General_Tab3 {} {
     {v_ - - 1 10}
     {fra2 v_ T 1 2 {-st nsew -cw 1}}
     {.labDef - - 1 1 {-st w -pady 1 -padx 3} {-t {Default values for new projects:}}}
-    {.chbDef .labDef L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(PRJDEFAULT) -com alited::pref::CheckUseDef -afteridle alited::pref::CheckUseDef}}
+    {.swiDef .labDef L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(PRJDEFAULT) -com alited::pref::CheckUseDef -afteridle alited::pref::CheckUseDef}}
     {.h_ .labDef T 1 2 {-st w -pady 8 -padx 3}}
     {.labIgn .h_ T 1 1 {-st w -pady 8 -padx 3} {-t "Skip subdirectories:"}}
     {.EntIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(DEFAULT,prjdirign) -w 50}}
@@ -464,10 +466,11 @@ proc pref::General_Tab3 {} {
     {.CbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjEOL) -values {{} LF CR CRLF} -state readonly -w 9}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
     {.SpxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjindent) -w 9 -from 2 -to 8 -justify center}}
+    {.ChbIndAuto .SpxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjindentAuto) -t "Auto detection"}}
     {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Unit lines per 1 red bar:"}}
     {.SpxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjredunit) -w 9 -from 10 -to 100 -justify center}}
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
-    {.ChbMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
+    {.SwiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
   }
 }
 #_______________________
@@ -523,7 +526,7 @@ proc pref::CbxTheme {} {
   # If CbxTheme is not "clam", "Tint" should be disabled.
 
   fetchVars
-  if {[GetCS]>-2 && [::apave::obj apaveTheme $alited::al(THEME)]} {
+  if {[GetCS]>-2 && [::apave::obj apaveTheme $opc1]} {
     set state normal
   } else {
     set state disabled
@@ -544,7 +547,7 @@ proc pref::CheckUseDef {} {
     set state disabled
     [$obDl2 CbxEOL] configure -state $state
   }
-  foreach w {EntIgn SpxIndent SpxRedunit ChbMult} {
+  foreach w {EntIgn SpxIndent SpxRedunit SwiMult ChbIndAuto} {
     [$obDl2 $w] configure -state $state
   }
 }
@@ -870,7 +873,7 @@ proc pref::Units_Tab {} {
     {.entPr2 .labPr2 L 1 1 {-st sw -pady 1} {-tvar alited::al(RE,proc2) -w 70}}
     {.seh_1 .labPr2 T 1 2 {-pady 5}}
     {.labUself .seh_1 T 1 1 {-st w -pady 1 -padx 3} {-t "Use leaf's regexp:"}}
-    {.chbUself .labUself L 1 1 {-st sw -pady 1} {-var alited::al(INI,LEAF) -onvalue yes -offvalue no -com alited::pref::CheckUseLeaf -afteridle alited::pref::CheckUseLeaf}}
+    {.swiUself .labUself L 1 1 {-st sw -pady 1} {-var alited::al(INI,LEAF) -onvalue yes -offvalue no -com alited::pref::CheckUseLeaf -afteridle alited::pref::CheckUseLeaf}}
     {.labLf .labUself T 1 1 {-st w -pady 1 -padx 3} {-t "Leaf's regexp:"}}
     {.EntLf .labLf L 1 1 {-st sw -pady 1} {-tvar alited::al(RE,leaf) -w 70}}
     {.seh_2 .labLf T 1 2 {-pady 5}}
@@ -907,8 +910,35 @@ proc pref::CheckUseLeaf {} {
 
 # ________________________ Tab "Tools" _________________________ #
 
+proc pref::Common_Tab {} {
+  # Serves to layout "Tools/Common" tab.
+
+  fetchVars
+  set al(EM,menu) [file join $al(EM,menudir) [file tail $al(EM,menu)]]
+  if {$al(EM,Tcl) eq {}} {
+    set al(TCLINIDIR) [info nameofexecutable]
+  } else {
+    set al(TCLINIDIR) $al(EM,Tcl)
+  }
+  set al(TCLINIDIR) [file dirname $al(TCLINIDIR)]
+  return {
+    {v_ - - 1 1}
+    {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
+    {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode x}}
+    {.labTcl - - 1 1 {-st w -pady 1 -padx 3} {-t "Path to tclsh, wish or tclkit:"}}
+    {.filTcl .labTcl L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,Tcl) -w 40 -initialdir $alited::al(TCLINIDIR)}}
+    {.labDoc .labTcl T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl8.6:"}}
+    {.dirDoc .labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 40}}
+    {.labTT .labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
+    {.entTT .labTT L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,tt=) -w 40}}
+    {.labDF .labTT T 1 1 {-st w -pady 1 -padx 3} {-t "Diff tool:"}}
+    {.entDF .labDF L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 40}}
+  }
+}
+#_______________________
+
 proc pref::Emenu_Tab {} {
-  # Serves to layout "Tools" tab.
+  # Serves to layout "Tools/e_menu" tab.
 
   set alited::al(EM,menu) [file join $alited::al(EM,menudir) \
     [file tail $alited::al(EM,menu)]]
@@ -917,7 +947,7 @@ proc pref::Emenu_Tab {} {
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode x}}
     {.labExe - - 1 1 {-st w -pady 1 -padx 3} {-t "Run as external app:"}}
-    {.chbExe .labExe L 1 1 {-st sw -pady 5} {-var alited::al(EM,exec) -onvalue yes -offvalue no}}
+    {.swiExe .labExe L 1 1 {-st sw -pady 5} {-var alited::al(EM,exec) -onvalue yes -offvalue no}}
     {.labCS .labExe T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.opc .labCS L 1 1 {-st sw -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 20} {alited::pref::opcToolPre %a}}}
     {.labGeo .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
@@ -928,18 +958,12 @@ proc pref::Emenu_Tab {} {
     {.filMenu .labMenu L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,menu) -w 40 -filetypes {{{Menus} .mnu} {{All files} .* }}}}
     {.labPD .labMenu T 1 1 {-st w -pady 1 -padx 3} {-t "Projects (%PD wildcard):"}}
     {.filPD .labPD L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,PD=) -w 40}}
-    {.labDoc .labPD T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl8.6:"}}
-    {.dirDoc .labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 40}}
-    {.labTT .labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
-    {.entTT .labTT L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,tt=) -w 40}}
-    {.labDF .labTT T 1 1 {-st w -pady 1 -padx 3} {-t "Diff tool:"}}
-    {.entDF .labDF L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 40}}
   }
 }
 #_______________________
 
 proc pref::Tkcon_Default {} {
-  # Sets defaults for "Tkcon" tab.
+  # Sets defaults for "Tools/Tkcon" tab.
 
   fetchVars
   set al(tkcon,clrbg) #25292b
@@ -961,7 +985,7 @@ proc pref::Tkcon_Default {} {
 #_______________________
 
 proc pref::Tkcon_Tab {} {
-  # Serves to layout "Tkcon" tab.
+  # Serves to layout "Tools/Tkcon" tab.
 
   if {![info exists alited::al(tkcon,clrbg)]} Tkcon_Default
   return {
@@ -1000,7 +1024,7 @@ proc pref::Tkcon_Tab {} {
     {.labGeo .labFsize T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
     {.entGeo .labGeo L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,geo) -w 20}}
     {.labTopmost .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Stay on top:"}}
-    {.chbTopmost .labTopmost L 1 1 {-st sw -pady 1} {-var alited::al(tkcon,topmost)}}
+    {.swiTopmost .labTopmost L 1 1 {-st sw -pady 1} {-var alited::al(tkcon,topmost)}}
     {fra.scf.but - - - - {pack -side left -pady 5} {-t Default -com alited::pref::Tkcon_Default -w 20}}
     {fra.scf.but2 - - - - {pack -side left -padx 5 -pady 5} {-t Test -com alited::tool::tkcon -w 20}}
   }
@@ -1008,7 +1032,7 @@ proc pref::Tkcon_Tab {} {
 #_______________________
 
 proc pref::Runs_Tab {} {
-  # Prepares and layouts "bar/menu" tab.
+  # Prepares and layouts "Tools/bar/menu" tab.
 
   fetchVars
   # get a list of all available icons for "bar/menu" actions
@@ -1219,9 +1243,10 @@ proc pref::_create {tab} {
     $win.fraR.nbk3.f1 [Units_Tab] \
     $win.fraR.nbk4.f1 [Template_Tab] \
     $win.fraR.nbk5.f1 [Keys_Tab1] \
-    $win.fraR.nbk6.f1 [Emenu_Tab] \
-    $win.fraR.nbk6.f2 [Tkcon_Tab] \
-    $win.fraR.nbk6.f3 [Runs_Tab]
+    $win.fraR.nbk6.f1 [Common_Tab] \
+    $win.fraR.nbk6.f2 [Emenu_Tab] \
+    $win.fraR.nbk6.f3 [Runs_Tab] \
+    $win.fraR.nbk6.f4 [Tkcon_Tab]
   if {$minsize eq ""} {      ;# save default min.sizes
     after idle [list after 100 {
       set ::alited::pref::minsize "-minsize {[winfo width $::alited::pref::win] [winfo height $::alited::pref::win]}"

@@ -1,6 +1,26 @@
 # Last changes:
 
 
+Version `1.0.4 (1 Sep'21)`
+
+  - NEW   : run alited with file name(s) as argument(s)
+  - NEW   : open multiple files in File/Open
+  - NEW   : go to a matched bracket
+  - NEW   : Preferences/Tools/Common incl. path to tclsh/wish/tclkit
+  - NEW   : "auto detection of indenting" option in Projects/Options
+  - NEW   : "All of..." and "Lines..." not saved in last visits
+  - NEW   : Edit menu splitted to Edit and Search
+  - NEW   : edit.tcl, with some procs from unit.tcl
+  - NEW   : "Find by List" in Find menu
+  - NEW   : switches instead some checkbuttons (for themes by rdbende)
+  - CHANGE: azure, forest and sun-valley themes revised heavily
+  - CHANGE: "Save as" instead "Save" at deleting file by external app
+  - CHANGE: autodetection of EOL at reading files
+  - CHANGE: clrpick.tcl (smooth opening)
+  - CHANGE: ForestDark CS modified
+  - CHANGE: apave package
+
+
 Version `1.0.3 (25 Aug'21)`
 
   - BUGFIX: the tree updated at saving a file

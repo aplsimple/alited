@@ -23,6 +23,10 @@ namespace eval ::alited {
     {Information} {Информация}
     {File} {Файл}
     {Edit} {Правка}
+    {Search} {Поиск}
+    {Conversions} {Преобразования}
+    {Change Encoding...} {Сменить кодировку...}
+    {Change EOL...} {Сменить EOL...}
     {Tools} {Инструменты}
     {Setup} {Опции}
     {Help} {Справка}
@@ -98,6 +102,8 @@ namespace eval ::alited {
     {Contract All} {Свернуть всё}
     {Expand All} {Развернуть всё}
     "Move %f\nto\n%d\n?" "Переместить %f\nв\n%d\n?"
+    {To Last Visited} {На последнее посещение}
+    {To Matched Bracket} {На парную скобку}
     {Go to Line} {Перейти на строку}
     {Line number:} {Номер строки:}
     {    In unit:} {     В юните:}
@@ -105,6 +111,7 @@ namespace eval ::alited {
     {Back} {Откат}
     {File not found: %f} {Файл не найден: %f}
     {Unit not found: %u} {Юнит не найден: %u}
+    {Don't ask anymore} {Больше не спрашивать}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -173,6 +180,7 @@ namespace eval ::alited {
     {Skip subdirectories:} {Пропускать подкаталоги:}
     {Description:} {Описание:}
     {Indentation:} {Пробелов отступа:}
+    {Auto detection} {Автоопределение}
     {End of line:} {Концы строк:}
     {Multi-line strings:} {Многострочные string:}
     {Unit lines per 1 red bar:} {Строк юнита на 1 красную полосу:}
@@ -273,6 +281,9 @@ namespace eval ::alited {
     "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all texts?" "Заменить все \"%s\"\n\nна \"%r\"\n\nво всех текстах?"
     {Don't focus a text after selecting in infobar} {Не переходить на текст при выборе в инфобаре}
     {Focus a text after selecting in infobar} {Переходить на текст при выборе в инфобаре}
+    {Find by List} {Поиск по списку}
+    {List:} {Список:}
+    {\n Enter a list of words devided by spaces: \n} {\n Введите список слов, разделенных пробелами: \n}
   }
 
   ## ________________________ Checking ini directory ________________________ ##
@@ -425,6 +436,7 @@ namespace eval ::alited {
     {Linux terminal:} {Терминал Linux:}
     {Diff tool:} {Команда diff:}
     {Path to man/tcl8.6:} {Путь к man/tcl8.6:}
+    {Path to tclsh, wish or tclkit:} {Путь к tclsh, wish или tclkit:}
     {Rows:} {Строк:}
     {Columns:} {Колонок:}
     {Geometry:} {Геометрия:}

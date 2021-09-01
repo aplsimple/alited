@@ -93,20 +93,34 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,moveupU) -command {alited::tree::MoveItem up yes} -accelerator $al(acc_15)
   $m add command -label $al(MC,movedownU) -command {alited::tree::MoveItem down yes} -accelerator $al(acc_16)
   $m add separator
-  $m add command -label $al(MC,indent) -command alited::unit::Indent -accelerator $al(acc_6)
-  $m add command -label $al(MC,unindent) -command alited::unit::UnIndent -accelerator $al(acc_7)
-  $m add command -label [msgcat::mc {Correct Indentation}] -command alited::unit::NormIndent
+  $m add command -label $al(MC,indent) -command alited::edit::Indent -accelerator $al(acc_6)
+  $m add command -label $al(MC,unindent) -command alited::edit::UnIndent -accelerator $al(acc_7)
+  $m add command -label [msgcat::mc {Correct Indentation}] -command alited::edit::NormIndent
   $m add separator
-  $m add command -label $al(MC,comment) -command alited::unit::Comment -accelerator $al(acc_8)
-  $m add command -label $al(MC,uncomment) -command alited::unit::UnComment -accelerator $al(acc_9)
+  $m add command -label $al(MC,comment) -command alited::edit::Comment -accelerator $al(acc_8)
+  $m add command -label $al(MC,uncomment) -command alited::edit::UnComment -accelerator $al(acc_9)
   $m add separator
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
   $m add separator
+
+### ________________________ Conversions _________________________ ###
+
+  menu $m.convert -tearoff 0
+  $m add cascade -label [msgcat::mc Conversions] -menu $m.convert
+  $m.convert add command -label [msgcat::mc {Change Encoding...}] -command alited::edit::ChangeEncoding
+  $m.convert add command -label [msgcat::mc {Change EOL...}] -command alited::edit::ChangeEOL
+
+## ________________________ Search _________________________ ##
+  set m [set al(SEARCH) $al(WIN).menu.search]
   $m add command -label $al(MC,findreplace) -command alited::find::_run -accelerator Ctrl+F
   $m add command -label $al(MC,findnext) -command alited::find::Next -accelerator $al(acc_12)
   $m add command -label [msgcat::mc {Look for Declaration}] -command alited::find::SearchUnit -accelerator $al(acc_13)
   $m add command -label [msgcat::mc {Look for Word}] -command alited::find::SearchWordInSession -accelerator $al(acc_14)
   $m add command -label [msgcat::mc {Find Unit}] -command alited::find::FindUnit -accelerator Ctrl+Shift+F
+  $m add command -label [msgcat::mc {Find by List}] -command alited::find::SearchByList
+  $m add separator
+  $m add command -label [msgcat::mc {To Last Visited}] -command alited::unit::SwitchUnits -accelerator Alt-Backspace
+  $m add command -label [msgcat::mc {To Matched Bracket}] -command alited::main::GotoBracket -accelerator $al(acc_20)
   $m add separator
   $m add command -label [msgcat::mc {Go to Line}] -command alited::main::GotoLine -accelerator $al(acc_17)
 

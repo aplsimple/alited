@@ -46,7 +46,7 @@ namespace eval ::apave {
   set ::apave::_CS_(ALL) {
 {{ 0: AzureLight} "#050b0d" #050b0d #e9e9e7 #ebebe9 #002aaa #1b9ae9 #fff #444 grey #007fff #000 #AFAFAF - #e1e1df #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
 {{ 1: ForestLight} "#050b0d" #050b0d #fafaf8 #efefed #004000 #A8CCA8 #000 #444 grey #217346 #000 #AFAFAF - #e5ffe5 #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
-{{ 2: SunValleyLight} "#050b0d" #050b0d #e9e9e7 #ebebe9 #00469f #5586fe #fff #444 grey #005fb8 #000 #AFAFAF - #e1e1df #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
+{{ 2: SunValleyLight} "#050b0d" #050b0d #e9e9e7 #ebebe9 #00469f #196ebf #fff #444 grey #005fb8 #000 #AFAFAF - #e1e1df #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
 {{ 3: Grey1} "#050b0d" #050b0d #F8F8F8 #dadad8 #5c1616 #AFAFAF #000 #444 grey #933232 #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #004 #005 #006 #007}
 {{ 4: Grey2} "#050b0d" #050b0d #e9e9e7 #F8F8F8 #5c1616 #AFAFAF #000 #444 grey #933232 #000 #AFAFAF - #e1e1df #000 #FBFB95 #d5d5d3 #a20000 #004 #005 #006 #007}
 {{ 5: Rosy} "#2B122A" #000 #FFFFFF #F6E6E9 #570957 #C5ADC8 #000 #444 grey #870287 #000 #C5ADC8 - #e3d3d6 #000 #FBFB95 #e5e3e1 #a20000 #004 #005 #006 #007}
@@ -69,7 +69,7 @@ namespace eval ::apave {
 {{22: Notebook3} "#000" #000 #beb69d #96907c #460000 #d59d6f #000 #444 #505050 #771d00 #000 #cfab86 - #a6a08c #000 #eded89 #b2aa91 #7b1010 #004 #005 #006 #007}
 {{23: Darcula} "#ececec" #c7c7c7 #272727 #323232 #e98f1c #2F5692 #e1e1e1 #f4f49f grey #d18d3f #EDC881 #1e4581 - #444444 #000 #a2a23e #343434 #f28787 #004 #005 #006 #007}
 {{24: AzureDark} "#ececec" #c7c7c7 #272727 #393939 #28a7ff #007fff #FFF #f4f49f grey #007fff #EDC881 #006ded - #444444 #000 #a2a23e #404040 #ff95ff #004 #005 #006 #007}
-{{25: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #5aac7f #217346 #FFF #f4f49f grey #009200 #EDC881 #0a5c2f - #444444 #000 #a2a23e #404040 #ff9595 #004 #005 #006 #007}
+{{25: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #95bf95 #217346 #FFF #f4f49f grey #99c399 #ffffff #2c7e51 - #444444 #000 #a2a23e #404040 #ff9595 #004 #005 #006 #007}
 {{26: SunValleyDark} "#dfdfdf" #dddddd #131313 #252525 #38a9e0 #2f60d8 #FFF #f4f49f #6f6f6f #57c8ff #fff #2051c9 - #2d2d2d #000 #a2a23e #2a2a2a #ff95ff #004 #005 #006 #007}
 {{27: Dark} "#F0E8E8" #E7E7E7 #272727 #323232 #de9e5e #707070 #000 #f4f49f grey #eda95b #000 #767676 - #454545 #000 #cdcd69 #2e2e2e #ffabab #004 #005 #006 #007}
 {{28: Dark1} "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #eda95b #000 #767676 - #363636 #000 #cdcd69 #292929 #ffabab #004 #005 #006 #007}
@@ -574,12 +574,22 @@ proc ::apave::textEOL {{EOL "-"}} {
   set _PU_opts(_EOL_) [string trim [string tolower $EOL]]
 }
 
-proc ::apave::textChanConfigure {channel} {
+proc ::apave::textChanConfigure {channel {coding {}} {eol {}}} {
   # Configures a channel for text file.
   #   channel - the channel
+  #   coding - if set, defines encoding of the file
+  #   eol - if set, defines EOL of the file
 
-  chan configure $channel -encoding utf-8
-  chan configure $channel {*}[::apave::textEOL translation]
+  if {$coding eq {}} {
+    chan configure $channel -encoding utf-8
+  } else {
+    chan configure $channel -encoding $coding
+  }
+  if {$eol eq {}} {
+    chan configure $channel {*}[::apave::textEOL translation]
+  } else {
+    chan configure $channel -translation $eol
+  }
 }
 
 ###########################################################################
@@ -635,7 +645,7 @@ proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
     if {$doErr} {error [::apave::error $fileName]}
     set fvar {}
   } else {
-    ::apave::textChanConfigure $chan
+    ::apave::textChanConfigure $chan {} auto ;# let EOL be autodetected
     set fvar [read $chan]
     close $chan
     logMessage "read $fileName"
@@ -1405,7 +1415,7 @@ oo::class create ::apave::ObjectTheming {
 
     lassign $clrs tfg1 tbg1 tfg2 tbg2 tfgS tbgS tfgD tbgD tcur bclr \
       thlp tfgI tbgI tfgM tbgM twfg twbg tHL2 res3 res4 res5 res6 res7
-    if {$tfg1 eq "-"} return
+    if {$tfg1 eq {-}} return
     if {!$isCS} {
       # if 'external  scheme' is used, register it in _CS_(ALL)
       # and set it as the current CS
@@ -1417,14 +1427,14 @@ oo::class create ::apave::ObjectTheming {
         $thlp $tbgS $tfgS $tcur $tfgD $bclr $tfgI $tbgI $tfgM $tbgM \
         $twfg $twbg $tHL2 $res3 $res4 $res5 $res6 $res7]
     }
-    if {$tfgI eq ""} {set tfgI $tfg2}
-    if {$tbgI eq ""} {set tbgI $tbg2}
-    if {$tfgM in {"" -}} {set tfgM $tfg1}
-    if {$tbgM eq ""} {set tbgM $tbg1}
+    if {$tfgI eq {}} {set tfgI $tfg2}
+    if {$tbgI eq {}} {set tbgI $tbg2}
+    if {$tfgM in {{} -}} {set tfgM $tfg1}
+    if {$tbgM eq {}} {set tbgM $tbg1}
     my Main_Style $tfg1 $tbg1 $tfg2 $tbg2 $tfgS $tbgS $tfgD $tbg1 $tfg1 $tbg2 $tbg1
     foreach arg {tfg1 tbg1 tfg2 tbg2 tfgS tbgS tfgD tbgD tcur bclr \
     thlp tfgI tbgI tfgM tbgM twfg twbg tHL2 res3 res4 res5 res6 res7 args} {
-      if {$win eq "."} {
+      if {$win eq {.}} {
         set ::apave::_C_($win,$arg) [set $arg]
       }
       set ::apave::_CS_(expo,$arg) [set $arg]
@@ -1478,7 +1488,7 @@ oo::class create ::apave::ObjectTheming {
       my Ttk_style configure $ts -insertcolor $tcur
       my Ttk_style map $ts -bordercolor [list focus $bclr active $bclr]
       my Ttk_style configure $ts -insertwidth $::apave::_CS_(CURSORWIDTH)
-      if {$ts eq "TCombobox"} {
+      if {$ts eq {TCombobox}} {
         # combobox is sort of individual
         my Ttk_style configure $ts -foreground $tfg1
         my Ttk_style configure $ts -background $tbg1
@@ -1495,6 +1505,7 @@ oo::class create ::apave::ObjectTheming {
         my Ttk_style map $ts -fieldbackground [list readonly $tbgD disabled $tbgD]
       }
     }
+    ttk::style configure Heading -font $fontdef -relief raised -padding 1 -background $tbg1
     option add *Listbox.font $fontdef
     option add *Menu.font $fontdef
     my Ttk_style configure TMenubutton -foreground $tfgM
@@ -1565,7 +1576,7 @@ oo::class create ::apave::ObjectTheming {
           set ::apave::_C_($ts,6) "-disabledforeground $tfgD"
           set ::apave::_C_($ts,7) "-disabledbackground $tbgD"
           set ::apave::_C_($ts,8) "-highlightcolor $bclr"
-          if {$ts eq "text"} {
+          if {$ts eq {text}} {
             set ::apave::_C_($ts,9) "-font {[font actual apaveFontMono]}"
           } else {
             set ::apave::_C_($ts,9) "-font {$fontdef}"

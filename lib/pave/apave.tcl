@@ -59,6 +59,7 @@ namespace eval ::apave {
     buT {{} {-width -20 -pady 1}} \
     can {{} {}} \
     chb {{} {}} \
+    swi {{} {}} \
     chB {{} {-relief sunken -padx 6 -pady 2}} \
     cbx {{} {}} \
     fco {{} {}} \
@@ -107,7 +108,7 @@ namespace eval ::apave {
           -showseparators 1}} \
     tex {{} {-undo 1 -maxundo 0 -highlightthickness 2 -insertofftime 250 -insertontime 750 -insertwidth $::apave::cursorwidth -wrap word
           -selborderwidth 1}} \
-    tre {{} {}} \
+    tre {{} {-selectmode browse}} \
     "h_" {{-sticky ew -csz 3 -padx 3} {}} \
     "v_" {{-sticky ns -rsz 3 -pady 3} {}}]
   variable apaveDir [file dirname [info script]]
@@ -1030,6 +1031,12 @@ oo::class create ::apave::APave {
         }
       can {set widget canvas}
       chb {set widget ttk::checkbutton}
+      swi {
+        set widget ttk::checkbutton
+        if {![my apaveTheme]} {
+          set attrs "$attrs -style Switch.TCheckbutton"
+        }
+      }
       chB {set widget checkbutton}
       cbx - fco {
         set widget ttk::combobox
@@ -1598,7 +1605,13 @@ oo::class create ::apave::APave {
     } elseif {$choosname in {"tk_getOpenFile" "tk_getSaveFile"}} {
       set vargeo $filvar
       set widname [my AuxSetChooserGeometry $vargeo $parent __tk_filedialog]
-      if {[set fn [set $tvar]] eq ""} {set dn [pwd]} {set dn [file dirname $fn]}
+      if {[set fn [set $tvar]] eq {}} {
+        set dn [pwd]
+      } else {
+        set dn [file dirname $fn]
+        set fn [file tail $fn]
+        set args [::apave::removeOptions $args -initialdir]
+      }
       set args "-initialfile \"$fn\" -initialdir \"$dn\" $parent $args"
       incr isfilename
     } elseif {$nchooser eq "tk_chooseDirectory"} {
@@ -1799,34 +1812,37 @@ oo::class create ::apave::APave {
 
     upvar 1 $r0 w $r1 i $r2 lwlen $r3 lwidgets
     lassign $args name neighbor posofnei rowspan colspan options1 attrs1
-    lassign "" wpar view addattrs addattrs2
+    lassign {} wpar view addattrs addattrs2
     set tvar [::apave::getOption -tvar {*}$attrs1]
-    set filetypes [::apave::getOption -filetypes {*}$attrs1]
-    set takefocus "-takefocus [::apave::parseOptions $attrs1 -takefocus 0]"
-    if {$filetypes ne {}} {
-      set attrs1 [::apave::removeOptions $attrs1 -filetypes -takefocus]
-      lset args 6 $attrs1
-      append addattrs2 " -filetypes {$filetypes}"
+    lassign [::apave::extractOptions attrs1 -takefocus 0 -showcolor {} \
+      -filetypes {} -initialdir {} -initialfile {} -defaultextension {} -multiple {}] \
+      takefocus showcolor filetypes initialdir initialfile defaultextension multiple
+    set takefocus "-takefocus $takefocus"
+    foreach atr {filetypes initialdir initialfile defaultextension multiple} {
+      set val [set $atr]
+      if {$val ne {}} {
+        lset args 6 $attrs1
+        append addattrs2 " -$atr {$val}"
+      }
     }
     set an [set entname ""]
     lassign [my LowercaseWidgetName $name] n
     switch -glob -- [my ownWName $n] {
-      "fil*" { set chooser "tk_getOpenFile" }
-      "fis*" { set chooser "tk_getSaveFile" }
-      "dir*" { set chooser "tk_chooseDirectory" }
-      "fon*" { set chooser "fontChooser" }
-      "dat*" { set chooser "dateChooser"; set entname "-entry " }
-      "ftx*" {
-        set chooser [set view "ftx_OpenFile"]
-        if {$tvar ne "" && [info exist $tvar]} {
+      fil* {set chooser tk_getOpenFile}
+      fis* {set chooser tk_getSaveFile}
+      dir* {set chooser tk_chooseDirectory}
+      fon* {set chooser fontChooser}
+      dat* {set chooser dateChooser; set entname {-entry }}
+      ftx* {
+        set chooser [set view ftx_OpenFile]
+        if {$tvar ne {} && [info exist $tvar]} {
           append addattrs " -t {[set $tvar]}"
         }
         set an tex
         set txtnam [my Transname $an $name]
       }
-      "clr*" {
-        set chooser "colorChooser"
-        lassign [::apave::extractOptions attrs1 -showcolor {}] showcolor
+      clr* {
+        set chooser colorChooser
         if {$showcolor eq {}} {set showcolor 1} ;# default is "show color label"
         set showcolor [string is true -strict $showcolor]
         set wpar "-parent $w" ;# specific for color chooser (parent of $w)
@@ -1841,7 +1857,7 @@ oo::class create ::apave::APave {
       set tvname $inname
       set inname [my WidgetNameFull $w $name]
     }
-    set tvar [set vv [set addopt ""]]
+    set tvar [set vv [set addopt {}]]
     set attmp [list]
     foreach {nam val} $attrs1 {
       if {$nam in {-title -parent -dateformat -weekday -modal -centerme}} {
@@ -1853,14 +1869,14 @@ oo::class create ::apave::APave {
     set attrs1 $attmp
     catch {array set a $attrs1; set tvar "-tvar [set vv $a(-tvar)]"}
     catch {array set a $attrs1; set tvar "-tvar [set vv $a(-textvariable)]"}
-    if {$vv eq ""} {
+    if {$vv eq {}} {
       set vv [namespace current]::$name
       set tvar "-tvar $vv"
     }
     # make a frame in the widget list
     set ispack 0
     if {![catch {set gm [lindex [lindex $lwidgets $i] 5]}]} {
-      set ispack [expr [string first "pack" $gm]==0]
+      set ispack [expr [string first pack $gm]==0]
     }
     if {$ispack} {
       set args [list $name - - - - "pack -expand 0 -fill x [string range $gm 5 end]" $addattrs]
@@ -1886,7 +1902,7 @@ oo::class create ::apave::APave {
       append wpar " -tname $tname"
       set entf [list $tname - - - - "pack -side left -expand 1 -fill x -in $inname" "$attrs1 $tvar"]
     }
-    set icon "folder"
+    set icon folder
     foreach ic {OpenFile SaveFile font color date} {
       if {[string first $ic $chooser] >= 0} {set icon $ic; break}
     }
@@ -1901,7 +1917,7 @@ oo::class create ::apave::APave {
       set lwidgets [linsert $lwidgets [expr {$i+3}] $scrolv]
       incr lwlen 3
       set wrap [::apave::getOption -wrap {*}$attrs1]
-      if {$wrap eq "none"} {
+      if {$wrap eq {none}} {
         set lwidgets [linsert $lwidgets [expr {$i+4}] $scrolh]
         incr lwlen
       }

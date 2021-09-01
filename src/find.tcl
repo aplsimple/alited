@@ -14,6 +14,9 @@ namespace eval find {
   # "Find/Replace" dialogue's path
   variable win $::alited::al(WIN).winFind
 
+  # "Search by list" dialogue's path
+  variable win3 $::alited::al(WIN).winSBL
+
   # initial geometry of the dialogue
   variable geo root=$::alited::al(WIN)
 
@@ -239,7 +242,7 @@ proc find::DoFindUnit {} {
     }
   }
   alited::info::Clear 0
-  ShowResults [string map [list %n $n %s $what] $al(MC,frres1)] 3
+  ShowResults [string map [list %n $n %s $what] $al(MC,frres1)]
 }
 #_______________________
 
@@ -378,7 +381,7 @@ proc find::FindOptions {wtxt} {
 
 # ________________________ Show results _________________________ #
 
-proc find::ShowResults {msg {mode 2} {TID ""}} {
+proc find::ShowResults {msg {mode 3} {TID ""}} {
   # Display a message containing results of a search.
   #   msg - the message
   #   mode - mode for alited::Message
@@ -431,16 +434,18 @@ proc find::InitShowResults {} {
 
 # ________________________ Do search _________________________ #
 
-proc find::CheckWord {wtxt index1 index2} {
+proc find::CheckWord {wtxt index1 index2 {wordonly {}}} {
   # Check if the found string is a word, at searching by words, 
   #   wtxt - text widget's path
   #   index1 - first index of the found string
   #   index2 - last index of the found string
+  #   wordonly - flag "search word only"
   # Returns "yes" if the found string is a word.
 
   variable adelim
   variable data
-  if {$data(c1)} {
+  if {$wordonly eq {}} {set wordonly $data(c1)}
+  if {$wordonly} {
     set index10 [$wtxt index "$index1 - 1c"]
     set index20 [$wtxt index "$index2 + 1c"]
     if {[$wtxt get $index10 $index1] ni $adelim} {return no}
@@ -661,7 +666,7 @@ proc find::Replace {} {
     $wtxt replace $idx1 $idx2 $data(en2)
     SetCursor $wtxt $idx1
     set msg [string map [list %n 1 %s $data(en1) %r $data(en2)] $alited::al(MC,frres2)]
-    ShowResults $msg 3
+    ShowResults $msg
     alited::main::UpdateTextAndGutter
   }
   Find
@@ -679,7 +684,7 @@ proc find::ReplaceAll {TID wtxt allfnd} {
   for {set i [llength $allfnd]} {$i} {} {
     if {!$rn} {
       if {$TID ni [alited::bar::BAR listFlag m]} {
-        alited::unit::BackupFile $TID orig
+        alited::edit::BackupFile $TID orig
       }
     }
     incr i -1
@@ -809,7 +814,88 @@ proc find::LastInvoke {} {
   [$obFND But$data(lastinvoke)] invoke
 }
 
-# ________________________ Main _________________________ #
+# _____________________ Search by list ____________________ #
+
+proc find::SearchByList_Options {findstr} {
+
+  namespace upvar ::alited al al
+  if {!$al(caseSBL)} {append options {-nocase }}
+  # glob search - through its regexp
+  switch $al(matchSBL) {
+    Glob {
+      append options {-regexp }
+      set findstr [string map {* .* ? . . \\. \{ \\\{ \} \\\} ( \\( ) \\) ^ \\^ \$ \\\$ - \\- + \\+} $findstr]
+    }
+    RE {
+      append options {-regexp }
+    }
+    default {
+      append options {-exact }}
+  }
+  return [list $findstr $options]
+}
+#_______________________
+
+proc find::SearchByList_Do {} {
+  # Does searching words by list.
+
+  namespace upvar ::alited al al
+  variable counts
+  set found [set notfound [list]]
+  set wtxt [alited::main::CurrentWTXT]
+  set list [string map {\n { }} $al(listSBL)]
+  foreach findword [split $list] {
+    lassign [SearchByList_Options $findword] findstr options
+    if {[catch {set fnd [$wtxt search {*}$options -count alited::find::counts -all -- $findstr 1.0]} err]} {
+      alited::Message $err 4
+      break
+    }
+    if {[llength $fnd]} {
+      set i 0
+      foreach index1 $fnd {
+        set index2 [$wtxt index "$index1 + [lindex $counts $i]c"]
+        if {[CheckWord $wtxt $index1 $index2 $al(wordonlySBL)]} {
+          set word [$wtxt get $index1 $index2]
+          if {[lsearch -exact $found $word]==-1} {
+            lappend found $word
+          }
+        }
+        incr i
+      }
+    } else {
+      lappend notfound $findword
+    }
+  }
+  alited::msg ok info "Found:\n$found\n[string repeat _ 50]\
+    \n\nNot found:\n$notfound\n" -text 1 -w {40 70} -h {10 20}
+}
+#_______________________
+
+proc find::SearchByList {} {
+  # Searches words by list.
+
+  namespace upvar ::alited al al obDl3 obDl3
+  set head [msgcat::mc {\n Enter a list of words devided by spaces: \n}]
+  set text [string map [list $alited::EOL \n] $al(listSBL)]
+  if {$al(matchSBL) eq {}} {set al(matchSBL) $al(MC,frExact)}
+  lassign [$obDl3 input {} [msgcat::mc {Find by List}] [list \
+    tex "{[msgcat::mc List:]} {} {-w 50 -h 8}" "$text" \
+    seh1  {{} {} {}} {} \
+    radA  {$::alited::al(MC,frMatch)} {"$::alited::al(matchSBL)" "$::alited::al(MC,frExact)" Glob RE} \
+    seh2  {{} {} {}} {} \
+    chb1  {$::alited::al(MC,frWord)} {$::alited::al(wordonlySBL)} \
+    chb2  {$::alited::al(MC,frCase)} {$::alited::al(caseSBL)} \
+    ] -head $head -weight bold] res list match wordonly case
+  if {$res} {
+    set al(listSBL) $list
+    set al(matchSBL) $match
+    set al(wordonlySBL) $wordonly
+    set al(caseSBL) $case
+    SearchByList_Do
+  }
+}
+
+# _____________________ Find/Replace dialogue ____________________ #
 
 proc find::_close {} {
   # Closes Find/Replace dialogue.

@@ -46,6 +46,7 @@ namespace eval ::alited {
     set al(MC,findreplace) [msgcat::mc {Find / Replace}]
     set al(MC,findnext)    [msgcat::mc {Find Next}]
     set al(MC,alloffile)   [msgcat::mc "All of \"%f\""]
+    set al(MC,lines)       [msgcat::mc Lines]
     set al(MC,moveupU)     [msgcat::mc {Move Unit Up}]
     set al(MC,movedownU)   [msgcat::mc {Move Unit Down}]
     set al(MC,moveupF)     [msgcat::mc {Move File Up}]
@@ -130,6 +131,10 @@ namespace eval ::alited {
     set al(MC,favdelq)     [msgcat::mc {Delete a favorites' list #%n ?}]
   
     ## _ find-replace dialogue _ ##
+    set al(MC,frMatch) [msgcat::mc {Match: }]
+    set al(MC,frWord)  [msgcat::mc {Match whole word only}]
+    set al(MC,frExact) [msgcat::mc {Exact}]
+    set al(MC,frCase)  [msgcat::mc {Match case}]
     set al(MC,frres1)  [msgcat::mc "Found %n matches for \"%s\"."]
     set al(MC,frres2)  [msgcat::mc "Made %n replacements of \"%s\" with \"%r\" in \"%f\"."]
     set al(MC,frres3)  [msgcat::mc "Made %n replacements of \"%s\" with \"%r\" in all of session."]

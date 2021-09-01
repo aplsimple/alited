@@ -276,14 +276,14 @@ proc main::HighlightText {TID curfile wtxt} {
     if {[alited::file::IsClang $curfile]} {
       ::hl_c::hl_init $wtxt -dark [$obPav csDarkEdit] \
         -multiline 1 -keywords $al(ED,CKeyWords) \
-        -cmd "::alited::unit::Modified $TID" \
+        -cmd "::alited::edit::Modified $TID" \
         -cmdpos ::alited::main::CursorPos \
         -font $al(FONT,txt) -colors $Ccolors \
         -insertwidth $al(CURSORWIDTH)
     } else {
       ::hl_tcl::hl_init $wtxt -dark [$obPav csDarkEdit] \
         -multiline $al(prjmultiline) \
-        -cmd "::alited::unit::Modified $TID" \
+        -cmd "::alited::edit::Modified $TID" \
         -cmdpos ::alited::main::CursorPos \
         -plaintext [expr {![alited::file::IsTcl $curfile]}] \
         -font $al(FONT,txt) -colors $colors \
@@ -338,6 +338,25 @@ proc main::InsertLine {} {
     set pos $ln.$leadsp
   }
   ::tk::TextSetCursor $wtxt $pos
+}
+#_______________________
+
+proc main::GotoBracket {} {
+  # Processes Alt+B keypressing: "go to a matched bracket".
+
+  # search a pair for a bracket highlighted
+  set wtxt [CurrentWTXT]
+  if {[llength [set tagged [$wtxt tag ranges tagBRACKET]]]==4} {
+    set p [$wtxt index insert]
+    set p1 [$wtxt index "$p +1c"]
+    set p2 [$wtxt index "$p -1c"]
+    foreach {pos1 pos2} $tagged {
+      if {[incr -]==2 || ($pos1!=$p && $pos1!=$p1 && $pos1!=$p2)} {
+        alited::main::FocusText [alited::bar::CurrentTabID] $pos1
+        break
+      }
+    }
+  }
 }
 #_______________________
 
@@ -417,14 +436,37 @@ proc main::ShowHeader {{doit no}} {
 }
 #_______________________
 
-proc main::UpdateProjectInfo {} {
+proc main::CalcIndentation {} {
+  # Check for "Auto detection of indentation" and calculates it at need.
+
+  namespace upvar ::alited al al
+  set res $al(prjindent)
+  if {$al(prjindentAuto)} {
+    catch {
+      set wtxt [CurrentWTXT]
+      foreach line [split [$wtxt get 1.0 end] \n] {
+        if {[set lsp [::apave::obj leadingSpaces $line]]>0} {
+          set res $lsp
+          break
+        }
+      }
+    }
+  }
+  return $res
+}
+
+proc main::UpdateProjectInfo {{indent {}}} {
   # Displays a project settings in the status bar.
+  #   indent - indentation calculated for a text
 
   namespace upvar ::alited al al obPav obPav
   if {$al(prjroot) ne {}} {set stsw normal} {set stsw disabled}
   [$obPav BuTswitch] configure -state $stsw
   if {[set eol $al(prjEOL)] eq {}} {set eol auto}
-  [$obPav Labstat4] configure -text "eol=$eol, [msgcat::mc ind]=$al(prjindent)"
+  if {$indent eq {}} {set indent [CalcIndentation]}
+  set info "eol=$eol, [msgcat::mc ind]=$indent"
+  if {$al(prjindentAuto)} {append info /auto}
+  [$obPav Labstat4] configure -text $info
 }
 #_______________________
 
@@ -483,6 +525,7 @@ proc main::_create {} {
     {Menu - - - - - {-array {
       file File
       edit Edit
+      search Search
       tool Tools
       setup Setup
       help Help
@@ -511,7 +554,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.sev3 - - - - {pack -side right -fill y -padx 0}}
     {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1} 
-      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0}}
+      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0 -selectmode extended}}
     {.fraBot.panBM.fraTree.fra.SbvTree .fraBot.panBM.fraTree.fra.Tree L - - {pack -side right -fill both}}
     {.FraFV - - - - {add}}
     {.fraFV.v_ - - - - {pack -side top -fill x} {-h 5}}

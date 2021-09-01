@@ -1,5 +1,5 @@
 
-package ifneeded apave 3.4.4 [list source [file join $dir apaveinput.tcl]]
+package ifneeded apave 3.4.5a1 [list source [file join $dir apaveinput.tcl]]
 
 # A short intro (for Ruff! docs generator:)
 
