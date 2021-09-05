@@ -27,7 +27,7 @@ namespace eval ::alited {
     {Conversions} {Преобразования}
     {Change Encoding...} {Сменить кодировку...}
     {Change EOL...} {Сменить EOL...}
-    {Tools} {Снасть}
+    {Tools} {Снасти}
     {Setup} {Опции}
     {Help} {Справка}
     {Yes} {Да}
@@ -451,7 +451,7 @@ namespace eval ::alited {
     {Before Run...} {Перед Запуском...}
     {Commands:} {Команды:}
     {Command before "Run"} {Команда перед "Запуском"}
-    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Введите команды, выполняемые перед \"Снасть/Запуск\".\n Это может быть полезно в некоторых проектах. Что-то типа инициализации перед запуском.  \n"
+    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Введите команды, выполняемые перед \"Снасти/Запуск\".\n Это может быть полезно в некоторых проектах. Что-то типа инициализации перед запуском.  \n"
   }
 
   ## ________________________ Checks ________________________ ##
