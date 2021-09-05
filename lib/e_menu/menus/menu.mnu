@@ -3,7 +3,7 @@ g=+0+27
 in=4.3
 bd=1
 w=25
-pos=76.98
+pos=75.76
 ::EMENUTMPFILE=%mn.tmp~
 %C set ::EMENUFILE [string map {\\ /} "%f"]
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
@@ -72,7 +72,7 @@ pos=76.98
  S: Commit "%s" S: %IF [Q "FOSSIL COMMIT" " Add all changes and GIT COMMIT\n\n with message\n\n   '$::TMP_MSG' ?"] %THEN git add *\n\n git commit -m "$::TMP_MSG"
 
  R: Differences of $::FILETAIL (fossil/git) ... R: cd %PD
-RW: Differences of $::FILETAIL (fossil/git) ... RW: fossil tim -t ci -n 11 > $::EMENUTMPFILE
+RW: Differences of $::FILETAIL (fossil/git) ... RW: fossil tim -t ci -n 9999 > $::EMENUTMPFILE
  R: Differences of $::FILETAIL (fossil/git) ... R: %C set ::EMENUBAKFILE [file join "%pd" .bak $::EMENUFILETAIL]
  R: Differences of $::FILETAIL (fossil/git) ... R: %C if {"%BF" ne {}} {set ::EMENUBAKFILE "%BF"}
  R: Differences of $::FILETAIL (fossil/git) ... R: %C if {[file exists "$::EMENUBAKFILE"]} {set ::EMENUCHBSTATE normal} {set ::EMENUCHBSTATE disabled}

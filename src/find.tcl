@@ -619,7 +619,6 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
   set data(_ERR_) no
   foreach tab [SessionList] {
     set TID [lindex $tab 0]
-#    alited::file::ReadFileByTID $TID
     lassign [alited::main::GetText $TID] curfile wtxt
     lappend allfnd {*}[FindAll $wtxt $TID $tagme]
     if {$data(_ERR_)} break
@@ -733,9 +732,6 @@ proc find::ReplaceInSession {} {
   set data(_ERR_) no
   foreach tab [SessionList] {
     set TID [lindex $tab 0]
-#    if {![info exist al(_unittree,$TID)]} {
-#      alited::file::ReadFile $TID [alited::bar::FileName $TID]
-#    }
     lassign [alited::main::GetText $TID] curfile wtxt
     if {[set rdone [ReplaceAll $TID $wtxt [Search $wtxt]]]} {
       ShowResults2 $rdone $alited::al(MC,frres2) $TID

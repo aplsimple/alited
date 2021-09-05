@@ -44,15 +44,15 @@ namespace eval ::apave {
   fI     bI  --12--  bM    fW      bW     itemHL2 #003...reserved...
 
   set ::apave::_CS_(ALL) {
-{{ 0: AzureLight} "#050b0d" #050b0d #e9e9e7 #ebebe9 #002aaa #1b9ae9 #fff #444 grey #007fff #000 #AFAFAF - #e1e1df #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
-{{ 1: ForestLight} "#050b0d" #050b0d #fafaf8 #efefed #004000 #A8CCA8 #000 #444 grey #217346 #000 #AFAFAF - #e5ffe5 #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
-{{ 2: SunValleyLight} "#050b0d" #050b0d #e9e9e7 #ebebe9 #00469f #196ebf #fff #444 grey #005fb8 #000 #AFAFAF - #e1e1df #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
+{{ 0: AzureLight} "#050b0d" #050b0d #fff #e1e1df #002aaa #1b9ae9 #fff #444 grey #007fff #000 #6fbbff - #d7d7d7 #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
+{{ 1: ForestLight} "#050b0d" #050b0d #fff #e1e1df #004000 #A8CCA8 #000 #444 grey #217346 #000 #a8bda8 - #d7d7d7 #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
+{{ 2: SunValleyLight} "#050b0d" #050b0d #fff #d9d9d9 #00469f #196ebf #fff #444 grey #005fb8 #000 #6fbbff - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
 {{ 3: Grey1} "#050b0d" #050b0d #F8F8F8 #dadad8 #5c1616 #AFAFAF #000 #444 grey #933232 #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #004 #005 #006 #007}
-{{ 4: Grey2} "#050b0d" #050b0d #e9e9e7 #F8F8F8 #5c1616 #AFAFAF #000 #444 grey #933232 #000 #AFAFAF - #e1e1df #000 #FBFB95 #d5d5d3 #a20000 #004 #005 #006 #007}
-{{ 5: Rosy} "#2B122A" #000 #FFFFFF #F6E6E9 #570957 #C5ADC8 #000 #444 grey #870287 #000 #C5ADC8 - #e3d3d6 #000 #FBFB95 #e5e3e1 #a20000 #004 #005 #006 #007}
+{{ 4: Grey2} "#050b0d" #050b0d #e9e9e7 #F8F8F8 #5c1616 #b8b8b8 #000 #444 grey #933232 #000 #c1c1c1 - #e1e1df #000 #FBFB95 #d5d5d3 #a20000 #004 #005 #006 #007}
+{{ 5: Rosy} "#2B122A" #000 #FFFFFF #F6E6E9 #570957 #C5ADC8 #000 #444 grey #870287 #000 #ceb6d1 - #e3d3d6 #000 #FBFB95 #e5e3e1 #a20000 #004 #005 #006 #007}
 {{ 6: Clay} "#000" #000 #fdf4ed #ded3cc #500a0a #bcaea2 #000 #444 grey #843500 #fff #9a8f83 - #d5c9c1 #000 #FBFB95 #e1dfde #a20000 #004 #005 #006 #007}
 {{ 7: Dawn} "#08085D" #030358 #FFFFFF #e3f9f9 #562222 #a3dce5 #000 #444 grey #933232 #000 #99d2db - #d3e9e9 #000 #FBFB96 #dbe9ed #a20000 #004 #005 #006 #007}
-{{ 8: Sky} "#102433" #0A1D33 #d0fdff #bdf6ff #562222 #95ced7 #000 #444 grey #933232 #000 #9fd8e1 - #b1eaf3 #000 #FBFB95 #c0e9ef #a20000 #004 #005 #006 #007}
+{{ 8: Sky} "#102433" #0A1D33 #d0fdff #bdf6ff #562222 #95ced7 #000 #444 grey #933232 #000 #9ad3dc - #b1eaf3 #000 #FBFB95 #c0e9ef #a20000 #004 #005 #006 #007}
 {{ 9: Celestial} "#141414" #151616 #d1ffff #a9e2f8 #562222 #82bbd1 #000 #444 grey #933232 #000 #7fb8ce - #9dd6f9 #000 #FBFB96 #b6e4e4 #a20000 #004 #005 #006 #007}
 {{10: Florid} "#000" #004000 #e4fce4 #fff #5c1616 #93e493 #0F2D0F #444 grey #802e00 #004000 #a7f8a7 - #eefdee #000 #FBFB96 #d7e6d7 #a20000 #004 #005 #006 #007}
 {{11: LightGreen} "#122B05" #091900 #edffed #DEF8DE #562222 #A8CCA8 #000 #444 grey #933232 #000 #A8CCA8 - #d0ead0 #000 #FBFB96 #dee9de #a20000 #004 #005 #006 #007}
@@ -67,11 +67,11 @@ namespace eval ::apave {
 {{20: Notebook1} "#000" #000 #dad2b9 #b5af9b #460000 #d59d6f #000 #444 #707070 #771d00 #000 #ba9671 - #c5bfab #000 #eded89 #ccc4ab #a20000 #004 #005 #006 #007}
 {{21: Notebook2} "#000" #000 #cdc5ac #a6a08c #460000 #d59d6f #000 #444 #606060 #771d00 #000 #cfab86 - #b4ae9a #000 #eded89 #c1b9a0 #980000 #004 #005 #006 #007}
 {{22: Notebook3} "#000" #000 #beb69d #96907c #460000 #d59d6f #000 #444 #505050 #771d00 #000 #cfab86 - #a6a08c #000 #eded89 #b2aa91 #7b1010 #004 #005 #006 #007}
-{{23: Darcula} "#ececec" #c7c7c7 #272727 #323232 #e98f1c #2F5692 #e1e1e1 #f4f49f grey #d18d3f #EDC881 #1e4581 - #444444 #000 #a2a23e #343434 #f28787 #004 #005 #006 #007}
-{{24: AzureDark} "#ececec" #c7c7c7 #272727 #393939 #28a7ff #007fff #FFF #f4f49f grey #007fff #EDC881 #006ded - #444444 #000 #a2a23e #404040 #ff95ff #004 #005 #006 #007}
-{{25: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #95bf95 #217346 #FFF #f4f49f grey #99c399 #ffffff #2c7e51 - #444444 #000 #a2a23e #404040 #ff9595 #004 #005 #006 #007}
+{{23: Darcula} "#ececec" #c7c7c7 #272727 #323232 #e98f1c #2F5692 #e1e1e1 #f4f49f grey #d18d3f #EDC881 #2a518d - #444444 #000 #a2a23e #343434 #f28787 #004 #005 #006 #007}
+{{24: AzureDark} "#ececec" #c7c7c7 #272727 #393939 #28a7ff #007fff #FFF #f4f49f grey #007fff #EDC881 #0062a5 - #444444 #000 #a2a23e #404040 #ff95ff #004 #005 #006 #007}
+{{25: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #95bf95 #217346 #FFF #f4f49f grey #99c399 #ffffff #247649 - #444444 #000 #a2a23e #404040 #ff9595 #004 #005 #006 #007}
 {{26: SunValleyDark} "#dfdfdf" #dddddd #131313 #252525 #38a9e0 #2f60d8 #FFF #f4f49f #6f6f6f #57c8ff #fff #2051c9 - #2d2d2d #000 #a2a23e #2a2a2a #ff95ff #004 #005 #006 #007}
-{{27: Dark} "#F0E8E8" #E7E7E7 #272727 #323232 #de9e5e #707070 #000 #f4f49f grey #eda95b #000 #767676 - #454545 #000 #cdcd69 #2e2e2e #ffabab #004 #005 #006 #007}
+{{27: Dark} "#F0E8E8" #E7E7E7 #272727 #323232 #de9e5e #6d6d6d #000 #f4f49f grey #eda95b #000 #767676 - #454545 #000 #cdcd69 #2e2e2e #ffabab #004 #005 #006 #007}
 {{28: Dark1} "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #eda95b #000 #767676 - #363636 #000 #cdcd69 #292929 #ffabab #004 #005 #006 #007}
 {{29: Dark2} "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #000 #f4f49f #616161 #eda95b #000 #767676 - #2b2b2b #000 #b0b04c #262626 #ffabab #004 #005 #006 #007}
 {{30: Dark3} "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #000 #f4f49f #616161 #eda95b #000 #767676 - #1c1c1c #000 #bebe5a #131313 #ffabab #004 #005 #006 #007}
@@ -1018,7 +1018,9 @@ oo::class create ::apave::ObjectTheming {
     # If 'fs' >0, this method sets it.
 
     if {$fs} {
-      return [set ::apave::_CS_(fs) [expr {$fs + $ds}]]
+      set ::apave::_CS_(fs) [expr {$fs + $ds}]
+      my create_Fonts
+      return $::apave::_CS_(fs)
     } else {
       return [expr {$::apave::_CS_(fs) + $ds}]
     }
@@ -1446,7 +1448,7 @@ oo::class create ::apave::ObjectTheming {
       my Ttk_style configure $ts -font $fontdef
       my Ttk_style configure $ts -foreground $tfg1
       my Ttk_style configure $ts -background $tbg1
-      my Ttk_style map $ts -background [list pressed $tbg1 active $tbg2 alternate $tbg2 focus $tbg2 selected $tbg2]
+      my Ttk_style map $ts -background [list pressed $tbg2 active $tbg2 alternate $tbg2]
       my Ttk_style map $ts -foreground [list disabled $tfgD pressed $bclr active $tfg2 alternate $tfg2 focus $tfg2 selected $tfg1]
       my Ttk_style map $ts -bordercolor [list focus $bclr pressed $bclr]
       my Ttk_style map $ts -lightcolor [list focus $bclr]
@@ -1492,8 +1494,8 @@ oo::class create ::apave::ObjectTheming {
         # combobox is sort of individual
         my Ttk_style configure $ts -foreground $tfg1
         my Ttk_style configure $ts -background $tbg1
-        my Ttk_style map $ts -foreground [list {readonly focus} $tfg2 {active focus} $tfg2]
         my Ttk_style map $ts -background [list {readonly focus} $tbg2 {active focus} $tbg2]
+        my Ttk_style map $ts -foreground [list {readonly focus} $tfg2 {active focus} $tfg2]
         my Ttk_style map $ts -fieldforeground [list {active focus} $tfg2 readonly $tfg2 disabled $tfgD]
         my Ttk_style map $ts -fieldbackground [list {active focus} $tbg2 {readonly focus} $tbg2 {readonly !focus} $tbg1 disabled $tbgD]
       } else {
@@ -1510,7 +1512,7 @@ oo::class create ::apave::ObjectTheming {
     option add *Menu.font $fontdef
     my Ttk_style configure TMenubutton -foreground $tfgM
     my Ttk_style configure TMenubutton -background $tbgM
-    foreach {nam clr} {back tbg1 fore tfg1 selectBack tbgS selectFore tfgS} {
+    foreach {nam clr} {back tbg2 fore tfg2 selectBack tbgS selectFore tfgS} {
       option add *Listbox.${nam}ground [set $clr]
     }
     foreach {nam clr} {back tbgM fore tfgM selectBack tbgS selectFore tfgS} {

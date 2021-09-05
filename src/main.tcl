@@ -95,7 +95,11 @@ proc main::GetText {TID {doshow no}} {
   if {$doinit} {
     # if the file isn't read yet, read it and initialize its highlighting
     alited::file::DisplayFile $TID $curfile $wtxt $doreload
-    HighlightText $TID $curfile $wtxt
+    if {$doshow} {
+      HighlightText $TID $curfile $wtxt
+    } else {
+      alited::file::MakeThemHighlighted $TID  ;# postpone the highlighting till a show
+    }
   } elseif {[alited::file::ToBeHighlighted $wtxt]} {
     HighlightText $TID $curfile $wtxt
     if {$al(TREE,isunits)} alited::tree::RecreateTree
@@ -482,7 +486,7 @@ proc main::BindsForText {TID wtxt} {
   bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
   bind $wtxt <Control-Tab> {::alited::bar::ControlTab ; break}
   bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}
-  bind $wtxt <<Undo>> {after idle alited::main::HighlightLine}
+  bind $wtxt <<Undo>> {+ alited::main::HighlightLine}
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action
   alited::keys::BindKeys $wtxt template

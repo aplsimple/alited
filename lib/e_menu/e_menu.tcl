@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.5a1"
+  variable em_version "e_menu 3.4.5a5"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -1931,7 +1931,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         }
         o= {set ::em::ornament [::apave::getN $seltd 0 -1 3]
           if {$::em::ornament>1} {
-            set ::em::font_f2 "-family [::apave::obj basicTextFont]"
+            set ::em::font_f2 "-family {[::apave::obj basicTextFont]}"
           }
         }
         g= {

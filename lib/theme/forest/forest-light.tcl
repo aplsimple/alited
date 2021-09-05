@@ -28,7 +28,7 @@ namespace eval ttk::theme::forest-light {
 
     LoadImages [file join [file dirname [info script]] forest-light]
 
-    # Settings
+    # _ Settings _ #
     ttk::style theme create forest-light -parent default -settings {
         ttk::style configure . \
             -background $colors(-bg) \
@@ -58,7 +58,7 @@ namespace eval ttk::theme::forest-light {
         option add *Menu.background #e5ffe5
 
 
-        # Layouts
+        # _ Layouts _ #
         ttk::style layout TButton {
             Button.button -children {
                 Button.padding -children {
@@ -147,12 +147,16 @@ namespace eval ttk::theme::forest-light {
 
         ttk::style layout Vertical.TScrollbar {
             Vertical.Scrollbar.trough -sticky ns -children {
+                Vertical.Scrollbar.uparrow -side top
+                Vertical.Scrollbar.downarrow -side bottom
                 Vertical.Scrollbar.thumb -expand true
             }
         }
 
         ttk::style layout Horizontal.TScrollbar {
             Horizontal.Scrollbar.trough -sticky ew -children {
+                Horizontal.Scrollbar.leftarrow -side left
+                Horizontal.Scrollbar.rightarrow -side right
                 Horizontal.Scrollbar.thumb -expand true
             }
         }
@@ -233,7 +237,7 @@ namespace eval ttk::theme::forest-light {
 
         # Elements
 
-        # Button
+        # _ Button _ #
         ttk::style configure TButton -padding {8 4 8 4} -width -10 -anchor center
 
         ttk::style element create Button.button image \
@@ -311,7 +315,7 @@ namespace eval ttk::theme::forest-light {
                 active $I(rect-accent-hover) \
             ] -border 4 -sticky nsew
 
-        # Checkbutton
+        # _ Checkbutton _ #
         ttk::style configure TCheckbutton -padding 4
 
         ttk::style element create Checkbutton.indicator image \
@@ -329,7 +333,7 @@ namespace eval ttk::theme::forest-light {
                 {focus !selected} $I(check-unsel-hover) \
             ] -width 26 -sticky w
 
-        # Switch
+        # _ Switch _ #
         ttk::style element create Switch.indicator image \
             [list $I(off-accent) \
                 {selected disabled} $I(on-basic) \
@@ -378,25 +382,31 @@ namespace eval ttk::theme::forest-light {
                 {focus !selected} $I(radio-unsel-hover) \
             ] -width 26 -sticky w
 
-        # Scrollbar
-        ttk::style element create Horizontal.Scrollbar.trough image $I(hor-accent) \
+        # _ Scrollbar _ #
+        ttk::style element create Horizontal.Scrollbar.trough image $I(hor-basic) \
             -sticky ew
-        ttk::style element create Vertical.Scrollbar.trough image $I(vert-accent) \
+        ttk::style element create Vertical.Scrollbar.trough image $I(vert-basic) \
             -sticky ns
 
         ttk::style element create Horizontal.Scrollbar.thumb image \
-            [list $I(hor-basic) \
-                disabled $I(hor-accent) \
+            [list $I(hor-accent) \
+                disabled $I(hor-basic) \
                 pressed $I(hor-hover) \
                 active $I(hor-hover) \
             ] -sticky ew
 
         ttk::style element create Vertical.Scrollbar.thumb image \
-            [list $I(vert-basic) \
-                disabled  $I(vert-accent) \
+            [list $I(vert-accent) \
+                disabled  $I(vert-basic) \
                 pressed $I(vert-hover) \
                 active $I(vert-hover) \
             ] -sticky ns
+
+        ttk::style element create Vertical.Scrollbar.uparrow image $I(scroll-up) -sticky {} -height 12
+        ttk::style element create Vertical.Scrollbar.downarrow image $I(scroll-down) -sticky {} -height 12
+
+        ttk::style element create Horizontal.Scrollbar.rightarrow image $I(scroll-right) -sticky {} -width 12
+        ttk::style element create Horizontal.Scrollbar.leftarrow image $I(scroll-left) -sticky {} -width 12
 
         # Scale
         ttk::style element create Horizontal.Scale.trough image $I(scale-hor) \
@@ -442,7 +452,7 @@ namespace eval ttk::theme::forest-light {
                 hover $I(border-hover) \
             ] -border 5 -padding {8} -sticky nsew
 
-        # Combobox
+        # _ Combobox _ #
         ttk::style map TCombobox -selectbackground [list \
             {!focus} $colors(-selectbg) \
             {readonly hover} $colors(-selectbg) \
@@ -478,7 +488,7 @@ namespace eval ttk::theme::forest-light {
 
         ttk::style element create Combobox.arrow image $I(down) -width 15 -sticky e
 
-        # Spinbox
+        # _ Spinbox _ #
         ttk::style element create Spinbox.field image \
             [list $I(border-basic) \
                 invalid $I(border-invalid) \
@@ -514,7 +524,7 @@ namespace eval ttk::theme::forest-light {
         ttk::style element create Labelframe.border image $I(card) \
             -border 5 -padding 4 -sticky nsew
 
-        # Notebook
+        # _ Notebook _ #
         ttk::style configure TNotebook -padding 2
 
         ttk::style element create Notebook.border image $I(card) -border 5
@@ -527,9 +537,9 @@ namespace eval ttk::theme::forest-light {
                 {focus selected} $I(tab-hover) \
             ] -border 5 -padding {14 4}
 
-        # Treeview
-        ttk::style element create Treeview.field image $I(card) \
-            -border 5
+        # _ Treeview _ #
+#        ttk::style element create Treeview.field image $I(card) \
+#            -border 5
 
         ttk::style element create Treeheading.cell image \
             [list $I(tree-basic) \

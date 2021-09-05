@@ -39,15 +39,19 @@ proc edit::Indent {} {
   set len [string length $::apave::_AP_VARS(INDENT)]
   for {set l $l1} {$l<=$l2} {incr l} {
     set line [$wtxt get $l.0 $l.end]
-    set leadsp [::apave::obj leadingSpaces $line]
-    set sp [expr {$leadsp % $len}]
-    # align by the indent edge
-    if {$sp==0} {
-      set ind $indent
+    if {[string trim $line] eq {}} {
+      $wtxt replace $l.0 $l.end {}
     } else {
-      set ind [string repeat " " [expr {$len - $sp}]]
+      set leadsp [::apave::obj leadingSpaces $line]
+      set sp [expr {$leadsp % $len}]
+      # align by the indent edge
+      if {$sp==0} {
+        set ind $indent
+      } else {
+        set ind [string repeat " " [expr {$len - $sp}]]
+      }
+      $wtxt insert $l.0 $ind
     }
-    $wtxt insert $l.0 $ind
   }
   alited::main::HighlightLine
 }
@@ -60,7 +64,9 @@ proc edit::UnIndent {} {
   set len [string length $::apave::_AP_VARS(INDENT)]
   for {set l $l1} {$l<=$l2} {incr l} {
     set line [$wtxt get $l.0 $l.end]
-    if {[string first " " $line]==0} {
+    if {[string trim $line] eq {}} {
+      $wtxt replace $l.0 $l.end {}
+    } elseif {[string index $line 0] eq { }} {
       set leadsp [::apave::obj leadingSpaces $line]
       # align by the indent edge
       set sp [expr {$leadsp % $len}]

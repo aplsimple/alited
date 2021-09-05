@@ -16,7 +16,6 @@ namespace eval ttk::theme::sun-valley-light {
                 [image create photo -file $file -format png]
             }
         }
-
     # ________________________ load images _________________________ #
 
         load_images [file join [file dirname [info script]] light]
@@ -188,7 +187,7 @@ namespace eval ttk::theme::sun-valley-light {
             }
         }
 
-        # Button
+        # _ Button _ #
         ttk::style configure TButton -padding {8 4} -anchor center -foreground $colors(-fg)
 
         ttk::style map TButton -foreground \
@@ -263,7 +262,7 @@ namespace eval ttk::theme::sun-valley-light {
                 active $images(button-accent-hover) \
             ] -border 4 -sticky nsew
 
-        # Checkbutton
+        # _  Checkbutton _ #
         ttk::style configure TCheckbutton -padding 4
 
         ttk::style element create Checkbutton.indicator image \
@@ -281,7 +280,7 @@ namespace eval ttk::theme::sun-valley-light {
                 {focus !selected} $images(check-unsel-hover) \
             ] -width 26 -sticky w
 
-        # Switch.TCheckbutton
+        # _ Switch.TCheckbutton _ #
         ttk::style element create Switch.indicator image \
             [list $images(switch-off) \
                 {selected disabled} $images(switch-on-disabled) \
@@ -397,7 +396,7 @@ namespace eval ttk::theme::sun-valley-light {
                 hover $images(entry-hover) \
             ] -border 5 -padding 8 -sticky nsew
 
-        # Combobox
+        # _ Combobox _ #
         ttk::style configure TCombobox -foreground $colors(-fg)
 
         ttk::style configure ComboboxPopdownFrame -borderwidth 1 -relief solid
@@ -429,7 +428,7 @@ namespace eval ttk::theme::sun-valley-light {
 
         ttk::style element create Combobox.arrow image $images(arrow-down) -width 35 -sticky {}
 
-        # Spinbox
+        # _ Spinbox _ #
         ttk::style configure TSpinbox -foreground $colors(-fg)
 
         ttk::style map TSpinbox -foreground \
@@ -464,7 +463,7 @@ namespace eval ttk::theme::sun-valley-light {
         ttk::style element create Labelframe.border image $images(card) \
             -border 5 -padding 4 -sticky nsew
 
-        # Notebook
+        # _ Notebook _ #
         ttk::style configure TNotebook -padding 1
 
         ttk::style element create Notebook.border \
@@ -476,12 +475,12 @@ namespace eval ttk::theme::sun-valley-light {
             image [list $images(tab-rest) \
                 {selected focus} $images(tab-sel-focus) \
                 {selected !focus} $images(tab-selected) \
-                active $images(tab-hover) \
+                active $images(tab-rest) \
             ] -border 13 -padding {16 14 16 6} -height 32
 
-        # Treeview
-        ttk::style element create Treeview.field image $images(card) \
-            -border 5
+        # _ Treeview _ #
+#        ttk::style element create Treeview.field image $images(card) \
+#            -border 5
 
         ttk::style element create Treeheading.cell \
             image [list $images(treeheading-rest) \

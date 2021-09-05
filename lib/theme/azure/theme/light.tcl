@@ -17,9 +17,10 @@ namespace eval ttk::theme::azure-light {
             }
         }
 
-    # ________________________ load images _________________________ #
 
         load_images [file join [file dirname [info script]] light]
+
+    # ________________________ Layouts _________________________ #
 
         array set colors {
             -fg             "#000000"
@@ -109,12 +110,16 @@ namespace eval ttk::theme::azure-light {
 
         ttk::style layout Vertical.TScrollbar {
             Vertical.Scrollbar.trough -sticky ns -children {
+                Vertical.Scrollbar.uparrow -side top
+                Vertical.Scrollbar.downarrow -side bottom
                 Vertical.Scrollbar.thumb -expand true
             }
         }
 
         ttk::style layout Horizontal.TScrollbar {
             Horizontal.Scrollbar.trough -sticky ew -children {
+                Horizontal.Scrollbar.leftarrow -side left
+                Horizontal.Scrollbar.rightarrow -side right
                 Horizontal.Scrollbar.thumb -expand true
             }
         }
@@ -198,7 +203,8 @@ namespace eval ttk::theme::azure-light {
 
         # Elements
 
-        # Button
+        # _ Button _ #
+
         ttk::style configure TButton -padding {8 4 8 4} -width -10 -anchor center
 
         ttk::style element create Button.button image \
@@ -276,7 +282,7 @@ namespace eval ttk::theme::azure-light {
                 active $I(rect-accent-hover) \
             ] -border 4 -sticky ewns
 
-        # Checkbutton
+        # _ Checkbutton _ #
         ttk::style configure TCheckbutton -padding 4
 
         ttk::style element create Checkbutton.indicator image \
@@ -293,7 +299,7 @@ namespace eval ttk::theme::azure-light {
                 {focus !selected} $I(check-unsel-hover) \
             ] -width 26 -sticky w
 
-        # Switch
+        # _ Switch _ #
         ttk::style element create Switch.indicator image \
             [list $I(off-basic) \
                 {selected disabled} $I(on-basic) \
@@ -335,7 +341,7 @@ namespace eval ttk::theme::azure-light {
                 {focus !selected} $I(radio-unsel-hover) \
             ] -width 26 -sticky w
 
-        # Scrollbar
+        # _ Scrollbar _ #
         ttk::style element create Horizontal.Scrollbar.trough image $I(hor-basic) \
             -sticky ew
 
@@ -355,6 +361,12 @@ namespace eval ttk::theme::azure-light {
                 pressed $I(vert-hover) \
                 active $I(vert-hover) \
             ] -sticky ns
+
+        ttk::style element create Vertical.Scrollbar.uparrow image $I(scroll-up) -sticky {} -height 12
+        ttk::style element create Vertical.Scrollbar.downarrow image $I(scroll-down) -sticky {} -height 12
+
+        ttk::style element create Horizontal.Scrollbar.rightarrow image $I(scroll-right) -sticky {} -width 12
+        ttk::style element create Horizontal.Scrollbar.leftarrow image $I(scroll-left) -sticky {} -width 12
 
         # Scale
         ttk::style element create Horizontal.Scale.trough image $I(scale-hor) \
@@ -421,7 +433,7 @@ namespace eval ttk::theme::azure-light {
                 hover $I(box-hover) \
             ] -border 5 -padding {8} -sticky news
 
-        # Combobox
+        # _ Combobox _ #
         ttk::style map TCombobox -selectbackground [list \
             {!focus} $colors(-selectbg) \
             {readonly hover} $colors(-selectbg) \
@@ -453,13 +465,13 @@ namespace eval ttk::theme::azure-light {
             image [list $I(combo-button-basic) \
                  {!readonly focus} $I(combo-button-focus) \
                  {readonly focus} $I(combo-button-hover) \
-                 {readonly hover} $I(combo-button-hover)
+                 {readonly hover} $I(combo-button-hover) \
             ] -border 5 -padding {2 6 6 6}
 
         ttk::style element create Combobox.arrow image $I(down) \
             -width 15 -sticky e
 
-        # Spinbox
+        # _ Spinbox _ #
         ttk::style element create Spinbox.field \
             image [list $I(box-basic) \
                 invalid $I(box-invalid) \
@@ -506,20 +518,20 @@ namespace eval ttk::theme::azure-light {
         ttk::style element create Labelframe.border image $I(card) \
             -border 5 -padding 4 -sticky news
 
-        # Notebook
+        # _ Notebook _ #
         ttk::style element create Notebook.client \
             image $I(notebook) -border 5
 
         ttk::style element create Notebook.tab \
-            image [list $I(tab-disabled) \
+            image [list $I(tab-hover) \
                 {selected focus} $I(tab-sel-focus) \
                 {selected !focus} $I(tab-sel) \
                 active $I(tab-hover) \
             ] -border 5 -padding {14 4}
 
-        # Treeview
-        ttk::style element create Treeview.field image $I(card) \
-            -border 5
+        # _ Treeview _ #
+#        ttk::style element create Treeview.field image $I(card) \
+#            -border 5
 
         ttk::style element create Treeheading.cell \
             image [list $I(tree-basic) \
@@ -532,7 +544,7 @@ namespace eval ttk::theme::azure-light {
                 user1 $I(down) \
             ] -width 26 -sticky {}
 
-        ttk::style configure Treeview -background $colors(-bg)
+#        ttk::style configure Treeview -background $colors(-bg)
         ttk::style configure Treeview.Item -padding {2 0 0 0}
         ttk::style map Treeview \
             -background [list selected $colors(-selectbg)] \

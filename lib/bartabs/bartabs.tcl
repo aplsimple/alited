@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.4.8
+package provide bartabs 1.4.9
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -191,7 +191,7 @@ method Tab_Create {BID TID w text} {
 #   text - tab's label
 # Returns a list of created widgets of the tab.
 
-  lassign [my $BID cget -relief -bd -padx -pady] relief bd padx pady
+  lassign [my $BID cget -relief -bd -padx -pady -BGMAIN] relief bd padx pady bgm
   set bd [expr {$bd?1:0}]
   lassign [my $TID cget -wb -wb1 -wb2] wb wb1 wb2
   if {![my Tab_Is $wb]} {
@@ -210,7 +210,7 @@ method Tab_Create {BID TID w text} {
         -command [list [self] $TID close] -takefocus 0
     } else {
       button $wb2 -borderwidth 0 -highlightthickness 0 -image bts_ImgNone \
-        -command [list [self] $TID close] -takefocus 0
+        -command [list [self] $TID close] -takefocus 0 -background $bgm
     }
   } else {
     $wb configure -relief $relief -borderwidth $bd
@@ -2037,6 +2037,7 @@ method create {barCom {barOpts ""} {tab1 ""}} {
   lappend barOpts -WWID [list $wframe $wlarr $wrarr]
   my My [set BID [my Bar_Data $barOpts]]
   my $BID InitColors
+  set bgm [my $BID cget -BGMAIN]
   if {[my TtkTheme]} {
     ttk::button $wlarr -style ClButton$BID -image bts_ImgLeft \
       -command [list [self] $BID scrollLeft] -takefocus 0
@@ -2044,9 +2045,9 @@ method create {barCom {barOpts ""} {tab1 ""}} {
       -command [list [self] $BID scrollRight] -takefocus 0
   } else {
     button $wlarr -image bts_ImgLeft -borderwidth 0 -highlightthickness 0 \
-      -command [list [self] $BID scrollLeft] -takefocus 0
+      -command [list [self] $BID scrollLeft] -takefocus 0 -background $bgm
     button $wrarr -image bts_ImgRight -borderwidth 0 -highlightthickness 0 \
-      -command [list [self] $BID scrollRight] -takefocus 0
+      -command [list [self] $BID scrollRight] -takefocus 0 -background $bgm
   }
   ttk::frame $wframe -relief flat
   pack $wlarr -side left -padx 0 -pady 0 -anchor e

@@ -1825,7 +1825,7 @@ oo::class create ::apave::APave {
         append addattrs2 " -$atr {$val}"
       }
     }
-    set an [set entname ""]
+    set an [set entname {}]
     lassign [my LowercaseWidgetName $name] n
     switch -glob -- [my ownWName $n] {
       fil* {set chooser tk_getOpenFile}
@@ -1881,7 +1881,7 @@ oo::class create ::apave::APave {
     if {$ispack} {
       set args [list $name - - - - "pack -expand 0 -fill x [string range $gm 5 end]" $addattrs]
     } else {
-      set args [list $name $neighbor $posofnei $rowspan $colspan "-st ew" $addattrs]
+      set args [list $name $neighbor $posofnei $rowspan $colspan {-st ew} $addattrs]
     }
     lset lwidgets $i $args
     if {$view ne {}} {
@@ -2064,13 +2064,13 @@ oo::class create ::apave::APave {
             } else {
               set but BuT
             }
+            lassign [my csGet] - fg - bg
             if {[string match _* $v1]} {
               set font [my boldTextFont 16]
-              lassign [my csGet] - fg - bg
               set img "-font {$font} -foreground $fg -background $bg -width 2 -bd 0 -pady 0 -padx 2"
               set v1 _untouch_$v1
             } else {
-              set img "-image $v1"
+              set img "-image $v1 -background $bg"
             }
             set v2 "$img -command $v2 -relief flat -highlightthickness 0 -takefocus 0"
             set v1 [my Transname $but _$v1]

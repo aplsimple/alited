@@ -34,7 +34,7 @@
 
 package require Tk
 
-package provide apave 3.4.5a2
+package provide apave 3.4.5a4
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 

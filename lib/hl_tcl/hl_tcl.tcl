@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.16
+package provide hl_tcl 0.9.17
 
 # ______________________ Common data ____________________ #
 
@@ -576,17 +576,18 @@ proc ::hl_tcl::my::CoroModified {txt {i1 -1} {i2 -1} args} {
   # flag "highlight to the end":
   set bf1 [expr {abs($ln-int($data(CURPOS,$txt)))>1 || $dl>1 \
    || $cntq!=$data(CNT_QUOTE,$txt) \
-   || $cnts!=$data(CNT_SLASH,$txt) \
    || $ccmnt!=$data(CNT_COMMENT,$txt)}]
-  if {$bf1 && !$data(MULTILINE,$txt)} {
+  set bf2 [expr {$cnts!=$data(CNT_SLASH,$txt)}]
+  if {$bf1 && !$data(MULTILINE,$txt) || $bf2} {
     set lnt1 $ln
     set lnt2 [expr {$ln+1}]
     while {$ln2<$endl && $lnt1<$endl && $lnt2<=$endl && ( \
     [$txt get "$lnt1.end -1 char" $lnt1.end] in {\\ \"} ||
-    [$txt get "$lnt2.end -1 char" $lnt2.end] in {\\ \"})} {
+    [$txt get "$lnt2.end -1 char" $lnt2.end] in {\\ \"}) || $bf2} {
       incr lnt1 ;# next lines be handled too, if ended with "\\"
       incr lnt2
       incr ln2
+      set bf2 0
     }
   }
   set tSTR [$txt tag ranges tagSTR]

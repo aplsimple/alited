@@ -27,7 +27,7 @@ namespace eval ::alited {
     {Conversions} {Преобразования}
     {Change Encoding...} {Сменить кодировку...}
     {Change EOL...} {Сменить EOL...}
-    {Tools} {Инструменты}
+    {Tools} {Снасть}
     {Setup} {Опции}
     {Help} {Справка}
     {Yes} {Да}
@@ -67,7 +67,7 @@ namespace eval ::alited {
     {Default} {По умолчанию}
     {Test} {Проверка}
     {Correct Indentation} {Поправить отступы}
-    "Correct the indentation of \"%f\" ?" "Поправить отступы \"%f\" ?"
+    "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Поправить отступы \"%f\",\nпо %i на каждый?"
     {The line %n: unbalanced brace!} {Строка %n: несбалансированная скобка!}
     {Wrap Lines} {Сворачивать строки}
     {Default values for new projects:} {Опции по умолчанию для проектов:}
@@ -451,7 +451,7 @@ namespace eval ::alited {
     {Before Run...} {Перед Запуском...}
     {Commands:} {Команды:}
     {Command before "Run"} {Команда перед "Запуском"}
-    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Введите команды, выполняемые перед \"Инструменты/Запуск\".\n Это может быть полезно в некоторых проектах. Что-то типа инициализации перед запуском.  \n"
+    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Введите команды, выполняемые перед \"Снасть/Запуск\".\n Это может быть полезно в некоторых проектах. Что-то типа инициализации перед запуском.  \n"
   }
 
   ## ________________________ Checks ________________________ ##

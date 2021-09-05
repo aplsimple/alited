@@ -95,13 +95,14 @@ proc indent::normalize {} {
   # Normalizes all indents of the current Tcl text.
 
   set txt [alited::main::CurrentWTXT]
-  set pad $alited::al(prjindent)
+  set pad [alited::main::CalcIndentation]
   set indcnt 0
   if {$pad<1} {
     alited::msg ok err "No indentation set.\nSee 'Setup/Projects/Options'."
     return
   }
-  set msg [msgcat::mc "Correct the indentation of \"%f\" ?"]
+  set msg [msgcat::mc "Correct the indentation of \"%f\"\nwith indenting %i spaces?"]
+  set msg [string map [list %i $pad] $msg]
   set msg [string map [list %f [file tail [alited::bar::FileName]]] $msg]
   if {[alited::msg yesno ques $msg YES]} {
     set contents [$txt get 1.0 {end -1 chars}]

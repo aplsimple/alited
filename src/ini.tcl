@@ -885,8 +885,7 @@ proc ini::InitTheme {} {
       global auto_path
       lappend auto_path [file join $alited::LIBDIR theme awthemes-10.4.0]
       package require awthemes
-      package require ttk::theme::awdark
-      package require ttk::theme::awlight
+      package require ttk::theme::$al(THEME)
       set theme $al(THEME)
       set lbd 1
     }
@@ -978,10 +977,10 @@ proc ini::_init {} {
   set listIcons [::apave::iconImage]
   # the below icons' order defines their order in the toolbar
   foreach {icon} {none gulls heart add change delete up down plus minus \
-  retry misc previous next folder file OpenFile box SaveFile saveall \
-  undo redo help replace ok color date run other e_menu trash} {
+  retry misc previous next folder file OpenFile SaveFile saveall categories \
+  undo redo replace ok color date help run other e_menu trash} {
     set img [CreateIcon $icon]
-    if {$icon in {"file" OpenFile box SaveFile saveall help ok color date other \
+    if {$icon in {"file" OpenFile categories SaveFile saveall help ok color date other \
     replace e_menu run undo redo}} {
       append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4} "
       switch $icon {
@@ -989,10 +988,7 @@ proc ini::_init {} {
           append al(atools) "-com alited::file::NewFile\}"
         }
         OpenFile {
-          append al(atools) "-com alited::file::OpenFile\}"
-        }
-        box {
-          append al(atools) "-com alited::project::_run\} sev 6"
+          append al(atools) "-com alited::file::OpenFile\} sev 6"
         }
         SaveFile {
           append al(atools) "-com alited::file::SaveFile -state disabled\}"
@@ -1000,14 +996,14 @@ proc ini::_init {} {
         saveall {
           append al(atools) "-com alited::file::SaveAll -state disabled\} sev 6"
         }
+        categories {
+          append al(atools) "-com alited::project::_run\} sev 6"
+        }
         undo {
           append al(atools) "-com alited::tool::Undo -state disabled\}"
         }
         redo {
           append al(atools) "-com alited::tool::Redo -state disabled\} sev 6"
-        }
-        help {
-          append al(atools) "-com alited::tool::Help\}"
         }
         replace {
           append al(atools) "-com alited::find::_run\}"
@@ -1019,7 +1015,10 @@ proc ini::_init {} {
           append al(atools) "-command alited::tool::ColorPicker\}"
         }
         date {
-          append al(atools) "-command alited::tool::DatePicker\} sev 6"
+          append al(atools) "-command alited::tool::DatePicker\}"
+        }
+        help {
+          append al(atools) "-com alited::tool::Help\} sev 6"
         }
         run {
           append al(atools) "-com alited::tool::_run\}"

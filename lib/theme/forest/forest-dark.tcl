@@ -28,7 +28,8 @@ namespace eval ttk::theme::forest-dark {
 
     LoadImages [file join [file dirname [info script]] forest-dark]
 
-    # Settings
+    # _ Layouts _ #
+
     ttk::style theme create forest-dark -parent default -settings {
         ttk::style configure . \
             -background $colors(-bg) \
@@ -147,12 +148,16 @@ namespace eval ttk::theme::forest-dark {
 
         ttk::style layout Vertical.TScrollbar {
             Vertical.Scrollbar.trough -sticky ns -children {
+                Vertical.Scrollbar.uparrow -side top
+                Vertical.Scrollbar.downarrow -side bottom
                 Vertical.Scrollbar.thumb -expand true
             }
         }
 
         ttk::style layout Horizontal.TScrollbar {
             Horizontal.Scrollbar.trough -sticky ew -children {
+                Horizontal.Scrollbar.leftarrow -side left
+                Horizontal.Scrollbar.rightarrow -side right
                 Horizontal.Scrollbar.thumb -expand true
             }
         }
@@ -233,7 +238,8 @@ namespace eval ttk::theme::forest-dark {
 
         # Elements
 
-        # Button
+        # _ Button _ #
+
         ttk::style configure TButton -padding {8 4 8 4} -width -10 -anchor center
 
         ttk::style element create Button.button image \
@@ -311,7 +317,7 @@ namespace eval ttk::theme::forest-dark {
                 active $I(rect-accent-hover) \
             ] -border 4 -sticky nsew
 
-        # Checkbutton
+        # _ Checkbutton _ #
         ttk::style configure TCheckbutton -padding 4
 
         ttk::style element create Checkbutton.indicator image \
@@ -328,7 +334,7 @@ namespace eval ttk::theme::forest-dark {
                 {focus !selected} $I(check-unsel-hover) \
             ] -width 26 -sticky w
 
-        # Switch
+        # _ Switch _ #
         ttk::style element create Switch.indicator image \
             [list $I(off-accent) \
                 {selected disabled} $I(on-basic) \
@@ -441,7 +447,7 @@ namespace eval ttk::theme::forest-dark {
                 hover $I(border-hover) \
             ] -border 5 -padding {8} -sticky nsew
 
-        # Combobox
+        # _ Combobox _ #
         ttk::style map TCombobox -selectbackground [list \
             {!focus} $colors(-selectbg) \
             {readonly hover} $colors(-selectbg) \
@@ -477,7 +483,7 @@ namespace eval ttk::theme::forest-dark {
 
         ttk::style element create Combobox.arrow image $I(down) -width 15 -sticky e
 
-        # Spinbox
+        # _ Spinbox _ #
         ttk::style element create Spinbox.field image \
             [list $I(border-basic) \
                 invalid $I(border-invalid) \
@@ -513,10 +519,10 @@ namespace eval ttk::theme::forest-dark {
         ttk::style element create Labelframe.border image $I(card) \
             -border 5 -padding 4 -sticky nsew
 
-        # Notebook
+        # _ Notebook _ #
         ttk::style configure TNotebook -padding 2
 
-        ttk::style element create Notebook.border image $I(card) -border 5
+        ttk::style element create Notebook.border image $I(notebook-border) -border 5
 
         ttk::style element create Notebook.client image $I(notebook) -border 5
 
@@ -526,9 +532,9 @@ namespace eval ttk::theme::forest-dark {
                 {focus selected} $I(tab-hover) \
             ] -border 5 -padding {14 4}
 
-        # Treeview
-        ttk::style element create Treeview.field image $I(card) \
-            -border 5
+        # _ Treeview _ #
+#        ttk::style element create Treeview.field image $I(card) \
+#            -border 5
 
         ttk::style element create Treeheading.cell image \
             [list $I(tree-basic) \

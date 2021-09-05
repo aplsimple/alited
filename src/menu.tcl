@@ -101,14 +101,14 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,uncomment) -command alited::edit::UnComment -accelerator $al(acc_9)
   $m add separator
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
-  $m add separator
 
 ### ________________________ Conversions _________________________ ###
 
-  menu $m.convert -tearoff 0
-  $m add cascade -label [msgcat::mc Conversions] -menu $m.convert
-  $m.convert add command -label [msgcat::mc {Change Encoding...}] -command alited::edit::ChangeEncoding
-  $m.convert add command -label [msgcat::mc {Change EOL...}] -command alited::edit::ChangeEOL
+#  $m add separator
+#  menu $m.convert -tearoff 0
+#  $m add cascade -label [msgcat::mc Conversions] -menu $m.convert
+#  $m.convert add command -label [msgcat::mc {Change Encoding...}] -command alited::edit::ChangeEncoding
+#  $m.convert add command -label [msgcat::mc {Change EOL...}] -command alited::edit::ChangeEOL
 
 ## ________________________ Search _________________________ ##
   set m [set al(SEARCH) $al(WIN).menu.search]
