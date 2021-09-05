@@ -271,11 +271,8 @@ namespace eval ttk::theme::sun-valley-light {
                 {alternate disabled} $images(check-tri-disabled) \
                 {selected disabled} $images(check-disabled) \
                 disabled $images(check-unsel-disabled) \
-                {pressed alternate} $images(check-tri-hover) \
                 {active alternate} $images(check-tri-hover) \
                 alternate $images(check-tri-rest) \
-                {pressed selected} $images(check-hover) \
-                {pressed !selected} $images(check-unsel-pressed) \
                 {active selected} $images(check-hover) \
                 {active !selected} $images(check-unsel) \
                 {!focus selected} $images(check-hover) \
@@ -286,12 +283,10 @@ namespace eval ttk::theme::sun-valley-light {
 
         # Switch.TCheckbutton
         ttk::style element create Switch.indicator image \
-            [list $images(switch-off-rest) \
+            [list $images(switch-off) \
                 {selected disabled} $images(switch-on-disabled) \
                 disabled $images(switch-off-disabled) \
-                {pressed selected} $images(switch-on-pressed) \
                 {active selected} $images(switch-on-hover) \
-                {pressed !selected} $images(switch-off-pressed) \
                 active $images(switch-off-hover) \
                 {focus selected} $images(switch-on-hover) \
                 {!focus selected} $images(switch-on) \
@@ -315,10 +310,8 @@ namespace eval ttk::theme::sun-valley-light {
             [list $images(button-rest) \
                 {selected disabled} $images(button-accent-disabled) \
                 disabled $images(button-disabled) \
-                {pressed selected} $images(button-rest) \
                 {active selected} $images(button-accent-hover) \
                 selected $images(button-accent-rest) \
-                {pressed !selected} $images(button-accent-rest) \
                 active $images(button-hover) \
             ] -border 4 -sticky nsew
 
@@ -329,9 +322,7 @@ namespace eval ttk::theme::sun-valley-light {
             [list $images(radio-unsel) \
                 {selected disabled} $images(radio-disabled) \
                 disabled $images(radio-unsel-disabled) \
-                {pressed selected} $images(radio-pressed) \
                 {active selected} $images(radio-pressed) \
-                {pressed !selected} $images(radio-unsel) \
                 {active !selected} $images(radio-unsel) \
                 {active selected} $images(radio-pressed) \
                 {!focus selected} $images(radio-pressed) \

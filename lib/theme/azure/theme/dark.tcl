@@ -282,11 +282,8 @@ namespace eval ttk::theme::azure-dark {
                 {alternate disabled} $I(check-tri-basic) \
                 {selected disabled} $I(check-basic) \
                 disabled $I(box-basic) \
-                {pressed alternate} $I(check-tri-hover) \
                 {active alternate} $I(check-tri-hover) \
                 alternate $I(check-tri-accent) \
-                {pressed selected} $I(check-hover) \
-                {pressed !selected} $I(rect-hover) \
                 {active selected} $I(check-accent) \
                 {active !selected} $I(check-unsel) \
                 {!focus selected} $I(check-accent) \
@@ -299,9 +296,7 @@ namespace eval ttk::theme::azure-dark {
             [list $I(off-basic) \
                 {selected disabled} $I(on-basic) \
                 disabled $I(off-basic) \
-                {pressed selected} $I(on-accent) \
                 {active selected} $I(on-hover) \
-                {pressed !selected} $I(off-accent) \
                 active $I(off-hover) \
                 {focus selected} $I(on-hover) \
                 {!focus selected} $I(on-accent) \
@@ -316,10 +311,8 @@ namespace eval ttk::theme::azure-dark {
             [list $I(rect-basic) \
                 {selected disabled} $I(rect-accent-hover) \
                 disabled $I(rect-basic) \
-                {pressed selected} $I(rect-basic) \
                 {active selected} $I(rect-accent) \
                 selected $I(rect-accent) \
-                {pressed !selected} $I(rect-accent) \
                 active $I(rect-basic) \
             ] -border 4 -sticky ewns
 
@@ -331,11 +324,8 @@ namespace eval ttk::theme::azure-dark {
                 {alternate disabled} $I(radio-tri-basic) \
                 {selected disabled} $I(radio-basic) \
                 disabled $I(outline-basic) \
-                {pressed alternate} $I(radio-tri-hover) \
                 {active alternate} $I(radio-tri-hover) \
                 alternate $I(radio-tri-accent) \
-                {pressed selected} $I(radio-hover) \
-                {pressed !selected} $I(radio-unsel) \
                 {active !selected} $I(radio-unsel) \
                 {active selected} $I(radio-accent) \
                 {!focus selected} $I(radio-accent) \

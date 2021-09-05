@@ -866,8 +866,8 @@ proc find::SearchByList_Do {} {
       lappend notfound $findword
     }
   }
-  alited::msg ok info "Found:\n$found\n[string repeat _ 50]\
-    \n\nNot found:\n$notfound\n" -text 1 -w {40 70} -h {10 20}
+  alited::msg ok info "[msgcat::mc FOUND:]\n$found\n[string repeat _ 50]\
+    \n\n[msgcat::mc {NOT FOUND:}]\n$notfound\n" -text 1 -w {40 70} -h {10 20}
 }
 #_______________________
 
@@ -875,7 +875,7 @@ proc find::SearchByList {} {
   # Searches words by list.
 
   namespace upvar ::alited al al obDl3 obDl3
-  set head [msgcat::mc {\n Enter a list of words devided by spaces: \n}]
+  set head [msgcat::mc {\n Enter a list of words divided by spaces: \n}]
   set text [string map [list $alited::EOL \n] $al(listSBL)]
   if {$al(matchSBL) eq {}} {set al(matchSBL) $al(MC,frExact)}
   lassign [$obDl3 input {} [msgcat::mc {Find by List}] [list \

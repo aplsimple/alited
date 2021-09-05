@@ -20,9 +20,13 @@ proc complete::TextCursorCoordinates {wtxt} {
   #   wtxt - text's path
   # Returns a list of X and Y coordinates.
 
-  set ch [$wtxt get [$wtxt index insert] [$wtxt index {insert +1c}]]
+  set poi [$wtxt index insert]
+  set ch [$wtxt get $poi [$wtxt index {insert +1c}]]
   if {[string trim $ch] eq {}} {set pos {insert -1c}} {set pos insert}
-  lassign [$wtxt bbox [$wtxt index $pos]] X Y w h
+  set pos [$wtxt index $pos]
+  if {int($pos)!=int($poi)} {return -1}
+  lassign [$wtxt bbox $pos] X Y w h
+  if {$w eq {}} {return -1}
   incr X $w
   incr Y $h
   set p [winfo parent $wtxt]
@@ -128,12 +132,17 @@ proc complete::PickCommand {wtxt} {
   }
   $lbx selection set 0
   lassign [TextCursorCoordinates $wtxt] X Y
-  if {$::tcl_platform(platform) eq {windows}} {
-    incr X 10
-    incr Y 40
-    after 100 "wm deiconify $win"
+  if {$X==-1} {
+    bell
+    set res {}
+  } else {
+    if {$::tcl_platform(platform) eq {windows}} {
+      incr X 10
+      incr Y 40
+      after 100 "wm deiconify $win"
+    }
+    set res [$obj showModal $win -decor 0 -focus $lbx -geometry +$X+$Y]
   }
-  set res [$obj showModal $win -decor 0 -focus $lbx -geometry +$X+$Y]
   destroy $win
   $obj destroy
   if {$res ne "0"} {return $res}

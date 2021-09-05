@@ -86,7 +86,7 @@ namespace eval ::alited {
     set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
     set al(MC,beforerun)   [msgcat::mc {Command before "Run"}]
     set al(MC,locale)      [msgcat::mc "Mostly this is a country code,\nfor example: ru, ua, cz."]
-  
+
     ## _ templates _ ##
     set al(MC,tpl)         [msgcat::mc Templates]
     set al(MC,tplsel)      [msgcat::mc {Click a template}]
@@ -97,7 +97,7 @@ namespace eval ::alited {
     set al(MC,tplent2)     [msgcat::mc {Enter a text of the template}]
     set al(MC,tplexists)   [msgcat::mc {A template with the attribute(s) already exists.}]
     set al(MC,tpldelq)     [msgcat::mc {Delete a template #%n ?}]
-  
+
     ## _ projects _ ##
     set al(MC,projects)    [msgcat::mc Projects]
     set al(MC,prjgoing)    [msgcat::mc {You are going to %n!}]
@@ -118,7 +118,7 @@ namespace eval ::alited {
     set al(MC,prjsel)      [msgcat::mc {Click a project}]
     set al(MC,prjdelq)     [msgcat::mc "Delete a project \"%n\" ?"]
     set al(MC,prjexists)   [msgcat::mc "A project \"%n\" already exists."]
-  
+
     ## _ favorites _ ##
     set al(MC,favsel)      [msgcat::mc {Click a list of favorites}]
     set al(MC,favnew)      [msgcat::mc {The list #%n added}]
@@ -129,7 +129,7 @@ namespace eval ::alited {
     set al(MC,favexists)   [msgcat::mc {This list already exists}]
     set al(MC,faverrsav)   [msgcat::mc "This list not saved to\n\"%f\"."]
     set al(MC,favdelq)     [msgcat::mc {Delete a favorites' list #%n ?}]
-  
+
     ## _ find-replace dialogue _ ##
     set al(MC,frMatch) [msgcat::mc {Match: }]
     set al(MC,frWord)  [msgcat::mc {Match whole word only}]
@@ -140,17 +140,17 @@ namespace eval ::alited {
     set al(MC,frres3)  [msgcat::mc "Made %n replacements of \"%s\" with \"%r\" in all of session."]
     set al(MC,frdoit1) [msgcat::mc "Replace all of \"%s\"\n\nwith \"%r\"\n\nin \"%f\" ?"]
     set al(MC,frdoit2) [msgcat::mc "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all texts?"]
-  
+
     ## _ file & directory _ ##
     set al(MC,errcopy)     [msgcat::mc "Can't backup \"%f\" to\n\"%d\"!\n\nDelete it anyway?"]
     set al(MC,removed)     [msgcat::mc "\"%f\" removed to \"%d\""]
     set al(MC,nottoopen)   [msgcat::mc "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?"]
-  
+
   ## _ checking ini directory _ ##
     set al(MC,chini1)      [msgcat::mc {Choosing Directory for Settings}]
     set al(MC,chini2)      [msgcat::mc "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n"]
     set al(MC,chini3)      [msgcat::mc {Choose a directory}]
-  
+
     set al(MC,notes)       [msgcat::mc "Sort of diary.\nList of TODOs etc."]
     set al(MC,checktcl)    [msgcat::mc {Check of Tcl}]
     set al(MC,colorpicker) [msgcat::mc {Color Picker}]
@@ -158,7 +158,7 @@ namespace eval ::alited {
     set al(checkroot)      [msgcat::mc {Checking %d. Wait a little...}]
     set al(badroot)        [msgcat::mc {Too big directory for a project: %n files or more.}]
     set al(makeroot)       [msgcat::mc "Directory \"%d\"\ndoesn't exist.\n\nCreate it?"]
-  
+
     ## _ icons of toolbar _ ##
     set al(MC,icofile)     [msgcat::mc "Create a file\nCtrl+N"]
     set al(MC,icoOpenFile) [msgcat::mc "Open a file\nCtrl+O"]
@@ -175,7 +175,7 @@ namespace eval ::alited {
     set al(MC,icoundo)     [msgcat::mc "Undo changes\nCtrl+Z"]
     set al(MC,icoredo)     [msgcat::mc "Redo changes\nCtrl+Shift+Z"]
     set al(MC,icobox)      [msgcat::mc Projects]
-  
+
     ## _ find units _ ##
     set al(MC,findunit)    [msgcat::mc "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored."]
   }

@@ -59,6 +59,7 @@ namespace eval ::apave {
     buT {{} {-width -20 -pady 1}} \
     can {{} {}} \
     chb {{} {}} \
+    swi {{} {}} \
     chB {{} {-relief sunken -padx 6 -pady 2}} \
     cbx {{} {}} \
     fco {{} {}} \
@@ -1030,6 +1031,12 @@ oo::class create ::apave::APave {
         }
       can {set widget canvas}
       chb {set widget ttk::checkbutton}
+      swi {
+        set widget ttk::checkbutton
+        if {![my apaveTheme]} {
+          set attrs "$attrs -style Switch.TCheckbutton"
+        }
+      }
       chB {set widget checkbutton}
       cbx - fco {
         set widget ttk::combobox

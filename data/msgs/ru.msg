@@ -283,7 +283,9 @@ namespace eval ::alited {
     {Focus a text after selecting in infobar} {Переходить на текст при выборе в инфобаре}
     {Find by List} {Поиск по списку}
     {List:} {Список:}
-    {\n Enter a list of words devided by spaces: \n} {\n Введите список слов, разделенных пробелами: \n}
+    {\n Enter a list of words divided by spaces: \n} {\n Введите список слов, разделенных пробелами: \n}
+    {FOUND:} {НАЙДЕНЫ:}
+    {NOT FOUND:} {НЕ НАЙДЕНЫ:}
   }
 
   ## ________________________ Checking ini directory ________________________ ##

@@ -18,10 +18,11 @@ namespace eval alited {
 
   variable tcltk_version "Tcl/Tk [package versions Tk]"
 
+  set DEBUG no  ;# debug mode
+  set LOG {}    ;# log file in develop mode
+
   variable al; array set al [list]
-  set al(DEBUG) no        ;# debug mode
-  set al(LOG) {}          ;# log file in develop mode
-  set al(WIN) .alwin      ;# main form's path
+  set al(WIN) .alwin  ;# main form's path
 
   proc raise_window {} {
     # Raises the app's window.
@@ -83,12 +84,12 @@ if {[package versions alited] eq {}} {
       set ALITED_NOSEND yes
     }
     if {[string match LOG=* [lindex $::argv 0]]} {
-      set alited::al(LOG) [string range [lindex $::argv 0] 4 end]
+      set alited::LOG [string range [lindex $::argv 0] 4 end]
       set ::argv [lreplace $::argv 0 0]
       incr ::argc -1
     }
     if {[lindex $::argv 0] eq {DEBUG}} {
-      set alited::al(DEBUG) yes
+      set alited::DEBUG yes
       set ::argv [lreplace $::argv 0 0]
       incr ::argc -1
     }
@@ -101,7 +102,7 @@ if {[package versions alited] eq {}} {
 
 # ____________________ Open an existing app __________________ #
 
-  if {!$alited::al(DEBUG) && !$ALITED_NOSEND} {
+  if {!$alited::DEBUG && !$ALITED_NOSEND} {
     # Code borrowed from TKE editor.
     # Set the comm port that we will use
     set comm_port 51837
@@ -338,7 +339,7 @@ namespace eval alited {
     } else {
       set msg "Here should be a text of\n\"$fname\""
     }
-    if {$alited::al(DEBUG)} {
+    if {$alited::DEBUG} {
       puts "help file: $fname"
     }
     msg ok {} $msg -title Help -text 1 -geometry root=$win -scroll no -noesc 1
@@ -408,8 +409,8 @@ namespace eval alited {
 # this "if" satisfies the Ruff doc generator "package require":
 if {[info exists ALITED_NOSEND]} {
   unset ALITED_NOSEND
-  if {$alited::al(LOG) ne {}} {
-    ::apave::logName $alited::al(LOG)
+  if {$alited::LOG ne {}} {
+    ::apave::logName $alited::LOG
     ::apave::logMessage {start alited ------------}
   }
 #  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
@@ -418,6 +419,7 @@ if {[info exists ALITED_NOSEND]} {
     set ::argv {}
     after 10 [list ::alited::open_files_and_raise 0 {*}$fnames]
   }
+  set alited::ARGV $::argv
   unset fnames
   unset onfiles
   alited::ini::_init     ;# initialize GUI & data
@@ -426,10 +428,13 @@ if {[info exists ALITED_NOSEND]} {
 #  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
-    cd $alited::SRCDIR
-    if {$alited::al(LOG) ne {}} {set ::argv [linsert $::argv 0 LOG=$alited::al(LOG)]}
-    if {$alited::al(DEBUG)} {set ::argv [linsert $::argv 0 DEBUG]}
-    alited::Run $alited::SCRIPT NOSEND {*}$::argv
+    if {$alited::LOG ne {}} {
+      set alited::ARGV [linsert $alited::ARGV 0 LOG=$alited::LOG]
+    }
+    if {$alited::DEBUG} {
+      set alited::ARGV [linsert $alited::ARGV 0 DEBUG]
+    }
+    alited::Run $alited::SCRIPT NOSEND {*}$alited::ARGV
   }
   exit
 }

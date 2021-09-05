@@ -418,7 +418,7 @@ proc tool::_run {{what ""}} {
   if {$what eq {}} {
     #  it is 'Run me' e_menu item
     set fpid [file join $al(EM,menudir) .pid~]
-    if {!$al(DEBUG) && [file exists $fpid]} {
+    if {!$::alited::DEBUG && [file exists $fpid]} {
       catch {
         set pid [::apave::readTextFile $fpid]
         exec kill -s SIGINT $pid

@@ -1,8 +1,9 @@
 # Last changes:
 
 
-Version `1.0.4 (1 Sep'21)`
+Version `1.0.4 (8 Sep'21)`
 
+  - BUGFIX: command autocompletion at 1st column failed
   - NEW   : run alited with file name(s) as argument(s)
   - NEW   : open multiple files in File/Open
   - NEW   : go to a matched bracket
