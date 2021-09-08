@@ -466,6 +466,7 @@ oo::class create ::apave::APaveDialog {
       incr lto
       lassign [my GetLinePosition $txt $lfrom.0] linestart lineend
       set duptext [$txt get $linestart $lineend]
+      $txt edit separator
       $txt delete $linestart $lineend
       $txt insert $lto.0 $duptext
       ::tk::TextSetCursor $txt [NewRow $pos $to]
@@ -475,6 +476,7 @@ oo::class create ::apave::APaveDialog {
       if {[lsearch [$txt tag names] tagCOM*]>-1} {
         catch {::hl_tcl::my::Modified $txt insert $lto.0 $lto.end}
       }
+      $txt edit separator
       if {$dobreak} {return -code break}
     }
     return

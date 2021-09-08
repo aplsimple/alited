@@ -330,24 +330,41 @@ proc project::UpdateTree {} {
 }
 #_______________________
 
+proc project::CheckNewDir {} {
+  # Checks if the root directory exists. If no, tries to create it.
+  # Returns yes, if all is OK.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable win
+  if {![file exists $al(prjroot)]} {
+    $win.fraR.nbk select $win.fraR.nbk.f1
+    focus [::apave::precedeWidgetName [$obDl2 Dir] ent]
+    set msg [string map [list %d $al(prjroot)] $al(makeroot)]
+    if {![alited::msg yesno ques $msg NO -geometry root=$win]} {
+      return no
+    }
+    if {[catch {file mkdir $al(prjroot)} err]} {
+      set msg [msgcat::mc {Error at creating the directory.}]
+      alited::msg ok err [append msg \n\n $err] -geometry root=$win
+      return no
+    }
+  }
+  return yes
+}
+
+#_______________________
+
 proc project::ValidProject {} {
   # Checks if a project's options are valid.
 
   namespace upvar ::alited al al obDl2 obDl2
-  variable win
   if {[string trim $al(prjname)] eq {} || ![CheckProjectName]} {
     bell
     focus [$obDl2 EntName]
     return no
   }
   set al(prjroot) [file nativename $al(prjroot)]
-  if {![file exists $al(prjroot)]} {
-    set msg [string map [list %d $al(prjroot)] $al(makeroot)]
-    if {![alited::msg yesno ques $msg NO -geometry root=$win]} {
-      return no
-    }
-    file mkdir $al(prjroot)
-  }
+  if {![CheckNewDir]} {return no}
   if {$al(prjindent)<0 || $al(prjindent)>8} {set al(prjindent) 2}
   if {$al(prjredunit)<10 || $al(prjredunit)>100} {set al(prjredunit) 20}
   set msg [string map [list %d $al(prjroot)] $al(checkroot)]

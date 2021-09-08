@@ -106,8 +106,7 @@ namespace eval ::apave {
     tbl {{} {-selectborderwidth 1 -highlightthickness 2 \
           -labelcommand tablelist::sortByColumn -stretch all \
           -showseparators 1}} \
-    tex {{} {-undo 1 -maxundo 0 -highlightthickness 2 -insertofftime 250 -insertontime 750 -insertwidth $::apave::cursorwidth -wrap word
-          -selborderwidth 1}} \
+    tex {{} {-undo 1 -maxundo 0 -highlightthickness 2 -insertofftime 250 -insertontime 750 -insertwidth $::apave::cursorwidth -wrap word -selborderwidth 1 -autoseparators no}} \
     tre {{} {-selectmode browse}} \
     "h_" {{-sticky ew -csz 3 -padx 3} {}} \
     "v_" {{-sticky ns -rsz 3 -pady 3} {}}]
@@ -413,6 +412,23 @@ namespace eval ::apave {
     #   acc - key name, may contain 2 items (e.g. Control-D Control-d)
     set acc [lindex $acc 0]
     return [string map {Control Ctrl - + bracketleft [ bracketright ]} $acc]
+  }
+
+  ##########################################################################
+
+  proc precedeWidgetName {widname prename} {
+    # Adds a preceding name to a tail name of widget.
+    #   widname - widget's full name
+    #   prename - preceding name
+    # Useful at getting a entry/button name of chooser.
+    # Example:
+    #   set wentry [::apave::precedeWidgetName [$pobj DirToChoose] ent]
+    # See also: APave::Replace_chooser
+
+    set p [string last . $widname]
+    set res [string range $widname 0 $p]
+    append res $prename [string range $widname $p+1 end]
+    return $res
   }
 
   ##########################################################################
@@ -1490,7 +1506,7 @@ oo::class create ::apave::APave {
     tk fontchooser configure -parent . -font fontchoose {*}[my ParentOpt] \
       {*}$args -command [namespace current]::applyFont
     set res [tk fontchooser show]
-    return $font
+    return [set $tvar] ;#$font
   }
 
   #########################################################################
@@ -2771,8 +2787,8 @@ oo::class create ::apave::APave {
     switch -exact $K {
       Return - KP_Enter {
         # at pressing Enter key, indent (and possibly add the right brace)
-        # but shift/ctrl/alt+Enter acts by default - without indenting
-        if {$s} return
+        # but shift/ctrl+Enter acts by default - without indenting
+        if {$s & 1 || $s & 4} return
         set idx1 [$w index {insert linestart}]
         set idx2 [$w index {insert lineend}]
         set line [$w get $idx1 $idx2]
@@ -3439,7 +3455,7 @@ oo::class create ::apave::APave {
     #
     # Returns a value of variable that controls an event cycle.
 
-    if {$result eq "get"} {
+    if {$result eq {get}} {
       return [set ${_pav(ns)}PN::AR($win)]
     }
     my CleanUps $win
@@ -3459,7 +3475,7 @@ oo::class create ::apave::APave {
     my CleanUps
     set w [set wtop [string trimright $w .]]
     set withfr [expr {[set pp [string last . $w]]>0 && \
-      [string match "*.fra" $w]}]
+      [string match *.fra $w]}]
     if {$withfr} {
       set wtop [string range $w 0 $pp-1]
     }
@@ -3499,12 +3515,12 @@ oo::class create ::apave::APave {
     #   w - text widget's name
     #   conts - contents to be set in the widget
 
-    if { [set state [$w cget -state]] ne "normal"} {
+    if {[set state [$w cget -state]] ne {normal}} {
       $w configure -state normal
     }
     $w replace 1.0 end $conts
     $w edit reset; $w edit modified no
-    if {$state eq "normal"} {
+    if {$state eq {normal}} {
       ::tk::TextSetCursor $w $pos
     } else {
       $w configure -state $state
@@ -3512,10 +3528,24 @@ oo::class create ::apave::APave {
     return
   }
 
+  method resetText {w state {contsName {}}} {
+    # Resets a text widget to edit/view from scratch.
+    #   w - text widget's name
+    #   state - widget's final state (normal/disabled)
+    #   contsName - variable name for contents to be set in the widget
+
+    if {$contsName ne {}} {
+      upvar 1 $contsName conts
+      $w replace 1.0 end $conts
+    }
+    $w edit reset
+    $w edit modified no
+    $w configure -state $state
+  }
+
   #########################################################################
 
   method displayTaggedText {w contsName {tags ""}} {
-
     # Sets the text widget's contents using tags (ornamental details).
     #   w - text widget's name
     #   contsName - variable name for contents to be set in the widget
@@ -3530,30 +3560,33 @@ oo::class create ::apave::APave {
     # The tag's name is "pure" one (without <>) so e.g.for <b>..</b> the tag
     # list contains "b".
     #
-    # The tag's name is a string of text attributes (-font etc.).
+    # The tag's value is a string of text attributes (-font etc.).
 
     upvar $contsName conts
-    if {$tags eq ""} {
+    if {$tags eq {}} {
       my displayText $w $conts
       return
     }
-    if { [set state [$w cget -state]] ne "normal"} {
+    if { [set state [$w cget -state]] ne {normal}} {
       $w configure -state normal
     }
     set taglist [set tagpos [set taglen [list]]]
     foreach tagi $tags {
-      lassign $tagi tag
+      lassign $tagi tag opts
+      if {![string match link* $tag]} {
+        $w tag config $tag {*}$opts
+      }
       lappend tagpos 0
       lappend taglen [string length $tag]
     }
     set tLen [llength $tags]
-    set disptext ""
+    set disptext {}
     set irow 1
     foreach line [split $conts \n] {
       if {$irow > 1} {
         append disptext \n
       }
-      set newline ""
+      set newline {}
       while 1 {
         set p [string first \< $line]
         if {$p < 0} {
@@ -3566,15 +3599,15 @@ oo::class create ::apave::APave {
         foreach tagi $tags pos $tagpos len $taglen {
           lassign $tagi tag
           if {[string first "\<$tag\>" $line]==0} {
-            if {$pos ne "0"} {
-              error "\npaveme.tcl: mismatched \<$tag\> in line $irow.\n"
+            if {$pos ne {0}} {
+              error "\napaveme.tcl: mismatched \<$tag\> in line $irow.\n"
             }
             lset tagpos $i $nrnc
             set line [string range $line $len+2 end]
             break
           } elseif {[string first "\</$tag\>" $line]==0} {
-            if {$pos eq "0"} {
-              error "\npaveme.tcl: mismatched \</$tag\> in line $irow.\n"
+            if {$pos eq {0}} {
+              error "\napaveme.tcl: mismatched \</$tag\> in line $irow.\n"
             }
             lappend taglist [list $i $pos $nrnc]
             lset tagpos $i 0
@@ -3593,12 +3626,6 @@ oo::class create ::apave::APave {
       incr irow
     }
     $w replace 1.0 end $disptext
-    foreach tagi $tags {
-      lassign $tagi tag opts
-      if {![string match "link*" $tag]} {
-        $w tag config $tag {*}$opts
-      }
-    }
     lassign [my csGet] fg fg2 bg bg2
     set lfont [$w cget -font]
     catch {set lfont [font actual $lfont]}
@@ -3608,7 +3635,7 @@ oo::class create ::apave::APave {
       set tagli [lindex $taglist $it]
       lassign $tagli i p1 p2
       lassign [lindex $tags $i] tag opts
-      if {[string match "link*" $tag] && \
+      if {[string match link* $tag] && \
       [set ist [lsearch -exact -index 0 $tags $tag]]>=0} {
         set txt [$w get $p1 $p2]
         set lab ${w}l[incr ::apave::__linklab__]
@@ -3622,8 +3649,7 @@ oo::class create ::apave::APave {
         $w tag add $tag $p1 $p2
       }
     }
-    $w edit reset; $w edit modified no
-    if { $state ne "normal" } { $w configure -state $state }
+    my resetText $w $state
     return
   }
 

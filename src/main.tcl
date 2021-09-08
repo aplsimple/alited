@@ -94,6 +94,7 @@ proc main::GetText {TID {doshow no}} {
   }
   if {$doinit} {
     # if the file isn't read yet, read it and initialize its highlighting
+    $wtxt configure -autoseparators no
     alited::file::DisplayFile $TID $curfile $wtxt $doreload
     if {$doshow} {
       HighlightText $TID $curfile $wtxt
@@ -177,7 +178,7 @@ proc main::UpdateText {{wtxt {}} {curfile {}}} {
 }
 #_______________________
 
-proc main::UpdateTextAndGutter {} {
+proc main::UpdateTextGutter {} {
   # Redraws both a text and a gutter.
 
   UpdateGutter
@@ -185,12 +186,30 @@ proc main::UpdateTextAndGutter {} {
 }
 #_______________________
 
+proc main::UpdateUnitTree {} {
+  # Redraws unit tree at need.
+
+  set fname [alited::bar::FileName]
+  if {$alited::al(TREE,isunits) && [alited::file::IsUnitFile $fname]} {
+    alited::tree::RecreateTree
+  }
+}
+#_______________________
+
 proc main::UpdateAll {} {
   # Updates tree, text and gutter.
 
   alited::tree::RecreateTree
-  UpdateTextAndGutter
+  UpdateTextGutter
   HighlightLine
+}
+#_______________________
+
+proc main::UpdateTextGutterTree {} {
+  # Updates after replacements: text, gutter, unit tree.
+
+  UpdateTextGutter
+  UpdateUnitTree
 }
 
 # ________________________ focus _________________________ #
@@ -486,7 +505,8 @@ proc main::BindsForText {TID wtxt} {
   bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
   bind $wtxt <Control-Tab> {::alited::bar::ControlTab ; break}
   bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}
-  bind $wtxt <<Undo>> {+ alited::main::HighlightLine}
+  bind $wtxt <<Undo>> {+ alited::main::HighlightLine; after idle alited::main::UpdateUnitTree}
+  bind $wtxt <<Redo>> {+ alited::main::HighlightLine; after idle alited::main::UpdateUnitTree}
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action
   alited::keys::BindKeys $wtxt template

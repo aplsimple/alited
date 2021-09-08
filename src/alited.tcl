@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.4b5
+package provide alited 1.0.4b6
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -182,9 +182,11 @@ namespace eval alited {
   set al(prjredunit) 20   ;# current project's unit lines per 1 red bar
   set al(prjbeforerun) {} ;# a command to be run before "Tools/Run"
 
-  set al(TITLE) {%f :: %d :: %p - alited}     ;# alited title's template
-  set al(TclExtensions) {.tcl .tm .msg}       ;# extensions of Tcl files
-  set al(ClangExtensions) {.c .h .cpp .hpp}   ;# extensions of C/C++ files
+  set al(TITLE) {%f :: %d :: %p - alited}      ;# alited title's template
+  set al(TclExtensionsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
+  set al(ClangExtensionsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
+  set al(TclExtensions) $al(TclExtensionsDef)
+  set al(ClangExtensions) $al(ClangExtensionsDef)
 }
 
 # _____________________________ Packages used __________________________ #

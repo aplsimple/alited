@@ -600,7 +600,7 @@ proc ::apave::logName {fname} {
   # If fname is {}, disables logging.
 
   variable _PU_opts;
-  set _PU_opts(_LOGFILE_) $fname
+  set _PU_opts(_LOGFILE_) [file normalize $fname]
 }
 
 ###########################################################################
@@ -1543,14 +1543,19 @@ oo::class create ::apave::ObjectTheming {
           set ::apave::_C_($ts,8) "-elementborderwidth 2"
         }
         menu {
-          set ::apave::_C_($ts,0) 9
+          set ::apave::_C_($ts,0) 8
           set ::apave::_C_($ts,1) "-background $tbgM"
           set ::apave::_C_($ts,3) "-activeforeground $tfgS"
           set ::apave::_C_($ts,4) "-activebackground $tbgS"
-          set ::apave::_C_($ts,5) "-borderwidth 2"
-          set ::apave::_C_($ts,7) "-relief raised"
-          set ::apave::_C_($ts,8) "-disabledforeground $tfgD"
-          set ::apave::_C_($ts,9) "-font {$fontdef}"
+          set ::apave::_C_($ts,5) "-disabledforeground $tfgD"
+          set ::apave::_C_($ts,6) "-font {$fontdef}"
+          if {[my apaveTheme]} {
+            set ::apave::_C_($ts,7) {-borderwidth 2}
+            set ::apave::_C_($ts,8) {-relief raised}
+          } else {
+            set ::apave::_C_($ts,7) {-borderwidth 1}
+            set ::apave::_C_($ts,8) {-relief groove}
+          }
         }
         canvas {
           set ::apave::_C_($ts,1) "-background $tbg2"

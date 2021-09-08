@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.5a5"
+  variable em_version "e_menu 3.4.5b1"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -607,15 +607,26 @@ proc ::em::checkForWilds {rsel} {
   }
   return false
 }
+#___ tclsh/tclkit executable
+proc ::em::Tclexe {} {
+  if {[set tclexe [info nameofexecutable]] eq {}} {
+    set tclexe [auto_execok tclsh]
+  }
+  return $tclexe
+}
 #___ replace first %t with terminal pathname
 proc ::em::checkForShell {rsel} {
   upvar $rsel sel
+  set res no
   if {[string first "%t " $sel] == 0 || \
       [string first "%T " $sel] == 0 } {
     set sel "[string range $sel 3 end]"
-    return true
+    set res yes
   }
-  return false
+  if {[string first "tclsh " $sel]==0 || [string first "wish " $sel]==0} {
+    set sel [append _ [Tclexe] [string range $sel [string first { } $sel] end]]
+  }
+  return $res
 }
 #___ call command in xterm
 proc ::em::xterm {sel amp {term ""}} {
@@ -980,7 +991,7 @@ proc ::em::callmenu {typ s1 {amp ""} {from ""}} {
   set sel "\"$::em::Argv0\""
   prepr_win sel "M/"  ;# force converting
   if {$::em::solo} {
-    catch {exec [auto_execok tclsh] {*}$sel {*}$pars $amp}
+    catch {exec [::em::Tclexe] {*}$sel {*}$pars $amp}
     if {$amp eq ""} {
       ::em::reread_menu $::em::lasti  ;# changes possible
     }
@@ -1108,18 +1119,21 @@ proc ::em::get_AR {} {
     return [list [string map {\n \\n \" \\\"} $::em::seltd]]
   }
   if {[::em::read_f_file]} {
-    set re {^[[:space:]#/*]*#[ ]?ARGS[0-9]+:[ ]*(.*)}
+    set ar {^[[:space:]#/*]*#[ ]?ARGS[0-9]+:[ ]*(.*)}
     set rf {^[[:space:]#/*]*#[ ]?RUNF[0-9]+:[ ]*(.*)}
-    set AR [set RF {}]
+    set ee {^[[:space:]#/*]*#[ ]?EXEC[0-9]+:[ ]*(.*)}
+    set AR [set RF [set EE {}]]
     foreach st $::em::filecontent {
-      if {[regexp $re $st] && $AR eq {}} {
-        lassign [regexp -inline $re $st] => AR
+      if {[regexp $ar $st] && $AR eq {}} {
+        lassign [regexp -inline $ar $st] => AR
       } elseif {[regexp $rf $st] && $RF eq {}} {
         lassign [regexp -inline $rf $st] => RF
+      } elseif {[regexp $ee $st] && $EE eq {}} {
+        lassign [regexp -inline $ee $st] => EE
       }
-      if {$AR ne {} && $RF ne {}} break
+      if {$AR ne {} || $RF ne {} || $EE ne {}} break
     }
-    return [list $AR $RF]
+    return [list $AR $RF $EE]
   }
   return {}
 }
@@ -1285,9 +1299,10 @@ proc ::em::prepr_pn {refpn {dt 0}} {
   prepr_1 pn "qq" $::em::qseltd ;# %qq is %s with quotes escaped
   prepr_1 pn "dd" $::em::dseltd ;# %dd is %s with special simbols deleted
   prepr_1 pn "ss" $::em::sseltd ;# %ss is %s trimmed
-  lassign [get_AR] AR RF
+  lassign [get_AR] AR RF EE
   prepr_1 pn "AR" $AR                 ;# %AR is contents of #ARGS..: line
   prepr_1 pn "RF" $RF                 ;# %RF is contents of #RUNF..: line
+  prepr_1 pn "EE" $EE                 ;# %EE is contents of #EXEC..: line
   prepr_1 pn "L"  [get_L]             ;# %L is contents of %l-th line
   prepr_1 pn "TT" [::eh::get_tty $::em::linuxconsole] ;# %TT is a terminal
   set pndt [prepr_dt pn]

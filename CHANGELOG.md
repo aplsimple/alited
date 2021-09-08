@@ -1,11 +1,13 @@
 # Last changes:
 
 
-Version `1.0.4 (8 Sep'21)`
+Version `1.0.4b6 (8 Sep'21)`
 
   - BUGFIX: command autocompletion at 1st column failed
   - BUGFIX: e_menu could fail due to font2's multiple words
+  - BUGFIX: Default buttons of Preferences didn't update colors properly
   - NEW   : run alited with file name(s) as argument(s)
+  - NEW   : run alited by tclkit
   - NEW   : open multiple files in File/Open
   - NEW   : go to a matched bracket
   - NEW   : Preferences/Tools/Common incl. path to tclsh/wish/tclkit
@@ -14,15 +16,18 @@ Version `1.0.4 (8 Sep'21)`
   - NEW   : Edit menu splitted to Edit and Search
   - NEW   : edit.tcl, with some procs from unit.tcl
   - NEW   : "Find by List" in Find menu
-  - NEW   : switches instead of some checkbuttons (for themes by rdbende)
+  - NEW   : switches instead of some checkbuttons (for rdbende themes)
   - CHANGE: rearranging toolbar
   - CHANGE: faster "find/replace in session"
   - CHANGE: indent normalizing applies "autodetected" indent
   - CHANGE: (un)indented blank lines become ""
-  - CHANGE: azure, forest and sun-valley themes revised heavily
+  - CHANGE: rdbende themes revised heavily
+  - CHANGE: minimal borderwidth of menus for rdbende themes
   - CHANGE: "Save as" instead "Save" at deleting file by external app
   - CHANGE: autodetection of EOL at reading files
   - CHANGE: clrpick.tcl (smooth opening)
+  - CHANGE: check for Tcl & C extensions at opening files
+  - CHANGE: undo/redo's separators
   - CHANGE: e_menu, apave, bartabs, hl_tcl packages
 
 

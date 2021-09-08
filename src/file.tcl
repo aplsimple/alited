@@ -141,6 +141,14 @@ proc file::IsClang {fname} {
 }
 #_______________________
 
+proc file::IsUnitFile {fname} {
+  # Checks if a file has a unit tree.
+  #   fname - file name
+
+  return [expr {[IsTcl $fname]}]
+}
+#_______________________
+
 proc file::ReadFileByTID {TID {getcont no}} {
   # Reads a file of tab, if needed.
   #   TID - ID of the tab
@@ -332,7 +340,10 @@ proc file::OpenFile {{fnames ""} {reload no}} {
   set TID {}
   foreach fname $fnames {
     if {[file exists $fname]} {
-      set exts {tcl, tm, msg, c, h, cc, cpp, hpp, html, css, md, txt, ini}
+      set exts $al(TclExtensions)
+      append exts { } $al(ClangExtensions)
+      set exts [string trim [string map {{ } {, } . {}} $exts]]
+      append exts {\nhtml, css, md, txt, sh, bat, ini}
       set ext [string tolower [string trim [file extension $fname] .]]
       if {!$reload && $ext ni [split [string map {{ } {}} $exts] ,]} {
         set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]

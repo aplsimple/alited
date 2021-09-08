@@ -338,6 +338,7 @@ proc unit::MoveL1L2 {wtxt i1 i2 io} {
   [set linesmoved [$wtxt get $i1.0 $ind2]] eq ""} {
     return "" ;# nothing to do
   }
+  $wtxt edit separator
   $wtxt delete $i1.0 $ind2
   if {$io>$i2} {
     # 3. i1    if moved below, the moved (deleted) lines change 'io', so
@@ -353,6 +354,7 @@ proc unit::MoveL1L2 {wtxt i1 i2 io} {
   } else {
     $wtxt insert $io.0 $linesmoved
   }
+  $wtxt edit separator
   return $io
 }
 #_______________________

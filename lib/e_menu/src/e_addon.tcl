@@ -382,7 +382,7 @@ proc ::em::restart_e_menu {} {
   if {[is_s_menu] && [file extension $::em::Argv0] ne ".tcl"} {
     exec $::em::Argv0 {*}$::em::Argv &
   } else {
-    execom "tclsh \"$::em::Argv0\" $::em::Argv &"
+    exec [::em::Tclexe] $::em::Argv0 {*}$::em::Argv &
   }
   on_exit
 }

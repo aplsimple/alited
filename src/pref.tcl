@@ -658,7 +658,40 @@ proc pref::Edit_Tab3 {} {
 }
 #_______________________
 
-proc pref::UpdateColors {lng} {
+proc pref::TclSyntax_Default {{init no}} {
+  # Sets default colors to highlight Tcl.
+  #   init - yes, if only variables should be initialized.
+
+  fetchVars
+  set al(TclExtensions) $al(TclExtensionsDef)
+  set Dark [::apave::obj csDarkEdit]
+  set clrnams [::hl_tcl::hl_colorNames]
+  set clrvals [::hl_tcl::hl_colors {} $Dark]
+  foreach nam $clrnams val $clrvals {
+    set al(ED,$nam) $val
+  }
+  set al(ED,Dark) $Dark
+  if {!$init} {UpdateSyntaxTab {}}
+}
+#_______________________
+
+proc pref::CSyntax_Default {{init no}} {
+  # Sets default colors to highlight C.
+  #   init - yes, if only variables should be initialized.
+
+  fetchVars
+  set al(ClangExtensions) $al(ClangExtensionsDef)
+  set Dark [::apave::obj csDarkEdit]
+  set clrnams [::hl_tcl::hl_colorNames]
+  set clrvals [::hl_c::hl_colors {} $Dark]
+  foreach nam $clrnams val $clrvals {
+    set al(ED,C$nam) $val
+  }
+  if {!$init} {UpdateSyntaxTab 2}
+}
+#_______________________
+
+proc pref::UpdateSyntaxTab {lng} {
   # Updates color labels at clicking "Default" button.
   #   lng - {} for Tcl, {2} for C/C++
 
@@ -669,36 +702,6 @@ proc pref::UpdateColors {lng} {
     set ent [string map [list labCOM entclr$nam] $lab1]
     $lab configure -background [$ent get]
   }
-}
-
-proc pref::TclSyntax_Default {{init no}} {
-  # Sets default colors to highlight Tcl.
-  #   init - yes, if only variables should be initialized.
-
-  fetchVars
-  set Dark [::apave::obj csDarkEdit]
-  set clrnams [::hl_tcl::hl_colorNames]
-  set clrvals [::hl_tcl::hl_colors {} $Dark]
-  foreach nam $clrnams val $clrvals {
-    set al(ED,$nam) $val
-  }
-  set al(ED,Dark) $Dark
-  if {!$init} {UpdateColors {}}
-}
-#_______________________
-
-proc pref::CSyntax_Default {{init no}} {
-  # Sets default colors to highlight C.
-  #   init - yes, if only variables should be initialized.
-
-  fetchVars
-  set Dark [::apave::obj csDarkEdit]
-  set clrnams [::hl_tcl::hl_colorNames]
-  set clrvals [::hl_c::hl_colors {} $Dark]
-  foreach nam $clrnams val $clrvals {
-    set al(ED,C$nam) $val
-  }
-  if {!$init} {UpdateColors 2}
 }
 
 # ________________________ Tab "Template" _________________________ #
@@ -962,20 +965,28 @@ proc pref::Emenu_Tab {} {
 }
 #_______________________
 
+proc pref::UpdateTkconTab {} {
+  # Updates color labels for "Tools/Tkcon" tab.
+
+  fetchVars
+  set lab1 [$obDl2 Labbg]
+  foreach nam {bg blink cursor disabled proc var prompt stdin stdout stderr} {
+    set lab [string map [list labbg labclr$nam] $lab1]
+    set ent [string map [list labbg entclr$nam] $lab1]
+    $lab configure -background [$ent get]
+  }
+}
+#_______________________
+
 proc pref::Tkcon_Default {} {
   # Sets defaults for "Tools/Tkcon" tab.
 
   fetchVars
-  set al(tkcon,clrbg) #25292b
-  set al(tkcon,clrblink) #929281
-  set al(tkcon,clrcursor) #FFFFFF
-  set al(tkcon,clrdisabled) #999797
-  set al(tkcon,clrproc) #FF6600
-  set al(tkcon,clrvar) #602B06
-  set al(tkcon,clrprompt) #66FF10
-  set al(tkcon,clrstdin) #FFFFFF
-  set al(tkcon,clrstdout) #CECECE
-  set al(tkcon,clrstderr) #FB44C0
+  foreach {clr val} { \
+  bg #25292b blink #929281 cursor #FFFFFF disabled #999797 proc #FF6600 \
+  var #602B06 prompt #66FF10 stdin #FFFFFF stdout #CECECE stderr #FB44C0} {
+    set al(tkcon,clr$clr) $val
+  }
   set al(tkcon,rows) 10
   set al(tkcon,cols) 80
   set al(tkcon,fsize) 13
@@ -993,7 +1004,7 @@ proc pref::Tkcon_Tab {} {
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {fra.scf.lfr - - 1 1  {pack -fill x} {-t Colors}}
-    {.labbg - - 1 1 {-st w -pady 1 -padx 3} {-t "bg:"}}
+    {.Labbg - - 1 1 {-st w -pady 1 -padx 3} {-t "bg:"}}
     {.clrbg .labbg L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,clrbg) -w 20}}
     {.labblink .labbg T 1 1 {-st w -pady 1 -padx 3} {-t "blink:"}}
     {.clrblink .labblink L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,clrblink) -w 20}}
@@ -1025,7 +1036,7 @@ proc pref::Tkcon_Tab {} {
     {.entGeo .labGeo L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,geo) -w 20}}
     {.labTopmost .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Stay on top:"}}
     {.swiTopmost .labTopmost L 1 1 {-st sw -pady 1} {-var alited::al(tkcon,topmost)}}
-    {fra.scf.but - - - - {pack -side left -pady 5} {-t Default -com alited::pref::Tkcon_Default -w 20}}
+    {fra.scf.but - - - - {pack -side left -pady 5} {-t Default -com {alited::pref::Tkcon_Default; alited::pref::UpdateTkconTab} -w 20}}
     {fra.scf.but2 - - - - {pack -side left -padx 5 -pady 5} {-t Test -com alited::tool::tkcon -w 20}}
   }
 }

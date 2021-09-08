@@ -87,7 +87,7 @@ proc edit::NormIndent {} {
     }
   }
   alited::indent::normalize
-  alited::main::UpdateTextAndGutter
+  alited::main::UpdateTextGutter
 }
 
 # ________________________ Comment in / out _________________________ #

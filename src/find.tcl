@@ -666,7 +666,7 @@ proc find::Replace {} {
     SetCursor $wtxt $idx1
     set msg [string map [list %n 1 %s $data(en1) %r $data(en2)] $alited::al(MC,frres2)]
     ShowResults $msg
-    alited::main::UpdateTextAndGutter
+    alited::main::UpdateTextGutterTree
   }
   Find
 }
@@ -712,7 +712,7 @@ proc find::ReplaceInText {} {
   set TID [alited::bar::CurrentTabID]
   set rn [ReplaceAll $TID $wtxt [Search $wtxt]]
   ShowResults2 $rn $alited::al(MC,frres2)
-  alited::main::UpdateTextAndGutter
+  alited::main::UpdateTextGutterTree
 }
 #_______________________
 
@@ -741,7 +741,7 @@ proc find::ReplaceInSession {} {
     if {$data(_ERR_)} break
   }
   ShowResults2 $rn $alited::al(MC,frres3)
-  alited::main::UpdateTextAndGutter
+  alited::main::UpdateTextGutterTree
 }
 
 # ________________________ Helpers _________________________ #
