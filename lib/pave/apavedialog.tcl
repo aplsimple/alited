@@ -466,6 +466,7 @@ oo::class create ::apave::APaveDialog {
       incr lto
       lassign [my GetLinePosition $txt $lfrom.0] linestart lineend
       set duptext [$txt get $linestart $lineend]
+      $txt configure -autoseparators no
       $txt edit separator
       $txt delete $linestart $lineend
       $txt insert $lto.0 $duptext
@@ -477,6 +478,7 @@ oo::class create ::apave::APaveDialog {
         catch {::hl_tcl::my::Modified $txt insert $lto.0 $lto.end}
       }
       $txt edit separator
+      $txt configure -autoseparators yes
       if {$dobreak} {return -code break}
     }
     return

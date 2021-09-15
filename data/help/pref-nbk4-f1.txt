@@ -5,6 +5,7 @@
     %w - user's web site
     %d - date (default format is %D)
     %t - time (default format is %T)
+    %F - current file's name
     %f - current file's tail name
     %n - current file's root name (namespace)
     %p - current procedure/method's name

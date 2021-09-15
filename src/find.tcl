@@ -619,7 +619,7 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
   set data(_ERR_) no
   foreach tab [SessionList] {
     set TID [lindex $tab 0]
-    lassign [alited::main::GetText $TID] curfile wtxt
+    lassign [alited::main::GetText $TID no no] curfile wtxt
     lappend allfnd {*}[FindAll $wtxt $TID $tagme]
     if {$data(_ERR_)} break
   }
@@ -679,6 +679,8 @@ proc find::ReplaceAll {TID wtxt allfnd} {
   #   allfnd - list of found strings data (index1, index2)
 
   variable data
+  $wtxt configure -autoseparators no
+  $wtxt edit separator
   set rn 0
   for {set i [llength $allfnd]} {$i} {} {
     if {!$rn} {
@@ -692,6 +694,8 @@ proc find::ReplaceAll {TID wtxt allfnd} {
     incr rn
   }
   if {$rn} {SetCursor $wtxt [lindex $allfnd end 0]}
+  $wtxt edit separator
+  $wtxt configure -autoseparators yes
   return $rn
 }
 #_______________________
@@ -732,12 +736,13 @@ proc find::ReplaceInSession {} {
   set data(_ERR_) no
   foreach tab [SessionList] {
     set TID [lindex $tab 0]
-    lassign [alited::main::GetText $TID] curfile wtxt
+    lassign [alited::main::GetText $TID no no] curfile wtxt
     if {[set rdone [ReplaceAll $TID $wtxt [Search $wtxt]]]} {
       ShowResults2 $rdone $alited::al(MC,frres2) $TID
       incr rn $rdone
+      alited::bar::BAR markTab $TID
     }
-    alited::file::MakeThemHighlighted $TID
+#    alited::file::MakeThemHighlighted $TID
     if {$data(_ERR_)} break
   }
   ShowResults2 $rn $alited::al(MC,frres3)

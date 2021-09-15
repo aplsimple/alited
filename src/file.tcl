@@ -70,7 +70,7 @@ proc file::ToBeHighlighted {wtxt} {
   #   wtxt - text's path
 
   namespace upvar ::alited al al
-  return [expr {$al(HL,$wtxt) eq {..}}]
+  return [expr {![info exists al(HL,$wtxt)] || $al(HL,$wtxt) eq {..}}]
 }
 #_______________________
 
@@ -343,9 +343,10 @@ proc file::OpenFile {{fnames ""} {reload no}} {
       set exts $al(TclExtensions)
       append exts { } $al(ClangExtensions)
       set exts [string trim [string map {{ } {, } . {}} $exts]]
-      append exts {\nhtml, css, md, txt, sh, bat, ini}
+      append exts "\nhtml, htm, css, md, txt, sh, bat, ini"
       set ext [string tolower [string trim [file extension $fname] .]]
-      if {!$reload && $ext ni [split [string map {{ } {}} $exts] ,]} {
+      set esp [split [string map [list { } {} \n ,] $exts] ,]
+      if {!$reload && $ext ni $esp} {
         set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
         if {![alited::msg yesno warn $msg NO]} {
           break
@@ -657,12 +658,15 @@ proc file::RemoveFile {fname dname mode} {
     if {![alited::msg yesno warn "$err\n\n$msg" NO]} return
   }
   catch {file mtime $fname2 [file mtime $fname]}
-  file delete $fname
-  alited::Message [string map [list %f $ftail %d $dtail] $al(MC,removed)]
-  if {$mode eq "move"} {
-    set TID [alited::bar::CurrentTabID]
-    alited::bar::SetTabState $TID --fname $fname2
-    alited::bar::BAR $TID configure -tip [FileStat $fname2]
+  if {[catch {file delete $fname} err]} {
+    alited::msg ok err "Error of deleting\n$fname\n\n$err"
+  } else {
+    alited::Message [string map [list %f $ftail %d $dtail] $al(MC,removed)]
+    if {$mode eq "move"} {
+      set TID [alited::bar::CurrentTabID]
+      alited::bar::SetTabState $TID --fname $fname2
+      alited::bar::BAR $TID configure -tip [FileStat $fname2]
+    }
   }
   alited::tree::RecreateTree
 }
@@ -713,9 +717,9 @@ proc file::Add {ID} {
       ent {{File name:} {} {-w 40}} "{$fname}" \
       chb [list {} {-padx 5} [list -toprev 1 -t "Directory"]] {0} ] \
       -head $head -family "{[::apave::obj basicTextFont]}"]
-    if {[lindex $res 0] && $fname eq ""} bell else break
+    lassign $res res fname isdir
+    if {$res && $fname eq {}} bell else break
   }
-  lassign $res res fname isdir
   if {$res} {
     set fname [file join $dname $fname]
     if {[catch {

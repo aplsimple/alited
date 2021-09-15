@@ -30,6 +30,7 @@ namespace eval ::tk::dialog::color {
 #    function when a native color selector widget does not exist
 #
 proc ::tk::dialog::color:: {args} {
+
   variable ::tk::Priv
   set dataName __tk__color
   upvar ::tk::dialog::color::$dataName data
@@ -244,14 +245,13 @@ proc ::tk::dialog::color::BuildDialog {w} {
 
     # The box frame contains the label and entry widget for an [R|G|B]
     set box [ttk::frame $f.box]
-
-    ttk::label $box.label -text "[mc $l]:" \
+    ttk::label $box.label {*}[ttk::style config TLabel] -text "[mc $l]:" \
       -width $maxWidth -anchor ne
     bind $box.label <<AltUnderlined>> [list focus $box.entry]
 
     ttk::entry $box.entry -textvariable \
       ::tk::dialog::color::[winfo name $w]($color,intensity) -width 4
-    pack $box.label -side left -fill y -pady 4
+    pack $box.label -side left -fill both -pady 6
     pack $box.entry -side left -anchor n -pady 4 -padx 2
     pack $box -side left -fill both
 
@@ -295,7 +295,7 @@ proc ::tk::dialog::color::BuildDialog {w} {
     "::tk::dialog::color::StickSelectors $w 1"] -padx 2 -side left
   pack [ttk::checkbutton $stripsFrame.followColorSel -text [mc "Tone moves"] \
     -variable ::tk::dialog::color::tonemoves] -padx 20 -side left
-  set foc [ttk::frame $stripsFrame.foc -relief flat -height 26]
+  set foc [ttk::frame $stripsFrame.foc]
   foreach l { 804000 004000 004080 008080 800080 808000 \
               ffff00 ff00ff 00ffff 0000ff 00ff00 ff0000} {
     set fl [frame $stripsFrame.foc.$l -bd 3 -relief raised -height 14 -width 14]
@@ -303,15 +303,16 @@ proc ::tk::dialog::color::BuildDialog {w} {
     bind $fl <Button-1> [list tk::dialog::color::LittleSwatch $w $mainentry #$l]
     pack $fl -expand yes -anchor nw -fill both -padx 3 -side left
   }
-  pack $foc -expand yes -anchor nw -fill both -pady 2 -side right
+  pack $foc -expand yes -anchor nw -fill both -pady 4 -side right
 
-  pack $stripsFrame -side left -fill both -pady 2
+  pack $stripsFrame -side left -fill both -pady 4
 
   # The selFrame contains a frame that demonstrates the currently
   # selected color
   #
   set selFrame [ttk::frame $topFrame.sel]
-  set lab [ttk::label $selFrame.lab -text [mc "Selection:"]]
+  set lab [ttk::label $selFrame.lab {*}[ttk::style config TLabel] \
+    -text [mc "Selection:"]]
   set ent [ttk::entry $selFrame.ent -textvariable $mainentry -width 14]
   set f1  [ttk::frame $selFrame.f1 -relief sunken]
   #set data(finalCanvas) [frame $f1.demo -bd 1 -width 110 -height 116]
@@ -558,7 +559,7 @@ proc ::tk::dialog::color::RedrawFinalColor {w} {
 
   #$data(finalCanvas) configure -bg $color
   set fg [InvertBg $data(red,intensity) $data(green,intensity) $data(blue,intensity)]
-  $data(finalCanvas) configure -bg $color -fg $fg -text $fg
+  $data(finalCanvas) configure -bg $color -fg $fg -text $fg -font {-weight bold}
   set data(idxFinalColor) [expr {$fg ne "#000000"}]
   set data(finalColor) $color
   set data(selection) $color

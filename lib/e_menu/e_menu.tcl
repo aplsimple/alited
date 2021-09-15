@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.5b1"
+  variable em_version "e_menu 3.4.5b4"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -193,6 +193,7 @@ namespace eval ::em {
   variable ls {} pk {}
   variable DF kdiff3 BF {}
   variable PI 0
+  variable NE 0
 }
 #___ creates an item for the menu pool
 proc ::em::pool_item_create {} {
@@ -873,16 +874,9 @@ proc ::em::Select_Item {{ib {}}} {
     ::em::on_exit 1
   }
 }
-#___ run/shell
-proc ::em::shell_run {from typ c1 s1 amp {inpsel ""}} {
+#___ repeat run/shell once in a cycle
+proc ::em::Shell_Run {from typ c1 s1 amp inpsel} {
   set cpwd [pwd]
-  set ib [string range $s1 1 end]
-  set butt .em.fr.win.fr$ib.butt
-  if {$::eh::pk ne {} && [winfo exists $butt]} {
-    # e_menu was called to pick an item
-    ::em::Select_Item $ib
-    return
-  }
   set inc 1
   set doexit 0
   foreach n [array names ::em::saveddata] {
@@ -939,6 +933,22 @@ proc ::em::shell_run {from typ c1 s1 amp {inpsel ""}} {
   update_buttons_pn
   update idletasks
   catch {cd $cpwd}  ;# may be deleted by commands
+}
+#___ run/shell
+proc ::em::shell_run {from typ c1 s1 amp {inpsel ""}} {
+  set ib [string range $s1 1 end]
+  set butt .em.fr.win.fr$ib.butt
+  if {$::eh::pk ne {} && [winfo exists $butt]} {
+    # e_menu was called to pick an item
+    ::em::Select_Item $ib
+    return
+  }
+  # repeat input dialogues: set by ::em::NE in .mnu or by NE=1 argument of e_menu
+  set ::em::inputResult 0
+  while {1} {
+    ::em::Shell_Run $from $typ $c1 $s1 $amp $inpsel
+    if {!$::em::inputResult || !$::em::NE} break
+  }
 }
 #___ run commands before a submenu
 proc ::em::before_callmenu {pars} {
@@ -1884,7 +1894,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         a= d= e= f= p= l= h= b= cs= c= t= g= n= \
         fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= \
         cc= gr= ht= hh= rt= DF= BF= pd= m= om= ts= \
-        TF= yn= in= ex= EX= PI= ls=} { ;# the processing order is important
+        TF= yn= in= ex= EX= PI= NE= ls=} { ;# the processing order is important
     if {($s1 in {o= s= m=}) && !($s1 in $osm)} {
       continue
     }
@@ -2006,7 +2016,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           set ::em::$s01 [::apave::getN $seltd [set ::em::$s01]]
         }
         ed= {set ::em::editor $seltd}
-        tg= - om= - dk= - ls= - DF= - BF= - pd= - PI= {
+        tg= - om= - dk= - ls= - DF= - BF= - pd= - PI= - NE= {
           set ::em::$s01 $seltd
         }
         ex= - EX= {
@@ -2426,10 +2436,10 @@ proc ::em::run_autohidden {alist} {
 }
 #___ run commands of ::em::ex list and exit
 proc ::em::run_ex {{exe ""}} {
-  if {$exe eq ""} {set exe $::em::ex}
+  if {$exe eq {}} {set exe $::em::ex}
   if {[llength $exe]} {
     foreach ex [split $exe ,] {
-      if {$ex eq "Help"} {
+      if {$ex eq {Help}} {
         ::em::help_button $::em::pseltd
       } elseif {[string match "h*" $ex] && $ex ne "h"} {
         ::em::run_autohidden [string range $ex 1 end]

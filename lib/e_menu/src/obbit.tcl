@@ -38,15 +38,15 @@ namespace eval ::apave {
 # Colors for <MildDark CS> : 1) meanings 2) code names
 
 # <CS>    itemfg  mainfg  itembg  mainbg  itemsHL  actbg   actfg  cursor  greyed   hot \
-  emfg  embg   -  menubg  winfg   winbg   itemHL2 #003...reserved...
+  emfg  embg   -  menubg  winfg   winbg   itemHL2 tabHL #004...reserved...
 
 # <CS>    clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk \
-  fI     bI  --12--  bM    fW      bW     itemHL2 #003...reserved...
+  fI     bI  --12--  bM    fW      bW     itemHL2 tabHL #004...reserved...
 
   set ::apave::_CS_(ALL) {
-{{ 0: AzureLight} "#050b0d" #050b0d #fff #e1e1df #002aaa #1b9ae9 #fff #444 grey #007fff #000 #6fbbff - #d7d7d7 #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
+{{ 0: AzureLight} "#050b0d" #050b0d #fff #e1e1df #002aaa #8dd9db #000 #444 grey #0e7b7c #000 #81cdcf - #d7d7d7 #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
 {{ 1: ForestLight} "#050b0d" #050b0d #fff #e1e1df #004000 #A8CCA8 #000 #444 grey #217346 #000 #a8bda8 - #d7d7d7 #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
-{{ 2: SunValleyLight} "#050b0d" #050b0d #fff #d9d9d9 #00469f #196ebf #fff #444 grey #005fb8 #000 #6fbbff - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
+{{ 2: SunValleyLight} "#050b0d" #050b0d #fff #d9d9d9 #00469f #74c9ff #000 #444 grey #005fb8 #000 #7fcbff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #004 #005 #006 #007}
 {{ 3: Grey1} "#050b0d" #050b0d #F8F8F8 #dadad8 #5c1616 #AFAFAF #000 #444 grey #933232 #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #004 #005 #006 #007}
 {{ 4: Grey2} "#050b0d" #050b0d #e9e9e7 #F8F8F8 #5c1616 #b8b8b8 #000 #444 grey #933232 #000 #c1c1c1 - #e1e1df #000 #FBFB95 #d5d5d3 #a20000 #004 #005 #006 #007}
 {{ 5: Rosy} "#2B122A" #000 #FFFFFF #F6E6E9 #570957 #C5ADC8 #000 #444 grey #870287 #000 #ceb6d1 - #e3d3d6 #000 #FBFB95 #e5e3e1 #a20000 #004 #005 #006 #007}
@@ -68,17 +68,17 @@ namespace eval ::apave {
 {{21: Notebook2} "#000" #000 #cdc5ac #a6a08c #460000 #d59d6f #000 #444 #606060 #771d00 #000 #cfab86 - #b4ae9a #000 #eded89 #c1b9a0 #980000 #004 #005 #006 #007}
 {{22: Notebook3} "#000" #000 #beb69d #96907c #460000 #d59d6f #000 #444 #505050 #771d00 #000 #cfab86 - #a6a08c #000 #eded89 #b2aa91 #7b1010 #004 #005 #006 #007}
 {{23: Darcula} "#ececec" #c7c7c7 #272727 #323232 #e98f1c #2F5692 #e1e1e1 #f4f49f grey #d18d3f #EDC881 #2a518d - #444444 #000 #a2a23e #343434 #f28787 #004 #005 #006 #007}
-{{24: AzureDark} "#ececec" #c7c7c7 #272727 #393939 #28a7ff #007fff #FFF #f4f49f grey #007fff #EDC881 #0062a5 - #444444 #000 #a2a23e #404040 #ff95ff #004 #005 #006 #007}
-{{25: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #95bf95 #217346 #FFF #f4f49f grey #99c399 #ffffff #247649 - #444444 #000 #a2a23e #404040 #ff9595 #004 #005 #006 #007}
-{{26: SunValleyDark} "#dfdfdf" #dddddd #131313 #252525 #38a9e0 #2f60d8 #FFF #f4f49f #6f6f6f #57c8ff #fff #2051c9 - #2d2d2d #000 #a2a23e #2a2a2a #ff95ff #004 #005 #006 #007}
+{{24: AzureDark} "#ececec" #c7c7c7 #272727 #393939 #28a7ff #007fff #FFF #f4f49f grey #33b2ff #EDC881 #0062a5 - #444444 #000 #a2a23e #404040 #ffc341 #004 #005 #006 #007}
+{{25: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #95bf95 #217346 #FFF #f4f49f grey #99c399 #ffffff #247649 - #444444 #000 #a2a23e #404040 #efaf6f #004 #005 #006 #007}
+{{26: SunValleyDark} "#dfdfdf" #dddddd #131313 #252525 #38a9e0 #2f60d8 #FFF #f4f49f #6f6f6f #57c8ff #fff #2051c9 - #2d2d2d #000 #a2a23e #2a2a2a #efaf6f #004 #005 #006 #007}
 {{27: Dark} "#F0E8E8" #E7E7E7 #272727 #323232 #de9e5e #6d6d6d #000 #f4f49f grey #eda95b #000 #767676 - #454545 #000 #cdcd69 #2e2e2e #ffabab #004 #005 #006 #007}
 {{28: Dark1} "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #eda95b #000 #767676 - #363636 #000 #cdcd69 #292929 #ffabab #004 #005 #006 #007}
 {{29: Dark2} "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #000 #f4f49f #616161 #eda95b #000 #767676 - #2b2b2b #000 #b0b04c #262626 #ffabab #004 #005 #006 #007}
 {{30: Dark3} "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #000 #f4f49f #616161 #eda95b #000 #767676 - #1c1c1c #000 #bebe5a #131313 #ffabab #004 #005 #006 #007}
-{{31: Oscuro} "#f1f1f1" #f1f1f1 #344545 #526d6d #f1b479 #728d8d #fff #f4f49f #afafaf #cc994a #000 #94afaf - #4f6666 #000 #cdcd69 #3d4e4e #ffbcbc #004 #005 #006 #007}
-{{32: Oscuro1} "#f1f1f1" #f1f1f1 #2a3b3b #466161 #e5a565 #6c8787 #fff #f4f49f #a2a2a2 #c99647 #000 #8ba6a6 - #4a6161 #000 #cdcd69 #354646 #ffbcbc #004 #005 #006 #007}
-{{33: Oscuro2} "#f1f1f1" #f1f1f1 #223333 #3e5959 #de9e5e #668181 #fff #f4f49f #a2a2a2 #c69344 #000 #819c9c - #3f5656 #000 #cdcd69 #2b3c3c #ffbcbc #004 #005 #006 #007}
-{{34: Oscuro3} "#f1f1f1" #f1f1f1 #192a2a #355050 #de9e5e #5c7777 #fff #f4f49f #9e9e9e #c28f40 #000 #779292 - #364d4d #000 #cdcd69 #223333 #ffbcbc #004 #005 #006 #007}
+{{31: Oscuro} "#f1f1f1" #f1f1f1 #344545 #526d6d #f1b479 #728d8d #fff #f4f49f #afafaf #f7c475 #000 #94afaf - #4f6666 #000 #cdcd69 #3d4e4e #ffbcbc #004 #005 #006 #007}
+{{32: Oscuro1} "#f1f1f1" #f1f1f1 #2a3b3b #466161 #e5a565 #6c8787 #fff #f4f49f #a2a2a2 #edba6b #000 #8ba6a6 - #4a6161 #000 #cdcd69 #354646 #ffbcbc #004 #005 #006 #007}
+{{33: Oscuro2} "#f1f1f1" #f1f1f1 #223333 #3e5959 #de9e5e #668181 #fff #f4f49f #a2a2a2 #e4b162 #000 #819c9c - #3f5656 #000 #cdcd69 #2b3c3c #ffbcbc #004 #005 #006 #007}
+{{34: Oscuro3} "#f1f1f1" #f1f1f1 #192a2a #355050 #de9e5e #5c7777 #fff #f4f49f #9e9e9e #dfac5d #000 #779292 - #364d4d #000 #cdcd69 #223333 #ffbcbc #004 #005 #006 #007}
 {{35: MildDark} "#d2d2d2" #fff #222323 #384e66 #2ccaca #4b7391 #fff #00ffff #939393 #43e1e1 #000 #668eac - #394d64 #000 #bebe5a #2b2c2c #ffa2a2 #004 #005 #006 #007}
 {{36: MildDark1} "#d2d2d2" #fff #151616 #2D435B #2ac8c8 #436b89 #fff #00ffff grey #36d4d4 #000 #668eac - #2e4259 #000 #bebe5a #1f2020 #ffb0b0 #004 #005 #006 #007}
 {{37: MildDark2} "#b4b4b4" #fff #0d0e0e #24384f #28c6c6 #3e6684 #fff #00ffff #757575 #33d1d1 #000 #668eac - #253a52 #000 #bebe5a #161717 #ffaeae #004 #005 #006 #007}
@@ -91,7 +91,7 @@ namespace eval ::apave {
 {{44: Red} "#fff" #e9e9e6 #340202 #440702 #f1b479 #b05e5e #000 #f4f49f #828282 #ffbb6d #000 #ba6868 - #3e0100 #000 #bebe5a #461414 #ffc1c1 #004 #005 #006 #007}
 {{45: Chocolate} "#d6d1ab" #d6d1ab #251919 #402020 #de9e5e #664D4D #fff #f4f49f #828282 #c3984a #fff #583f3f - #361d1d #000 #b0b04c #2d2121 #ffb7b7 #004 #005 #006 #007}
 {{46: Dusk} "#ececec" #ececec #1a1f21 #262b2d #f1b479 #6b7072 #000 #f4f49f #585d5f #ffbb6d #000 #6b7072 - #363b3d #000 #9e9e3a #23282a #ffabab #004 #005 #006 #007}
-{{47: TKE Default} "#dbdbdb" #dbdbdb #000 #282828 #de9e5e #0a0acc #fff #f4f49f #6a6a6a #bd9244 #fff #0000d3 - #383838 #000 #b0b04c #0d0e0e #ffabab #004 #005 #006 #007}
+{{47: TKE Default} "#dbdbdb" #dbdbdb #000 #282828 #de9e5e #0a0acc #fff #f4f49f #6a6a6a #d3a85a #fff #0000d3 - #383838 #000 #b0b04c #0d0e0e #ffabab #004 #005 #006 #007}
 }
   set ::apave::_CS_(initall) 1
   set ::apave::_CS_(initWM) 1
@@ -1204,11 +1204,11 @@ oo::class create ::apave::ObjectTheming {
     if {$ncolor == -2} return
     if {$ncolor eq {}} {
       lassign $args \
-        clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk tfgI tbgI fM bM tfgW tbgW tHL2 res3 res4 res5 res6 res7
+        clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk tfgI tbgI fM bM tfgW tbgW tHL2 tbHL res4 res5 res6 res7
     } else {
       foreach cs [list $ncolor $::apave::_CS_(MINCS)] {
         lassign [my csGet $cs] \
-          clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk tfgI tbgI fM bM tfgW tbgW tHL2 res3 res4 res5 res6 res7
+          clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk tfgI tbgI fM bM tfgW tbgW tHL2 tbHL res4 res5 res6 res7
         if {$clrtitf ne ""} break
         set ncolor $cs
       }
@@ -1227,13 +1227,13 @@ oo::class create ::apave::ObjectTheming {
     set grey $gr ;# #808080
     if {$::apave::_CS_(old) != $ncolor || $args eq "-doit"} {
       set ::apave::_CS_(old) $ncolor
-      my themeWindow $win [list $fg $bg $fE $bE $fS $bS $grey $bg $cc $ht $hh $tfgI $tbgI $fM $bM $tfgW $tbgW $tHL2 $res3 $res4 $res5 $res6 $res7]
+      my themeWindow $win [list $fg $bg $fE $bE $fS $bS $grey $bg $cc $ht $hh $tfgI $tbgI $fM $bM $tfgW $tbgW $tHL2 $tbHL $res4 $res5 $res6 $res7]
       my UpdateColors
       my initTooltip
     }
     set ::apave::FGMAIN $fg
     set ::apave::BGMAIN $bg
-    return [list $fg $bg $fE $bE $fS $bS $hh $grey $cc $ht $tfgI $tbgI $fM $bM $tfgW $tbgW $tHL2 $res3 $res4 $res5 $res6 $res7]
+    return [list $fg $bg $fE $bE $fS $bS $hh $grey $cc $ht $tfgI $tbgI $fM $bM $tfgW $tbgW $tHL2 $tbHL $res4 $res5 $res6 $res7]
   }
 
   ###########################################################################
@@ -1416,7 +1416,7 @@ oo::class create ::apave::ObjectTheming {
     # be consistent with TKE theme.
 
     lassign $clrs tfg1 tbg1 tfg2 tbg2 tfgS tbgS tfgD tbgD tcur bclr \
-      thlp tfgI tbgI tfgM tbgM twfg twbg tHL2 res3 res4 res5 res6 res7
+      thlp tfgI tbgI tfgM tbgM twfg twbg tHL2 tbHL res4 res5 res6 res7
     if {$tfg1 eq {-}} return
     if {!$isCS} {
       # if 'external  scheme' is used, register it in _CS_(ALL)
@@ -1427,7 +1427,7 @@ oo::class create ::apave::ObjectTheming {
 
       my csAdd [list CS-[expr {[::apave::cs_Max]+1}] $tfg2 $tfg1 $tbg2 $tbg1 \
         $thlp $tbgS $tfgS $tcur $tfgD $bclr $tfgI $tbgI $tfgM $tbgM \
-        $twfg $twbg $tHL2 $res3 $res4 $res5 $res6 $res7]
+        $twfg $twbg $tHL2 $tbHL $res4 $res5 $res6 $res7]
     }
     if {$tfgI eq {}} {set tfgI $tfg2}
     if {$tbgI eq {}} {set tbgI $tbg2}
@@ -1435,7 +1435,7 @@ oo::class create ::apave::ObjectTheming {
     if {$tbgM eq {}} {set tbgM $tbg1}
     my Main_Style $tfg1 $tbg1 $tfg2 $tbg2 $tfgS $tbgS $tfgD $tbg1 $tfg1 $tbg2 $tbg1
     foreach arg {tfg1 tbg1 tfg2 tbg2 tfgS tbgS tfgD tbgD tcur bclr \
-    thlp tfgI tbgI tfgM tbgM twfg twbg tHL2 res3 res4 res5 res6 res7 args} {
+    thlp tfgI tbgI tfgM tbgM twfg twbg tHL2 tbHL res4 res5 res6 res7 args} {
       if {$win eq {.}} {
         set ::apave::_C_($win,$arg) [set $arg]
       }
@@ -1443,8 +1443,7 @@ oo::class create ::apave::ObjectTheming {
     }
     set fontdef [font actual apaveFontDef]
     # configuring themed widgets
-    foreach ts {TLabel TLabelframe.Label TButton TCheckbutton \
-    TProgressbar TRadiobutton TNotebook.Tab} {
+    foreach ts {TLabel TButton TCheckbutton TProgressbar TRadiobutton TNotebook.Tab} {
       my Ttk_style configure $ts -font $fontdef
       my Ttk_style configure $ts -foreground $tfg1
       my Ttk_style configure $ts -background $tbg1
@@ -1454,6 +1453,9 @@ oo::class create ::apave::ObjectTheming {
       my Ttk_style map $ts -lightcolor [list focus $bclr]
       my Ttk_style map $ts -darkcolor [list focus $bclr]
     }
+    my Ttk_style configure TLabelframe.Label -foreground $bclr ;# $thlp $tfg2
+    my Ttk_style configure TLabelframe.Label -background $tbg1
+    my Ttk_style configure TLabelframe.Label -font $fontdef
     foreach ts {TNotebook TFrame} {
       my Ttk_style configure $ts -background $tbg1
     }
@@ -1543,7 +1545,7 @@ oo::class create ::apave::ObjectTheming {
           set ::apave::_C_($ts,8) "-elementborderwidth 2"
         }
         menu {
-          set ::apave::_C_($ts,0) 8
+          set ::apave::_C_($ts,0) 9
           set ::apave::_C_($ts,1) "-background $tbgM"
           set ::apave::_C_($ts,3) "-activeforeground $tfgS"
           set ::apave::_C_($ts,4) "-activebackground $tbgS"
@@ -1556,6 +1558,8 @@ oo::class create ::apave::ObjectTheming {
             set ::apave::_C_($ts,7) {-borderwidth 1}
             set ::apave::_C_($ts,8) {-relief groove}
           }
+          if {[my csDarkEdit]} {set c white} {set c black}
+          set ::apave::_C_($ts,9) "-selectcolor $c"
         }
         canvas {
           set ::apave::_C_($ts,1) "-background $tbg2"

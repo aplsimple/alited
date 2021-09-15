@@ -1,11 +1,18 @@
 # Last changes:
 
 
-Version `1.0.4b6 (8 Sep'21)`
+Version `1.0.4 (22 Sep'21)`
 
   - BUGFIX: command autocompletion at 1st column failed
   - BUGFIX: e_menu could fail due to font2's multiple words
   - BUGFIX: Default buttons of Preferences didn't update colors properly
+  - BUGFIX: clicking "Row/Files" cell of tree to select an item
+  - BUGFIX: marking tabs as modified at "Replace in session"
+  - BUGFIX: creating files from the file tree
+  - BUGFIX: creating file tree at switching to other project
+  - BUGFIX: undo cleared text of "notes" (projects, preferences)
+  - BUGFIX: after restarting, open new instance at repeated start
+  - BUGFIX: favors/last-visited at switching to other project
   - NEW   : run alited with file name(s) as argument(s)
   - NEW   : run alited by tclkit
   - NEW   : open multiple files in File/Open
@@ -17,18 +24,24 @@ Version `1.0.4b6 (8 Sep'21)`
   - NEW   : edit.tcl, with some procs from unit.tcl
   - NEW   : "Find by List" in Find menu
   - NEW   : switches instead of some checkbuttons (for rdbende themes)
+  - NEW   : %F wildcard (full file name) for templates
   - CHANGE: rearranging toolbar
   - CHANGE: faster "find/replace in session"
   - CHANGE: indent normalizing applies "autodetected" indent
   - CHANGE: (un)indented blank lines become ""
+  - CHANGE: theme chooser: light/dark list separated
   - CHANGE: rdbende themes revised heavily
   - CHANGE: minimal borderwidth of menus for rdbende themes
-  - CHANGE: "Save as" instead "Save" at deleting file by external app
+  - CHANGE: "Save as" instead of "Save" at deleting file by external app
   - CHANGE: autodetection of EOL at reading files
   - CHANGE: clrpick.tcl (smooth opening)
   - CHANGE: check for Tcl & C extensions at opening files
   - CHANGE: undo/redo's separators
-  - CHANGE: e_menu, apave, bartabs, hl_tcl packages
+  - CHANGE: by default, auto detection of indentation = yes
+  - CHANGE: "- alited" removed from window title
+  - CHANGE: grep.mnu items stay till closing
+  - CHANGE: 6 demo releases
+  - CHANGE: e_menu, apave, bartabs, hl_tcl, aloupe packages
 
 
 Version `1.0.3 (25 Aug'21)`

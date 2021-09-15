@@ -591,6 +591,7 @@ proc ::em::input {cmd} {
     }
     ::em::save_menuvars
   }
+  set ::em::inputResult $r
   repaintForWindows
   return $r
 }

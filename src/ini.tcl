@@ -10,7 +10,7 @@
 # ___________ Default settings of alited app ____________ #
 
 namespace eval ::alited {
-  set al(MAXFILES) 2000     ;# maximum size of file tree (max size of project)
+  set al(MAXFILES) 5000     ;# maximum size of file tree (max size of project)
   set al(ED,sp1) 1          ;# -spacing1 option of texts
   set al(ED,sp2) 0          ;# -spacing2 option of texts
   set al(ED,sp3) 0          ;# -spacing3 option of texts
@@ -42,6 +42,8 @@ namespace eval ::alited {
   set al(INI,confirmexit) 1     ;# flag "confirm exiting alited"
   set al(INI,belltoll) 1        ;# flag "bell at warnings"
   set al(INI,LINES1) 10         ;# number of initial "untouched" lines (to ban moves in it)
+  set al(moveall) 0             ;# "move all" of color chooser
+  set al(tonemoves) 1           ;# "tone moves" of color chooser
 
   # flag "use special RE for leafs of unit tree"
   set al(INI,LEAF) 0
@@ -138,7 +140,7 @@ namespace eval ::alited {
   set al(DEFAULT,prjdirign) {.git .bak}
   set al(DEFAULT,prjEOL) {}
   set al(DEFAULT,prjindent) 4
-  set al(DEFAULT,prjindentAuto) 0
+  set al(DEFAULT,prjindentAuto) 1
   set al(DEFAULT,prjredunit) 20
   set al(DEFAULT,prjmultiline) 0
 
@@ -413,6 +415,8 @@ proc ini::ReadIniMisc {nam val} {
     chosencolor {set alited::al(chosencolor) $val}
     showinfo {set alited::al(TREE,showinfo) $val}
     listSBL {set alited::al(listSBL) $val}
+    moveall {set al(moveall) $val}
+    tonemoves {set al(tonemoves) $val}
   }
 }
 
@@ -672,6 +676,8 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "showinfo=$al(TREE,showinfo)"
   set al(listSBL) [string map [list \n $alited::EOL] $al(listSBL)]
   puts $chan "listSBL=$al(listSBL)"
+  puts $chan "moveall=$al(moveall)"
+  puts $chan "tonemoves=$al(tonemoves)"
   close $chan
   SaveIniPrj $newproject
 }

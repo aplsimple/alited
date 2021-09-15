@@ -19,7 +19,7 @@ package require treectrl
 package require Img
 ::msgcat::mcload [file join [file dirname [info script]] msgs]
 
-package provide aloupe 0.9.1
+package provide aloupe 0.9.2
 
 # _______________________________________________________________________ #
 
@@ -89,14 +89,14 @@ proc ::aloupe::my::CreateDisplay {start} {
   grid [ttk::separator $data(WDISP).sep1 -orient horizontal] -row 1 -columnspan 4 -sticky we -pady 2
   grid [ttk::label $data(LABEL) -image $data(IMAGE) -relief flat \
     -style [lindex [SetStyle TLabel no -bd 0] 1]] -row 2 -columnspan 4 -padx 2
-  grid [ttk::button $data(WDISP).but1 -text [::msgcat::mc Save] \
-    -command ::aloupe::my::Save] -row 3 -column 0 -columnspan 2 -sticky ew
   set data(BUT2) $data(WDISP).but2
   if {[set but2text $data(-commandname)] eq ""} {
     set but2text [::msgcat::mc "To clipboard"]
   }
   grid [ttk::button $data(BUT2) -text $but2text \
-    -command ::aloupe::my::Button2Click] -row 3 -column 2 -columnspan 2 -sticky ew
+    -command ::aloupe::my::Button2Click] -row 3 -column 0 -columnspan 2 -sticky ew
+  grid [ttk::button $data(WDISP).but1 -text [::msgcat::mc Save] \
+    -command ::aloupe::my::Save] -row 3 -column 2 -columnspan 2 -sticky ew
   set data(-geometry) [regexp -inline \\+.* $data(-geometry)]
   if {$data(-geometry) ne ""} {
     wm geometry $data(WDISP) $data(-geometry)
@@ -352,7 +352,7 @@ proc ::aloupe::my::IsCapture {} {
   variable data
   if {$data(CAPTURE) eq ""} {
     Message -title "Color of Image" -icon warning \
-      -message "Click, then drag and drop\nthe loupe to get the image."
+      -message  [msgcat::mc "Click, then drag and drop\nthe loupe to get the image."]
     return no
   }
   return yes
@@ -384,7 +384,7 @@ proc ::aloupe::my::HandleColor {{doclb yes}} {
   if {[IsCapture]} {
     if {$data(COLOR) eq ""} {
       Message -title "Color of Image" -icon warning \
-        -message "Click the magnified image\nto get a pixel's color.\n\nThen hit this button."
+        -message [msgcat::mc "Click the magnified image\nto get a pixel's color.\n\nThen hit this button."]
     } else {
       if {$doclb && $data(-commandname) eq ""} {
         clipboard clear
@@ -574,4 +574,4 @@ if {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info s
 }
 # _________________________________ EOF _________________________________ #
 #-ARGS1: -alpha .2 -background "yellow" -ontop 1 -save 1 -inifile 123 -commandname "Get"
-#RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 23 9 12 "small icons"
+#-RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 23 9 12 "small icons"

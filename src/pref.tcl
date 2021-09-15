@@ -252,7 +252,8 @@ proc pref::MainFrame {} {
         f4 {-t tkcon}
     }}
     {#LabMess fraL T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
-    {fraB fraL T 1 2 {-st nsew} {-padding {5 5 5 5} -relief groove}}
+    {seh fraL T 1 2 {-st nsew -pady 2}}
+    {fraB seh T 1 2 {-st nsew} {-padding {2 2}}}
     {.butHelp - - - - {pack -side left} {-t "Help" -com ::alited::pref::Help}}
     {.LabMess - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
     {.butOK - - - - {pack -side left -anchor s -padx 2} {-t Save -command ::alited::pref::Ok}}
@@ -312,14 +313,14 @@ proc pref::Tab {tab {nt ""} {doit no}} {
   fetchVars
   if {$tab ne $curTab || $doit} {
     if {$curTab ne {}} {
-      set arrayTab($curTab) [$win.fraR.$curTab select]
-      pack forget $win.fraR.$curTab
+      set arrayTab($curTab) [$win.fra.fraR.$curTab select]
+      pack forget $win.fra.fraR.$curTab
     }
     set curTab $tab
-    pack $win.fraR.$curTab -expand yes -fill both
+    pack $win.fra.fraR.$curTab -expand yes -fill both
     catch {
       if {$nt eq {}} {set nt $arrayTab($curTab)}
-      $win.fraR.$curTab select $nt
+      $win.fra.fraR.$curTab select $nt
     }
   }
   if {$tab eq {nbk2}} {
@@ -356,7 +357,7 @@ proc pref::Help {} {
   # Shows a help on a current tab.
 
   fetchVars
-  set sel [lindex [split [$win.fraR.$curTab select] .] end]
+  set sel [lindex [split [$win.fra.fraR.$curTab select] .] end]
   alited::Help $win "-${curTab}-$sel"
 }
 
@@ -375,8 +376,9 @@ proc pref::General_Tab1 {} {
     if {$i == $al(INI,CS)} {set opcc $csname}
     if {$i == $al(EM,CS)} {set opcc2 $csname}
   }
-  set opcThemes [list default clam classic alt awlight awdark -- {experimental \
-    azure-light azure-dark forest-light forest-dark sun-valley-light sun-valley-dark}]
+  set lightdark [msgcat::mc {Light / Dark}]
+  set opcThemes [list default clam classic alt -- "{$lightdark} awlight awdark -- \
+    azure-light azure-dark -- forest-light forest-dark -- sun-valley-light sun-valley-dark"]
   if {[string first $alited::al(THEME) $opcThemes]<0} {
     set opc1 [lindex $opcThemes 0]
   } else {
@@ -1242,37 +1244,39 @@ proc pref::_create {tab} {
   #   tab - a tab to open (saved at previous session) or {}
 
   fetchVars
-  $obDl2 makeWindow $win "$al(MC,pref) :: $::alited::USERDIR"
+  $obDl2 makeWindow $win.fra "$al(MC,pref) :: $::alited::USERDIR"
   $obDl2 paveWindow \
-    $win [MainFrame] \
-    $win.fraR.nbk.f1 [General_Tab1] \
-    $win.fraR.nbk.f2 [General_Tab2] \
-    $win.fraR.nbk.f3 [General_Tab3] \
-    $win.fraR.nbk2.f1 [Edit_Tab1] \
-    $win.fraR.nbk2.f2 [Edit_Tab2] \
-    $win.fraR.nbk2.f3 [Edit_Tab3] \
-    $win.fraR.nbk3.f1 [Units_Tab] \
-    $win.fraR.nbk4.f1 [Template_Tab] \
-    $win.fraR.nbk5.f1 [Keys_Tab1] \
-    $win.fraR.nbk6.f1 [Common_Tab] \
-    $win.fraR.nbk6.f2 [Emenu_Tab] \
-    $win.fraR.nbk6.f3 [Runs_Tab] \
-    $win.fraR.nbk6.f4 [Tkcon_Tab]
+    $win.fra [MainFrame] \
+    $win.fra.fraR.nbk.f1 [General_Tab1] \
+    $win.fra.fraR.nbk.f2 [General_Tab2] \
+    $win.fra.fraR.nbk.f3 [General_Tab3] \
+    $win.fra.fraR.nbk2.f1 [Edit_Tab1] \
+    $win.fra.fraR.nbk2.f2 [Edit_Tab2] \
+    $win.fra.fraR.nbk2.f3 [Edit_Tab3] \
+    $win.fra.fraR.nbk3.f1 [Units_Tab] \
+    $win.fra.fraR.nbk4.f1 [Template_Tab] \
+    $win.fra.fraR.nbk5.f1 [Keys_Tab1] \
+    $win.fra.fraR.nbk6.f1 [Common_Tab] \
+    $win.fra.fraR.nbk6.f2 [Emenu_Tab] \
+    $win.fra.fraR.nbk6.f3 [Runs_Tab] \
+    $win.fra.fraR.nbk6.f4 [Tkcon_Tab]
   if {$minsize eq ""} {      ;# save default min.sizes
     after idle [list after 100 {
       set ::alited::pref::minsize "-minsize {[winfo width $::alited::pref::win] [winfo height $::alited::pref::win]}"
     }]
   }
+  set wtxt [$obDl2 TexNotes]
   set fnotes [file join $::alited::USERDIR notes.txt]
   if {[file exists $fnotes]} {
-    [$obDl2 TexNotes] insert end [::apave::readTextFile $fnotes]
+    $wtxt insert end [::apave::readTextFile $fnotes]
   }
+  $wtxt edit reset; $wtxt edit modified no
   [$obDl2 TexCKeys] insert end $al(ED,CKeyWords)
   if {$tab ne {}} {
     switch -exact $tab {
       Emenu_Tab {
         set nbk nbk6
-        set nt $win.fraR.nbk6.f3
+        set nt $win.fra.fraR.nbk6.f3
       }
     }
     Tab $nbk $nt yes
@@ -1282,12 +1286,12 @@ proc pref::_create {tab} {
   bind $win <Control-o> alited::ini::EditSettings
   set res [$obDl2 showModal $win -geometry $geo {*}$minsize \
     -onclose ::alited::pref::Cancel]
-  set fcont [[$obDl2 TexNotes] get 1.0 {end -1c}]
+  set fcont [$wtxt get 1.0 {end -1c}]
   ::apave::writeTextFile $fnotes fcont
   if {[llength $res] < 2} {set res ""}
   set geo [wm geometry $win] ;# save the new geometry of the dialogue
   set oldTab $curTab
-  set arrayTab($curTab) [$win.fraR.$curTab select]
+  set arrayTab($curTab) [$win.fra.fraR.$curTab select]
   destroy $win
   return $res
 }

@@ -34,10 +34,11 @@ proc main::GetWTXT {TID} {
 
 # ________________________ get and show text widget _________________________ #
 
-proc main::GetText {TID {doshow no}} {
+proc main::GetText {TID {doshow no} {dohighlight yes}} {
   # Creates or gets a text widget for a tab.
   #   TID - tab's ID
   #   doshow - flag "this widget should be displayed"
+  #   dohighlight - flag "this text should be highlighted"
   # Returns a list of: curfile (current file name),
   # wtxt (text's path), wsbv (scrollbar's path),
   # pos (cursor's position), doinit (flag "initialized")
@@ -94,14 +95,13 @@ proc main::GetText {TID {doshow no}} {
   }
   if {$doinit} {
     # if the file isn't read yet, read it and initialize its highlighting
-    $wtxt configure -autoseparators no
     alited::file::DisplayFile $TID $curfile $wtxt $doreload
     if {$doshow} {
       HighlightText $TID $curfile $wtxt
     } else {
       alited::file::MakeThemHighlighted $TID  ;# postpone the highlighting till a show
     }
-  } elseif {[alited::file::ToBeHighlighted $wtxt]} {
+  } elseif {$dohighlight && [alited::file::ToBeHighlighted $wtxt]} {
     HighlightText $TID $curfile $wtxt
     if {$al(TREE,isunits)} alited::tree::RecreateTree
   }

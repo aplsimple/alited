@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.4b6
+package provide alited 1.0.4b9
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -94,36 +94,40 @@ if {[package versions alited] eq {}} {
       incr ::argc -1
     }
   }
-  set fnames {}
+  set ALITED_FNAMES {}
   foreach - $::argv {
-    lappend fnames [file normalize ${-}]
+    lappend ALITED_FNAMES [file normalize ${-}]
   }
-  set onfiles [expr {$::argc>1 || ($::argc==1 && [file isfile [lindex $::argv 0]])}]
 
 # ____________________ Open an existing app __________________ #
 
+  set comm_port 51837
+  set already_running [catch { ::comm::comm config -port $comm_port }]
   if {!$alited::DEBUG && !$ALITED_NOSEND} {
     # Code borrowed from TKE editor.
     # Set the comm port that we will use
-    set comm_port 51837
     # Change our comm port to a known value
     # (if we fail, the app is already running at that port so connect to it)
-    if {[catch { ::comm::comm config -port $comm_port }]} {
+    if {$already_running} {
       # Attempt to add files or raise the existing application
-      if {[llength $fnames]} {
-        if {![catch {::comm::comm send $comm_port ::alited::run_remote ::alited::open_files_and_raise 0 {*}$fnames} rc]} {
+      if {[llength $ALITED_FNAMES]} {
+        if {![catch {::comm::comm send $comm_port ::alited::run_remote ::alited::open_files_and_raise 0 {*}$ALITED_FNAMES}]} {
           destroy .
           exit
         }
       } else {
-        if {![catch { ::comm::comm send $comm_port ::alited::run_remote ::alited::::raise_window } rc]} {
+        if {![catch { ::comm::comm send $comm_port ::alited::run_remote ::alited::::raise_window }]} {
           destroy .
           exit
         }
       }
     }
   }
+  unset comm_port
+  unset already_running
 }
+
+set ALITED_ONFILES [expr {$::argc>1 || ($::argc==1 && [file isfile [lindex $::argv 0]])}]
 
 # ________________________ Main variables _________________________ #
 
@@ -155,7 +159,7 @@ namespace eval alited {
   # directories of user's data
   variable USERDIRSTD [file normalize {~/.config}]
   variable USERDIRROOT $USERDIRSTD
-  if {$::argc && !$onfiles} {set USERDIRROOT [lindex $::argv 0]}
+  if {$::argc && !$ALITED_ONFILES} {set USERDIRROOT [lindex $::argv 0]}
 
   # two main objects to build forms (just some unique names)
   variable obPav ::alited::alitedpav
@@ -175,14 +179,14 @@ namespace eval alited {
   set al(prjname) {}      ;# current project's name
   set al(prjfile) {}      ;# current project's file name
   set al(prjroot) {}      ;# current project's directory name
-  set al(prjindent) 2     ;# current project's indentation
-  set al(prjindentAuto) 0 ;# auto detection of indentation
+  set al(prjindent) 4     ;# current project's indentation
+  set al(prjindentAuto) 1 ;# auto detection of indentation
   set al(prjmultiline) 0  ;# current project's multiline mode
   set al(prjEOL) {}       ;# current project's end of line
   set al(prjredunit) 20   ;# current project's unit lines per 1 red bar
   set al(prjbeforerun) {} ;# a command to be run before "Tools/Run"
 
-  set al(TITLE) {%f :: %d :: %p - alited}      ;# alited title's template
+  set al(TITLE) {%f :: %d :: %p}               ;# alited title's template
   set al(TclExtensionsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
   set al(ClangExtensionsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
   set al(TclExtensions) $al(TclExtensionsDef)
@@ -416,14 +420,14 @@ if {[info exists ALITED_NOSEND]} {
     ::apave::logMessage {start alited ------------}
   }
 #  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
-  if {$onfiles} {
+  if {$ALITED_ONFILES} {
     set ::argc 0
     set ::argv {}
-    after 10 [list ::alited::open_files_and_raise 0 {*}$fnames]
+    after 10 [list ::alited::open_files_and_raise 0 {*}$ALITED_FNAMES]
   }
   set alited::ARGV $::argv
-  unset fnames
-  unset onfiles
+  unset ALITED_FNAMES
+  unset ALITED_ONFILES
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
@@ -437,6 +441,9 @@ if {[info exists ALITED_NOSEND]} {
       set alited::ARGV [linsert $alited::ARGV 0 DEBUG]
     }
     alited::Run $alited::SCRIPT NOSEND {*}$alited::ARGV
+    catch {wm attributes . -alpha 0.0}
+    catch {wm withdraw $alited::al(WIN)}
+    after 1000 ;# no reaction to it while it restarts
   }
   exit
 }

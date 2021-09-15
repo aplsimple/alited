@@ -11,6 +11,7 @@
     %U - user's name
     %m - user's mail
     %w - user's web site
+    %F - current file's name
     %f - current file's tail name
     %n - current file's root name (namespace)
     %p - current procedure/method's name

@@ -1,4 +1,4 @@
-package ifneeded alited 1.0.4b6 [list source [file join $dir alited.tcl]]
+package ifneeded alited 1.0.4b9 [list source [file join $dir alited.tcl]]
 
 namespace eval ::alited {
 
@@ -18,7 +18,7 @@ It satisfies most requirements of [Tcl Editors](https://wiki.tcl-lang.org/Tcl+Ed
 
 Edited by *alited* are Tcl/Tk files. The C/C++ code is another target of *alited*, still for *Tcl/Tk development only* all the same.
 
-The *alited* facilitates the development and the maintenance of Tcl/Tk code, particularly because of the [unit tree](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.2/2.Units_alited-1.0.2.mp4) being a sort of documentation.
+The *alited* facilitates the development and the maintenance of Tcl/Tk code, particularly because of the [unit tree](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.4/2.Units_alited-1.0.4.mp4) being a sort of documentation.
 
 ## Links
 
@@ -28,12 +28,12 @@ The *alited* facilitates the development and the maintenance of Tcl/Tk code, par
 
 For a quick acquaintance of *alited*, a few of demo videos are available:
 
-   * [1. First start](https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.0/1.Start_alited-1.0.mp4)
-   * [2. Units](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.2/2.Units_alited-1.0.2.mp4)
-   * [3. Projects](https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.0/3.Projects_alited-1.0.mp4)
-   * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.0/4.Find_alited-1.0.mp4)
-   * [5. Tools](https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.0/5.Tools_alited-1.0.mp4)
-   * [6. Themes](https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.0.3/6.Themes_alited-1.0.3.mp4)
+   * [1. First start](https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.0.4/1.Start_alited-1.0.4.mp4)
+   * [2. Units](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.4/2.Units_alited-1.0.4.mp4)
+   * [3. Projects](https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.0.4/3.Projects_alited-1.0.4.mp4)
+   * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.0.4/4.Find_alited-1.0.4.mp4)
+   * [5. Tools](https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.0.4/5.Tools_alited-1.0.4.mp4)
+   * [6. Themes](https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.0.4/6.Themes_alited-1.0.4.mp4)
 
 ## Inevitable blah-blah
 

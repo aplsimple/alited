@@ -106,7 +106,7 @@ namespace eval ::apave {
     tbl {{} {-selectborderwidth 1 -highlightthickness 2 \
           -labelcommand tablelist::sortByColumn -stretch all \
           -showseparators 1}} \
-    tex {{} {-undo 1 -maxundo 0 -highlightthickness 2 -insertofftime 250 -insertontime 750 -insertwidth $::apave::cursorwidth -wrap word -selborderwidth 1 -autoseparators no}} \
+    tex {{} {-undo 1 -maxundo 0 -highlightthickness 2 -insertofftime 250 -insertontime 750 -insertwidth $::apave::cursorwidth -wrap word -selborderwidth 1}} \
     tre {{} {-selectmode browse}} \
     "h_" {{-sticky ew -csz 3 -padx 3} {}} \
     "v_" {{-sticky ns -rsz 3 -pady 3} {}}]
@@ -526,7 +526,6 @@ oo::class create ::apave::APave {
     }
 
     proc ListboxSelect {W} {
-
       # This code had been taken from Tcl's wiki:
       #   https://wiki.tcl-lang.org/page/listbox+selection
 
@@ -540,7 +539,6 @@ oo::class create ::apave::APave {
     }
 
     proc WinResize {win} {
-
       # Restricts the window's sizes (thus fixing Tk's issue with a menubar)
       #   win - path to a window to be of restricted sizes
 
@@ -567,13 +565,25 @@ oo::class create ::apave::APave {
   }
 
   destructor {
-
     # Clears variables used in the object.
 
     array unset ${_pav(ns)}PN::AR
     namespace delete ${_pav(ns)}PN
     array unset _pav
     if {[llength [self next]]} next
+  }
+
+  #########################################################################
+
+  method paveoptionValue {option} {
+    # Gets an option's value.
+    #   option - option's name
+    # Returns a value from _pav array (for options like "moveall", "tonemoves").
+
+    if {[info exists _pav($option)]} {
+      return [set _pav($option)]
+    }
+    return {}
   }
 
   #########################################################################
@@ -1473,9 +1483,10 @@ oo::class create ::apave::APave {
     if {[catch {lassign [tk_chooseColor -moveall $_pav(moveall) \
     -tonemoves $_pav(tonemoves) -initialcolor $_pav(initialcolor) {*}$args] \
     res _pav(moveall) _pav(tonemoves)}]} {
+      set args [::apave::removeOptions $args -moveall -tonemoves]
       set res [tk_chooseColor -initialcolor $_pav(initialcolor) {*}$args]
     }
-    if {$res ne ""} {
+    if {$res ne {}} {
       set _pav(initialcolor) [set $tvar $res]
     }
     return $res
@@ -2237,12 +2248,10 @@ oo::class create ::apave::APave {
       catch {bind $wt <braceright> {+ [self] onKeyTextM $wt %K}}"
     }
     foreach k [::apave::getTextHotkeys CtrlD] {
-      append res " ;\
-      bind $wt <$k> {[self] doubleText $wt}"
+      append res " ; bind $wt <$k> {[self] doubleText $wt}"
     }
     foreach k [::apave::getTextHotkeys CtrlY] {
-      append res " ;\
-      bind $wt <$k> {[self] deleteLine $wt}"
+      append res " ; bind $wt <$k> {[self] deleteLine $wt}"
     }
     append res " ;\
       bind $wt <Alt-Up> {[self] linesMove $wt -1} ;\
@@ -2264,11 +2273,11 @@ oo::class create ::apave::APave {
 
     upvar 1 $attrsName attrs
     lassign $args state state2
-    if {$state2 ne ""} {
+    if {$state2 ne {}} {
       if {[::apave::getOption -state {*}$attrs] eq $state2} return
       set isRO [expr {$isRO || [::apave::getOption -state {*}$attrs] eq $state}]
     }
-    if {$isRO} { append atRO "RO" }
+    if {$isRO} {append atRO RO}
     append attrs " $atRO $w"
     return
   }
@@ -2288,7 +2297,7 @@ oo::class create ::apave::APave {
     catch {menu $pop -tearoff $tearoff}
     $pop delete 0 end
     if {$isRO} {
-      $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label "Copy" \
+      $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label Copy \
             -command "event generate $w <<Copy>>"
       if {$istext} {
         eval [my popupHighlightCommands $pop $w]
@@ -2296,16 +2305,16 @@ oo::class create ::apave::APave {
       }
     } else {
       if {$istext} {
-        $pop add command {*}[my iconA cut] -accelerator Ctrl+X -label "Cut" \
+        $pop add command {*}[my iconA cut] -accelerator Ctrl+X -label Cut \
               -command "::apave::eventOnText $w <<Cut>>"
-        $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label "Copy" \
+        $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label Copy \
               -command "::apave::eventOnText $w <<Copy>>"
-        $pop add command {*}[my iconA paste] -accelerator Ctrl+V -label "Paste" \
+        $pop add command {*}[my iconA paste] -accelerator Ctrl+V -label Paste \
               -command "::apave::eventOnText $w <<Paste>>"
         $pop add separator
-        $pop add command {*}[my iconA undo] -accelerator Ctrl+Z -label "Undo" \
+        $pop add command {*}[my iconA undo] -accelerator Ctrl+Z -label Undo \
               -command "::apave::eventOnText $w <<Undo>>"
-        $pop add command {*}[my iconA redo] -accelerator Ctrl+Shift+Z -label "Redo" \
+        $pop add command {*}[my iconA redo] -accelerator Ctrl+Shift+Z -label Redo \
               -command "::apave::eventOnText $w <<Redo>>"
         eval [my popupBlockCommands $pop $w]
         eval [my popupHighlightCommands $pop $w]
@@ -2316,17 +2325,17 @@ oo::class create ::apave::APave {
         after idle [list [self] set_highlight_matches $w]
         after idle [my setTextBinds $w]
       } else {
-        $pop add command {*}[my iconA cut] -accelerator Ctrl+X -label "Cut" \
+        $pop add command {*}[my iconA cut] -accelerator Ctrl+X -label Cut \
               -command "event generate $w <<Cut>>"
-        $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label "Copy" \
+        $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label Copy \
               -command "event generate $w <<Copy>>"
-        $pop add command {*}[my iconA paste] -accelerator Ctrl+V -label "Paste" \
+        $pop add command {*}[my iconA paste] -accelerator Ctrl+V -label Paste \
               -command "event generate $w <<Paste>>"
       }
     }
     if {$istext} {
       $pop add separator
-      $pop add command {*}[my iconA none] -accelerator Ctrl+A -label "Select All" \
+      $pop add command {*}[my iconA none] -accelerator Ctrl+A -label {Select All} \
         -command "$w tag add sel 1.0 end"
       bind $w <Control-a> "$w tag add sel 1.0 end; break"
     }

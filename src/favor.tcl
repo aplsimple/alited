@@ -259,6 +259,14 @@ proc favor::Show {} {
 }
 #_______________________
 
+proc favor::ShowFavVisit {} {
+  # Show favorites/last visits, depending on the mode.
+
+  namespace upvar ::alited al al obPav obPav
+  SetFavorites $al(FAV,current)
+  if {!$al(FAV,IsFavor)} Show
+}
+
 proc favor::SwitchFavVisit {} {
   # Switches favorites / last visited units' view.
 
@@ -499,8 +507,7 @@ proc favor::_init {} {
   $wtree tag bind tagNorm <Motion> {after idle {alited::favor::Tooltip %x %y %X %Y}}
   bind $wtree <Leave> {alited::favor::TooltipOff}
   $wtree heading #1 -text [msgcat::mc $al(MC,favorites)]
-  SetFavorites $al(FAV,current)
-  if {!$al(FAV,IsFavor)} Show
+  ShowFavVisit
 }
 
 # _________________________________ EOF _________________________________ #

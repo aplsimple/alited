@@ -77,8 +77,11 @@ proc tool::ColorPicker {} {
   if {$color ne {}} {
     set al(chosencolor) $color
   }
-  set res [::apave::obj chooser colorChooser alited::al(chosencolor) -parent $al(WIN)]
+  set res [::apave::obj chooser colorChooser alited::al(chosencolor) \
+    -moveall $al(moveall) -tonemoves $al(tonemoves) -parent $al(WIN)]
   if {$res ne {}} {
+    set al(moveall) [::apave::obj paveoptionValue moveall]
+    set al(tonemoves) [::apave::obj paveoptionValue tonemoves]
     set al(chosencolor) $res
     InsertInText $res $pos1 $pos2
   }
@@ -291,7 +294,7 @@ proc tool::PopupBar {X Y} {
   catch {destroy $popm}
   menu $popm -tearoff 0
   $popm add command -label [msgcat::mc {Open bar/menu settings}] \
-    -command "alited::pref::_run Emenu_Tab"
+    -command {alited::pref::_run Emenu_Tab}
   $obPav themePopup $popm
   tk_popup $popm $X $Y
 }
@@ -364,6 +367,9 @@ proc tool::e_menu {args} {
     EM_SaveFiles
     if {![is_submenu $args]} {
       append args " g="  ;# should be last, to override previous settings
+    }
+    if {{m=grep.mnu} in $args} {
+      append args " NE=1"  ;# let him search till closing the search dialogue
     }
   }
   if {{m=menu.mnu} in $args && {ex=d} in $args && $al(BACKUP) ne {}} {

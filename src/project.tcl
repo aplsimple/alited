@@ -337,7 +337,7 @@ proc project::CheckNewDir {} {
   namespace upvar ::alited al al obDl2 obDl2
   variable win
   if {![file exists $al(prjroot)]} {
-    $win.fraR.nbk select $win.fraR.nbk.f1
+    $win.fra.fraR.nbk select $win.fra.fraR.nbk.f1
     focus [::apave::precedeWidgetName [$obDl2 Dir] ent]
     set msg [string map [list %d $al(prjroot)] $al(makeroot)]
     if {![alited::msg yesno ques $msg NO -geometry root=$win]} {
@@ -426,6 +426,7 @@ proc project::Select {{item ""}} {
     if {[file exists $fnotes]} {
       $wtxt insert end [::apave::readTextFile $fnotes]
     }
+    $wtxt edit reset; $wtxt edit modified no
     foreach opt $OPTS {
       set al($opt) $prjinfo($prj,$opt)
     }
@@ -600,6 +601,8 @@ proc project::Ok {args} {
   $obDl2 res $win 1
   alited::file::MakeThemHighlighted
   after idle alited::main::ShowText
+  if {!$al(TREE,isunits)} {after idle alited::tree::RecreateTree}
+  alited::favor::ShowFavVisit
   return
 }
 #_______________________
@@ -628,10 +631,8 @@ proc project::Help {} {
 proc project::MainFrame {} {
   # Creates a main frame of "Project" dialogue.
 
-  namespace upvar ::alited al al obDl2 obDl2
-  variable win
   return {
-    {fraTreePrj - - 10 1 {-st nswe -pady 4 -rw 1} {}}
+    {fraTreePrj - - 10 1 {-st nswe -pady 4 -rw 1}}
     {.TreePrj - - - - {pack -side left -expand 1 -fill both} {-h 16 -show headings -columns {C1} -displaycolumns {C1}}}
     {.sbvPrjs .TreePrj L - - {pack -side left -fill both}}
     {fraR fraTreePrj L 10 1 {-st nsew -cw 1 -pady 4}}
@@ -640,12 +641,13 @@ proc project::MainFrame {} {
       f2 {-text {$al(MC,prjOptions)}}
       -traverse yes -select f1
     }}
-    {fraB1 fraTreePrj T 1 1 {-st nsew} {}}
+    {fraB1 fraTreePrj T 1 1 {-st nsew}}
     {.buTad - - - - {pack -side left -anchor n} {-takefocus 0 -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big}}
     {.buTch - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big}}
     {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel)} -image alimg_delete-big}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
-    {fraB2 fraB1 T 1 2 {-st nsew} {-padding {5 5 5 5} -relief groove}}
+    {seh fraB1 T 1 2 {-st nsew -pady 2}}
+    {fraB2 seh T 1 2 {-st nsew} {-padding {2 2}}}
     {.butHelp - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,help)} -command ::alited::project::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
     {.butOK - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,select)} -command ::alited::project::Ok}}
@@ -708,15 +710,15 @@ proc project::_create {} {
   variable prjlist
   variable oldTab
   variable ilast
-  $obDl2 makeWindow $win "$al(MC,projects) :: $::alited::PRJDIR"
+  $obDl2 makeWindow $win.fra "$al(MC,projects) :: $::alited::PRJDIR"
   $obDl2 paveWindow \
-    $win [MainFrame] \
-    $win.fraR.nbk.f1 [Tab1] \
-    $win.fraR.nbk.f2 [Tab2]
+    $win.fra [MainFrame] \
+    $win.fra.fraR.nbk.f1 [Tab1] \
+    $win.fra.fraR.nbk.f2 [Tab2]
   set tree [$obDl2 TreePrj]
   $tree heading C1 -text $al(MC,projects)
   if {$oldTab ne ""} {
-    $win.fraR.nbk select $oldTab
+    $win.fra.fraR.nbk select $oldTab
   }
   UpdateTree
   bind $tree <<TreeviewSelect>> "::alited::project::Select"
@@ -732,7 +734,7 @@ proc project::_create {} {
   bind [$obDl2 TexPrj] <FocusOut> "alited::project::SaveNotes"
   set res [$obDl2 showModal $win  -geometry $geo {*}$minsize \
     -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
-  set oldTab [$win.fraR.nbk select]
+  set oldTab [$win.fra.fraR.nbk select]
   if {[llength $res] < 2} {set res ""}
   set geo [wm geometry $win] ;# save the new geometry of the dialogue
   destroy $win

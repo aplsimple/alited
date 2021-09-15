@@ -200,6 +200,7 @@ proc unit::TemplateData {wtxt l1 tpldata} {
     %U $al(TPL,%U) \
     %m $al(TPL,%m) \
     %w $al(TPL,%w) \
+    %F $fname \
     %f [file tail $fname] \
     %n [file rootname [file tail $fname]] \
     ] $tex]
@@ -338,6 +339,7 @@ proc unit::MoveL1L2 {wtxt i1 i2 io} {
   [set linesmoved [$wtxt get $i1.0 $ind2]] eq ""} {
     return "" ;# nothing to do
   }
+  $wtxt configure -autoseparators no
   $wtxt edit separator
   $wtxt delete $i1.0 $ind2
   if {$io>$i2} {
@@ -355,6 +357,7 @@ proc unit::MoveL1L2 {wtxt i1 i2 io} {
     $wtxt insert $io.0 $linesmoved
   }
   $wtxt edit separator
+  $wtxt configure -autoseparators yes
   return $io
 }
 #_______________________

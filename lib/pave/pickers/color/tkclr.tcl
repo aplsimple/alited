@@ -180,9 +180,8 @@ proc ::tk::dialog::color::Config {dataName argList} {
   } else {
     set defaultColor black
   }
-  set mva [expr {![string match "*-initialcolor black*" "$argList"]}]
   set specs [list \
-    [list -moveall "" "" $mva] \
+    [list -moveall "" "" 0] \
     [list -tonemoves "" "" 1] \
     [list -initialcolor "" "" $defaultColor] \
     [list -parent "" "" "."] \
@@ -289,7 +288,7 @@ proc ::tk::dialog::color::BuildDialog {w} {
     "::tk::dialog::color::StickSelectors $w 1"] -padx 2 -side left
   pack [ttk::checkbutton $stripsFrame.followColorSel -text [mc "Tone moves"] \
     -variable ::tk::dialog::color::tonemoves] -padx 20 -side left
-  set foc [ttk::frame $stripsFrame.foc -relief flat -height 26]
+  set foc [ttk::frame $stripsFrame.foc]
   foreach l { 804000 004000 004080 008080 800080 808000 \
               ffff00 ff00ff 00ffff 0000ff 00ff00 ff0000} {
     set fl [frame $stripsFrame.foc.$l -bd 3 -relief raised -height 14 -width 14]
@@ -297,9 +296,9 @@ proc ::tk::dialog::color::BuildDialog {w} {
     bind $fl <Button-1> [list tk::dialog::color::LittleSwatch $w $mainentry #$l]
     pack $fl -expand yes -anchor nw -fill both -padx 3 -side left
   }
-  pack $foc -expand yes -anchor nw -fill both -pady 2 -side right
+  pack $foc -expand yes -anchor nw -fill both -pady 4 -side right
 
-  pack $stripsFrame -side left -fill both -pady 2
+  pack $stripsFrame -side left -fill both -pady 4
 
   # The selFrame contains a frame that demonstrates the currently
   # selected color
@@ -347,7 +346,7 @@ proc ::tk::dialog::color::BuildDialog {w} {
   if {$aloupe eq ""} {
     grid $botFrame.ok0 x x x $botFrame.ok $botFrame.cancel -sticky ew
   } else {
-    grid $botFrame.ok0 $botFrame.loupe x x x $botFrame.ok $botFrame.cancel -sticky ew
+    grid $botFrame.ok0 $botFrame.loupe x x x $botFrame.ok $botFrame.cancel -sticky ew -padx 2
   }
   grid configure $botFrame.ok $botFrame.cancel -padx 2 -pady 4
   grid columnconfigure $botFrame 2 -weight 2 -uniform space
@@ -549,7 +548,7 @@ proc ::tk::dialog::color::RedrawFinalColor {w} {
   set color [format "#%02x%02x%02x" $data(red,intensity) \
     $data(green,intensity) $data(blue,intensity)]
   set fg [InvertBg $data(red,intensity) $data(green,intensity) $data(blue,intensity)]
-  $data(finalCanvas) configure -bg $color -fg $fg -text $fg
+  $data(finalCanvas) configure -bg $color -fg $fg -text $fg -font {-weight bold}
   set data(idxFinalColor) [expr {$fg ne "#000000"}]
   set data(finalColor) $color
   set data(selection) $color
@@ -860,9 +859,9 @@ if {$::argc==1} {
     . configure -background $_
   }
 }
-ttk::style theme use clam
+catch {ttk::style theme use default}
 ttk::style configure TButton -anchor center -width -8 -relief raised -borderwidth 1 -padding 1
-::tk::dialog::color::  -parent . -title "Choose Color" -initialcolor $initcolor
+::tk::dialog::color::  -parent . -title "Choose Color" -initialcolor $initcolor {*}$::argv
 exit
 # ________________________________ EOF __________________________________ #
 # -ARGS1: "#000000"

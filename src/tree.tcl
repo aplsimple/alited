@@ -531,7 +531,7 @@ proc tree::ButtonPress {but x y X Y} {
   set ID [$wtree identify item $x $y]
   set region [$wtree identify region $x $y]
   set al(movID) [set al(movWin) {}]
-  if {![$wtree exists $ID] || $region ne {tree}} {
+  if {![$wtree exists $ID] || $region ni {tree cell}} {
     return  ;# only tree items are processed
   }
   switch $but {

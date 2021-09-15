@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.17
+package provide hl_tcl 0.9.19
 
 # ______________________ Common data ____________________ #
 
@@ -73,8 +73,8 @@ namespace eval ::hl_tcl {
   set data(S_SPACE2) [concat $data(S_SPACE) [list "\{"]]
   set data(S_BOTH) [concat $data(S_SPACE) [list "\"" "="]]
 
-  set data(RE0) {(^|\[|\{|\}|;)+\s*([:_[:alpha:]])+}
-  set data(RE1) {(\[|\{|\}|;)+\s*([:_[:alpha:]])+}
+  set data(RE0) {(^|\[|\{|\}|;)+\s*([:\w]+)([\s]|$){1}}
+  set data(RE1) {(\[|\{|\}|;)+\s*([:\w]+)([\s]|$){1}}
   set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})+}
   }
 }
@@ -152,11 +152,11 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
   if {$pri} {set RE $data(RE1)} {set RE $data(RE0)}
   set lcom [regexp -inline -all -indices $RE $st]
   # commands
-  foreach {lc _ _} $lcom {
+  foreach {- - lc -} $lcom {
     lassign $lc i1 i2
     set c [string trim [string range $st $i1 $i2] "\{\}\[;\t "]
     set ik [expr {$i2-$i1+1-[string length $c]}]
-    if {$c ne ""} {
+    if {$c ne {}} {
       incr i1 $ik
       incr i2
       if {[lsearch -exact -sorted $data(CMD_TCL) $c]>-1} {
@@ -174,7 +174,7 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
   set cnt [CountChar $st \$ dlist no]
   foreach dl $dlist {
     if {[string index $st $dl+1] eq "\{"} {
-      if {[set br2 [string first "\}" $st $dl+2]]!=-1} {
+      if {[set br2 [string first \} $st $dl+2]]!=-1} {
         $txt tag add tagVAR "$ln.$pri +$dl char" "$ln.$pri +[incr br2] char"
       }
       continue

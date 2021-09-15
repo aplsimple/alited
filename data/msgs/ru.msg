@@ -332,6 +332,7 @@ namespace eval ::alited {
     {Cursor width:} {Ширина курсора:}
     {Notes:} {Заметки:}
     "Sort of diary.\nList of TODOs etc." "Типа дневника.\nСписок TODO и пр."
+    {Light / Dark} {Светлая / Темная}
   }
 
   ### ________________________ Editor _________________________ ###
