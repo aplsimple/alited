@@ -670,7 +670,7 @@ proc project::Tab1 {} {
     {.entIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 50}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 lab T 1 2 {-st nsew -rw 1 -cw 1}}
-    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fraB2.butHelp -tip {$alited::al(MC,notes)}}}
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fra.fraB2.butHelp -tip {$alited::al(MC,notes)}}}
     {.sbv .TexPrj L - - {pack -side left}}
   }
 }

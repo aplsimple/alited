@@ -74,7 +74,7 @@ namespace eval ::alited {
     set al(MC,delfavor)    [msgcat::mc "Remove \"%n\" of %f\nfrom the favorites?"]
     set al(MC,selfavor)    [msgcat::mc "Click \"%t\""]
     set al(MC,copydecl)    [msgcat::mc {Copy Declaration}]
-    set al(MC,openofdir)   [msgcat::mc "Open all Tcl files of \"%n\""]
+    set al(MC,openofdir)   [msgcat::mc "Open All Tcl Files of \"%n\""]
     set al(MC,delitem)     [msgcat::mc "Remove \"%n\"\nfrom \"%f\"?"]
     set al(MC,delfile)     [msgcat::mc "Delete \"%f\"?"]
     set al(MC,nodelopen)   [msgcat::mc {An open file can not be deleted.}]

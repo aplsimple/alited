@@ -21,9 +21,12 @@ proc unit::GetHeader {wtree ID {NC ""}} {
   namespace upvar ::alited al al
   set tip [string trim [$wtree item $ID -text]]
   lassign [$wtree item $ID -values] l1 l2 - id
-  if {$NC eq "#1"} {
+  if {!$al(TREE,isunits)} {
+    return $l2  ;# for file tree, it's a full file name
+  }
+  if {$NC eq {#1}} {
     set tip "[string map {al #} $id]\n$l1 - $l2"
-    set ID ""
+    set ID {}
   } else {
     catch {
       set wtxt [alited::main::CurrentWTXT]
@@ -31,7 +34,7 @@ proc unit::GetHeader {wtree ID {NC ""}} {
       if {[string match "*\{" $tip2]} {
         set tip [string trim $tip2 " \{"]
       }
-      if {$NC eq ""} {
+      if {$NC eq {}} {
         return $tip  ;# returns a declaration only
       }
       # find first commented line, after the proc/method declaration
@@ -39,10 +42,10 @@ proc unit::GetHeader {wtree ID {NC ""}} {
         incr l1
         set line [string trim [$wtxt get $l1.0 $l1.end]]
         if {[string index $line end] ni [list \\ \{] && \
-        $line ni {"" "#" "//"} && ![regexp $al(RE,proc) $line]} {
-          if {[string match "#*" $line]} {
+        $line ni {{} # //} && ![regexp $al(RE,proc) $line]} {
+          if {[string match #* $line]} {
             append tip \n [string trim [string range $line 1 end]]
-          } elseif {[string match "//*" $line]} {
+          } elseif {[string match //* $line]} {
             append tip \n [string trim [string range $line 2 end]]
           }
           break
@@ -293,8 +296,7 @@ proc unit::Add {} {
   }
   alited::keys::BindKeys [alited::main::CurrentWTXT] template
 }
-
-# ________________________ Moving units _________________________ #
+#_______________________
 
 proc unit::Delete {wtree fname} {
   # Deletes a unit from a text.
@@ -324,14 +326,74 @@ proc unit::Delete {wtree fname} {
     }
   }
 }
+
+# ________________________ Moving units _________________________ #
+
+proc unit::DropUnits {wtree fromIDs toID} {
+  # Moves unit(s) from one location in the unit tree to other.
+  #   wtree - unit tree's path
+  #   fromIDs - IDs of tree item "to move from"
+  #   toID - ID of tree item "to move to"
+
+  namespace upvar ::alited obPav obPav
+  set tree [alited::tree::GetTree]
+  set wtxt [alited::main::CurrentWTXT]
+  set wtree [$obPav Tree]
+  $wtxt configure -autoseparators no
+  $wtxt edit separator
+  # firstly, cut all moved lines
+  set ijust 0
+  set movedlines [list]
+  # we must cut from below, so sort units reversely:
+  set fromIDs [lsort -decreasing -dictionary $fromIDs]
+  set headers [list]
+  foreach fromID $fromIDs {
+    if {$fromID eq $toID} continue
+    # simply for each unit: find its moved lines and a destination line
+    set i1 [set i2 [set io 0]]
+    foreach item $tree {
+      lassign $item lev cnt id title values
+      lassign $values l1 l2 prl id lev leaf fl1
+      if {$id eq $fromID} {
+        set i1 $l1
+        set i2 $l2
+      } elseif {$id eq $toID} {
+        set io $l1
+      }
+    }
+    if {$i1 && $i2 && $io} {
+      lappend headers [GetHeader $wtree $fromID]
+      # if the unit is above the destination, the destination should be adjusted
+      if {$i2<$io} {set ijust [expr {$ijust-$i2+$i1-1}]}
+      set ind2 [$wtxt index "$i2.end +1 char"]
+      set lines [$wtxt get $i1.0 $ind2]
+      $wtxt delete $i1.0 $ind2
+      # the cut lines are saved, to paste them afterwards
+      lappend movedlines $lines
+    }
+  }
+  # secondly, paste all moved lines
+  if {[llength $movedlines]} {
+    incr io $ijust
+    foreach lines $movedlines {
+      $wtxt insert $io.0 $lines
+    }
+    ::tk::TextSetCursor $wtxt $io.0
+    alited::tree::RecreateTree {} $headers
+    alited::main::FocusText
+  }
+  $wtxt edit separator
+  $wtxt configure -autoseparators yes
+}
 #_______________________
 
-proc unit::MoveL1L2 {wtxt i1 i2 io} {
+proc unit::MoveL1L2 {wtxt i1 i2 io {dosep yes}} {
   # Moves a text lines to other location.
   #   wtxt - text widget's path
   #   i1 - first line to be moved
   #   i2 - last line to be moved
   #   io - destination line (to insert the moved lines before)
+  #   dosep - yes, if "edit separator" is required
   # Returns a position of destination line, if the moving was successful.
 
   set ind2 [$wtxt index "$i2.end +1 char"]
@@ -339,8 +401,10 @@ proc unit::MoveL1L2 {wtxt i1 i2 io} {
   [set linesmoved [$wtxt get $i1.0 $ind2]] eq ""} {
     return "" ;# nothing to do
   }
-  $wtxt configure -autoseparators no
-  $wtxt edit separator
+  if {$dosep} {
+    $wtxt configure -autoseparators no
+    $wtxt edit separator
+  }
   $wtxt delete $i1.0 $ind2
   if {$io>$i2} {
     # 3. i1    if moved below, the moved (deleted) lines change 'io', so
@@ -356,19 +420,22 @@ proc unit::MoveL1L2 {wtxt i1 i2 io} {
   } else {
     $wtxt insert $io.0 $linesmoved
   }
-  $wtxt edit separator
-  $wtxt configure -autoseparators yes
+  if {$dosep} {
+    $wtxt edit separator
+    $wtxt configure -autoseparators yes
+  }
   return $io
 }
 #_______________________
 
-proc unit::MoveUnit {wtree to hd headers f1112} {
+proc unit::MoveUnit {wtree to hd headers f1112 {dosep yes}} {
   # Moves a unit up/down the unit tree.
   #   wtree - unit tree's path
   #   to - direction (up/down)
   #   hd - header of the moved unit
   #   headers - headers of all selected units
   #   f1112 - yes, if run by F11/F12 keys
+  #   dosep - yes, if "edit separator" is required
 
   namespace upvar ::alited al al
   set wtxt [alited::main::CurrentWTXT]
@@ -397,42 +464,13 @@ proc unit::MoveUnit {wtree to hd headers f1112} {
     alited::msg ok err $msg -title $al(MC,introln1) {*}$geo
     return no
   }
-  if {[set pos [MoveL1L2 $wtxt $i1 $i2 $io]] ne {}} {
+  if {[set pos [MoveL1L2 $wtxt $i1 $i2 $io $dosep]] ne {}} {
     ::tk::TextSetCursor $wtxt [expr {int($pos)}].0
     alited::tree::RecreateTree $wtree $headers
   } else {
     return no
   }
   return yes
-}
-#_______________________
-
-proc unit::MoveUnit1 {wtree fromID toID} {
-  # Moves a unit from one location in the unit tree to other.
-  #   wtree - unit tree's path
-  #   fromID - ID of tree item "to move from"
-  #   toID - ID of tree item "to move to"
-
-  if {$fromID eq $toID} return
-  set wtxt [alited::main::CurrentWTXT]
-  set tree [alited::tree::GetTree]
-  set i1 [set i2 [set io 0]]
-  foreach item $tree {
-    lassign $item lev cnt id title values
-    lassign $values l1 l2 prl id lev leaf fl1
-    if {$id eq $fromID} {
-      set i1 $l1
-      set i2 $l2
-    } elseif {$id eq $toID} {
-      set io $l1
-    }
-  }
-  if {$i1 && $i2 && $io} {
-    if {[set pos [MoveL1L2 $wtxt $i1 $i2 $io]] ne {}} {
-      ::tk::TextSetCursor $wtxt [expr {int($pos)}].0
-      alited::tree::RecreateTree
-    }
-  }
 }
 #_______________________
 
@@ -463,7 +501,7 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
     }
   }
   if {$to eq "move"} {
-    MoveUnit1 $wtree $itemIDs $f1112
+    DropUnits $wtree $itemIDs $f1112
     return
   }
   set al(RECREATE) 0
@@ -477,11 +515,15 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
     }
   }
   # move items one by one, by their headers
+  $wtxt configure -autoseparators no
+  $wtxt edit separator
   foreach hd $headers {
-    if {![MoveUnit $wtree $to $hd $headers $f1112]} {
+    if {![MoveUnit $wtree $to $hd $headers $f1112 no]} {
       break
     }
   }
+  $wtxt edit separator
+  $wtxt configure -autoseparators yes
   after idle "set alited::al(RECREATE) 1 ; alited::tree::RecreateTree"
   if {[set sel [$wtree selection]] ne ""} {
     after idle [list after 10 "$wtree selection set {$sel}"]

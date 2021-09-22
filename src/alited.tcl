@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.4b9
+package provide alited 1.0.4b12
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -412,14 +412,14 @@ namespace eval alited {
 
 # _________________________ Run the app _________________________ #
 
+if {$alited::LOG ne {}} {
+  ::apave::logName $alited::LOG
+  ::apave::logMessage "START ------------"
+}
 # this "if" satisfies the Ruff doc generator "package require":
 if {[info exists ALITED_NOSEND]} {
   unset ALITED_NOSEND
-  if {$alited::LOG ne {}} {
-    ::apave::logName $alited::LOG
-    ::apave::logMessage {start alited ------------}
-  }
-#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {$ALITED_ONFILES} {
     set ::argc 0
     set ::argv {}
@@ -431,7 +431,7 @@ if {[info exists ALITED_NOSEND]} {
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
-#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
     if {$alited::LOG ne {}} {
@@ -440,10 +440,14 @@ if {[info exists ALITED_NOSEND]} {
     if {$alited::DEBUG} {
       set alited::ARGV [linsert $alited::ARGV 0 DEBUG]
     }
+    if {$alited::LOG ne {}} {
+      ::apave::logMessage "QUIT ------------ $alited::SCRIPT NOSEND $alited::ARGV"
+    }
     alited::Run $alited::SCRIPT NOSEND {*}$alited::ARGV
     catch {wm attributes . -alpha 0.0}
     catch {wm withdraw $alited::al(WIN)}
-    after 1000 ;# no reaction to it while it restarts
+  } elseif {$alited::LOG ne {}} {
+    ::apave::logMessage {QUIT ------------}
   }
   exit
 }

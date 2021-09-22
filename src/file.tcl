@@ -74,28 +74,41 @@ proc file::ToBeHighlighted {wtxt} {
 }
 #_______________________
 
-proc file::OutwardChange {TID {docheck yes}} {
-  # Checks for change of file by an external application.
-  #   TID - ID of tab
-  #   docheck - yes for "do check", no for "just save the file's mtime"
+proc file::FileAttrs {TID} {
+  # Returns a file attributes: name & time.
+  #   TID - tab's ID
 
   namespace upvar ::alited al al
   set fname [alited::bar::FileName $TID]
   lassign [alited::bar::BAR $TID cget --mtime --mtimefile] mtime mtimefile
-  if {[file exists $fname]} {
+  set isfile [file exists $fname]
+  if {$isfile} {
     set curtime [file mtime $fname]
   } elseif {$fname ne $al(MC,nofile)} {
     set curtime ?
   } else {
     set curtime {}
   }
+  return [list $fname $isfile $mtime $mtimefile $curtime]
+}
+#_______________________
+
+proc file::OutwardChange {TID {docheck yes}} {
+  # Checks for change of file by an external application.
+  #   TID - ID of tab
+  #   docheck - yes for "do check", no for "just save the file's mtime"
+
+  namespace upvar ::alited al al
+  lassign [FileAttrs $TID] fname isfile mtime mtimefile curtime
   if {$docheck && $mtime ne {} && $curtime ne $mtime && $fname eq $mtimefile} {
-    set isfile [file exists $fname]
     if {$isfile} {
       set msg [string map [list %f [file tail $fname]] $al(MC,modiffile)]
     } else {
       set msg [string map [list %f [file tail $fname]] $al(MC,wasdelfile)]
     }
+    # at any answer, the tab should be marked as "modified"
+    alited::bar::BAR markTab $TID
+    alited::edit::CheckSaveIcons yes
     if {[alited::msg yesno warn $msg YES -title $al(MC,saving)]} {
       if {$isfile} {
         set wtxt [alited::main::GetWTXT $TID]
@@ -107,15 +120,19 @@ proc file::OutwardChange {TID {docheck yes}} {
           ::alited::main::CursorPos $wtxt
         }
       } else {
-        # if the answer was "no save", let the text remains for further considerations
         alited::bar::BAR $TID configure --mtime {}
         SaveFileAs $TID
         if {[catch {set curtime [file mtime $fname]}]} {set curtime {}}
       }
     }
+    set do_update_tree yes
   }
+  lassign [FileAttrs $TID] fname isfile mtime mtimefile curtime
   alited::bar::BAR $TID configure --mtime $curtime --mtimefile $fname \
     -tip [FileStat $fname]
+  if {[info exists do_update_tree]} {
+    ::alited::tree::RecreateTree {} $fname
+  }
 }
 #_______________________
 
@@ -363,6 +380,7 @@ proc file::OpenFile {{fnames ""} {reload no}} {
           }
         }
         # open new tab
+        [$obPav Tree] selection set {}
         set tab [alited::bar::UniqueListTab $fname]
         set TID [alited::bar::InsertTab $tab [FileStat $fname]]
         alited::file::AddRecent $fname
@@ -410,7 +428,7 @@ proc file::SaveFile {{TID ""}} {
   set res [SaveFileByName $TID $fname]
   alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)"
   alited::main::ShowHeader yes
-  alited::tree::RecreateTree
+  alited::tree::RecreateTree {} $fname
   return $res
 }
 #_______________________
@@ -434,7 +452,7 @@ proc file::SaveFileAs {{TID ""}} {
   } elseif {[set res [SaveFileByName $TID $fname]]} {
     RenameFile $TID $fname
     alited::main::ShowHeader yes
-    alited::tree::RecreateTree
+    alited::tree::RecreateTree {} $fname
   }
   return $res
 }
@@ -536,14 +554,49 @@ proc file::OpenOfDir {dname} {
   # Opens all Tcl files of a directory.
   #   dname - directory's name
 
-  if {![catch {set flist [glob -directory $dname *]}]} {
-    foreach fname [lsort -decreasing $flist] {
-      if {[file isfile $fname] && [IsTcl $fname]} {
-        OpenFile $fname
+  set msg [msgcat::mc "All Tcl files of this directory:\n  \"%f\"  \nwill be open.\n\nThis may be expensive!"]
+  set msg [string map [list %f [file tail $dname]] $msg]
+  if {[alited::msg okcancel warn $msg NO]} {
+    if {![catch {set flist [glob -directory $dname *]}]} {
+      foreach fname [lsort -decreasing $flist] {
+        if {[file isfile $fname] && [IsTcl $fname]} {
+          OpenFile $fname
+        }
       }
+      alited::tree::UpdateFileTree
     }
-    alited::tree::UpdateFileTree
   }
+}
+#_______________________
+
+proc file::DoMoveFile {fname dname f1112 {addmsg {}}} {
+  # Asks and moves a file to a directory.
+  #   fname - file name
+  #   dname - directory name
+  #   f1112 - yes, if run by pressing F11/F12 keys
+  #   addmsg - additional message (for external moves)
+
+  namespace upvar ::alited al al
+  if {[file isdirectory $fname]} {
+    set msg [msgcat::mc {%f is a directory}]
+    alited::Message [string map [list %f $fname] $msg] 4
+    return
+  }
+  set tailname [file tail $fname]
+  if {$f1112 || $addmsg ne {}} {
+    set defb NO
+    set geo ""
+  } else {
+    set defb YES
+    set geo "-geometry pointer+10+10"
+  }
+  if {![info exists al(_ANS_MOVE_)] || $al(_ANS_MOVE_)!=11} {
+    append addmsg [string map [list %f $tailname %d $dname] $al(MC,movefile)]
+    set al(_ANS_MOVE_) [alited::msg yesno ques $addmsg \
+      $defb -title $al(MC,moving) {*}$geo -ch "Don't ask again"]
+    if {!$al(_ANS_MOVE_)} return
+  }
+  return [RemoveFile $fname $dname move]
 }
 #_______________________
 
@@ -556,55 +609,80 @@ proc file::MoveExternal {f1112} {
   if {$al(prjroot) eq {} || [string first $al(prjroot) $fname]==0} {
     return no  ;# no project directory or the file is inside it
   }
-  DoMoveFile $fname $al(prjroot) $f1112
+  set addmsg [msgcat::mc {THE EXTERNAL FILE IS MOVED TO THE PROJECT!}]
+  set fname2 [DoMoveFile $fname $al(prjroot) $f1112 "$addmsg\n\n"]
+  alited::tree::RecreateTree {} $fname2
+  alited::main::ShowHeader yes
   return yes
 }
 #_______________________
 
-proc file::MoveFile1 {wtree fromID toID} {
-  # Moves a file from a tree position to another tree position.
+proc file::DropFiles {wtree fromIDs toID} {
+  # Moves a group of selected files to other tree position.
   #   wtree - file tree widget
-  #   fromID - tree ID to move the file from
+  #   fromIDs- tree IDs to move the file from
   #   toID - tree ID to move the file to
+  # The destination position is freely chosen by "Drop here" menu item.
 
-  if {![$wtree exists $fromID] || ![$wtree exists $toID]} return
-  set curfile [lindex [$wtree item $fromID -values] 1]
+  if {![$wtree exists $toID]} return
   set dirname [lindex [$wtree item $toID -values] 1]
   if {![file isdirectory $dirname]} {
     set dirname [file dirname $dirname]
   }
-  if {[file isdirectory $curfile]} {
-    if {$curfile ne $dirname} {
-      alited::msg ok err [msgcat::mc "Only files are moved by alited."] \
-        -geometry pointer+10+-100
-    }
-    return
+  set movedfiles [list]
+  foreach fromID $fromIDs {
+    if {![$wtree exists $fromID]} continue
+    set curfile [lindex [$wtree item $fromID -values] 1]
+    lappend movedfiles $curfile
   }
-  if {[file dirname $curfile] ne $dirname} {
-    DoMoveFile $curfile $dirname no
+  if {![llength $movedfiles]} return
+  foreach curfile $movedfiles {
+    if {[file isdirectory $curfile]} {
+      if {$curfile ne $dirname} {
+        alited::Message [msgcat::mc {Only files are moved by alited.}] 4
+      }
+      continue
+    }
+    if {[file dirname $curfile] ne $dirname} {
+      lappend newnames [DoMoveFile $curfile $dirname yes]
+    }
+  }
+  if {[info exists newnames]} {
+    alited::tree::RecreateTree {} $newnames
     alited::main::ShowHeader yes
   }
 }
 #_______________________
 
-proc file::MoveFile {wtree to itemID f1112} {
+proc file::MoveFiles {wtree to itemIDs f1112} {
   # Moves  file(s).
   #   wtree - file tree widget
   #   to - "move", "up" or "down" (direction of moving)
-  #   itemID - file's tree ID to be moved
+  #   itemIDs - file's tree IDs to be moved
   #   f1112 - yes for pressing F11/F12 or file's tree ID
   # For to=move, f1112 is a file's ID to be moved to.
 
   set tree [alited::tree::GetTree]
+  set itemID [lindex $itemIDs 0]
   set idx [alited::unit::SearchInBranch $itemID $tree]
-  if {$idx<0} return
   if {$to eq {move}} {
-    MoveFile1 $wtree $itemID $f1112
+    if {$idx>=0} {
+      DropFiles $wtree $itemIDs $f1112
+    }
     return
   }
   set curfile [alited::bar::FileName]
   set curdir [file dirname $curfile]
-  set selparent [$wtree parent $itemID]
+  set isexternal [expr {[string first [file normalize $alited::al(prjroot)] \
+    [file normalize $curdir]]<0}]
+  if {!$isexternal} {
+    if {$idx<0} {bell; return}
+    # the edited file is not external => try to move selected files of the tree
+    lassign [$wtree item $itemID -values] -> curfile
+    set curdir [file dirname $curfile]
+  }
+  if {$to eq {up}} {set ito 0} {set ito end}
+  set selparent [$wtree parent [lindex $itemIDs $ito]]
   set dirname {}
   set increment [expr {$to eq {up} ? -1 : 1}]
   for {set i $idx} {1} {incr i $increment} {
@@ -617,20 +695,32 @@ proc file::MoveFile {wtree to itemID f1112} {
         set dirname $fname
         break
       }
-    } elseif {$id ne $selparent || $fname ne $curdir} {
+    } elseif {$id ne $selparent && $fname ne $curdir} {
       set dirname $fname
       break
     }
   }
-  if {$dirname eq ""} {
-    if {$selparent ne ""} {
+  if {$dirname eq {}} {
+    if {$selparent ne {}} {
       set dirname $alited::al(prjroot)
     } else {
       bell
       return
     }
   }
-  DoMoveFile $curfile $dirname $f1112
+  set movedfiles [list]
+  if {$isexternal} {
+    # this file is external to the project - ask to move it into the project
+    lappend movedfiles [DoMoveFile $curfile $dirname $f1112]
+  } else {
+    set f1112 [expr {$f1112 || [llength $itemIDs]>1}]
+    foreach ID $itemIDs {
+      set curfile [lindex [$wtree item $ID -values] 1]
+      lappend movedfiles [DoMoveFile $curfile $dirname $f1112]
+    }
+  }
+  $wtree selection set {}
+  alited::tree::RecreateTree {} $movedfiles
   alited::main::ShowHeader yes
 }
 #_______________________
@@ -640,6 +730,7 @@ proc file::RemoveFile {fname dname mode} {
   #   fname - file name
   #   dname - name of directory
   #   mode - if "move", then moves a file to a directory, otherwise backups it
+  # Returns a destination file's name.
 
   namespace upvar ::alited al al
   set ftail [file tail $fname]
@@ -649,51 +740,25 @@ proc file::RemoveFile {fname dname mode} {
     if {$mode eq "move"} {
       set msg [string map [list %f $ftail %d $dname] $al(MC,fileexist)]
       alited::msg ok warn $msg
-      return
+      return {}
     }
     catch {file delete $fname2}
   }
   if {[catch {file copy $fname $dname} err]} {
     set msg [string map [list %f $ftail %d $dname] $al(MC,errcopy)]
-    if {![alited::msg yesno warn "$err\n\n$msg" NO]} return
+    if {![alited::msg yesno warn "$err\n\n$msg" NO]} {return {}}
   }
   catch {file mtime $fname2 [file mtime $fname]}
   if {[catch {file delete $fname} err]} {
     alited::msg ok err "Error of deleting\n$fname\n\n$err"
   } else {
     alited::Message [string map [list %f $ftail %d $dtail] $al(MC,removed)]
-    if {$mode eq "move"} {
-      set TID [alited::bar::CurrentTabID]
+    if {$mode eq "move" && [set TID [alited::bar::FileTID $fname]] ne {}} {
       alited::bar::SetTabState $TID --fname $fname2
       alited::bar::BAR $TID configure -tip [FileStat $fname2]
     }
   }
-  alited::tree::RecreateTree
-}
-#_______________________
-
-proc file::DoMoveFile {fname dname f1112} {
-  # Asks and moves a file to a directory.
-  #   fname - file name
-  #   dname - directory name
-  #   f1112 - yes, if run by pressing F11/F12 keys
-
-  namespace upvar ::alited al al
-  set tailname [file tail $fname]
-  if {$f1112} {
-    set defb NO
-    set geo ""
-  } else {
-    set defb YES
-    set geo "-geometry pointer+10+10"
-  }
-  set msg [string map [list %f $tailname %d $dname] $al(MC,movefile)]
-  if {![info exists al(_ANS_MOVE_)] || $al(_ANS_MOVE_)!=11} {
-    set al(_ANS_MOVE_) [alited::msg yesno ques $msg \
-      $defb -title $al(MC,moving) {*}$geo -ch "Don't ask again"]
-    if {!$al(_ANS_MOVE_)} return
-  }
-  RemoveFile $fname $dname move
+  return $fname2
 }
 #_______________________
 
@@ -703,7 +768,8 @@ proc file::Add {ID} {
 
   namespace upvar ::alited al al obPav obPav obDl2 obDl2
   if {$ID eq {}} {set ID [alited::tree::CurrentItem]}
-  set dname [lindex [[$obPav Tree] item $ID -values] 1]
+  set wtree [$obPav Tree]
+  set dname [lindex [$wtree item $ID -values] 1]
   if {[file isdirectory $dname]} {
     set fname {}
   } else {
@@ -712,10 +778,10 @@ proc file::Add {ID} {
   }
   set head [string map [list %d $dname] $al(MC,filesadd2)]
   while {1} {
-    set res [$obDl2 input "" $al(MC,filesadd) [list \
+    set res [$obDl2 input {} $al(MC,filesadd) [list \
       seh {{} {-pady 10}} {} \
       ent {{File name:} {} {-w 40}} "{$fname}" \
-      chb [list {} {-padx 5} [list -toprev 1 -t "Directory"]] {0} ] \
+      chb [list {} {-padx 5} [list -toprev 1 -t Directory]] {0} ] \
       -head $head -family "{[::apave::obj basicTextFont]}"]
     lassign $res res fname isdir
     if {$res && $fname eq {}} bell else break
@@ -726,11 +792,24 @@ proc file::Add {ID} {
       if {$isdir} {
         file mkdir $fname
       } else {
-        if {[file extension $fname] eq ""} {append fname .tcl}
+        if {[file extension $fname] eq {}} {append fname .tcl}
         if {![file exists $fname]} {close [open $fname w]}
         OpenFile $fname
       }
+      $wtree selection set {}
       alited::tree::RecreateTree
+      if {$isdir} {
+        # find the created directory
+        foreach item [alited::tree::GetTree] {
+          lassign $item - - ID - data
+          if {[set dname [lindex $data 1]] eq $fname} {
+            catch {$wtree selection remove [$wtree selection]}
+            $wtree selection add $ID
+            $wtree see $ID
+            break
+          }
+        }
+      }
     } err]} then {
       alited::msg ok err $err
     }
@@ -756,6 +835,8 @@ proc file::Delete {ID wtree} {
   set msg [string map [list %f $name] $al(MC,delfile)]
   if {[alited::msg yesno ques $msg NO]} {
     RemoveFile $fname $BAKDIR backup
+    $wtree selection set {}
+    alited::tree::RecreateTree
   }
 }
 

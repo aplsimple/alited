@@ -1,7 +1,7 @@
 [OPTIONS]
 o=0
 in=1.0
-pos=14.0
+pos=106.49
 ::FSLUSER=aplsimple
 ::FSLBRANCH=tip
 ::FSLBRANCHCOLOR=#004000
@@ -103,7 +103,7 @@ SW:fossil uv sync %F SW: fossil uv add %F\nfossil uv sync
 SW:fossil commit -m ? --branch ? SW: fossil commit -m "$::COMMES" --branch "$::FSLBRANCH" $::TMPBG
 
  S:fossil checkout ? S: cd %PD
-RW:fossil checkout ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
+RW:fossil checkout ? RW: fossil tim -t ci -n 9999 > $::EMENUTMPFILE
  R:fossil checkout ? R: %I {} "CHECKOUT" { \
    fco1 {{Version / branch / tag :} {} {-h 10 -state readonly -cbxsel "$::FSLBRANCH"}} \
      {@@-div1 "\[" -div2 "\]" -ret 1 -list {"" tip} $::EMENUTMPFILE@@ \

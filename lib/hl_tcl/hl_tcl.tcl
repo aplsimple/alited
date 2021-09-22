@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.19
+package provide hl_tcl 0.9.20
 
 # ______________________ Common data ____________________ #
 
@@ -73,8 +73,8 @@ namespace eval ::hl_tcl {
   set data(S_SPACE2) [concat $data(S_SPACE) [list "\{"]]
   set data(S_BOTH) [concat $data(S_SPACE) [list "\"" "="]]
 
-  set data(RE0) {(^|\[|\{|\}|;)+\s*([:\w]+)([\s]|$){1}}
-  set data(RE1) {(\[|\{|\}|;)+\s*([:\w]+)([\s]|$){1}}
+  set data(RE0) {(^|[\{\}\[;])+\s*([:\w]+)([\s\}\];]|$){1}}
+  set data(RE1) {([\{\}\[;])+\s*([:\w]+)([\s\}\];]|$){1}}
   set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})+}
   }
 }

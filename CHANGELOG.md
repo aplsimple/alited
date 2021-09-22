@@ -1,7 +1,14 @@
-# Last changes:
+# LAST CHANGES:
 
 
-Version `1.0.4 (22 Sep'21)`
+Version `1.0.4 (29 Sep'21)`
+
+  - TODO  : save unit's position at any switching to another unit/file
+            (except for navigating inside a text, but including mouse clicks)
+  - TODO  : a mark nearby a selected notebook of Preferences
+  - TODO  : at pressing Enter: "-", "*" to be duplicated
+  - TODO  : basic .md highlighting: lists, titles, quotes
+  - TODO  : "~/DOC/www.tcl.tk/man/tcl8.6" help directory set in Preferences
 
   - BUGFIX: command autocompletion at 1st column failed
   - BUGFIX: e_menu could fail due to font2's multiple words
@@ -13,6 +20,8 @@ Version `1.0.4 (22 Sep'21)`
   - BUGFIX: undo cleared text of "notes" (projects, preferences)
   - BUGFIX: after restarting, open new instance at repeated start
   - BUGFIX: favors/last-visited at switching to other project
+  - BUGFIX: issues at external modification/deletion of files
+  - BUGFIX: false movings in unit tree at Ctrl/Shift+click
   - NEW   : run alited with file name(s) as argument(s)
   - NEW   : run alited by tclkit
   - NEW   : open multiple files in File/Open
@@ -25,6 +34,9 @@ Version `1.0.4 (22 Sep'21)`
   - NEW   : "Find by List" in Find menu
   - NEW   : switches instead of some checkbuttons (for rdbende themes)
   - NEW   : %F wildcard (full file name) for templates
+  - NEW   : warning on "Open all Tcl files..."
+  - NEW   : "Drop selected units/files here" to move a group of units/files
+  - NEW   : selecting a directory after its creation in file tree
   - CHANGE: rearranging toolbar
   - CHANGE: faster "find/replace in session"
   - CHANGE: indent normalizing applies "autodetected" indent
@@ -40,7 +52,9 @@ Version `1.0.4 (22 Sep'21)`
   - CHANGE: by default, auto detection of indentation = yes
   - CHANGE: "- alited" removed from window title
   - CHANGE: grep.mnu items stay till closing
-  - CHANGE: 6 demo releases
+  - CHANGE: smoother recreating the file tree (not opening all directories)
+  - CHANGE: smoother moving the units/files
+  - CHANGE: 6 demo.mp4 releases
   - CHANGE: e_menu, apave, bartabs, hl_tcl, aloupe packages
 
 

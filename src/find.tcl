@@ -926,7 +926,7 @@ proc find::_create {} {
       {labB2 labB1 T 1 1 {-st e}  {-t "Replace: " -style TLabelFS}}
       {cbx2 labB2 L 1 9 {-st wes} {-tvar ::alited::find::data(en2) -values {$::alited::find::data(vals2)}}}
       {labBm labB2 T 1 1 {-st e}  {-t "Match: " -style TLabelFS}}
-      {radA labBm L 1 1 {-st ws -padx 0}  {-t "Exact" -var ::alited::find::data(v1) -value 1 -style TRadiobuttonFS}}
+      {radA labBm L 1 1 {-st es -padx 0}  {-t "Exact" -var ::alited::find::data(v1) -value 1 -style TRadiobuttonFS}}
       {radB radA L 1 1 {-st ws -padx 5}  {-t "Glob" -var ::alited::find::data(v1) -value 2 -tip "Allows to use *, ?, \[ and \]\nin \"find\" string." -style TRadiobuttonFS}}
       {radC radB L 1 5 {-st ws -padx 0 -cw 1}  {-t "RE" -var ::alited::find::data(v1) -value 3 -tip "Allows to use the regular expressions\nin \"find\" string." -style TRadiobuttonFS}}
       {h_2 labBm T 1 9  {-st es -rw 1}}

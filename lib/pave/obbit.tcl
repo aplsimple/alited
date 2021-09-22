@@ -47,13 +47,13 @@ namespace eval ::apave {
 {{ 0: AzureLight} "#050b0d" #050b0d #fff #e1e1df #002aaa #8dd9db #000 #444 grey #0e7b7c #000 #81cdcf - #d7d7d7 #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
 {{ 1: ForestLight} "#050b0d" #050b0d #fff #e1e1df #004000 #A8CCA8 #000 #444 grey #217346 #000 #a8bda8 - #d7d7d7 #000 #FBFB95 #e2e2e0 #ad0000 #004 #005 #006 #007}
 {{ 2: SunValleyLight} "#050b0d" #050b0d #fff #d9d9d9 #00469f #74c9ff #000 #444 grey #005fb8 #000 #7fcbff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #004 #005 #006 #007}
-{{ 3: Grey1} "#050b0d" #050b0d #F8F8F8 #dadad8 #5c1616 #AFAFAF #000 #444 grey #933232 #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #004 #005 #006 #007}
-{{ 4: Grey2} "#050b0d" #050b0d #e9e9e7 #F8F8F8 #5c1616 #b8b8b8 #000 #444 grey #933232 #000 #c1c1c1 - #e1e1df #000 #FBFB95 #d5d5d3 #a20000 #004 #005 #006 #007}
-{{ 5: Rosy} "#2B122A" #000 #FFFFFF #F6E6E9 #570957 #C5ADC8 #000 #444 grey #870287 #000 #ceb6d1 - #e3d3d6 #000 #FBFB95 #e5e3e1 #a20000 #004 #005 #006 #007}
-{{ 6: Clay} "#000" #000 #fdf4ed #ded3cc #500a0a #bcaea2 #000 #444 grey #843500 #fff #9a8f83 - #d5c9c1 #000 #FBFB95 #e1dfde #a20000 #004 #005 #006 #007}
-{{ 7: Dawn} "#08085D" #030358 #FFFFFF #e3f9f9 #562222 #a3dce5 #000 #444 grey #933232 #000 #99d2db - #d3e9e9 #000 #FBFB96 #dbe9ed #a20000 #004 #005 #006 #007}
-{{ 8: Sky} "#102433" #0A1D33 #d0fdff #bdf6ff #562222 #95ced7 #000 #444 grey #933232 #000 #9ad3dc - #b1eaf3 #000 #FBFB95 #c0e9ef #a20000 #004 #005 #006 #007}
-{{ 9: Celestial} "#141414" #151616 #d1ffff #a9e2f8 #562222 #82bbd1 #000 #444 grey #933232 #000 #7fb8ce - #9dd6f9 #000 #FBFB96 #b6e4e4 #a20000 #004 #005 #006 #007}
+{{ 3: AwLight} "#141414" #151616 #dfdfde #d1d1d0 #562222 #85b4e7 #000 #444 grey #1a497c #000 #7fb8ce - #bebebd #000 #FBFB96 #cacaca #a20000 #004 #005 #006 #007}
+{{ 4: Grey1} "#050b0d" #050b0d #F8F8F8 #dadad8 #5c1616 #AFAFAF #000 #444 grey #933232 #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #004 #005 #006 #007}
+{{ 5: Grey2} "#050b0d" #050b0d #e9e9e7 #F8F8F8 #5c1616 #b8b8b8 #000 #444 grey #933232 #000 #c1c1c1 - #e1e1df #000 #FBFB95 #d5d5d3 #a20000 #004 #005 #006 #007}
+{{ 6: Rosy} "#2B122A" #000 #FFFFFF #F6E6E9 #570957 #C5ADC8 #000 #444 grey #870287 #000 #ceb6d1 - #e3d3d6 #000 #FBFB95 #e5e3e1 #a20000 #004 #005 #006 #007}
+{{ 7: Clay} "#000" #000 #fdf4ed #ded3cc #500a0a #bcaea2 #000 #444 grey #843500 #fff #9a8f83 - #d5c9c1 #000 #FBFB95 #e1dfde #a20000 #004 #005 #006 #007}
+{{ 8: Dawn} "#08085D" #030358 #FFFFFF #e3f9f9 #562222 #a3dce5 #000 #444 grey #933232 #000 #99d2db - #d3e9e9 #000 #FBFB96 #dbe9ed #a20000 #004 #005 #006 #007}
+{{ 9: Sky} "#102433" #0A1D33 #d0fdff #bdf6ff #562222 #95ced7 #000 #444 grey #933232 #000 #9ad3dc - #b1eaf3 #000 #FBFB95 #c0e9ef #a20000 #004 #005 #006 #007}
 {{10: Florid} "#000" #004000 #e4fce4 #fff #5c1616 #93e493 #0F2D0F #444 grey #802e00 #004000 #a7f8a7 - #eefdee #000 #FBFB96 #d7e6d7 #a20000 #004 #005 #006 #007}
 {{11: LightGreen} "#122B05" #091900 #edffed #DEF8DE #562222 #A8CCA8 #000 #444 grey #933232 #000 #A8CCA8 - #d0ead0 #000 #FBFB96 #dee9de #a20000 #004 #005 #006 #007}
 {{12: InverseGreen} "#122B05" #091900 #cce6c8 #DEF8DE #562222 #9cc09c #000 #444 grey #933232 #000 #b5d9b5 - #cce6cc #000 #FBFB96 #bed8ba #a20000 #004 #005 #006 #007}
@@ -67,30 +67,30 @@ namespace eval ::apave {
 {{20: Notebook1} "#000" #000 #dad2b9 #b5af9b #460000 #d59d6f #000 #444 #707070 #771d00 #000 #ba9671 - #c5bfab #000 #eded89 #ccc4ab #a20000 #004 #005 #006 #007}
 {{21: Notebook2} "#000" #000 #cdc5ac #a6a08c #460000 #d59d6f #000 #444 #606060 #771d00 #000 #cfab86 - #b4ae9a #000 #eded89 #c1b9a0 #980000 #004 #005 #006 #007}
 {{22: Notebook3} "#000" #000 #beb69d #96907c #460000 #d59d6f #000 #444 #505050 #771d00 #000 #cfab86 - #a6a08c #000 #eded89 #b2aa91 #7b1010 #004 #005 #006 #007}
-{{23: Darcula} "#ececec" #c7c7c7 #272727 #323232 #e98f1c #2F5692 #e1e1e1 #f4f49f grey #d18d3f #EDC881 #2a518d - #444444 #000 #a2a23e #343434 #f28787 #004 #005 #006 #007}
-{{24: AzureDark} "#ececec" #c7c7c7 #272727 #393939 #28a7ff #007fff #FFF #f4f49f grey #33b2ff #EDC881 #0062a5 - #444444 #000 #a2a23e #404040 #ffc341 #004 #005 #006 #007}
-{{25: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #95bf95 #217346 #FFF #f4f49f grey #99c399 #ffffff #247649 - #444444 #000 #a2a23e #404040 #efaf6f #004 #005 #006 #007}
-{{26: SunValleyDark} "#dfdfdf" #dddddd #131313 #252525 #38a9e0 #2f60d8 #FFF #f4f49f #6f6f6f #57c8ff #fff #2051c9 - #2d2d2d #000 #a2a23e #2a2a2a #efaf6f #004 #005 #006 #007}
-{{27: Dark} "#F0E8E8" #E7E7E7 #272727 #323232 #de9e5e #6d6d6d #000 #f4f49f grey #eda95b #000 #767676 - #454545 #000 #cdcd69 #2e2e2e #ffabab #004 #005 #006 #007}
-{{28: Dark1} "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #eda95b #000 #767676 - #363636 #000 #cdcd69 #292929 #ffabab #004 #005 #006 #007}
-{{29: Dark2} "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #000 #f4f49f #616161 #eda95b #000 #767676 - #2b2b2b #000 #b0b04c #262626 #ffabab #004 #005 #006 #007}
-{{30: Dark3} "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #000 #f4f49f #616161 #eda95b #000 #767676 - #1c1c1c #000 #bebe5a #131313 #ffabab #004 #005 #006 #007}
-{{31: Oscuro} "#f1f1f1" #f1f1f1 #344545 #526d6d #f1b479 #728d8d #fff #f4f49f #afafaf #f7c475 #000 #94afaf - #4f6666 #000 #cdcd69 #3d4e4e #ffbcbc #004 #005 #006 #007}
-{{32: Oscuro1} "#f1f1f1" #f1f1f1 #2a3b3b #466161 #e5a565 #6c8787 #fff #f4f49f #a2a2a2 #edba6b #000 #8ba6a6 - #4a6161 #000 #cdcd69 #354646 #ffbcbc #004 #005 #006 #007}
-{{33: Oscuro2} "#f1f1f1" #f1f1f1 #223333 #3e5959 #de9e5e #668181 #fff #f4f49f #a2a2a2 #e4b162 #000 #819c9c - #3f5656 #000 #cdcd69 #2b3c3c #ffbcbc #004 #005 #006 #007}
-{{34: Oscuro3} "#f1f1f1" #f1f1f1 #192a2a #355050 #de9e5e #5c7777 #fff #f4f49f #9e9e9e #dfac5d #000 #779292 - #364d4d #000 #cdcd69 #223333 #ffbcbc #004 #005 #006 #007}
-{{35: MildDark} "#d2d2d2" #fff #222323 #384e66 #2ccaca #4b7391 #fff #00ffff #939393 #43e1e1 #000 #668eac - #394d64 #000 #bebe5a #2b2c2c #ffa2a2 #004 #005 #006 #007}
-{{36: MildDark1} "#d2d2d2" #fff #151616 #2D435B #2ac8c8 #436b89 #fff #00ffff grey #36d4d4 #000 #668eac - #2e4259 #000 #bebe5a #1f2020 #ffb0b0 #004 #005 #006 #007}
-{{37: MildDark2} "#b4b4b4" #fff #0d0e0e #24384f #28c6c6 #3e6684 #fff #00ffff #757575 #33d1d1 #000 #668eac - #253a52 #000 #bebe5a #161717 #ffaeae #004 #005 #006 #007}
-{{38: MildDark3} "#e2e2e2" #f1f1f1 #000 #1B3048 #27c5c5 #375f7d #fff #00ffff #6c6c6c #31d0d0 #000 #668eac - #192e46 #000 #b0b04c #0f0f0f #ffafaf #004 #005 #006 #007}
-{{39: Inkpot} "#d3d3ff" #AFC2FF #16161f #1E1E27 #de9e5e #6767a8 #000 #f4f49f #6e6e6e #ffbb6d #000 #8585c6 - #292936 #000 #a2a23e #202029 #ffa5a5 #004 #005 #006 #007}
-{{40: Quiverly} "#cdd8d8" #cdd8d8 #2b303b #333946 #de9e5e #6f7582 #000 #f4f49f #757575 #eda95b #000 #9197a4 - #414650 #000 #b0b04c #323742 #ffabab #004 #005 #006 #007}
-{{41: Monokai} "#f8f8f2" #f8f8f2 #353630 #4e5044 #f1b479 #707070 #000 #f4f49f #9a9a9a #ffbb6d #000 #777777 - #46473d #000 #cdcd69 #3c3d37 #ffabab #004 #005 #006 #007}
-{{42: Desert} "#fff" #fff #47382d #5a4b40 #f1b479 #78695e #000 #f4f49f #a2a2a2 #ffbb6d #000 #7f7065 - #55463b #000 #eded89 #503f34 #ffabab #004 #005 #006 #007}
-{{43: Magenta} "#E8E8E8" #F0E8E8 #381e44 #4A2A4A #f1b479 #846484 #000 #f4f49f grey #ffbb6d #000 #ad8dad - #573757 #000 #cdcd69 #42284e #ffabab #004 #005 #006 #007}
-{{44: Red} "#fff" #e9e9e6 #340202 #440702 #f1b479 #b05e5e #000 #f4f49f #828282 #ffbb6d #000 #ba6868 - #3e0100 #000 #bebe5a #461414 #ffc1c1 #004 #005 #006 #007}
-{{45: Chocolate} "#d6d1ab" #d6d1ab #251919 #402020 #de9e5e #664D4D #fff #f4f49f #828282 #c3984a #fff #583f3f - #361d1d #000 #b0b04c #2d2121 #ffb7b7 #004 #005 #006 #007}
-{{46: Dusk} "#ececec" #ececec #1a1f21 #262b2d #f1b479 #6b7072 #000 #f4f49f #585d5f #ffbb6d #000 #6b7072 - #363b3d #000 #9e9e3a #23282a #ffabab #004 #005 #006 #007}
+{{23: Dusk} "#ececec" #ececec #1a1f21 #262b2d #f1b479 #6b7072 #000 #f4f49f #585d5f #ffbb6d #000 #6b7072 - #363b3d #000 #9e9e3a #23282a #ffabab #004 #005 #006 #007}
+{{24: Darcula} "#ececec" #c7c7c7 #272727 #323232 #e98f1c #2F5692 #e1e1e1 #f4f49f grey #d18d3f #EDC881 #2a518d - #444444 #000 #a2a23e #343434 #f28787 #004 #005 #006 #007}
+{{25: AzureDark} "#ececec" #c7c7c7 #272727 #393939 #28a7ff #007fff #FFF #f4f49f grey #33b2ff #EDC881 #0062a5 - #444444 #000 #a2a23e #404040 #ffc341 #004 #005 #006 #007}
+{{26: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #95bf95 #217346 #FFF #f4f49f grey #99c399 #ffffff #247649 - #444444 #000 #a2a23e #323232 #efaf6f #004 #005 #006 #007}
+{{27: SunValleyDark} "#dfdfdf" #dddddd #131313 #252525 #38a9e0 #2f60d8 #FFF #f4f49f #6f6f6f #57c8ff #fff #2051c9 - #2d2d2d #000 #a2a23e #2a2a2a #efaf6f #004 #005 #006 #007}
+{{28: AwDark} "#F0E8E8" #E7E7E7 #1f2223 #232829 #de9e5e #215d9c #fff #f4f49f grey #80bcfb #fff #134f8e - #313637 #000 #cdcd69 #292e2f #ffabab #004 #005 #006 #007}
+{{29: Dark1} "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #eda95b #000 #767676 - #363636 #000 #cdcd69 #292929 #ffabab #004 #005 #006 #007}
+{{30: Dark2} "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #000 #f4f49f #616161 #eda95b #000 #767676 - #2b2b2b #000 #b0b04c #262626 #ffabab #004 #005 #006 #007}
+{{31: Dark3} "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #000 #f4f49f #616161 #eda95b #000 #767676 - #1c1c1c #000 #bebe5a #131313 #ffabab #004 #005 #006 #007}
+{{32: Oscuro} "#f1f1f1" #f1f1f1 #344545 #526d6d #f1b479 #728d8d #fff #f4f49f #afafaf #f7c475 #000 #94afaf - #4f6666 #000 #cdcd69 #3d4e4e #ffbcbc #004 #005 #006 #007}
+{{33: Oscuro1} "#f1f1f1" #f1f1f1 #2a3b3b #466161 #e5a565 #6c8787 #fff #f4f49f #a2a2a2 #edba6b #000 #8ba6a6 - #4a6161 #000 #cdcd69 #354646 #ffbcbc #004 #005 #006 #007}
+{{34: Oscuro2} "#f1f1f1" #f1f1f1 #223333 #3e5959 #de9e5e #668181 #fff #f4f49f #a2a2a2 #e4b162 #000 #819c9c - #3f5656 #000 #cdcd69 #2b3c3c #ffbcbc #004 #005 #006 #007}
+{{35: Oscuro3} "#f1f1f1" #f1f1f1 #192a2a #355050 #de9e5e #5c7777 #fff #f4f49f #9e9e9e #dfac5d #000 #779292 - #364d4d #000 #cdcd69 #223333 #ffbcbc #004 #005 #006 #007}
+{{36: MildDark} "#d2d2d2" #fff #222323 #384e66 #2ccaca #4b7391 #fff #00ffff #939393 #43e1e1 #000 #668eac - #394d64 #000 #bebe5a #2b2c2c #ffa2a2 #004 #005 #006 #007}
+{{37: MildDark1} "#d2d2d2" #fff #151616 #2D435B #2ac8c8 #436b89 #fff #00ffff grey #36d4d4 #000 #668eac - #2e4259 #000 #bebe5a #1f2020 #ffb0b0 #004 #005 #006 #007}
+{{38: MildDark2} "#b4b4b4" #fff #0d0e0e #24384f #28c6c6 #3e6684 #fff #00ffff #757575 #33d1d1 #000 #668eac - #253a52 #000 #bebe5a #161717 #ffaeae #004 #005 #006 #007}
+{{39: MildDark3} "#e2e2e2" #f1f1f1 #000 #1B3048 #27c5c5 #375f7d #fff #00ffff #6c6c6c #31d0d0 #000 #668eac - #192e46 #000 #b0b04c #0f0f0f #ffafaf #004 #005 #006 #007}
+{{40: Inkpot} "#d3d3ff" #AFC2FF #16161f #1E1E27 #de9e5e #6767a8 #000 #f4f49f #6e6e6e #ffbb6d #000 #8585c6 - #292936 #000 #a2a23e #202029 #ffa5a5 #004 #005 #006 #007}
+{{41: Quiverly} "#cdd8d8" #cdd8d8 #2b303b #333946 #de9e5e #6f7582 #000 #f4f49f #757575 #eda95b #000 #9197a4 - #414650 #000 #b0b04c #323742 #ffabab #004 #005 #006 #007}
+{{42: Monokai} "#f8f8f2" #f8f8f2 #353630 #4e5044 #f1b479 #707070 #000 #f4f49f #9a9a9a #ffbb6d #000 #777777 - #46473d #000 #cdcd69 #3c3d37 #ffabab #004 #005 #006 #007}
+{{43: Desert} "#fff" #fff #47382d #5a4b40 #f1b479 #78695e #000 #f4f49f #a2a2a2 #ffbb6d #000 #7f7065 - #55463b #000 #eded89 #503f34 #ffabab #004 #005 #006 #007}
+{{44: Magenta} "#E8E8E8" #F0E8E8 #381e44 #4A2A4A #f1b479 #846484 #000 #f4f49f grey #ffbb6d #000 #ad8dad - #573757 #000 #cdcd69 #42284e #ffabab #004 #005 #006 #007}
+{{45: Red} "#fff" #e9e9e6 #340202 #440702 #f1b479 #b05e5e #000 #f4f49f #828282 #ffbb6d #000 #ba6868 - #3e0100 #000 #bebe5a #461414 #ffc1c1 #004 #005 #006 #007}
+{{46: Chocolate} "#d6d1ab" #d6d1ab #251919 #402020 #de9e5e #664D4D #fff #f4f49f #828282 #c3984a #fff #583f3f - #361d1d #000 #b0b04c #2d2121 #ffb7b7 #004 #005 #006 #007}
 {{47: TKE Default} "#dbdbdb" #dbdbdb #000 #282828 #de9e5e #0a0acc #fff #f4f49f #6a6a6a #d3a85a #fff #0000d3 - #383838 #000 #b0b04c #0d0e0e #ffabab #004 #005 #006 #007}
 }
   set ::apave::_CS_(initall) 1
@@ -1443,7 +1443,7 @@ oo::class create ::apave::ObjectTheming {
     }
     set fontdef [font actual apaveFontDef]
     # configuring themed widgets
-    foreach ts {TLabel TButton TCheckbutton TProgressbar TRadiobutton TNotebook.Tab} {
+    foreach ts {TLabel TButton TCheckbutton TRadiobutton TNotebook.Tab} {
       my Ttk_style configure $ts -font $fontdef
       my Ttk_style configure $ts -foreground $tfg1
       my Ttk_style configure $ts -background $tbg1
@@ -1470,6 +1470,9 @@ oo::class create ::apave::ObjectTheming {
       my Ttk_style map $ts -lightcolor [list focus $bclr active $bclr]
       my Ttk_style map $ts -darkcolor [list focus $bclr active $bclr]
     }
+    my Ttk_style map TScrollbar -troughcolor [list !active $tbg1 active $tbg2]
+    my Ttk_style map TProgressbar -troughcolor [list !active $tbg2 active $tbg1]
+    my Ttk_style configure TProgressbar -background $tbgS
     if {[set cs [my csCurrent]]<20} {
       ttk::style conf TSeparator -background #a2a2a2
     } elseif {$cs<23} {
@@ -1682,16 +1685,19 @@ oo::class create ::apave::ObjectTheming {
 
   ###########################################################################
 
-  method themeNonThemed {win} {
+  method themeNonThemed {win {addwid {}}} {
 
     # Updates the appearances of currently used widgets (non-themed).
     #   win - window path whose children will be touched
+    #   addwid - additional widget(s) to be touched
     #
     # See also:
     #   untouchWidgets
 
     set wtypes [my NonThemedWidgets all]
-    foreach w1 [winfo children $win] {
+    set lwid [winfo children $win]
+    lappend lwid {*}$addwid
+    foreach w1 $lwid {
       my themeNonThemed $w1
       set ts [string tolower [winfo class $w1]]
       set tch 1
@@ -1876,14 +1882,14 @@ oo::class create ::apave::ObjectTheming {
     #   args - options of configuration
     # See also: themePopup
 
-    if {[set last [$mnu index end]] ne "none"} {
+    if {[set last [$mnu index end]] ne {none}} {
       $mnu configure {*}$args
       for {set i 0} {$i <= $last} {incr i} {
         switch -- [$mnu type $i] {
-          "cascade" {
+          cascade {
             my ThemePopup [$mnu entrycget $i -menu] {*}$args
           }
-          "command" {
+          command {
             $mnu entryconfigure $i {*}$args
           }
         }
@@ -1900,12 +1906,13 @@ oo::class create ::apave::ObjectTheming {
 
     if {[my csCurrent] == $::apave::_CS_(NONCS)} return
     lassign [my csGet] - fg - bg2 - bgS fgS - tfgD - - - - bg
-    if {$bg eq ""} {set bg $bg2}
+    if {$bg eq {}} {set bg $bg2}
     set opts "-foreground $fg -background $bg -activeforeground $fgS \
       -activebackground $bgS -font {[font actual apaveFontDef]}"
     if {[catch {my ThemePopup $mnu {*}$opts -disabledforeground $tfgD}]} {
       my ThemePopup $mnu {*}$opts
     }
+    my themeNonThemed $mnu $mnu
   }
 
   ###########################################################################

@@ -3,7 +3,7 @@ g=+0+27
 in=4.3
 bd=1
 w=25
-pos=75.76
+pos=28.38
 ::EMENUTMPFILE=%mn.tmp~
 %C set ::EMENUFILE [string map {\\ /} "%f"]
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
@@ -20,10 +20,12 @@ pos=75.76
  RE: Run me (+ selection) RE: cd %d
   R: Run me (+ selection) R: %C set ::_EM_AR_ [string map {\\$ \$} {%AR}]
   R: Run me (+ selection) R: %C set ::_EM_RF_ [string map {\\$ \$} {%RF}]
+  R: Run me (+ selection) R: %C set ::_EM_EE_ [string map {\\$ \$} {%EE}]
  RE: Run me (+ selection) RE: %IF "%x"==".tcl" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
  RE: Run me (+ selection) RE: %IF "%x"==".tcl" %THEN %T tclsh "$::EMENUFILE" $::_EM_AR_
  RE: Run me (+ selection) RE: %IF "%x"==".py"  %THEN %t python3 "$::EMENUFILE" %AR
  SE: Run me (+ selection) SE: %IF {%RF}!="" %THEN %RF
+ SE: Run me (+ selection) SE: %IF {%EE}!="" %THEN %EE
  RE: Run me (+ selection) RE: %IF {%AR}=="" %THEN %O $::EMENUFILE
   S: Run me (+ selection) S: $::EMENUFILE %AR
 

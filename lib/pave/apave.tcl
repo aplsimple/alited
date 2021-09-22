@@ -2050,6 +2050,7 @@ oo::class create ::apave::APave {
     set itmp $i
     set k [set j [set j2 [set wasmenu 0]]]
     foreach {nam v1 v2} $namvar {
+      if {[string first # $v1]==0} continue
       if {$v1 eq "h_"} {  ;# horisontal space
         set ntmp [my Transname fra ${name}[incr j2]]
         set wid1 [list $ntmp - - - - "pack -side left -in $w.$name -fill y"]

@@ -55,7 +55,7 @@ proc tree::MoveItem {to {f1112 no}} {
   if {$al(TREE,isunits)} {
     alited::unit::MoveUnits $wtree $to $itemID $f1112
   } else {
-    alited::file::MoveFile $wtree $to $itemID $f1112
+    alited::file::MoveFiles $wtree $to $itemID $f1112
   }
 }
 #_______________________
@@ -139,7 +139,7 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   set header [alited::unit::GetHeader $wtree $itnew]
   lassign [$wtree item $itnew -values] l1 l2 - - - leaf
   if {[string is true -strict $leaf]} {
-    $wtree tag add tagBold $itnew
+    $wtree tag add tagSel $itnew
   }
   # get saved pos
   if {[catch {set pos $al(CPOS,$ctab,$header)}] \
@@ -226,17 +226,30 @@ proc tree::SeeSelection {} {
 
 proc tree::Create {} {
   # Creates a tree of units/files, at need.
+  # See also: CreateFilesTree
 
   namespace upvar ::alited al al obPav obPav
   if {$al(TREE,isunits) && $al(TREE,units) \
   || !$al(TREE,isunits) && $al(TREE,files)} return  ;# no need
-  set TID [alited::bar::CurrentTabID]
   set wtree [$obPav Tree]
+  if {!$al(TREE,isunits)} {
+    # for file tree: get its current "open branch" flags
+    # in order to check them in CreateFilesTree
+    set al(SAVED_FILE_TREE) [list]
+    foreach item [GetTree] {
+      lassign $item - - ID - values
+      lassign $values -> fname isfile
+      if {[string is false -strict $isfile]} {
+        lappend al(SAVED_FILE_TREE) [list $fname [$wtree item $ID -open]]
+      }
+    }
+  }
+  set TID [alited::bar::CurrentTabID]
   Delete $wtree {} $TID
   AddTags $wtree
   $wtree tag bind tagNorm <ButtonPress> {after idle {alited::tree::ButtonPress %b %x %y %X %Y}}
-  $wtree tag bind tagNorm <ButtonRelease> {after idle {alited::tree::ButtonRelease %b %x %y %X %Y}}
-  $wtree tag bind tagNorm <Motion> {after idle {alited::tree::ButtonMotion %b %x %y %X %Y}}
+  $wtree tag bind tagNorm <ButtonRelease> {after idle {alited::tree::ButtonRelease %b %s %x %y %X %Y}}
+  $wtree tag bind tagNorm <Motion> {after idle {alited::tree::ButtonMotion %b %s %x %y %X %Y}}
   bind $wtree <ButtonRelease> {alited::tree::DestroyMoveWindow no}
   bind $wtree <Leave> {
     alited::tree::TooltipOff
@@ -302,7 +315,7 @@ proc tree::CreateUnitsTree {TID wtree} {
     catch {
       if {$leaf && \
       [info exists al(CPOS,$ctab,[alited::unit::GetHeader $wtree $itemID])]} {
-        $wtree tag add tagBold $itemID
+        $wtree tag add tagSel $itemID
       }
     }
     if {!$leaf} {
@@ -346,6 +359,7 @@ proc tree::CreateFilesTree {wtree} {
     } else {
       set parent [alited::tree::NewItemID [incr iroot]]
     }
+    set isopen no
     if {$isfile} {
       if {[alited::file::IsTcl $fname]} {
         set imgopt {-image alimg_tclfile}
@@ -354,15 +368,20 @@ proc tree::CreateFilesTree {wtree} {
       }
     } else {
       set imgopt {-image alimg_folder}
+      # get the directory's flag of expanded branch (in the file tree)
+      set idx [lsearch -index 0 -exact $al(SAVED_FILE_TREE) $fname]
+      if {$idx>-1} {
+        set isopen [lindex $al(SAVED_FILE_TREE) $idx 1]
+      }
     }
     if {$fcount} {set fc $fcount} {set fc {}}
     $wtree insert $parent end -id $itemID -text "$title" \
-      -values [list $fc $fname $isfile $itemID] -open yes {*}$imgopt
+      -values [list $fc $fname $isfile $itemID] -open $isopen {*}$imgopt
     $wtree tag add tagNorm $itemID
     if {!$isfile} {
       $wtree tag add tagBranch $itemID
     } elseif {[alited::bar::FileTID $fname] ne ""} {
-      $wtree tag add tagBold $itemID
+      $wtree tag add tagSel $itemID
     }
   }
   if {$selID ne {}} {
@@ -386,10 +405,11 @@ proc tree::AddTags {wtree} {
 
   namespace upvar ::alited al al
   lassign [::hl_tcl::hl_colors {-AddTags} [::apave::obj csDarkEdit]] - fgred fgbr
-  set fontN "-font $alited::al(FONT,defsmall)"
-  append fontB $fontN " -foreground $fgred"
+  append fontN "-font $alited::al(FONT,defsmall)"
+  append fontS $fontN " -foreground $fgred"
   $wtree tag configure tagNorm {*}$fontN
-  $wtree tag configure tagBold {*}$fontB
+  $wtree tag configure tagSel  {*}$fontS
+  $wtree tag configure tagBold -foreground magenta
   $wtree tag configure tagBranch -foreground $fgbr
 }
 #_______________________
@@ -475,6 +495,7 @@ proc tree::ShowPopupMenu {ID X Y} {
     set m3 $al(MC,unitsdel)
     set moveup $al(MC,moveupU) 
     set movedown $al(MC,movedownU)
+    set dropitem [msgcat::mc {Drop Selected Units Here}]
   } else {
     set img alimg_gulls
     set m1 $al(MC,swfiles)
@@ -482,6 +503,7 @@ proc tree::ShowPopupMenu {ID X Y} {
     set m3 $al(MC,filesdel)
     set moveup $al(MC,moveupF) 
     set movedown $al(MC,movedownF)
+    set dropitem [msgcat::mc {Drop Selected Files Here}]
   }
   if {[string length $sname]>25} {set sname "[string range $sname 0 21]..."}
   $popm add command {*}[$obPav iconA none] -label $m1 \
@@ -489,9 +511,9 @@ proc tree::ShowPopupMenu {ID X Y} {
   $popm add command {*}[$obPav iconA none] -label $al(MC,updtree) \
     -command alited::tree::RecreateTree -image alimg_retry
   $popm add separator
-  $popm add command {*}[$obPav iconA Up] -label $moveup \
+  $popm add command {*}[$obPav iconA none] -label $moveup \
     -accelerator F11 -command {::alited::tree::MoveItem up} -image alimg_up
-  $popm add command {*}[$obPav iconA Down] -label $movedown \
+  $popm add command {*}[$obPav iconA none] -label $movedown \
     -accelerator F12 -command {::alited::tree::MoveItem down} -image alimg_down
   $popm add separator
   $popm add command {*}[$obPav iconA none] -label $m2 \
@@ -512,6 +534,19 @@ proc tree::ShowPopupMenu {ID X Y} {
     $popm add command {*}[$obPav iconA OpenFile] -label $msg \
       -command "::alited::file::OpenOfDir {$fname}"
   }
+  set addsel {}
+  if {[llength [$wtree selection]]>1} {
+    $popm add separator
+    $popm add command {*}[$obPav iconA none] -label $dropitem \
+      -command "::alited::tree::DropItems $ID" -image alimg_paste
+    if {[$wtree tag has tagSel $ID]} {
+      # the added tagSel tag should be overrided
+      $wtree tag remove tagSel $ID
+      set addsel "; $wtree tag add tagSel $ID"
+    }
+  }
+  bind $popm <FocusIn> "$wtree tag add tagBold $ID"
+  bind $popm <FocusOut> "$wtree tag remove tagBold $ID; $addsel"
   $obPav themePopup $popm
   tk_popup $popm $X $Y
 }
@@ -551,7 +586,6 @@ proc tree::ButtonPress {but x y X Y} {
         if {[info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<400}]} {
           OpenFile $ID
         }
-        $wtree selection set $ID
         set al(_MSEC) $msec
       }
     }
@@ -559,9 +593,27 @@ proc tree::ButtonPress {but x y X Y} {
 }
 #_______________________
 
-proc tree::ButtonRelease {but x y X Y} {
+proc tree::DropItems {ID} {
+  # Drops (moves) selected items to a current position.
+  #   ID - ID of an item to be clicked
+
+  namespace upvar ::alited al al obPav obPav
+  set wtree [$obPav Tree]
+  set selection [$wtree selection]
+  if {[$wtree exists $ID] && $selection ne {} && $ID ne {} && $selection ne $ID} {
+    if {$al(TREE,isunits)} {
+      alited::unit::MoveUnits $wtree move $selection $ID
+    } else {
+      alited::file::MoveFiles $wtree move $selection $ID
+    }
+  }
+}
+#_______________________
+
+proc tree::ButtonRelease {but s x y X Y} {
   # Handles a mouse button releasing on the tree, at moving an item.
   #   but - mouse button
+  #   s - state (ctrl/alt/shift)
   #   x - x-coordinate to identify an item
   #   y - y-coordinate to identify an item
   #   X - x-coordinate of the click
@@ -571,22 +623,27 @@ proc tree::ButtonRelease {but x y X Y} {
   set wtree [$obPav Tree]
   set ID [$wtree identify item $x $y]
   DestroyMoveWindow no
+  if {$s & 7} {
+    set al(movWin) {}
+    return
+  }
   if {[$wtree exists $ID] && [info exists al(movID)] && \
   $al(movID) ne {} && $ID ne {} && $al(movID) ne $ID && \
   [$wtree identify region $x $y] eq {tree}} {
     if {$al(TREE,isunits)} {
       alited::unit::MoveUnits $wtree move $al(movID) $ID
     } else {
-      alited::file::MoveFile $wtree move $al(movID) $ID
+      alited::file::MoveFiles $wtree move $al(movID) $ID
     }
   }
   DestroyMoveWindow yes
 }
 #_______________________
 
-proc tree::ButtonMotion {but x y X Y} {
+proc tree::ButtonMotion {but s x y X Y} {
   # Starts moving an item of the tree.
   #   but - mouse button
+  #   s - state (ctrl/alt/shift)
   #   x - x-coordinate to identify an item
   #   y - y-coordinate to identify an item
   #   X - x-coordinate of the click
@@ -595,6 +652,10 @@ proc tree::ButtonMotion {but x y X Y} {
   namespace upvar ::alited al al obPav obPav
   if {![info exists al(movWin)] || $al(movWin) eq {}} {
     alited::tree::Tooltip $x $y $X $Y
+    return
+  }
+  if {$s & 7} {
+    set al(movWin) {}
     return
   }
   set wtree [$obPav Tree]
@@ -612,8 +673,14 @@ proc tree::ButtonMotion {but x y X Y} {
     } else {
       wm overrideredirect $al(movWin) 1
     }
-    label $al(movWin).label -text [$wtree item $al(movID) -text] -relief solid \
-      -foreground black -background #7eeeee
+    set selection [$wtree selection]
+    if {[set il [llength $selection]]>1} {
+      set al(movID) $selection
+      set text "$il items"
+    } else {
+      set text [$wtree item $al(movID) -text]
+    }
+    label $al(movWin).label -text $text -relief solid -foreground black -background #7eeeee
     pack $al(movWin).label -expand 1 -fill both -ipadx 1
   }
   set ID [$wtree identify item $x $y]
@@ -702,6 +769,7 @@ proc tree::TooltipOff {} {
 
 proc tree::GetDirectoryContents {dirname} {
   # Gets a directory's contents.
+  #   dirname - the directory's name
   # Returns a list containing the directory's contents.
   # See also:
   #   DirContents
@@ -888,22 +956,24 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
   #   wtree - the tree's path
   #   headers - a list of selected items
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al obPav obPav
+  if {$wtree eq {}} {set wtree [$obPav Tree]}
+  if {[catch {set selection [$wtree selection]}]} {set selection [list]}
   if {$al(TREE,isunits)} {
     set al(TREE,units) no
     set TID [alited::bar::CurrentTabID]
     set wtxt [alited::main::CurrentWTXT]
-    set al(_unittree,$TID) [alited::unit::GetUnits $TID [$wtxt get 1.0 "end -1 char"]]
+    set al(_unittree,$TID) [alited::unit::GetUnits $TID [$wtxt get 1.0 {end -1 char}]]
   } else {
     set al(TREE,files) no
   }
   Create
   # restore selections
-  if {$headers ne ""} {
+  if {$headers ne {}} {
     set selection [list]
-    foreach hd $headers {
-      foreach item [alited::tree::GetTree] {
-        lassign $item lev cnt ID
+    foreach item [alited::tree::GetTree] {
+      lassign $item lev cnt ID
+      foreach hd $headers {
         if {[alited::unit::GetHeader $wtree $ID] eq $hd} {
           lappend selection $ID
           break
@@ -911,7 +981,13 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
       }
     }
     $wtree selection set $selection
+  } else {
+    # try to restore selections
+    foreach item $selection {
+      catch {$wtree selection add $item}
+    }
   }
+  catch {$wtree see [lindex $selection 0]}
 }
 #_______________________
 
@@ -928,9 +1004,9 @@ proc tree::UpdateFileTree {{doit no}} {
       lassign [lindex $item 4] - fname leaf itemID
       if {$leaf} {
         if {[alited::bar::FileTID $fname] ne {}} {
-          $wtree tag add tagBold $itemID
+          $wtree tag add tagSel $itemID
         } else {
-          $wtree tag remove tagBold $itemID
+          $wtree tag remove tagSel $itemID
         }
       }
     }

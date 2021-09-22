@@ -158,7 +158,7 @@ SW:Save your stuff SW: cd %PD
    tex2 {{    Directories \n      postponed:} {} {-h 8 -w 60 -tabnext entdir3}} {$::EMENU7ZSKIP} \
    seh2 {{} {-pady 7} {}} {} \
    dir3 {{        Save to:}} {"$::EMENU7ZBAK"} \
-   } -head {\n This creates a backup of your directories.\n } -weight bold == ::EMENU7ZCOM ::EMENU7ZGIT ::EMENU7ZARC ::EMENU7ZSUFF ::EMENU7ZDIR ::EMENU7ZSKIP ::EMENU7ZBAK
+   } -head {\n This creates a backup of your directories.\n } -focus butOK -weight bold == ::EMENU7ZCOM ::EMENU7ZGIT ::EMENU7ZARC ::EMENU7ZSUFF ::EMENU7ZDIR ::EMENU7ZSKIP ::EMENU7ZBAK
  R:Save your stuff R: %C set ::EMENUTMP "$::EMENU7ZARC-$::EMENU7ZSUFF-$::EMENU7ZCNT-N.zip"
  R:Save your stuff R: %C \
   file delete "$::EMENUTMP" ; \

@@ -982,7 +982,7 @@ proc ini::_init {} {
   # here, the order of icons defines their order in the toolbar
   set listIcons [::apave::iconImage]
   # the below icons' order defines their order in the toolbar
-  foreach {icon} {none gulls heart add change delete up down plus minus \
+  foreach {icon} {none gulls heart add change delete up down paste plus minus \
   retry misc previous next folder file OpenFile SaveFile saveall categories \
   undo redo replace ok color date help run other e_menu trash} {
     set img [CreateIcon $icon]

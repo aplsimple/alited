@@ -89,6 +89,16 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
     $wsbv configure -command "$wtxt yview"
     BindsForText $TID $wtxt
   }
+  if {[winfo exists $wold1]} {
+    # previous text: save its state
+    alited::bar::SetTabState $TIDold --pos [$wold1 index insert]
+    if {$dopack && $doshow} {
+      # hide both previous
+      pack forget $wold1  ;# a text
+      pack forget $wold2  ;# a scrollbar
+      update
+    }
+  }
   # show the selected text
   if {$doshow} {
     alited::bar::SetBarState [alited::bar::CurrentTabID] $curfile $wtxt $wsbv
@@ -104,15 +114,6 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
   } elseif {$dohighlight && [alited::file::ToBeHighlighted $wtxt]} {
     HighlightText $TID $curfile $wtxt
     if {$al(TREE,isunits)} alited::tree::RecreateTree
-  }
-  if {[winfo exists $wold1]} {
-    # previous text: save its state
-    alited::bar::SetTabState $TIDold --pos [$wold1 index insert]
-    if {$dopack && $doshow} {
-      # hide both previous
-      pack forget $wold1  ;# a text
-      pack forget $wold2  ;# a scrollbar
-    }
   }
   return [list $curfile $wtxt $wsbv $pos $doinit $dopack]
 }

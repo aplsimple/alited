@@ -112,6 +112,11 @@ namespace eval ::alited {
     {File not found: %f} {Файл не найден: %f}
     {Unit not found: %u} {Юнит не найден: %u}
     {Don't ask anymore} {Больше не спрашивать}
+    {%f is a directory} {%f - это каталог}
+    {THE EXTERNAL FILE IS MOVED TO THE PROJECT!} {ВНЕШНИЙ ФАЙЛ ПЕРЕМЕЩАЕТСЯ В ПРОЕКТ!}
+    {Drop Selected Units Here} {Кинуть сюда выбранные юниты}
+    {Drop Selected Files Here} {Кинуть сюда выбранные файлы}
+    "All Tcl files of this directory:\n  \"%f\"  \nwill be open.\n\nThis may be expensive!" "Все Tcl файлы каталога:\n  \"%f\"  \nбудут открыты.\n\nЭта операция может быть затратной!"
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -124,7 +129,7 @@ namespace eval ::alited {
   ::msgcat::mcmset ru {
     "Click \"%t\"" "Кликните \"%t\""
     {Copy Declaration} {Копировать объявление}
-    "Open all Tcl files of \"%n\"" "Открыть все файлы Tcl из \"%n\""
+    "Open All Tcl Files of \"%n\"" "Открыть все файлы Tcl из \"%n\""
     "Remove \"%n\"\nfrom \"%f\"?" "Удалить \"%n\"\nиз \"%f\"?"
     "Delete \"%f\"?" "Удалить \"%f\"?"
     {An open file can not be deleted.} {Невозможно удалить открытый файл.}
