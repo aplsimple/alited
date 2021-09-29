@@ -70,6 +70,11 @@ namespace eval ::apave {
     dir {{} {}} \
     fon {{} {}} \
     clr {{} {}} \
+    fiL {{} {}} \
+    fiS {{} {}} \
+    diR {{} {}} \
+    foN {{} {}} \
+    clR {{} {}} \
     dat {{} {}} \
     sta {{} {}} \
     too {{} {}} \
@@ -1073,11 +1078,11 @@ oo::class create ::apave::APave {
       }
       ent {set widget ttk::entry}
       enT {set widget entry}
-      fil -
-      fis -
-      dir -
-      fon -
-      clr -
+      fil - fiL -
+      fis - fiS -
+      dir - diR -
+      fon - foN -
+      clr - clR -
       dat -
       sta -
       too -
@@ -1386,6 +1391,7 @@ oo::class create ::apave::APave {
     trace var $vname w \
       "$w config -text \"\[[self] optionCascadeText \${$vname}\]\" ;\#"
     lappend ::apave::_AP_VARS(_TRACED_$w) $vname
+    bind $w <ButtonPress> "+ focus $w"
     return $w.m
   }
 
@@ -1854,7 +1860,8 @@ oo::class create ::apave::APave {
     }
     set an [set entname {}]
     lassign [my LowercaseWidgetName $name] n
-    switch -glob -- [my ownWName $n] {
+    set ownname [my ownWName $n]
+    switch -glob -nocase -- $ownname {
       fil* {set chooser tk_getOpenFile}
       fis* {set chooser tk_getSaveFile}
       dir* {set chooser tk_chooseDirectory}
@@ -1923,9 +1930,15 @@ oo::class create ::apave::APave {
       }
       set entf [list $txtnam - - - - "pack -side left -expand 1 -fill both -in $inname" "$attrs1"]
     } else {
-      set tname [my Transname Ent $name]
-      if {$entname ne ""} {append entname $tname}
-      append attrs1 " -callF2 {.ent .buT}"
+      if {[string range $ownname 0 2] in {fiL fiS diR foN clR}} {
+        set field cbx
+        set tname [my Transname Cbx $name]
+      } else {
+        set tname [my Transname Ent $name]
+        set field ent
+      }
+      if {$entname ne {}} {append entname $tname}
+      append attrs1 " -callF2 {.$field .buT}"
       append wpar " -tname $tname"
       set entf [list $tname - - - - "pack -side left -expand 1 -fill x -in $inname" "$attrs1 $tvar"]
     }
@@ -2803,18 +2816,20 @@ oo::class create ::apave::APave {
         set idx2 [$w index {insert lineend}]
         set line [$w get $idx1 $idx2]
         set nchars [my leadingSpaces $line]
-        set indent [string range $line 0 [expr {$nchars-1}]]
-        set ch [string index $line end]
+        set indent [string range $line 0 $nchars-1]
+        set ch1 [string range $line $nchars $nchars+1]
+        set islist [expr {$ch1 in {{* } {- } {# }}}]
+        set ch2 [string index $line end]
         set idx1 [$w index insert]
         set idx2 [$w index "$idx1 +1 line"]
         set st2 [$w get "$idx2 linestart" "$idx2 lineend"]
-        if {$indent ne {} || $ch eq "\{" || $K eq {KP_Enter} || $st2 ne {}} {
+        if {$indent ne {} || $ch2 eq "\{" || $K eq {KP_Enter} || $st2 ne {} || $islist} {
           set st1 [$w get "$idx1" "$idx1 lineend"]
           if {[string index $st1 0] in [list \t { }]} {
             # if space(s) are at the right, remove them at cutting
             set n1 [my leadingSpaces $st1]
             $w delete [$w index $idx1] [$w index "$idx1 +$n1 char"]
-          } elseif {$ch eq "\{" && $st1 eq {}} {
+          } elseif {$ch2 eq "\{" && $st1 eq {}} {
             # indent + closing brace
             if {$st2 eq {}} {
               append indent $::apave::_AP_VARS(INDENT) \n $indent "\}"
@@ -2830,6 +2845,10 @@ oo::class create ::apave::APave {
             }
             set nchars [my leadingSpaces $st2]
             set indent [string range $st2 0 [expr {$nchars-1}]]
+          }
+          if {$islist} {
+            set indent "$indent$ch1"
+            incr nchars 2
           }
           $w insert [$w index $idx1] \n$indent
           ::tk::TextSetCursor $w [$w index "$idx2 linestart +$nchars char"]

@@ -340,7 +340,7 @@ proc file::NewFile {} {
 
 proc file::OpenFile {{fnames ""} {reload no}} {
   # Handles "Open file" menu item.
-  #   fnames - file name (if not set, asks for it
+  #   fnames - file name (if not set, asks for it)
   #   reload - if yes, loads the file even if it has a "strange" extension
   # Returns the file's tab ID if it's loaded, or {} if not loaded.
 
@@ -351,6 +351,7 @@ proc file::OpenFile {{fnames ""} {reload no}} {
     set chosen yes
     set fnames [$obPav chooser tk_getOpenFile alited::al(filename) -multiple 1 \
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
+    set fnames [lreverse $fnames]
   } else {
     set fnames [list $fnames]
   }

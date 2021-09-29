@@ -38,6 +38,7 @@ proc bar::FillBar {wframe {newproject no}} {
   set lab4 [msgcat::mc {... All}]
   set bar1Opts [list -wbar $wframe -wbase $wbase -pady 2 -scrollsel no -lifo yes \
     -lowlist $al(FONTSIZE,small) -lablen $al(INI,barlablen) -tiplen $al(INI,bartiplen) \
+    -bg [lindex [$obPav csGet] 3] \
     -menu [list \
       sep \
       "com {$lab0} {::alited::bar::SelTab %t} {} {}" \
@@ -59,10 +60,8 @@ proc bar::FillBar {wframe {newproject no}} {
     lappend bar1Opts -tab $tab
   }
   set curname [lindex $tabs $al(curtab)]
-  if {$newproject || [catch {
-    ::bartabs::Bars create al(bts)   ;# al(bts) is Bars object
-    set al(BID) [al(bts) create al(bt) $bar1Opts $curname]
-  }]} then {
+  catch {::bartabs::Bars create al(bts)}   ;# al(bts) is Bars object
+  if {$newproject || [catch {set al(BID) [al(bts) create al(bt) $bar1Opts $curname]}]} {
     foreach tab $tabs {BAR insertTab $tab}
   }
   set tabs [BAR listTab]

@@ -68,7 +68,7 @@ proc menu::FillMenu {} {
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
-## ________________________ File _________________________ ##
+  ## ________________________ File _________________________ ##
   set m [set al(MENUFILE) $al(WIN).menu.file]
   $m add command -label $al(MC,new) -command alited::file::NewFile -accelerator Ctrl+N
   $m add command -label $al(MC,open...) -command alited::file::OpenFile -accelerator Ctrl+O
@@ -88,7 +88,7 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label $al(MC,quit) -command {alited::Exit - 0 no}
 
-## ________________________ Edit _________________________ ##
+  ## ________________________ Edit _________________________ ##
   set m [set al(MENUEDIT) $al(WIN).menu.edit]
   $m add command -label $al(MC,moveupU) -command {alited::tree::MoveItem up yes} -accelerator $al(acc_15)
   $m add command -label $al(MC,movedownU) -command {alited::tree::MoveItem down yes} -accelerator $al(acc_16)
@@ -102,7 +102,7 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
 
-### ________________________ Conversions _________________________ ###
+    ### ________________________ Conversions _________________________ ###
 
 #  $m add separator
 #  menu $m.convert -tearoff 0
@@ -110,7 +110,7 @@ proc menu::FillMenu {} {
 #  $m.convert add command -label [msgcat::mc {Change Encoding...}] -command alited::edit::ChangeEncoding
 #  $m.convert add command -label [msgcat::mc {Change EOL...}] -command alited::edit::ChangeEOL
 
-## ________________________ Search _________________________ ##
+  ## ________________________ Search _________________________ ##
   set m [set al(SEARCH) $al(WIN).menu.search]
   $m add command -label $al(MC,findreplace) -command alited::find::_run -accelerator Ctrl+F
   $m add command -label $al(MC,findnext) -command alited::find::Next -accelerator $al(acc_12)
@@ -124,13 +124,13 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label [msgcat::mc {Go to Line}] -command alited::main::GotoLine -accelerator $al(acc_17)
 
-## ________________________ Tools _________________________ ##
+  ## ________________________ Tools _________________________ ##
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label $al(MC,run) -command alited::tool::_run -accelerator $al(acc_3)
   $m add command -label e_menu -command alited::tool::e_menu -accelerator $al(acc_2)
   $m add command -label tkcon -command alited::tool::tkcon
 
-### ________________________ Runs _________________________ ###
+    ### ________________________ Runs _________________________ ###
   for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
     if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
       if {[incr emwas]==1} {
@@ -146,7 +146,7 @@ proc menu::FillMenu {} {
     }
   }
 
-### ________________________ Other tools _________________________ ###
+    ### ________________________ Other tools _________________________ ###
   $m add separator
   $m add command -label $al(MC,checktcl) -command alited::check::_run
   $m add separator
@@ -154,7 +154,7 @@ proc menu::FillMenu {} {
   $m add command -label [msgcat::mc {Screen Loupe}] -command alited::tool::Loupe
   $m add command -label $al(MC,datepicker) -command alited::tool::DatePicker
 
-## ________________________ Setup _________________________ ##
+  ## ________________________ Setup _________________________ ##
   set m [set al(SETUP) $al(WIN).menu.setup]
   $m add command -label $al(MC,projects) -command alited::project::_run
   $m add command -label $al(MC,tpl) -command alited::unit::Add
@@ -184,7 +184,7 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label $al(MC,pref...) -command alited::pref::_run
 
-## ________________________ Help _________________________ ##
+  ## ________________________ Help _________________________ ##
   set m [set al(MENUHELP) $al(WIN).menu.help]
   $m add command -label "$al(MC,help) Tcl/Tk" -command alited::tool::Help -accelerator F1
   $m add separator

@@ -80,10 +80,10 @@ namespace eval ::apave {
 {{33: Oscuro1} "#f1f1f1" #f1f1f1 #2a3b3b #466161 #e5a565 #6c8787 #fff #f4f49f #a2a2a2 #edba6b #000 #8ba6a6 - #4a6161 #000 #cdcd69 #354646 #ffbcbc #004 #005 #006 #007}
 {{34: Oscuro2} "#f1f1f1" #f1f1f1 #223333 #3e5959 #de9e5e #668181 #fff #f4f49f #a2a2a2 #e4b162 #000 #819c9c - #3f5656 #000 #cdcd69 #2b3c3c #ffbcbc #004 #005 #006 #007}
 {{35: Oscuro3} "#f1f1f1" #f1f1f1 #192a2a #355050 #de9e5e #5c7777 #fff #f4f49f #9e9e9e #dfac5d #000 #779292 - #364d4d #000 #cdcd69 #223333 #ffbcbc #004 #005 #006 #007}
-{{36: MildDark} "#d2d2d2" #fff #222323 #384e66 #2ccaca #4b7391 #fff #00ffff #939393 #43e1e1 #000 #668eac - #394d64 #000 #bebe5a #2b2c2c #ffa2a2 #004 #005 #006 #007}
-{{37: MildDark1} "#d2d2d2" #fff #151616 #2D435B #2ac8c8 #436b89 #fff #00ffff grey #36d4d4 #000 #668eac - #2e4259 #000 #bebe5a #1f2020 #ffb0b0 #004 #005 #006 #007}
-{{38: MildDark2} "#b4b4b4" #fff #0d0e0e #24384f #28c6c6 #3e6684 #fff #00ffff #757575 #33d1d1 #000 #668eac - #253a52 #000 #bebe5a #161717 #ffaeae #004 #005 #006 #007}
-{{39: MildDark3} "#e2e2e2" #f1f1f1 #000 #1B3048 #27c5c5 #375f7d #fff #00ffff #6c6c6c #31d0d0 #000 #668eac - #192e46 #000 #b0b04c #0f0f0f #ffafaf #004 #005 #006 #007}
+{{36: MildDark} "#d2d2d2" #fff #222323 #384e66 #2ccaca #4b7391 #fff #00ffff #939393 #43e1e1 #000 #668eac - #2c4057 #000 #bebe5a #2b2c2c #ffa2a2 #004 #005 #006 #007}
+{{37: MildDark1} "#d2d2d2" #fff #151616 #2D435B #2ac8c8 #436b89 #fff #00ffff grey #36d4d4 #000 #668eac - #24384f #000 #bebe5a #1f2020 #ffb0b0 #004 #005 #006 #007}
+{{38: MildDark2} "#b4b4b4" #fff #0d0e0e #24384f #28c6c6 #3e6684 #fff #00ffff #757575 #33d1d1 #000 #668eac - #1a2f47 #000 #bebe5a #161717 #ffaeae #004 #005 #006 #007}
+{{39: MildDark3} "#e2e2e2" #f1f1f1 #000 #1B3048 #27c5c5 #375f7d #fff #00ffff #6c6c6c #31d0d0 #000 #668eac - #11263e #000 #b0b04c #0f0f0f #ffafaf #004 #005 #006 #007}
 {{40: Inkpot} "#d3d3ff" #AFC2FF #16161f #1E1E27 #de9e5e #6767a8 #000 #f4f49f #6e6e6e #ffbb6d #000 #8585c6 - #292936 #000 #a2a23e #202029 #ffa5a5 #004 #005 #006 #007}
 {{41: Quiverly} "#cdd8d8" #cdd8d8 #2b303b #333946 #de9e5e #6f7582 #000 #f4f49f #757575 #eda95b #000 #9197a4 - #414650 #000 #b0b04c #323742 #ffabab #004 #005 #006 #007}
 {{42: Monokai} "#f8f8f2" #f8f8f2 #353630 #4e5044 #f1b479 #707070 #000 #f4f49f #9a9a9a #ffbb6d #000 #777777 - #46473d #000 #cdcd69 #3c3d37 #ffabab #004 #005 #006 #007}
@@ -182,6 +182,11 @@ proc ::apave::initStyles {} {
   ttk::style configure TButtonWestBold -anchor w -font $::apave::FONTMAINBOLD
   ttk::style map       TButtonWestBold {*}[ttk::style map TButton]
   ttk::style layout    TButtonWestBold [ttk::style layout TButton]
+
+  ttk::style configure TButtonWestHL {*}[ttk::style configure TButton]
+  ttk::style configure TButtonWestHL -anchor w -foreground [lindex [obj csGet] 9]
+  ttk::style map       TButtonWestHL {*}[ttk::style map TButton]
+  ttk::style layout    TButtonWestHL [ttk::style layout TButton]
 
   ttk::style configure TMenuButtonWest {*}[ttk::style configure TMenubutton]
   ttk::style configure TMenuButtonWest -anchor w -font $::apave::FONTMAIN -relief raised
@@ -849,6 +854,9 @@ oo::class create ::apave::ObjectProperty {
     }
     return $defvalue
   }
+
+
+  ## _________________ End of ::apave::ObjectProperty _________________ ##
 
 }
 
@@ -1639,7 +1647,6 @@ oo::class create ::apave::ObjectTheming {
     }
     ::apave::initStyles
     my ThemeChoosers
-    catch {::bartabs::drawAll}
     return
   }
 
@@ -1988,6 +1995,10 @@ oo::class create ::apave::ObjectTheming {
       after idle [list [self] csSet $cs . -doit]  ;# theme the dialogue to be run
     }
   }
+
+
+  ## __________________ End of ::apave::ObjectTheming ___________________ ##
+
 }
 ################################# EOF #####################################
 

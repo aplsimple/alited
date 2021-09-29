@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.20
+package provide hl_tcl 0.9.22
 
 # ______________________ Common data ____________________ #
 
@@ -148,8 +148,13 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
 
   variable data
   $txt tag add tagSTD "$ln.$pri" "$ln.$i +1 chars"
+  if {$pri} {
+    incr pri -1
+    set RE $data(RE1)
+  } else {
+    set RE $data(RE0)
+  }
   set st [string range $line $pri $i-1]
-  if {$pri} {set RE $data(RE1)} {set RE $data(RE0)}
   set lcom [regexp -inline -all -indices $RE $st]
   # commands
   foreach {- - lc -} $lcom {

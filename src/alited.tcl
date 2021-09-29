@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.4b12
+package provide alited 1.0.4
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -362,7 +362,7 @@ namespace eval alited {
     } else {
       set Tclexe $al(EM,Tcl)
     }
-    exec $Tclexe {*}$args &
+    exec {*}$Tclexe {*}$args &
   }
   #_______________________
 
@@ -419,7 +419,7 @@ if {$alited::LOG ne {}} {
 # this "if" satisfies the Ruff doc generator "package require":
 if {[info exists ALITED_NOSEND]} {
   unset ALITED_NOSEND
-  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {$ALITED_ONFILES} {
     set ::argc 0
     set ::argv {}
@@ -431,7 +431,7 @@ if {[info exists ALITED_NOSEND]} {
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
-  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
     if {$alited::LOG ne {}} {

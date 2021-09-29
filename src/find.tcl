@@ -941,13 +941,13 @@ proc find::_create {} {
       {.rad2 - - - - {pack -anchor w -padx 0} {-t "Down" -image alimg_down -compound left -var ::alited::find::data(v2) -value 2 -style TRadiobuttonFS}}
       {.chb4 - - - - {pack -anchor sw} {-t "Wrap around" -var ::alited::find::data(c4) -style TCheckbuttonFS}}
       {sev2 cbx1 L 10 1 }
-      {But1 sev2 L 1 1 {-st we} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
-      {But2 but1 T 1 1 {-st we} {-t "All in Text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
-      {But3 but2 T 1 1 {-st we} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
-      {h_3 but3 T 2 1}
-      {but4 h_3 T 1 1 {-st we} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
-      {but5 but4 T 1 1 {-st nwe} {-t "All in Text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
-      {But6 but5 T 1 1 {-st nwe} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
+      {But1 sev2 L 1 1 {-st wes} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
+      {But2 but1 T 1 1 {-st wes} {-t "All in Text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
+      {But3 but2 T 1 1 {-st wen} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
+      {seh_3 but3 T 2 1}
+      {but4 seh_3 T 1 1 {-st wes} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
+      {but5 but4 T 1 1 {-st wes} {-t "All in Text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
+      {But6 but5 T 1 1 {-st wen} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
     }
     SessionButtons
     foreach k {f F} {bind $w.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}

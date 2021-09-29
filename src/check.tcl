@@ -119,6 +119,7 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
   incr fileerrors $fileerrs
   set und [string repeat _ 30]
   set pos1 [alited::bar::GetTabState $TID --pos]
+  if {![string is double -strict $$pos1]} {set pos1 1.0}
   set info [list $TID [expr {int($pos1)}]]
   alited::info::Put "$und $fileerrs ($errors1/$errors2/$errors3) file errors of $curfile $und$und$und" $info
   set unittree [alited::unit::GetUnits $TID $textcont]

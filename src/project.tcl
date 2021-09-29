@@ -419,6 +419,7 @@ proc project::Select {{item ""}} {
       return
     }
     set isel [$tree index $item]
+    if {$isel<0 || $isel>=[llength $prjlist]} return
     set prj [lindex $prjlist $isel]
     set fnotes [file join $::alited::PRJDIR $prj-notes.txt]
     set wtxt [$obDl2 TexPrj]
@@ -555,6 +556,13 @@ proc project::Ok {args} {
   variable prjlist
   variable prjinfo
   variable data
+  set msec [clock milliseconds]
+  if {($msec-$data(_MSEC))<10000} {
+    # disables entering twice (at multiple double-clicks)
+    # 10 sec. of clicking seems to be enough at opening a file
+    return
+  }
+  set data(_MSEC) $msec
   if {[set isel [Selected index]] eq {} || ![ValidProject]} {
     focus [$obDl2 TreePrj]
     return
@@ -595,14 +603,15 @@ proc project::Ok {args} {
     }
   }
   set TID [lindex [alited::bar::BAR listTab] $al(curtab) 0]
-  catch {alited::bar::BAR $TID show}
+  catch {alited::bar::BAR $TID show yes no}
   alited::main::UpdateProjectInfo
   alited::ini::GetUserDirs
-  $obDl2 res $win 1
   alited::file::MakeThemHighlighted
   after idle alited::main::ShowText
+  [$obPav Tree] selection set {}  ;# new project - no group selected
   if {!$al(TREE,isunits)} {after idle alited::tree::RecreateTree}
   alited::favor::ShowFavVisit
+  $obDl2 res $win 1
   return
 }
 #_______________________
@@ -710,6 +719,8 @@ proc project::_create {} {
   variable prjlist
   variable oldTab
   variable ilast
+  variable data
+  set data(_MSEC) 0
   $obDl2 makeWindow $win.fra "$al(MC,projects) :: $::alited::PRJDIR"
   $obDl2 paveWindow \
     $win.fra [MainFrame] \

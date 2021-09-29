@@ -444,7 +444,7 @@ namespace eval ::alited {
     {Linux terminal:} {Терминал Linux:}
     {Diff tool:} {Команда diff:}
     {Path to man/tcl8.6:} {Путь к man/tcl8.6:}
-    {Path to tclsh, wish or tclkit:} {Путь к tclsh, wish или tclkit:}
+    {tclsh, wish or tclkit:} {tclsh, wish или tclkit:}
     {Rows:} {Строк:}
     {Columns:} {Колонок:}
     {Geometry:} {Геометрия:}

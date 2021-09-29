@@ -100,6 +100,7 @@ namespace eval ::alited {
   set al(EM,save) {}
   set al(EM,PD=) ~/PG/e_menu_PD.txt
   set al(EM,Tcl) {}
+  set al(EM,TclList) [list]
   set al(EM,h=) ~/DOC/www.tcl.tk/man/tcl8.6
   set al(EM,tt=) {xterm -fs 12 -geometry 90x30+1+1}
   set al(EM,menu) menu.mnu
@@ -376,6 +377,7 @@ proc ini::ReadIniEM {nam val emiName} {
     emsave     {set al(EM,save) $val}
     emPD       {set al(EM,PD=) $val}
     emTcl      {set al(EM,Tcl) $val}
+    emTclList  {set al(EM,TclList) $val}
     emh        {set al(EM,h=) $val}
     emtt       {set al(EM,tt=) $val}
     emmenu     {set al(EM,menu) $val}
@@ -427,7 +429,7 @@ proc ini::ReadIniPrj {} {
 
   namespace upvar ::alited al al
   set al(tabs) [list]
-  set al(curtab) ""
+  set al(curtab) 0
   alited::favor_ls::GetIni ""  ;# initializes favorites' lists
   set al(prjdirign) ".git .bak"
   if {![file exists $al(prjfile)]} {
@@ -626,6 +628,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "emsave=$al(EM,save)"
   puts $chan "emPD=$al(EM,PD=)"
   puts $chan "emTcl=$al(EM,Tcl)"
+  puts $chan "emTclList=$al(EM,TclList)"
   puts $chan "emh=$al(EM,h=)"
   puts $chan "emtt=$al(EM,tt=)"
   puts $chan "emmenu=$al(EM,menu)"

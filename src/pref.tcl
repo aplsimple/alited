@@ -216,14 +216,22 @@ proc pref::ReservedIcons {} {
 proc pref::MainFrame {} {
   # Creates a main frame of the dialogue.
 
+  fetchVars
+  $obDl2 untouchWidgets *.cannbk*
   return {
     {fraL - - 1 1 {-st nws -rw 2}}
-    {.ButHome - - 1 1 {-st we} {-t "General" -com "alited::pref::Tab nbk" -style TButtonWest}}
-    {.butChange .butHome T 1 1 {-st we} {-t "Editor" -com "alited::pref::Tab nbk2" -style TButtonWest}}
-    {.butCategories .butChange T 1 1 {-st we} {-t "Units" -com "alited::pref::Tab nbk3" -style TButtonWest}}
-    {.butActions .butCategories T 1 1 {-st we} {-t "Templates" -com "alited::pref::Tab nbk4" -style TButtonWest}}
-    {.butKeys .butActions T 1 1 {-st we} {-image alimg_kbd -compound left -t "Keys" -com "alited::pref::Tab nbk5" -style TButtonWest}}
-    {.butTools .butKeys T 1 1 {-st we} {-t "Tools" -com "alited::pref::Tab nbk6" -style TButtonWest}}
+    {.ButHome - - 1 1 {-st we -pady 0} {-t "General" -com "alited::pref::Tab nbk" -style TButtonWest}}
+    {.Cannbk .butHome L 1 1 {-st ns} {-w 2 -h 10 -highlightthickness 1 -afteridle {alited::pref::fillCan %w}}}
+    {.ButChange .butHome T 1 1 {-st we -pady 1} {-t "Editor" -com "alited::pref::Tab nbk2" -style TButtonWest}}
+    {.Cannbk2 .butChange L 1 1 {-st ns} {-w 2 -h 10 -highlightthickness 1 -afteridle {alited::pref::fillCan %w}}}
+    {.ButCategories .butChange T 1 1 {-st we -pady 0} {-t "Units" -com "alited::pref::Tab nbk3" -style TButtonWest}}
+    {.Cannbk3 .butCategories L 1 1 {-st ns} {-w 2 -h 10 -highlightthickness 1 -afteridle {alited::pref::fillCan %w}}}
+    {.ButActions .butCategories T 1 1 {-st we -pady 1} {-t "Templates" -com "alited::pref::Tab nbk4" -style TButtonWest}}
+    {.Cannbk4 .butActions L 1 1 {-st ns} {-w 2 -h 10 -highlightthickness 1 -afteridle {alited::pref::fillCan %w}}}
+    {.ButKeys .butActions T 1 1 {-st we -pady 0} {-image alimg_kbd -compound left -t "Keys" -com "alited::pref::Tab nbk5" -style TButtonWest}}
+    {.Cannbk5 .butKeys L 1 1 {-st ns} {-w 2 -h 10 -highlightthickness 1 -afteridle {alited::pref::fillCan %w}}}
+    {.ButTools .butKeys T 1 1 {-st we -pady 1} {-t "Tools" -com "alited::pref::Tab nbk6" -style TButtonWest}}
+    {.Cannbk6 .butTools L 1 1 {-st ns} {-w 2 -h 10 -highlightthickness 1 -afteridle {alited::pref::fillCan %w}}}
     {.v_  .butTools T 1 1 {-st ns} {-h 30}}
     {fraR fraL L 1 1 {-st nsew -cw 1}}
     {fraR.Nbk - - - - {pack -side top -expand 1 -fill both} {
@@ -287,6 +295,14 @@ proc pref::Ok {args} {
     set al(ED,CKeyWords) [[$obDl2 TexCKeys] get 1.0 {end -1c}]
     set al(ED,CKeyWords) [string map [list \n { }] $al(ED,CKeyWords)]
     set al(BACKUP) [string trim $al(BACKUP)]
+    if {$al(EM,Tcl) ne {}} {set al(TCLPREV) $al(EM,Tcl)}  ;# to remove "bad one"
+    if {[set i [lsearch -exact $al(TCLLIST) $al(TCLPREV)]]>-1} {
+      set al(TCLLIST) [lreplace $al(TCLLIST) $i $i]
+    }
+    set al(TCLLIST) [lreplace $al(TCLLIST) 16 end]
+    set al(EM,TclList) $al(EM,Tcl)
+    foreach tcl $al(TCLLIST) {append al(EM,TclList) \t $tcl}
+    set al(EM,TclList) [string trim $al(EM,TclList)]
     $obDl2 res $win 1
     if {$ans == 1} {alited::Exit - 1 no}
   }
@@ -311,6 +327,20 @@ proc pref::Tab {tab {nt ""} {doit no}} {
   # At changing the current notebook: we need to save the old selection
   # in order to restore the selection at returning to the notebook.
   fetchVars
+  foreach nbk {nbk nbk2 nbk3 nbk4 nbk5 nbk6} {fillCan [$obDl2 Can$nbk]}
+  foreach but {Home Change Categories Actions Keys Tools} {
+    [$obDl2 But$but] configure -style TButtonWest
+  }
+  switch $tab {
+    nbk  {set but Home}
+    nbk2 {set but Change}
+    nbk3 {set but Categories}
+    nbk4 {set but Actions}
+    nbk5 {set but Keys}
+    nbk6 {set but Tools}
+  }
+  [$obDl2 But$but] configure -style TButtonWestHL
+  fillCan [$obDl2 Can$tab] yes
   if {$tab ne $curTab || $doit} {
     if {$curTab ne {}} {
       set arrayTab($curTab) [$win.fra.fraR.$curTab select]
@@ -360,7 +390,21 @@ proc pref::Help {} {
   set sel [lindex [split [$win.fra.fraR.$curTab select] .] end]
   alited::Help $win "-${curTab}-$sel"
 }
+#_______________________
 
+proc pref::fillCan {w {selected no}} {
+
+  fetchVars
+  catch {$w delete $data(CANVAS,$w)}
+  lassign [$obDl2 csGet] - - - bg - selbg - - - hotbg
+  if {$selected} {
+    set bg $selbg
+    $w configure -highlightbackground $hotbg
+  } else {
+    $w configure -highlightbackground $bg
+  }
+  set data(CANVAS,$w) [$w create rectangle {0 0 10 100} -fill $bg -outline $bg]
+}
 # ________________________ Tabs "General" _________________________ #
 
 proc pref::General_Tab1 {} {
@@ -371,7 +415,7 @@ proc pref::General_Tab1 {} {
   set opcColors [list "{$opcc}"]
   for {set i -1; set n [apave::cs_MaxBasic]} {$i<=$n} {incr i} {
     if {(($i+2) % ($n/2+2)) == 0} {lappend opcColors |}
-    set csname [::apave::obj csGetName $i]
+    set csname [$obDl2 csGetName $i]
     lappend opcColors [list $csname]
     if {$i == $al(INI,CS)} {set opcc $csname}
     if {$i == $al(EM,CS)} {set opcc2 $csname}
@@ -926,12 +970,14 @@ proc pref::Common_Tab {} {
     set al(TCLINIDIR) $al(EM,Tcl)
   }
   set al(TCLINIDIR) [file dirname $al(TCLINIDIR)]
+  set al(TCLPREV) $al(EM,Tcl)
+  set al(TCLLIST) [split $al(EM,TclList) \t]
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode x}}
-    {.labTcl - - 1 1 {-st w -pady 1 -padx 3} {-t "Path to tclsh, wish or tclkit:"}}
-    {.filTcl .labTcl L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,Tcl) -w 40 -initialdir $alited::al(TCLINIDIR)}}
+    {.labTcl - - 1 1 {-st w -pady 1 -padx 3} {-t "tclsh, wish or tclkit:"}}
+    {.fiLTcl .labTcl L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,Tcl) -values {$alited::al(TCLLIST)} -w 48 -initialdir $alited::al(TCLINIDIR)}}
     {.labDoc .labTcl T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl8.6:"}}
     {.dirDoc .labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 40}}
     {.labTT .labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
@@ -1279,9 +1325,11 @@ proc pref::_create {tab} {
         set nt $win.fra.fraR.nbk6.f3
       }
     }
-    Tab $nbk $nt yes
+    after idle "::alited::pref::Tab $nbk $nt yes"
   } elseif {$oldTab ne {}} {
-    Tab $oldTab $arrayTab($oldTab) yes
+    after idle "::alited::pref::Tab $oldTab $arrayTab($oldTab) yes"
+  } else {
+    after idle "::alited::pref::Tab nbk" ;# first entering
   }
   bind $win <Control-o> alited::ini::EditSettings
   set res [$obDl2 showModal $win -geometry $geo {*}$minsize \
