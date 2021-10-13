@@ -29,7 +29,7 @@ namespace eval ::alited {
     {Change EOL...} {Сменить EOL...}
     {Tools} {Снасти}
     {Setup} {Опции}
-    {Help} {Справка}
+    {Help} {Помощь}
     {Yes} {Да}
     {No} {Нет}
     {Cancel} {Отмена}
@@ -57,7 +57,7 @@ namespace eval ::alited {
     {Look for Word} {Искать слово}
     {Run} {Запуск}
     {Moving} {Перемещение}
-    {Help of alited} {Справка alited}
+    {Help of alited} {Помощь alited}
     {Color Picker} {Выбор цвета}
     {Date Picker} {Выбор даты}
     {Screen Loupe} {Экранная лупа}
@@ -81,14 +81,14 @@ namespace eval ::alited {
     {Line} {№ ст.}
     {Lines} {Строки}
     "All of \"%f\"" "Всё из \"%f\""
-    {Not recommended!} {Не рекомендуется!}
+    "Not recommended for projects\nwith large files (>2000 LOC)!" "Не рекомендуется для проектов\nс большими файлами (>2000 строк)!"
     {Move Unit Up} {Поднять юнит}
     {Move Unit Down} {Опустить юнит}
     {Move File Up} {Переместить файл вверх}
     {Move File Down} {Переместить файл вниз}
     {Only files are moved by alited.} {Только файлы перемещает alited.}
     {Lists of Favorites} {Списки избранного}
-    {Last Visited} {Последние посещения}
+    {Last Visited} {Последние входы}
     {Switch to Unit Tree} {Перейти на список юнитов}
     {Switch to File Tree} {Перейти на список файлов}
     {Create File} {Создать файл}
@@ -102,7 +102,7 @@ namespace eval ::alited {
     {Contract All} {Свернуть всё}
     {Expand All} {Развернуть всё}
     "Move %f\nto\n%d\n?" "Переместить %f\nв\n%d\n?"
-    {To Last Visited} {На последнее посещение}
+    {To Last Visited} {На последний вход}
     {To Matched Bracket} {На парную скобку}
     {Go to Line} {Перейти на строку}
     {Line number:} {Номер строки:}
@@ -136,6 +136,8 @@ namespace eval ::alited {
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" был изменен другим приложением.\n\nОтменить вашу редакцию и перезагрузить файл?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" был удален другим приложением.\n\nСохранить файл?"
     {Tip File Info} {Данные о файлах}
+    {Rename File} {Переименовать файл}
+    {Select one file in the tree.} {Выберите один файл в списке.}
   }
 
   ## ________________________ Templates ________________________ ##
@@ -225,19 +227,20 @@ namespace eval ::alited {
     {Non-favorite files to be:} {Файлы не Избранного должны}
     {kept} {остаться}
     {closed} {закрыться}
-    "Doesn't close any tab without favorites\nat choosing the favorites' list" "Не закрывать \"неизбранные\" закладки\nпри выборе списка Избранного"
-    "Closes all tabs without favorites\nat choosing the favorites' list" "Закрывать \"неизбранные\" закладки\nпри выборе списка Избранного"
-    "Sets a list of favorites\nthat was active initially." "Восстанавливает список Избранного,\nдействовавший вначале."
+    "Doesn't close any tab without favorites\nat choosing Favorites' list" "Не закрывать \"неизбранные\" закладки\nпри выборе списка Избранного"
+    "Closes all tabs without favorites\nat choosing Favorites' list" "Закрывать \"неизбранные\" закладки\nпри выборе списка Избранного"
+    "Sets a list of Favorites\nthat was active initially." "Восстанавливает список Избранного,\nдействовавший вначале."
     {Delete a favorites' list #%n ?} {Удалить список Избранного #%n ?}
     {Favorites} {Избранное}
-    "Add \"%n\" of %f\nto the favorites?" "Добавить \"%n\" файла %f\nв Избранное?"
-    "Item \"%n\" of %f\nis already in the favorites." "Юнит \"%n\" из %f\nуже есть в Избранном."
-    "Remove \"%n\" of %f\nfrom the favorites?" "Удалить \"%n\" файла %f\nиз Избранного?"
+    "Add \"%n\" of %f\nto Favorites?" "Добавить \"%n\" файла %f\nв Избранное?"
+    "Item \"%n\" of %f\nis already in Favorites." "Юнит \"%n\" из %f\nуже есть в Избранном."
+    "Remove \"%n\" of %f\nfrom Favorites?" "Удалить \"%n\" файла %f\nиз Избранного?"
+    "\"%n\" unit of %f\nis not in Favorites." "Юнит \"%n\" файла %f\nотсутствует в Избранном."
     {Add to Favorites} {Добавить в Избранное}
     {Remove from Favorites} {Удалить из Избранного}
     {Remove All} {Удалить всё}
-    {Remove all of the favorites?} {Удалить всё из Избранного?}
-    {Remove all of the last visited?} {Удалить всё из Последних посещений?}
+    {Remove all of Favorites?} {Удалить всё из Избранного?}
+    {Remove all of the last visited?} {Удалить всё из Последних входов?}
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##
@@ -360,7 +363,7 @@ namespace eval ::alited {
     {Current file} {Текущий файл}
     {All files} {Все файлы}
     {'Recent Files' length:} {Длина списка 'Недавние файлы':}
-    {'Last Visited' length:} {Длина списка 'Последние посещения':}
+    {'Last Visited' length:} {Длина списка 'Последние входы':}
     {Maximum of project files:} {Число файлов проекта не более:}
     {Confirm exit:} {Подтверждать выход:}
     {Save configuration on} {Сохранять конфигурацию при}
@@ -419,6 +422,7 @@ namespace eval ::alited {
     {Color of return/goto:} {Цвет return/goto:}
     {Color of your key words:} {Цвет ваших ключевых слов:}
     {Colors} {Цвета}
+    {Your commands:} {Ваши команды:}
     {Your key words:} {Ваши ключевые слова:}
   }
 

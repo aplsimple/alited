@@ -344,13 +344,13 @@ proc favor_ls::_create {} {
     {.sbvFav .TexFav L - - {pack -side left}}
     {fra2 fra1 T 1 2 {-st nswe} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Non-favorite files to be:"}}
-    {.radA - - - - {pack -side left -padx 8}  {-t kept -var ::alited::favor_ls::place -value 1 -tip "Doesn't close any tab without favorites\nat choosing the favorites' list"}}
-    {.radB - - - - {pack -side left -padx 8}  {-t closed -var ::alited::favor_ls::place -value 2 -tip "Closes all tabs without favorites\nat choosing the favorites' list"}}
+    {.radA - - - - {pack -side left -padx 8}  {-t kept -var ::alited::favor_ls::place -value 1 -tip "Doesn't close any tab without favorites\nat choosing Favorites' list"}}
+    {.radB - - - - {pack -side left -padx 8}  {-t closed -var ::alited::favor_ls::place -value 2 -tip "Closes all tabs without favorites\nat choosing Favorites' list"}}
     {LabMess fra2 T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 labMess T 1 2 {-st nswe}}
     {.butHelp - - - - {pack -side left} {-t "$alited::al(MC,help)" -command ::alited::favor_ls::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
-    {.butUndo - - - - {pack -side left} {-t Back -command {::alited::favor_ls::Ok 3} -tip "Sets a list of favorites\nthat was active initially."}}
+    {.butUndo - - - - {pack -side left} {-t Back -command {::alited::favor_ls::Ok 3} -tip "Sets a list of Favorites\nthat was active initially."}}
     {.butOK - - - - {pack -side left -padx 2} {-t "$alited::al(MC,select)" -command ::alited::favor_ls::Ok}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::favor_ls::Cancel}}
   }

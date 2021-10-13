@@ -363,7 +363,7 @@ proc tool::e_menu {args} {
   # depending on e_menu's preferences.
 
   namespace upvar ::alited al al
-  if {{ex=Help} ni $args} {
+  if {{EX=Help} ni $args} {
     EM_SaveFiles
     if {![is_submenu $args]} {
       append args " g="  ;# should be last, to override previous settings

@@ -731,7 +731,6 @@ proc find::ReplaceInSession {} {
   if {![alited::msg yesno warn $msg NO -ontop $data(c5)]} {
     return {}
   }
-  set currTID [alited::bar::CurrentTabID]
   set rn 0
   set data(_ERR_) no
   foreach tab [SessionList] {
@@ -742,11 +741,11 @@ proc find::ReplaceInSession {} {
       incr rn $rdone
       alited::bar::BAR markTab $TID
     }
-#    alited::file::MakeThemHighlighted $TID
     if {$data(_ERR_)} break
   }
   ShowResults2 $rn $alited::al(MC,frres3)
   alited::main::UpdateTextGutterTree
+  alited::bar::OnTabSelection [alited::bar::CurrentTabID] ;# updates icons
 }
 
 # ________________________ Helpers _________________________ #

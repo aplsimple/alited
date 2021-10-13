@@ -96,7 +96,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
       # hide both previous
       pack forget $wold1  ;# a text
       pack forget $wold2  ;# a scrollbar
-      update
+      after idle update
     }
   }
   # show the selected text
@@ -306,7 +306,7 @@ proc main::HighlightText {TID curfile wtxt} {
         -insertwidth $al(CURSORWIDTH)
     } else {
       ::hl_tcl::hl_init $wtxt -dark [$obPav csDarkEdit] \
-        -multiline $al(prjmultiline) \
+        -multiline $al(prjmultiline) -keywords $al(ED,TclKeyWords) \
         -cmd "::alited::edit::Modified $TID" \
         -cmdpos ::alited::main::CursorPos \
         -plaintext [expr {![alited::file::IsTcl $curfile]}] \
@@ -521,13 +521,12 @@ proc main::PackTextWidgets {wtxt wsbv} {
   #   wsbv - scrollbar widget's path
 
   namespace upvar ::alited al al obPav obPav
+  pack $wtxt -side left -expand 1 -fill both
+  pack $wsbv -fill y -expand 1
   lassign [GutterAttrs] canvas width shift
   # widgets created outside apave require the theming:
   $obPav csSet [$obPav csCurrent] $al(WIN) -doit
-  pack $wtxt -side left -expand 1 -fill both
-  pack $wsbv -fill y -expand 1
-  set bind [list $obPav fillGutter $wtxt $canvas $width $shift]
-  {*}$bind
+  $obPav fillGutter $wtxt $canvas $width $shift
 }
 
 # ________________________ main _________________________ #

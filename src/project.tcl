@@ -74,7 +74,7 @@ proc project::SaveCurrFileList {title {isnew no}} {
   if {[info exists al(ANSWERED,SaveCurrFileList)]} {
     set ans $al(ANSWERED,SaveCurrFileList)
   } else {
-    set ans [$obDl3 misc ques $title $msg $asks file -ch {Don't ask anymore}]
+    set ans [$obDl3 misc ques $title $msg $asks file -ch $al(MC,noask)]
     if {[string last {10} $ans]>-1} {
       set ans [string map {10 {}} $ans]
       set al(ANSWERED,SaveCurrFileList) $ans
@@ -607,10 +607,10 @@ proc project::Ok {args} {
   alited::main::UpdateProjectInfo
   alited::ini::GetUserDirs
   alited::file::MakeThemHighlighted
-  after idle alited::main::ShowText
+  alited::favor::ShowFavVisit
   [$obPav Tree] selection set {}  ;# new project - no group selected
   if {!$al(TREE,isunits)} {after idle alited::tree::RecreateTree}
-  alited::favor::ShowFavVisit
+  after 10 alited::main::ShowText
   $obDl2 res $win 1
   return
 }

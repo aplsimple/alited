@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.4
+package provide alited 1.0.5a6
 
 package require Tk
 catch {package require comm}  ;# Generic message transport

@@ -303,14 +303,15 @@ proc bar::OnTabSelection {TID} {
   if {[alited::edit::CommentChar] ne {}} {set cmnst normal} {set cmnst disabled}
   $al(MENUEDIT) entryconfigure 7 -state $cmnst
   $al(MENUEDIT) entryconfigure 8 -state $cmnst
-  set wtxt [alited::main::GetWTXT $TID]
-  set al(wrapwords) [expr {[$wtxt cget -wrap] eq {word}}]
+  if {[set wtxt [alited::main::GetWTXT $TID]] ne {}} {
+    set al(wrapwords) [expr {[$wtxt cget -wrap] eq {word}}]
+  }
   CurrentControlTab [FileName $TID]
   alited::main::HighlightLine
-  alited::tree::SeeSelection
   set indent [alited::main::CalcIndentation]
   ::apave::setTextIndent $indent
   if {$al(prjindentAuto)} {alited::main::UpdateProjectInfo $indent}
+  after 10 ::alited::tree::SeeSelection
 }
 
 # ________________________ Handle Ctrl+Tab keys ______________________ #

@@ -25,7 +25,7 @@ proc unit::GetHeader {wtree ID {NC ""}} {
     return $l2  ;# for file tree, it's a full file name
   }
   if {$NC eq {#1}} {
-    set tip "[string map {al #} $id]\n$l1 - $l2"
+    set tip "[string map {al #} $id]\n$l1 - [expr {max($l1,$l2)}]"
     set ID {}
   } else {
     catch {

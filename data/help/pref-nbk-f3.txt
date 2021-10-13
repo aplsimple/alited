@@ -17,9 +17,10 @@
    - "Unit lines per 1 red bar" is a number of lines to mark a unit
      (proc/method) with 1 red bar in its icon; a fully red icon is bad!
 
-   - "Multi-line strings" is strongly recommended be OFF; it's only for
-     granular (with small source files) projects the ON value could be
-     a good choice as it can slow your work; use it on your own risk.
+   - "Multi-line strings" is recommended be OFF for projects with giant
+     files; it's only for granular (with small source files) projects
+     the ON value could be a good choice because it can slow your work;
+     use it on your own risk.
 
  If you don't want to use these defaults, switch the top checkbox off.
  While preparing a new project in "Projects" dialogue, you would input

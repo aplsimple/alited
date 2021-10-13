@@ -260,16 +260,75 @@ proc file::AllSaved {} {
 }
 #_______________________
 
-proc file::RenameFile {TID fname} {
+proc file::RenameFile {TID fname {doshow yes}} {
   # Renames a file.
   #   TID - ID of tab
   #   fname - file name
+  #   doshow - flag "show the file's text"
 
   alited::bar::SetTabState $TID --fname $fname
   alited::bar::BAR $TID configure -text {} -tip {}
   set tab [alited::bar::UniqueListTab $fname]
-  alited::bar::BAR $TID configure -text $tab -tip [FileStat $fname]
-  alited::bar::BAR $TID show
+  set sname [file tail $fname]
+  alited::bar::BAR $TID configure -text $sname -tip [FileStat $fname]
+  if {$doshow} {
+    alited::bar::BAR $TID show
+  }
+}
+#_______________________
+
+proc file::DoRenameFileInTree {wtree ID fname name2} {
+  # Performs renaming a current file in a file tree.
+  #   wtree - file tree's path
+  #   ID    - ID of the file in the file tree
+  #   fname - old file name (full)
+  #   name2 - new file name (tail)
+
+  set fsplit [file split $fname]
+  set fname2 [file join [file dirname $fname] $name2]
+  if {[catch {file rename $fname $fname2} err]} {
+    alited::msg ok err $err -text 1 -w 40 -h {5 7}
+    return
+  }
+  set currTID [alited::bar::CurrentTabID]
+  foreach tab [alited::bar::BAR listTab] {
+    set TID [lindex $tab 0]
+    set fname1 [alited::bar::FileName $TID]
+    if {$fname1 eq $fname} {
+      RenameFile $TID $fname2 no
+      break
+    }
+    set fsplit1 [file split $fname1]
+    if {[string first $fsplit $fsplit1]==0} {
+      set fname1 [file join $fname2 {*}[lrange $fsplit1 [llength $fsplit] end]]
+      RenameFile $TID $fname1 no
+    }
+  }
+  alited::bar::BAR draw
+  RecreateFileTree
+}
+#_______________________
+
+proc file::RenameFileInTree {{geo ""}} {
+  # Renames a current file in a file tree.
+  #   geo - geometry for dialogue
+
+  namespace upvar ::alited al al obPav obPav obDl2 obDl2
+  set wtree [$obPav Tree]
+  set ID [$wtree selection]
+  if {[llength $ID]!=1} {
+    alited::Message [msgcat::mc {Select one file in the tree.}] 4
+    return
+  }
+  set name [$wtree item $ID -text]
+  set fname [lindex [$wtree item $ID -values] 1]
+  lassign [$obDl2 input {} $al(MC,renamefile) [list \
+    ent "{} {} {-w 32}" "$name"] \
+    -head [msgcat::mc {File name:}] {*}$geo] res name2
+  set name2 [string trim $name2]
+  if {$res && $name2 ne {} && $name2 ne $name} {
+    DoRenameFileInTree $wtree $ID $fname $name2
+  }
 }
 #_______________________
 
@@ -338,10 +397,11 @@ proc file::NewFile {} {
 }
 #_______________________
 
-proc file::OpenFile {{fnames ""} {reload no}} {
+proc file::OpenFile {{fnames ""} {reload no} {islist no}} {
   # Handles "Open file" menu item.
   #   fnames - file name (if not set, asks for it)
   #   reload - if yes, loads the file even if it has a "strange" extension
+  #   islist - if yes, *fnames* is a file list
   # Returns the file's tab ID if it's loaded, or {} if not loaded.
 
   namespace upvar ::alited al al obPav obPav
@@ -351,8 +411,8 @@ proc file::OpenFile {{fnames ""} {reload no}} {
     set chosen yes
     set fnames [$obPav chooser tk_getOpenFile alited::al(filename) -multiple 1 \
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
-    set fnames [lreverse $fnames]
-  } else {
+    set fnames [lsort -decreasing $fnames]
+  } elseif {!$islist} {
     set fnames [list $fnames]
   }
   set TID {}
@@ -381,7 +441,6 @@ proc file::OpenFile {{fnames ""} {reload no}} {
           }
         }
         # open new tab
-        [$obPav Tree] selection set {}
         set tab [alited::bar::UniqueListTab $fname]
         set TID [alited::bar::InsertTab $tab [FileStat $fname]]
         alited::file::AddRecent $fname
@@ -391,6 +450,7 @@ proc file::OpenFile {{fnames ""} {reload no}} {
   if {$TID ne {} && $TID ne [alited::bar::CurrentTabID]} {
     alited::bar::BAR $TID show
   }
+  RecreateFileTree
   return $TID
 }
 #_______________________
@@ -545,6 +605,7 @@ proc file::RecreateFileTree {} {
 
   namespace upvar ::alited al al obPav obPav
   if {!$al(TREE,isunits)} {
+    [$obPav Tree] selection set {}
     catch {after cancel $al(_AFT_RECR_)}
     set al(_AFT_RECR_) [after 100 ::alited::tree::RecreateTree]
   }
@@ -559,12 +620,13 @@ proc file::OpenOfDir {dname} {
   set msg [string map [list %f [file tail $dname]] $msg]
   if {[alited::msg okcancel warn $msg NO]} {
     if {![catch {set flist [glob -directory $dname *]}]} {
-      foreach fname [lsort -decreasing $flist] {
+      set fnames [list]
+      foreach fname $flist {
         if {[file isfile $fname] && [IsTcl $fname]} {
-          OpenFile $fname
+          lappend fnames $fname
         }
       }
-      alited::tree::UpdateFileTree
+      OpenFile $fnames no yes
     }
   }
 }

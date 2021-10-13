@@ -1643,8 +1643,8 @@ oo::class create ::apave::APave {
       } else {
         set dn [file dirname $fn]
         set fn [file tail $fn]
-        set args [::apave::removeOptions $args -initialdir]
       }
+      set dn [::apave::extractOptions args -initialdir $dn]
       set args "-initialfile \"$fn\" -initialdir \"$dn\" $parent $args"
       incr isfilename
     } elseif {$nchooser eq "tk_chooseDirectory"} {
@@ -2828,7 +2828,7 @@ oo::class create ::apave::APave {
           if {[string index $st1 0] in [list \t { }]} {
             # if space(s) are at the right, remove them at cutting
             set n1 [my leadingSpaces $st1]
-            $w delete [$w index $idx1] [$w index "$idx1 +$n1 char"]
+            $w delete $idx1 [$w index "$idx1 +$n1 char"]
           } elseif {$ch2 eq "\{" && $st1 eq {}} {
             # indent + closing brace
             if {$st2 eq {}} {
@@ -2846,11 +2846,13 @@ oo::class create ::apave::APave {
             set nchars [my leadingSpaces $st2]
             set indent [string range $st2 0 [expr {$nchars-1}]]
           }
-          if {$islist} {
+          if {$islist && ![string match *.0 $idx1] && \
+          [string trim [$w get "$idx1 linestart" $idx1]] ne {}} {
+            # a new line supplied with "list-like pattern"
             set indent "$indent$ch1"
             incr nchars 2
           }
-          $w insert [$w index $idx1] \n$indent
+          $w insert $idx1 \n$indent
           ::tk::TextSetCursor $w [$w index "$idx2 linestart +$nchars char"]
           return -code break
         }
@@ -3158,9 +3160,10 @@ oo::class create ::apave::APave {
       set lst1 [lindex $lwidgets $i]
       if {[my Replace_Tcl i lwlen lwidgets {*}$lst1] ne ""} {incr i}
     }
-    set lwlen [llength $lwidgets]
     # firstly, normalize all names that are "subwidgets": .lab instead fra.lab etc
-    for {set i $lwlen} {$i} {incr i -1} {
+    set i [set lwlen [llength $lwidgets]]
+    while {$i>1} {
+      incr i -1
       set lst1 [lindex $lwidgets $i]
       lassign $lst1 name neighbor
       lassign [my NormalizeName name i lwidgets] name wname
@@ -3385,8 +3388,15 @@ oo::class create ::apave::APave {
     if {[set ontop [::apave::getOption -ontop {*}$args]] eq {}} {
       set ontop no
       catch {
-        set wpar [winfo parent $win]
-        set ontop [wm attributes $wpar -topmost]
+        set ontop [wm attributes [winfo parent $win] -topmost]
+      }
+      if {!$ontop} {
+        # find if a window child of "." is topmost
+        # if so, let this one be topmost too
+        foreach w [winfo children .] {
+          catch {set ontop [wm attributes $w -topmost]}
+          if {$ontop} break
+        }
       }
     }
     if {[set modal [::apave::getOption -modal {*}$args]] eq {}} {

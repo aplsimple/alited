@@ -14,6 +14,7 @@ namespace eval ::alited {
   set al(ED,sp1) 1          ;# -spacing1 option of texts
   set al(ED,sp2) 0          ;# -spacing2 option of texts
   set al(ED,sp3) 0          ;# -spacing3 option of texts
+  set al(ED,TclKeyWords) {} ;# user's key words for Tcl
   set al(ED,CKeyWords) {}   ;# user's key words for C/C++
   set al(ED,gutterwidth) 5  ;# gutter's windth in chars
   set al(ED,guttershift) 3  ;# space between gutter and text
@@ -293,6 +294,7 @@ proc ini::ReadIniOptions {nam val} {
     spacing1      {set al(ED,sp1) $val}
     spacing2      {set al(ED,sp2) $val}
     spacing3      {set al(ED,sp3) $val}
+    TclKeyWords   {set al(ED,TclKeyWords) $val}
     CKeyWords     {set al(ED,CKeyWords) $val}
     clrDark       {set al(ED,Dark) $val}
     save_onadd - save_onclose - save_onsave {set al(INI,$nam) $val}
@@ -576,6 +578,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "spacing2=$al(ED,sp2)"
   puts $chan "spacing3=$al(ED,sp3)"
   puts $chan "CKeyWords=$al(ED,CKeyWords)"
+  puts $chan "TclKeyWords=$al(ED,TclKeyWords)"
   puts $chan "cursorwidth=$al(CURSORWIDTH)"
   set clrnams [::hl_tcl::hl_colorNames]
   foreach lng {{} C} {

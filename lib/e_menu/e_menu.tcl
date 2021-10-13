@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.5b10"
+  variable em_version "e_menu 3.4.5.3"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -625,7 +625,8 @@ proc ::em::checkForShell {rsel} {
     set res yes
   }
   if {[string first "tclsh " $sel]==0 || [string first "wish " $sel]==0} {
-    set sel [append _ [Tclexe] [string range $sel [string first { } $sel] end]]
+    set tclexe [string map {wish.exe tclsh.exe} [Tclexe]]
+    set sel [append _ $tclexe [string range $sel [string first { } $sel] end]]
   }
   return $res
 }

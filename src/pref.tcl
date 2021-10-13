@@ -69,9 +69,6 @@ namespace eval pref {
   # bar/e_menu full info
   variable em_inf; array set em_inf [list]
 
-  # list of menus' content
-  variable em_Menus [list]
-
   # list of e_menu icons
   variable em_Icons [list]
 
@@ -140,7 +137,6 @@ proc pref::fetchVars {} {
     variable em_ico
     variable em_sep
     variable em_inf
-    variable em_Menus
     variable em_Icons
     variable listIcons
     variable listMenus
@@ -292,6 +288,8 @@ proc pref::Ok {args} {
     if {![string is integer -strict $al(INI,CS)]} {set al(INI,CS) -1}
     set al(EM,CS)  [GetCS 2]
     if {![string is integer -strict $al(EM,CS)]} {set al(EM,CS) -1}
+    set al(ED,TclKeyWords) [[$obDl2 TexTclKeys] get 1.0 {end -1c}]
+    set al(ED,TclKeyWords) [string map [list \n { }] $al(ED,TclKeyWords)]
     set al(ED,CKeyWords) [[$obDl2 TexCKeys] get 1.0 {end -1c}]
     set al(ED,CKeyWords) [string map [list \n { }] $al(ED,CKeyWords)]
     set al(BACKUP) [string trim $al(BACKUP)]
@@ -646,7 +644,7 @@ proc pref::Edit_Tab2 {} {
     {FraTab2 v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fraTab2.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "Tcl files' extensions:"}}
-    {.entExt .labExt L 1 1 {-st sw -pady 3} {-tvar alited::al(TclExtensions) -w 30}}
+    {.entExt .labExt L 1 1 {-st swe -pady 3} {-tvar alited::al(TclExtensions) -w 30}}
     {.LabCOM .labExt T 1 1 {-st w -pady 3 -padx 3} {-t "Color of Tcl commands:"}}
     {.clrCOM .labCOM L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,clrCOM) -w 20}}
     {.labCOMTK .labCOM T 1 1 {-st w -pady 3 -padx 3} {-t "Color of Tk commands:"}}
@@ -665,6 +663,10 @@ proc pref::Edit_Tab2 {} {
     {.clrBRA .labBRA L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,clrBRA) -w 20}}
     {.seh .labBRA T 1 2 {-pady 3}}
     {.but .seh T 1 1 {-st w} {-t Default -com alited::pref::TclSyntax_Default}}
+    {.seh2 .but T 1 2 {-pady 10}}
+    {fraTab2.scf.fra2 .seh2 T 1 2 {-st nsew}}
+    {.labAddKeys - - 1 1 {-st nw -pady 3} {-t "Your commands:"}}
+    {.TexTclKeys .labAddKeys L 1 1 {-st new} {-h 7 -w 55 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
   }
 }
 #_______________________
@@ -677,7 +679,7 @@ proc pref::Edit_Tab3 {} {
     {FraTab3 v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fraTab3.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "C/C++ files' extensions:"}}
-    {.entExt .labExt L 1 2 {-st sw -pady 3} {-tvar alited::al(ClangExtensions) -w 30}}
+    {.entExt .labExt L 1 1 {-st swe -pady 3} {-tvar alited::al(ClangExtensions) -w 30}}
     {.LabCOM2 .labExt T 1 1 {-st w -pady 3 -padx 3} {-t "Color of C key words:"}}
     {.clrCOM2 .labCOM2 L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrCOM) -w 20}}
     {.labCOMTK2 .labCOM2 T 1 1 {-st w -pady 3 -padx 3} {-t "Color of C++ key words:"}}
@@ -699,7 +701,7 @@ proc pref::Edit_Tab3 {} {
     {.seh2 .but T 1 2 {-pady 10}}
     {fraTab3.scf.fra2 .seh2 T 1 2 {-st nsew}}
     {.labAddKeys - - 1 1 {-st nw -pady 3} {-t "Your key words:"}}
-    {.TexCKeys .labAddKeys L 1 1 {-st new} {-h 7 -w 36 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
+    {.TexCKeys .labAddKeys L 1 1 {-st new} {-h 7 -w 48 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
   }
 }
 #_______________________
@@ -1116,24 +1118,6 @@ proc pref::Runs_Tab {} {
     incr icr
   }
   EmSeparators no
-  # get a full list of actions contained in all e_menu's menus
-  set em_Menus {}
-  set curmenu menu.mnu
-  set curlev 0
-  set listMenus [alited::tool::EM_AllStructure $curmenu]
-  foreach mit $listMenus {
-    lassign $mit lev mnu hk item
-    set item [string map [list \{ \\\{ \} \\\} \" \\\" \$ \\\$] $item]
-    if {$lev>$curlev} {
-      append em_Menus " \{$mnu"
-    } elseif {$lev<$curlev} {
-      append em_Menus "\} \"$item\""
-    } else {
-      append em_Menus " \"$item\""
-    }
-    set curlev $lev
-  }
-  append em_Menus [string repeat \} $curlev]
   # get a layout of "bar/menu" tab
   return {
     {v_ - - 1 1}
@@ -1317,6 +1301,7 @@ proc pref::_create {tab} {
     $wtxt insert end [::apave::readTextFile $fnotes]
   }
   $wtxt edit reset; $wtxt edit modified no
+  [$obDl2 TexTclKeys] insert end $al(ED,TclKeyWords)
   [$obDl2 TexCKeys] insert end $al(ED,CKeyWords)
   if {$tab ne {}} {
     switch -exact $tab {

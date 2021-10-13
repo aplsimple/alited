@@ -543,7 +543,8 @@ namespace eval ttk::theme::forest-light {
 
         ttk::style element create Treeheading.cell image \
             [list $I(tree-basic) \
-                pressed $I(tree-pressed)
+                pressed $I(tree-basic) \
+                active $I(tree-pressed) \
             ] -border 5 -padding 6 -sticky nsew
 
         ttk::style element create Treeitem.indicator image \

@@ -36,7 +36,7 @@ namespace eval ::alited {
     set al(MC,clallright)  [msgcat::mc {... All at Right}]
     set al(MC,pref)        [msgcat::mc Preferences]
     set al(MC,pref...)     [msgcat::mc Preferences...]
-    set al(MC,notrecomm)   [msgcat::mc {Not recommended!}]
+    set al(MC,notrecomm)   [msgcat::mc "Not recommended for projects\nwith large files (>2000 LOC)!"]
     set al(MC,restart)     [msgcat::mc Restart]
     set al(MC,quit)        [msgcat::mc Quit]
     set al(MC,indent)      [msgcat::mc Indent]
@@ -69,9 +69,10 @@ namespace eval ::alited {
     set al(MC,introln2)    [msgcat::mc {Can't touch the first %n lines.}]
     set al(MC,favorites)   [msgcat::mc Favorites]
     set al(MC,lastvisit)   [msgcat::mc {Last Visited}]
-    set al(MC,addfavor)    [msgcat::mc "Add \"%n\" of %f\nto the favorites?"]
-    set al(MC,addexist)    [msgcat::mc "Item \"%n\" of %f\nis already in the favorites."]
-    set al(MC,delfavor)    [msgcat::mc "Remove \"%n\" of %f\nfrom the favorites?"]
+    set al(MC,addfavor)    [msgcat::mc "Add \"%n\" of %f\nto Favorites?"]
+    set al(MC,addexist)    [msgcat::mc "Item \"%n\" of %f\nis already in Favorites."]
+    set al(MC,delfavor)    [msgcat::mc "Remove \"%n\" of %f\nfrom Favorites?"]
+    set al(MC,notfavor)    [msgcat::mc "\"%n\" unit of %f\nis not in Favorites."]
     set al(MC,selfavor)    [msgcat::mc "Click \"%t\""]
     set al(MC,copydecl)    [msgcat::mc {Copy Declaration}]
     set al(MC,openofdir)   [msgcat::mc "Open All Tcl Files of \"%n\""]
@@ -86,6 +87,7 @@ namespace eval ::alited {
     set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
     set al(MC,beforerun)   [msgcat::mc {Command before "Run"}]
     set al(MC,locale)      [msgcat::mc "Mostly this is a country code,\nfor example: ru, ua, cz."]
+    set al(MC,noask)       [msgcat::mc {Don't ask anymore}]
 
     ## _ templates _ ##
     set al(MC,tpl)         [msgcat::mc Templates]
@@ -145,8 +147,9 @@ namespace eval ::alited {
     set al(MC,errcopy)     [msgcat::mc "Can't backup \"%f\" to\n\"%d\"!\n\nDelete it anyway?"]
     set al(MC,removed)     [msgcat::mc "\"%f\" removed to \"%d\""]
     set al(MC,nottoopen)   [msgcat::mc "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?"]
+    set al(MC,renamefile)  [msgcat::mc {Rename File}]
 
-  ## _ checking ini directory _ ##
+    ## _ checking ini directory _ ##
     set al(MC,chini1)      [msgcat::mc {Choosing Directory for Settings}]
     set al(MC,chini2)      [msgcat::mc "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n"]
     set al(MC,chini3)      [msgcat::mc {Choose a directory}]

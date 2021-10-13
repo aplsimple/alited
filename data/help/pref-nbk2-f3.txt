@@ -8,4 +8,4 @@
  for highlighting.
 
  At need, you can enter your own key words to highlight,
- in the text field.
+ in the text field. They are highlighted as C++ ones.

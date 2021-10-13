@@ -535,14 +535,15 @@ namespace eval ttk::theme::azure-light {
 
         ttk::style element create Treeheading.cell \
             image [list $I(tree-basic) \
-                pressed $I(tree-pressed)
-            ] -border 5 -padding 4 -sticky ewns
+                pressed $I(tree-basic) \
+                active $I(tree-pressed)
+            ] -border 5 -padding 4 -sticky nsew
 
         ttk::style element create Treeitem.indicator \
             image [list $I(right) \
                 user2 $I(empty) \
                 user1 $I(down) \
-            ] -width 26 -sticky {}
+            ] -width 17 -sticky {}
 
 #        ttk::style configure Treeview -background $colors(-bg)
         ttk::style configure Treeview.Item -padding {2 0 0 0}

@@ -71,7 +71,12 @@ proc tree::OpenFile {{ID ""}} {
     }
     lassign [$wtree item $ID -values] -> fname isfile
     if {$isfile} {
-      alited::file::OpenFile $fname
+      if {[set TID [alited::bar::FileTID $fname]] eq {}} {
+        alited::file::OpenFile $fname
+      } else {
+        alited::bar::BAR $TID show
+      }
+      alited::bar::BAR draw
       alited::tree::UpdateFileTree
     }
   }
@@ -255,6 +260,7 @@ proc tree::Create {} {
     alited::tree::TooltipOff
     alited::tree::DestroyMoveWindow yes
   }
+  bind $wtree <F2> {alited::file::RenameFileInTree}
   if {$al(TREE,isunits)} {
     CreateUnitsTree $TID $wtree
   } else {
@@ -521,6 +527,11 @@ proc tree::ShowPopupMenu {ID X Y} {
   $popm add command {*}[$obPav iconA none] -label $m3 \
     -command "::alited::tree::DelItem $ID" -image alimg_delete
   if {$al(TREE,isunits)} {
+    if {$al(FAV,IsFavor)} {
+      $popm add separator
+      $popm add command {*}[$obPav iconA heart] -label $al(MC,favoradd) \
+        -command ::alited::favor::AddFromTree
+    }
     if {$isunit} {
       $popm add separator
       $popm add command {*}[$obPav iconA none] -label $al(MC,copydecl) \
@@ -529,6 +540,9 @@ proc tree::ShowPopupMenu {ID X Y} {
   } else {
     if {$isfile} {set fname [file dirname $fname]}
     set sname [file tail $fname]
+    $popm add command {*}[$obPav iconA change] \
+      -label $al(MC,renamefile) -accelerator F2 \
+      -command {::alited::file::RenameFileInTree {-geometry pointer+10+-100}}
     $popm add separator
     set msg [string map [list %n $sname] $al(MC,openofdir)]
     $popm add command {*}[$obPav iconA OpenFile] -label $msg \
@@ -546,7 +560,7 @@ proc tree::ShowPopupMenu {ID X Y} {
     }
   }
   bind $popm <FocusIn> "$wtree tag add tagBold $ID"
-  bind $popm <FocusOut> "$wtree tag remove tagBold $ID; $addsel"
+  bind $popm <FocusOut> "catch {$wtree tag remove tagBold $ID; $addsel}"
   $obPav themePopup $popm
   tk_popup $popm $X $Y
 }
@@ -579,15 +593,15 @@ proc tree::ButtonPress {but x y X Y} {
     {1} {
       set al(movID) $ID
       set al(movWin) .tritem_move
+      set msec [clock milliseconds]
       if {$al(TREE,isunits)} {
         NewSelection $ID
       } else {
-        set msec [clock milliseconds]
         if {[info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<400}]} {
           OpenFile $ID
         }
-        set al(_MSEC) $msec
       }
+      set al(_MSEC) $msec
     }
   }
 }
@@ -623,7 +637,9 @@ proc tree::ButtonRelease {but s x y X Y} {
   set wtree [$obPav Tree]
   set ID [$wtree identify item $x $y]
   DestroyMoveWindow no
-  if {$s & 7} {
+  set msec [clock milliseconds]
+  if {([info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<400}]) \
+  || ($s & 7)} {
     set al(movWin) {}
     return
   }

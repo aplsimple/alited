@@ -1,10 +1,36 @@
 # LAST CHANGES:
 
 
+Version `1.0.5 (30 Oct'21)`
+
+  - TODO  : BUGFIX: demo 2.Units: favorites not passed to new project - FIX the demo
+  - TODO  : NEW   : basic .md highlighting: lists, titles, quotes
+  - TODO  : NEW   : more integrated with tclkits
+  - TODO  : CHANGE: save unit's position at any switching to another unit/file
+            (except for navigating inside a text, but including mouse clicks)
+  - TODO  : CHANGE: revise help & doc
+
+  - BUGFIX: demo 1.Start   ~01:10 : 'All #1 1-0' in tip of 'Row', if 'No name'
+  - BUGFIX: demo 3.Project ~10:00 : not see for a current proc
+  - BUGFIX: switching (popup menu) from file to unit tree if the latter is one line
+  - BUGFIX: no updating icons at "Replace all in session"
+  - BUGFIX: no updating file tree at opening files from 'File / Open'
+  - BUGFIX: pressing Enter if current & next lines begin with *, -, #
+  - BUGFIX: false movings in the tree (no Ctrl+click, just click & move)
+  - BUGFIX: false saving modified files at "Tcl/Tk help"
+  - NEW   : "Rename file" from the tree
+  - NEW   : selected units to be added to Favorites (popup menu)
+  - NEW   : "Don't ask again" checkbox at adding to Favorites
+  - NEW   : "Your commands" for Tcl syntax
+  - CHANGE: faster switching tabs
+  - CHANGE: faster opening 'Preferences'
+  - CHANGE: faster opening a file from the file tree
+  - CHANGE: faster opening 'All Tcl Files' from the file tree
+  - CHANGE: hl_tcl, apave, e_menu packages
+
+
 Version `1.0.4 (29 Sep'21)`
 
-  - TODO  : save unit's position at any switching to another unit/file
-            (except for navigating inside a text, but including mouse clicks)
   - BUGFIX: command autocompletion at 1st column failed
   - BUGFIX: e_menu could fail due to font2's multiple words
   - BUGFIX: Default buttons of Preferences didn't update colors properly

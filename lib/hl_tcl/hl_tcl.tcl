@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.22
+package provide hl_tcl 0.9.26
 
 # ______________________ Common data ____________________ #
 
@@ -37,7 +37,7 @@ namespace eval ::hl_tcl {
     pkg::create tcl::prefix \
     http::config http::geturl http::formatQuery http::reset http::wait \
     http::status http::size http::code http::ncode http::meta http::data \
-    http::error http::cleanup http::register http::unregister \
+    http::error http::cleanup http::register http::unregister * \
   ]]
 
   # Ttk commands
@@ -57,25 +57,28 @@ namespace eval ::hl_tcl {
   ]
 
   # Tk/ttk commands united
-  set data(CMD_TK) [lsort [concat $data(CMD_TTK) $data(CMD_TK2) [list \
+  set data(CMD_TK) [concat $data(CMD_TTK) $data(CMD_TK2) [list \
     button entry checkbutton radiobutton label menubutton menu wm winfo bind \
     grid pack event bell text canvas frame listbox grab scale scrollbar \
     labelframe focus font bindtags image selection toplevel destroy \
     option options spinbox bitmap photo keysyms send lower clipboard colors \
     console message cursors panedwindow place raise \
-  ]]]
+  ]]
 
   # allowed edges of string (as one and only)
-  set data(S_LEFT) [list "\{" "\["]
-  set data(S_RIGHT) [list "\}" "\]"]
+  set data(S_LEFT) [list \{ \[]
+  set data(S_RIGHT) [list \} \]]
   # allowed edges of string (as one or both)
-  set data(S_SPACE) [list "" " " "\t" ";"]
-  set data(S_SPACE2) [concat $data(S_SPACE) [list "\{"]]
-  set data(S_BOTH) [concat $data(S_SPACE) [list "\"" "="]]
+  set data(S_SPACE) [list {} { } \t {;}]
+  set data(S_SPACE2) [concat $data(S_SPACE) [list \{]]
+  set data(S_BOTH) [concat $data(S_SPACE) [list \" \}]]
 
-  set data(RE0) {(^|[\{\}\[;])+\s*([:\w]+)([\s\}\];]|$){1}}
-  set data(RE1) {([\{\}\[;])+\s*([:\w]+)([\s\}\];]|$){1}}
+  set data(RE0) {(^|[\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
+  set data(RE1) {([\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
   set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})+}
+
+  set data(LBR) {\{(\[}
+  set data(RBR) {\})\]}
   }
 }
 
@@ -168,7 +171,7 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
         $txt tag add tagCOM "$ln.$pri +$i1 char" "$ln.$pri +$i2 char"
       } elseif {[lsearch -exact -sorted $data(PROC_TCL) $c]>-1} {
         $txt tag add tagPROC "$ln.$pri +$i1 char" "$ln.$pri +$i2 char"
-      } elseif {[lsearch -exact -sorted $data(CMD_TK) $c]>-1} {
+      } elseif {[lsearch -exact -sorted $data(CMD_TK_EXP) $c]>-1} {
         $txt tag add tagCOMTK "$ln.$pri +$i1 char" "$ln.$pri +$i2 char"
       }
     }
@@ -401,7 +404,7 @@ proc ::hl_tcl::my::CountQSH {txt ln} {
 
   set ln [expr {int($ln)}]
   set st [$txt get $ln.0 $ln.end]
-  return [list [CountChar $st "\""] [CountChar $st "\\"] [CountChar $st #]]
+  return [list [CountChar $st \"] [CountChar $st \\] [CountChar $st #]]
 }
 #_____
 
@@ -440,7 +443,7 @@ proc ::hl_tcl::my::MemPos1 {txt {donorm yes} {K ""} {s ""}} {
   # This fixes an issue with text cursor: less width at 0th column.
 
   variable data
-  if {$K eq "Home" && [string is digit -strict $s] && \
+  if {$K eq {Home} && [string is digit -strict $s] && \
   [expr {$s & 4}]==0 && [expr {$s & 1}]==0} {
     # Ctrl-Home & Shift-Home are passed
     set p1 [$txt index insert]
@@ -458,7 +461,7 @@ proc ::hl_tcl::my::MemPos1 {txt {donorm yes} {K ""} {s ""}} {
   }
   set insLC [$txt index insert]
   lassign [split $insLC .] L C
-  if {$data(_INSPOS_,$txt) eq ""} {
+  if {$data(_INSPOS_,$txt) eq {}} {
     set L2 [set C2 0]
   } else {
     lassign [split $data(_INSPOS_,$txt) .] L2 C2
@@ -472,6 +475,7 @@ proc ::hl_tcl::my::MemPos1 {txt {donorm yes} {K ""} {s ""}} {
   }
   return $insLC
 }
+#_____
 
 proc ::hl_tcl::my::MemPos {txt {doit no}} {
   # Remembers the state of current line.
@@ -648,10 +652,6 @@ proc ::hl_tcl::my::InRange {p1 p2 l {c -1}} {
   return [expr { \
     ($l>=$l1 && $l<$l2 && $c>=$c1) || ($l>$l1 && $l<=$l2 && $c<=$c2) ||
     ($l==$l1 && $l1==$l2 && $c>=$c1 && $c<=$c2) || ($l>$l1 && $l<$l2)}]
-  #set p [format "%09d%09d" $l $c]
-  #set p1 [format "%09d%09d" $l1 $c1]
-  #set p2 [format "%09d%09d" $l2 $c2]
-  #return [expr {$p>=$p1 && $p<=$p2}]
 }
 # doctest:
 #% ::hl_tcl::my::InRange 9.0 9.20 9.0
@@ -718,7 +718,7 @@ proc ::hl_tcl::my::LineState {txt tSTR tCMN l1} {
       set co1 [set co2 {}]
       while {$nl>1} {
         incr nl -1
-        if {[set line [$txt get $nl.0 $nl.end]] ne ""} {
+        if {[set line [$txt get $nl.0 $nl.end]] ne {}} {
           if {$co2 eq {}} {
             set co2 [$txt index "$nl.end -1 char"]
             if {[string length $line]>1} {
@@ -736,7 +736,7 @@ proc ::hl_tcl::my::LineState {txt tSTR tCMN l1} {
       set ch [$txt get $co2 "$co2 +1 chars"]
       set c [lindex [split [$txt index $co2] .] 1]
       if {![NotEscaped $line $c]} {set ch {}}
-      return [expr {$ch!="\"" && $f2 || $ch=="\"" && !$f1}]
+      return [expr {$ch ne {"} && $f2 || $ch eq {"} && !$f1}]
     }
     # is the end of line quoted?
     set line {}
@@ -751,7 +751,7 @@ proc ::hl_tcl::my::LineState {txt tSTR tCMN l1} {
     if {![NotEscaped $line $c]} {set ch {}}
     set f1 [expr {[SearchTag $tSTR [$txt index $i1]]!=-1}]
     set f2 [expr {[SearchTag $tSTR [$txt index "$i1 +1 chars"]]!=-1}]
-    return [expr {$ch!="\"" && $f1 || $ch=="\"" && !$f2}]
+    return [expr {$ch ne {"} && $f1 || $ch eq {"} && !$f2}]
   }
   return 0
 }
@@ -884,28 +884,27 @@ proc ::hl_tcl::my::HighlightBrackets {w} {
   # Highlights matching brackets if any.
   #   w - text widget's path
 
+  variable data
   set curpos [ShowCurrentLine $w]
   set curpos2 [$w index {insert -1 chars}]
   set ch [$w get $curpos]
-  set lbr "\{(\["
-  set rbr "\})\]"
-  set il [string first $ch $lbr]
-  set ir [string first $ch $rbr]
+  set il [string first $ch $data(LBR)]
+  set ir [string first $ch $data(RBR)]
   set txt [split [$w get 1.0 end] \n]
   if {$il>-1} {
     set brcpos [MatchedBrackets $txt $curpos \
-      [string index $lbr $il] [string index $rbr $il] 1]
+      [string index $data(LBR) $il] [string index $data(RBR) $il] 1]
   } elseif {$ir>-1} {
     set brcpos [MatchedBrackets $txt $curpos \
-      [string index $rbr $ir] [string index $lbr $ir] -1]
-  } elseif {[set il [string first [$w get $curpos2] $lbr]]>-1} {
+      [string index $data(RBR) $ir] [string index $data(LBR) $ir] -1]
+  } elseif {[set il [string first [$w get $curpos2] $data(LBR)]]>-1} {
     set curpos $curpos2
     set brcpos [MatchedBrackets $txt $curpos \
-      [string index $lbr $il] [string index $rbr $il] 1]
-  } elseif {[set ir [string first [$w get $curpos2] $rbr]]>-1} {
+      [string index $data(LBR) $il] [string index $data(RBR) $il] 1]
+  } elseif {[set ir [string first [$w get $curpos2] $data(RBR)]]>-1} {
     set curpos $curpos2
     set brcpos [MatchedBrackets $txt $curpos \
-      [string index $rbr $ir] [string index $lbr $ir] -1]
+      [string index $data(RBR) $ir] [string index $data(LBR) $ir] -1]
   } else {
     return
   }
@@ -935,20 +934,20 @@ proc ::hl_tcl::hl_readonly {txt {ro -1} {com2 ""}} {
   if {[info commands $newcom] eq ""} {rename $txt $newcom}
   set com "[namespace current]::my::Modified $txt"
   #if {$com2 ne ""} {append com " ; $com2"}
-  if {$ro} {proc ::$txt {args} "
-    switch -exact -- \[lindex \$args 0\] \{
-      insert \{$com2\}
-      delete \{$com2\}
-      replace \{$com2\}
-      default \{ return \[eval $newcom \$args\] \}
+  if {$ro} {proc ::$txt {args} " \
+    switch -exact -- \[lindex \$args 0\] \{ \
+      insert \{$com2\} \
+      delete \{$com2\} \
+      replace \{$com2\} \
+      default \{ return \[eval $newcom \$args\] \} \
     \}"
-  } else {proc ::$txt {args} "
-    switch -exact -- \[lindex \$args 0\] \{
-      delete \{$com {*}\$args\}
-      insert \{$com {*}\$args\}
-      replace \{$com {*}\$args\}
-    \}
-    set _res_ \[eval $newcom \$args\]
+  } else {proc ::$txt {args} " \
+    switch -exact -- \[lindex \$args 0\] \{ \
+      delete \{$com {*}\$args\} \
+      insert \{$com {*}\$args\} \
+      replace \{$com {*}\$args\} \
+    \} ; \
+    set _res_ \[eval $newcom \$args\] ; \
     return \$_res_"
   }
 }
@@ -975,8 +974,9 @@ proc ::hl_tcl::hl_init {txt args} {
     set args [lrange $args 1 end]
   }
   set ::hl_tcl::my::data(REG_TXT,$txt) {}  ;# disables Modified at changing the text
+  set ::hl_tcl::my::data(KEYWORDS,$txt) {}
   foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 \
-  -multiline 1 -seen 500 -plaintext no -insertwidth 2} {
+  -multiline 1 -seen 500 -plaintext no -insertwidth 2 -keywords {}} {
     if {[dict exists $args $opt]} {
       set val [dict get $args $opt]
     } elseif {$setonly} {
@@ -984,6 +984,9 @@ proc ::hl_tcl::hl_init {txt args} {
     }
     set ::hl_tcl::my::data([string toupper [string range $opt 1 end]],$txt) $val
   }
+  set ::hl_tcl::my::data(CMD_TK_EXP) [lsort [list \
+    {*}$::hl_tcl::my::data(CMD_TK) {*}$::hl_tcl::my::data(KEYWORDS,$txt)]]
+  unset ::hl_tcl::my::data(KEYWORDS,$txt)
   if {[dict exists $args -colors]} {
     set ::hl_tcl::my::data(COLORS,$txt) [dict get $args -colors]
     set ::hl_tcl::my::data(SETCOLORS,$txt) 1
@@ -1125,15 +1128,14 @@ proc ::hl_tcl::hl_line {txt} {
   #   txt - text's path
 
   if {!$::hl_tcl::my::data(PLAINTEXT,$txt)} {
-    set ln [expr {int([$txt index insert])}]
     set tSTR [$txt tag ranges tagSTR]
     set tCMN [$txt tag ranges tagCMN]
-    if {$ln==1} {
-      set currQtd 0
-    } else {
-      set currQtd [::hl_tcl::my::LineState $txt $tSTR $tCMN "$ln.0 -1 chars"]
-    }
-    ::hl_tcl::my::HighlightLine $txt $ln $currQtd
+    set ln0 [expr {int([$txt index insert])}]
+    set ln2 [expr {int([$txt index end])}]
+    set ln1 [expr {max (1,$ln0-1)}]
+    set ln2 [expr {min ($ln2,$ln0+1)}]
+    # update lines: previous, current, next 
+    ::hl_tcl::my::RunCoroAfterIdle $txt $ln1 $ln2 no
   }
   ::hl_tcl::my::MemPos $txt yes
   $txt configure -insertwidth $::hl_tcl::my::data(INSERTWIDTH,$txt)
