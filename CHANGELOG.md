@@ -3,13 +3,10 @@
 
 Version `1.0.5 (30 Oct'21)`
 
-  - TODO  : BUGFIX: demo 2.Units: favorites not passed to new project - FIX the demo
-  - TODO  : NEW   : basic .md highlighting: lists, titles, quotes
   - TODO  : NEW   : more integrated with tclkits
-  - TODO  : CHANGE: save unit's position at any switching to another unit/file
-            (except for navigating inside a text, but including mouse clicks)
-  - TODO  : CHANGE: revise help & doc
+  - TODO  : CHANGE: revised help & doc
 
+  - BUGFIX: default/classic/alt theme & dark CS: selected check/radio buttons' bg
   - BUGFIX: demo 1.Start   ~01:10 : 'All #1 1-0' in tip of 'Row', if 'No name'
   - BUGFIX: demo 3.Project ~10:00 : not see for a current proc
   - BUGFIX: switching (popup menu) from file to unit tree if the latter is one line
@@ -18,10 +15,18 @@ Version `1.0.5 (30 Oct'21)`
   - BUGFIX: pressing Enter if current & next lines begin with *, -, #
   - BUGFIX: false movings in the tree (no Ctrl+click, just click & move)
   - BUGFIX: false saving modified files at "Tcl/Tk help"
+  - BUGFIX: error at closing big files
+  - BUGFIX: sort order at "Open all Tcl files..."
+  - NEW   : ua.msg
+  - NEW   : "Open Selected File(s)" in tree's menu
+  - NEW   : flags for "Preferable Locale"
   - NEW   : "Rename file" from the tree
   - NEW   : selected units to be added to Favorites (popup menu)
   - NEW   : "Don't ask again" checkbox at adding to Favorites
   - NEW   : "Your commands" for Tcl syntax
+  - CHANGE: save/restore unit's position and last visited units at
+            switching unit/file, text change, mouse click (when unit tree is active)
+  - CHANGE: demo 2.Units
   - CHANGE: faster switching tabs
   - CHANGE: faster opening 'Preferences'
   - CHANGE: faster opening a file from the file tree

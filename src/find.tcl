@@ -943,7 +943,7 @@ proc find::_create {} {
       {But1 sev2 L 1 1 {-st wes} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
       {But2 but1 T 1 1 {-st wes} {-t "All in Text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
       {But3 but2 T 1 1 {-st wen} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
-      {seh_3 but3 T 2 1}
+      {seh_3 but3 T 2 1 {-st ews}}
       {but4 seh_3 T 1 1 {-st wes} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
       {but5 but4 T 1 1 {-st wes} {-t "All in Text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
       {But6 but5 T 1 1 {-st wen} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}

@@ -440,6 +440,63 @@ proc main::GotoLine {} {
   }
 }
 
+
+# ________________________ Event handlers _________________________ #
+
+proc main::SaveVisitInfo {wtxt {Key ""}} {
+  # Remembers data about current unit.
+  #   wtxt - text's path
+  #   Key - a key pressed (to check keypressings)
+
+  namespace upvar ::alited al al obPav obPav
+  # only if the tree is units'
+  if {!$al(TREE,isunits)} return
+  if {$Key ne {} && $Key in {Up Down Next Prior Home End}} return
+  set wtree [$obPav Tree]
+  # check for current text and line (line to be checked for performance)
+  set pos [$wtxt index insert]
+  set line [expr {int($pos)}]
+  if {$wtxt ne $al(CURRUNIT,wtxt) || (
+  ($line < $al(CURRUNIT,line1) || $line > $al(CURRUNIT,line2)))
+  } then {
+    # if current unit's info changed,
+    # save it and update "Last Visited" list
+    lassign [alited::tree::CurrentItemByLine {} 1] itemID - - - name \
+      al(CURRUNIT,line1) al(CURRUNIT,line2)
+    # save a new unit in "Last Visited"
+    set header [alited::unit::GetHeader $wtree $itemID]
+    alited::favor::LastVisited [$wtree item $itemID] $header
+    # at last, save current info (lines saved above)
+    set al(CURRUNIT,wtxt) $wtxt
+    set al(CURRUNIT,itemID) $itemID
+    set al(CURRUNIT,line) $line
+    set selID [$wtree selection]
+    if {[llength $selID]<2 && $selID ne $itemID} {
+      $wtree selection set $itemID
+      $wtree see $itemID
+      $wtree tag add tagSel $itemID
+    }
+    set TID [alited::bar::CurrentTabID]
+    foreach it $al(_unittree,$TID) {
+      set treeID [alited::tree::NewItemID [incr iit]]
+      lassign $it lev leaf fl1 title l1 l2
+      if {$name eq [alited::tree::UnitTitle $title $l1 $l2]} {
+        set al(CPOS,$TID,$header) [expr {$pos-$l1}]
+        break
+      }
+    }
+  }
+}
+#_______________________
+
+proc main::AfterUndoRedo {} {
+  # Actions after undo/redo.
+
+  HighlightLine
+  after idle alited::main::UpdateUnitTree
+}
+#_______________________
+
 # ________________________ GUI _________________________ #
 
 proc main::ShowHeader {{doit no}} {
@@ -506,8 +563,10 @@ proc main::BindsForText {TID wtxt} {
   bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
   bind $wtxt <Control-Tab> {::alited::bar::ControlTab ; break}
   bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}
-  bind $wtxt <<Undo>> {+ alited::main::HighlightLine; after idle alited::main::UpdateUnitTree}
-  bind $wtxt <<Redo>> {+ alited::main::HighlightLine; after idle alited::main::UpdateUnitTree}
+  bind $wtxt <ButtonRelease-1> "+ alited::main::SaveVisitInfo $wtxt"
+  bind $wtxt <KeyRelease> "+ alited::main::SaveVisitInfo $wtxt %K"
+  bind $wtxt <<Undo>> {+ alited::main::AfterUndoRedo}
+  bind $wtxt <<Redo>> {+ alited::main::AfterUndoRedo}
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action
   alited::keys::BindKeys $wtxt template

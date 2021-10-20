@@ -111,7 +111,8 @@ proc tool::DatePicker {} {
 proc tool::Loupe {} {
   # Calls a screen loupe.
 
-  alited::Run [file join $::alited::PAVEDIR pickers color aloupe aloupe.tcl]
+  alited::Run [file join $::alited::PAVEDIR pickers color aloupe aloupe.tcl] \
+    -locale $alited::al(LOCAL)
 }
 #_______________________
 

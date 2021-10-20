@@ -155,6 +155,14 @@ namespace eval ::alited {
   set al(matchSBL) {}
   set al(wordonlySBL) 0
   set al(caseSBL) 1
+
+  # info about current unit
+  set al(CURRUNIT,line) 0
+  set al(CURRUNIT,line1) 0
+  set al(CURRUNIT,line2) 0
+  set al(CURRUNIT,wtxt) {}
+  set al(CURRUNIT,itemID) {}
+
 }
 
 # ________________________ Variables _________________________ #
@@ -948,7 +956,10 @@ proc ini::InitFonts {} {
   if {$al(LOCAL) ni {en {}}} {
     # load localized messages
     msgcat::mcload $alited::MSGSDIR
+    msgcat::mclocale $al(LOCAL)
     alited::msgcatMessages
+  } else {
+    msgcat::mclocale en_us
   }
 }
 #_______________________

@@ -85,9 +85,11 @@ namespace eval ::alited {
     set al(MC,Col:)        [msgcat::mc { Col: }]
     set al(MC,Item)        [msgcat::mc Item]
     set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
-    set al(MC,beforerun)   [msgcat::mc {Command before "Run"}]
-    set al(MC,locale)      [msgcat::mc "Mostly this is a country code,\nfor example: ru, ua, cz."]
+    set al(MC,beforerun)   [msgcat::mc {Commands before "Run"}]
+    set al(MC,locale)      [msgcat::mc "This is a country code: ru, ua, cz...\nIn alited, \"en\" means American English."]
     set al(MC,noask)       [msgcat::mc {Don't ask anymore}]
+    set al(MC,hue)         [msgcat::mc {Makes colors darker .. lighter}]
+    set al(MC,maxbak)      [msgcat::mc {Maximum of backup copies per a file}]
 
     ## _ templates _ ##
     set al(MC,tpl)         [msgcat::mc Templates]

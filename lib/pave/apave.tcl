@@ -1179,8 +1179,12 @@ oo::class create ::apave::APave {
       siz {set widget ttk::sizegrip}
       spx - spX {
          if {$nam3 eq {spx}} {set widget "ttk::spinbox"} {set widget "spinbox"}
-         lassign [::apave::parseOptions $attrs -command "" -from "" -to "" ] cmd from to
-         set attrs "-onReturn {$::apave::UFF{$cmd} {$from} {$to}$::apave::UFF} $attrs"
+         lassign [::apave::parseOptions $attrs -command {} -from {} -to {}] cmd from to
+         lassign [::apave::extractOptions attrs -tip {} -tooltip {}] t1 t2
+         set t2 "$t1$t2"
+         if {$t2 ne {}} {set t2 "\n $t2"}
+         set t2 " $from .. $to $t2"
+         append attrs " -onReturn {$::apave::UFF{$cmd} {$from} {$to}$::apave::UFF} -tip {$t2}"
       }
       tbl { ;# tablelist
         package require tablelist
@@ -1850,6 +1854,7 @@ oo::class create ::apave::APave {
     lassign [::apave::extractOptions attrs1 -takefocus 0 -showcolor {} \
       -filetypes {} -initialdir {} -initialfile {} -defaultextension {} -multiple {}] \
       takefocus showcolor filetypes initialdir initialfile defaultextension multiple
+    lassign [::apave::extractOptions options1 -padx 0 -pady 0] padx pady
     set takefocus "-takefocus $takefocus"
     foreach atr {filetypes initialdir initialfile defaultextension multiple} {
       set val [set $atr]
@@ -1940,7 +1945,7 @@ oo::class create ::apave::APave {
       if {$entname ne {}} {append entname $tname}
       append attrs1 " -callF2 {.$field .buT}"
       append wpar " -tname $tname"
-      set entf [list $tname - - - - "pack -side left -expand 1 -fill x -in $inname" "$attrs1 $tvar"]
+      set entf [list $tname - - - - "pack -padx $padx -pady $pady -side left -expand 1 -fill x -in $inname" "$attrs1 $tvar"]
     }
     set icon folder
     foreach ic {OpenFile SaveFile font color date} {

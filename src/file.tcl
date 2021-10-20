@@ -290,7 +290,6 @@ proc file::DoRenameFileInTree {wtree ID fname name2} {
     alited::msg ok err $err -text 1 -w 40 -h {5 7}
     return
   }
-  set currTID [alited::bar::CurrentTabID]
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
     set fname1 [alited::bar::FileName $TID]
@@ -545,6 +544,7 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
   # Closes a file.
   #   TID - tab's ID
   #   checknew - if yes, checks if new file's tab should be created
+  # Returns 0, if a user selects "Cancel".
 
   namespace upvar ::alited al al obPav obPav
   set res 1
@@ -597,6 +597,21 @@ proc file::CloseAll {func args} {
   set al(closefunc) 0
   return [expr {[llength [alited::bar::BAR listFlag "m"]]==0}]
 }
+#_______________________
+
+proc file::OpenFiles {} {
+  # Opens files selected in the file tree.
+
+  namespace upvar ::alited al al obPav obPav
+  set wtree [$obPav Tree]
+  set fnames [list]
+  foreach selID [$wtree selection] {
+    lassign [$wtree item $selID -values] - fname isfile
+    if {$isfile} {lappend fnames $fname}
+  }
+  OpenFile [lsort -decreasing -dictionary $fnames] no yes
+}
+#_______________________
 
 # ________________________ File tree _________________________ #
 
@@ -621,7 +636,7 @@ proc file::OpenOfDir {dname} {
   if {[alited::msg okcancel warn $msg NO]} {
     if {![catch {set flist [glob -directory $dname *]}]} {
       set fnames [list]
-      foreach fname $flist {
+      foreach fname [lsort -decreasing -dictionary $flist] {
         if {[file isfile $fname] && [IsTcl $fname]} {
           lappend fnames $fname
         }

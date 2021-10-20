@@ -57,7 +57,7 @@ proc ::baltip::configure {args} {
         set my::ttdata($n1) $v
       }
       -force - -geometry - -index - -tag - -global {set $n1 $v}
-      default {return -code error "invalid option \"$n\""}
+      default {return -code error "baltip: invalid option \"$n\""}
     }
     if {$global && ($n ne "-global" || [llength $args]==2)} {
       foreach k [array names my::ttdata -glob on,*] {

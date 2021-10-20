@@ -372,74 +372,76 @@ proc ::hl_c::my::CoroModified {txt {i1 -1} {i2 -1} args} {
   #   txt - text widget's path
   # See also: Modified
 
-  variable data
-  # current line:
-  set ln [expr {int([$txt index insert])}]
-  # ending line:
-  set endl [expr {int([$txt index {end -1 char}])}]
-  # range of change:
-  if {$i1!=-1} {
-    set dl [expr {abs($i2-$i1)}]
-    set ln $i1
-  } else {
-    set dl [expr {abs(int($data(CUR_LEN,$txt)) - $endl)}]
-  }
-  # begin and end of changes:
-  set ln1 [set lno1 [expr {max(($ln-$dl),1)}]]
-  set ln2 [set lno2 [expr {min(($ln+$dl),$endl)}]]
-  lassign [CountQSH $txt $ln] cntq cnts ccmnt
-  # flag "highlight to the end":
-  set bf1 [expr {abs($ln-int($data(CURPOS,$txt)))>1 || $dl>1 \
-   || $cntq!=$data(CNT_QUOTE,$txt) \
-   || $ccmnt!=$data(CNT_COMMENT,$txt)}]
-  set bf2 [expr {$cnts!=$data(CNT_SLASH,$txt)}]
-  if {$bf1 && !$data(MULTILINE,$txt) || $bf2} {
-    set lnt1 $ln
-    set lnt2 [expr {$ln+1}]
-    while {$ln2<$endl && $lnt1<$endl && $lnt2<=$endl && ( \
-    [$txt get "$lnt1.end -1 char" $lnt1.end] in {\\ \"} ||
-    [$txt get "$lnt2.end -1 char" $lnt2.end] in {\\ \"}) || $bf2} {
-      incr lnt1 ;# next lines be handled too, if ended with "\\"
-      incr lnt2
-      incr ln2
-      set bf2 0
+  catch {
+    variable data
+    # current line:
+    set ln [expr {int([$txt index insert])}]
+    # ending line:
+    set endl [expr {int([$txt index {end -1 char}])}]
+    # range of change:
+    if {$i1!=-1} {
+      set dl [expr {abs($i2-$i1)}]
+      set ln $i1
+    } else {
+      set dl [expr {abs(int($data(CUR_LEN,$txt)) - $endl)}]
     }
-  }
-  set tSTR [$txt tag ranges tagSTR]
-  set tCMN [$txt tag ranges tagCMN]
-  if {$ln1==1} {
-    set currQtd -1
-  } else {
-    set currQtd [LineState $txt $tSTR $tCMN "$ln1.0 -1 chars"]
-  }
-  if {!$data(PLAINTEXT,$txt)} {
-    set lnseen 0
-    $txt tag add tagSTD $ln1.0 $ln2.end
-    while {$ln1<=$ln2} {
-      if {$ln1==$ln2} {
-        set bf2 [LineState $txt $tSTR $tCMN "$ln1.end +1 chars"]
+    # begin and end of changes:
+    set ln1 [set lno1 [expr {max(($ln-$dl),1)}]]
+    set ln2 [set lno2 [expr {min(($ln+$dl),$endl)}]]
+    lassign [CountQSH $txt $ln] cntq cnts ccmnt
+    # flag "highlight to the end":
+    set bf1 [expr {abs($ln-int($data(CURPOS,$txt)))>1 || $dl>1 \
+    || $cntq!=$data(CNT_QUOTE,$txt) \
+    || $ccmnt!=$data(CNT_COMMENT,$txt)}]
+    set bf2 [expr {$cnts!=$data(CNT_SLASH,$txt)}]
+    if {$bf1 && !$data(MULTILINE,$txt) || $bf2} {
+      set lnt1 $ln
+      set lnt2 [expr {$ln+1}]
+      while {$ln2<$endl && $lnt1<$endl && $lnt2<=$endl && ( \
+      [$txt get "$lnt1.end -1 char" $lnt1.end] in {\\ \"} ||
+      [$txt get "$lnt2.end -1 char" $lnt2.end] in {\\ \"}) || $bf2} {
+        incr lnt1 ;# next lines be handled too, if ended with "\\"
+        incr lnt2
+        incr ln2
+        set bf2 0
       }
-      RemoveTags $txt $ln1.0 $ln1.end
-      set currQtd [HighlightLine $txt $ln1 $currQtd]
-      if {$ln1==$ln2 && ($bf1 || $bf2!=$currQtd) && $data(MULTILINE,$txt)} {
-        set ln2 $endl  ;# run to the end
-      }
-      if {[incr lnseen]>$::hl_c::my::data(SEEN,$txt)} {
-        set lnseen 0
-        catch {after cancel $data(COROATFER,$txt)}
-        set data(COROATFER,$txt) [after idle after 1 [info coroutine]]
-        yield
-      }
-      incr ln1
     }
+    set tSTR [$txt tag ranges tagSTR]
+    set tCMN [$txt tag ranges tagCMN]
+    if {$ln1==1} {
+      set currQtd -1
+    } else {
+      set currQtd [LineState $txt $tSTR $tCMN "$ln1.0 -1 chars"]
+    }
+    if {!$data(PLAINTEXT,$txt)} {
+      set lnseen 0
+      $txt tag add tagSTD $ln1.0 $ln2.end
+      while {$ln1<=$ln2} {
+        if {$ln1==$ln2} {
+          set bf2 [LineState $txt $tSTR $tCMN "$ln1.end +1 chars"]
+        }
+        RemoveTags $txt $ln1.0 $ln1.end
+        set currQtd [HighlightLine $txt $ln1 $currQtd]
+        if {$ln1==$ln2 && ($bf1 || $bf2!=$currQtd) && $data(MULTILINE,$txt)} {
+          set ln2 $endl  ;# run to the end
+        }
+        if {[incr lnseen]>$::hl_c::my::data(SEEN,$txt)} {
+          set lnseen 0
+          catch {after cancel $data(COROATFER,$txt)}
+          set data(COROATFER,$txt) [after idle after 1 [info coroutine]]
+          yield
+        }
+        incr ln1
+      }
+    }
+    if {[set cmd $data(CMD,$txt)] ne {}} {
+      # run a command after changes done (its arguments are txt, ln1, ln2)
+      append cmd " $txt $lno1 $lno2 $args"
+      {*}$cmd
+    }
+    MemPos $txt
+    return
   }
-  if {[set cmd $data(CMD,$txt)] ne {}} {
-    # run a command after changes done (its arguments are txt, ln1, ln2)
-    append cmd " $txt $lno1 $lno2 $args"
-    {*}$cmd
-  }
-  MemPos $txt
-  return
 }
 #_____
 

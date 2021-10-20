@@ -75,7 +75,6 @@ namespace eval ::alited {
 
   ::msgcat::mcmset ru {
     {Select} {Выбор}
-    "\"%f\" wasn't saved.\n\nSave it?" "\"%f\" не сохранен.\n\nСохранить?"
     {Save as} {Сохранить как}
     {Files} {Файлы}
     {Line} {№ ст.}
@@ -138,6 +137,7 @@ namespace eval ::alited {
     {Tip File Info} {Данные о файлах}
     {Rename File} {Переименовать файл}
     {Select one file in the tree.} {Выберите один файл в списке.}
+    {Open Selected File(s)} {Открыть файл(ы)}
   }
 
   ## ________________________ Templates ________________________ ##
@@ -192,7 +192,7 @@ namespace eval ::alited {
     {Multi-line strings:} {Многострочные string:}
     {Unit lines per 1 red bar:} {Строк юнита на 1 красную полосу:}
     {List of files:} {Список файлов:}
-    "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n" "Вы можете\n  - добавить текущие закладки файлов в\n  - заменить текущими закладками\n  - удалить\n  - не изменять\nсписок закладок файлов в проекте.\n"
+    "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n" "Вы можете\n  - добавить текущий список файлов в\n  - заменить текущим списком\n  - удалить\n  - не изменять\nсписок файлов в проекте.\n"
     {Add} {Добавить}
     {Substitute} {Заменить}
     {Delete} {Удалить}
@@ -334,13 +334,14 @@ namespace eval ::alited {
     {Tint:} {Оттенок:}
     "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?"
     {Preferable locale:} {Предпочтительная локаль:}
-    "Mostly this is a country code,\nfor example: ru, ua, cz." "Чаще всего это код страны,\nнапример: ru, ua, cz."
+    "This is a country code: ru, ua, cz...\nIn alited, \"en\" means American English." "Это код страны: ru, ua, cz...\nВ alited \"en\" значит American English."
     {Small font size:} {Размер малого шрифта:}
     {Middle font size:} {Размер среднего шрифта:}
     {Cursor width:} {Ширина курсора:}
     {Notes:} {Заметки:}
     "Sort of diary.\nList of TODOs etc." "Типа дневника.\nСписок TODO и пр."
     {Light / Dark} {Светлая / Темная}
+    {Makes colors darker .. lighter} {Делает цвета темнее .. светлее}
   }
 
   ### ________________________ Editor _________________________ ###
@@ -457,10 +458,10 @@ namespace eval ::alited {
     {Deletes a line.} {Удаляет строку.}
     {separator} {разделитель}
     {Item} {Пункт}
-    {If 'yes', means a separator of the toolbar/menu.} {Если включено, означает разделитель в строке/меню.}
+    {If 'yes', means a separator of the toolbar/menu.} {Если включено, означает разделитель в тулбаре/меню.}
     {Before Run...} {Перед Запуском...}
     {Commands:} {Команды:}
-    {Command before "Run"} {Команда перед "Запуском"}
+    {Commands before "Run"} {Команды перед "Запуском"}
     "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Введите команды, выполняемые перед \"Снасти/Запуск\".\n Это может быть полезно в некоторых проектах. Что-то типа инициализации перед запуском.  \n"
   }
 
@@ -473,7 +474,7 @@ namespace eval ::alited {
     {Consistency of {} } {Соответствие {}}
     {Consistency of []} {Соответствие []}
     {Consistency of ()} {Соответствие ()}
-    {all of session files} {все файлы сессии}
+    {all of session files} {все файлы сеанса}
     {current file} {текущий файл}
     {Found %f file error(s), %u unit error(s).} {Найдено ошибок: %f файлов, %u юнитов.}
     {No errors found.} {Ошибок не найдено.}

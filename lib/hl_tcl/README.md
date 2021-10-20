@@ -75,6 +75,7 @@ It seems *hl_tcl* got close to this compromise. Specifically, it provides:
 
   * special highlighting for Tcl and TclOO commands
   * special highlighting for Tk and ttk commands
+  * allowing additional commands to highlight (as Tk ones)
   * special highlighting for declarations `proc, method, oo::class` etc. as well as `return, yield`
   * special highlighting for `#comments`, `$variables`, `"strings"`, `-options`
   * in-line comments being recognized and thus highlighted only after `;#`
@@ -132,6 +133,7 @@ The *args* is a list of *-option "value"* where *-option* may be:
    * *-cmdpos* - command to watch cursor positioning (default "")
    * *-seen* - number of first lines seen at start (default 500)
    * *-optRE* - flag "use a regular expression to highlight options" (default "yes")
+   * *-keywords* - additional commands to highlight (as Tk ones)
 
 **Note**: `-seen 500` and `-multiline no` can improve the performance a lot. It's recommended to use `-seen 500` (or any other reasonable limit, e.g. `-seen 200`) at any rate, except for static html pages.
 

@@ -108,6 +108,9 @@ namespace eval pref {
 
   # size of standard keys' data
   variable stdkeysSize [dict size $stdkeys]
+
+  # locales
+  variable locales [list]
 }
 
 # ________________________ Common procedures _________________________ #
@@ -142,6 +145,7 @@ proc pref::fetchVars {} {
     variable listMenus
     variable stdkeys
     variable stdkeysSize
+    variable locales
   }
 }
 #_______________________
@@ -434,11 +438,12 @@ proc pref::General_Tab1 {} {
     {.labCS .labTheme T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.opc2 .labCS L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 20 -com alited::pref::CbxTheme} {alited::pref::opcToolPre %a}}}
     {.labHue .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Tint:"}}
-    {.SpxHue .labHue L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 9 -afteridle alited::pref::CbxTheme}}
+    {.SpxHue .labHue L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 9 -afteridle alited::pref::CbxTheme -tip {$alited::al(MC,hue)}}}
     {seh_ .labHue T 1 2 {-pady 4}}
     {fra2 seh_ T 1 2 {-st nsew -cw 1}}
     {.labLocal - - 1 1 {-st w -pady 1 -padx 3} {-t "Preferable locale:" -tip {$alited::al(MC,locale)}}}
-    {.entLocal .labLocal L 1 1 {-st sw -pady 1 -padx 3} {-tvar alited::al(LOCAL) -w 8 -tip {$alited::al(MC,locale)}}}
+    {.cbxLocal .labLocal L 1 1 {-st sew -pady 1 -padx 3} {-tvar alited::al(LOCAL) -values {$alited::pref::locales} -w 4 -tip {$alited::al(MC,locale)} -state readonly -selcombobox alited::pref::GetLocaleImage -afteridle alited::pref::GetLocaleImage}}
+    {.LabLocales .cbxLocal L}
     {.labFon .labLocal T 1 1 {-st w -pady 1 -padx 3} {-t "Font:"}}
     {.fonTxt .labFon L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONT) -w 40}}
     {.labFsz1 .labFon T 1 1 {-st w -pady 1 -padx 3} {-t "Small font size:"}}
@@ -488,7 +493,7 @@ proc pref::General_Tab2 {} {
     {.labBackup .seh4 T 1 1 {-st w -pady 1 -padx 3} {-t "Back up files to a project's subdirectory:"}}
     {.CbxBackup .labBackup L 1 1 {-st sw -pady 1} {-tvar alited::al(BACKUP) -values {{} .bak} -state readonly -w 6 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." -afteridle alited::pref::CbxBackup -selcombobox alited::pref::CbxBackup}}
     {.labMaxBak .CbxBackup L 1 1 {-st w -pady 1 -padx 1} {-t "  Maximum:"}}
-    {.SpxMaxBak .labMaxBak L 1 1 {-st sw -pady 1 -padx 1} {-tvar alited::al(MAXBACKUP) -from 1 -to 99 -justify center -w 9 -tip "Maximum of backup copies per a file"}}
+    {.SpxMaxBak .labMaxBak L 1 1 {-st sw -pady 1 -padx 1} {-tvar alited::al(MAXBACKUP) -from 1 -to 99 -justify center -w 9 -tip {$alited::al(MC,maxbak)}}}
     {.labBell .labBackup T 1 1 {-st w -pady 1 -padx 3} {-t "Bell at warnings:"}}
     {.swiBell .labBell L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,belltoll)}}
   }
@@ -604,6 +609,30 @@ proc pref::GetCS {{ncc {}}} {
   fetchVars
   return [scan [set opcc$ncc] %d:]
 }
+#_______________________
+
+proc pref::GetLocaleImage {} {
+
+  fetchVars
+  [$obDl2 LabLocales] configure -image alited::pref::LOC$alited::al(LOCAL)
+}
+#_______________________
+
+proc pref::InitLocales {} {
+  # Creates flag images to display at "Preferable locale".
+
+  fetchVars
+  if {[llength $locales]} return
+  set imd [file join $::alited::DATADIR img]
+  set locales [list]
+  foreach lm [list en {*}[glob -nocomplain [file join $::alited::MSGSDIR *]]] {
+    set loc [file rootname [file tail $lm]]
+    catch { ;# no duplicates due to 'catch'
+      image create photo alited::pref::LOC$loc -file [file join $imd $loc.png]
+      lappend locales $loc
+    }
+  }
+}
 
 # ________________________ Tab "Editor" _________________________ #
 
@@ -656,7 +685,7 @@ proc pref::Edit_Tab2 {} {
     {.labCMN .labVAR T 1 1 {-st w -pady 3 -padx 3} {-t "Color of comments:"}}
     {.clrCMN .labCMN L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,clrCMN) -w 20}}
     {.labPROC .labCMN T 1 1 {-st w -pady 3 -padx 3} {-t "Color of proc/methods:"}}
-    {.clrPROC .labPROC L 1 1 {-st sw -pady } {-tvar alited::al(ED,clrPROC) -w 20}}
+    {.clrPROC .labPROC L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,clrPROC) -w 20}}
     {.labOPT .labPROC T 1 1 {-st w -pady 3 -padx 3} {-t "Color of options:"}}
     {.clrOPT .labOPT L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,clrOPT) -w 20}}
     {.labBRA .labOPT T 1 1 {-st w -pady 3 -padx 3} {-t "Color of brackets:"}}
@@ -691,9 +720,9 @@ proc pref::Edit_Tab3 {} {
     {.labCMN2 .labVAR2 T 1 1 {-st w -pady 3 -padx 3} {-t "Color of comments:"}}
     {.clrCMN2 .labCMN2 L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrCMN) -w 20}}
     {.labPROC2 .labCMN2 T 1 1 {-st w -pady 3 -padx 3} {-t "Color of return/goto:"}}
-    {.clrPROC2 .labPROC2 L 1 1 {-st sw -pady } {-tvar alited::al(ED,CclrPROC) -w 20}}
+    {.clrPROC2 .labPROC2 L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrPROC) -w 20}}
     {.labOPT2 .labPROC2 T 1 1 {-st w -pady 3 -padx 3} {-t "Color of your key words:"}}
-    {.clrOPT2 .labOPT2 L 1 1 {-st sw -pady } {-tvar alited::al(ED,CclrOPT) -w 20}}
+    {.clrOPT2 .labOPT2 L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrOPT) -w 20}}
     {.labBRA2 .labOPT2 T 1 1 {-st w -pady 3 -padx 3} {-t "Color of brackets:"}}
     {.clrBRA2 .labBRA2 L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrBRA) -w 20}}
     {.seh .labBRA2 T 1 2 {-pady 3}}
@@ -1274,6 +1303,7 @@ proc pref::_create {tab} {
   #   tab - a tab to open (saved at previous session) or {}
 
   fetchVars
+  InitLocales
   $obDl2 makeWindow $win.fra "$al(MC,pref) :: $::alited::USERDIR"
   $obDl2 paveWindow \
     $win.fra [MainFrame] \

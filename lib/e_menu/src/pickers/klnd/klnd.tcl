@@ -18,9 +18,13 @@ namespace eval ::klnd {
     array set locales [list \
       en_uk %u \
       en_us %w \
+      ru %u \
       ru_ru %u \
       ru_ua %u \
+      ua %u \
       uk_ua %u \
+      ua_ua %u \
+      by %u \
       be_by %u \
     ]
     array set p [list FINT %Y/%N/%e days {} months {} \

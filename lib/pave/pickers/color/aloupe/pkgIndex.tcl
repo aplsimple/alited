@@ -1,5 +1,5 @@
 
-package ifneeded aloupe 0.9.2 [list source [file join $dir aloupe.tcl]]
+package ifneeded aloupe 0.9.3 [list source [file join $dir aloupe.tcl]]
 
 
 # A short intro (for Ruff! docs generator:)
@@ -7,7 +7,7 @@ package ifneeded aloupe 0.9.2 [list source [file join $dir aloupe.tcl]]
 namespace eval aloupe {
 
   set _ruff_preamble {
-The *aloupe v0.9.1* is a Tcl/Tk small widget / utility allowing to view the screen through a loupe.
+The *aloupe v0.9.3* is a Tcl/Tk small widget / utility allowing to view the screen through a loupe.
 
 It allows also
 
@@ -38,8 +38,8 @@ There are also stand-alone [aloupe executables](https://github.com/aplsimple/alo
 
 The executables are started as simply as:
 
-     aloupe
-     aloupe.exe
+     aloupe ?option value ...?
+     aloupe.exe ?option value ...?
 
 After the start, two windows would be displayed: a moveable loupe (at the mouse pointer) and a displaying window.
 
@@ -65,15 +65,16 @@ The *aloupe* can be run with the options:
   * `-ontop` - if *yes* (default), sets the displaying window above others
   * `-save` - if *yes* (default), saves/restores the appearance settings
   * `-inifile` - a file to save the settings (~/.config/aloupe.conf by default)
+  * `-locale` - a preferable locale (e.g., ru, ua, cz)
 
 Some options can be used at running *aloupe* from a Tcl code:
 
   * `-exit` - is *false* which means "don't finish Tcl/Tk session, just close the loupe"
   * `-command` - a command to be run at pressing the *To clipboard* button
-  * `-commandname` - a label instead of *To clipboard*; means "no clipboard"
+  * `-commandname` - a label instead of *To clipboard*; when set it means also "no copy to clipboard"
   * `-parent` - a parent window's path (when the parent closes, its *aloupe* children do too)
 
-From a Tcl code, *aloupe* is run this way:
+From a Tcl code, *aloupe* widget is called this way:
 
      package require aloupe
      ::aloupe::run ?option value ...?

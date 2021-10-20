@@ -395,7 +395,7 @@ proc ::em::reread_init {} {
 #___ destroy all e_menu apps
 proc ::em::destroy_emenus {} {
   if {[em_question "Clearance - $::em::appname" \
-  "\n  Destroy all e_menu applications?  \n"]} {
+  "\n  Destroy all e_menu applications?  \n" yesno ques NO -text 0]} {
     for {set i 0} {$i < 3} {incr i} {
       for {set nap 1} {$nap <= 64} {incr nap} {
         set app $::em::thisapp$nap

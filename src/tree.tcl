@@ -147,8 +147,9 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
     $wtree tag add tagSel $itnew
   }
   # get saved pos
-  if {[catch {set pos $al(CPOS,$ctab,$header)}] \
-  || [catch {set pos [expr {$pos+$l1}]}]} {
+  if {[info exists al(CPOS,$ctab,$header)]} {
+    set pos [expr {$l1+$al(CPOS,$ctab,$header)}]
+  } else {
     set pos [$wtxt index insert]
   }
   if {$topos} {
@@ -205,7 +206,7 @@ proc tree::SaveCursorPos {} {
     set itnew [CurrentItemByLine $pos]
     set wtree [$obPav Tree]
     set header [alited::unit::GetHeader $wtree $itnew]
-    set al(CPOS,$TID,$header) $pos
+    #set al(CPOS,$TID,$header) [expr {$pos-$l1}]
     # save the position to unit tree list, to restore it in favor::GoToUnit
     set it [lsearch -exact -index 6 $al(_unittree,$TID) $itnew]
     if {$it>-1} {
@@ -544,8 +545,10 @@ proc tree::ShowPopupMenu {ID X Y} {
       -label $al(MC,renamefile) -accelerator F2 \
       -command {::alited::file::RenameFileInTree {-geometry pointer+10+-100}}
     $popm add separator
+    $popm add command {*}[$obPav iconA OpenFile] -label {Open Selected File(s)} \
+      -command ::alited::file::OpenFiles
     set msg [string map [list %n $sname] $al(MC,openofdir)]
-    $popm add command {*}[$obPav iconA OpenFile] -label $msg \
+    $popm add command {*}[$obPav iconA none] -label $msg \
       -command "::alited::file::OpenOfDir {$fname}"
   }
   set addsel {}
@@ -1004,6 +1007,7 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
     }
   }
   catch {$wtree see [lindex $selection 0]}
+  alited::main::SaveVisitInfo [alited::main::CurrentWTXT]
 }
 #_______________________
 

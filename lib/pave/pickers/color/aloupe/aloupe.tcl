@@ -19,7 +19,7 @@ package require treectrl
 package require Img
 ::msgcat::mcload [file join [file dirname [info script]] msgs]
 
-package provide aloupe 0.9.2
+package provide aloupe 0.9.3
 
 # _______________________________________________________________________ #
 
@@ -41,6 +41,7 @@ namespace eval ::aloupe {
       -parent "" \
       -save yes \
       -inifile "~/.config/aloupe.conf" \
+      -locale "" \
     ]
   }
 }
@@ -557,6 +558,12 @@ proc ::aloupe::run {args} {
       my::Synopsis
     }
   }
+  if {$my::data(-locale) ne {}} {
+    catch {
+      ::msgcat::mcload [file join [file dirname [info script]] msgs]
+      ::msgcat::mclocale $my::data(-locale)
+    }
+  }
   catch {::apave::obj untouchWidgets "*_a_loupe_loup*"}  ;# don't theme the loupe
   set my::size [set my::data(PREVSIZE) $my::data(-size)]
   set my::zoom [set my::data(PREVZOOM) $my::data(-zoom)]
@@ -573,5 +580,5 @@ if {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info s
   ::aloupe::run {*}$::argv
 }
 # _________________________________ EOF _________________________________ #
-#-ARGS1: -alpha .2 -background "yellow" -ontop 1 -save 1 -inifile 123 -commandname "Get"
+#ARGS1: -locale ua -alpha .2 -background "yellow" -ontop 1 -save 1 -inifile 123 -commandname "Get"
 #-RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 23 9 12 "small icons"
