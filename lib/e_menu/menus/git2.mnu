@@ -64,7 +64,6 @@
 x1=plugins
 x2=: add_shortcut, e_menu
 om=1
-o=0
 in=1.0
 
  R:git revert HEAD R: %q "REVERT" "This cancels the last commit!\n\nDo you want to REVERT\nlast commit?\n\n(IT'S CANNOT BE UNDONE)"

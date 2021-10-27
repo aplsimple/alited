@@ -16,7 +16,6 @@
 [OPTIONS]
 
 co=;
-o=0
 w=45
 rt=2/5
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
@@ -136,9 +135,9 @@ rt=2/5
 
  M:  M: 3
 
- MW: Test2 menu MW: "m=test2.mnu" o=0 "a1=M {It's just a test}; if {![Q {DANGER!} {These commands are dangerous\nand can set the world on fire!\n\nContinue?} yesno]} EXIT"
+ MW: Test2 menu MW: "m=test2.mnu" "a1=M {It's just a test}; if {![Q {DANGER!} {These commands are dangerous\nand can set the world on fire!\n\nContinue?} yesno]} EXIT"
 
- MW: Test3 menu MW: "m=test3.mnu" o=0
+ MW: Test3 menu MW: "m=test3.mnu"
 
 [OPTIONS]
 in=1.0

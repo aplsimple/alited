@@ -1,5 +1,5 @@
 
-package ifneeded aloupe 0.9.3 [list source [file join $dir aloupe.tcl]]
+package ifneeded aloupe 0.9.4 [list source [file join $dir aloupe.tcl]]
 
 
 # A short intro (for Ruff! docs generator:)
@@ -7,7 +7,7 @@ package ifneeded aloupe 0.9.3 [list source [file join $dir aloupe.tcl]]
 namespace eval aloupe {
 
   set _ruff_preamble {
-The *aloupe v0.9.3* is a Tcl/Tk small widget / utility allowing to view the screen through a loupe.
+The *aloupe v0.9.4* is a Tcl/Tk small widget / utility allowing to view the screen through a loupe.
 
 It allows also
 
@@ -32,7 +32,7 @@ The *aloupe* utility runs with the command:
 
 where `option` may be `-size, -zoom, -alpha, -background, -geometry, -ontop`.
 
-The `Img` and `treectrl` packages have to be installed to run it. In Debian Linux the packages are titled `libtk-img` and `tktreectrl`.
+The `Img` and `treectrl` packages have to be installed to run it. In Debian Linux the packages are titled `libtk-img` and `tktreectrl`. If *aloupe* is run by a *tclkit* that doesn't provide these packages, define an environment variable `TCLLIBPATH` before running *aloupe* so that `TCLLIBPATH` be a list of pathes to the packages.
 
 There are also stand-alone [aloupe executables](https://github.com/aplsimple/aloupe/releases) for Linux / Windows.
 

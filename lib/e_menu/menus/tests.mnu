@@ -1,9 +1,8 @@
 # options should go first because of "co=" (line continuator)
 
 [OPTIONS]
-
+pos=11.38
 co=;
-o=0
 w=45
 rt=2/5
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
@@ -45,6 +44,3 @@ rt=2/5
    } -head {\n This will remove tracing 'puts' from a file.} -weight bold == ::EMENUFILE
  S: Untrace $::FILETAIL S: tclsh %m/src/atrace.tcl untrace $::EMENUFILE
 
-
-[OPTIONS]
-pos=11.38

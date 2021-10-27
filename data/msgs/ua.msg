@@ -72,8 +72,8 @@ namespace eval ::alited {
     {Wait a little ...} {Чекайте ...}
     {Default} {По вмовчанню}
     {Test} {Перевірка}
-    {Correct Indentation} {Виправити відступи}
-    "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Виправити відступи \"%f\",\nпо %i на кожний?"
+    {Correct Indentation} {Правити відступи}
+    "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Правити відступи \"%f\",\nпо %i на кожний?"
     {The line %n: unbalanced brace!} {Рядок %n: незбалансована скобка!}
     {Wrap Lines} {Згортати рядки}
     {Default values for new projects:} {Опції по вмовчанню для проектів:}
@@ -88,11 +88,11 @@ namespace eval ::alited {
     "All of \"%f\"" "Все з \"%f\""
     "Not recommended for projects\nwith large files (>2000 LOC)!" "Не рекомендовано для проектів\nз великими файлами (>2000 рядків)!"
     {Move Unit Up} {Підняти юніт}
-    {Move Unit Down} {Опустить юніт}
+    {Move Unit Down} {Опустити юніт}
     {Move File Up} {Перемістити файл вгору}
     {Move File Down} {Перемістити файл вниз}
     {Only files are moved by alited.} {Тільки файли переміщує alited.}
-    {Lists of Favorites} {Списки вибраного}
+    {Lists of Favorites} {Списки Вибраного}
     {Last Visited} {Останні вхіди}
     {Switch to Unit Tree} {Перейти на список юнітів}
     {Switch to File Tree} {Перейти на список файлів}
@@ -241,9 +241,9 @@ namespace eval ::alited {
     "Add \"%n\" of %f\nto Favorites?" "Додати \"%n\" файлів %f\nу Вибране?"
     "Item \"%n\" of %f\nis already in Favorites." "Юніт \"%n\" з %f\nвже є у Вибраному."
     "Remove \"%n\" of %f\nfrom Favorites?" "Видалити \"%n\" файлів %f\nз Вибраного?"
-    "\"%n\" unit of %f\nis not in Favorites." "Юніта \"%n\" файлу %f\nнемає у Вибраному."
+    "\"%n\" unit of %f is not in the list." "Юніта \"%n\" файлу %f немає у списку."
     {Add to Favorites} {Додати до Вибраного}
-    {Remove from Favorites} {Видалити з Вибраного}
+    {Remove} {Видалити}
     {Remove All} {Видалити все}
     {Remove all of Favorites?} {Видалити все з Вибраного?}
     {Remove all of the last visited?} {Видалити все з Останніх входів?}
@@ -295,7 +295,7 @@ namespace eval ::alited {
     "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all texts?" "Замінити всі \"%s\"\n\nна \"%r\"\n\nв усіх текстах?"
     {Don't focus a text after selecting in infobar} {Не переходити на текст при виборі у інфобарі}
     {Focus a text after selecting in infobar} {Переходити на текст при виборі у інфобарі}
-    {Find by List} {Пошук по списку}
+    {Find by List} {Шукати по списку}
     {List:} {Список:}
     {\n Enter a list of words divided by spaces: \n} {\n Введіть список слів, разділених пробілами: \n}
     {FOUND:} {ЗНАЙДЕНІ:}
@@ -312,8 +312,8 @@ namespace eval ::alited {
   ## ________________________ "About" dialogue ________________________ ##
   ::msgcat::mcmset ua {
     {stands for} {значить}
-    {Written in pure Tcl/Tk.} {Зроблен на чистому Tcl/Tk.}
-    {And well fit for programming with it.} {Та годен для програмування на ньому.}
+    {Written in pure Tcl/Tk.} {Зроблений на чистому Tcl/Tk.}
+    {And well fit for programming with it.} {Та гідний для програмування на ньому.}
     {Details:} {Підробиці:}
     {Authors:} {Автори:}
     {License:} {Ліцензія:}
@@ -501,6 +501,7 @@ namespace eval ::alited {
     {in all} {у всіх}
     {in current} {у поточному}
     "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored." "Користуйтеся шаблоном glob для пошуку юнітів:\nнаприклад, \"s*rt\" знайде \"start\" та \"insert\".\nРегістр букв не враховується."
+    {Incorrect name for a unit.} {Некорректне ім'я для юніта.}
   }
 
   ## ________________________ Abbreviations etc. ________________________ ##

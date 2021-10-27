@@ -1,5 +1,5 @@
 
-package ifneeded klnd 1.1 [list source [file join $dir klnd.tcl]]
+package ifneeded klnd 1.2 [list source [file join $dir klnd.tcl]]
 
 # A short intro (for Ruff! docs generator:)
 

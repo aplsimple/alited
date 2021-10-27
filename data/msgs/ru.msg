@@ -50,8 +50,8 @@ namespace eval ::alited {
     {Put New Line} {Добавить строку}
     {Indent} {Добавить отступ}
     {Unindent} {Убрать отступ}
-    {Comment} {Закомментировать}
-    {Uncomment} {Раскомментировать}
+    {Comment} {Закомментить}
+    {Uncomment} {Раскомментить}
     {Find Next} {Искать дальше}
     {Look for Declaration} {Искать объявление}
     {Look for Word} {Искать слово}
@@ -66,8 +66,8 @@ namespace eval ::alited {
     {Wait a little ...} {Ожидайте ...}
     {Default} {По умолчанию}
     {Test} {Проверка}
-    {Correct Indentation} {Поправить отступы}
-    "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Поправить отступы \"%f\",\nпо %i на каждый?"
+    {Correct Indentation} {Править отступы}
+    "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Править отступы \"%f\",\nпо %i на каждый?"
     {The line %n: unbalanced brace!} {Строка %n: несбалансированная скобка!}
     {Wrap Lines} {Сворачивать строки}
     {Default values for new projects:} {Опции по умолчанию для проектов:}
@@ -86,7 +86,7 @@ namespace eval ::alited {
     {Move File Up} {Переместить файл вверх}
     {Move File Down} {Переместить файл вниз}
     {Only files are moved by alited.} {Только файлы перемещает alited.}
-    {Lists of Favorites} {Списки избранного}
+    {Lists of Favorites} {Списки Избранного}
     {Last Visited} {Последние входы}
     {Switch to Unit Tree} {Перейти на список юнитов}
     {Switch to File Tree} {Перейти на список файлов}
@@ -235,9 +235,9 @@ namespace eval ::alited {
     "Add \"%n\" of %f\nto Favorites?" "Добавить \"%n\" файла %f\nв Избранное?"
     "Item \"%n\" of %f\nis already in Favorites." "Юнит \"%n\" из %f\nуже есть в Избранном."
     "Remove \"%n\" of %f\nfrom Favorites?" "Удалить \"%n\" файла %f\nиз Избранного?"
-    "\"%n\" unit of %f\nis not in Favorites." "Юнит \"%n\" файла %f\nотсутствует в Избранном."
+    "\"%n\" unit of %f is not in the list." "Юнита \"%n\" файла %f нет в списке."
     {Add to Favorites} {Добавить в Избранное}
-    {Remove from Favorites} {Удалить из Избранного}
+    {Remove} {Удалить}
     {Remove All} {Удалить всё}
     {Remove all of Favorites?} {Удалить всё из Избранного?}
     {Remove all of the last visited?} {Удалить всё из Последних входов?}
@@ -289,7 +289,7 @@ namespace eval ::alited {
     "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all texts?" "Заменить все \"%s\"\n\nна \"%r\"\n\nво всех текстах?"
     {Don't focus a text after selecting in infobar} {Не переходить на текст при выборе в инфобаре}
     {Focus a text after selecting in infobar} {Переходить на текст при выборе в инфобаре}
-    {Find by List} {Поиск по списку}
+    {Find by List} {Искать по списку}
     {List:} {Список:}
     {\n Enter a list of words divided by spaces: \n} {\n Введите список слов, разделенных пробелами: \n}
     {FOUND:} {НАЙДЕНЫ:}
@@ -495,6 +495,7 @@ namespace eval ::alited {
     {in all} {во всех}
     {in current} {в текущем}
     "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored." "Используйте шаблон glob для поиска юнитов:\nнапример, \"s*rt\" найдет \"start\" и \"insert\".\nРегистр букв не учитывается."
+    {Incorrect name for a unit.} {Некорректное имя для юнита.}
   }
 
   ## ________________________ Abbreviations etc. ________________________ ##

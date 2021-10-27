@@ -49,6 +49,16 @@
 
 package require Tk
 
+# use TCLLIBPATH variable (some tclkits don't see it)
+catch {
+  foreach _apave_ [lreverse $::env(TCLLIBPATH)] {
+    if {[lsearch -exact $::auto_path $_apave_]<0} {
+      set ::auto_path [linsert $::auto_path 0 $_apave_]
+    }
+  }
+  unset _apave_
+}
+
 namespace eval ::apave {
 
   ;# default grid options & attributes of widgets (no abbreviations here)
@@ -1213,14 +1223,24 @@ oo::class create ::apave::APave {
       tre {set widget ttk::treeview}
       h_* {set widget ttk::frame}
       v_* {set widget ttk::frame}
-      default {set widget ""}
+      default {set widget {}}
     }
     set attrs [my GetMC $attrs]
     if {$nam3 in {cbx ent enT fco spx spX}} {
       ;# entry-like widgets need their popup menu
       my AddPopupAttr $wnamefull attrs -entrypop 0 readonly disabled
     }
-    if {[string first "pack" [string trimleft $pack]]==0} {
+    if {[string first pack [string trimleft $pack]]==0} {
+      catch {
+        # try to expand -after option (if set as WidgetName instead widgetName)
+        if {[set i [lsearch -exact $pack {-after}]]>=0} {
+          set aft [lindex $pack [incr i]]
+          if {[regexp {^[A-Z]} $aft]} {
+            set aft [my $aft]
+            set pack [lreplace $pack $i $i $aft]
+          }
+        }
+      }
       set options $pack
     }
     set options [string trim $options]
@@ -1722,7 +1742,12 @@ oo::class create ::apave::APave {
         lappend gcont [list $y $linenum]
       }
       # update the gutter at changing its contents/config
-      lassign [my csGet] - - - bg - - - - fg
+      if {[::apave::cs_Active]} {
+        lassign [my csGet] - - - bg - - - - fg
+        ::apave::setProperty _GUTTER_FGBG [list $fg $bg]
+      } else {
+        lassign [::apave::getProperty _GUTTER_FGBG] fg bg
+      }
       set cwidth [expr {$shift + \
         [font measure apaveFontMono -displayof $txt [string repeat 0 $width]]}]
       set newbg [expr {$bg ne [$canvas cget -background]}]

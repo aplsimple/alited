@@ -23,7 +23,6 @@ bM=#afefaf
 [OPTIONS]
 in=1.0
 om=1
-o=0
-c=8
+c=10
 w=50
-pos=27.4
+pos=26.4

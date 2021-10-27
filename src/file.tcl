@@ -316,7 +316,7 @@ proc file::RenameFileInTree {{geo ""}} {
   set wtree [$obPav Tree]
   set ID [$wtree selection]
   if {[llength $ID]!=1} {
-    alited::Message [msgcat::mc {Select one file in the tree.}] 4
+    alited::msg ok err [msgcat::mc {Select one file in the tree.}]
     return
   }
   set name [$wtree item $ID -text]

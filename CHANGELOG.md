@@ -1,9 +1,8 @@
 # LAST CHANGES:
 
 
-Version `1.0.5 (30 Oct'21)`
+Version `1.0.5 (27 Oct'21)`
 
-  - TODO  : NEW   : more integrated with tclkits
   - TODO  : CHANGE: revised help & doc
 
   - BUGFIX: default/classic/alt theme & dark CS: selected check/radio buttons' bg
@@ -17,6 +16,7 @@ Version `1.0.5 (30 Oct'21)`
   - BUGFIX: false saving modified files at "Tcl/Tk help"
   - BUGFIX: error at closing big files
   - BUGFIX: sort order at "Open all Tcl files..."
+  - NEW   : more integrated with tclkits
   - NEW   : ua.msg
   - NEW   : "Open Selected File(s)" in tree's menu
   - NEW   : flags for "Preferable Locale"
@@ -24,6 +24,8 @@ Version `1.0.5 (30 Oct'21)`
   - NEW   : selected units to be added to Favorites (popup menu)
   - NEW   : "Don't ask again" checkbox at adding to Favorites
   - NEW   : "Your commands" for Tcl syntax
+  - NEW   : "Remove" of "Last Visited" removes a current unit from the list
+  - CHANGE: combobox for "Find Unit" (saved list)
   - CHANGE: save/restore unit's position and last visited units at
             switching unit/file, text change, mouse click (when unit tree is active)
   - CHANGE: demo 2.Units

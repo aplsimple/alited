@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.5.8"
+  variable em_version "e_menu 3.4.6a3"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -135,7 +135,7 @@ namespace eval ::em {
     {0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,./}
   variable hotkeys $::em::hotsall
   variable workdir {} PD {} pd {} prjname {} PN2 {} prjdirlist [list]
-  variable ornament 1  ;# 1 - header only; 2 - prompt only; 3 - both; 0 - none; -1 - no hint
+  variable ornament -1  ;# -2 none  -1 - top line only; 0 - Help/Exec/Shell 1 - +header 2 - +prompt; 3 - all
   variable inttimer 1  ;# interval to check the timed tasks
   variable bd 1 b0 0 b1 0 b2 1 b3 1 b4 1
   variable incwidth 15
@@ -300,10 +300,10 @@ proc ::em::em_question {ttl mes {typ okcancel} {icon warn} {defb OK} args} {
 }
 #___ check is there a header of menu
 proc ::em::isheader {} {
-  return [expr {$::em::ornament in {1 3}} ? 1 : 0]
+  return [expr {$::em::ornament in {1 2 3}} ? 1 : 0]
 }
 proc ::em::isheader_nohint {} {
-  return [expr {[isheader] || $::em::ornament==-1} ? 1 : 0]
+  return [expr {[isheader] || $::em::ornament==0} ? 1 : 0]
 }
 #___ get an item's color
 proc ::em::color_button {i {fgbg "fg"}} {
@@ -1413,9 +1413,9 @@ proc ::em::allMarkers {} {
 #___ check for and insert macro, if any
 proc ::em::check_macro {line} {
   set line [string trimleft $line]
-  set s1 "I:"
+  set s1 I:
   if {[string first $s1 $line] != 0} {
-    set s1 ""
+    set s1 {}
     foreach marker [::em::allMarkers] {
       if {[string first $marker $line] == 0} {
         set s1 $marker
@@ -1427,7 +1427,7 @@ proc ::em::check_macro {line} {
     #check for macro %M1..%M9, %Ma..%Mz, %MA..%MZ
     set im [expr {[string first $s1 $line 3]+[string length $s1]}]
     set s2 [string trimleft [string range $line $im end]]
-    if {[regexp "^%M\[^ \] " $s2]} {
+    if {[regexp {^%M[^ ] } $s2]} {
       ::em::expand_macro $s1 $s2 $line
       return
     }
@@ -1483,7 +1483,10 @@ proc ::em::menuof {commands s1 domenu} {
           break
         }
       }
-      if {$icont>=$lcont} break
+      if {$icont>=$lcont} {
+        lappend ::em::menufile $line
+        break
+      }
       ::em::check_macro $line
     } else {
       incr ilmenu
@@ -1677,7 +1680,7 @@ proc ::em::prepare_buttons {refcommands} {
   checkbutton .em.fr.cb -text "On top" -variable ::em::ontop -fg $::em::clrhelp \
     -bg $::em::clrtitb -takefocus 0 -command {::em::toggle_ontop} \
     -font $::em::font1a
-  if {$::eh::pk eq {}} {
+  if {$::eh::pk eq {} && $::em::ornament!=-2} {
     grid [label .em.fr.h0 -text [string repeat " " [expr $::em::itviewed -3]] \
       -bg $::em::clrinab] -row 0 -column 0 -sticky nsew
     grid .em.fr.cb -row 0 -column 1 -sticky ne
@@ -1955,7 +1958,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
             ::em::initdefaultcolors
           }
         }
-        o= {set ::em::ornament [::apave::getN $seltd 0 -1 3]
+        o= {set ::em::ornament [::apave::getN $seltd 0 -2 3]
           if {$::em::ornament>1} {
             set ::em::font_f2 "-family {[::apave::obj basicTextFont]}"
           }
@@ -2150,11 +2153,6 @@ proc ::em::initcomm {} {
     if {[set io [lsearch -glob $::em::Argv "o=*"]]<0} {
       lappend ::em::Argv "o=0"
       incr ::em::Argc
-    } else {
-      set o [string index [lindex $::em::Argv $io] end]
-      if {$o in {1 3}} {
-        set ::em::Argv [lreplace $::em::Argv $io $io "o=0"]
-      }
     }
   }
   initcommands $::em::Argc $::em::Argv {o= s= m=} 1

@@ -1,9 +1,8 @@
 [OPTIONS]
-g=+0+27
-in=4.3
+in=1.0
 bd=1
 w=25
-pos=28.38
+pos=1.0
 ::EMENUTMPFILE=%mn.tmp~
 %C set ::EMENUFILE [string map {\\ /} "%f"]
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]

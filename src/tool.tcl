@@ -161,7 +161,7 @@ proc tool::EM_Options {opts} {
   set l [expr {int($l)}]
   return [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
-    o=-1 om=0 g=$al(EM,geometry) {*}$ls {*}$opts]
+    o=0 g=$al(EM,geometry) {*}$ls {*}$opts]
 }
 #_______________________
 
@@ -405,11 +405,13 @@ proc tool::e_menu2 {opts} {
   if {![info exists ::em::geometry]} {
     source [file join $::e_menu_dir e_menu.tcl]
   }
+  ::apave::cs_Active no ;# no CS changes by e_menu
   set options [EM_Options $opts]
   ::em::main -prior 1 -modal 0 -remain 0 -noCS 1 {*}$options
   if {[is_submenu $options]} {
     set alited::al(EM,geometry) $::em::geometry
   }
+  ::apave::cs_Active yes
 }
 #_______________________
 

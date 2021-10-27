@@ -163,6 +163,8 @@ namespace eval ::alited {
   set al(CURRUNIT,wtxt) {}
   set al(CURRUNIT,itemID) {}
 
+  # list of "Find Unit" combobox's values
+  set al(findunitvals) {}
 }
 
 # ________________________ Variables _________________________ #
@@ -330,6 +332,7 @@ proc ini::ReadIniOptions {nam val} {
     cursorwidth   {set al(CURSORWIDTH) $val}
     prjdefault    {set al(PRJDEFAULT) $val}
     DEFAULT,*     {set al($nam) $val}
+    findunit      {set al(findunitvals) $val}
   }
 }
 #_______________________
@@ -618,6 +621,7 @@ proc ini::SaveIni {{newproject no}} {
   foreach k [array names al DEFAULT,*] {
     puts $chan "$k=$al($k)"
   }
+  puts $chan "findunit=$al(findunitvals)"
 
   puts $chan ""
   puts $chan {[Templates]}

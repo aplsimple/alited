@@ -252,7 +252,7 @@ proc favor::Show {} {
     SetFavorites $al(FAV,visited)
     $wtree heading #1 -text [msgcat::mc $al(MC,lastvisit)]
   }
-  foreach but {BuTListF BuTAddF BuTDelF} {
+  foreach but {BuTListF BuTAddF} {
     [$obPav $but] configure -state $state
   }
   baltip::tip [$obPav BuTVisitF] $tip
@@ -348,10 +348,11 @@ proc favor::Delete {{undermouse yes}} {
   #   undermouse - if yes, run by mouse click
 
   namespace upvar ::alited al al obPav obPav
+  set treelist [alited::tree::GetTree {} TreeFavor]
   if {$undermouse} {
     set name [lindex [CurrentName] 1]
     set favID {}
-    foreach it [alited::tree::GetTree {} TreeFavor] {
+    foreach it $treelist {
       lassign $it - - ID2 - values
       lassign $values name2 fname header line
       if {$name2 eq $name} {
@@ -362,6 +363,10 @@ proc favor::Delete {{undermouse yes}} {
   } else {
     if {![IsSelected favID name fname sname header line]} return
   }
+  if {![info exists fname] || $fname eq {}} {
+    bell
+    return  ;# for empty list
+  }
   set sname [file tail $fname]
   if {$favID eq {}} {
     set msg [string map [list %n $name %f $sname] $al(MC,notfavor)]
@@ -370,8 +375,12 @@ proc favor::Delete {{undermouse yes}} {
   }
   set msg [string map [list %n $name %f $sname] $al(MC,delfavor)]
   if {$undermouse} {set geo {-geometry pointer+10+-100}} {set geo {}}
-  if {[alited::msg yesno warn $msg NO {*}$geo]} {
+  if {!$al(FAV,IsFavor) || [alited::msg yesno warn $msg NO {*}$geo]} {
     [$obPav TreeFavor] delete $favID
+    if {!$al(FAV,IsFavor)} {
+      set i [lsearch -exact -index 2 $treelist $favID]
+      set al(FAV,visited) [lreplace $al(FAV,visited) $i $i]
+    }
   }
 }
 #_______________________
@@ -439,12 +448,12 @@ proc favor::ShowPopupMenu {ID X Y} {
   if {$al(FAV,IsFavor)} {
     $popm add command -label $al(MC,FavLists) {*}[$obPav iconA none] \
       -command ::alited::favor::Lists -image alimg_heart
+    $popm add separator
     $popm add command -label $al(MC,favoradd) {*}[$obPav iconA none] \
       -command {::alited::favor::Add no} -image alimg_add
-    $popm add command -label $al(MC,favordel) {*}[$obPav iconA none] \
-      -command {::alited::favor::Delete no} -image alimg_delete
-    $popm add separator
   }
+  $popm add command -label $al(MC,favordel) {*}[$obPav iconA none] \
+    -command {::alited::favor::Delete no} -image alimg_delete
   $popm add command -label $al(MC,favordelall) {*}[$obPav iconA none] \
     -command {::alited::favor::DeleteAll no} -image alimg_trash
   $popm add separator

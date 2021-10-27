@@ -114,6 +114,7 @@ proc menu::FillMenu {} {
   set m [set al(SEARCH) $al(WIN).menu.search]
   $m add command -label $al(MC,findreplace) -command alited::find::_run -accelerator Ctrl+F
   $m add command -label $al(MC,findnext) -command alited::find::Next -accelerator $al(acc_12)
+  $m add separator
   $m add command -label [msgcat::mc {Look for Declaration}] -command alited::find::SearchUnit -accelerator $al(acc_13)
   $m add command -label [msgcat::mc {Look for Word}] -command alited::find::SearchWordInSession -accelerator $al(acc_14)
   $m add command -label [msgcat::mc {Find Unit}] -command alited::find::FindUnit -accelerator Ctrl+Shift+F
@@ -128,7 +129,6 @@ proc menu::FillMenu {} {
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label $al(MC,run) -command alited::tool::_run -accelerator $al(acc_3)
   $m add command -label e_menu -command alited::tool::e_menu -accelerator $al(acc_2)
-  $m add command -label tkcon -command alited::tool::tkcon
 
     ### ________________________ Runs _________________________ ###
   for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
@@ -145,6 +145,7 @@ proc menu::FillMenu {} {
       }
     }
   }
+  $m add command -label tkcon -command alited::tool::tkcon
 
     ### ________________________ Other tools _________________________ ###
   $m add separator

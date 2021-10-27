@@ -21,16 +21,15 @@
 
  M:  M: 3
 
- ME: Tcl/Tk       ME: m=tcltk.mnu "u=%s" o=0 w=40
- ME: System       ME: m=system.mnu "u=%s" o=0 w=40
- ME: Wiki & Dicts ME: m=wiki.mnu "u=%s" o=0 w=40
- ME: Misc         ME: m=misc.mnu "u=%s" o=0 w=40
- ME: Tests        ME: m=tests.mnu "u=%s" o=0 w=40
- ME: Test1        ME: m=test1.mnu "u=%s" o=0 w=40
+ ME: Tcl/Tk       ME: m=tcltk.mnu "u=%s" w=40
+ ME: System       ME: m=system.mnu "u=%s" w=40
+ ME: Wiki & Dicts ME: m=wiki.mnu "u=%s" w=40
+ ME: Misc         ME: m=misc.mnu "u=%s" w=40
+ ME: Tests        ME: m=tests.mnu "u=%s" w=40
+ ME: Test1        ME: m=test1.mnu "u=%s" w=40
 
 [OPTIONS]
-o=0
-om=1
+o=-1
 in=1.0
 %#W geo=1089x560+0+56;pos=24.62 # Below are the commands to get the Web page by wget.|!|# The downloaded pages are stored in ~/WGET directory (change this if needed).|!|#|!|# Note that .+ are used to edge "some unique string of the page address", e.g.|!|#   wget -r -k -l 2 -p --accept-regex=.+/UNIQUE/.+ https://www.some.com/UNIQUE/some|!|# would download all of https://www.some.com/UNIQUE/some|!|# excluding all external links that don't most likely match /UNIQUE/.|!|#|!|# Note also that -l option means "maximum level to dig".|!|###################################################################################|!|mkdir ~/WGET|!|cd ~/WGET|!||!|# wget the Tcl/Tk man pages:|!|# wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6/|!||!|# wget letter-to-peter|!|# wget -r -k -l 2 -p --accept-regex=.+letter-to-peter.+ http://catesfamily.org.uk/letter-to-peter/|!||!|# wget -r -k -l 2 -p --accept-regex=.+tablelist/.+ https://www.nemethi.de/tablelist/index.html|!|# wget -r -k -l 2 -p --accept-regex=.+mentry/.+ https://www.nemethi.de/mentry/index.html|!||!|# wget -r -k -l 2 -p --accept-regex=.+/manual3.1/.+ http://tcl.apache.org/rivet/manual3.1/|!|wget -r -k -l 2 -p --accept-regex=.+/tcart.+ http://tcart.com/
-pos=8.24
+pos=29.40

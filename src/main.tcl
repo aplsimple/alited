@@ -440,36 +440,37 @@ proc main::GotoLine {} {
   }
 }
 
-
 # ________________________ Event handlers _________________________ #
 
-proc main::SaveVisitInfo {wtxt {Key ""}} {
+proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
   # Remembers data about current unit.
   #   wtxt - text's path
-  #   Key - a key pressed (to check keypressings)
+  #   K - key pressed (to check keypressings)
+  #   s - key's state
 
   namespace upvar ::alited al al obPav obPav
-  # only if the tree is units'
-  if {!$al(TREE,isunits)} return
-  if {$Key ne {} && $Key in {Up Down Next Prior Home End}} return
+  # only for unit tree and not navigation key and not Alt-BackSpace
+  if {!$al(TREE,isunits) || ($K eq {BackSpace} && $s!=0) || \
+  $K in {Up Down Left Right Next Prior Home End}} {
+    return
+  }
   set wtree [$obPav Tree]
-  # check for current text and line (line to be checked for performance)
+  # check for current text and current unit's lines
+  if {$wtxt eq {}} {set wtxt [CurrentWTXT]}
   set pos [$wtxt index insert]
   set line [expr {int($pos)}]
-  if {$wtxt ne $al(CURRUNIT,wtxt) || (
-  ($line < $al(CURRUNIT,line1) || $line > $al(CURRUNIT,line2)))
-  } then {
-    # if current unit's info changed,
-    # save it and update "Last Visited" list
-    lassign [alited::tree::CurrentItemByLine {} 1] itemID - - - name \
-      al(CURRUNIT,line1) al(CURRUNIT,line2)
-    # save a new unit in "Last Visited"
+  set doit [expr {$wtxt ne $al(CURRUNIT,wtxt) || (
+    ($line < $al(CURRUNIT,line1) || $line > $al(CURRUNIT,line2)))}]
+  lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name \
+    al(CURRUNIT,line1) al(CURRUNIT,line2)
+  set al(CURRUNIT,wtxt) $wtxt
+  set al(CURRUNIT,itemID) $itemID
+  set al(CURRUNIT,line) $line
+  # if current unit's info changed,
+  # save it and update "Last Visited" list
+  if {$doit} {
     set header [alited::unit::GetHeader $wtree $itemID]
     alited::favor::LastVisited [$wtree item $itemID] $header
-    # at last, save current info (lines saved above)
-    set al(CURRUNIT,wtxt) $wtxt
-    set al(CURRUNIT,itemID) $itemID
-    set al(CURRUNIT,line) $line
     set selID [$wtree selection]
     if {[llength $selID]<2 && $selID ne $itemID} {
       $wtree selection set $itemID
@@ -564,7 +565,7 @@ proc main::BindsForText {TID wtxt} {
   bind $wtxt <Control-Tab> {::alited::bar::ControlTab ; break}
   bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}
   bind $wtxt <ButtonRelease-1> "+ alited::main::SaveVisitInfo $wtxt"
-  bind $wtxt <KeyRelease> "+ alited::main::SaveVisitInfo $wtxt %K"
+  bind $wtxt <KeyRelease> "+ alited::main::SaveVisitInfo $wtxt %K %s"
   bind $wtxt <<Undo>> {+ alited::main::AfterUndoRedo}
   bind $wtxt <<Redo>> {+ alited::main::AfterUndoRedo}
   alited::keys::ReservedAdd $wtxt
@@ -601,7 +602,7 @@ proc main::_create {} {
     -lightcolor [list focus $::alited::FRABG active $::alited::FRABG] \
     -darkcolor [list focus $::alited::FRABG active $::alited::FRABG]
   ttk::style layout TreeNoHL [ttk::style layout Treeview]
-  $obPav untouchWidgets *.frAText *.fraBot.fra.lbxInfo *.entFind
+  $obPav untouchWidgets *.frAText *.lbxInfo
   # make the main apave object and populate it
   $obPav makeWindow $al(WIN).fra alited
   $obPav paveWindow $al(WIN).fra {
@@ -630,6 +631,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.BuTDown - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_down -command {alited::tree::MoveItem down}}}
     {.fraBot.panBM.fraTree.fra1.sev2 - - - - {pack -side left -fill y -padx 5}}
     {.fraBot.panBM.fraTree.fra1.BuTAddT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -command alited::tree::AddItem}}
+    {.fraBot.panBM.fraTree.fra1.BuTRenT - - - - {pack forget -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_change -command {::alited::file::RenameFileInTree {-geometry pointer+-100+10}}}}
     {.fraBot.panBM.fraTree.fra1.BuTDelT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -command alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraBot.panBM.fraTree.fra1.buTCtr - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -command {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}
@@ -667,7 +669,7 @@ proc main::_create {} {
     {.fraTop.panTop.fraSbv.SbvText .fraTop.panTop.frAText.text L - - {pack -fill y}}
     {.fraTop.FraHead  - - - - {pack forget -side bottom -fill x} {-padding {4 4 4 4} -relief groove}}
     {.fraTop.fraHead.labFind - - - - {pack -side left} {-t "    Unit: "}}
-    {.fraTop.fraHead.EntFindSTD - - - - {pack -side left} {-tvar alited::al(findunit) -w 30 -tip {$al(MC,findunit)}}}
+    {.fraTop.fraHead.CbxFindSTD - - - - {pack -side left} {-tvar alited::al(findunit) -values {$alited::al(findunitvals)} -w 30 -tip {$al(MC,findunit)}}}
     {.fraTop.fraHead.buT - - - - {pack -side left -padx 4} {-t "Find: " -relief flat -com alited::find::DoFindUnit -takefocus 0 -bd 0 -highlightthickness 0 -w 8 -anchor e}}
     {.fraTop.fraHead.rad1 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in all} -value 1}}
     {.fraTop.fraHead.rad2 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in current} -value 2}}

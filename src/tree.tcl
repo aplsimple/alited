@@ -94,10 +94,16 @@ proc tree::CurrentItemByLine {{pos ""} {fullinfo no}} {
   }
   set l [expr {int($pos)}]
   set TID [alited::bar::CurrentTabID]
-  foreach it $al(_unittree,$TID) {
-    set ID [NewItemID [incr iit]]
-    lassign $it lev leaf fl1 title l1 l2
-    if {$l1<=$l && $l<=$l2} {
+  set L 0
+  set R [llength $al(_unittree,$TID)]
+  while {$L<$R} {
+    set m [expr {int(($L+$R)/2)}]
+    lassign [lindex $al(_unittree,$TID) $m] lev leaf fl1 title l1 l2 ID
+    if {$l2<$l} {
+      set L [incr m]
+    } elseif {$l1>$l} {
+      set R $m
+    } else {
       if {$fullinfo} {
         return [list $ID $lev $leaf $fl1 $title $l1 $l2]
       }
@@ -239,6 +245,7 @@ proc tree::Create {} {
   || !$al(TREE,isunits) && $al(TREE,files)} return  ;# no need
   set wtree [$obPav Tree]
   if {!$al(TREE,isunits)} {
+    pack [$obPav BuTRenT] -side left -after [$obPav BuTAddT]  ;# display 'Rename' button
     # for file tree: get its current "open branch" flags
     # in order to check them in CreateFilesTree
     set al(SAVED_FILE_TREE) [list]
@@ -249,6 +256,8 @@ proc tree::Create {} {
         lappend al(SAVED_FILE_TREE) [list $fname [$wtree item $ID -open]]
       }
     }
+  } else {
+    pack forget [$obPav BuTRenT] ;# hide 'Rename' button
   }
   set TID [alited::bar::CurrentTabID]
   Delete $wtree {} $TID
@@ -525,6 +534,11 @@ proc tree::ShowPopupMenu {ID X Y} {
   $popm add separator
   $popm add command {*}[$obPav iconA none] -label $m2 \
     -command "::alited::tree::AddItem $ID" -image alimg_add
+  if {!$al(TREE,isunits)} {
+    $popm add command {*}[$obPav iconA change] \
+      -label $al(MC,renamefile) -accelerator F2 \
+      -command {::alited::file::RenameFileInTree {-geometry pointer+-100+-100}}
+  }
   $popm add command {*}[$obPav iconA none] -label $m3 \
     -command "::alited::tree::DelItem $ID" -image alimg_delete
   if {$al(TREE,isunits)} {
@@ -541,9 +555,6 @@ proc tree::ShowPopupMenu {ID X Y} {
   } else {
     if {$isfile} {set fname [file dirname $fname]}
     set sname [file tail $fname]
-    $popm add command {*}[$obPav iconA change] \
-      -label $al(MC,renamefile) -accelerator F2 \
-      -command {::alited::file::RenameFileInTree {-geometry pointer+10+-100}}
     $popm add separator
     $popm add command {*}[$obPav iconA OpenFile] -label {Open Selected File(s)} \
       -command ::alited::file::OpenFiles
@@ -599,6 +610,7 @@ proc tree::ButtonPress {but x y X Y} {
       set msec [clock milliseconds]
       if {$al(TREE,isunits)} {
         NewSelection $ID
+        alited::main::SaveVisitInfo
       } else {
         if {[info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<400}]} {
           OpenFile $ID
@@ -1007,7 +1019,7 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
     }
   }
   catch {$wtree see [lindex $selection 0]}
-  alited::main::SaveVisitInfo [alited::main::CurrentWTXT]
+  alited::main::SaveVisitInfo
 }
 #_______________________
 

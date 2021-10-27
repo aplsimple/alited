@@ -11,15 +11,23 @@
 # _______________________________________________________________________ #
 
 package require Tk
-#lappend auto_path C:/ActiveTcl/lib/treectrl2.4.1
-#lappend auto_path /usr/lib/treectrl2.4.1
+
+# use TCLLIBPATH variable (some tclkits don't see it)
+catch {
+  foreach _apave_ [lreverse $::env(TCLLIBPATH)] {
+    if {[lsearch -exact $::auto_path $_apave_]<0} {
+      set ::auto_path [linsert $::auto_path 0 $_apave_]
+    }
+  }
+  unset _apave_
+}
+
 package require treectrl
-#lappend auto_path C:/ActiveTcl/lib/Img1.4.6
-#lappend auto_path /usr/lib/tcltk/x86_64-linux-gnu/Img1.4.9
 package require Img
+
 ::msgcat::mcload [file join [file dirname [info script]] msgs]
 
-package provide aloupe 0.9.3
+package provide aloupe 0.9.4
 
 # _______________________________________________________________________ #
 
@@ -580,5 +588,5 @@ if {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info s
   ::aloupe::run {*}$::argv
 }
 # _________________________________ EOF _________________________________ #
-#ARGS1: -locale ua -alpha .2 -background "yellow" -ontop 1 -save 1 -inifile 123 -commandname "Get"
+#-ARGS1: -locale ua -alpha .2 -background "yellow" -ontop 1 -save 1 -commandname "Get"
 #-RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 23 9 12 "small icons"

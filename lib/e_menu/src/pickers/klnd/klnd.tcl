@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide klnd 1.1
+package provide klnd 1.2
 
 namespace eval ::klnd {
   namespace export calendar
@@ -68,7 +68,7 @@ proc ::klnd::my::InitCalendar {} {
   # get localized week day names
   set p(days) [list]
   foreach i {0 1 2 3 4 5 6} {
-    lappend p(days) [clock format [clock scan "06/[expr {22+$i}]/1941" -format %D] \
+    lappend p(days) [clock format [clock scan "03/[expr {14+$i}]/2021" -format %D] \
       -format %a -locale $loc]
   }
   if {$p(weekday) eq "%u"} {  ;# Sunday be the last day of week
@@ -78,7 +78,7 @@ proc ::klnd::my::InitCalendar {} {
   # get localized month names
   set p(months) [list]
   foreach i {01 02 03 04 05 06 07 08 09 10 11 12} {
-    lappend p(months) [clock format [clock scan "$i/01/1941" -format %D] \
+    lappend p(months) [clock format [clock scan "$i/01/2021" -format %D] \
       -format %B -locale $loc]
   }
 }

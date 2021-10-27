@@ -201,10 +201,11 @@ proc find::SearchUnit {{wtxt ""}} {
     lassign [SearchUnit1 $wtxt no] found TID
   }
   if {$found ne {}} {
+    alited::main::SaveVisitInfo
     alited::bar::BAR $TID show
     after idle " \
       alited::main::FocusText $TID $found.0 ; \
-      alited::tree::NewSelection {} $found.0 yes"
+      alited::main::SaveVisitInfo"
   } else {
     bell
   }
@@ -215,12 +216,18 @@ proc find::DoFindUnit {} {
   # Runs searching units in current text / all texts.
 
   namespace upvar ::alited al al obPav obPav
-  set ent [$obPav EntFindSTD]
+  set ent [$obPav CbxFindSTD]
   set what [string trim [$ent get]]
-  if {$what eq {}} {
-    bell
+  if {$what eq {} || [regexp {\s} $what]} {
+    alited::Message [msgcat::mc {Incorrect name for a unit.}] 4
     return
   }
+  if {[set i [lsearch -exact $al(findunitvals) $what]]>=0} {
+    set al(findunitvals) [lreplace $al(findunitvals) $i $i]
+  }
+  set al(findunitvals) [linsert $al(findunitvals) 0 $what]
+  catch {set al(findunitvals) [lreplace $al(findunitvals) $al(FAV,MAXLAST) end]}
+  $ent configure -values $al(findunitvals)
   InitShowResults
   set n 0
   if {$alited::main::findunits==1} {
@@ -250,7 +257,7 @@ proc find::FindUnit {} {
   # Displays "Find unit" frame.
 
   namespace upvar ::alited al al obPav obPav
-  set ent [$obPav EntFindSTD]
+  set ent [$obPav CbxFindSTD]
   if {[set word [GetWordOfText]] ne {}} {
     set alited::al(findunit) $word
   }
