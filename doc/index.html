@@ -34,6 +34,7 @@
 <ul class="toc">
 <li class="level2"><div class="li"><a href="#intro">What is this</a></div></li>
 <li class="level2"><div class="li"><a href="#installation">Installation</a></div></li>
+<li class="level2"><div class="li"><a href="#tclkit">Usage with tclkits</a></div></li>
 <li class="level2"><div class="li"><a href="#start">First start</a></div></li>
 <li class="level3"><div class="li"><a href="#units">Units</a></div></li>
 <li class="level3"><div class="li"><a href="#projects">Projects</a></div></li>
@@ -43,6 +44,7 @@
 <ol>
 <li class="level4"><div class="li"><a href="#contextmenu">Context menu</a></div>
 <li class="level4"><div class="li"><a href="#editmenu">Edit menu</a></div>
+<li class="level4"><div class="li"><a href="#searchmenu">Search menu</a></div>
 <li class="level4"><div class="li"><a href="#templates">Templates</a></div>
 <li class="level4"><div class="li"><a href="#keyssetup">Keys setup</a></div>
 <li class="level4"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div>
@@ -104,7 +106,7 @@ For a <em>quick</em> acquaintance of <span class="curid"><a href="#" class="wiki
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.4/2.Units_alited-1.0.4.mp4">2. Units (alited's main point)</A>
+<A href="https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.5/2.Units_alited-1.0.5.mp4">2. Units (alited's main point)</A>
 </li>
 
 <li>
@@ -120,9 +122,24 @@ For a <em>quick</em> acquaintance of <span class="curid"><a href="#" class="wiki
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.0.4/6.Themes_alited-1.0.4.mp4">6. Themes</A>
+<A href="https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.0.5/6.Themes_alited-1.0.5.mp4">6. Themes</A>
 </li>
 </ul>
+
+</p>
+<p id=png1>
+Below is a screenshot of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>:
+</p>
+<p>
+<img src="files/alited-en.png" class="media" alt="">
+</p>
+<p>
+<br>
+... and its localized and themed variant:
+</p>
+<p>
+<img src="files/alited-ru.png" class="media" alt="">
+</p>
 
 <p>
 <br>
@@ -185,20 +202,47 @@ In Linux, possibly you need to install the packages:
   <li> tclx8.4 </li>
 </ul>
 </p>
+<p>
+<br>
+
+</p>
+
+</div>
+
+<h2 id="tclkit">Usage with tclkits</h3>
+<div class="level2">
 
 <p>
 As noticed above, the <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is born for <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> development only, so it requires a basic <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> knowledge and the installed <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> packages.
 </p>
 
 <p>
-No need for a stand-alone <em>alited executable</em>. Also, the open sources of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> may be used for a further customization.
+No need for a stand-alone <em>alited executable</em>. Also, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s license allows using its open source for a further customization.
 </p>
 
 <p>
-However, if you use a stand-alone <em>tclkit</em> instead of installed <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> packages (or just a specific version of tclsh/wish), then you have to set it as "tclsh, wish or tclkit" option in "Preferences / Tools" and run <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> with the command:
+However, if you use a stand-alone <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkit</a> instead of fully installed <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> (or just a specific version of tclsh/wish), then you can set it as "tclsh, wish or tclkit" option in "Preferences / Tools" and run <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> with a command:
 <pre class="code">
 tclkit ~/PG/alited/src/alited.tcl</code></li>
 </pre>
+</p>
+
+<p>
+While <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> works fine under <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkits</a> based on Tcl/Tk 8.6 (as it uses core <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> packages only), you may develop programs requiring non-core packages. In such cases, these programs should append to <code>auto_path</code> the appropriate pathes to the non-core packages. Preferably these pathes should be subdirectories of your project, so that you make your project independent on the availability of packages at other machines.
+</p>
+
+<p>Another way to have <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkits</a> be friendly with the non-core packages is setting <code>TCLLIBPATH</code> environment variable before running <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>:
+<pre class="code">
+# in Linux:
+export TCLLIBPATH="~/myPrj/package1 ~/myPrj/package2"
+# in Windows:
+set TCLLIBPATH=~/myPrj/package1 ~/myPrj/package2
+# run alited to edit/run/debug a script
+tclkit alited.tcl myScript.tcl
+# or a whole project:
+tclkit alited.tcl ~/.config/myAlitedOptionsDir
+</pre>
+... and when in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> we run a script, there are no errors at <code>package require package1; package require package2</code>.
 </p>
 
 <!--
@@ -449,8 +493,10 @@ If the selected group should be moved to some far position, you can use "Drop Se
 Also, you can drag-and-drop a unit before a target location of the unit tree. There is no posibility to drag-and-drop a group of units.
 </p>
 
-<p>
+<p id="lastvisitscursor">
 When you navigate through the unit tree, the cursor positions are saved/restored in visited units. You can continue with units in the same positions you left them.
+<br>
+<b>Note</b>: this feature is active only in a current session of <span><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>.
 </p>
 
 <p>
@@ -470,7 +516,39 @@ These saved favorites' lists can be considered as <em>subprojects inside a proje
 </p>
 
 <p>
-The <em>Last Visited</em> list is a comrade of Favorites. It allows fast access to the last visited units. The <em>last visits</em> are registered at clicking units in the unit tree or at clicking found lines in the info listbox.
+The <em>Last Visited</em> list is a comrade of the favorites. It allows fast access to the last visited units. The <em>last visits</em> are registered at clicking units in the unit tree or at clicking found lines in the info listbox.
+</p>
+
+<p>
+The "Search / To Last Visited" menu item (Alt+Backspace) switches between last two visited units.
+</p>
+
+<p>
+The <em>Last Visited</em> list is populated and changed when you:
+<ul>
+<li>click a unit's content</li>
+<li>change a unit's content</li>
+<li>switch tabs of edited files</li>
+<li>choose the unit tree's item</li>
+<li>choose the infobar's item</li>
+<li>choose the Favorites/Last Visited's item</li>
+<li>press Alt+Backspace ("To Last Visited")</li>
+<li>press Alt+B ("To Matched Bracket")</li>
+<li>press Ctrl+L ("Look for Declaration")</li>
+<li>press F3 ("Find Next")</li>
+<li>press keys of a text's context menu (Alt+Q, Alt+W etc.)</li>
+<li>undo / redo changes</li>
+</ul>
+</p>
+
+<p>
+When you choose an item of "Favorites" or "Last Visited" list, <span><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> tries to enter a unit even when its file isn't open yet.
+</p>
+
+<p>
+Both "Favorites" and "Last Visited" lists (as well as their current visibility) are saved for all other sessions of <span><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>.
+<br>
+<b>Note</b>: to ensure this saving feature, it's recommended to quit <span><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> before shutdowning your machine or, in "Preferences / General / Saving", set all of "Save configuration" options to ON.
 </p>
 
 <p>
@@ -490,31 +568,16 @@ After pressing Ctrl+Shift+F you get "Search Units" bar where you can search unit
 </p>
 
 <p>
-After searching just click an info listbox to enter a found unit.
+After searching just click the info listbox's item to enter a found unit. With the listbox's context menu, you can also set "Don't focus a text" mode to scan the found units with keys.
+</p>
+
+
+<p>
+Pressing Ctrl+G brings up "Go to Line" dialogue allowing you to go to a unit by a relative line number. It's useful when you get an error message with a proc / method name and a line number.
 </p>
 
 <p>
-You can also set "Don't focus a text" mode in order to scan the found units with keys.
-</p>
-
-<p>
-Once called, "Search Units" bar might remain.
-</p>
-
-<p>
-After pressing Ctrl+G you get "Go to Line" dialogue where you can go inside a unit by its relative number of line.
-</p>
-
-<p>
-It's useful when you get a Tcl error message with a proc / method name and a line number.
-</p>
-
-<p>
-The <a href="#" class="wikilink1" title="Table of Contents">alited</a></span> provides a tool to check Tcl code for consistencies of brackets. In fact, it allows to find "problem" units.
-</p>
-
-<p>
-It's useful when you get a peculiar error message.
+The <span><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> provides a tool to check Tcl code for consistencies of brackets. In fact, it allows to find "problem" units. It's useful when you get a peculiar error message.
 </p>
 
 <p>
@@ -640,7 +703,9 @@ So, when you switch to another project, <span class="curid"><a href="#" class="w
 <div class="level2">
 
 <p>
-Along with the unit facilities, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> provides other tools for a navigation throughout a project.
+Along with the unit facilities, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> provides a lot of other tools to navigate throughout a project.
+</p>
+<p>
 One of them is "Find / Replace" tool, called with:
 <ul>
 <li> Ctrl+F keys</li>
@@ -659,7 +724,7 @@ Both contain 3 buttons:
 <ul>
 <li> do it <em>once</em></li>
 <li> do it <em>in text</em></li>
-<li> do it <em>in session</em></li>
+<li> do it <em>in session</em> or <em>in selected files</em></li>
 </ul>
 </p>
 
@@ -668,7 +733,7 @@ The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">
 </p>
 
 <p>
-The dialogue provides standard options of such type. Probably, except for one of them.
+The dialogue provides standard options of such type. Probably, except for two of them.
 </p>
 
 <p>The "Replace by blank" option means that you can replace the found strings by the blank string which means just deleting the found strings!
@@ -676,9 +741,14 @@ The dialogue provides standard options of such type. Probably, except for one of
 
 <p>As the blank replacements are rarely required, the "Replace by blank" option allows to avoid mistakes. Use it accordingly.
 </p>
-
 <p>
-All of the found instances in text / session are presented in the info listbox.
+Another uncommon option is a search in selected files. Sometimes very useful.
+</p>
+<p>
+If you select tabs of the tab bar with Ctrl+click, the "Find / Replace" dialogue will offer "All in N" meaning selected files (including a current one).
+</p>
+<p>
+All of the found in text / session / selected files instances are presented in the info listbox.
 </p>
 
 <p>
@@ -690,15 +760,11 @@ While the "Find / Replace" dialogue is open, the found strings are highlighted. 
 </p>
 
 <p>
-The info listbox has a context menu allowing to navigate through its items just with keys (Up / Down / Ctrl+Home / Ctrl+End).
+The info listbox has a context menu allowing you to navigate through its items just with keys (Up / Down / Ctrl+Home / Ctrl+End).
 </p>
 
 <p>
-If you select some tabs of the tab bar with Ctrl+click, the "Find / Replace" dialogue will offer Find/Replace "In selected files" (including a current one) instead of "In all files of session".
-</p>
-
-<p>
-The "Find / Replace" dialogue allows to replace the found strings with a new one. At single replacements, next found strings are presented one by one.
+The "Find / Replace" dialogue allows you to replace the found strings with a new one. At single replacements, next found strings are presented one by one.
 </p>
 
 <p>
@@ -707,12 +773,17 @@ Other search facilities of <span class="curid"><a href="#" class="wikilink1" tit
 <li> Find a unit</li>
 <li> Find a declaration</li>
 <li> Find a word</li>
+<li> Find by list</li>
 <li> Find in a directory</li>
 </ul>
 </p>
 
 <p>
-Press Ctrl+Shift+F or hit "Edit / Find Unit" menu item to find unit(s) by case insensitive glob patterns. It's <em>very helpful</em> when you remember a part of a unit's name, so just enter this part to find the unit. The part to find can include glob's characters:  *,   ?,   [abc]
+Press Ctrl+Shift+F or hit "Edit / Find Unit" menu item to find unit(s) by <em>case insensitive glob</em> patterns.
+</p>
+
+<p>
+It's very helpful when you remember a part of a unit's name, so just enter this part to find the unit.
 </p>
 
 <p>
@@ -725,7 +796,11 @@ To look for a proc/method declaration, you can try:
 </p>
 
 <p>
-To complete a command, press Tab key while the cursor is on initial characters of a command - this will offer you to select from a list of commands available in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session's files. The Tab key of this option is changeable (like many other keys) in "Setup / Preferences / Keys".
+To complete a command, press Tab key while the cursor is on initial characters of a command - this will offer you to select from a list of commands available in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session's files.
+</p>
+
+<p>
+The Tab key of this option is customizeable (like many other keys) in "Setup / Preferences / Keys".
 </p>
 
 <p>
@@ -737,11 +812,19 @@ At the completion, the commands offered to choose are:
 </p>
 
 <p>
-For a quick search of a word (or a selected text), there is a nice Ctrl+Shift+click applied to the word. It means a search throughout <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session and is <em>very helpful</em> in some cases. Though, the very first Ctrl+Shift+click can take 1-2 seconds of your day. Excuse me.
+For a quick search of a word (or a selected text), there is a nice Ctrl+Shift+click applied to the word. It means a search throughout <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session and is <em>very helpful</em> in some cases.
 </p>
 
 <p>
-To find a word or a selection in a directory hit the appropriate button of the toolbar. The search will be performed by "grep" command with options:
+Double clicking a word highlights all of its occurences (if red) or only one. This allows, e.g., quick overview of a variable's usage. If you want to highlight a selection, run a context menu.
+</p>
+
+<p>
+Sometimes, a whole list of words should be sought in a file. There is an appropriate item in "Search" menu. The search result is displayed in a text widget, so that you can use it in a code.
+</p>
+
+<p>
+To find a word or a selection in a directory, hit the appropriate button of the toolbar. The search will be performed by "grep" command with options:
 <ul>
 <li> recursively in a chosen directory</li>
 <li> case insensible</li>
@@ -749,7 +832,7 @@ To find a word or a selection in a directory hit the appropriate button of the t
 </p>
 
 <p>
-Other "grep" facilities are available in "e_menu" run with F4 key. For example, you can search in selected files of current <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session. The selection is set by Ctrl+clicking the tabs.
+Other "grep" facilities are available in "e_menu". Run it with F4 key and hit "Search all" item.
 
 </p>
 
@@ -801,14 +884,28 @@ The "Run" tool tries to run an application chosen as default for the currently e
 
 <p>
 But <a href="https://aplsimple.github.io/en/tcl/e_menu" title="Description of e_menu" rel="nofollow">e_menu</a> recognizes special comments like:
-<pre class="code">#RUNF1: file.tcl args</pre>
-which mean running "tclsh file.tcl args".
+<pre class="code">#ARGS1: args</pre>
+which means running "tclsh <em>currentfile</em> args".
 </p>
 
-<p>So, it's possible to run a main Tcl script at editing any Tcl script of an application.
+<p><pre class="code">#RUNF1: file.tcl args</pre>
+which means running "tclsh <em>file.tcl</em> args".
 </p>
 
-<p>The "Setup / Before Run" menu item allows to set command(s) to be executed before "Run" tool, sort of preparatory steps. You can enter several commands, one command per a line.
+<p>
+<pre class="code">#EXEC1: command args</pre>
+which means running "<em>command</em> args".
+</p>
+
+<p>
+There may be many those comments, from #ARGS1: (#RUNF1:, #EXEC1:) to #ARGS99: (#RUNF99:, #EXEC99:), but only first of them would be run.
+</p>
+
+<p>
+So, it's possible to run a main Tcl script at editing any Tcl script of an application. Or test a singular script in many applications, while editing it.
+</p>
+
+<p>The "Setup / Before Run" menu item allows setting command(s) to be executed before "Run" tool, sort of preparatory steps. You can enter several commands, one per a line.
 </p>
 
 <p>
@@ -822,7 +919,7 @@ Still, this context help is available only if <a href="https://www.tcl.tk/man/tc
 </p>
 
 <p>
-In <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, <em>tkcon</em> tool is customizable a little. To do this, open from <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s menu "Setup / Preferences / Tools / tkcon". There is a <em>Test</em> button allowing to preview your settings.
+In <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, <em>tkcon</em> tool is customizable in "Setup / Preferences"  menu item, "Tools / tkcon" tab. Use <em>Test</em> button to preview <em>tkcon</em>.
 </p>
 
 <p>
@@ -907,7 +1004,7 @@ With right-clicking a text, you get a context menu containing:
 </li>
 
 
-<li><em>Highlight processing</em> commands:
+<li id="highlightcom"><em>Highlight processing</em> commands:
 <br><br>
 <ul>
 <li><em>Highlight First</em> (Alt+Q keys customized in "Setup / Preferences / Keys")
@@ -954,7 +1051,18 @@ applied to a current unit, moves it down
 <li><em>Uncomment</em> command (Ctrl+] keys customized in "Setup / Preferences / Keys")
 <br><br></li>
 <li><em>Put New Line</em> command (Ctrl+P keys customized in "Setup / Preferences / Keys")
-<br><br></li>
+</ul>
+</p>
+
+<br>
+<p>
+<h3 id="searchmenu">3. Search menu</h3>
+</p>
+
+<p>
+The search facilities of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> are rather rich:
+<ul>
+</li>
 <li><em>Find / Replace</em> command (Ctrl+F keys)
 <br>when Ctrl+F pressed twice, performs a search in a last mode (once, in text, in all)
 <br><br></li>
@@ -970,37 +1078,46 @@ applied to a current unit, moves it down
 <li><em>Find by List</em> command
 <br>searches a list of words in a current text; very useful in some cases
 <br><br></li>
+<li><em>To Last Visited</em> command (Alt+Backspace keys)
+<br>switches between two last visited units
+<br><br></li>
+<li><em>To Matched Bracket</em> command (Alt+B keys)
+<br>when the cursor is on a bracket, goes to its match
+<br><br></li>
 <li><em>Go to Line</em> command (Ctrl+G keys customized in "Setup / Preferences / Keys")
 </ul>
+</p>
 
 <p>
-<b>Note</b> again: when Ctrl+F (or Ctrl+Shift+F) keys are pressed twice, a search is performed immediately.
+<b>Note</b> again: if Ctrl+F (or Ctrl+Shift+F) keys are pressed twice, a last performed search starts immediately. When you need to repeat a search in text/session with many words of a text, this feature will help a lot: just repeatedly set the cursor on the words and do it.
+</p>
+<p>Also, for  highlighting words / selected strings, use <a href="#highlightcom">alited's context menu</a> on a text or double-click on a word. If there are multiple highlighted instances, they are highlighted with reddish color, otherwise the only instance is highlighted as a usual selection. This feature is very useful for example when you need to see all uses of a variable in a procedure: double click the variable and you'll see all of its occurences. At that, mouse moves and clicks on the text don't remove the highlighting, only a keypressing does.
 </p>
 
 <br>
 <p>
-<h3 id="templates">3. Templates</h3>
+<h3 id="templates">4. Templates</h3>
 </p>
 
 <p>
-The templates are available in "Setup" menu and through "Add Unit" button of the tree toolbar.
+The templates are available through "Setup / Templates" menu item and "Add Unit" button of the tree toolbar.
 </p>
 
 <p>
-</p>
-
-<br>
-<p>
-<h3 id="keyssetup">4. Keys setup</h3>
-</p>
-
-<p>
-A few of keys are customized in "Setup / Preferences / Keys" menu.
 </p>
 
 <br>
 <p>
-<h3 id="misckeys">5. Miscellaneous keys</h3>
+<h3 id="keyssetup">5. Keys setup</h3>
+</p>
+
+<p>
+A few of keys are customized with "Setup / Preferences / Keys" menu item.
+</p>
+
+<br>
+<p>
+<h3 id="misckeys">6. Miscellaneous keys</h3>
 </p>
 
 <p>
@@ -1048,6 +1165,13 @@ This option allows to change a tint of a current color scheme. It's per a sessio
 When all of sudden you get a feeling that too much of light / darkness is around, this option might help.
 </p>
 
+<em>Wrap Lines</em>
+<p>
+This option allows to turn off the line wrapping.
+<br>
+It's rarely needed, so the wrapping is normally on. This option acts per a file.
+</p>
+
 <em>Tip File Info</em>
 <p>
 This option allows to view an information of file attributes displayed in tips of the tab bar and the file tree.
@@ -1088,7 +1212,7 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 </li>
 
 <li>
-<A href="https://aplsimple.github.io/en/tcl/alited/alited.html">Reference</A>
+<A href="alited.html">Reference</A>
 </li>
 
 <li>
@@ -1100,7 +1224,7 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.4/2.Units_alited-1.0.4.mp4">2. Units</A>
+<A href="https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.5/2.Units_alited-1.0.5.mp4">2. Units</A>
 </li>
 
 <li>
@@ -1116,7 +1240,7 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.0.4/6.Themes_alited-1.0.4.mp4">6. Themes</A>
+<A href="https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.0.5/6.Themes_alited-1.0.5.mp4">6. Themes</A>
 </li>
 </ul>
 
