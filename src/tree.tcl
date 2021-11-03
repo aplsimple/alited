@@ -957,8 +957,10 @@ proc tree::GetTree {{parent {}} {Tree Tree}} {
       if {$lev<=$levp} {return -code break}  ;# all of branch fetched
       if {$item eq $parent} {set levp $lev}
     }
-    if {$parent eq {} || $levp>-1} {
-      lappend tree [list $lev %children $item {%text} {%values}]
+    catch {
+      if {$parent eq {} || $levp>-1} {
+        lappend tree [list $lev %children $item {%text} {%values}]
+      }
     }
   }
   return $tree

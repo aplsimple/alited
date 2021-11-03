@@ -8,6 +8,8 @@ Version `1.0.6 (30 Nov'21)`
   - BUGFIX: demo 2.Units 03:15 .. 04:18 - cursor position is 309.1 instead of 309.10
   - BUGFIX: treeview in sun-valley dark theme
   - BUGFIX: diff name normalized for Windows
+  - BUGFIX: populating "Last visited" at changing unit name
+  - BUGFIX: running e_menu & tools at cursor on quotes & braces
   - NEW   : ru.msg, ua.msg for klnd
   - CHANGE: unit's cursor position saved at every Left-click (in current unit too)
   - CHANGE: use Pref's "ignore dirs" for projects (al(prjdirign))

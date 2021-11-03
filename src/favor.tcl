@@ -36,10 +36,11 @@ proc favor::LastVisited {item header} {
   # search an old item
   set found no
   set i 0
+  set ln "[expr {int([[alited::main::CurrentWTXT] index insert])}]"
   foreach it $al(FAV,visited) {
     lassign $it - - ID - values
-    lassign $values name2 fname2 header2
-    if {$fname eq $fname2 && $header eq $header2} {
+    lassign $values name2 fname2 header2 l1
+    if {$ln eq $l1 || $fname eq $fname2 && $header eq $header2} {
       set found yes
       # if found, move it to 0th position
       set al(FAV,visited) [lreplace $al(FAV,visited) $i $i]
@@ -47,7 +48,7 @@ proc favor::LastVisited {item header} {
     }
     incr i
   }
-  set al(FAV,visited) [linsert $al(FAV,visited) 0 [list - - - - [list $name $fname $header]]]
+  set al(FAV,visited) [linsert $al(FAV,visited) 0 [list - - - - [list $name $fname $header $ln]]]
   # delete last items if the list's limit is exceeded
   catch {set al(FAV,visited) [lreplace $al(FAV,visited) $al(FAV,MAXLAST) end]}
   # update the tree widget
