@@ -458,17 +458,18 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
   # check for current text and current unit's lines
   if {$wtxt eq {}} {set wtxt [CurrentWTXT]}
   set pos [$wtxt index insert]
-  set line [expr {int($pos)}]
-  set doit [expr {$wtxt ne $al(CURRUNIT,wtxt) || (
-    ($line < $al(CURRUNIT,line1) || $line > $al(CURRUNIT,line2)))}]
-  lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name \
-    al(CURRUNIT,line1) al(CURRUNIT,line2)
-  set al(CURRUNIT,wtxt) $wtxt
-  set al(CURRUNIT,itemID) $itemID
-  set al(CURRUNIT,line) $line
-  # if current unit's info changed,
-  # save it and update "Last Visited" list
-  if {$doit} {
+  lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name
+#  set line [expr {int($pos)}]
+#  set doit [expr {$wtxt ne $al(CURRUNIT,wtxt) || (
+#    ($line < $al(CURRUNIT,line1) || $line > $al(CURRUNIT,line2)))}]
+#  lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name \
+#    al(CURRUNIT,line1) al(CURRUNIT,line2)
+#  set al(CURRUNIT,wtxt) $wtxt
+#  set al(CURRUNIT,itemID) $itemID
+#  set al(CURRUNIT,line) $line
+#  # if current unit's info changed,
+#  # save it and update "Last Visited" list
+#  if {$doit} {
     set header [alited::unit::GetHeader $wtree $itemID]
     alited::favor::LastVisited [$wtree item $itemID] $header
     set selID [$wtree selection]
@@ -482,11 +483,11 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
       set treeID [alited::tree::NewItemID [incr iit]]
       lassign $it lev leaf fl1 title l1 l2
       if {$name eq [alited::tree::UnitTitle $title $l1 $l2]} {
-        set al(CPOS,$TID,$header) [expr {$pos-$l1}]
+        set al(CPOS,$TID,$header) [alited::p+ $pos -$l1]
         break
       }
     }
-  }
+#  }
 }
 #_______________________
 

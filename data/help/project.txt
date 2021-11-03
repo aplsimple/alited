@@ -2,29 +2,33 @@
  Then choose a root directory of the project. Supposedly, it should
  contain all files and subdirectories of the project.
 
- If the project directory contains some subdirectories which should be
- ignored (most often, SCM ones like ".git"), enter their tail names.
- Separate them with spaces. Use double quotes if they include spaces.
-
  The "Notes" field may be used as a sort of diary for the project.
 
  The "Options" tab contains other details of the project:
 
+   - "Skip subdirectories" - if the project directory contains some
+     subdirectories which should be ignored (most often, SCM ones like
+     ".git"), enter their tail names; separate them with spaces; use
+     double quotes if they include spaces;
+
    - "End of line" - if this field is empty, the EOLs for saved files
-     would correspond your platform; but if you have some projects
-     with other EOLs, set the field accordingly;
+     are defined by your platform; but if you have some projects with
+     other EOLs, set the field accordingly;
 
    - "Indentation" is a number of spaces to indent your texts' lines;
-     if "Auto detection" is on, a text indentation is calculated from
-     its first indented line; for a new file it's set by "Indentation"
+     if "Auto detection" is on, a text indentation is defined by its
+     first indented line while for a new file it's set by "Indentation"
 
    - "Unit lines per 1 red bar" is a number of lines to mark a unit
      (proc/method) with 1 red bar in its icon; a fully red icon is bad!
 
-   - "Multi-line strings" is recommended be OFF for projects with giant
+   - "Multi-line strings" is recommended be OFF for projects with large
      files; it's only for granular (with small source files) projects
-     the ON value could be a good choice because it can slow your work;
+     that ON value could be a good choice because it can slow your work;
      use it on your own risk.
+
+ NOTE: for new projects (if this mode is checked), these options may be
+ defined by "Preferences/General/Projects".
 
  The buttons under the list are used to add / change / delete a project.
  At adding / changing a project, you can choose to include the current

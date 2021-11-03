@@ -195,7 +195,7 @@ namespace eval ::alited {
     {Indentation:} {Пробілів відступу:}
     {Auto detection} {Автовизначення}
     {End of line:} {Кінці рядків:}
-    {Multi-line strings:} {Многорядкові string:}
+    {Multi-line strings:} {Багаторядкові string:}
     {Unit lines per 1 red bar:} {Рядків юніта на 1 червону смужку:}
     {List of files:} {Список файлів:}
     "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n" "Ви можете\n  - додати поточний список файлів до\n  - замінити поточним списком\n  - видалити\n  - не змінювати\nсписок файлів у проекті.\n"
@@ -211,6 +211,7 @@ namespace eval ::alited {
     "Directory \"%d\"\ndoesn't exist.\n\nCreate it?" "Каталог \"%d\"\nне існує.\n\nСтворити його?"
     {Checking %d. Wait a little...} {Перевірка %d. Чекайте...}
     {Too big directory for a project: %n files or more.} {Занадто великий каталог проекту: не менш, ніж %n файлів.}
+    {Options for new projects are set in "Preferences/General/Projects"} {Опції для нових проектів беруться з "Опції/Загальне/Проекти"}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -327,7 +328,7 @@ namespace eval ::alited {
     {Keys} {Клавіши}
     {Misc.} {Різне}
     {Saving} {Збереження}
-    {View} {Вид}
+    {View} {Вигляд}
   }
 
   ### ________________________ General _________________________ ###

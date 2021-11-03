@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.5  ;# for documentation (esp. for Ruff!)
+package provide alited 1.0.5.1  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -212,13 +212,16 @@ namespace eval alited {
     #   p1 - 1st position
     #   p2 - 2nd position
     # The lines may be with "-".
+    # Reasons for this:
+    #  1. expr $p1+$p2 doesn't work, e.g. 309.10+1.4=310.5 instead of 310.14
+    #  2. do it without a text widget's path (for text's arithmetic)
 
     lassign [split $p1 .] l11 c11
     lassign [split $p2 .] l21 c21
     foreach n {l11 c11 l21 c21} {
       if {![string is digit -strict [string trimleft [set $n] -]]} {set $n 0}
     }
-    return "[incr l11 $l21].[incr c11 $c21]"
+    return [incr l11 $l21].[incr c11 $c21]
   }
   #_______________________
 

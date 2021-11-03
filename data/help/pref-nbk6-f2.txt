@@ -1,13 +1,14 @@
 The e_menu main options are following:
 
- - "Run as external app" if on runs e_menu as external application;
+ - "Run as external app" if set ON runs e_menu as an external app;
    this is a bit slower than "internal one", still more secure and
    themed by "Color scheme"; also running it external you wouldn't
    await for time-wasting actions like a backup
 
- - "Color scheme" is used when the e_menu is run as external app
+ - "Color scheme" is used when the e_menu is run as an external app
 
- - "Geometry" sets a geometry of the main menu at starting e_menu
+ - "Geometry" sets a geometry of the main menu at starting e_menu;
+   mostly defined as +X+Y meaning x- and y-coordinates
 
  - "Directory of menus" contains .mnu files to be used by e_menu
 

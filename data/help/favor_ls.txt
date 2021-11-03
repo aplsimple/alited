@@ -1,6 +1,6 @@
  Use buttons on the right to add/change/delete a list of favorites.
 
- The currently used list of favorites is displayed at the bottom.
+ The current list of favorites is displayed in the bottom listbox.
  Enter a name for the list and click "Add" button to use it aftewards.
 
  This way you can keep a kind of "projects inside a project", choosing

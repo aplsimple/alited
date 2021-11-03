@@ -3,7 +3,7 @@
  Note that "default", "clam", "alt", "classic" are standard Ttk themes.
  The standard themes may be used with all color schemes.
 
- But "aw", "azure", "sun-valley", "forest" light / dark themes are only good
+ But "aw*", "azure", "sun-valley", "forest" light / dark themes are only good
  with light / dark color schemes accordingly.
 
  E.g. "azure-dark" theme fits to "AzureDark" color scheme, while "forest-light"

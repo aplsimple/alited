@@ -122,6 +122,7 @@ namespace eval ::alited {
     set al(MC,prjsel)      [msgcat::mc {Click a project}]
     set al(MC,prjdelq)     [msgcat::mc "Delete a project \"%n\" ?"]
     set al(MC,prjexists)   [msgcat::mc "A project \"%n\" already exists."]
+    set al(MC,DEFopts)     [msgcat::mc {Options for new projects are set in "Preferences/General/Projects"}]
 
     ## _ favorites _ ##
     set al(MC,favsel)      [msgcat::mc {Click a list of favorites}]

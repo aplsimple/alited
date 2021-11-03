@@ -476,17 +476,19 @@ namespace eval ttk::theme::sun-valley-dark {
 
         ttk::style element create Treeheading.cell \
             image [list $images(treeheading-rest) \
-                pressed $images(treeheading-pressed) \
+                pressed $images(treeheading-rest) \
                 active $images(treeheading-hover)
-            ] -border 5 -padding 15 -sticky nsew
+            ] -border 5 -padding 4 -sticky nsew
 
         ttk::style element create Treeitem.indicator \
             image [list $images(arrow-right) \
                 user2 $images(empty) \
                 user1 $images(arrow-down) \
-            ] -width 26 -sticky {}
+            ] -width 17 -sticky {}
 
-        ttk::style configure Treeview -background $colors(-bg) -rowheight [expr {[font metrics font -linespace] + 2}]
+#        ttk::style configure Treeview -foreground $colors(-fg) -background $colors(-bg) -rowheight [expr {[font metrics font -linespace] + 2}]
+        ttk::style configure Treeview -background $colors(-bg)
+        ttk::style configure Treeview.Item -padding {2 0 0 0}
         ttk::style map Treeview \
             -background [list selected $colors(-selectbg)] \
             -foreground [list selected $colors(-selectfg)]

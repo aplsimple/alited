@@ -205,6 +205,7 @@ namespace eval ::alited {
     "Directory \"%d\"\ndoesn't exist.\n\nCreate it?" "Каталог \"%d\"\nне существует.\n\nСоздать его?"
     {Checking %d. Wait a little...} {Проверка %d. Ожидайте...}
     {Too big directory for a project: %n files or more.} {Слишком велик каталог проекта: %n файлов или более.}
+    {Options for new projects are set in "Preferences/General/Projects"} {Опции для новых проектов берутся из "Опции/Общее/Проекты"}
   }
 
   ## ________________________ Favorites ________________________ ##

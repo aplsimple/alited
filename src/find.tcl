@@ -935,25 +935,26 @@ proc find::_create {} {
       {radA labBm L 1 1 {-st es -padx 0}  {-t "Exact" -var ::alited::find::data(v1) -value 1 -style TRadiobuttonFS}}
       {radB radA L 1 1 {-st ws -padx 5}  {-t "Glob" -var ::alited::find::data(v1) -value 2 -tip "Allows to use *, ?, \[ and \]\nin \"find\" string." -style TRadiobuttonFS}}
       {radC radB L 1 5 {-st ws -padx 0 -cw 1}  {-t "RE" -var ::alited::find::data(v1) -value 3 -tip "Allows to use the regular expressions\nin \"find\" string." -style TRadiobuttonFS}}
-      {h_2 labBm T 1 9  {-st es -rw 1}}
+      {h_2 labBm T 1 9  {-st es -rw 1 -pady 0}}
       {seh  h_2 T 1 9  {-st ews}}
       {chb1 seh  T 1 2 {-st w} {-t "Match whole word only" -var ::alited::find::data(c1) -style TCheckbuttonFS}}
       {chb2 chb1 T 1 2 {-st w} {-t "Match case" -var ::alited::find::data(c2) -style TCheckbuttonFS}}
       {chb3 chb2 T 1 2 {-st w} {-t "Replace by blank" -var ::alited::find::data(c3) -tip "Allows replacements by the empty string,\nin fact, to erase the found ones." -style TCheckbuttonFS}}
-      {sev1 chb1 L 5 1 }
-      {fralabB3 sev1 L 4 6 {-st nsw} {-borderwidth 0 -relief groove -padding {3 3}}}
+      {sev1 chb1 L 4 1 }
+      {fralabB3 sev1 L 4 6 {-st nsw -pady 0} {-borderwidth 0 -relief groove -padding {3 3}}}
       {.labB3 - - - - {pack -anchor w} {-t "Direction:" -style TLabelFS}}
       {.rad1 - - - - {pack -anchor w -padx 0} {-t "Up" -image alimg_up -compound left -var ::alited::find::data(v2) -value 1 -style TRadiobuttonFS}}
       {.rad2 - - - - {pack -anchor w -padx 0} {-t "Down" -image alimg_down -compound left -var ::alited::find::data(v2) -value 2 -style TRadiobuttonFS}}
       {.chb4 - - - - {pack -anchor sw} {-t "Wrap around" -var ::alited::find::data(c4) -style TCheckbuttonFS}}
-      {sev2 cbx1 L 10 1 }
-      {But1 sev2 L 1 1 {-st wes} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
-      {But2 but1 T 1 1 {-st wes} {-t "All in Text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
-      {But3 but2 T 1 1 {-st wen} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
-      {seh_3 but3 T 2 1 {-st ews}}
-      {but4 seh_3 T 1 1 {-st wes} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
-      {but5 but4 T 1 1 {-st wes} {-t "All in Text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
-      {But6 but5 T 1 1 {-st wen} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
+      {sev2 cbx1 L 9 1}
+      {But1 sev2 L 1 1 {-st wes -pady 2} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
+      {But2 but1 T 1 1 {-st we -pady 0} {-t "All in Text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
+      {But3 but2 T 1 1 {-st wen -pady 2} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
+      {seh2 but3 T 1 1 {-st ews}}
+      {seh3 seh2 T 1 1 {-st ews}}
+      {but4 seh3 T 1 1 {-st wes -pady 2} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
+      {but5 but4 T 1 1 {-st we -pady 0} {-t "All in Text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
+      {But6 but5 T 1 1 {-st wen -pady 2} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
     }
     SessionButtons
     foreach k {f F} {bind $w.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}

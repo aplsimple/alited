@@ -1,6 +1,6 @@
-The common options are following:
+The common options of tools are following:
 
- - "Path to tclsh, wish or tclkit" is a path to Tcl/Tk executable;
+ - "tclsh, wish or tclkit" is a path to Tcl/Tk executable;
    by default, it is an executable that had run alited.tcl
 
  - "Path to man/tcl8.6" is used at calling Tcl/Tk context help;

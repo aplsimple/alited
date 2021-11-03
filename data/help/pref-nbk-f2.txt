@@ -12,7 +12,7 @@
 
  See also "Preferences / Tools / bar/menu" tab.
 
- The following options restrict a number of:
+ Other options restrict a number of:
    - files in 'Files/Recent Files' menu item
    - items in 'Last Visited' list of units
    - project files: this is important in order to
@@ -23,3 +23,5 @@
  just before its change, in a project's subdirectory hidden for SCM. Set
  it blank to disable the backup. The "Maximum" field allows to backup a
  few of file copies, named like: file-1.bak, file-2.bak, file-3.bak...
+
+ "Bell at warnings" may be set off to make 'alited' mute at warnings.

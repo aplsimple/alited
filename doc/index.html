@@ -512,7 +512,7 @@ If some favorites' list is valuable, you can save it by its own name to return t
 </p>
 
 <p>
-These saved favorites' lists can be considered as <em>subprojects inside a project</em>.
+This way you can keep a kind of "projects inside a project", choosing a list of favorites for appropriate tasks inside a current project.
 </p>
 
 <p>
@@ -647,7 +647,7 @@ The open files are highlighted in the file tree. When a file is closed it's unhi
 </p>
 
 <p>
-A newly open file is placed in the very beginning of the tab bar. This is true even when you select a tab bar file which isn't among the visible tabs.
+A newly open file is placed in the very beginning of the tab bar. This is true even when you select a tab bar file that isn't among the visible tabs.
 </p>
 
 <p>
@@ -670,6 +670,7 @@ When projects are switched, <span class="curid"><a href="#" class="wikilink1" ti
 <li> a currently open file</li>
 <li> a list of favorites</li>
 <li> a list of favorites' lists</li>
+<li> a list of last visited units</li>
 </ul>
 So, when you switch to another project, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> closes all files of the old project and open all files of the new project.
 </p>
@@ -689,7 +690,7 @@ So, when you switch to another project, <span class="curid"><a href="#" class="w
 <p>There are 8 grades of redness: 0, 1*N, 2*N, 3*N ... 7*N. So, if N=20, then 141 lines would mean "a too long unit". Just look at the unit tree to detect those horrible reds, candidates for reforming.
 </p>
 
-<p>For example, look at <code>bar::FillBar</code> of <a href=#png1>the above screenshot</a>: its row range is 27..80, total 54 which gives two red bars.
+<p>For example, look at <code>favor::LastVisited</code> of <a href=#png1>the above screenshot</a>: its row range is 20..63, total 44 which gives two red bars.
 </p>
 
 <p>
@@ -764,7 +765,7 @@ The info listbox has a context menu allowing you to navigate through its items j
 </p>
 
 <p>
-The "Find / Replace" dialogue allows you to replace the found strings with a new one. At single replacements, next found strings are presented one by one.
+The "Find / Replace" dialogue allows you to replace the found strings with a new one. At single replacements, first hit "Find", then "Replace" - next found strings will be presented one by one.
 </p>
 
 <p>
@@ -820,7 +821,7 @@ Double clicking a word highlights all of its occurences (if red) or only one. Th
 </p>
 
 <p>
-Sometimes, a whole list of words should be sought in a file. There is an appropriate item in "Search" menu. The search result is displayed in a text widget, so that you can use it in a code.
+Sometimes, a whole list of words should be sought in a file. There is an appropriate item in "Search" menu. The search result is displayed in a text widget, so that you can copy-paste it to a code.
 </p>
 
 <p>

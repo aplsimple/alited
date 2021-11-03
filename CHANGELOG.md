@@ -1,9 +1,23 @@
 # LAST CHANGES:
 
 
-Version `1.0.5 (27 Oct'21)`
+Version `1.0.6 (30 Nov'21)`
 
-  - TODO  : CHANGE: revised help & doc
+  - TODO  : BUGFIX: issues with e_menu & tools in Windows
+
+  - BUGFIX: demo 2.Units 03:15 .. 04:18 - cursor position is 309.1 instead of 309.10
+  - BUGFIX: treeview in sun-valley dark theme
+  - BUGFIX: diff name normalized for Windows
+  - NEW   : ru.msg, ua.msg for klnd
+  - CHANGE: unit's cursor position saved at every Left-click (in current unit too)
+  - CHANGE: use Pref's "ignore dirs" for projects (al(prjdirign))
+  - CHANGE: "ignore dirs" option of projects moved to Project/Options
+  - CHANGE: warning of Pref/General/Projects when defining Project/Options
+  - CHANGE: ru.msg, ua.msg
+  - CHANGE: apave package
+
+
+Version `1.0.5 (27 Oct'21)`
 
   - BUGFIX: default/classic/alt theme & dark CS: selected check/radio buttons' bg
   - BUGFIX: demo 1.Start   ~01:10 : 'All #1 1-0' in tip of 'Row', if 'No name'
@@ -25,6 +39,7 @@ Version `1.0.5 (27 Oct'21)`
   - NEW   : "Don't ask again" checkbox at adding to Favorites
   - NEW   : "Your commands" for Tcl syntax
   - NEW   : "Remove" of "Last Visited" removes a current unit from the list
+  - CHANGE: revised help & doc
   - CHANGE: combobox for "Find Unit" (saved list)
   - CHANGE: save/restore unit's position and last visited units at
             switching unit/file, text change, mouse click (when unit tree is active)

@@ -154,7 +154,7 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   }
   # get saved pos
   if {[info exists al(CPOS,$ctab,$header)]} {
-    set pos [expr {$l1+$al(CPOS,$ctab,$header)}]
+    set pos [alited::p+ $l1 $al(CPOS,$ctab,$header)]
   } else {
     set pos [$wtxt index insert]
   }
@@ -182,12 +182,12 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
       set opos [$wtxt index insert]
       if {$o1<=$opos && $opos<($o2+1)} {
         set ohead [alited::unit::GetHeader $wtree $itold]
-        set al(CPOS,$otab,$ohead) [expr {$opos-$o1}]
+        set al(CPOS,$otab,$ohead) [alited::p+ $opos -$o1]
       }
     }
   }
   alited::bar::BAR configure --currSelTab $ctab --currSelItem $itnew
-  catch {set al(CPOS,$ctab,$header) [expr {$pos-$l1}]}
+  catch {set al(CPOS,$ctab,$header) [alited::p+ $pos -$l1]}
   if {$doFocus} {
     alited::main::FocusText $TID $pos
   }
@@ -212,7 +212,6 @@ proc tree::SaveCursorPos {} {
     set itnew [CurrentItemByLine $pos]
     set wtree [$obPav Tree]
     set header [alited::unit::GetHeader $wtree $itnew]
-    #set al(CPOS,$TID,$header) [expr {$pos-$l1}]
     # save the position to unit tree list, to restore it in favor::GoToUnit
     set it [lsearch -exact -index 6 $al(_unittree,$TID) $itnew]
     if {$it>-1} {

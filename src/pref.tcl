@@ -305,6 +305,7 @@ proc pref::Ok {args} {
     set al(EM,TclList) $al(EM,Tcl)
     foreach tcl $al(TCLLIST) {append al(EM,TclList) \t $tcl}
     set al(EM,TclList) [string trim $al(EM,TclList)]
+    set al(EM,DiffTool) [file join {*}[file split $al(EM,DiffTool)]]
     $obDl2 res $win 1
     if {$ans == 1} {alited::Exit - 1 no}
   }
@@ -508,8 +509,8 @@ proc pref::General_Tab3 {} {
     {fra2 v_ T 1 2 {-st nsew -cw 1}}
     {.labDef - - 1 1 {-st w -pady 1 -padx 3} {-t {Default values for new projects:}}}
     {.swiDef .labDef L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(PRJDEFAULT) -com alited::pref::CheckUseDef -afteridle alited::pref::CheckUseDef}}
-    {.h_ .labDef T 1 2 {-st w -pady 8 -padx 3}}
-    {.labIgn .h_ T 1 1 {-st w -pady 8 -padx 3} {-t "Skip subdirectories:"}}
+    {.seh .labDef T 1 10 {-st ew -pady 3 -padx 3}}
+    {.labIgn .seh T 1 1 {-st w -pady 8 -padx 3} {-t "Skip subdirectories:"}}
     {.EntIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(DEFAULT,prjdirign) -w 50}}
     {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
     {.CbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjEOL) -values {{} LF CR CRLF} -state readonly -w 9}}
@@ -1010,11 +1011,11 @@ proc pref::Common_Tab {} {
     {.labTcl - - 1 1 {-st w -pady 1 -padx 3} {-t "tclsh, wish or tclkit:"}}
     {.fiLTcl .labTcl L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,Tcl) -values {$alited::al(TCLLIST)} -w 48 -initialdir $alited::al(TCLINIDIR)}}
     {.labDoc .labTcl T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl8.6:"}}
-    {.dirDoc .labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 40}}
+    {.dirDoc .labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 48}}
     {.labTT .labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
-    {.entTT .labTT L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,tt=) -w 40}}
+    {.entTT .labTT L 1 1 {-st swe -pady 5} {-tvar alited::al(EM,tt=) -w 48}}
     {.labDF .labTT T 1 1 {-st w -pady 1 -padx 3} {-t "Diff tool:"}}
-    {.entDF .labDF L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 40}}
+    {.filDF .labDF L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 48}}
   }
 }
 #_______________________

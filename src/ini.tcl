@@ -444,7 +444,7 @@ proc ini::ReadIniPrj {} {
   set al(tabs) [list]
   set al(curtab) 0
   alited::favor_ls::GetIni ""  ;# initializes favorites' lists
-  set al(prjdirign) ".git .bak"
+  set al(prjdirign) $al(DEFAULT,prjdirign)
   if {![file exists $al(prjfile)]} {
     set al(prjfile) [file join $alited::PRJDIR [file tail $al(prjfile)]]
   }

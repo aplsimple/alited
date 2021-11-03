@@ -246,7 +246,7 @@ proc project::GetProjectOpts {fname} {
   }
   set prjinfo($pname,prjfile) $fname
   set prjinfo($pname,prjname) $pname
-  set prjinfo($pname,prjdirign) ".git .bak"
+  set prjinfo($pname,prjdirign) $al(DEFAULT,prjdirign)
   set prjinfo($pname,tablist) [list]
   if {[set currentprj [expr {$data(prjname) eq $pname}]]} {
     foreach tab [alited::bar::BAR listTab] {
@@ -675,8 +675,6 @@ proc project::Tab1 {} {
     {.EntName .labName L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 50}}
     {.labDir .labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
     {.Dir .labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 50}}
-    {.labIgn .labDir T 1 1 {-st w -pady 8 -padx 3} {-t "Skip subdirectories:"}}
-    {.entIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 50}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 lab T 1 2 {-st nsew -rw 1 -cw 1}}
     {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fra.fraB2.butHelp -tip {$alited::al(MC,notes)}}}
@@ -688,10 +686,18 @@ proc project::Tab1 {} {
 proc project::Tab2 {} {
   # Creates Options tab of "Project".
 
+  namespace upvar ::alited al al
+  lassign [alited::FgFgBold] fg al(FG,DEFopts)
+  if {!$al(PRJDEFAULT)} {
+    set alited::al(FG,DEFopts) "$fg -afteridle {grid forget %w}" ;# no heading message
+  }
   return {
     {v_ - - 1 10}
-    {fra2 v_ T 1 2 {-st nsew -cw 1}}
-    {.labEOL - - 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
+    {lab1 v_ T 1 2 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,DEFopts)} -foreground $alited::al(FG,DEFopts)}}
+    {fra2 lab1 T 1 2 {-st nsew -cw 1}}
+    {.labIgn - - 1 1 {-st w -pady 1 -padx 3} {-t "Skip subdirectories:"}}
+    {.entIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 50}}
+    {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
     {.cbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
     {.spxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 9 -from 2 -to 8 -justify center}}

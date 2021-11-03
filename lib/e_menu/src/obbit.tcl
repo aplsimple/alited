@@ -67,31 +67,31 @@ namespace eval ::apave {
 {{20: Notebook1} "#000" #000 #dad2b9 #b5af9b #460000 #d59d6f #000 #682800 #707070 #771d00 #000 #ba9671 - #c5bfab #000 #eded89 #ccc4ab #a20000 #76b2f1 #005 #006 #007}
 {{21: Notebook2} "#000" #000 #cdc5ac #a6a08c #460000 #d59d6f #000 #682800 #606060 #771d00 #000 #cfab86 - #b4ae9a #000 #eded89 #c1b9a0 #980000 #76b2f1 #005 #006 #007}
 {{22: Notebook3} "#000" #000 #beb69d #96907c #460000 #d59d6f #000 #682800 #505050 #771d00 #000 #cfab86 - #a6a08c #000 #eded89 #b2aa91 #7b1010 #76b2f1 #005 #006 #007}
-{{23: Darcula} "#ececec" #c7c7c7 #272727 #323232 #e98f1c #2F5692 #e1e1e1 #f4f49f grey #d18d3f #EDC881 #2a518d - #444444 #000 #a2a23e #343434 #f28787 #76b2f1 #005 #006 #007}
-{{24: Dusk} "#ececec" #ececec #1a1f21 #262b2d #95bf95 #217346 #FFF #f4f49f #585d5f #99c399 #ffffff #225c3b - #363b3d #000 #9e9e3a #23282a #ffabab #99dd99 #005 #006 #007}
-{{25: AwDark} "#F0E8E8" #E7E7E7 #1f2223 #232829 #de9e5e #215d9c #fff #f4f49f grey #80bcfb #fff #134f8e - #313637 #000 #cdcd69 #292e2f #ffabab #76b2f1 #005 #006 #007}
-{{26: AzureDark} "#ececec" #c7c7c7 #272727 #393939 #28a7ff #0a89c1 #FFF #f4f49f grey #33b2ff #EDC881 #0062a5 - #4a4a4a #000 #a2a23e #383838 #ffc341 #76b2f1 #005 #006 #007}
-{{27: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #95bf95 #217346 #FFF #42ff42 grey #99c399 #ffffff #247649 - #4a4a4a #000 #a2a23e #383838 #efaf6f #99dd99 #005 #006 #007}
-{{28: SunValleyDark} "#dfdfdf" #dddddd #131313 #252525 #38a9e0 #2a627f #FFF #f4f49f #6f6f6f #57c8ff #fff #2051c9 - #323232 #000 #a2a23e #2a2a2a #efaf6f #4273eb #005 #006 #007}
-{{29: Dark1} "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #eda95b #000 #767676 - #363636 #000 #cdcd69 #292929 #ffabab #76b2f1 #005 #006 #007}
-{{30: Dark2} "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #000 #f4f49f #616161 #eda95b #000 #767676 - #323232 #000 #b0b04c #262626 #ffabab #76b2f1 #005 #006 #007}
-{{31: Dark3} "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #000 #f4f49f #616161 #eda95b #000 #767676 - #303030 #000 #bebe5a #131313 #ffabab #76b2f1 #005 #006 #007}
-{{32: Oscuro} "#f1f1f1" #ffffff #314242 #3e5959 #f1b479 #6c8787 #fff #42ff42 #afafaf #f7c475 #000 #94afaf - #4d6868 #000 #cbcb67 #425353 #ffcd8d #94e2b8 #005 #006 #007}
-{{33: Oscuro1} "#e3e3e3" #f7f7f7 #233434 #304b4b #e3a66b #5e7979 #fff #42ff42 #a1a1a1 #e9b667 #000 #86a1a1 - #3f5a5a #000 #bfbf5b #344545 #ffc585 #86d4aa #005 #006 #007}
-{{34: Oscuro2} "#d5d5d5" #f1f1f1 #152626 #223d3d #d5985d #506b6b #fff #42ff42 #939393 #dba859 #000 #789393 - #314c4c #000 #bbbb57 #263737 #f7bc7c #78c69c #005 #006 #007}
-{{35: Oscuro3} "#c7c7c7" #eaeaea #071818 #142f2f #c78a4f #425d5d #fff #42ff42 #858585 #cd9a4b #000 #6a8585 - #233e3e #000 #afaf4b #182929 #e9ae6e #6ab88e #005 #006 #007}
-{{36: MildDark} "#d2d2d2" #ffffff #223142 #2D435B #2ac8c8 #517997 #fff #00ffff grey #36d4d4 #000 #668eac - #3a5068 #000 #bebe5a #324152 #eeae6e #76b2f1 #005 #006 #007}
-{{37: MildDark1} "#c8c8c8" #f7f7f7 #1a2937 #24384f #28c6c6 #466e8c #fff #00ffff #757575 #33d1d1 #000 #668eac - #31455c #000 #bebe5a #2b3a48 #f1b171 #76b2f1 #005 #006 #007}
-{{38: MildDark2} "#e2e2e2" #f1f1f1 #0e1d2c #1B3048 #27c5c5 #426a88 #fff #00ffff #6c6c6c #31d0d0 #000 #668eac - #2a3f57 #000 #b0b04c #1d2c3b #ebab6b #76b2f1 #005 #006 #007}
-{{39: MildDark3} "#dbdbdb" #eaeaea #000c1b #031830 #27c5c5 #375f7d #fff #00ffff #6c6c6c #28c7c7 #000 #5a82a0 - #162b43 #000 #b0b04c #0a1f37 #e5a565 #76b2f1 #005 #006 #007}
-{{40: Inkpot} "#d3d3ff" #AFC2FF #16161f #1E1E27 #de9e5e #6767a8 #000 #f4f49f #6e6e6e #ffbb6d #000 #8585c6 - #292936 #000 #a2a23e #202029 #ffa5a5 #7a7abb #005 #006 #007}
-{{41: Quiverly} "#cdd8d8" #cdd8d8 #2b303b #333946 #de9e5e #6f7582 #000 #f4f49f #757575 #eda95b #000 #9197a4 - #414650 #000 #b0b04c #323742 #ffabab #76b2f1 #005 #006 #007}
-{{42: Monokai} "#f8f8f2" #f8f8f2 #353630 #4e5044 #f1b479 #707070 #000 #f4f49f #9a9a9a #ffbb6d #000 #777777 - #46473d #000 #cdcd69 #3c3d37 #ffabab #cd994b #005 #006 #007}
-{{43: TKE Default} "#dbdbdb" #dbdbdb #000 #282828 #de9e5e #0a0acc #fff #f4f49f #6a6a6a #d3a85a #fff #0000d3 - #383838 #000 #b0b04c #0d0e0e #ffabab #76b2f1 #005 #006 #007}
-{{44: Magenta} "#E8E8E8" #F0E8E8 #381e44 #4A2A4A #f1b479 #846484 #000 #f4f49f grey #ffbb6d #000 #ad8dad - #573757 #000 #cdcd69 #42284e #ffabab #ffafff #005 #006 #007}
-{{45: Red} "#fff" #e9e9e6 #340202 #440702 #f1b479 #b05e5e #000 #f4f49f #828282 #ffbb6d #000 #ba6868 - #521514 #000 #bebe5a #461414 #ffc1c1 #ff9a9a #005 #006 #007}
-{{46: Chocolate} "#d6d1ab" #d6d1ab #251919 #402020 #de9e5e #664D4D #fff #f4f49f #828282 #c3984a #fff #583f3f - #432a2a #000 #b0b04c #2d2121 #ffb7b7 #cf9292 #005 #006 #007}
-{{47: Desert} "#fff" #fff #47382d #5a4b40 #f1b479 #78695e #000 #f4f49f #a2a2a2 #ffbb6d #000 #7f7065 - #695a4f #000 #eded89 #503f34 #ffabab #ead79b #005 #006 #007}
+{{23: Darcula} "#ececec" #c7c7c7 #272727 #323232 #e98f1c #2F5692 #e1e1e1 #f4f49f grey #d18d3f #EDC881 #2a518d - #444444 #000 #c5c561 #343434 #f28787 #76b2f1 #005 #006 #007}
+{{24: Dusk} "#ececec" #ececec #1a1f21 #262b2d #95bf95 #217346 #FFF #f4f49f #585d5f #99c399 #ffffff #225c3b - #363b3d #000 #c5c561 #23282a #ffabab #99dd99 #005 #006 #007}
+{{25: AwDark} "#F0E8E8" #E7E7E7 #1f2223 #232829 #de9e5e #215d9c #fff #f4f49f grey #80bcfb #fff #134f8e - #313637 #000 #c5c561 #292e2f #ffabab #76b2f1 #005 #006 #007}
+{{26: AzureDark} "#ececec" #c7c7c7 #272727 #393939 #28a7ff #0a89c1 #FFF #f4f49f grey #33b2ff #EDC881 #0062a5 - #4a4a4a #000 #d3d36f #383838 #ffc341 #76b2f1 #005 #006 #007}
+{{27: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #95bf95 #217346 #FFF #42ff42 grey #99c399 #ffffff #247649 - #4a4a4a #000 #d3d36f #383838 #efaf6f #99dd99 #005 #006 #007}
+{{28: SunValleyDark} "#dfdfdf" #dddddd #131313 #252525 #38a9e0 #2a627f #FFF #f4f49f #6f6f6f #57c8ff #fff #2051c9 - #323232 #000 #c5c561 #2a2a2a #efaf6f #4273eb #005 #006 #007}
+{{29: Dark1} "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #eda95b #000 #767676 - #363636 #000 #c5c561 #292929 #ffabab #76b2f1 #005 #006 #007}
+{{30: Dark2} "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #000 #f4f49f #616161 #eda95b #000 #767676 - #323232 #000 #c5c561 #262626 #ffabab #76b2f1 #005 #006 #007}
+{{31: Dark3} "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #000 #f4f49f #616161 #eda95b #000 #767676 - #303030 #000 #c5c561 #131313 #ffabab #76b2f1 #005 #006 #007}
+{{32: Oscuro} "#f1f1f1" #ffffff #314242 #3e5959 #f1b479 #6c8787 #fff #42ff42 #afafaf #f7c475 #000 #94afaf - #4d6868 #000 #d3d36f #425353 #ffcd8d #94e2b8 #005 #006 #007}
+{{33: Oscuro1} "#e3e3e3" #f7f7f7 #233434 #304b4b #e3a66b #5e7979 #fff #42ff42 #a1a1a1 #e9b667 #000 #86a1a1 - #3f5a5a #000 #d3d36f #344545 #ffc585 #86d4aa #005 #006 #007}
+{{34: Oscuro2} "#d5d5d5" #f1f1f1 #152626 #223d3d #d5985d #506b6b #fff #42ff42 #939393 #dba859 #000 #789393 - #314c4c #000 #d3d36f #263737 #f7bc7c #78c69c #005 #006 #007}
+{{35: Oscuro3} "#c7c7c7" #eaeaea #071818 #142f2f #c78a4f #425d5d #fff #42ff42 #858585 #cd9a4b #000 #6a8585 - #233e3e #000 #d3d36f #182929 #e9ae6e #6ab88e #005 #006 #007}
+{{36: MildDark} "#d2d2d2" #ffffff #223142 #2D435B #2ac8c8 #517997 #fff #00ffff grey #36d4d4 #000 #668eac - #3a5068 #000 #c5c561 #324152 #eeae6e #76b2f1 #005 #006 #007}
+{{37: MildDark1} "#c8c8c8" #f7f7f7 #1a2937 #24384f #28c6c6 #466e8c #fff #00ffff #757575 #33d1d1 #000 #668eac - #31455c #000 #c5c561 #2b3a48 #f1b171 #76b2f1 #005 #006 #007}
+{{38: MildDark2} "#e2e2e2" #f1f1f1 #0e1d2c #1B3048 #27c5c5 #426a88 #fff #00ffff #6c6c6c #31d0d0 #000 #668eac - #2a3f57 #000 #c5c561 #1d2c3b #ebab6b #76b2f1 #005 #006 #007}
+{{39: MildDark3} "#dbdbdb" #eaeaea #000c1b #031830 #27c5c5 #375f7d #fff #00ffff #6c6c6c #28c7c7 #000 #5a82a0 - #162b43 #000 #c5c561 #0a1f37 #e5a565 #76b2f1 #005 #006 #007}
+{{40: Inkpot} "#d3d3ff" #AFC2FF #16161f #1E1E27 #de9e5e #525293 #fff #f4f49f #6e6e6e #ffbb6d #000 #8585c6 - #292936 #000 #c5c561 #202029 #ffc888 #7a7abb #005 #006 #007}
+{{41: Quiverly} "#cdd8d8" #cdd8d8 #2b303b #333946 #de9e5e #6f7582 #fff #f4f49f #757575 #eda95b #000 #9197a4 - #414650 #000 #c5c561 #323742 #ffc888 #76b2f1 #005 #006 #007}
+{{42: Monokai} "#f8f8f2" #f8f8f2 #353630 #4e5044 #f1b479 #707070 #fff #f4f49f #9a9a9a #ffbb6d #000 #777777 - #46473d #000 #d3d36f #3c3d37 #ffc888 #cd994b #005 #006 #007}
+{{43: TKE Default} "#dbdbdb" #dbdbdb #000 #282828 #de9e5e #0a0acc #fff #f4f49f #6a6a6a #d3a85a #fff #0000d3 - #383838 #000 #c5c561 #0d0e0e #ffc888 #76b2f1 #005 #006 #007}
+{{44: Magenta} "#E8E8E8" #F0E8E8 #381e44 #4A2A4A #f1b479 #846484 #fff #f4f49f grey #ffbb6d #000 #ad8dad - #573757 #000 #c5c561 #42284e #ffc888 #ffafff #005 #006 #007}
+{{45: Red} "#fff" #e9e9e6 #340202 #440702 #f1b479 #b05e5e #fff #f4f49f #828282 #ffbb6d #000 #ba6868 - #521514 #000 #c5c561 #461414 #ffc888 #ff9a9a #005 #006 #007}
+{{46: Chocolate} "#d6d1ab" #d6d1ab #251919 #402020 #de9e5e #664D4D #fff #f4f49f #828282 #c3984a #fff #583f3f - #432a2a #000 #c5c561 #2d2121 #eeb777 #cf9292 #005 #006 #007}
+{{47: Desert} "#fff" #fff #47382d #5a4b40 #f1b479 #85766b #fff #f4f49f #a2a2a2 #ffbb6d #fff #7f7065 - #695a4f #000 #d3d36f #503f34 #ffc888 #ead79b #005 #006 #007}
 }
   set ::apave::_CS_(initall) 1
   set ::apave::_CS_(initWM) 1
