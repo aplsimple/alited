@@ -143,6 +143,7 @@ proc tool::EM_Options {opts} {
 
   namespace upvar ::alited al al
   set sel [alited::find::GetWordOfText]
+  set sel [string map [list "\"" {} "\{" {} "\}" {}] $sel]
   set f [alited::bar::FileName]
   set d [file dirname $f]
   # get a list of selected tabs (i.e. their file names):
