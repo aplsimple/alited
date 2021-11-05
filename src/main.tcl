@@ -458,36 +458,24 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
   # check for current text and current unit's lines
   if {$wtxt eq {}} {set wtxt [CurrentWTXT]}
   set pos [$wtxt index insert]
-  lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name
-#  set line [expr {int($pos)}]
-#  set doit [expr {$wtxt ne $al(CURRUNIT,wtxt) || (
-#    ($line < $al(CURRUNIT,line1) || $line > $al(CURRUNIT,line2)))}]
-#  lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name \
-#    al(CURRUNIT,line1) al(CURRUNIT,line2)
-#  set al(CURRUNIT,wtxt) $wtxt
-#  set al(CURRUNIT,itemID) $itemID
-#  set al(CURRUNIT,line) $line
-#  # if current unit's info changed,
-#  # save it and update "Last Visited" list
-#  if {$doit} {
-    set header [alited::unit::GetHeader $wtree $itemID]
-    alited::favor::LastVisited [$wtree item $itemID] $header
-    set selID [$wtree selection]
-    if {[llength $selID]<2 && $selID ne $itemID} {
-      $wtree selection set $itemID
-      $wtree see $itemID
-      $wtree tag add tagSel $itemID
+  lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name l1
+  set header [alited::unit::GetHeader $wtree $itemID]
+  alited::favor::LastVisited [$wtree item $itemID] $header $l1
+  set selID [$wtree selection]
+  if {[llength $selID]<2 && $selID ne $itemID} {
+    $wtree selection set $itemID
+    $wtree see $itemID
+    $wtree tag add tagSel $itemID
+  }
+  set TID [alited::bar::CurrentTabID]
+  foreach it $al(_unittree,$TID) {
+    set treeID [alited::tree::NewItemID [incr iit]]
+    lassign $it lev leaf fl1 title l1 l2
+    if {$name eq [alited::tree::UnitTitle $title $l1 $l2]} {
+      set al(CPOS,$TID,$header) [alited::p+ $pos -$l1]
+      break
     }
-    set TID [alited::bar::CurrentTabID]
-    foreach it $al(_unittree,$TID) {
-      set treeID [alited::tree::NewItemID [incr iit]]
-      lassign $it lev leaf fl1 title l1 l2
-      if {$name eq [alited::tree::UnitTitle $title $l1 $l2]} {
-        set al(CPOS,$TID,$header) [alited::p+ $pos -$l1]
-        break
-      }
-    }
-#  }
+  }
 }
 #_______________________
 

@@ -17,10 +17,11 @@ namespace eval favor {
 
 # ________________________ Common _________________________ #
 
-proc favor::LastVisited {item header} {
+proc favor::LastVisited {item header {l1 -1}} {
   # Puts an item to "Last visited" list.
   #   item - list of tree's item data (first two: -text {label})
   #   header - header of item
+  #   l1 - starting line of a last visited unit, if any
 
   namespace upvar ::alited al al obPav obPav
   # check for "All of..." - don't save it
@@ -39,7 +40,7 @@ proc favor::LastVisited {item header} {
   set ln "[expr {int([[alited::main::CurrentWTXT] index insert])}]"
   foreach it $al(FAV,visited) {
     lassign $it - - ID - values
-    lassign $values name2 fname2 header2 l1
+    lassign $values name2 fname2 header2
     if {$ln eq $l1 || $fname eq $fname2 && $header eq $header2} {
       set found yes
       # if found, move it to 0th position
@@ -48,7 +49,7 @@ proc favor::LastVisited {item header} {
     }
     incr i
   }
-  set al(FAV,visited) [linsert $al(FAV,visited) 0 [list - - - - [list $name $fname $header $ln]]]
+  set al(FAV,visited) [linsert $al(FAV,visited) 0 [list - - - - [list $name $fname $header]]]
   # delete last items if the list's limit is exceeded
   catch {set al(FAV,visited) [lreplace $al(FAV,visited) $al(FAV,MAXLAST) end]}
   # update the tree widget

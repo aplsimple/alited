@@ -120,7 +120,7 @@ proc menu::FillMenu {} {
   $m add command -label [msgcat::mc {Find Unit}] -command alited::find::FindUnit -accelerator Ctrl+Shift+F
   $m add command -label [msgcat::mc {Find by List}] -command alited::find::SearchByList
   $m add separator
-  $m add command -label [msgcat::mc {To Last Visited}] -command alited::unit::SwitchUnits -accelerator Alt-Backspace
+  $m add command -label [msgcat::mc {To Last Visited}] -command alited::unit::SwitchUnits -accelerator Alt+BackSpace
   $m add command -label [msgcat::mc {To Matched Bracket}] -command alited::main::GotoBracket -accelerator $al(acc_20)
   $m add separator
   $m add command -label [msgcat::mc {Go to Line}] -command alited::main::GotoLine -accelerator $al(acc_17)
