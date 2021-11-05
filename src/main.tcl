@@ -551,7 +551,7 @@ proc main::BindsForText {TID wtxt} {
   }
   bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
   bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
-  bind $wtxt <Control-Tab> {::alited::bar::ControlTab ; break}
+  bind $wtxt <Control-Tab> {::alited::bar::ControlTab}
   bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}
   bind $wtxt <ButtonRelease-1> "+ alited::main::SaveVisitInfo $wtxt"
   bind $wtxt <KeyRelease> "+ alited::main::SaveVisitInfo $wtxt %K %s"
