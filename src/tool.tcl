@@ -143,7 +143,7 @@ proc tool::EM_Options {opts} {
 
   namespace upvar ::alited al al
   set sel [alited::find::GetWordOfText]
-  set sel [string map [list "\"" {} "\{" {} "\}" {}] $sel]
+  set sel [string map [list "\"" {} "\{" {} "\}" {} "\\" {}] $sel]
   set f [alited::bar::FileName]
   set d [file dirname $f]
   # get a list of selected tabs (i.e. their file names):
@@ -157,12 +157,28 @@ proc tool::EM_Options {opts} {
   } else {
     set ls "ls="
   }
+  # get file names of left & right tabs (used in utils.mnu by diff items)
+  set z6 {}
+  set z7 {}
+  set tabs [alited::bar::BAR listTab]
+  set TID [alited::bar::CurrentTabID]
+  set i [lsearch -index 0 $tabs $TID]
+  if {$i>=0} {
+    if {$i} {
+      append z6 z6=[alited::bar::FileName [lindex $tabs $i-1 0]]
+    }
+    append z7 z7=[alited::bar::FileName [lindex $tabs $i+1 0]]
+  }
   if {$al(EM,DiffTool) ne {}} {append ls " DF=$al(EM,DiffTool)"}
   set l [[alited::main::CurrentWTXT] index insert]
   set l [expr {int($l)}]
-  return [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" "l=$l" \
+  set R [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
-    o=0 g=$al(EM,geometry) {*}$ls {*}$opts]
+    o=0 g=$al(EM,geometry) $z6 $z7 {*}$ls {*}$opts]
+  # quote all options
+  set res {}
+  foreach r $R {append res "\"$r\" "}
+  return $res
 }
 #_______________________
 

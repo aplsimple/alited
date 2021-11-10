@@ -42,6 +42,9 @@ source [file join [file dirname [info script]] apave.tcl]
 namespace eval ::apave {
 }
 
+
+# ________________________ APaveDialog class _________________________ #
+
 oo::class create ::apave::APaveDialog {
 
   superclass ::apave::APave
@@ -96,9 +99,10 @@ oo::class create ::apave::APaveDialog {
     if {[llength [self next]]} next
   }
 
-  #########################################################################
-  #
-  # Standard dialogs:
+
+
+# ________________________ Standard dialogs _________________________ #
+
   #  ok               - dialog with button OK
   #  okcancel         - dialog with buttons OK, Cancel
   #  yesno            - dialog with buttons YES, NO
@@ -228,136 +232,122 @@ oo::class create ::apave::APaveDialog {
     return [my Query $icon $ttl $msg $apave_msc_bttns But$defb {} [my PrepArgs $args]]
   }
 
-  #########################################################################
-
-  method Pdg {name} {
-
-    # Gets a value of _pdg(name).
-
-    return $_pdg($name)
-  }
+# ________________________ Progress for splash _________________________ #
 
   #########################################################################
 
-  method FieldName {name} {
+  method progress_Begin {type wprn ttl msg1 msg2 maxvalue args} {
+    # Creates and shows a progress window. Fit for splash screens.
+    #   type - any word(s)
+    #   wprn - parent window
+    #   ttl - title message
+    #   msg1 - top message
+    #   msg2 - bottom message
+    #   maxvalue - maximum value
+    #   args - additional attributes of the progress bar
+    # 
+    # If type={}, widgetType method participates too in progress_Go, and also
+    # progress_End puts out a little statistics.
+    # 
+    # See also: APave::widgetType, progress_Go, progress_End
 
-    # Gets a field name.
-
-    return fraM.fra$name.$name
-  }
-
-  method VarName {name} {
-
-    # Gets a variable name associated with a field name.
-
-    return [namespace current]::var$name
-  }
-
-  method GetVarsValues {lwidgets} {
-
-    # Gets values of entries passed (or set) in -tvar.
-    #   lwidgets - list of widget items
-
-    set res [set vars [list]]
-    foreach wl $lwidgets {
-      set ownname [my ownWName [lindex $wl 0]]
-      set vv [my VarName $ownname]
-      set attrs [lindex $wl 6]
-      if {[string match "ra*" $ownname]} {
-        # only for widgets with a common variable (e.g. radiobuttons):
-        foreach t {-var -tvar} {
-          if {[set v [::apave::getOption $t {*}$attrs]] ne ""} {
-            array set a $attrs
-            set vv $v
-          }
-        }
-      }
-      if {[info exist $vv] && [lsearch $vars $vv]==-1} {
-        lappend res [set $vv]
-        lappend vars $vv
-      }
+    set ::apave::_AP_VARS(win) .proSplashScreen
+    set qdlg $::apave::_AP_VARS(win)
+    set atr1 "-maximum 100 -value 0 -mode determinate -length 300 -orient horizontal"
+    set widlist [list \
+      "fra - - - - {pack } {-h 10}" \
+      ".Lab1SplashScreen - - - - {pack} {-t {$msg1}}" \
+      ".ProgSplashScreen - - - - {pack} {$atr1 $args}" \
+      ".Lab2SplashScreen - - - - {pack -anchor w} {-t {$msg2}}" \
+      ]
+    set win [my makeWindow $qdlg.fra $ttl]
+    set widlist [my paveWindow $qdlg.fra $widlist]
+    ::tk::PlaceWindow $win widget $wprn
+    my showWindow $win 0 1
+    update
+    set ::apave::_AP_VARS(ProSplash,type) $type
+    set ::apave::_AP_VARS(ProSplash,win) $win
+    set ::apave::_AP_VARS(ProSplash,wid1) [my Lab1SplashScreen]
+    set ::apave::_AP_VARS(ProSplash,wid2) [my ProgSplashScreen]
+    set ::apave::_AP_VARS(ProSplash,wid3) [my Lab2SplashScreen]
+    set ::apave::_AP_VARS(ProSplash,val1) 0
+    set ::apave::_AP_VARS(ProSplash,val2) 0
+    set ::apave::_AP_VARS(ProSplash,value) 0
+    set ::apave::_AP_VARS(ProSplash,curvalue) 0
+    set ::apave::_AP_VARS(ProSplash,maxvalue) $maxvalue
+    set ::apave::_AP_VARS(ProSplash,after) [list]
+    # 'after' should be postponed, as 'update' messes it up
+    rename ::after ::ProSplash_after
+    proc ::after {args} {
+      lappend ::apave::_AP_VARS(ProSplash,after) $args
     }
-    return $res
-  }
-
-  method SetGetTexts {oper w iopts lwidgets} {
-
-    # Sets/gets contents of text fields.
-    #   oper - "set" to set, "get" to get contents of text field
-    #   w - window's name
-    #   iopts - equals to "" if no operation
-    #   lwidgets - list of widget items
-
-    if {$iopts eq ""} return
-    foreach widg $lwidgets {
-      set wname [lindex $widg 0]
-      set name [my ownWName $wname]
-      if {[string range $name 0 1] eq "te"} {
-        set vv [my VarName $name]
-        if {$oper eq "set"} {
-          my displayText $w.$wname [set $vv]
-        } else {
-          set $vv [string trimright [$w.$wname get 1.0 end]]
-        }
-      }
-    }
-    return
   }
 
   #########################################################################
 
-  method AppendButtons {widlistName buttons neighbor pos defb timeout} {
+  method progress_Go {value {msg1 ""} {msg2 ""}} {
+    # Updates a progress window.
+    #   value -  current value of the progress bar
+    #   msg1 - top message
+    #   msg2 - bottom message
+    # 
+    # Returns current percents (value) of progress.
+    # If it reaches 100, the progress_Go may continue from 0.
+    # 
+    # See also: progress_Begin
 
-    # Adds buttons to the widget list from a position of neighbor widget.
-    #   widlistName - variable name for widget list
-    #   buttons - buttons to add
-    #   neighbor - neighbor widget
-    #   pos - position of neighbor widget
-    #   defb - default button
-    #   timeout  - timeout (to count down seconds and invoke a button)
-
-    upvar $widlistName widlist
-    set defb1 [set defb2 ""]
-    foreach {but txt res} $buttons {
-      if {$defb1 eq ""} {
-        set defb1 $but
-      } elseif {$defb2 eq ""} {
-        set defb2 $but
+    set ::apave::_AP_VARS(ProSplash,val1) $value
+    incr ::apave::_AP_VARS(ProSplash,val2)
+    set val [expr {min(100,int(100*$value/$::apave::_AP_VARS(ProSplash,maxvalue)))}]
+    if {$val!=$::apave::_AP_VARS(ProSplash,value)} {
+      set ::apave::_AP_VARS(ProSplash,value) $val
+      $::apave::_AP_VARS(ProSplash,wid2) configure -value $val
+      if {$msg1 ne {}} {
+        $::apave::_AP_VARS(ProSplash,wid1) configure -text $msg1
       }
-      if {[set _ [string first "::" $txt]]>-1} {
-        set tt " -tip {[string range $txt $_+2 end]}"
-        set txt [string range $txt 0 $_-1]
-      } else {
-        set tt ""
+      if {$msg2 ne {}} {
+        $::apave::_AP_VARS(ProSplash,wid3) configure -text $msg2
       }
-      if {$timeout ne "" && ($defb eq $but || $defb eq "")} {
-        set tmo "-timeout {$timeout}"
-      } else {
-        set tmo ""
-      }
-      lappend widlist [list $but $neighbor $pos 1 1 "-st we" \
-        "-t \"$txt\" -com \"${_pdg(ns)}my res $_pdg(dlg) $res\"$tt $tmo"]
-      set neighbor $but
-      set pos L
+      update
     }
-    lassign [my LowercaseWidgetName $_pdg(dlg).fra.$defb1] _pdg(defb1)
-    lassign [my LowercaseWidgetName $_pdg(dlg).fra.$defb2] _pdg(defb2)
-    return
+    return $val
   }
 
-  ###################################################################
+  #########################################################################
 
-  method GetLinePosition {txt ind} {
+  method progress_End {} {
+    # Destroys a progress window.
+    # See also: progress_Begin
 
-    # Gets a line's position.
-    #   txt - text widget
-    #   ind - index of the line
-    # Returns a list containing a line start and a line end.
-
-    set linestart [$txt index "$ind linestart"]
-    set lineend   [expr {$linestart + 1.0}]
-    return [list $linestart $lineend]
+    variable ::apave::_AP_VARS
+    catch {
+      destroy $::apave::_AP_VARS(ProSplash,win)
+      rename ::after {}
+      rename ::ProSplash_after ::after
+      foreach aftargs $::apave::_AP_VARS(ProSplash,after) {
+        after {*}$aftargs
+      }
+      if {$::apave::_AP_VARS(ProSplash,type) eq {}} {
+        puts "Splash statistics: \
+          \n  \"maxvalue\": $::apave::_AP_VARS(ProSplash,maxvalue) \
+          \n  curr.value: $::apave::_AP_VARS(ProSplash,val1) \
+          \n  steps made: $::apave::_AP_VARS(ProSplash,val2)"
+      }
+      unset ::apave::_AP_VARS(ProSplash,type)
+      unset ::apave::_AP_VARS(ProSplash,win)
+      unset ::apave::_AP_VARS(ProSplash,wid1)
+      unset ::apave::_AP_VARS(ProSplash,wid2)
+      unset ::apave::_AP_VARS(ProSplash,wid3)
+      unset ::apave::_AP_VARS(ProSplash,val1)
+      unset ::apave::_AP_VARS(ProSplash,val2)
+      unset ::apave::_AP_VARS(ProSplash,value)
+      unset ::apave::_AP_VARS(ProSplash,curvalue)
+      unset ::apave::_AP_VARS(ProSplash,maxvalue)
+      unset ::apave::_AP_VARS(ProSplash,after)
+    }
   }
+
+# ________________________ Text utilities _________________________ #
 
   #########################################################################
 
@@ -632,6 +622,9 @@ oo::class create ::apave::APaveDialog {
        -command \"[self] linesMove {$txt} +1 0\""
   }
 
+
+# ________________________ Highlighting _________________________ #
+
   #########################################################################
 
   method popupHighlightCommands {{pop ""} {txt ""}} {
@@ -799,6 +792,137 @@ oo::class create ::apave::APaveDialog {
       ::tk::TextSetCursor $txt $pos
       $txt tag add sel $pos [$txt index "$pos + [string length $sel] chars"]
     }
+  }
+
+# ________________________ Query procs _________________________ #
+
+  method FieldName {name} {
+
+    # Gets a field name.
+
+    return fraM.fra$name.$name
+  }
+
+  method VarName {name} {
+
+    # Gets a variable name associated with a field name.
+
+    return [namespace current]::var$name
+  }
+
+  method GetVarsValues {lwidgets} {
+
+    # Gets values of entries passed (or set) in -tvar.
+    #   lwidgets - list of widget items
+
+    set res [set vars [list]]
+    foreach wl $lwidgets {
+      set ownname [my ownWName [lindex $wl 0]]
+      set vv [my VarName $ownname]
+      set attrs [lindex $wl 6]
+      if {[string match "ra*" $ownname]} {
+        # only for widgets with a common variable (e.g. radiobuttons):
+        foreach t {-var -tvar} {
+          if {[set v [::apave::getOption $t {*}$attrs]] ne ""} {
+            array set a $attrs
+            set vv $v
+          }
+        }
+      }
+      if {[info exist $vv] && [lsearch $vars $vv]==-1} {
+        lappend res [set $vv]
+        lappend vars $vv
+      }
+    }
+    return $res
+  }
+
+  method SetGetTexts {oper w iopts lwidgets} {
+
+    # Sets/gets contents of text fields.
+    #   oper - "set" to set, "get" to get contents of text field
+    #   w - window's name
+    #   iopts - equals to "" if no operation
+    #   lwidgets - list of widget items
+
+    if {$iopts eq ""} return
+    foreach widg $lwidgets {
+      set wname [lindex $widg 0]
+      set name [my ownWName $wname]
+      if {[string range $name 0 1] eq "te"} {
+        set vv [my VarName $name]
+        if {$oper eq "set"} {
+          my displayText $w.$wname [set $vv]
+        } else {
+          set $vv [string trimright [$w.$wname get 1.0 end]]
+        }
+      }
+    }
+    return
+  }
+
+  #########################################################################
+
+  method AppendButtons {widlistName buttons neighbor pos defb timeout} {
+
+    # Adds buttons to the widget list from a position of neighbor widget.
+    #   widlistName - variable name for widget list
+    #   buttons - buttons to add
+    #   neighbor - neighbor widget
+    #   pos - position of neighbor widget
+    #   defb - default button
+    #   timeout  - timeout (to count down seconds and invoke a button)
+
+    upvar $widlistName widlist
+    set defb1 [set defb2 ""]
+    foreach {but txt res} $buttons {
+      if {$defb1 eq ""} {
+        set defb1 $but
+      } elseif {$defb2 eq ""} {
+        set defb2 $but
+      }
+      if {[set _ [string first "::" $txt]]>-1} {
+        set tt " -tip {[string range $txt $_+2 end]}"
+        set txt [string range $txt 0 $_-1]
+      } else {
+        set tt ""
+      }
+      if {$timeout ne "" && ($defb eq $but || $defb eq "")} {
+        set tmo "-timeout {$timeout}"
+      } else {
+        set tmo ""
+      }
+      lappend widlist [list $but $neighbor $pos 1 1 "-st we" \
+        "-t \"$txt\" -com \"${_pdg(ns)}my res $_pdg(dlg) $res\"$tt $tmo"]
+      set neighbor $but
+      set pos L
+    }
+    lassign [my LowercaseWidgetName $_pdg(dlg).fra.$defb1] _pdg(defb1)
+    lassign [my LowercaseWidgetName $_pdg(dlg).fra.$defb2] _pdg(defb2)
+    return
+  }
+
+  ###################################################################
+
+  method GetLinePosition {txt ind} {
+
+    # Gets a line's position.
+    #   txt - text widget
+    #   ind - index of the line
+    # Returns a list containing a line start and a line end.
+
+    set linestart [$txt index "$ind linestart"]
+    set lineend   [expr {$linestart + 1.0}]
+    return [list $linestart $lineend]
+  }
+
+  #########################################################################
+
+  method Pdg {name} {
+
+    # Gets a value of _pdg(name).
+
+    return $_pdg($name)
   }
 
   #########################################################################

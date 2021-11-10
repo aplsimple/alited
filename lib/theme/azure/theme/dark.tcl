@@ -355,7 +355,7 @@ namespace eval ttk::theme::azure-dark {
 
         ttk::style element create Vertical.Scrollbar.thumb image \
             [list $I(vert-basic) \
-                disabled  $I(vert-basic) \
+                disabled  $I(vert-accent) \
                 pressed $I(vert-hover) \
                 active $I(vert-hover) \
             ] -sticky ns

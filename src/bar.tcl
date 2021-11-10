@@ -327,8 +327,12 @@ proc bar::CurrentControlTab {{fname ""}} {
   if {[set i [lsearch -exact $ctrltablist $fname]]>-1} {
     set ctrltablist [lreplace $ctrltablist $i $i]
   }
-  if {$ret} {return $fname}
-  set ctrltablist [linsert $ctrltablist 0 $fname]
+  if {$ret} {
+    set ctrltablist [linsert $ctrltablist 1 $fname]
+  } else {
+    set ctrltablist [linsert $ctrltablist 0 $fname]
+  }
+  return $fname
 }
 #_______________________
 
@@ -351,15 +355,11 @@ proc bar::ControlTab {} {
     # if the file was closed, remove it from the ctrl-tabbed
     set ctrltablist [lreplace $ctrltablist 0 0]
   }
-  CurrentControlTab $fname
-  if {!$found} {
-    # only one tab is open - return to it (possibly not visible in the bar tab)
-    set TID [CurrentTabID]
-    set pos [[alited::main::CurrentWTXT] index insert]
-    after idle [list alited::main::FocusText $TID $pos]
+  if {$found} {
+    CurrentControlTab $fname
+    BAR $TID show
   }
-  # select the first of open files that was next to the current
-  BAR $TID show
+  after idle {focus [alited::main::CurrentWTXT]}
 }
 
 # ________________________ Service  _________________________ #

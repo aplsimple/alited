@@ -45,6 +45,7 @@ namespace eval ::alited {
   set al(INI,LINES1) 10         ;# number of initial "untouched" lines (to ban moves in it)
   set al(moveall) 0             ;# "move all" of color chooser
   set al(tonemoves) 1           ;# "tone moves" of color chooser
+  set al(checkgeo) {}           ;# geometry of "Check Tcl" window
 
   # flag "use special RE for leafs of unit tree"
   set al(INI,LEAF) 0
@@ -432,6 +433,7 @@ proc ini::ReadIniMisc {nam val} {
     listSBL {set alited::al(listSBL) $val}
     moveall {set al(moveall) $val}
     tonemoves {set al(tonemoves) $val}
+    checkgeo {set al(checkgeo) $val}
   }
 }
 
@@ -696,6 +698,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "listSBL=$al(listSBL)"
   puts $chan "moveall=$al(moveall)"
   puts $chan "tonemoves=$al(tonemoves)"
+  puts $chan "checkgeo=$al(checkgeo)"
   close $chan
   SaveIniPrj $newproject
 }
@@ -963,7 +966,7 @@ proc ini::InitFonts {} {
     msgcat::mclocale $al(LOCAL)
     alited::msgcatMessages
   } else {
-    msgcat::mclocale en_us
+    msgcat::mclocale en
   }
 }
 #_______________________

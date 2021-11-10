@@ -43,7 +43,7 @@ proc about::About {} {
     \n \
     <red> $alited::tcltk_version </red> <link3></link3>\n \
     \n \
-    <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>\n\n"
+    <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>\n\n\n\n"
   set wmax [expr {max([string length $long1],[string length $long2])}]
   ::alited::msg ok {} $msg \
     -title [msgcat::mc About] -t 1 -w [incr wmax 4] -scroll 0 \

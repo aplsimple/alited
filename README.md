@@ -64,3 +64,7 @@ Below is a screenshot of *alited*, just to glance at it:
 ... and its localized and themed variant:
 
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited-ru.png" class="media" alt="">
+
+... and its themed variant on Windows 10:
+
+<img src="https://aplsimple.github.io/en/tcl/alited/files/alited-win10.png" class="media" alt="">

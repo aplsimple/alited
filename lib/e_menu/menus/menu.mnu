@@ -89,7 +89,7 @@ RW: Differences of $::FILETAIL (fossil/git) ... RW: fossil tim -t ci -n 9999 > $
    texc {{   Hint:} {} {-h 12 -w 60 -ro 1 -wrap word}} \
    {\n Select a version from the combobox to be compared to tip.\n\n If it's blank, the current file is compared to tip.\n\n No response means no differences.\n\n Or you can compare a current file with its .bak version\n saved in .bak subdirectory of project, before last changes.\n\n (temp file: $::EMENUTMPFILE)} \
    } -head {\n This will compare a selected version of\n     $::EMENUFILE\n to its tip.} -weight bold == ::EMENUFILE ::EMENUCOMMIT ::EMENUCHB
- R: Differences of $::FILETAIL (fossil/git) ... R: %IF {$::EMENUCHB} %THEN %DF "$::EMENUFILE" "$::EMENUBAKFILE"
+ R: Differences of $::FILETAIL (fossil/git) ... R: %IF {$::EMENUCHB} %THEN "%DF" "$::EMENUFILE" "$::EMENUBAKFILE"
  R: Differences of $::FILETAIL (fossil/git) ... R: %C if {"$::EMENUCOMMIT" eq ""} \
    {set ::EMENUTMP ""} {set ::EMENUTMP "--from $::EMENUCOMMIT --to tip"}
  R: Differences of $::FILETAIL (fossil/git) ... R: %IF [file exists .fslckout] %THEN \

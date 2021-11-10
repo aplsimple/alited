@@ -202,6 +202,7 @@ proc check::_create {} {
 
   namespace upvar ::alited al al obDl2 obDl2
   variable win
+  catch {destroy $win}
   $obDl2 makeWindow $win.fra $al(MC,checktcl)
   $obDl2 paveWindow $win.fra {
     {v_ - -}
@@ -220,16 +221,24 @@ proc check::_create {} {
     {.ButOK - - - - {pack -side left -padx 2} {-t "Check" -command ::alited::check::Ok}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::check::Cancel}}
   }
+  if {[set geo $al(checkgeo)] ne {}} {set geo "-geometry $geo"}
   set res [$obDl2 showModal $win -resizable {0 0} -focus [$obDl2 ButOK] \
-    -onclose alited::check::Cancel]
-  destroy $win
+    {*}$geo -modal no -onclose alited::check::Cancel]
+  set al(checkgeo) [wm geometry $win]
+  if {!$res} {destroy $win}
   return $res
 }
 
 proc check::_run {} {
   # Runs "Checking" dialogue.
 
-  if {[_create]} Check
+  while {1} {
+    if {[_create]} {
+      Check
+    } else {
+      break
+    }
+  }
 }
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

@@ -5,12 +5,18 @@ Version `1.0.6 (30 Nov'21)`
 
   - TODO  : BUGFIX: issues with e_menu & tools in Windows
 
+  - BUGFIX: ctrl+tab at start (no switching tab yet)
   - BUGFIX: demo 2.Units 03:15 .. 04:18 - cursor position is 309.1 instead of 309.10
   - BUGFIX: treeview in sun-valley dark theme
   - BUGFIX: diff name normalized for Windows
   - BUGFIX: populating "Last visited" at changing unit name
   - BUGFIX: running e_menu & tools at cursor on quotes & braces
+  - BUGFIX: rdbende themes' scrollbars as in forest theme: hide at need
+  - NEW   : "Utils / Diff to LEFT/RIGHT tab" of e_menu
   - NEW   : ru.msg, ua.msg for klnd
+  - CHANGE: app's icon
+  - CHANGE: add space after completed command
+  - CHANGE: "Check Tcl" window be non-modal topmost
   - CHANGE: unit's cursor position saved at every Left-click (in current unit too)
   - CHANGE: use Pref's "ignore dirs" for projects (al(prjdirign))
   - CHANGE: "ignore dirs" option of projects moved to Project/Options

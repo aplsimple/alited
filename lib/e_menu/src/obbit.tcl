@@ -106,7 +106,7 @@ namespace eval ::apave {
   set ::apave::_CS_(STDCS) [expr {[llength $::apave::_CS_(ALL)] - 1}]
   set ::apave::_CS_(NONCS) -2
   set ::apave::_CS_(MINCS) -1
-  set ::apave::_CS_(old) $::apave::_CS_(NONCS)
+  set ::apave::_CS_(old) -3
   set ::apave::_CS_(TONED) [list -2 no]
   set ::apave::_CS_(LABELBORDER) 0
   namespace eval ::tk { ; # just to get localized messages
@@ -314,7 +314,7 @@ proc ::apave::cs_Non {} {
 
   # Gets non-existent CS index
 
-  return $::apave::_CS_(NONCS)
+  return -3
 }
 
 #########################################################################
@@ -943,42 +943,6 @@ oo::class create ::apave::ObjectTheming {
 
   ###########################################################################
 
-  method Main_Style {tfg1 tbg1 tfg2 tbg2 tfgS tbgS bclr tc fA bA bD} {
-
-    # Sets main colors of application
-    #   tfg1 - main foreground
-    #   tbg1 - main background
-    #   tfg2 - not used
-    #   tbg2 - not used
-    #   tfgS - selectforeground
-    #   tbgS - selectbackground
-    #   bclr - bordercolor
-    #   tc - troughcolor
-    #   fA - foreground active
-    #   bA - background active
-    #   bD - background disabled
-    #
-    # The *foreground disabled* is set as `grey`.
-
-    my create_Fonts
-    ttk::style configure "." \
-      -background        $tbg1 \
-      -foreground        $tfg1 \
-      -bordercolor       $bclr \
-      -darkcolor         $tbg1 \
-      -lightcolor        $tbg1 \
-      -troughcolor       $tc \
-      -arrowcolor        $tfg1 \
-      -selectbackground  $tbgS \
-      -selectforeground  $tfgS \
-      ;#-selectborderwidth 0
-    ttk::style map "." \
-      -background       [list disabled $bD active $bA] \
-      -foreground       [list disabled grey active $fA]
-  }
-
-  ###########################################################################
-
   method ColorScheme {{ncolor ""}} {
 
     # Gets a full record of color scheme from a list of available ones
@@ -1172,7 +1136,7 @@ oo::class create ::apave::ObjectTheming {
     #   ncolor - index of color scheme
 
     if {$ncolor < $::apave::_CS_(MINCS)} {
-      return "Default"
+      return "-2: None"
     } elseif {$ncolor == $::apave::_CS_(MINCS)} {
       return "-1: Basic"
     }
@@ -1403,6 +1367,45 @@ oo::class create ::apave::ObjectTheming {
 
     if {$theme eq {}} {set theme [ttk::style theme use]}
     return [expr {$theme in {clam alt classic default awdark awlight}}]
+  }
+
+
+# ________________________ theme window _________________________ #
+
+  ###########################################################################
+
+  method Main_Style {tfg1 tbg1 tfg2 tbg2 tfgS tbgS bclr tc fA bA bD} {
+
+    # Sets main colors of application
+    #   tfg1 - main foreground
+    #   tbg1 - main background
+    #   tfg2 - not used
+    #   tbg2 - not used
+    #   tfgS - selectforeground
+    #   tbgS - selectbackground
+    #   bclr - bordercolor
+    #   tc - troughcolor
+    #   fA - foreground active
+    #   bA - background active
+    #   bD - background disabled
+    #
+    # The *foreground disabled* is set as `grey`.
+
+    my create_Fonts
+    ttk::style configure "." \
+      -background        $tbg1 \
+      -foreground        $tfg1 \
+      -bordercolor       $bclr \
+      -darkcolor         $tbg1 \
+      -lightcolor        $tbg1 \
+      -troughcolor       $tc \
+      -arrowcolor        $tfg1 \
+      -selectbackground  $tbgS \
+      -selectforeground  $tfgS \
+      ;#-selectborderwidth 0
+    ttk::style map "." \
+      -background       [list disabled $bD active $bA] \
+      -foreground       [list disabled grey active $fA]
   }
 
   ###########################################################################

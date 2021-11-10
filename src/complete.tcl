@@ -161,7 +161,7 @@ proc complete::AutoCompleteCommand {} {
     set row [expr {int([$wtxt index insert])}]
     $wtxt delete $row.$idx1 $row.[incr idx2]
     set pos $row.$idx1
-    $wtxt insert $pos $com
+    $wtxt insert $pos "$com "
     ::alited::main::HighlightLine
   }
   focus -force $wtxt
