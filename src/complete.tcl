@@ -61,6 +61,9 @@ proc complete::AllSessionCommands {{currentTID ""}} {
       }
     }
   }
+  if {[llength $al(ED,TclKeyWords)]} {
+    lappend res {*}$al(ED,TclKeyWords)  ;# user's commands
+  }
   return $res
 }
 #_______________________

@@ -68,7 +68,6 @@ namespace eval ::alited {
     {Date Picker} {Вибір дати}
     {Screen Loupe} {Екранна лупа}
     {Quit alited?} {Вийти з alited?}
-    {Don't ask again} {Більше не питати}
     {Wait a little ...} {Чекайте ...}
     {Default} {По вмовчанню}
     {Test} {Перевірка}
@@ -100,7 +99,6 @@ namespace eval ::alited {
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Введіть ім'я файлу, створюваного в:\n%d\n\nЯкщо це каталог, включіть опцію 'Каталог'.\nКаталог може включати підкаталоги (a/b/c)."
     {Delete File} {Видалити файл}
     "File %f already exists in\n%d" "Файл %f вже існує в\n%d"
-    {Add Unit by Template} {Добавити юніт по шаблону}
     {Remove Unit(s)} {Видалити юніт(и)}
     {No item selected.} {Запис не выбраний.}
     {Update Tree} {Оновити список}
@@ -116,7 +114,7 @@ namespace eval ::alited {
     {Back} {Откат}
     {File not found: %f} {Файл не знайдений: %f}
     {Unit not found: %u} {Юніт не знайдений: %u}
-    {Don't ask anymore} {Більш не запитувати}
+    {Don't ask anymore} {Більш не питати}
     {%f is a directory} {%f - це каталог}
     {THE EXTERNAL FILE IS MOVED TO THE PROJECT!} {ЗОВНІШНІЙ ФАЙЛ ПЕРЕМЕЩУЄТЬСЯ У ПРОЕКТ!}
     {Drop Selected Units Here} {Кинути сюди вибрані юніти}
@@ -150,6 +148,7 @@ namespace eval ::alited {
   ::msgcat::mcmset ua {
     {Template} {Шаблон}
     {Templates} {Шаблони}
+    {List of Templates} {Список шаблонів}
     {Current template:} {Поточний шаблон:}
     {New template:} {Новий шаблон:}
     {Hot keys} {Клявіши}
@@ -212,6 +211,18 @@ namespace eval ::alited {
     {Checking %d. Wait a little...} {Перевірка %d. Чекайте...}
     {Too big directory for a project: %n files or more.} {Занадто великий каталог проекту: не менш, ніж %n файлів.}
     {Options for new projects are set in "Preferences/General/Projects"} {Опції для нових проектів беруться з "Опції/Загальне/Проекти"}
+    {Date} {Дата}
+    {Reminder} {Нагадування}
+    {List of reminders} {Список нагадувань}
+    {Add a reminder} {Додати нагадування}
+    {Change a reminder} {Змінити нагадування}
+    {Delete a reminder} {Видалити нагадування}
+    {Text of a reminder} {Текст нагадування}
+    {Reminder added} {Нагадування додано}
+    {Reminder updated} {Нагадування оновлено}
+    {Reminder deleted} {Нагадування видалено}
+    {Reminder will be deleted:\n} {Нагадування буде видалено:\n}
+    {TODO reminders for the past: %d. Delete them or try "Select".} {TODO нагадування минулого: %d. Видалите їх або спробуйте "Вибір".}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -231,7 +242,7 @@ namespace eval ::alited {
     {The current list is empty!} {Поточний список пустий!}
     {This list already exists} {Цей список вже існує}
     "This list not saved to\n\"%f\"." "Цей список не збережений у\n\"%f\"."
-    {Non-favorite files to be:} {Файли не Вибраного повинні}
+    {Non-favorite files to be:} {Файли не Вибраного повинні:}
     {kept} {залишитися}
     {closed} {закритися}
     "Doesn't close any tab without favorites\nat choosing Favorites' list" "Не закривати \"невибрані\" заставки\nпри виборі списка Вибраного"
@@ -474,7 +485,7 @@ namespace eval ::alited {
 
   ## ________________________ Checks ________________________ ##
   ::msgcat::mcmset ua {
-    {Check of Tcl} {Перевірка Tcl}
+    {Check Tcl} {Перевірка Tcl}
     {Check} {Перевірка}
     {Check:} {Перевірити:}
     {Checks available:} {Можливі перевірки:}
@@ -485,6 +496,8 @@ namespace eval ::alited {
     {current file} {поточний файл}
     {Found %f file error(s), %u unit error(s).} {Знайдено помилок: %f файлів, %u юнітів.}
     {No errors found.} {Помилок не знайдено.}
+    {Duplicate units} {Дублікатні юніти}
+    {duplicate unit:} {дублікатний юніт:}
   }
 
   ## ________________________ Misc. ________________________ ##

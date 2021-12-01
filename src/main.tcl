@@ -577,6 +577,21 @@ proc main::PackTextWidgets {wtxt wsbv} {
   $obPav csSet [$obPav csCurrent] $al(WIN) -doit
   $obPav fillGutter $wtxt $canvas $width $shift
 }
+#_______________________
+
+proc main::InitActions {} {
+  # Initializes working with a main form of alited.
+
+  namespace upvar ::alited al al obPav obPav
+  alited::bar::FillBar [$obPav BtsBar]
+  # check for reminders of the past
+  set rems [alited::project::ReadRems $al(prjname)]
+  lassign [alited::project::SortRems $rems] dmin
+  if {$dmin && $dmin<[clock seconds]} {
+    alited::project::_run
+  }
+}
+#_______________________
 
 # ________________________ main _________________________ #
 
@@ -628,7 +643,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.sev3 - - - - {pack -side right -fill y -padx 0}}
     {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1} 
-      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0 -selectmode extended}}
+      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0 -selectmode extended -tip {alited::tree::GetTooltip %i %c}}}
     {.fraBot.panBM.fraTree.fra.SbvTree .fraBot.panBM.fraTree.fra.Tree L - - {pack -side right -fill both}}
     {.FraFV - - - - {add}}
     {.fraFV.v_ - - - - {pack -side top -fill x} {-h 5}}
@@ -644,12 +659,12 @@ proc main::_create {} {
     {.fraFV.fra1.h_2 - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraFV.fra1.sev2 - - - - {pack -side right -fill y -padx 0}}
     {.fraFV.fra - - - - {pack -fill both -expand 1} {}}
-    {.fraFV.fra.TreeFavor - - - - {pack -side left -fill both -expand 1} {-h 5 -style TreeNoHL -columns {C1 C2 C3 C4} -displaycolumns C1 -show headings -takefocus 0}}
+    {.fraFV.fra.TreeFavor - - - - {pack -side left -fill both -expand 1} {-h 5 -style TreeNoHL -columns {C1 C2 C3 C4} -displaycolumns C1 -show headings -takefocus 0 -tip {alited::favor::GetTooltip %i}}}
     {.fraFV.fra.SbvFavor .fraFV.fra.TreeFavor L - - {pack -side left}}
     {fra.pan.PanR - - - - {add} {-orient vertical $alited::PanR_wh}}
     {.fraTop - - - - {add}}
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
-    {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3} {after 100 {alited::bar::FillBar %w}}}
+    {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3}}
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
     {#.fraTop.panTop.CanDiff - - - - {pack -side left -expand 0 -fill y} {-w 4}}
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both} {-background $::alited::FRABG}}
@@ -677,6 +692,7 @@ proc main::_create {} {
     }}}
   }
   UpdateProjectInfo
+  after 100 {after 100 {alited::main::InitActions}}
   bind [$obPav Pan] <ButtonRelease> ::alited::tree::AdjustWidth
   set sbhi [$obPav SbhInfo]
   set lbxi [$obPav LbxInfo]

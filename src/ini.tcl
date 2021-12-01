@@ -146,6 +146,8 @@ namespace eval ::alited {
   set al(DEFAULT,prjindentAuto) 1
   set al(DEFAULT,prjredunit) 20
   set al(DEFAULT,prjmultiline) 0
+  set al(PRJTOOLTREE,cw0) 70      ;# project tool tree column #0 width
+  set al(PRJTOOLTREE,cw1) 200     ;# project tool tree column #1 width
 
   # use localized messages
   set al(LOCAL) {}
@@ -235,6 +237,7 @@ proc ini::ReadIni {{projectfile ""}} {
     }
     ReadIniOptions project $projectfile
   }
+#  set al(EM,Tcl) [::alited::Tclexe]
   ReadIniPrj
   set al(TEXT,opts) "-padx 3 -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3)"
   if {!$al(INI,belltoll)} {
@@ -268,6 +271,8 @@ proc ini::ReadIniGeometry {nam val} {
     filgeometry    {set ::alited::FilGeometry $val}
     treecw0        {set al(TREE,cw0) $val}
     treecw1        {set al(TREE,cw1) $val}
+    prjtreecw0     {set al(PRJTOOLTREE,cw0) $val}
+    prjtreecw1     {set al(PRJTOOLTREE,cw1) $val}
   }
 }
 #_______________________
@@ -537,9 +542,12 @@ proc ini::ReadPrjMisc {nam val} {
   switch -exact -- $nam {
     datafind {
       catch {
-        array set ::alited::find::data $val
-        set ::alited::find::data(en1) ""
-        set ::alited::find::data(en2) ""
+        # lists of find/replace strings to be restored only
+        set ::alited::find::data(en1) {}
+        set ::alited::find::data(en2) {}
+        array set data $val
+        set ::alited::find::data(vals1) $data(vals1)
+        set ::alited::find::data(vals2) $data(vals2)
       }
     }
   }
@@ -686,6 +694,8 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "minsizepref=$::alited::pref::minsize"
   puts $chan "treecw0=[[$obPav Tree] column #0 -width]"
   puts $chan "treecw1=[[$obPav Tree] column #1 -width]"
+  puts $chan "prjtreecw0=$al(PRJTOOLTREE,cw0)"
+  puts $chan "prjtreecw1=$al(PRJTOOLTREE,cw1)"
   puts $chan "dirgeometry=$::alited::DirGeometry"
   puts $chan "filgeometry=$::alited::FilGeometry"
   # save other options
@@ -975,7 +985,7 @@ proc ini::_init {} {
   # Initializes alited app.
 
   namespace upvar ::alited al al \
-    obPav obPav obDlg obDlg obDl2 obDl2 obDl3 obDl3 obFND obFND
+    obPav obPav obDlg obDlg obDl2 obDl2 obDl3 obDl3 obFND obFND obCHK obCHK
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
@@ -1002,15 +1012,16 @@ proc ini::_init {} {
   ::apave::APaveInput create $obDl2 $al(WIN)
   ::apave::APaveInput create $obDl3 $al(WIN)
   ::apave::APaveInput create $obFND $al(WIN)
+  ::apave::APaveInput create $obCHK $al(WIN)
 
   # here, the order of icons defines their order in the toolbar
   set listIcons [::apave::iconImage]
   # the below icons' order defines their order in the toolbar
   foreach {icon} {none gulls heart add change delete up down paste plus minus \
   retry misc previous next folder file OpenFile SaveFile saveall categories \
-  undo redo replace ok color date help run other e_menu trash} {
+  undo redo replace ok color date help run other e_menu trash actions} {
     set img [CreateIcon $icon]
-    if {$icon in {"file" OpenFile categories SaveFile saveall help ok color date other \
+    if {$icon in {"file" OpenFile categories SaveFile saveall help ok color other \
     replace e_menu run undo redo}} {
       append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4} "
       switch $icon {
@@ -1039,13 +1050,10 @@ proc ini::_init {} {
           append al(atools) "-com alited::find::_run\}"
         }
         ok {
-          append al(atools) "-com alited::check::_run\}"
+          append al(atools) "-com alited::CheckRun\}"
         }
         color {
           append al(atools) "-command alited::tool::ColorPicker\}"
-        }
-        date {
-          append al(atools) "-command alited::tool::DatePicker\}"
         }
         help {
           append al(atools) "-com alited::tool::Help\} sev 6"
@@ -1058,7 +1066,7 @@ proc ini::_init {} {
         }
         e_menu {
           image create photo $img-big -data $alited::img::_AL_IMG(e_menu)
-          append al(atools) "-com alited::tool::e_menu\}"
+          append al(atools) "-com {alited::tool::e_menu o=0}\}"
         }
       }
     }

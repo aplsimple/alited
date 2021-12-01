@@ -15,7 +15,8 @@ package require Tk
 # use TCLLIBPATH variable (some tclkits don't see it)
 catch {
   foreach _apave_ [lreverse $::env(TCLLIBPATH)] {
-    if {[lsearch -exact $::auto_path $_apave_]<0} {
+    set _apave_ [file normalize $_apave_]
+    if {[lsearch -exact $::auto_path $_apave_]<0 && [file exists $_apave_]} {
       set ::auto_path [linsert $::auto_path 0 $_apave_]
     }
   }
@@ -27,7 +28,7 @@ package require Img
 
 ::msgcat::mcload [file join [file dirname [info script]] msgs]
 
-package provide aloupe 0.9.4
+package provide aloupe 0.9.5
 
 # _______________________________________________________________________ #
 
@@ -177,7 +178,7 @@ proc ::aloupe::my::Create {start} {
 
 proc ::aloupe::my::DragStart {w X Y} {
   # Initializes the frag-and-drop of the loupe.
-  #   w - the loupe window's path 
+  #   w - the loupe window's path
   #   X - X-coordinate of the mouse pointer
   #   Y - Y-coordinate of the mouse pointer
 
@@ -208,7 +209,7 @@ proc ::aloupe::my::DragStart {w X Y} {
 
 proc ::aloupe::my::Drag {w X Y} {
   # Performs the frag-and-drop of the loupe.
-  #   w - the loupe window's path 
+  #   w - the loupe window's path
   #   X - X-coordinate of the mouse pointer
   #   Y - Y-coordinate of the mouse pointer
 
@@ -222,7 +223,7 @@ proc ::aloupe::my::Drag {w X Y} {
 
 proc ::aloupe::my::DragEnd {w} {
   # Ends the frag-and-drop of the loupe and displays its magnified image.
-  #   w - the loupe window's path 
+  #   w - the loupe window's path
 
   variable data
   if {![info exists data(dragX)]} return

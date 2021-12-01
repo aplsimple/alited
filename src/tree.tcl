@@ -265,10 +265,7 @@ proc tree::Create {} {
   $wtree tag bind tagNorm <ButtonRelease> {after idle {alited::tree::ButtonRelease %b %s %x %y %X %Y}}
   $wtree tag bind tagNorm <Motion> {after idle {alited::tree::ButtonMotion %b %s %x %y %X %Y}}
   bind $wtree <ButtonRelease> {alited::tree::DestroyMoveWindow no}
-  bind $wtree <Leave> {
-    alited::tree::TooltipOff
-    alited::tree::DestroyMoveWindow yes
-  }
+  bind $wtree <Leave> {alited::tree::DestroyMoveWindow yes}
   bind $wtree <F2> {alited::file::RenameFileInTree}
   if {$al(TREE,isunits)} {
     CreateUnitsTree $TID $wtree
@@ -298,7 +295,7 @@ proc tree::CreateUnitsTree {TID wtree} {
   set al(TREE,units) yes
   [$obPav BuTswitch] configure -image alimg_folder
   baltip::tip [$obPav BuTswitch] $al(MC,swunits)
-  baltip::tip [$obPav BuTAddT] $al(MC,unitsadd)
+  baltip::tip [$obPav BuTAddT] $al(MC,tpllist)
   baltip::tip [$obPav BuTDelT] $al(MC,unitsdel)
   baltip::tip [$obPav BuTUp] $al(MC,moveupU)
   baltip::tip [$obPav BuTDown] $al(MC,movedownU)
@@ -336,7 +333,7 @@ proc tree::CreateUnitsTree {TID wtree} {
     if {!$leaf} {
       $wtree tag add tagBranch $itemID
       set parent $itemID
-      set parents [lreplace $parents $lev end $parent]
+      catch {set parents [lreplace $parents $lev end $parent]}
     }
     set levprev $lev
   }
@@ -506,7 +503,7 @@ proc tree::ShowPopupMenu {ID X Y} {
   if {$al(TREE,isunits)} {
     set img alimg_folder
     set m1 $al(MC,swunits)
-    set m2 $al(MC,unitsadd)
+    set m2 $al(MC,tpllist)
     set m3 $al(MC,unitsdel)
     set moveup $al(MC,moveupU) 
     set movedown $al(MC,movedownU)
@@ -588,7 +585,6 @@ proc tree::ButtonPress {but x y X Y} {
   #   Y - x-coordinate of the click
 
   namespace upvar ::alited al al obPav obPav
-  TooltipOff
   set wtree [$obPav Tree]
   set ID [$wtree identify item $x $y]
   set region [$wtree identify region $x $y]
@@ -681,7 +677,6 @@ proc tree::ButtonMotion {but s x y X Y} {
 
   namespace upvar ::alited al al obPav obPav
   if {![info exists al(movWin)] || $al(movWin) eq {}} {
-    alited::tree::Tooltip $x $y $X $Y
     return
   }
   if {$s & 7} {
@@ -731,68 +726,34 @@ proc tree::DestroyMoveWindow {cancel} {
   catch {destroy $al(movWin)}
   if {$cancel} {lassign {} al(movWin) al(movID)}
 }
-
-# ________________________ Tooltips _________________________ #
-
-proc tree::Tooltip {x y X Y} {
-  # Creates a tooltip for the tree.
-  #   x - x-coordinate to identify an item and its column
-  #   y - y-coordinate to identify an item
-  #   X - x-coordinate of the click
-  #   Y - x-coordinate of the click
-
-  namespace upvar ::alited al al obPav obPav
-  variable tipID
-  set wtree [$obPav Tree]
-  if {[$wtree identify region $x $y] ni {tree cell}} {
-    TooltipOff
-    return
-  }
-  set ID [$wtree identify item $x $y]
-  set NC [$wtree identify column $x $y]
-  set newTipID "$ID/$NC"
-  if {[$wtree exists $ID] && $tipID ne $newTipID} {
-    lassign [$wtree bbox $ID] x2 y2 w2 h2
-    incr X 10
-    if {[catch {incr Y [expr {$y2-$y+$h2}]}]} {incr Y 10}
-    if {$al(TREE,isunits)} {
-      # for units
-      set tip [alited::unit::GetHeader $wtree $ID $NC]
-    } else {
-      # for files
-      lassign [$wtree item $ID -values] -> tip isfile
-      if {$isfile} {
-        if {$al(TREE,showinfo)} {
-          set tip [alited::file::FileStat $tip]
-        } else {
-          ::baltip hide $al(WIN)
-          set tipID $newTipID
-          return
-        }
-      }
-    }
-    set msec [clock milliseconds]
-    if {![info exists al(TREETIP_MSEC)]} {
-      set al(TREETIP_MSEC) 0
-    }
-    if {($msec-$al(TREETIP_MSEC))>200} {
-      ::baltip tip $al(WIN) $tip -geometry +$X+$Y -per10 4000 -pause 5 -fade 5
-      set tipID $newTipID
-    } else {
-      ::baltip hide $al(WIN)
-    }
-    set al(TREETIP_MSEC) $msec
-  }
-}
 #_______________________
 
-proc tree::TooltipOff {} {
-  # Hides a tooltip for the tree.
+proc tree::GetTooltip {ID NC} {
+  # Gets a tip for unit / file tree's item.
+  #   ID - ID of treeview item
+  #   NC - column of treeview item
 
-  namespace upvar ::alited al al
-  variable tipID
-  ::baltip hide $al(WIN)
-  set tipID {}
+  namespace upvar ::alited al al obPav obPav
+  if {[info exists al(movWin)] && $al(movWin) ne {}} {
+    # no tips while drag-n-dropping
+    return {}
+  }
+  set wtree [$obPav Tree]
+  if {$al(TREE,isunits)} {
+    # for units
+    set tip [alited::unit::GetHeader $wtree $ID $NC]
+  } else {
+    # for files
+    lassign [$wtree item $ID -values] -> tip isfile
+    if {$isfile} {
+      if {$al(TREE,showinfo)} {
+        set tip [alited::file::FileStat $tip]
+      } else {
+        set tip {}
+      }
+    }
+  }
+  return $tip
 }
 
 # ________________________ Directories procs _________________________ #

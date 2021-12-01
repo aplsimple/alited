@@ -2,7 +2,7 @@
 in=1.0
 bd=1
 w=25
-pos=1.0
+pos=108.31
 ::EMENUTMPFILE=%mn.tmp~
 %C set ::EMENUFILE [string map {\\ /} "%f"]
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
@@ -102,7 +102,7 @@ RW: Differences of $::FILETAIL (fossil/git) ... RW: fossil tim -t ci -n 9999 > $
 RE: Edit *.tcl of %d RE: %C unset ::ALLFILES
 
  M:  M: 3
- ME: Fossil ME: m=fossil.mnu "u=%s" o=0
- ME: Git  ME: m=git.mnu "u=%s" o=0
- ME: Hg ME: m=hg.mnu
- ME: Utils ME: m=utils.mnu
+ ME: Fossil ME: m=fossil.mnu "u=%s" o=-1
+ ME: Git  ME: m=git.mnu "u=%s" o=-1
+ ME: Hg ME: m=hg.mnu o=-1
+ ME: Utils ME: m=utils.mnu o=-1

@@ -18,6 +18,7 @@ namespace eval check {
   variable chBrace 1
   variable chBracket 1
   variable chParenthesis 1
+  variable chDuplUnits 1
 
   # what to check: 1 - current file, 2 - all files
   variable what 1
@@ -43,17 +44,34 @@ proc check::ShowResults {} {
 }
 #_______________________
 
+proc check::PosInfo {TID pos1} {
+  # Gets an info on a unit's position (for Put procedure).
+  #   TID - tab's ID
+  #   pos1 - starting position of the unit in the text
+  # Returns a list of TID and the normalized unit's position.
+  # See also: ::alited::info::Put
+
+  if {$TID eq {}} {
+    set res {}
+  } else {
+    set res [list $TID [expr {[string is double -strict $pos1] ? int($pos1) : 1}]]
+  }
+  return $res
+}
+#_______________________
+
 proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""}} {
   # Checks a unit.
   #   wtxt - text's path
   #   pos1 - starting position of the unit in the text
-  #   pos1 - ending position of the unit in the text
+  #   pos2 - ending position of the unit in the text
   #   TID - tab's ID
   #   title - title of the unit
 
-  variable chBrace 1
-  variable chBracket 1
-  variable chParenthesis 1
+  variable chBrace
+  variable chBracket
+  variable chParenthesis
+  variable chDuplUnits
   variable errors1
   variable errors2
   variable errors3
@@ -73,9 +91,7 @@ proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""}} {
     }
   }
   set err 0
-  if {$TID ne {}} {
-    set info [list $TID [expr {[string is double -strict $pos1] ? int($pos1) : 1}]]
-  }
+  set info [PosInfo $TID $pos1]
   if {$cc1 != $cc2} {
     incr err
     incr errors1
@@ -106,6 +122,7 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
   variable errors1
   variable errors2
   variable errors3
+  variable chDuplUnits
   if {$fname eq {}} {
     set fname [alited::bar::FileName]
     set wtxt [alited::main::CurrentWTXT]
@@ -114,15 +131,39 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
   if {![alited::file::IsTcl $fname]} return
   set curfile [file tail $fname]
   set textcont [$wtxt get 1.0 end]
+  set unittree [alited::unit::GetUnits $TID $textcont]
+  # check for errors of a whole file
   set errors1 [set errors2 [set errors3 0]]
   set fileerrs [CheckUnit $wtxt 1.0 end]
+  # check for duplicate units
+  set errduplist [list]
+  if {$chDuplUnits} {
+    set prevtitle "\{\$\}"
+    set errmsg [msgcat::mc {duplicate unit:}]
+    set uniterr 0
+    foreach item [lsort -index 3 $unittree] {
+      lassign $item lev leaf fl1 title l1
+      if {$prevtitle eq $title} {
+        set uniterr 1
+        lappend errduplist [list "$curfile: $errmsg $title" $l1]
+      }
+      set prevtitle $title
+    }
+    if {!$fileerrs} {set fileerrs $uniterr}
+  }
+  # put a whole file's statistics on errors
   incr fileerrors $fileerrs
   set und [string repeat _ 30]
   set pos1 [alited::bar::GetTabState $TID --pos]
   if {![string is double -strict $$pos1]} {set pos1 1.0}
   set info [list $TID [expr {int($pos1)}]]
   alited::info::Put "$und $fileerrs ($errors1/$errors2/$errors3) file errors of $curfile $und$und$und" $info
-  set unittree [alited::unit::GetUnits $TID $textcont]
+  # put a list of duplicate units
+  foreach errdup $errduplist {
+    lassign $errdup msg pos1
+    alited::info::Put $msg [PosInfo $TID $pos1]
+  }
+  # check for errors of specific units
   foreach item $unittree {
     lassign $item lev leaf fl1 title l1 l2
     if {!$leaf || $title eq {}} continue
@@ -172,9 +213,9 @@ proc check::Check {} {
 proc check::Ok {args} {
   # Handles hitting "OK" button.
 
-  namespace upvar ::alited obDl2 obDl2
+  namespace upvar ::alited obCHK obCHK
   variable win
-  $obDl2 res $win 1
+  $obCHK res $win 1
   return
 }
 #_______________________
@@ -182,9 +223,9 @@ proc check::Ok {args} {
 proc check::Cancel {args} {
   # Handles hitting "Cancel" button.
 
-  namespace upvar ::alited obDl2 obDl2
+  namespace upvar ::alited obCHK obCHK
   variable win
-  $obDl2 res $win 0
+  $obCHK res $win 0
 }
 #_______________________
 
@@ -200,17 +241,18 @@ proc check::Help {args} {
 proc check::_create {} {
   # Creates "Checking" dialogue.
 
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al obCHK obCHK
   variable win
   catch {destroy $win}
-  $obDl2 makeWindow $win.fra $al(MC,checktcl)
-  $obDl2 paveWindow $win.fra {
+  $obCHK makeWindow $win.fra $al(MC,checktcl)
+  $obCHK paveWindow $win.fra {
     {v_ - -}
     {labHead v_ T 1 1 {-st w -pady 4 -padx 8} {-t "Checks available:"}}
     {chb1 labHead T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chBrace -t {Consistency of {} }}}
     {chb2 chb1 T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chBracket -t {Consistency of []}}}
     {chb3 chb2 T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chParenthesis -t {Consistency of ()}}}
-    {v_2 chb3 T}
+    {chb4 chb3 T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chDuplUnits -t {Duplicate units}}}
+    {v_2 chb4 T}
     {fra v_2 T 1 1 {-st nsew -pady 0 -padx 3} {-padding {5 5 5 5} -relief groove}}
     {fra.lab - - - - {pack -side left} {-t "Check:"}}
     {fra.radA - - - - {pack -side left -padx 9}  {-t "current file" -var ::alited::check::what -value 1}}
@@ -221,8 +263,11 @@ proc check::_create {} {
     {.ButOK - - - - {pack -side left -padx 2} {-t "Check" -command ::alited::check::Ok}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::check::Cancel}}
   }
-  if {[set geo $al(checkgeo)] ne {}} {set geo "-geometry $geo"}
-  set res [$obDl2 showModal $win -resizable {0 0} -focus [$obDl2 ButOK] \
+  if {[set geo $al(checkgeo)] ne {}} {
+    set geo [string range $geo [string first + $geo] end]
+    set geo "-geometry $geo"
+  }
+  set res [$obCHK showModal $win -resizable {0 0} -focus [$obCHK ButOK] \
     {*}$geo -modal no -onclose alited::check::Cancel]
   set al(checkgeo) [wm geometry $win]
   if {!$res} {destroy $win}
@@ -232,6 +277,11 @@ proc check::_create {} {
 proc check::_run {} {
   # Runs "Checking" dialogue.
 
+  variable win
+  if {[winfo exists $win]} {
+    focus -force $win
+    return
+  }
   while {1} {
     if {[_create]} {
       Check

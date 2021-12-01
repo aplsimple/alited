@@ -1,4 +1,4 @@
-package ifneeded baltip 1.0.6 [list source [file join $dir baltip.tcl]]
+package ifneeded baltip 1.3.0 [list source [file join $dir baltip.tcl]]
 
 namespace eval ::baltip {
 
@@ -13,14 +13,16 @@ The original code has been modified to make the tip:
 
   * be faded/destroyed after an interval defined by a caller
   * be enabled/disabled for all or specific widgets
+  * be usable with labels, menus, text tags, canvas tags, notebook tabs etc.
   * be displayed at the screen's edges
   * be displayed under the host widget
   * be displayed as a stand-alone balloon message at given coordinates
-  * be displayed with given opacity, font, paddings, colors
+  * be displayed with given opacity, font, paddings, relief, colors
+  * have -image and -compound options to display images
   * have configure/cget etc. wrapped in Tcl ensemble for convenience
 
 The video introduction to *baltip* is presented by
- [baltip-1.0.mp4](https://github.com/aplsimple/baltip/releases/download/baltip-1.0/baltip-1.0.mp4) (11 Mb).
+ [baltip-1.3.mp4](https://github.com/aplsimple/baltip/releases/download/baltip-1.3/baltip-1.3.mp4) (16 Mb).
 
 Below are several pictures just to glance at *baltip*.
 
@@ -40,6 +42,9 @@ Below are several pictures just to glance at *baltip*.
 
 *Tips of menu items*. The menu items can have their own tips. The popup menus may be *tear-off* at that.
 
+The menu tips are useful e.g. when the items are displayed as short names of files, while
+the tips are wanted to be their full names.
+
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip5.png" class="media" alt="">
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip6.png" class="media" alt="">
@@ -48,13 +53,31 @@ Below are several pictures just to glance at *baltip*.
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip7.png" class="media" alt="">
 
+The tags of canvas have tips too.
+
+ <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip12.png" class="media" alt="">
+
+The tabs of notebook are also supplied with tips.
+
+ <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip13.png" class="media" alt="">
+
+The listbox can have tips per item as well as for a whole listbox widget.
+
+ <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip14.png" class="media" alt="">
+
+The treeview can have tips per item and/or column as well as for a whole treeview widget.
+
+ <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip15.png" class="media" alt="">
+
 *Configurable tips*. The tip configuration can be global or local (for a specific tip).
 
-The configuring can include: font, colors, paddings, border, exposition time, opacity, bell.
+The configuring can include: font, colors, paddings, border, exposition time, opacity, relief, image (with -compound), bell.
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip8.png" class="media" alt="">
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip9.png" class="media" alt="">
+
+ <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip11.png" class="media" alt="">
 
 *Balloon*. The balloon messages aren't related to any widgets. This one is configurated to appear at the top right corner, disappearing after a while.
 
@@ -114,6 +137,30 @@ When you click on a widget with its tip being displayed, the tip is hidden. It i
 
       ::baltip::repaint widgetpath
 
+The "text" for *listbox* can contain %i wildcard - and in such cases the text means a callback receiving a current index of item to tip:
+
+      proc ::lbxTip {idx} {
+        set item [lindex $::lbxlist $idx]
+        return "Tip for \"$item\"\nindex=$idx"
+      }
+      ::baltip tip .listbox {::lbxTip %i}
+
+The "text" for *treeview* can contain %i and %c wildcards - and in such cases the text means a callback receiving ID of item and/or column of item to tip:
+
+      proc ::treTip {id c} {
+        set item [.treeview item $id -text]
+        return "Tip for \"$item\"\nID=$id, column=$c"
+      }
+      ::baltip::tip .treeview {::treTip %i %c}
+
+If a tip for listbox and treeview widgets doesn't contain %i nor %c, it means a usual tip for a whole widget. At that, if those wildcards still need to be displayed, use %%i and %%c instead.
+
+If you need to switch between "per item" and "per widget" tip of listbox and treeview , use `::baltip::tip` with `-reset yes` option:
+
+      ::baltip::tip .treeview {Common tip} -reset yes      ;# sets a usual tip
+      ::baltip::tip .treeview {::treTip %i %c} -reset yes  ;# sets a callback
+
+
 ## Balloon
 
 The *normal* tip has no `-geometry` option because it's calculated by *baltip*, to position the tip under its host widget.
@@ -141,28 +188,34 @@ For example:
 
 Below are listed the *baltip* options that are set with `tip` and `configure` and got with `cget`:
 
- **-on** - switches all tips on/off;
- **-per10** - a time of exposition per 10 characters (in millisec.); "0" means "eternal";
- **-fade** - a time of fading (in millisec.);
- **-pause** - a pause before displaying tips (in millisec.);
- **-alpha** - an opacity (from 0.0 to 1.0);
- **-fg** - foreground of tip;
- **-bg** - background of tip;
- **-bd** - borderwidth of tip;
- **-font** - font attributes;
- **-padx** - X padding for text;
- **-pady** - Y padding for text;
- **-padding** - padding for pack;
- **-under** - if >= 0, sets the tip under the widget, else under the pointer;
- **-bell** - if true, rings at displaying.
+ * `-on` - switches all tips on/off;
+ * `-per10` - a time of exposition per 10 characters (in millisec.); "0" means "eternal";
+ * `-fade` - a time of fading (in millisec.);
+ * `-pause` - a pause before displaying tips (in millisec.);
+ * `-alpha` - an opacity (from 0.0 to 1.0);
+ * `-fg` - foreground of tip;
+ * `-bg` - background of tip;
+ * `-bd` - borderwidth of tip;
+ * `-font` - font attributes;
+ * `-padx` - X padding for text;
+ * `-pady` - Y padding for text;
+ * `-padding` - padding for pack;
+ * `-under` - if >= 0, sets the tip under the widget, else under the pointer;
+ * `-image` - image option;
+ * `-compound` - compound option;
+ * `-relief` - relief option;
+ * `-bell` - if true, rings at displaying.
 
 The following options are special:
 
- **-global** - if true, applies the settings to all registered tips;
- **-force** - if true, forces the display by 'tip' command;
- **-index** - index of menu item to tip;
- **-tag** - name of text tag to tip;
- **-geometry** - geometry (+X+Y) of the balloon.
+ * `-global` - if true, applies the settings to all registered tips;
+ * `-force` - if true, forces the display by 'tip' command;
+ * `-index` - index of menu item to tip;
+ * `-tag` - name of text tag to tip;
+ * `-ctag` - name of canvas tag to tip;
+ * `-nbktab` - path to ttk::notebook tab to tip;
+ * `-geometry` - geometry (+X+Y) of the balloon;
+ * `-reset` - "-reset true" may be useful to set a new tip (callback or text) for listbox and treeview.
 
 If `-global yes` option is used alone, it applies all global options to all registered tips. If `-global yes` option is used along with other options, only those options are applied to all registered tips.
 
@@ -182,13 +235,23 @@ See more examples in *test.tcl* of [baltip.zip](https://chiselapp.com/user/aplsi
 
 Also, you can test *baltip* with *test2_pave.tcl* of [apave package](https://chiselapp.com/user/aplsimple/repository/pave/download).
 
+## Acknowledgements
+
+The *baltip* package has been developed with help of these kind people:
+
+  * [Nicolas Bats](https://github.com/sl1200mk2) prompted to add canvas tags' tips
+
+  * [Csaba Nemethi](https://www.nemethi.de/) sent several bug fixes and advices, incl. on listbox and treeview tips
+
 ## Links
 
-  * [Demo of baltip v1.0](https://github.com/aplsimple/baltip/releases/download/baltip-1.0/baltip-1.0.mp4)
+  * [Source at chiselapp](https://chiselapp.com/user/aplsimple/repository/baltip/download) (baltip.zip)
+
+  * [Source at github](https://github.com/aplsimple/baltip)
 
   * [Reference](https://aplsimple.github.io/en/tcl/baltip/baltip.html)
 
-  * [Source](https://chiselapp.com/user/aplsimple/repository/baltip/download) (baltip.zip)
+  * [Demo of baltip v1.3](https://github.com/aplsimple/baltip/releases/download/baltip-1.3/baltip-1.3.mp4)
 }
 }
 

@@ -31,22 +31,28 @@ proc about::About {} {
     ]
   set long1 [msgcat::mc {And well fit for programming with it.}]
   set long2 __________________________________________
+  set long3 [alited::Tclexe]
   set msg "  <red>alited v[package require alited]</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
     [msgcat::mc {Written in pure Tcl/Tk.}] \n \
     $long1\n\n \
     [msgcat::mc {Details:}] \n\n \
-      \u2022 <link1>aplsimple.github.io/en/tcl/alited</link1>\n\n \
+      \u2022 <link1>aplsimple.github.io/en/tcl/alited</link1>\n \
+      \u2022 <link1>github.com/aplsimple/alited</link1>\n \
+      \u2022 <link1>chiselapp.com/user/aplsimple/repository/alited</link1>\n\n \
     [msgcat::mc {Authors:}] \n\n \
       \u2022 <linkapl>Alex Plotnikov</linkapl>\n\n \
     [msgcat::mc {License:}] <linkMIT>MIT</linkMIT>\n \
     $long2\n \
     \n \
+    <red> $long3 </red>\n \
+    \n \
     <red> $alited::tcltk_version </red> <link3></link3>\n \
     \n \
-    <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>\n\n\n\n"
-  set wmax [expr {max([string length $long1],[string length $long2])}]
+    <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>"
+  set wmax [expr {max([string length $long1], \
+    [string length $long2],[string length $long3])}]
   ::alited::msg ok {} $msg \
-    -title [msgcat::mc About] -t 1 -w [incr wmax 4] -scroll 0 \
+    -title [msgcat::mc About] -t 1 -w [incr wmax 4] -h {30 30} -scroll 0 \
     -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}"
 }
 #_______________________
@@ -55,7 +61,7 @@ proc about::textImaged {w} {
   # Makes the feather blink.
   #  w - window's path
 
-  ::apave::obj labelFlashing [::apave::obj textLink $w 3] "" 1 \
+  ::apave::obj labelFlashing [::apave::obj textLink $w 5] "" 1 \
     -data $::alited::img::_AL_IMG(feather) -pause 0.5 -incr 0.1 -after 40
 }
 

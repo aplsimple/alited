@@ -88,6 +88,16 @@ proc tool::ColorPicker {} {
 }
 #_______________________
 
+proc tool::FormatDate {{date {}}} {
+  # Formats a date.
+  #   date - date to be formatted (a current date if omitted)
+
+  namespace upvar ::alited al al
+  if {$date eq {}} {set date [clock seconds]}
+  return [clock format $date -format $al(TPL,%d)]
+}
+#_______________________
+
 proc tool::DatePicker {} {
   # Calls a calendar to pick a date.
 
@@ -97,7 +107,7 @@ proc tool::DatePicker {} {
   && ![catch {clock scan $date -format $al(TPL,%d)}]} {
     set al(klnddate) $date
   } elseif {![info exists al(klnddate)]} {
-    set al(klnddate) [clock format [clock seconds] -format $al(TPL,%d)]
+    set al(klnddate) [FormatDate]
   }
   set res [::apave::obj chooser dateChooser alited::al(klnddate) \
     -parent $al(WIN) -dateformat $al(TPL,%d)]
@@ -108,11 +118,23 @@ proc tool::DatePicker {} {
 }
 #_______________________
 
+proc tool::SrcPath {toolpath} {
+  # Gets a path to an external tool.
+  # This may be useful at calling alited by tclkit:
+  # tkcon, aloupe etc. may be located in "src" subdirectory of alited.
+
+  set srcpath [file join $::alited::FILEDIR src [file tail $toolpath]]
+  if {[file exists $srcpath]} {set toolpath $srcpath}
+  catch {cd [file dirname $toolpath]}
+  return $toolpath
+}
+#_______________________
+
 proc tool::Loupe {} {
   # Calls a screen loupe.
 
-  alited::Run [file join $::alited::PAVEDIR pickers color aloupe aloupe.tcl] \
-    -locale $alited::al(LOCAL)
+  set loupe [SrcPath [file join $::alited::PAVEDIR pickers color aloupe aloupe.tcl]]
+  alited::Run $loupe -locale $alited::al(LOCAL)
 }
 #_______________________
 
@@ -126,7 +148,8 @@ proc tool::tkcon {} {
   foreach opt {rows cols fsize geo topmost} {
     lappend opts -apl-$opt $al(tkcon,$opt)
   }
-  alited::Run [file join $::alited::LIBDIR util tkcon.tcl] {*}$opts
+  set tkcon [SrcPath [file join $::alited::LIBDIR util tkcon.tcl]]
+  alited::Run $tkcon {*}$opts
 }
 #_______________________
 
@@ -169,12 +192,18 @@ proc tool::EM_Options {opts} {
     }
     append z7 z7=[alited::bar::FileName [lindex $tabs $i+1 0]]
   }
+  set srcdir [file join $::alited::FILEDIR src]
+  if {[file exists [file join $srcdir e_menu.png]]} {
+    set srcdir "\"SD=$srcdir\""
+  } else {
+    set srcdir {}
+  }
   if {$al(EM,DiffTool) ne {}} {append ls " DF=$al(EM,DiffTool)"}
   set l [[alited::main::CurrentWTXT] index insert]
   set l [expr {int($l)}]
   set R [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
-    o=0 g=$al(EM,geometry) $z6 $z7 {*}$ls {*}$opts]
+    o=-1 g=$al(EM,geometry) $z6 $z7 {*}$ls {*}$opts {*}$srcdir]
   # quote all options
   set res {}
   foreach r $R {append res "\"$r\" "}
@@ -327,7 +356,7 @@ proc tool::EM_command {im} {
   if {$idx eq {-} || [regexp {^[^[:blank:].]+[.]mnu: } $item]} {
     # open a menu
     set mnu [string range $item 0 [string first : $item]-1]
-    set ex {ex= o=0}
+    set ex {ex= o=-1}
   } else {
     # call a command
     set ex "ex=[alited::tool::EM_HotKey $idx]"

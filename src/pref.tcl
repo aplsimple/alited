@@ -234,7 +234,7 @@ proc pref::MainFrame {} {
     {.Cannbk6 .butTools L 1 1 {-st ns} {-w 2 -h 10 -highlightthickness 1 -afteridle {alited::pref::fillCan %w}}}
     {.v_  .butTools T 1 1 {-st ns} {-h 30}}
     {fraR fraL L 1 1 {-st nsew -cw 1}}
-    {fraR.Nbk - - - - {pack -side top -expand 1 -fill both} {
+    {fraR.nbk - - - - {pack -side top -expand 1 -fill both} {
         f1 {-t View}
         f2 {-t Saving}
         f3 {-t Projects}
@@ -262,7 +262,7 @@ proc pref::MainFrame {} {
     {#LabMess fraL T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraL T 1 2 {-st nsew -pady 2}}
     {fraB seh T 1 2 {-st nsew} {-padding {2 2}}}
-    {.butHelp - - - - {pack -side left} {-t "Help" -com ::alited::pref::Help}}
+    {.ButHelp - - - - {pack -side left} {-t "Help" -com ::alited::pref::Help}}
     {.LabMess - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
     {.butOK - - - - {pack -side left -anchor s -padx 2} {-t Save -command ::alited::pref::Ok}}
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::pref::Cancel}}
@@ -399,14 +399,14 @@ proc pref::fillCan {w {selected no}} {
 
   fetchVars
   catch {$w delete $data(CANVAS,$w)}
-  lassign [$obDl2 csGet] - - - bg - selbg - - - hotbg
+  lassign [$obDl2 csGet] - - - bg selbg - - - - hotbg
   if {$selected} {
-    set bg $selbg
+    set bg $hotbg
     $w configure -highlightbackground $hotbg
   } else {
     $w configure -highlightbackground $bg
   }
-  set data(CANVAS,$w) [$w create rectangle {0 0 10 100} -fill $bg -outline $bg]
+  set data(CANVAS,$w) [$w create rectangle {0 0 10 100} -fill $bg -outline $selbg]
 }
 # ________________________ Tabs "General" _________________________ #
 
@@ -803,6 +803,8 @@ proc pref::Template_Tab {} {
     {.entd .labd L 1 1 {-st sw -pady 5} {-tvar alited::al(TPL,%d) -w 30}}
     {.labt .labd T 1 1 {-st w -pady 1 -padx 3} {-t "Time format:"}}
     {.entt .labt L 1 1 {-st sw -pady 5} {-tvar alited::al(TPL,%t) -w 30}}
+    {.seh .labt T 1 2 {-pady 3}}
+    {.but .seh T 1 1 {-st w} {-t {$::alited::al(MC,tpllist)} -com {alited::unit_tpl::_run no "-geometry root=$::alited::pref::win"}}}
   }
 }
 
@@ -1256,7 +1258,7 @@ proc pref::PickMenuItem {it} {
   set X [winfo rootx $w]
   set Y [winfo rooty $w]
   set res [::em::main -prior 1 -modal 1 -remain 0 -noCS 1 \
-    {*}[alited::tool::EM_Options "pk=yes dk=dock o=0 t=1 g=+[incr X 5]+[incr Y 25]"]]
+    {*}[alited::tool::EM_Options "pk=yes dk=dock o=-1 t=1 g=+[incr X 5]+[incr Y 25]"]]
   lassign $res menu idx item
   if {$item ne {}} {
     set i [lindex [alited::tool::EM_Structure $menu] $idx-1 1]
@@ -1348,6 +1350,7 @@ proc pref::_create {tab} {
     after idle "::alited::pref::Tab nbk" ;# first entering
   }
   bind $win <Control-o> alited::ini::EditSettings
+  bind $win <F1> "[$obDl2 ButHelp] invoke"
   set res [$obDl2 showModal $win -geometry $geo {*}$minsize \
     -onclose ::alited::pref::Cancel]
   set fcont [$wtxt get 1.0 {end -1c}]

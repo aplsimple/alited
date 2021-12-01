@@ -197,7 +197,7 @@ proc unit::TemplateData {wtxt l1 tpldata} {
   set fname [alited::bar::FileName]
   # fill the common wildcards
   set tex [string map [list \
-    %d [clock format $sec -format $al(TPL,%d)] \
+    %d [alited::tool::FormatDate $sec] \
     %t [clock format $sec -format $al(TPL,%t)] \
     %u $al(TPL,%u) \
     %U $al(TPL,%U) \

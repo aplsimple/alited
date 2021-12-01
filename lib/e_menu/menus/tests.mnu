@@ -1,7 +1,8 @@
 # options should go first because of "co=" (line continuator)
 
 [OPTIONS]
-pos=11.38
+pos=5.4
+o=-1
 co=;
 w=45
 rt=2/5

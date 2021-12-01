@@ -44,7 +44,7 @@ proc ::klnd::my::IsDay {i} {
   #   i - button index
 
   variable p
-  return [expr {![catch {set w [$p(obj) BuT_KLND$i]}] && [$w cget -takefocus]}]
+  return [expr {![catch {set w [$p(obj) BuT_KLNDSTD$i]}] && [$w cget -takefocus]}]
 }
 #_______________________
 
@@ -85,7 +85,7 @@ proc ::klnd::my::ShowMonth {m y} {
     "[::msgcat::mc {Current date}]: [clock format $sec -format $p(dformat)]\n(F3)" -under 5
   # display month & year
   [$p(obj) LabMonth] configure -text  "[lindex $p(months) [expr {$m-1}]] $y" \
-    -font "[$p(obj) csFontDef] -size [expr {[$p(obj) basicFontSize]+3}]"
+    -font [::apave::obj boldDefFont [expr {[::apave::obj basicFontSize]+2}]]
   # display day names
   for {set i 1} {$i<8} {incr i} {
     [$p(obj) LabDay$i] configure -text " [lindex $p(days) $i-1] "
@@ -112,7 +112,7 @@ proc ::klnd::my::ShowMonth {m y} {
         set p(icurr) $i  ;# button's index of the current date
       }
     }
-    [$p(obj) BuT_KLND$i] configure {*}$att -fg $p(fg1) -bg $p(bg1) -relief flat -overrelief flat
+    [$p(obj) BuT_KLNDSTD$i] configure {*}$att -fg $p(fg1) -bg $p(bg1) -relief flat -overrelief flat
   }
   set p(mvis) $m  ;# month & year currently visible
   set p(yvis) $y
@@ -146,7 +146,7 @@ proc ::klnd::my::HighlightCurrentDay {} {
   # Highlights the current day's button.
 
   variable p
-  catch {[$p(obj) BuT_KLND$p(icurr)] configure -fg $p(fg2) -bg $p(bg2)}
+  catch {[$p(obj) BuT_KLNDSTD$p(icurr)] configure -fg $p(fg2) -bg $p(bg2)}
 }
 #_______________________
 
@@ -196,7 +196,7 @@ proc ::klnd::my::Enter {i {focusin 0}} {
   variable p
   if {![IsDay $i]} return
   Leave
-  [set w [$p(obj) BuT_KLND$i]] configure -fg $p(fgsel) -bg $p(bgsel)
+  [set w [$p(obj) BuT_KLNDSTD$i]] configure -fg $p(fgsel) -bg $p(bgsel)
   set p(ienter) $i
   set p(dvis) [$w cget -text]
   catch {after cancel $p(after2)}
@@ -210,9 +210,9 @@ proc ::klnd::my::Leave {{i 0}} {
   #   i - button index
 
   variable p
-  if {$i && ![[$p(obj) BuT_KLND$i] cget -takefocus]} return
+  if {$i && ![[$p(obj) BuT_KLNDSTD$i] cget -takefocus]} return
   foreach n [list $i $p(ienter)] {
-    if {$n} {[$p(obj) BuT_KLND$n] configure -fg $p(fg1) -bg $p(bg1)}
+    if {$n} {[$p(obj) BuT_KLNDSTD$n] configure -fg $p(fg1) -bg $p(bg1)}
   }
   HighlightCurrentDay
 }
@@ -227,7 +227,7 @@ proc ::klnd::my::InitSettings {} {
   variable msgdir
   if {![info exists :klnd::my::prevY]} {
     foreach {i icon} {0 date 1 previous2 2 previous 3 next 4 next2} {
-      image create photo IM_KLND_$i -data [::apave::iconData $icon]
+      image create photo IM_KLND_$i -data [::apave::iconData $icon small]
     }
     lassign [::apave::obj csGet] p(fg0) p(fg1) p(bg0) p(bg1) - p(bgsel) p(fgsel) - - p(fgh) - - - - p(fg2) p(bg2)
     # localized stuff
@@ -249,10 +249,10 @@ proc ::klnd::my::InitCalendar {args} {
   lassign [::apave::parseOptions $args \
   -title {} -value {} -tvar {} -locale {} -parent {} -dateformat %D \
   -weekday {} -centerme {} -geometry {} -entry {} -com {} -command {} \
-  -static 0 -currentmonth {} -staticdate {}] \
+  -currentmonth {} -united no -daylist {-} -hllist {} -popup {}] \
     title datevalue tvar loc parent p(dformat) \
     p(weekday) centerme geo entry com1 com2 \
-    p(static) p(currentmonth) p(staticdate)
+    p(currentmonth) p(united) p(daylist) p(hllist) p(popup)
   if {$com2 eq {}} {set p(com) $com1} {set p(com) $com2}
   # get localized week day names
   lassign [::klnd::weekdays $loc] p(days) p(weekday)
@@ -262,6 +262,8 @@ proc ::klnd::my::InitCalendar {args} {
   set p(tvar) $tvar
   if {$tvar ne {}} {
     set datevalue [set $tvar]
+  } elseif {$p(daylist) ne {-}} {
+    set datevalue [lindex $p(daylist) 0]
   }
   catch {unset p(after)} ;# to pause more at start
   # colors to be used
@@ -286,8 +288,8 @@ proc ::klnd::my::MainWidgets {} {
   # Forms main widgets of calendar.
 
   return {
-    {fra - - 1 10 {-st new} {}} \
-    {.fraTool - - 1 10 {-st new} {}}
+    {fra - - 1 7 {-st new} {}} \
+    {.fraTool - - 1 7 {-st new} {}}
     {.fraTool.tool - - - - {pack -side top} {-array {
       IM_KLND_0 {::klnd::my::SetCurrentDay} sev 6
       IM_KLND_1 {{::klnd::my::GoYear -1} -tip "$::klnd::my::prevY\n(Home)@@-under 5"} h_ 2
@@ -306,12 +308,12 @@ proc ::klnd::my::MainWidgets {} {
       }
       set wt -
       for {set i 1} {$i<50} {incr i} {
-        if {$i<8} {set cur ".fraDays.LabDay$i"} {set cur ".fraDays.BuT_KLND[expr {$i-7}]"}
+        if {$i<8} {set cur ".fraDays.LabDay$i"} {set cur ".fraDays.BuT_KLNDSTD[expr {$i-7}]"}
         if {($i%7)!=1} {set p L; set pw $pr} {set p T; set pw $wt; set wt $cur}
         if {$i<8} {
           set lwid "$cur $pw $p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh)}"
         } else {
-          set lwid "$cur $pw $p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0 -pady 2 -com {::klnd::my::Enter [expr {$i-7}] 1} $att}"
+          set lwid "$cur $pw $p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0 -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter [expr {$i-7}] 1} $att}"
         }
         %C $lwid
         set pr $cur
@@ -329,6 +331,20 @@ proc ::klnd::my::DefaultLocale {} {
 #_______________________
 
 # ________________________ UI _________________________ #
+
+proc ::klnd::minYear {} {
+  # Gets minimal year that is correct.
+
+  return 1753
+}
+#_______________________
+
+proc ::klnd::maxYear {} {
+  # Gets maximal year that is correct.
+
+  return 9999
+}
+#_______________________
 
 proc ::klnd::currentYearMonthDay {} {
   # Gets current year, month, day.
@@ -387,7 +403,7 @@ proc ::klnd::clearArgs {args} {
   # Removes specific options from args.
   #   args - list of options
 
-  return [::apave::removeOptions $args -title -value -tvar -locale -parent -dateformat -weekday -com -command -currentmonth -staticdate]
+  return [::apave::removeOptions $args -title -value -tvar -locale -parent -dateformat -weekday -com -command -currentmonth -united -daylist -hllist -popup]
 }
 #_______________________
 
@@ -423,8 +439,8 @@ proc ::klnd::calendar {args} {
   $my::p(obj) makeWindow $win.fra $title
   $my::p(obj) paveWindow $win.fra [list \
     {*}[my::MainWidgets] \
-    {seh fra T 1 10 {-pady 4}} \
-    {fraBottom seh T 1 10 {-st ew}} \
+    {seh fra T 1 7 {-pady 4}} \
+    {fraBottom seh T 1 7 {-st ew}} \
     {fraBottom.h_ - - - - {pack -fill both -expand 1 -side left} {}} \
     {fraBottom.But_KLNDCLOSE - - - - {pack -side left} {-t "Close" -com "$::klnd::my::p(obj) res $win 0"}} \
   ]
@@ -432,7 +448,7 @@ proc ::klnd::calendar {args} {
   foreach {ev prc} { <Home> "::klnd::my::GoYear -1 yes" <End> "::klnd::my::GoYear 1 yes" \
   <Prior> "::klnd::my::GoMonth -1 yes" <Next> "::klnd::my::GoMonth 1 yes"} {
     for {set i 1} {$i<38} {incr i} {
-      set but [$my::p(obj) BuT_KLND$i]
+      set but [$my::p(obj) BuT_KLNDSTD$i]
       bind $but $ev $prc
       bind $but <FocusIn> "::klnd::my::Enter $i"
       bind $but <KeyPress> "::klnd::my::KeyPress $i %K"
@@ -460,5 +476,5 @@ proc ::klnd::calendar {args} {
 
 # _________________________________ EOF _________________________________ #
 
-#RUNF1: ../../tests/test2_pave.tcl 1 13 12 'small icons'
-#RUNF1: ../../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#-RUNF1: ../../tests/test2_pave.tcl 1 13 12 'small icons'
+#RUNF1: ~/PG/github/alited/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

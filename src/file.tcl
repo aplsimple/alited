@@ -489,6 +489,7 @@ proc file::SaveFile {{TID ""}} {
   alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)"
   alited::main::ShowHeader yes
   alited::tree::RecreateTree {} $fname
+  alited::tree::SeeSelection
   return $res
 }
 #_______________________
@@ -513,6 +514,7 @@ proc file::SaveFileAs {{TID ""}} {
     RenameFile $TID $fname
     alited::main::ShowHeader yes
     alited::tree::RecreateTree {} $fname
+    alited::tree::SeeSelection
   }
   return $res
 }
@@ -671,7 +673,7 @@ proc file::DoMoveFile {fname dname f1112 {addmsg {}}} {
   if {![info exists al(_ANS_MOVE_)] || $al(_ANS_MOVE_)!=11} {
     append addmsg [string map [list %f $tailname %d $dname] $al(MC,movefile)]
     set al(_ANS_MOVE_) [alited::msg yesno ques $addmsg \
-      $defb -title $al(MC,moving) {*}$geo -ch "Don't ask again"]
+      $defb -title $al(MC,moving) {*}$geo -ch $al(MC,noask)]
     if {!$al(_ANS_MOVE_)} return
   }
   return [RemoveFile $fname $dname move]

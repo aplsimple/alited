@@ -62,7 +62,6 @@ namespace eval ::alited {
     {Date Picker} {Выбор даты}
     {Screen Loupe} {Экранная лупа}
     {Quit alited?} {Выйти из alited?}
-    {Don't ask again} {Больше не спрашивать}
     {Wait a little ...} {Ожидайте ...}
     {Default} {По умолчанию}
     {Test} {Проверка}
@@ -94,7 +93,6 @@ namespace eval ::alited {
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Введите имя файла, создаваемого в:\n%d\n\nЕсли это каталог, включите опцию 'Каталог'.\nКаталог может включать подкаталоги (a/b/c)."
     {Delete File} {Удалить файл}
     "File %f already exists in\n%d" "Файл %f уже существует в\n%d"
-    {Add Unit by Template} {Добавить юнит по шаблону}
     {Remove Unit(s)} {Удалить юнит(ы)}
     {No item selected.} {Запись не выбрана.}
     {Update Tree} {Обновить список}
@@ -144,6 +142,7 @@ namespace eval ::alited {
   ::msgcat::mcmset ru {
     {Template} {Шаблон}
     {Templates} {Шаблоны}
+    {List of Templates} {Список шаблонов}
     {Current template:} {Текущий шаблон:}
     {New template:} {Новый шаблон:}
     {Hot keys} {Клавиши}
@@ -206,6 +205,18 @@ namespace eval ::alited {
     {Checking %d. Wait a little...} {Проверка %d. Ожидайте...}
     {Too big directory for a project: %n files or more.} {Слишком велик каталог проекта: %n файлов или более.}
     {Options for new projects are set in "Preferences/General/Projects"} {Опции для новых проектов берутся из "Опции/Общее/Проекты"}
+    {Date} {Дата}
+    {Reminder} {Напоминание}
+    {List of reminders} {Список напоминаний}
+    {Add a reminder} {Добавить напоминание}
+    {Change a reminder} {Изменить напоминание}
+    {Delete a reminder} {Удалить напоминание}
+    {Text of a reminder} {Текст напоминания}
+    {Reminder added} {Напоминание добавлено}
+    {Reminder updated} {Напоминание обновлено}
+    {Reminder deleted} {Напоминание удалено}
+    {Reminder will be deleted:\n} {Напоминание будет удалено:\n}
+    {TODO reminders for the past: %d. Delete them or try "Select".} {TODO напоминания прошлого: %d. Удалите их или попробуйте "Выбор".}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -225,7 +236,7 @@ namespace eval ::alited {
     {The current list is empty!} {Текущий список пуст!}
     {This list already exists} {Этот список уже существует}
     "This list not saved to\n\"%f\"." "Этот список не сохранен в\n\"%f\"."
-    {Non-favorite files to be:} {Файлы не Избранного должны}
+    {Non-favorite files to be:} {Файлы не Избранного должны:}
     {kept} {остаться}
     {closed} {закрыться}
     "Doesn't close any tab without favorites\nat choosing Favorites' list" "Не закрывать \"неизбранные\" закладки\nпри выборе списка Избранного"
@@ -468,7 +479,7 @@ namespace eval ::alited {
 
   ## ________________________ Checks ________________________ ##
   ::msgcat::mcmset ru {
-    {Check of Tcl} {Проверка Tcl}
+    {Check Tcl} {Проверка Tcl}
     {Check} {Проверка}
     {Check:} {Проверить:}
     {Checks available:} {Возможные проверки:}
@@ -479,6 +490,8 @@ namespace eval ::alited {
     {current file} {текущий файл}
     {Found %f file error(s), %u unit error(s).} {Найдено ошибок: %f файлов, %u юнитов.}
     {No errors found.} {Ошибок не найдено.}
+    {Duplicate units} {Дубликатные юниты}
+    {duplicate unit:} {дубликатный юнит:}
   }
 
   ## ________________________ Misc. ________________________ ##

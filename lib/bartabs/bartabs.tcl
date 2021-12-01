@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.5.1
+package provide bartabs 1.5.3
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -1078,7 +1078,7 @@ method Bar_Data {barOptions} {
     -hidearrows no -scrollsel yes -lablen 0 -tiplen 0 -tleft 0 -tright end \
     -disable [list] -select [list] -mark [list] -fgmark #800080  -fgsel "." \
     -relief groove -padx 1 -pady 1 -expand 0 -tabcurrent -1 -dotip no \
-    -bd 0 -separator 1 -lifo 0 -fg {} -bg {} \
+    -bd 0 -separator 1 -lifo 0 -fg {} -bg {} -popuptip {}\
     -ELLIPSE "\u2026" -MOVWIN {.bt_move} -ARRLEN 0 -USERMNU 0 -LLEN 0]
   set tabinfo [set imagetabs [set popup [list]]]
   my Bar_DefaultMenu $BID popup
@@ -1166,16 +1166,19 @@ method Bar_MenuList {BID TID popi {ilist ""} {pop ""}} {
       set fs {}
     }
   }
+  # ALERT: "font actual TkDefaultFont" may be wasteful with tclkits
+  set font [list -font "[font actual TkDefaultFont] $fs"]
   for {set i 0} {$i<[llength $ilist]} {incr i} {
-    if {[set tID [lindex $ilist $i]] eq "s"} continue
+    if {[set tID [lindex $ilist $i]] eq {s}} continue
     set opts [my Tab_MarkAttrs $BID $tID no]
     if {"-image" ni $opts} {append opts " -image bts_ImgNone"}
     append opts " -compound left"
-    set font [list -font "[font actual TkDefaultFont] $fs"]
     if {$tID==$tabcurr || [lsearch $fewsel $tID]>-1} {
-      set font [my Tab_SelAttrs $font {} {}]
+      set font2 [my Tab_SelAttrs $font {} {}]
+    } else {
+      set font2 $font
     }
-    append opts " $font"
+    append opts " $font2"
     if {$tID==$TID} {append opts " -foreground $fgo -background $bgo"}
     if {[string match *bartabs_cascade2 $popi] && [my Disabled $tID]} {
       append opts " -foreground [my $BID cget -FGMAIN]"  ;# move behind any
@@ -1348,12 +1351,14 @@ method FillMenuList {BID popi {TID -1} {mnu ""}} {
 #   mnu - root menu
 # Return a list of items types: s (separator) and TID.
 
-  set tiplen [my $BID cget -tiplen]
+  lassign [my $BID cget -tiplen -popuptip] tiplen popuptip
   set vis [set seps 0] ;# flags for separators: before/after visible items
+  set idx -1
   set res [list]
   foreach tab [my [set BID [my ID]] listFlag] {
     lassign $tab tID text vsbl
     if {$vsbl && !$seps || !$vsbl && $vis} {
+      incr idx
       $popi add separator
       lappend res s
       incr seps
@@ -1362,6 +1367,7 @@ method FillMenuList {BID popi {TID -1} {mnu ""}} {
       set vis 1
     }
     if {!$seps && $vis} { ;# no invisible at left
+      incr idx
       $popi add separator
       lappend res s
       incr seps
@@ -1374,6 +1380,11 @@ method FillMenuList {BID popi {TID -1} {mnu ""}} {
       set comm "[self] moveSelTab $TID $tID"
     }
     if {[set cbr [expr {$tiplen>0 && [incr ccnt]>$tiplen}]]} {set ccnt 0}
+    incr idx
+    if {$popuptip ne {}} {
+      # make a tip for menu items
+      $popuptip $popi $idx $tID
+    }
     $popi add command -label $text -command $comm {*}$dsbl -columnbreak $cbr
     lappend res $tID
   }

@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.0.6 (30 Nov'21)`
+Version `1.0.6 (8 Dec'21)`
 
   - TODO  : BUGFIX: issues with e_menu & tools in Windows
 
@@ -11,9 +11,26 @@ Version `1.0.6 (30 Nov'21)`
   - BUGFIX: diff name normalized for Windows
   - BUGFIX: populating "Last visited" at changing unit name
   - BUGFIX: running e_menu & tools at cursor on quotes & braces
-  - BUGFIX: rdbende themes' scrollbars as in forest theme: hide at need
+  - BUGFIX: rdbende themes: scrollbars as in forest theme (hide at need)
+  - BUGFIX: tree selection seen after file saves
+  - BUGFIX: more time for gaining bar's width before calling FillBar
+  - BUGFIX: o=-1 for e_menu calls (instead of old o=0)
+  - NEW   : remind on events (calendar's option in "Projects")
+  - NEW   : call a list of templates from Preferences/Templates
+  - NEW   : F1 in main dialogues for calling help
+  - NEW   : run alited.tcl by tclsh/tclkit, alited.kit by tclkit
+  - NEW   : info on the executable in "About"
+  - NEW   : user's Tcl commands autocompleted
+  - NEW   : "Check Tcl" for duplicates in the unit tree
+  - NEW   : tips for tab list (full file names)
   - NEW   : "Utils / Diff to LEFT/RIGHT tab" of e_menu
   - NEW   : ru.msg, ua.msg for klnd
+  - CHANGE: tooltips of treeviews from baltip (behaving properly at that)
+  - CHANGE: date picker removed from toolbar
+  - CHANGE: get rid of package duplicates (apave, baltip)
+  - CHANGE: at switching projects, strings to be only restored for "Find/Replace"
+  - CHANGE: colors of tips for dark CS
+  - CHANGE: rdbende themes: check/radio buttons hovered
   - CHANGE: app's icon
   - CHANGE: add space after completed command
   - CHANGE: "Check Tcl" window be non-modal topmost
@@ -22,7 +39,7 @@ Version `1.0.6 (30 Nov'21)`
   - CHANGE: "ignore dirs" option of projects moved to Project/Options
   - CHANGE: warning of Pref/General/Projects when defining Project/Options
   - CHANGE: ru.msg, ua.msg
-  - CHANGE: apave package
+  - CHANGE: apave, klnd, baltip, bartabs package
 
 
 Version `1.0.5 (27 Oct'21)`

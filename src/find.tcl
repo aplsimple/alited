@@ -31,7 +31,6 @@ namespace eval find {
   set data(c2) 1  ;# case
   set data(c3) 0  ;# by blank
   set data(c4) 1  ;# wrap around
-  set data(c5) 0  ;# on top
 
   # lists for find & replace comboboxes
   set data(vals1) [list]
@@ -716,7 +715,7 @@ proc find::ReplaceInText {} {
   set fname [file tail [alited::bar::FileName]]
   set msg [string map [list %f $fname %s [FindReplStr $data(en1)] \
     %r [FindReplStr $data(en2)]] $al(MC,frdoit1)]
-  if {![alited::msg yesno warn $msg NO -ontop $data(c5)]} {
+  if {![alited::msg yesno warn $msg NO]} {
     return {}
   }
   set wtxt [alited::main::CurrentWTXT]
@@ -735,7 +734,7 @@ proc find::ReplaceInSession {} {
   if {![CheckData repl]} return
   set msg [string map [list %s [FindReplStr $data(en1)] \
     %r [FindReplStr $data(en2)]] $al(MC,frdoit2)]
-  if {![alited::msg yesno warn $msg NO -ontop $data(c5)]} {
+  if {![alited::msg yesno warn $msg NO]} {
     return {}
   }
   set rn 0

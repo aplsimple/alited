@@ -128,7 +128,7 @@ proc menu::FillMenu {} {
   ## ________________________ Tools _________________________ ##
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label $al(MC,run) -command alited::tool::_run -accelerator $al(acc_3)
-  $m add command -label e_menu -command alited::tool::e_menu -accelerator $al(acc_2)
+  $m add command -label e_menu -command {alited::tool::e_menu o=0} -accelerator $al(acc_2)
 
     ### ________________________ Runs _________________________ ###
   for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
@@ -149,7 +149,7 @@ proc menu::FillMenu {} {
 
     ### ________________________ Other tools _________________________ ###
   $m add separator
-  $m add command -label $al(MC,checktcl) -command alited::check::_run
+  $m add command -label $al(MC,checktcl) -command alited::CheckRun
   $m add separator
   $m add command -label $al(MC,colorpicker) -command alited::tool::ColorPicker
   $m add command -label [msgcat::mc {Screen Loupe}] -command alited::tool::Loupe
@@ -158,7 +158,7 @@ proc menu::FillMenu {} {
   ## ________________________ Setup _________________________ ##
   set m [set al(SETUP) $al(WIN).menu.setup]
   $m add command -label $al(MC,projects) -command alited::project::_run
-  $m add command -label $al(MC,tpl) -command alited::unit::Add
+  $m add command -label $al(MC,tpllist) -command alited::unit::Add
   $m add command -label $alited::al(MC,FavLists) -command alited::favor::Lists
   $m add separator
   menu $m.tint -tearoff 0

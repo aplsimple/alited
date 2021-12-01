@@ -11,7 +11,7 @@
   # run doctest in console to view all debugging "puts"
 
   #% doctest 1
-  #% exec tclsh /home/apl/PG/github/e_menu/e_menu.tcl z5=~ "s0=PROJECT" "x0=EDITOR" "x1=THEME" "x2=SUBJ" b=firefox PD=~/.tke d=~/.tke s1=~/.tke "F=*" f=/home/apl/PG/Tcl-Tk/projects/mulster/mulster.tcl md=~/.tke/plugins/e_menu/menus m=menu.mnu fs=8 w=30 o=0 c=0 s=selected g=+0+30
+  #% exec tclsh /home/apl/PG/github/e_menu/e_menu.tcl z5=~ "s0=PROJECT" "x0=EDITOR" "x1=THEME" "x2=SUBJ" b=firefox PD=~/.tke d=~/.tke s1=~/.tke "F=*" f=/home/apl/PG/Tcl-Tk/projects/mulster/mulster.tcl md=~/.tke/plugins/e_menu/menus m=menu.mnu fs=8 w=30 o=-1 c=0 s=selected g=+0+30
   #> doctest
 
   #-% doctest 2
@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.6b2"
+  variable em_version "e_menu 3.4.6b16"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -38,7 +38,9 @@ namespace eval ::em {
   variable exedir [file normalize [file dirname $Argv0]]
   if {[info exists ::e_menu_dir]} {set exedir $::e_menu_dir}
   variable srcdir [file join $exedir src]
-  catch {source [file join $::em::srcdir baltip baltip.tcl]}
+  if {[info commands ::baltip::configure] eq {}} {
+    catch {source [file join $::em::srcdir baltip baltip.tcl]}
+  }
   if {!$solo} {append em_version " / [file tail $::em::Argv0]"}
 }
 
@@ -695,6 +697,7 @@ proc ::em::execcom {args} {
 proc ::em::shell0 {sel amp {silent -1}} {
   set ret true
   catch {set sel [subst -nobackslashes -nocommands $sel]}
+  checkForShell sel
   if {[string first "%IF " $sel] == 0} {
     if {![::em::addon IF $sel sel]} {return false}
   }
@@ -1898,7 +1901,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         a= d= e= f= p= l= h= b= cs= c= t= g= n= \
         fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= \
         cc= gr= ht= hh= rt= DF= BF= pd= m= om= ts= \
-        TF= yn= in= ex= EX= PI= NE= ls=} { ;# the processing order is important
+        TF= yn= in= ex= EX= PI= NE= ls= SD=} { ;# the processing order is important
     if {($s1 in {o= s= m=}) && !($s1 in $osm)} {
       continue
     }
@@ -2028,6 +2031,10 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         }
         pk= {set ::eh::$s01 $seltd}
         md= {set ::em::basedir $seltd}
+        SD= {
+          set ::em::lin_console [file join $seltd [file tail $::em::lin_console]]
+          set ::em::win_console [file join $seltd [file tail $::em::win_console]]
+        }
         tf= {set ::em::tf [::apave::getN $seltd $::em::tf]}
         in= {
           if {[set ip [string first . $seltd]]>0} {
@@ -2106,7 +2113,7 @@ proc ::em::initcolorscheme {{nothemed false}} {
   if {[info exist ::em::clrbI]} {set ::em::bI $::em::clrbI}
   if {[info exist ::em::clrfM]} {set ::em::fM $::em::clrfM}
   if {[info exist ::em::clrbM]} {set ::em::bM $::em::clrbM}
-  catch {::baltip config -fg $::em::fW -bg $::em::bW -padding 1 -padx 6 -pady 5 -alpha 0.9}
+  catch {::baltip config -fg $::em::fW -bg $::em::bW}
   if {[winfo exist .em.fr.win]} {
     .em configure -bg [.em.fr.win cget -bg]
   } else {
@@ -2151,7 +2158,7 @@ proc ::em::initcomm {} {
     lappend ::em::Argv s=
     incr ::em::Argc
     if {[set io [lsearch -glob $::em::Argv "o=*"]]<0} {
-      lappend ::em::Argv "o=0"
+      lappend ::em::Argv "o=-1"
       incr ::em::Argc
     }
   }

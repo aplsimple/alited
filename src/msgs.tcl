@@ -58,7 +58,6 @@ namespace eval ::alited {
     set al(MC,filesadd2)   [msgcat::mc "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)."]
     set al(MC,filesdel)    [msgcat::mc {Delete File}]
     set al(MC,fileexist)   [msgcat::mc "File %f already exists in\n%d"]
-    set al(MC,unitsadd)    [msgcat::mc {Add Unit by Template}]
     set al(MC,unitsdel)    [msgcat::mc {Remove Unit(s)}]
     set al(MC,favoradd)    [msgcat::mc {Add to Favorites}]
     set al(MC,favordel)    [msgcat::mc {Remove}]
@@ -93,6 +92,7 @@ namespace eval ::alited {
 
     ## _ templates _ ##
     set al(MC,tpl)         [msgcat::mc Templates]
+    set al(MC,tpllist)     [msgcat::mc {List of Templates}]
     set al(MC,tplsel)      [msgcat::mc {Click a template}]
     set al(MC,tplnew)      [msgcat::mc {The template #%n added}]
     set al(MC,tplupd)      [msgcat::mc {The template #%n updated}]
@@ -111,7 +111,7 @@ namespace eval ::alited {
     set al(MC,prjcantdel)  [msgcat::mc {Don't delete the current project!}]
     set al(MC,prjnew)      [msgcat::mc "The project \"%n\" added"]
     set al(MC,prjupd)      [msgcat::mc "The project \"%n\" updated"]
-    set al(MC,prjrem)      [msgcat::mc "The project \"%n\" removed"]
+    set al(MC,prjdel)      [msgcat::mc "The project \"%n\" removed"]
     set al(MC,prjOptions)  [msgcat::mc Options]
     set al(MC,prjName)     [msgcat::mc {Project name:}]
     set al(MC,prjsavfl)    [msgcat::mc "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n"]
@@ -123,6 +123,11 @@ namespace eval ::alited {
     set al(MC,prjdelq)     [msgcat::mc "Delete a project \"%n\" ?"]
     set al(MC,prjexists)   [msgcat::mc "A project \"%n\" already exists."]
     set al(MC,DEFopts)     [msgcat::mc {Options for new projects are set in "Preferences/General/Projects"}]
+    set al(MC,prjTactions) [msgcat::mc {List of reminders}]
+    set al(MC,prjTadd)     [msgcat::mc {Add a reminder}]
+    set al(MC,prjTchange)  [msgcat::mc {Change a reminder}]
+    set al(MC,prjTdelete)  [msgcat::mc {Delete a reminder}]
+    set al(MC,prjTtext)    [msgcat::mc {Text of a reminder}]
 
     ## _ favorites _ ##
     set al(MC,favsel)      [msgcat::mc {Click a list of favorites}]
@@ -158,7 +163,7 @@ namespace eval ::alited {
     set al(MC,chini3)      [msgcat::mc {Choose a directory}]
 
     set al(MC,notes)       [msgcat::mc "Sort of diary.\nList of TODOs etc."]
-    set al(MC,checktcl)    [msgcat::mc {Check of Tcl}]
+    set al(MC,checktcl)    [msgcat::mc {Check Tcl}]
     set al(MC,colorpicker) [msgcat::mc {Color Picker}]
     set al(MC,datepicker)  [msgcat::mc {Date Picker}]
     set al(checkroot)      [msgcat::mc {Checking %d. Wait a little...}]

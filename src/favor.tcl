@@ -496,51 +496,18 @@ proc favor::CopyDeclaration {wtree ID} {
 }
 #_______________________
 
-proc favor::TooltipOff {} {
-  # Removes a tip of favorite / last visited unit's declaration.
+proc favor::GetTooltip {ID} {
+  # Gets a tip of favorite / last visited unit's declaration.
+  #   ID - ID of treeview item
 
-  namespace upvar ::alited al al obPav obPav
-  variable tipID
-  ::baltip hide $al(WIN)
-  set tipID {}
+  namespace upvar ::alited obPav obPav
+  set wtree [$obPav TreeFavor]
+  set decl [lindex [$wtree item $ID -values] 2]
+  set fname [lindex [$wtree item $ID -values] 1]
+  append tip $decl \n $fname
+  return $tip
 }
 #_______________________
-
-proc favor::Tooltip {x y X Y} {
-  # Shows a tip of favorite / last visited unit's declaration.
-  #   x - x-coordinate to identify tree item
-  #   y - y-coordinate to identify tree item
-  #   X - x-coordinate of the mouse pointer
-  #   Y - y-coordinate of the mouse pointer
-
-  namespace upvar ::alited al al obPav obPav
-  variable tipID
-  set wtree [$obPav TreeFavor]
-  if {[$wtree identify region $x $y] ni {tree cell}} {
-    TooltipOff
-    return
-  }
-  set ID [$wtree identify item $x $y]
-  if {[$wtree exists $ID] && $tipID ne $ID} {
-    lassign [$wtree bbox $ID] x2 y2 w2 h2
-    incr X 10
-    if {[catch {incr Y [expr {$y2-$y+$h2}]}]} {incr Y 10}
-    set decl [lindex [$wtree item $ID -values] 2]
-    set fname [lindex [$wtree item $ID -values] 1]
-    append tip $decl \n $fname
-    set msec [clock milliseconds]
-    if {![info exists al(FAVORTIP_MSEC)]} {
-      set al(FAVORTIP_MSEC) 0
-    }
-    if {($msec-$al(FAVORTIP_MSEC))>200} {
-      ::baltip tip $al(WIN) $tip -geometry +$X+$Y -per10 4000 -pause 5 -fade 5
-      set tipID $ID
-    } else {
-      TooltipOff
-    }
-    set al(FAVORTIP_MSEC) $msec
-  }
-}
 
 # ________________________ Initialization _________________________ #
 
@@ -553,8 +520,6 @@ proc favor::_init {} {
   $wtree tag bind tagNorm <Return> {::alited::favor::Select}
   $wtree tag bind tagNorm <ButtonRelease-1> {::alited::favor::Select}
   $wtree tag bind tagNorm <ButtonPress-3> {after idle {alited::favor::PopupMenu %x %y %X %Y}}
-  $wtree tag bind tagNorm <Motion> {after idle {alited::favor::Tooltip %x %y %X %Y}}
-  bind $wtree <Leave> {alited::favor::TooltipOff}
   $wtree heading #1 -text [msgcat::mc $al(MC,favorites)]
   ShowFavVisit
 }

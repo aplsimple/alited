@@ -24,6 +24,16 @@ proc bar::BAR {args} {
 }
 #_______________________
 
+proc bar::PopupTip {wmenu idx TID} {
+  # Makes tooltips (full file names) for popup menu items.
+  # wmenu - path to popup menu
+  # idx - index of item
+  # TID - ID of item's tab
+  
+  ::baltip::tip $wmenu [FileName $TID] -index $idx -pause 800
+}
+#_______________________
+
 proc bar::FillBar {wframe {newproject no}} {
   # Fills the bar of tabs.
   #   wframe - frame's path to place the bar in
@@ -38,7 +48,7 @@ proc bar::FillBar {wframe {newproject no}} {
   set lab4 [msgcat::mc {... All}]
   set bar1Opts [list -wbar $wframe -wbase $wbase -pady 2 -scrollsel no -lifo yes \
     -lowlist $al(FONTSIZE,small) -lablen $al(INI,barlablen) -tiplen $al(INI,bartiplen) \
-    -bg [lindex [$obPav csGet] 3] \
+    -bg [lindex [$obPav csGet] 3] -popuptip ::alited::bar::PopupTip\
     -menu [list \
       sep \
       "com {$lab0} {::alited::bar::SelTab %t} {} {}" \

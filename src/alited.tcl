@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.6a9  ;# for documentation (esp. for Ruff!)
+package provide alited 1.0.6b8  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -135,21 +135,25 @@ namespace eval alited {
 
   # main data of alited (others are in ini.tcl)
 
-  variable SCRIPT [file normalize [info script]]
-  variable DIR [file normalize [file join [file dirname $SCRIPT] ..]]
+  variable FILEDIR [file normalize [file dirname ::argv0]]
+  variable SCRIPT $::argv0
+  variable SCRIPTNORMAL [file normalize $SCRIPT]
+  variable DIR [file dirname [file dirname [file normalize [info script]]]]
 
   # directories of sources
   variable SRCDIR [file join $DIR src]
   variable LIBDIR [file join $DIR lib]
 
   # directories of required packages
-  variable PAVEDIR [file join $LIBDIR pave]
   variable BARSDIR [file join $LIBDIR bartabs]
   variable HLDIR   [file join $LIBDIR hl_tcl]
-  variable BALTDIR [file join $LIBDIR baltip]
 
   set ::e_menu_dir [file join $LIBDIR e_menu]
   variable MNUDIR [file join $::e_menu_dir menus]
+
+  # apave & baltip packages are located in e_menu's subdirectory
+  variable PAVEDIR [file join $::e_menu_dir src]
+  variable BALTDIR [file join $PAVEDIR baltip]
 
   # directories of key data
   variable DATADIR [file join $DIR data]
@@ -166,7 +170,8 @@ namespace eval alited {
   variable obDlg ::alited::aliteddlg  ;# dialog of 1st level
   variable obDl2 ::alited::aliteddl2  ;# dialog of 2nd level
   variable obDl3 ::alited::aliteddl3  ;# dialog of 3rd level
-  variable obFND ::alited::alitedFND
+  variable obCHK ::alited::alitedCHK  ;# dialog of "Check Tcl"
+  variable obFND ::alited::alitedFND  ;# dialog of "Find/Replace"
 
   # misc. vars
   variable DirGeometry {}  ;# saved geometry of "Choose Directory" dialogue (for Linux)
@@ -229,7 +234,7 @@ namespace eval alited {
     # Gets foregrounds of normal and colored text of current color scheme.
 
     variable obPav
-    lassign [$obPav csGet] - fg - - - - - - - fgbold
+    lassign [$obPav csGet] - fg - - fgbold
     return [list $fg $fgbold]
   }
 
@@ -318,6 +323,17 @@ namespace eval alited {
   }
   #_______________________
 
+  proc Message3 {msg {mode 1}} {
+    # Displays a message in statusbar of tertiary dialogue ($obDl3).
+    #   msg - message
+    #   mode - mode of Message
+    # See also: Message
+
+    variable obDl3
+    Message $msg $mode [$obDl3 LabMess]
+  }
+  #_______________________
+
   proc HelpAbout {} {
     # Shows "About..." dialogue.
 
@@ -355,17 +371,34 @@ namespace eval alited {
   }
   #_______________________
 
+  proc CheckRun {} {
+    # Runs "Check Tcl".
+
+    variable SRCDIR
+    source [file join $SRCDIR check.tcl]
+    ::alited::check::_run
+  }
+
+  #_______________________
+
+  proc Tclexe {} {
+    # Gets Tcl's executable file.
+
+    variable al
+    if {$al(EM,Tcl) eq {}} {
+      set tclexe [info nameofexecutable]
+    } else {
+      set tclexe $al(EM,Tcl)
+    }
+    return $tclexe
+  }
+  #_______________________
+
   proc Run {args} {
     # Runs Tcl/Tk script.
     #   args - script's name and arguments
 
-    variable al
-    if {$al(EM,Tcl) eq {}} {
-      set Tclexe [info nameofexecutable]
-    } else {
-      set Tclexe $al(EM,Tcl)
-    }
-    exec {*}$Tclexe {*}$args &
+    exec {*}[Tclexe] {*}$args &
   }
   #_______________________
 
@@ -387,7 +420,7 @@ namespace eval alited {
     }
   }
 
-# _______________________ Sources in alited NS _______________________ #
+  ## _______________________ Sources in alited NS _______________________ ##
 
   source [file join $SRCDIR ini.tcl]
   source [file join $SRCDIR img.tcl]
@@ -408,7 +441,6 @@ namespace eval alited {
   source [file join $SRCDIR menu.tcl]
   source [file join $SRCDIR pref.tcl]
   source [file join $SRCDIR project.tcl]
-  source [file join $SRCDIR check.tcl]
   source [file join $SRCDIR complete.tcl]
   source [file join $SRCDIR edit.tcl]
 }
@@ -446,6 +478,12 @@ if {[info exists ALITED_NOSEND]} {
     if {$alited::LOG ne {}} {
       ::apave::logMessage "QUIT ------------ $alited::SCRIPT NOSEND $alited::ARGV"
     }
+    if {[file tail [file dirname $alited::DIR]] eq {alited.kit}} {
+      set alited::DIR [file dirname [file dirname $alited::DIR]]
+    } else {
+      set alited::SCRIPT $alited::SCRIPTNORMAL
+    }
+    cd $alited::DIR
     alited::Run $alited::SCRIPT NOSEND {*}$alited::ARGV
     catch {wm attributes . -alpha 0.0}
     catch {wm withdraw $alited::al(WIN)}
@@ -453,6 +491,14 @@ if {[info exists ALITED_NOSEND]} {
     ::apave::logMessage {QUIT ------------}
   }
   exit
+} else {
+  # these are sourced by demand while alited really running,
+  # here exclusively for Ruff doc generator
+  namespace eval alited {
+    source [file join $alited::SRCDIR about.tcl]
+    source [file join $alited::SRCDIR check.tcl]
+    source [file join $alited::SRCDIR indent.tcl]
+  }
 }
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
