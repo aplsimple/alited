@@ -1,11 +1,11 @@
 # LAST CHANGES:
 
 
-Version `1.0.6 (8 Dec'21)`
+Version `1.0.6 (15 Dec'21)`
 
   - TODO  : BUGFIX: issues with e_menu & tools in Windows
 
-  - BUGFIX: ctrl+tab at start (no switching tab yet)
+  - BUGFIX: Ctrl+Tab at start (no switching tab yet)
   - BUGFIX: demo 2.Units 03:15 .. 04:18 - cursor position is 309.1 instead of 309.10
   - BUGFIX: treeview in sun-valley dark theme
   - BUGFIX: diff name normalized for Windows
@@ -15,6 +15,7 @@ Version `1.0.6 (8 Dec'21)`
   - BUGFIX: tree selection seen after file saves
   - BUGFIX: more time for gaining bar's width before calling FillBar
   - BUGFIX: o=-1 for e_menu calls (instead of old o=0)
+  - BUGFIX: display redefined F3/Ctrl+D/Ctrl+Y in context menu
   - NEW   : remind on events (calendar's option in "Projects")
   - NEW   : call a list of templates from Preferences/Templates
   - NEW   : F1 in main dialogues for calling help
@@ -25,8 +26,10 @@ Version `1.0.6 (8 Dec'21)`
   - NEW   : tips for tab list (full file names)
   - NEW   : "Utils / Diff to LEFT/RIGHT tab" of e_menu
   - NEW   : ru.msg, ua.msg for klnd
+  - CHANGE: toolbar rearranged (date removed, tkcon moved)
+  - CHANGE: sourcing baltip.tcl rearranged
+  - CHANGE: Ctrl+L corrected & message if not found
   - CHANGE: tooltips of treeviews from baltip (behaving properly at that)
-  - CHANGE: date picker removed from toolbar
   - CHANGE: get rid of package duplicates (apave, baltip)
   - CHANGE: at switching projects, strings to be only restored for "Find/Replace"
   - CHANGE: colors of tips for dark CS
@@ -39,7 +42,7 @@ Version `1.0.6 (8 Dec'21)`
   - CHANGE: "ignore dirs" option of projects moved to Project/Options
   - CHANGE: warning of Pref/General/Projects when defining Project/Options
   - CHANGE: ru.msg, ua.msg
-  - CHANGE: apave, klnd, baltip, bartabs package
+  - CHANGE: apave, klnd, baltip, bartabs, hl_tcl, e_menu package
 
 
 Version `1.0.5 (27 Oct'21)`

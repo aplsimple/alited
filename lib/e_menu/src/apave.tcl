@@ -147,6 +147,7 @@ namespace eval ::apave {
   set _AP_VARS(MODALWIN) [list]
   set _AP_VARS(LINKFONT) [list -underline 1]
   set _AP_VARS(INDENT) "  "
+  set _AP_VARS(KEY,F3) F3
   set _AP_VARS(KEY,CtrlD) [list Control-D Control-d]
   set _AP_VARS(KEY,CtrlY) [list Control-Y Control-y]
   set _AP_VARS(KEY,AltQ) [list Alt-Q Alt-q]
@@ -468,9 +469,13 @@ namespace eval ::apave {
 
 }  ;# ::apave
 
-# ________________________ source obbit.tcl _________________________ #
+# ________________________ source *.tcl _________________________ #
+
+# Let the *.tcl be sourced here just to ensure
+# that apave's stuff available for them and vice versa.
 
 source [file join $::apave::apaveDir obbit.tcl]
+source [file join $::apave::apaveDir baltip baltip.tcl]
 
 # ________________________ Creating APave oo::class _________________________ #
 
@@ -1419,14 +1424,14 @@ oo::class create ::apave::APave {
     ttk::menubutton $w -menu $w.m -text [set $vname] -style TMenuButtonWest {*}$mbopts
     if {$tip ne {}} {
       set tip [my MC $tip]
-      catch {::baltip tip $w $tip}
+      ::baltip tip $w $tip
     }
     menu $w.m -tearoff 0
     my OptionCascade_add $w.m $vname $items $precom {*}$args
     trace var $vname w \
       "$w config -text \"\[[self] optionCascadeText \${$vname}\]\" ;\#"
     lappend ::apave::_AP_VARS(_TRACED_$w) $vname
-    bind $w <ButtonPress> "+ focus $w"
+    ::apave::bindToEvent $w <ButtonPress> focus $w
     return $w.m
   }
   #_______________________
@@ -2417,11 +2422,12 @@ oo::class create ::apave::APave {
             } elseif {![string match "#*" $fr]} {
               set attr [my GetMC $attr]
               set attr [subst $attr]
-              lassign [::apave::extractOptions attr -tip {} -tooltip {}] t1 t2
+              lassign [::apave::extractOptions attr -tip {} -tooltip {}] tip t2
               set wt $w.$fr
               $w add [ttk::frame $wt] {*}$attr
-              if {[append t1 $t2] ne {}} {
-                catch {::baltip::tip $w $t1 -nbktab $wt}
+              if {[append tip $t2] ne {}} {
+                set tip [my MC $tip]
+                ::baltip::tip $w $tip -nbktab $wt
               }
             }
           }
@@ -2456,7 +2462,7 @@ oo::class create ::apave::APave {
         -callF2 {
           if {[llength $v]==1} {set w2 $v} {set w2 [string map $v $w]}
           if {[string first $w2 [bind $w "<F2>"]] < 0} {
-            bind $w <F2> [list + $w2 invoke]
+            ::apave::bindToEvent $w <F2> $w2 invoke
           }
         }
         -timeout {
@@ -2729,8 +2735,9 @@ oo::class create ::apave::APave {
     lassign [split [string map [list $_pav(edge) $::apave::UFF] $v] $::apave::UFF] v tt vz
     set tt [string map [list %l $txt] $tt]
     set v [string map [list %l $txt %t $tt] $v]
-    if {$tt ne ""} {
-      catch {::baltip tip $lab $tt}
+    if {$tt ne {}} {
+      set tt [my MC $tt]
+      ::baltip tip $lab $tt
       lappend ::apave::_AP_VARS(TIMW) $lab
     }
     if {$inv} {
@@ -2878,10 +2885,10 @@ oo::class create ::apave::APave {
 
     if {[bind $wt <<Paste>>] eq ""} {
       set res " \
-      bind $wt <<Paste>> {+ [self] pasteText $wt} ;\
-      bind $wt <KP_Enter> {+ [self] onKeyTextM $wt %K %s} ;\
-      bind $wt <Return> {+ [self] onKeyTextM $wt %K %s} ;\
-      catch {bind $wt <braceright> {+ [self] onKeyTextM $wt %K}}"
+      ::apave::bindToEvent $wt <<Paste>> [self] pasteText $wt ;\
+      ::apave::bindToEvent $wt <KP_Enter> [self] onKeyTextM $wt %K %s ;\
+      ::apave::bindToEvent $wt <Return> [self] onKeyTextM $wt %K %s ;\
+      catch {::apave::bindToEvent $wt <braceright> [self] onKeyTextM $wt %K}"
     }
     foreach k [::apave::getTextHotkeys CtrlD] {
       append res " ; bind $wt <$k> {[self] doubleText $wt}"

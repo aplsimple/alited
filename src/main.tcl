@@ -197,10 +197,11 @@ proc main::UpdateUnitTree {} {
 }
 #_______________________
 
-proc main::UpdateAll {} {
+proc main::UpdateAll {{headers {}}} {
   # Updates tree, text and gutter.
+  #   headers - headers of all selected units
 
-  alited::tree::RecreateTree
+  alited::tree::RecreateTree {} $headers
   UpdateTextGutter
   HighlightLine
 }
@@ -553,10 +554,10 @@ proc main::BindsForText {TID wtxt} {
   bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
   bind $wtxt <Control-Tab> {::alited::bar::ControlTab}
   bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}
-  bind $wtxt <ButtonRelease-1> "+ alited::main::SaveVisitInfo $wtxt"
-  bind $wtxt <KeyRelease> "+ alited::main::SaveVisitInfo $wtxt %K %s"
-  bind $wtxt <<Undo>> {+ alited::main::AfterUndoRedo}
-  bind $wtxt <<Redo>> {+ alited::main::AfterUndoRedo}
+  ::apave::bindToEvent $wtxt <ButtonRelease-1> alited::main::SaveVisitInfo $wtxt
+  ::apave::bindToEvent $wtxt <KeyRelease> alited::main::SaveVisitInfo $wtxt %K %s
+  ::apave::bindToEvent $wtxt <<Undo>> alited::main::AfterUndoRedo
+  ::apave::bindToEvent $wtxt <<Redo>> alited::main::AfterUndoRedo
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action
   alited::keys::BindKeys $wtxt template

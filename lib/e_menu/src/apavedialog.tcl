@@ -594,12 +594,13 @@ oo::class create ::apave::APaveDialog {
     #   com1 - user's command "find first"
     #   com2 - user's command "find next"
 
+    set accF3 [::apave::KeyAccelerator [::apave::getTextHotkeys F3]]
     if {$com1 eq ""} {set com1 "[self] InitFindInText 0 $txt; focus \[[self] Entfind\]"}
     if {$com2 eq ""} {set com2 "[self] findInText 1 $txt"}
     return "\$pop add separator
       \$pop add command [my iconA find] -accelerator Ctrl+F -label \"Find First\" \\
         -command {$com1}
-      \$pop add command [my iconA none] -accelerator F3 -label \"Find Next\" \\
+      \$pop add command [my iconA none] -accelerator $accF3 -label \"Find Next\" \\
         -command {$com2}"
   }
 
@@ -611,10 +612,12 @@ oo::class create ::apave::APaveDialog {
     #   pop - path to the menu
     #   txt - path to the text
 
+    set accD [::apave::KeyAccelerator [::apave::getTextHotkeys CtrlD]]
+    set accY [::apave::KeyAccelerator [::apave::getTextHotkeys CtrlY]]
     return "\$pop add separator
-      \$pop add command [my iconA add] -accelerator Ctrl+D -label \"Double Selection\" \\
+      \$pop add command [my iconA add] -accelerator $accD -label \"Double Selection\" \\
         -command \"[self] doubleText {$txt} 0\"
-      \$pop add command [my iconA delete] -accelerator Ctrl+Y -label \"Delete Line\" \\
+      \$pop add command [my iconA delete] -accelerator $accY -label \"Delete Line\" \\
         -command \"[self] deleteLine {$txt} 0\"
       \$pop add command [my iconA up] -accelerator Alt+Up -label \"Line(s) Up\" \\
         -command \"[self] linesMove {$txt} -1 0\"
@@ -680,7 +683,7 @@ oo::class create ::apave::APaveDialog {
     $w tag configure hilited -foreground #1f0000 -background #ffa073
     $w tag configure hilited2 -foreground #1f0000 -background #ff6b85
     bind $w <Double-ButtonPress-1> [list [self] highlight_matches $w]
-    bind $w <KeyRelease> [list + [self] unhighlight_matches $w]
+    ::apave::bindToEvent $w <KeyRelease> [self] unhighlight_matches $w
     bind $w <Alt-Left> "[self] seek_highlight $w 0 ; break"
     bind $w <Alt-Right> "[self] seek_highlight $w 1 ; break"
     foreach k [::apave::getTextHotkeys AltQ] {

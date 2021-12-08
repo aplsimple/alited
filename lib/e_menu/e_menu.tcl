@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.6b16"
+  variable em_version "e_menu 3.4.6b19"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -39,7 +39,7 @@ namespace eval ::em {
   if {[info exists ::e_menu_dir]} {set exedir $::e_menu_dir}
   variable srcdir [file join $exedir src]
   if {[info commands ::baltip::configure] eq {}} {
-    catch {source [file join $::em::srcdir baltip baltip.tcl]}
+    source [file join $::em::srcdir baltip baltip.tcl]
   }
   if {!$solo} {append em_version " / [file tail $::em::Argv0]"}
 }

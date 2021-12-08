@@ -379,7 +379,7 @@ proc unit::DropUnits {wtree fromIDs toID} {
       $wtxt insert $io.0 $lines
     }
     ::tk::TextSetCursor $wtxt $io.0
-    alited::tree::RecreateTree {} $headers
+    alited::main::UpdateAll $headers
     alited::main::FocusText
   }
   $wtxt edit separator

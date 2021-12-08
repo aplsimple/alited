@@ -318,7 +318,7 @@ proc project::SaveNotes {} {
   variable fnotes
   if {$fnotes ne {}} {
     set fcont [[$obDl2 TexPrj] get 1.0 {end -1c}]
-    ::apave::writeTextFile $fnotes fcont
+    ::apave::writeTextFile $fnotes fcont 0 0
   }
 }
 #_______________________
@@ -331,7 +331,7 @@ proc project::SaveRems {} {
   variable prjinfo
   if {$frems ne {}} {
     set fcont $prjinfo($al(prjname),prjrem)
-    ::apave::writeTextFile $frems fcont
+    ::apave::writeTextFile $frems fcont 0 0
   }
 }
 #_______________________
@@ -754,6 +754,9 @@ proc project::KlndUpdate {} {
 
   namespace upvar ::alited al al
   variable prjinfo
+  if {![info exists prjinfo($al(prjname),prjrem)]} {
+    set prjinfo($al(prjname),prjrem) {}
+  }
   ::klnd::update {} {} {} $prjinfo($al(prjname),prjrem)
   lassign [::klnd::selectedDay] y m d
   KlndClick $y $m $d
@@ -943,7 +946,7 @@ proc project::Tab1 {} {
     {.Dir .labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 60}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 lab T 2 1 {-st nsew -rw 1 -cw 99}}
-    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fra.fraB2.butHelp -tip {$alited::al(MC,notes)}}}
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fra.fraB2.butHelp -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
     {.sbv .TexPrj L - - {pack -side left}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}

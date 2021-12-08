@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.27
+package provide hl_tcl 0.9.28
 
 # ______________________ Common data ____________________ #
 
@@ -75,7 +75,7 @@ namespace eval ::hl_tcl {
 
   set data(RE0) {(^|[\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
   set data(RE1) {([\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
-  set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})+}
+  set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})}
 
   set data(LBR) {\{(\[}
   set data(RBR) {\})\]}
@@ -248,10 +248,11 @@ proc ::hl_tcl::my::HighlightStr {txt p1 p2} {
     lassign $lc i1 i2
     incr i2
     while {$i1<$i2} {
-      if {[string first [string index $st $i1] "\[\]\$\{\}"]>-1} {
-        $txt tag add tagVAR "$p1 +$i1 char" "$p1 +$i2 char"
-      }
       incr i1
+      if {[string first [string index $st $i1] "\[\]\$\{\}"]>-1} {
+        set i12 [expr {$i1+1}]
+        $txt tag add tagVAR "$p1 +$i1 char" "$p1 +$i12 char"
+      }
     }
   }
   return
@@ -393,6 +394,18 @@ proc ::hl_tcl::my::CoroHighlightAll {txt} {
   }
   set ::hl_tcl::my::data(REG_TXT,$txt) {1}
   return
+}
+#_____
+
+proc ::hl_tcl::my::BindToEvent {w event args} {
+  # Binds an event on a widget to a command.
+  #   w - the widget's path
+  #   event - the event
+  #   args - the command
+
+  if {[string first $args [bind $w $event]]<0} {
+    bind $w $event [list + {*}$args]
+  }
 }
 
 # _________________________ DYNAMIC highlighting ________________________ #
@@ -1017,7 +1030,7 @@ proc ::hl_tcl::hl_init {txt args} {
     hl_readonly $txt $::hl_tcl::my::data(READONLY,$txt)
   }
   if {[string first ::hl_tcl:: [bind $txt]]<0} {
-    bind $txt <FocusIn> [list + ::hl_tcl::my::ShowCurrentLine $txt]
+    my::BindToEvent $txt <FocusIn> ::hl_tcl::my::ShowCurrentLine $txt
   }
   set ::hl_tcl::my::data(_INSPOS_,$txt) {}
   my::MemPos $txt
@@ -1051,12 +1064,12 @@ proc ::hl_tcl::hl_text {txt} {
   catch {$txt tag raise hilited;  $txt tag raise hilited2} ;# for apave package
   my::HighlightAll $txt
   if {![info exists ::hl_tcl::my::data(BIND_TXT,$txt)]} {
-    bind $txt <FocusIn> [list + ::hl_tcl::my::MemPos $txt]
-    bind $txt <KeyPress> [list + ::hl_tcl::my::MemPos1 $txt yes %K %s]
-    bind $txt <KeyRelease> [list + ::hl_tcl::my::MemPos $txt]
-    bind $txt <ButtonRelease-1> [list + ::hl_tcl::my::MemPos $txt]
+    my::BindToEvent $txt <FocusIn> ::hl_tcl::my::MemPos $txt
+    my::BindToEvent $txt <KeyPress> ::hl_tcl::my::MemPos1 $txt yes %K %s
+    my::BindToEvent $txt <KeyRelease> ::hl_tcl::my::MemPos $txt
+    my::BindToEvent $txt <ButtonRelease-1> ::hl_tcl::my::MemPos $txt
     foreach ev {Enter KeyRelease ButtonRelease-1} {
-      bind $txt <$ev> [list + ::hl_tcl::my::HighlightBrackets $txt]
+      my::BindToEvent $txt <$ev> ::hl_tcl::my::HighlightBrackets $txt
     }
     set ::hl_tcl::my::data(BIND_TXT,$txt) yes
   }

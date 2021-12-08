@@ -237,7 +237,7 @@ proc ::em::menuTextBrackets {w fg boldfont} {
   # The `w` might be omitted because it's a `my TexM` of APaveDialog.
   # It's here only to provide a template for similar handlers.
   foreach ev {Enter KeyRelease ButtonRelease} {
-    bind $w <$ev> [list + ::em::highlightBrackets $w $fg $boldfont]
+    ::apave::bindToEvent $w <$ev> ::em::highlightBrackets $w $fg $boldfont
   }
 }
 proc ::em::highlightBrackets {w fg boldfont} {

@@ -493,6 +493,7 @@ proc tree::ShowPopupMenu {ID X Y} {
   #   Y - y-coordinate of the click
 
   namespace upvar ::alited al al obPav obPav
+  ::baltip sleep 1000
   set wtree [$obPav Tree]
   set popm $wtree.popup
   catch {destroy $popm}

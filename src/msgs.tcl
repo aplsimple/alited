@@ -189,6 +189,7 @@ namespace eval ::alited {
 
     ## _ find units _ ##
     set al(MC,findunit)    [msgcat::mc "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored."]
+    set al(MC,notfndunit)  [msgcat::mc {Unit not found: %u}]
   }
 }
 

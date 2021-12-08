@@ -1585,7 +1585,7 @@ method _runBound_ {w ev args} {
   if {[catch {my {*}$args}]} { ;# failed binding => remove it
     foreach b [split [bind $w $ev] \n] {
       if {[string first $args $b]==-1} {
-        if {[incr is1]==1} {bind $w $ev $b} {bind $w $ev +$b}
+        if {[incr is1]==1} {bind $w $ev $b} {my bindToEvent $w $ev $b}
       }
     }
   }
@@ -1955,6 +1955,18 @@ method closeAll {BID TID func args} {
     3 {my $BID Tab_CloseFew $TID no}
   }
 }
+#_______________________
+
+method bindToEvent {w event args} {
+  # Binds an event on a widget to a command.
+  #   w - the widget's path
+  #   event - the event
+  #   args - the command
+
+  if {[string first $args [bind $w $event]]<0} {
+    bind $w $event [list + {*}$args]
+  }
+}
 
 } ;#  bartabs::Bar
 
@@ -2080,7 +2092,7 @@ method create {barCom {barOpts ""} {tab1 ""}} {
   if {$wbase ne {}} {
     after 1 [list \
       my $BID configure -BINDWBASE [list $wbase [bind $wbase <Configure>]] ; \
-      bind $wbase <Configure> [list + [self] _runBound_ $wbase <Configure> $BID NeedDraw]]
+      my $BID bindToEvent $wbase <Configure> [self] _runBound_ $wbase <Configure> $BID NeedDraw]
   }
   if {!$noComm} {
     proc $barCom {args} "return \[[self] $BID {*}\$args\]"

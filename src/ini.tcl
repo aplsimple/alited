@@ -1019,7 +1019,7 @@ proc ini::_init {} {
   # the below icons' order defines their order in the toolbar
   foreach {icon} {none gulls heart add change delete up down paste plus minus \
   retry misc previous next folder file OpenFile SaveFile saveall categories \
-  undo redo replace ok color date help run other e_menu trash actions} {
+  undo redo replace ok color date help run e_menu other trash actions} {
     set img [CreateIcon $icon]
     if {$icon in {"file" OpenFile categories SaveFile saveall help ok color other \
     replace e_menu run undo redo}} {
@@ -1061,12 +1061,12 @@ proc ini::_init {} {
         run {
           append al(atools) "-com alited::tool::_run\}"
         }
-        other {
-          append al(atools) "-command alited::tool::tkcon\}"
-        }
         e_menu {
           image create photo $img-big -data $alited::img::_AL_IMG(e_menu)
           append al(atools) "-com {alited::tool::e_menu o=0}\}"
+        }
+        other {
+          append al(atools) "-command alited::tool::tkcon\}"
         }
       }
     }

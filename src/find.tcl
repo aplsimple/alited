@@ -179,11 +179,11 @@ proc find::SearchUnit1 {wtxt isNS} {
     foreach it $al(_unittree,$TID) {
       lassign $it lev leaf fl1 ttl l1 l2
       if {[string match $what $ttl] || [string match "*::$ttl" $com2] || $com2 eq $ttl} {
-        return [list $l1 $TID]
+        return [list $l1 $TID $what]
       }
     }
   }
-  return {}
+  return [list {} {} [string range $what 1 end]]
 }
 #_______________________
 
@@ -194,7 +194,7 @@ proc find::SearchUnit {{wtxt ""}} {
   namespace upvar ::alited al al obPav obPav
   # switch to the unit tree: 1st to enable the search, 2nd to show units found & selected
   if {!$al(TREE,isunits)} alited::tree::SwitchTree
-  lassign [SearchUnit1 $wtxt yes] found TID
+  lassign [SearchUnit1 $wtxt yes] found TID what
   if {$found eq {}} {
     # if the qualified not found, try to find the non-qualified (first encountered)
     lassign [SearchUnit1 $wtxt no] found TID
@@ -204,9 +204,10 @@ proc find::SearchUnit {{wtxt ""}} {
     alited::bar::BAR $TID show
     after idle " \
       alited::main::FocusText $TID $found.0 ; \
-      alited::main::SaveVisitInfo"
+      alited::tree::NewSelection"
   } else {
-    bell
+    set msg [string map [list %u $what] $al(MC,notfndunit)]
+    alited::Message $msg 4
   }
 }
 #_______________________

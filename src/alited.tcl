@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.6b8  ;# for documentation (esp. for Ruff!)
+package provide alited 1.0.6b11  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -202,7 +202,6 @@ namespace eval alited {
 
   lappend auto_path $alited::LIBDIR
 
-  source [file join $::alited::BALTDIR baltip.tcl]
   source [file join $::alited::BARSDIR bartabs.tcl]
   source [file join $::alited::PAVEDIR apaveinput.tcl]
   source [file join $::alited::HLDIR  hl_tcl.tcl]

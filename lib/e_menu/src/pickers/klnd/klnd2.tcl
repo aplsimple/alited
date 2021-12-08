@@ -324,7 +324,7 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
   } else {
     lappend res \
     "$ownname.fra.tool - - - - {pack -side top} {-array { \
-      IM_KLND_0 {{::klnd::my::SetCurrentDay2 $obj} -tip {$::klnd::my::p(tipF3$obj)\n(F3)@@-under 5}} sev 6 \
+      IM_KLND_0 {{::klnd::my::SetCurrentDay2 $obj} -tip {$::klnd::my::p(tipF3$obj)@@-under 5}} sev 6 \
       IM_KLND_1 {{::klnd::my::GoYear2 $obj -1} -tip {$::klnd::my::prevY\n(Home)@@-under 5}} h_ 2 \
       IM_KLND_2 {{::klnd::my::GoMonth2 $obj -1} -tip {$::klnd::my::prevM\n(PageUp)@@-under 5}} h_ 3 \
       LabMonth$obj {{} {-fill x -expand 1} {-anchor center -w 14}} h_ 2 \
@@ -462,7 +462,7 @@ proc ::klnd::calendar2 {pobj w ownname args} {
   }
   # save options for current calendar
   foreach opt {weekday months days loc yvis mvis dvis \
-  com tvar dformat united currentmonth daylist popup hllist} {
+  com tvar dformat united currentmonth daylist popup hllist tip} {
     set my::p($opt$obj) $my::p($opt)
   }
   if {$my::p(daylist) ne {-} && $my::p(united)} {

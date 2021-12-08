@@ -78,8 +78,10 @@ namespace eval sframe {
     bind $path.canvas <Configure> [list [namespace current]::resize $path]
 
     # Mousewheel bindings for scrolling.
-    bind [winfo toplevel $path] <MouseWheel>       [list +[namespace current] scroll $path yview %W %D]
-    bind [winfo toplevel $path] <Shift-MouseWheel> [list +[namespace current] scroll $path xview %W %D]
+    ::apave::bindToEvent [winfo toplevel $path] <MouseWheel> \
+      [namespace current] scroll $path yview %W %D
+    ::apave::bindToEvent [winfo toplevel $path] <Shift-MouseWheel> \
+      [namespace current] scroll $path xview %W %D
 
     return $path
   }

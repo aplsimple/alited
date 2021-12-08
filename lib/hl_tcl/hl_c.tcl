@@ -582,7 +582,7 @@ proc ::hl_c::hl_init {txt args} {
     hl_readonly $txt $::hl_c::my::data(READONLY,$txt)
   }
   if {[string first ::hl_c:: [bind $txt]]<0} {
-    bind $txt <FocusIn> [list + ::hl_c::my::ShowCurrentLine $txt]
+    ::hl_tcl::my::BindToEvent $txt <FocusIn> ::hl_c::my::ShowCurrentLine $txt
   }
   set ::hl_c::my::data(_INSPOS_,$txt) {}
   my::MemPos $txt
@@ -617,12 +617,12 @@ proc ::hl_c::hl_text {txt} {
   catch {$txt tag raise hilited;  $txt tag raise hilited2} ;# for apave package
   my::HighlightAll $txt
   if {![info exists ::hl_c::my::data(BIND_TXT,$txt)]} {
-    bind $txt <FocusIn> [list + ::hl_c::my::MemPos $txt]
-    bind $txt <KeyPress> [list + ::hl_c::my::MemPos1 $txt yes %K %s]
-    bind $txt <KeyRelease> [list + ::hl_c::my::MemPos $txt]
-    bind $txt <ButtonRelease-1> [list + ::hl_c::my::MemPos $txt]
+    ::hl_tcl::my::BindToEvent $txt <FocusIn> ::hl_c::my::MemPos $txt
+    ::hl_tcl::my::BindToEvent $txt <KeyPress> ::hl_c::my::MemPos1 $txt yes %K %s
+    ::hl_tcl::my::BindToEvent $txt <KeyRelease> ::hl_c::my::MemPos $txt
+    ::hl_tcl::my::BindToEvent $txt <ButtonRelease-1> ::hl_c::my::MemPos $txt
     foreach ev {Enter KeyRelease ButtonRelease-1} {
-      bind $txt <$ev> [list + ::hl_tcl::my::HighlightBrackets $txt]
+      ::hl_tcl::my::BindToEvent $txt <$ev> ::hl_tcl::my::HighlightBrackets $txt
     }
     set ::hl_c::my::data(BIND_TXT,$txt) yes
   }

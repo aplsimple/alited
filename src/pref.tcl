@@ -456,7 +456,7 @@ proc pref::General_Tab1 {} {
     {seh_2 fra2 T 1 2 {-pady 4}}
     {lab seh_2 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra3 lab T 1 2 {-st nsew -rw 1 -cw 1}}
-    {.TexNotes - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 90 -wrap word -tabnext $alited::pref::win.fra.fraB.butHelp -tip {$alited::al(MC,notes)}}}
+    {.TexNotes - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 90 -wrap word -tabnext $alited::pref::win.fra.fraB.butHelp -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
     {.sbv .TexNotes L - - {pack -side left}}
   }
 }

@@ -136,7 +136,7 @@ proc favor::Select {} {
       break
     }
   }
-  set msg [string map [list %u $name] [msgcat::mc {Unit not found: %u}]]
+  set msg [string map [list %u $name] $al(MC,notfndunit)]
   alited::Message $msg 4
 }
 #_______________________
@@ -430,6 +430,7 @@ proc favor::ShowPopupMenu {ID X Y} {
   #   Y - y-coordinate of the mouse pointer
 
   namespace upvar ::alited al al obPav obPav
+  ::baltip sleep 1000
   set wtree [$obPav TreeFavor]
   set popm $wtree.popup
   catch {destroy $popm}

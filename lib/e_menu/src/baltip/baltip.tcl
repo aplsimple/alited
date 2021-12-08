@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    baltip.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -7,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.3.0
+package provide baltip 1.3.2
 
 package require Tk
 
@@ -15,7 +14,8 @@ package require Tk
 
 namespace eval ::baltip {
 
-  namespace export configure cget tip update hide repaint
+  namespace export configure cget tip update hide repaint \
+    optionlist tippath clear sleep
   namespace ensemble create
 
   namespace eval my {
@@ -37,6 +37,7 @@ namespace eval ::baltip {
     set ttdata(image) {}
     set ttdata(compound) {}
     set ttdata(relief) {}
+    variable GEOACTIVE {-}
   }
 }
 
@@ -50,7 +51,7 @@ proc ::baltip::configure {args} {
   variable my::ttdata
   set force no
   set index -1
-  lassign {} geometry tag ctag nbktab reset
+  lassign {} geometry tag ctag nbktab reset command maxexp
   set global [expr {[dict exists $args -global] && [dict get $args -global]}]
   foreach {n v} $args {
     set n1 [string range $n 1 end]
@@ -60,7 +61,8 @@ proc ::baltip::configure {args} {
       -on - -padx - -pady - -padding - -bell - -under - -font - -image - -compound {
         set my::ttdata($n1) $v
       }
-      -force - -geometry - -index - -tag - -global - -ctag - -nbktab - -reset {
+      -force - -geometry - -index - -tag - -global - -ctag - -nbktab - -reset - \
+      -command - -maxexp {
         set $n1 $v
       }
       default {return -code error "baltip: invalid option \"$n\""}
@@ -72,7 +74,7 @@ proc ::baltip::configure {args} {
       }
     }
   }
-  return [list $force $geometry $index $tag $ctag $nbktab $reset]
+  return [list $force $geometry $index $tag $ctag $nbktab $reset $command $maxexp]
 }
 #_______________________
 
@@ -83,9 +85,7 @@ proc ::baltip::cget {args} {
 
   variable my::ttdata
   if {![llength $args]} {
-    lappend args -on -per10 -fade -pause -fg -bg -bd -padx -pady -padding \
-      -font -alpha -text -index -tag -bell -under -image -compound -relief \
-      -ctag -nbktab -reset
+    lappend args {*}[optionlist]
   }
   set res [list]
   foreach n $args {
@@ -95,6 +95,15 @@ proc ::baltip::cget {args} {
     }
   }
   return $res
+}
+#_______________________
+
+proc ::baltip::optionlist {} {
+  # All options of baltip.
+
+  return [list -on -per10 -fade -pause -fg -bg -bd -padx -pady -padding \
+      -font -alpha -text -index -tag -bell -under -image -compound -relief \
+      -ctag -nbktab -reset -command -maxexp]
 }
 #_______________________
 
@@ -118,12 +127,16 @@ proc ::baltip::tip {w text args} {
     set arrsaved [array get my::ttdata]
     set optvals [::baltip::my::CGet {*}$args]
     # block of related lines for special options
-    lassign $optvals forced geo index ttag ctag nbktab reset
-    set optvals [lrange $optvals 7 end]  ;# get rid of special options
+    lassign $optvals forced geo index ttag ctag nbktab reset command maxexp
+    set optvals [lrange $optvals 9 end]  ;# get rid of special options
     # end of block
-    set my::ttdata(optvals,$w) [dict set optvals -text $text]
-    set my::ttdata(on,$w) [expr {[string length $text] && $my::ttdata(on)}]
     set my::ttdata(global,$w) no
+    set my::ttdata(command,$w) $command
+    set my::ttdata(maxexp,$w) $maxexp
+    set text [my::OptionsFromText $w $text]  ;# may reset -command and -maxexp
+    set onopt [expr {[string length $text] && $my::ttdata(on)}]
+    set my::ttdata(optvals,$w) [dict set optvals -text $text]
+    set my::ttdata(on,$w) $onopt
     if {$text ne {}} {
       if {$forced || $geo ne {}} {::baltip::my::Show $w $text yes $geo $optvals}
       if {$geo ne {}} {
@@ -140,21 +153,27 @@ proc ::baltip::tip {w text args} {
         bind Tooltip$w <Any-Button>   "::baltip::hide $w"
         if {$index>-1} {
           # tip for menu items
-          set my::ttdata($w,$index) $text
           set my::ttdata(LASTMITEM) {}
-          bind $w <<MenuSelect>> [list + ::baltip::my::MenuTip $w %W $optvals]
+          set wt [my::Clonename $w]
+          foreach w2 [list $w $wt] {
+            set my::ttdata(on,$w2) $onopt
+            set my::ttdata($w2,$index) $optvals
+            set my::ttdata(command,$w2) $command
+            set my::ttdata(global,$w2) no
+          }
+          my::BindToEvent Menu <<MenuSelect>>	::baltip::my::MenuTip %W
         } elseif {$ttag ne {}} {
           # tip for text tags
           set my::ttdata($w,$ttag) $text
-          $w tag bind $ttag <Enter> [list + ::baltip::my::TagTip $w $ttag $optvals]
+          my::BindTextagToEvent $w $ttag <Enter> ::baltip::my::TagTip $w $ttag $optvals
           foreach event {Leave KeyPress Button} {
-            $w tag bind $ttag <$event> [list + ::baltip::my::TagTip $w]
+            my::BindTextagToEvent $w $ttag <$event> ::baltip::my::TagTip $w
           }
         } elseif {$ctag ne {}} {
           # tip for canvas tags
           set my::ttdata($w,$ctag) $text
-          $w bind $ctag <Enter> [list + ::baltip::my::TagTip $w $ctag $optvals]
-          $w bind $ctag <Leave> [list + ::baltip::my::TagTip $w]
+          my::BindCantagToEvent $w $ctag <Enter> ::baltip::my::TagTip $w $ctag $optvals
+          my::BindCantagToEvent $w $ctag <Leave> ::baltip::my::TagTip $w
         } elseif {$nbktab ne {}} {
           # tip for notebook tabs
           configure -SPECTIP$nbktab $text
@@ -218,6 +237,13 @@ proc ::baltip::hide {{w ""}} {
   #   w - widget's path
   # Returns 1, if the window was really hidden.
 
+  variable my::ttdata
+  variable my::GEOACTIVE
+  if {$w eq $my::GEOACTIVE || $w eq {}} {
+    ;# unlock tips after a balloon message
+    set my::GEOACTIVE {-}
+  }
+  my::Command $w {}
   return [expr {![catch {destroy [tippath $w]}]}]
 }
 #_______________________
@@ -230,6 +256,16 @@ proc ::baltip::clear {w args} {
   foreach ev {Any-Leave Any-KeyPress Any-Button Motion Any-Enter Leave Enter} {
     catch {bind Tooltip$w <$ev> {}}
   }
+}
+#_______________________
+
+proc ::baltip::sleep {msec} {
+  # Disables tips for a while.
+  #   msec - time to sleep, in msec
+  # This is useful esp. before calling a popup menu on listbox/treeview.
+
+  configure -on no
+  after $msec "::baltip::configure -on yes"
 }
 # _____________________ Internals ____________________ #
 
@@ -263,8 +299,112 @@ proc ::baltip::my::WidCoord {w} {
   set inside [expr {$x>-1 && $x<$width && $y>-1 && $y<$height}]
   return [list $x $y $inside]
 }
+#_______________________
 
-## ________________________ Show _________________________ ##
+proc ::baltip::my::Clonename {mnu} {
+  # Gets a clone name of a menu.
+  #   mnu - the menu's path
+  # This procedure is borrowed from BWidget's utils.tcl.
+
+  set path [set menupath {}]
+  set found 0
+  foreach widget [lrange [split $mnu .] 1 end] {
+    if {$found || [winfo class "$path.$widget"] eq {Menu}} {
+      set found 1
+      append menupath # $widget
+      append path . $menupath
+    } else {
+      append menupath # $widget
+      append path . $widget
+    }
+  }
+  return $path
+}
+#_______________________
+
+proc ::baltip::my::OptionsFromText {w txt} {
+  # Extracts options from "text" argument of baltip::tip.
+  #   w - widget's path
+  #   txt - "-text" option's value
+  # Options can be set in the "text" argument as uppercased-name / value pairs:
+  #   "-BALTIP {True tip's text} -MAXEXP 1 -COMMAND {::mycom %i %c}"
+  # In this case, *txt* must be a correct list of name/value sequences.
+  # Returns an original *txt* or a value of -BALTIP option from *txt*.
+
+  variable ttdata
+  if {[string first {-BALTIP } $txt] >-1 && \
+  !([catch {set lst [list {*}$txt]}] || [expr {[llength $lst] % 2 }])} {
+    set ol [::baltip::optionlist]
+    lappend ol -baltip
+    foreach o $ol {lappend OL [string toupper $o]}
+    foreach {o v} $lst {
+      if {[set i [lsearch -exact $OL $o]]>-1} {
+        set n1 [string range [lindex $ol $i] 1 end]
+        set ttdata($n1,$w) $v
+        if {$o eq {-BALTIP}} {set txt $v}
+      }
+    }
+  }
+  return $txt
+}
+
+## ________________________ Binds _________________________ ##
+
+proc ::baltip::my::BindToEvent {w event args} {
+  # Binds an event on a widget to a command.
+  #   w - the widget's path
+  #   event - the event
+  #   args - the command
+
+  if {[string first $args [bind $w $event]]<0} {
+    bind $w $event [list + {*}$args]
+  }
+}
+#_______________________
+
+proc ::baltip::my::BindTextagToEvent {w tag event args} {
+  # Binds an event on a text tag to a command.
+  #   w - the widget's path
+  #   tag - the tag
+  #   event - the event
+  #   args - the command
+
+  if {[string first $args [$w tag bind $tag]]<0} {
+    $w tag bind $tag $event [list + {*}$args]
+  }
+}
+#_______________________
+
+proc ::baltip::my::BindCantagToEvent {w tag event args} {
+  # Binds an event on a canvas tag to a command.
+  #   w - the widget's path
+  #   tag - the tag
+  #   event - the event
+  #   args - the command
+
+  if {[catch {set bound [$w bind $tag $event]}]} {set bound {}}
+  if {[string first $args $bound]<0} {
+    $w bind $tag $event [list + {*}$args]
+  }
+}
+
+## ________________________ Shows _________________________ ##
+
+proc ::baltip::my::Command {w text} {
+  # Executes a command set for a window.
+  #   w - the widget's path
+  #   text - the tip text
+  # The command allows wildcards:
+  #   %w - window's path
+  #   %t - text of the tip
+
+  variable ttdata
+  if {![info exists ttdata(command,$w)] || $ttdata(command,$w) eq {}} {return no}
+  set com [string map [list %w $w %t $text] $ttdata(command,$w)]
+  if {[catch {eval $com} e]} {return no}
+  return yes
+}
+#_______________________
 
 proc ::baltip::my::ShowWindow {win} {
   # Shows a window of tip.
@@ -317,14 +457,17 @@ proc ::baltip::my::Show {w text force geo optvals} {
   # See also: Fade, ShowWindow, ::baltip::update
 
   variable ttdata
+  variable GEOACTIVE
   if {$w ne {} && ![winfo exists $w]} return
+  if {$geo eq {} && $GEOACTIVE ne {-}} return  ;# tips locked at a balloon message
   set win [::baltip::tippath $w]
   # keep the label's colors untouched (for apave package)
   catch {::apave::obj untouchWidgets $win.label}
   set px [winfo pointerx .]
   set py [winfo pointery .]
-  if {$geo ne {}} {                    ;# balloons not related to widgets
+  if {$geo ne {}} {           ;# balloons not related to widgets
     array set data $optvals
+    set GEOACTIVE $w  ;# lock other tips
   } elseif {$ttdata(global,$w)} {      ;# flag 'use global settings'
     array set data [::baltip::cget]
   } else {
@@ -341,14 +484,21 @@ proc ::baltip::my::Show {w text force geo optvals} {
   if {[catch {set widgetclass [winfo class $w]}]} {
     set widgetclass {}
   }
-  if {!$force && $geo eq {} && $widgetclass ne {Menu} && \
-  ([winfo exists $win] || ![info exists ttdata(on,$w)] || !$ttdata(on,$w) || \
-  ![string match $w* [winfo containing $px $py]])} {
-    return
+  if {!$force && $geo eq {}} {
+    if {![info exists ttdata(on,$w)] || !$ttdata(on,$w)} return
+    if {$widgetclass ne {Menu} && \
+    ([winfo exists $win] || ![string match $w* [winfo containing $px $py]])} {
+      return
+    }
   }
-  ::baltip::hide $w
+  if {$geo eq {}} {::baltip::hide $w}
   set icount [string length [string trim $text]]
   if {!$icount || (!$ttdata(on) && !$data(-on))} return
+  if {[Command $w $text]} return
+  if {[info exists ttdata(maxexp,$w)] && \
+  [string is integer -strict $ttdata(maxexp,$w)]} {
+    if {[incr ttdata(maxexp,$w) -1]<0} return
+  }
   lappend ttdata(REGISTERED) $w
   foreach wold [lrange $ttdata(REGISTERED) 0 end-1] {::baltip::hide $wold}
   if {$data(-fg) eq {} || $data(-bg) eq {}} {
@@ -458,7 +608,8 @@ proc ::baltip::my::FadeNext {w aint fint icount alpha show geo {geos ""}} {
     if {$al>0} {
       if {[catch {wm attributes $w -alpha $al}]} {set al 0}
     }
-    if {$al<=0 || ![winfo exists $w]} {
+    if {$al<=0.001 || ![winfo exists $w]} {
+      ::baltip::hide
       catch {destroy $w}
       return
     }
@@ -511,21 +662,24 @@ proc ::baltip::my::TagTip {w {tag ""} {optvals ""}} {
 
 ### ________________________ Menu _________________________ ###
 
-proc ::baltip::my::MenuTip {w wt optvals} {
+proc ::baltip::my::MenuTip {wt} {
   # Shows a menu's tip.
-  #   w - the menu's path
-  #   wt - the menu's path (incl. tearoff menu)
-  #   optvals - settings of tip
+  #   wt - the menu's path (incl. cloned menu)
 
   variable ttdata
-  ::baltip::hide $w
+  if {[string match .tearoff* $wt]} {
+    # not implemented for tear-offed menus
+    return
+  }
+  ::baltip::hide $wt
   set index [$wt index active]
-  set mit "$w/$index"
+  set mit "$wt/$index"
   if {$index eq {none}} return
-  if {[info exists ttdata($w,$index)] && ([::baltip::hide $w] || \
+  if {[info exists ttdata($wt,$index)] && ([::baltip::hide $wt] || \
   ![info exists ttdata(LASTMITEM)] || $ttdata(LASTMITEM) ne $mit)} {
-    set text $ttdata($w,$index)
-    ::baltip::my::Show $w $text no {} $optvals
+    set optvals $ttdata($wt,$index)
+    set text [dict get $optvals -text]
+    ::baltip::my::Show $wt $text no {} $optvals
   }
   set ttdata(LASTMITEM) $mit
 }
@@ -571,14 +725,16 @@ proc ::baltip::my::PrepareNbkTip {w x y} {
     if {$tab ne {} && $tab ne $tab2} {
       ::baltip hide $w
       lassign [::baltip cget -SPECTIP$nbktab] -> tip
-      set optafter -SPECTIPafter$w
-      catch {
-        after cancel [lindex [::baltip cget $optafter] 1]
+      if {![Command $w $tip]} {
+        set optafter -SPECTIPafter$w
+        catch {
+          after cancel [lindex [::baltip cget $optafter] 1]
+        }
+        set aftid [after $pause "::baltip::my::ShowNbkTip $w {$tip}"]
+        ::baltip configure $optafter $aftid
       }
-      set aftid [after $pause "::baltip::my::ShowNbkTip $w {$tip}"]
-      ::baltip configure $optafter $aftid
     }
-    ::baltip configure $optid $tab  ;# tab's <Motion> doen't fully imitate <Leave>
+    ::baltip configure $optid $tab
   }
 }
 
@@ -600,6 +756,23 @@ proc ::baltip::my::LbxCoord {w} {
 }
 #_______________________
 
+proc ::baltip::my::LbxTip {w idx whole} {
+  # Gets a text of a listbox' tip.
+  #   w - the listbox's path
+  #   idx - index of listbox's item
+  #   whole - flag "tip for a whole listbox, not per item"
+
+  lassign [::baltip cget -SPECTIP$w] - com
+  if {$whole} {
+    set tip [string map "%%i %i" $com]
+  } else {
+    set com [string map [list %i $idx] $com]
+    if {[catch {set tip [eval $com]}]} {set tip $com}
+  }
+  return $tip
+}
+#_______________________
+
 proc ::baltip::my::ShowLbxTip {w optid idx whole} {
   # Shows a tip for a listbox.
   #   w - the listbox's path
@@ -610,13 +783,7 @@ proc ::baltip::my::ShowLbxTip {w optid idx whole} {
   catch {
     lassign [LbxCoord $w] x y idx inside
     if {$inside} {
-      lassign [::baltip cget -SPECTIP$w] - com
-      if {$whole} {
-        set tip [string map "%%i %i" $com]
-      } else {
-        set com [string map [list %i $idx] $com]
-        if {[catch {set tip [eval $com]}]} {set tip {}}
-      }
+      set tip [LbxTip $w $idx $whole]
       ::baltip configure $optid $idx
       ::baltip tip $w $tip -force yes
       ::baltip repaint $w
@@ -649,14 +816,18 @@ proc ::baltip::my::PrepareLbxTip {w x y} {
       set com [string map "%%i \u0001" $com]
       set whole [expr {[string first %i $com]==-1}]
       set com [string map "\u0001 %i" $com]
+      set text [LbxTip $w $idx $whole]
       if {$whole && $idx2 ne {}} {
+        Command $w $text
         return  ;# tip for a whole listbox at entering
       }
       ::baltip hide $w
-      set optafter -SPECTIPafter$w
-      catch {after cancel [lindex [::baltip cget $optafter] 1]}
-      set aftid [after $pause "::baltip::my::ShowLbxTip $w $optid $idx $whole"]
-      ::baltip configure $optafter $aftid
+      if {![Command $w $text]} {
+        set optafter -SPECTIPafter$w
+        catch {after cancel [lindex [::baltip cget $optafter] 1]}
+        set aftid [after $pause "::baltip::my::ShowLbxTip $w $optid $idx $whole"]
+        ::baltip configure $optafter $aftid
+      }
       ::baltip configure $optid $idx
     }
   }
@@ -664,9 +835,10 @@ proc ::baltip::my::PrepareLbxTip {w x y} {
 
 ### ________________________ Treeview _________________________ ###
 
-proc ::baltip::my::TreCoord {w} {
+proc ::baltip::my::TreCoord {w whole} {
   # Gets treeview's coordinate data.
   #   w - path to the treeview
+  #   whole - flag "tip for a whole treeview, not per item"
   # Returns a list of:
   #   x - X coordinate
   #   y - Y coordinate
@@ -677,7 +849,29 @@ proc ::baltip::my::TreCoord {w} {
   lassign [WidCoord $w] x y inside
   set id [$w identify item $x $y]
   set c [$w identify column $x $y]
+  if {!$whole && [$w identify region $x $y] eq {heading}} {
+    set inside no
+  }
   return [list $x $y $id $c $inside]
+}
+#_______________________
+
+proc ::baltip::my::TreTip {w id c whole} {
+  # Gets a text of a treeview' tip.
+  #   w - the treeview's path
+  #   id - ID of item
+  #   c - column of item
+  #   whole - flag "tip for a whole treeview, not per item"
+
+  lassign [::baltip cget -SPECTIP$w] - com
+  if {$whole} {
+    set tip [string map "%%i %i %%c %c" $com]
+  } else {
+    set tip {}
+    set com [string map [list %i $id %c $c] $com]
+    if {$id ne {} && [catch {set tip [eval $com]}]} {set tip $com}
+  }
+  return $tip
 }
 #_______________________
 
@@ -689,15 +883,9 @@ proc ::baltip::my::ShowTreTip {w optid id whole} {
   #   whole - flag "tip for a whole treeview, not per item"
 
   catch {
-    lassign [TreCoord $w] x y id c inside
+    lassign [TreCoord $w $whole] x y id c inside
     if {$inside} {
-      lassign [::baltip cget -SPECTIP$w] - com
-      if {$whole} {
-        set tip [string map "%%i %i %%c %c" $com]
-      } else {
-        set com [string map [list %i $id %c $c] $com]
-        if {[catch {set tip [eval $com]}]} {set tip {}}
-      }
+      set tip [TreTip $w $id $c $whole]
       ::baltip configure $optid [list $id $c]
       ::baltip tip $w $tip -force yes
       ::baltip repaint $w
@@ -724,23 +912,27 @@ proc ::baltip::my::PrepareTreTip {w x y} {
     lassign [::baltip cget -pause] -> pause
     set optid -SPECTIPid$w
     lassign [lindex [::baltip cget $optid] 1] id2 c2
-    lassign [TreCoord $w] x y id c inside
     lassign [::baltip cget -SPECTIP$w] - com
     set com [string map "%%i \u0001 %%c \u0002" $com]
     set isid [expr {[string first %i $com]>-1}]
     set isc  [expr {[string first %c $com]>-1}]
     set whole [expr {!$isid && !$isc}]
     set com [string map "\u0001 %i \u0002 %c" $com]
-    if {$inside && $id ne {} && $c ne {} &&
-    ($whole || ($isid && $id ne $id2) || ($isc && $c ne $c2))} {
+    lassign [TreCoord $w $whole] x y id c inside
+    if {$whole || ($inside && $id ne {} && $c ne {} &&
+    (($isid && $id ne $id2) || ($isc && $c ne $c2)))} {
+      set text [TreTip $w $id $c $whole]
       if {$whole && $id2 ne {}} {
+        Command $w $text
         return  ;# tip for a whole treeview at entering
       }
-      ::baltip hide $w
-      set optafter -SPECTIPafter$w
-      catch {after cancel [lindex [::baltip cget $optafter] 1]}
-      set aftid [after $pause "::baltip::my::ShowTreTip $w $optid $id $whole"]
-      ::baltip configure $optafter $aftid
+      if {![Command $w $text]} {
+        ::baltip hide $w
+        set optafter -SPECTIPafter$w
+        catch {after cancel [lindex [::baltip cget $optafter] 1]}
+        set aftid [after $pause "::baltip::my::ShowTreTip $w $optid {$id} $whole"]
+        ::baltip configure $optafter $aftid
+      }
       ::baltip configure $optid [list $id $c]
     } elseif {$id eq {}} {
       ::baltip hide $w
@@ -750,5 +942,8 @@ proc ::baltip::my::PrepareTreTip {w x y} {
 }
 
 # ________________________________ EOF __________________________________ #
+
 #RUNF1: ./test.tcl
 #RUNF2: ../tests/test2_pave.tcl
+#EXEC1: ~/PG/github/freewrap/tclkit-8.6.11 /home/apl/PG/github/pave/tests/test2_pave.tcl
+#EXEC1: ~/PG/github/freewrap/tclkit-8.6.11 /home/apl/PG/github/baltip/test.tcl

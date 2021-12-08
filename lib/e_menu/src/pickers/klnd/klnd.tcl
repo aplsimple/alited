@@ -249,10 +249,10 @@ proc ::klnd::my::InitCalendar {args} {
   lassign [::apave::parseOptions $args \
   -title {} -value {} -tvar {} -locale {} -parent {} -dateformat %D \
   -weekday {} -centerme {} -geometry {} -entry {} -com {} -command {} \
-  -currentmonth {} -united no -daylist {-} -hllist {} -popup {}] \
+  -currentmonth {} -united no -daylist {-} -hllist {} -popup {} -tip {}] \
     title datevalue tvar loc parent p(dformat) \
     p(weekday) centerme geo entry com1 com2 \
-    p(currentmonth) p(united) p(daylist) p(hllist) p(popup)
+    p(currentmonth) p(united) p(daylist) p(hllist) p(popup) p(tip)
   if {$com2 eq {}} {set p(com) $com1} {set p(com) $com2}
   # get localized week day names
   lassign [::klnd::weekdays $loc] p(days) p(weekday)
@@ -287,6 +287,13 @@ proc ::klnd::my::InitCalendar {args} {
 proc ::klnd::my::MainWidgets {} {
   # Forms main widgets of calendar.
 
+  variable p
+  if {$p(tip) eq {}} {
+    set ::klnd::TMPTIP {}
+  } else {
+    set tip [string map [list \{ ( \} )] $p(tip)] ;# for a possible bad list
+    set ::klnd::TMPTIP "-tip {$tip}"
+  }
   return {
     {fra - - 1 7 {-st new} {}} \
     {.fraTool - - 1 7 {-st new} {}}
@@ -313,7 +320,7 @@ proc ::klnd::my::MainWidgets {} {
         if {$i<8} {
           set lwid "$cur $pw $p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh)}"
         } else {
-          set lwid "$cur $pw $p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0 -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter [expr {$i-7}] 1} $att}"
+          set lwid "$cur $pw $p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0 -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter [expr {$i-7}] 1} $::klnd::TMPTIP $att}"
         }
         %C $lwid
         set pr $cur
@@ -403,7 +410,7 @@ proc ::klnd::clearArgs {args} {
   # Removes specific options from args.
   #   args - list of options
 
-  return [::apave::removeOptions $args -title -value -tvar -locale -parent -dateformat -weekday -com -command -currentmonth -united -daylist -hllist -popup]
+  return [::apave::removeOptions $args -title -value -tvar -locale -parent -dateformat -weekday -com -command -currentmonth -united -daylist -hllist -popup -tip]
 }
 #_______________________
 
