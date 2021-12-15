@@ -152,7 +152,6 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
   set p(mvis$obj) $m  ;# month & year currently visible
   set p(yvis$obj) $y
 }
-#_______________________
 
 ## ________________________ Current day _________________________ ##
 
@@ -219,7 +218,6 @@ proc ::klnd::my::Blinking {doit} {
     ::apave::blinkWidget $lab $fgnorm $bgnorm
   }
 }
-#_______________________
 
 ## ________________________ Event handlers _________________________ ##
 
@@ -305,6 +303,26 @@ proc ::klnd::my::BindButtons2 {obj} {
 }
 #_______________________
 
+proc ::klnd::my::ButtonTip {obj tipcom w} {
+  # Gets a button's tip.
+  #   obj - index of calendar
+  #   tipcom - a caller's command returning a tip
+  #   w - current day button's path
+  # The tipcom command can include wildcards:
+  #   %W - a current day button's path
+  #   %D - a current day's value as Y/M/D
+
+  variable p
+  catch {
+    set y $p(yvis$obj)
+    set m $p(mvis$obj)
+    set d [string trim [$w cget -text]]
+    set d [::klnd::my::FormatDay2 $obj $y $m $d]
+    set tipcom [string map [list %W $w %D $d] $tipcom]
+    eval {*}$tipcom
+  }
+}
+
 ## ________________________ Widgets _________________________ ##
 
 proc ::klnd::my::MainWidgets2 {obj ownname} {
@@ -313,6 +331,14 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
   #   ownname - frame for calendar
 
   variable p
+  set ::klnd::TMPTIP {}
+  catch {
+    if {$p(tip$obj) ne {}} {
+      set tipcom [list $p(tip)] ;# possible bad list
+      set ::klnd::TMPTIP \
+        "-tip { -BALTIP %W -COMMAND {::klnd::my::ButtonTip $obj $tipcom %t} }"
+    }
+  }
   set p(tipF3$obj) \
     "[::msgcat::mc {Current date}]: \
       [clock format [CurrentDate] -format $p(dformat$obj) -locale $p(loc$obj)]"
@@ -347,7 +373,7 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
         if {\$i<8} { \
           set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh)}\" \
         } else { \
-          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0  -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} \$att}\" \
+          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0  -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP \$att}\" \
         } ; \
         %C \$lwid ; \
         set pr \$cur \
@@ -355,7 +381,6 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
     ]
   return $res
 }
-#_______________________
 
 # ________________________ UI _________________________ #
 
@@ -484,7 +509,6 @@ proc ::klnd::calendar2 {pobj w ownname args} {
   set res [my::MainWidgets2 $obj $ownname]
   return $res
 }
-#_______________________
 
 # _________________________________ EOF _________________________________ #
 

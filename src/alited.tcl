@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.6b11  ;# for documentation (esp. for Ruff!)
+package provide alited 1.0.6b13  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -336,7 +336,9 @@ namespace eval alited {
   proc HelpAbout {} {
     # Shows "About..." dialogue.
 
-    source [file join $alited::SRCDIR about.tcl]
+    if {[info commands about::About] eq {}} {
+      source [file join $alited::SRCDIR about.tcl]
+    }
     about::About
   }
   #_______________________
@@ -373,9 +375,10 @@ namespace eval alited {
   proc CheckRun {} {
     # Runs "Check Tcl".
 
-    variable SRCDIR
-    source [file join $SRCDIR check.tcl]
-    ::alited::check::_run
+    if {[info commands check::_run] eq {}} {
+      source [file join $alited::SRCDIR check.tcl]
+    }
+    check::_run
   }
 
   #_______________________
@@ -468,19 +471,21 @@ if {[info exists ALITED_NOSEND]} {
 #  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
+    update
+    update idletasks
     if {$alited::LOG ne {}} {
       set alited::ARGV [linsert $alited::ARGV 0 LOG=$alited::LOG]
     }
     if {$alited::DEBUG} {
       set alited::ARGV [linsert $alited::ARGV 0 DEBUG]
     }
-    if {$alited::LOG ne {}} {
-      ::apave::logMessage "QUIT ------------ $alited::SCRIPT NOSEND $alited::ARGV"
-    }
     if {[file tail [file dirname $alited::DIR]] eq {alited.kit}} {
       set alited::DIR [file dirname [file dirname $alited::DIR]]
     } else {
       set alited::SCRIPT $alited::SCRIPTNORMAL
+    }
+    if {$alited::LOG ne {}} {
+      ::apave::logMessage "QUIT :: $alited::DIR :: $alited::SCRIPT NOSEND $alited::ARGV"
     }
     cd $alited::DIR
     alited::Run $alited::SCRIPT NOSEND {*}$alited::ARGV

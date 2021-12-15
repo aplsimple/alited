@@ -1,12 +1,15 @@
 
-package ifneeded klnd 1.4 [list source [file join $dir klnd.tcl]]
+package ifneeded klnd 1.4 " \
+  source [file join $dir klnd.tcl] ;\
+  source [file join $dir klnd2.tcl] \
+  "
 
 # A short intro (for Ruff! docs generator:)
 
 namespace eval ::klnd {
   set _ruff_preamble {
 
-  The *klnd* package provides a calendar widget to use along with [apave](https://aplsimple.github.io/en/tcl/pave) package.
+  The *klnd* package provides a calendar widget to use along with [apave](../pave/index.html) package.
 
   Features:
 
@@ -19,12 +22,12 @@ namespace eval ::klnd {
   - buttons' tips
   - shown at +X+Y coordinates / under a widget / in a parent's center / in a screen's center or under the mouse pointer
   - customizable title, date format, first week day (Sunday/Monday)
-  - themeable (with ttk and apave themes)
+  - themeable (with ttk and [apave](../pave/index.html) themes)
   - may be a modal (by default) or non-modal window
 
   The calendar looks like this:
 
-  <img src="https://aplsimple.github.io/en/tcl/pave/files/widgdat2.png" class="media" alt="">
+  <img src="../pave/files/widgdat2.png" class="media" alt="">
 
   <hr>
 
@@ -60,17 +63,56 @@ namespace eval ::klnd {
 
   <hr>
 
-  An example of using the calendar for *apave* layout:
+  The calendar provides the hotkeys Left, Right, Up, Down, PageUp, PageDown, Home, End and F3 to navigate through days, months and years.
+
+  The Enter / Space keys or Double-Click are used to pick a date.
+
+## Usage in apave package
+
+  With [apave](../pave/index.html) package, the calendar can be used in two forms: <em>date picker</em> and <em>embedded calendar</em>:
+
+   * <em>date picker</em> presents an entry field to hold an input/output date and a button to choose a date from the picker
+
+   * <em>embedded calendar</em> presents a full set of widgets to display a selected month of year
+
+  An example of using <em>date picker</em> for [apave](../pave/index.html) layout:
 
       {dat1 labDat1 L 1 1 {} {-tvar ::N::dat1 -title {Date of the event} -dateformat %d.%m.%Y -weekday %w}}
 
   This example includes `-tvar` option meaning a variable name to hold the date.
 
-  <hr>
+The <em>embedded calendar</em> differs from this with `daT` type of widget used instead of `dat`. Also, this form of calendar doesn't allow using the keyboard; only the mouse is used in it.
 
-  The calendar provides the hotkeys Left, Right, Up, Down, PageUp, PageDown, Home, End and F3 to navigate through days, months and years.
+  The below example is taken from [alited](../alited/index.html)'s source:
 
-  The Enter / Space keys or Double-Click are used to pick a date.
+      {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate} -dateformat $alited::project::klnddata(dateformat) -tip {alited::project::KlndTip %W %D}}}
+
+  This example includes `-com` option to run a command at clicking a day. This command can use `::klnd::update` to highlight some days in the calendar. In [alited](../alited/index.html) these days contain  reminders of TODOs being dead-lines.
+
+  Options of embedded calendar:
+
+   -com, -command - a command to run at left-click
+   -popup - a command to run at right-click
+   -currentmonth - a current month to display, in form of "year/month"
+   -united - if yes, means "united" calendars
+   -daylist - a list of selected days for "united" calendars
+   -hllist - a list of highlighted days
+   -tip - a command to get a day's tip
+
+A command of `-com, -command, -popup` options can use wildcards: %y, %m, %d for year, month, day, %X, %Y for mouse pointer's coordinates.
+
+A command of `-tip` option can use wildcards: %W for a day widget's path, %D for a day.
+
+  UI procedures of embedded calendar:
+
+   ::klnd::labelPath - gets a title label's path, to change its attributes
+   ::klnd::selectedDay - gets a selected day
+   ::klnd::getDaylist - gets a list of selected days (for united calendars)
+   ::klnd::update - redraws a calendar for a month
+
+  The procedures use `obj` argument, which is just an index of a calendar (beginning with 1). If omitted or equal to {}, `obj` means a last created calendar.
+
+  The multiple embedded calendars may be united with `-united yes` option, so that a user can select a list of days inside them.
   }
 }
 

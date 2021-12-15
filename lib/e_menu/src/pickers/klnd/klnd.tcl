@@ -117,7 +117,6 @@ proc ::klnd::my::ShowMonth {m y} {
   set p(mvis) $m  ;# month & year currently visible
   set p(yvis) $y
 }
-#_______________________
 
 ## ________________________ Current day _________________________ ##
 
@@ -148,7 +147,6 @@ proc ::klnd::my::HighlightCurrentDay {} {
   variable p
   catch {[$p(obj) BuT_KLNDSTD$p(icurr)] configure -fg $p(fg2) -bg $p(bg2)}
 }
-#_______________________
 
 ## ________________________ Event handlers _________________________ ##
 
@@ -216,7 +214,6 @@ proc ::klnd::my::Leave {{i 0}} {
   }
   HighlightCurrentDay
 }
-#_______________________
 
 ## ________________________ Initializing _________________________ ##
 
@@ -335,7 +332,6 @@ proc ::klnd::my::DefaultLocale {} {
 
   return [lindex [::msgcat::mcpreferences] 0]
 }
-#_______________________
 
 # ________________________ UI _________________________ #
 
@@ -479,7 +475,6 @@ proc ::klnd::calendar {args} {
   destroy $win
   return $res
 }
-#_______________________
 
 # _________________________________ EOF _________________________________ #
 

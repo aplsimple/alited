@@ -805,6 +805,19 @@ proc project::KlndDate {date} {
 }
 #_______________________
 
+proc project::KlndText {dt} {
+  # Gets a reminder text for a date.
+  #   dt - date
+
+  namespace upvar ::alited al al
+  variable prjinfo
+  if {[set i [KlndSearch $dt]]>-1} {
+    return [lindex $prjinfo($al(prjname),prjrem) $i 1]
+  }
+  return {}
+}
+#_______________________
+
 proc project::KlndClick {y m d} {
   # Processes a click on a calendar day.
   #   y - year
@@ -815,11 +828,7 @@ proc project::KlndClick {y m d} {
   variable prjinfo
   variable klnddata
   set klnddata(date) [KlndOutDate $y $m $d]
-  if {[set i [KlndSearch $klnddata(date)]]>-1} {
-    set text [lindex $prjinfo($al(prjname),prjrem) $i 1]
-  } else {
-    set text {}
-  }
+  set text [KlndText $klnddata(date)]
   [$obDl2 TexKlnd] replace 1.0 end $text
   [$obDl2 LabKlndDate] configure -text [KlndDate $klnddata(date)]
 }
@@ -892,6 +901,16 @@ proc project::Klnd_delete {} {
 }
 #_______________________
 
+proc project::KlndTip {w d} {
+  # Processes a highlighted day.
+  #   w - button's path
+  #   d - day (Y/M/D)
+
+  set msg [KlndText $d]
+  ::baltip hide $w
+  if {$msg ne {}} {::baltip tip $w $msg -force yes}
+}
+
 # ________________________ GUI _________________________ #
 
 proc project::MainFrame {} {
@@ -950,14 +969,11 @@ proc project::Tab1 {} {
     {.sbv .TexPrj L - - {pack -side left}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
-    {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate} -dateformat $alited::project::klnddata(dateformat)}}
+    {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate} -dateformat $alited::project::klnddata(dateformat) -tip {alited::project::KlndTip %W %D}}}
     {fra3.fra - - - - {pack -fill both -expand 1} {}}
     {.seh2 - - - - {pack -side top -fill x}}
     {.too - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::project::klnddata(toobar)}}}
     {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext $alited::project::win.fra.fraB2.butHelp -w 4 -h 8 -tip {$alited::al(MC,prjTtext)}}}
-    {.SbvKlnd .TexKlnd L - - {pack -side left -fill y}}
-    {.TreKlnd - - - - {pack forget -side left -expand 1 -fill both} {-h 20 -columns {L1 L2} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(PRJTOOLTREE,cw0)} L1 {-width $::alited::al(PRJTOOLTREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0}}
-    {.SbvKlnd2 .TreKlnd L - - {pack forget -side left -fill y}}
 }
 }
 #_______________________
@@ -1018,9 +1034,6 @@ proc project::_create {} {
     $win.fra.fraR.nbk select $oldTab
   }
   UpdateTree
-  set tootree [$obDl2 TreKlnd]
-  $tootree heading #0 -text [msgcat::mc Date]
-  $tootree heading #1 -text [msgcat::mc Reminder]
   bind $tree <<TreeviewSelect>> "::alited::project::Select"
   bind $tree <Delete> "::alited::project::Delete"
   bind $tree <Double-Button-1> "::alited::project::ProjectEnter"
@@ -1039,8 +1052,6 @@ proc project::_create {} {
   if {[llength $res] < 2} {set res ""}
   # save the new geometry of the dialogue
   set geo [wm geometry $win]
-  set al(PRJTOOLTREE,cw0) [[$obDl2 TreKlnd] column #0 -width]
-  set al(PRJTOOLTREE,cw1) [[$obDl2 TreKlnd] column #1 -width]
   destroy $win
   return $res
 }

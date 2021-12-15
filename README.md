@@ -53,9 +53,9 @@ For a quick acquaintance of *alited*, a few of demo videos are available:
 
 # Inevitable blah-blah
 
-The *alited* project started 1 March 2021 and as such isn't complete, perfect etc. And in no way and in no time it will be so.
+The *alited* project started 1 March 2021.
 
-In fact, *alited* has been developed by its own means since v0.2. Inspite of permanent overheads of this way and a raw state of *alited*, it turned out to be amazingly productive, more and more in the course of time.
+In fact, *alited* has been developed by its own means since v0.2. Inspite of permanent overheads of this way, it turned out to be amazingly productive, more and more in the course of time.
 
 Below is a screenshot of *alited*, just to glance at it:
 

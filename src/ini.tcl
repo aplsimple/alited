@@ -146,8 +146,6 @@ namespace eval ::alited {
   set al(DEFAULT,prjindentAuto) 1
   set al(DEFAULT,prjredunit) 20
   set al(DEFAULT,prjmultiline) 0
-  set al(PRJTOOLTREE,cw0) 70      ;# project tool tree column #0 width
-  set al(PRJTOOLTREE,cw1) 200     ;# project tool tree column #1 width
 
   # use localized messages
   set al(LOCAL) {}
@@ -271,8 +269,6 @@ proc ini::ReadIniGeometry {nam val} {
     filgeometry    {set ::alited::FilGeometry $val}
     treecw0        {set al(TREE,cw0) $val}
     treecw1        {set al(TREE,cw1) $val}
-    prjtreecw0     {set al(PRJTOOLTREE,cw0) $val}
-    prjtreecw1     {set al(PRJTOOLTREE,cw1) $val}
   }
 }
 #_______________________
@@ -694,8 +690,6 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "minsizepref=$::alited::pref::minsize"
   puts $chan "treecw0=[[$obPav Tree] column #0 -width]"
   puts $chan "treecw1=[[$obPav Tree] column #1 -width]"
-  puts $chan "prjtreecw0=$al(PRJTOOLTREE,cw0)"
-  puts $chan "prjtreecw1=$al(PRJTOOLTREE,cw1)"
   puts $chan "dirgeometry=$::alited::DirGeometry"
   puts $chan "filgeometry=$::alited::FilGeometry"
   # save other options

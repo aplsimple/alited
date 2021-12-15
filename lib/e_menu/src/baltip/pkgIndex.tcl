@@ -1,4 +1,4 @@
-package ifneeded baltip 1.3.2 [list source [file join $dir baltip.tcl]]
+package ifneeded baltip 1.3.4 [list source [file join $dir baltip.tcl]]
 
 namespace eval ::baltip {
   variable _ruff_preamble {
@@ -51,11 +51,9 @@ The *tags of canvas* have tips too.
 The menu tips are useful e.g. when the items are displayed as short names, while
 the tips are wanted to be full names.
 
- <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip5.png" class="media" alt="">
-
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip6.png" class="media" alt="">
 
-*Label of danger*. The labels are also tipped. This one is configured to be an alert.
+*Label of danger*. The labels are also tipped. This one is configured to be an alert shown "eternally" (i.e. till hovering over it).
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip7.png" class="media" alt="">
 
@@ -78,8 +76,6 @@ The *-command* option allows to display tips in a status bar instead of a balloo
 *Configurable tips*. The tip configuration can be global or local (for a specific tip).
 
 The configuring can include: font, colors, paddings, border, relief, exposition time, opacity, image (with -compound), bell.
-
- <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip8.png" class="media" alt="">
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip9.png" class="media" alt="">
 

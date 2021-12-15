@@ -1,39 +1,10 @@
-###########################################################################
-#
-# This script contains the APaveDialog class that provides a batch of
-# standard dialogs with advanced features.
-#
-# Use:
-#   package require apave  ;# or 'source apavedialog.tcl'
-#   ...
-#   catch {pdlg destroy}
-#   ::apave::APaveDialog create pdlg .win
-#   pdlg DIALOG ARGS
-# where:
-#   DIALOG stands for the following dialog types:
-#     ok
-#     okcancel
-#     yesno
-#     yesnocancel
-#     retrycancel
-#     abortretrycancel
-#     misc
-#   ARGS stands for the arguments of dialog:
-#     icon title message (optional checkbox message) (optional geometry) \
-#                   (optional -text 1)
-#
-# Examples of dialog calls:
-#   pdlg ok info "OK title" "Ask for OK" -ch "Once only" -g "+300+100"
-#   pdlg okcancel info "OC title" "Ask for OK" OK
-#   pdlg yesno info "YN title" "Ask for YES" YES
-#   pdlg yesnocancel info "YNC title" "Ask for YES" YES -ch "Show once"
-#   pdlg retrycancel info "RC title" "Ask for RETRY" RETRY
-#   pdlg abortretrycancel info "ARC title" "Ask for RETRY" RETRY
-#   pdlg misc info "MSC title" "Ask for HELLO" {Hello 1 "Bye baby" 2} 1
-#
-# See test_pavedialog.tcl for the detailed examples of use.
-#
-###########################################################################
+###########################################################
+# Name:    apavedialog.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    12/09/2021
+# Brief:   Handles standard dialogs with advanced features.
+# License: MIT.
+###########################################################
 
 package require Tk
 
@@ -41,7 +12,6 @@ source [file join [file dirname [info script]] apave.tcl]
 
 namespace eval ::apave {
 }
-
 
 # ________________________ APaveDialog class _________________________ #
 
@@ -99,8 +69,6 @@ oo::class create ::apave::APaveDialog {
     if {[llength [self next]]} next
   }
 
-
-
 # ________________________ Standard dialogs _________________________ #
 
   #  ok               - dialog with button OK
@@ -126,16 +94,16 @@ oo::class create ::apave::APaveDialog {
   #     -color cval    (-c cval)  - sets the color of message
   #     -family... -size... etc. options of label widget
   #     -text 1 - sets the text widget to show a message
+  #_______________________
 
   method PrepArgs {args} {
-
     # Makes a list of arguments.
     foreach a $args { lappend res $a }
     return $res
   }
+  #_______________________
 
   method ok {icon ttl msg args} {
-
     # Shows the *OK* dialog.
     #   icon - icon
     #   ttl - title
@@ -144,9 +112,9 @@ oo::class create ::apave::APaveDialog {
 
     return [my Query $icon $ttl $msg {ButOK OK 1} ButOK {} [my PrepArgs $args]]
   }
+  #_______________________
 
   method okcancel {icon ttl msg {defb OK} args} {
-
     # Shows the *OKCANCEL* dialog.
     #   icon - icon
     #   ttl - title
@@ -157,9 +125,9 @@ oo::class create ::apave::APaveDialog {
     return [my Query $icon $ttl $msg \
       {ButOK OK 1 ButCANCEL Cancel 0} But$defb {} [my PrepArgs $args]]
   }
+  #_______________________
 
   method yesno {icon ttl msg {defb YES} args} {
-
     # Shows the *YESNO* dialog.
     #   icon - icon
     #   ttl - title
@@ -170,9 +138,9 @@ oo::class create ::apave::APaveDialog {
     return [my Query $icon $ttl $msg \
       {ButYES Yes 1 ButNO No 0} But$defb {} [my PrepArgs $args]]
   }
+  #_______________________
 
   method yesnocancel {icon ttl msg {defb YES} args} {
-
     # Shows the *YESNOCANCEL* dialog.
     #   icon - icon
     #   ttl - title
@@ -183,9 +151,9 @@ oo::class create ::apave::APaveDialog {
     return [my Query $icon $ttl $msg \
       {ButYES Yes 1 ButNO No 2 ButCANCEL Cancel 0} But$defb {} [my PrepArgs $args]]
   }
+  #_______________________
 
   method retrycancel {icon ttl msg {defb RETRY} args} {
-
     # Shows the *RETRYCANCEL* dialog.
     #   icon - icon
     #   ttl - title
@@ -196,9 +164,9 @@ oo::class create ::apave::APaveDialog {
     return [my Query $icon $ttl $msg \
       {ButRETRY Retry 1 ButCANCEL Cancel 0} But$defb {} [my PrepArgs $args]]
   }
+  #_______________________
 
   method abortretrycancel {icon ttl msg {defb RETRY} args} {
-
     # Shows the *ABORTRETRYCANCEL* dialog.
     #   icon - icon
     #   ttl - title
@@ -210,9 +178,9 @@ oo::class create ::apave::APaveDialog {
       {ButABORT Abort 1 ButRETRY Retry 2 ButCANCEL \
       Cancel 0} But$defb {} [my PrepArgs $args]]
   }
+  #_______________________
 
   method misc {icon ttl msg butts {defb ""} args} {
-
     # Shows the *MISCELLANEOUS* dialog.
     #   icon - icon
     #   ttl - title
@@ -233,8 +201,6 @@ oo::class create ::apave::APaveDialog {
   }
 
 # ________________________ Progress for splash _________________________ #
-
-  #########################################################################
 
   method progress_Begin {type wprn ttl msg1 msg2 maxvalue args} {
     # Creates and shows a progress window. Fit for splash screens.
@@ -282,8 +248,7 @@ oo::class create ::apave::APaveDialog {
       lappend ::apave::_AP_VARS(ProSplash,after) $args
     }
   }
-
-  #########################################################################
+  #_______________________
 
   method progress_Go {value {msg1 ""} {msg2 ""}} {
     # Updates a progress window.
@@ -312,8 +277,7 @@ oo::class create ::apave::APaveDialog {
     }
     return $val
   }
-
-  #########################################################################
+  #_______________________
 
   method progress_End {} {
     # Destroys a progress window.
@@ -349,10 +313,7 @@ oo::class create ::apave::APaveDialog {
 
 # ________________________ Text utilities _________________________ #
 
-  #########################################################################
-
   method pasteText {txt} {
-
     # Removes a selection at pasting.
     #   txt - text's path
     #
@@ -367,11 +328,9 @@ oo::class create ::apave::APaveDialog {
       }
     }
   }
-
-  #########################################################################
+  #_______________________
 
   method doubleText {txt {dobreak 1}} {
-
     # Doubles a current line or a selection of text widget.
     #   txt - text's path
     #   dobreak - if true, means "return -code break"
@@ -395,11 +354,9 @@ oo::class create ::apave::APaveDialog {
     if {$dobreak} {return -code break}
     return
   }
-
-  #########################################################################
+  #_______________________
 
   method deleteLine {txt {dobreak 1}} {
-
     # Deletes a current line of text widget.
     #   txt - text's path
     #   dobreak - if true, means "return -code break"
@@ -415,11 +372,9 @@ oo::class create ::apave::APaveDialog {
     if {$dobreak} {return -code break}
     return
   }
-
-  #########################################################################
+  #_______________________
 
   method linesMove {txt to {dobreak 1}} {
-
     # Moves a current line or lines of selection up/down.
     #   txt - text's path
     #   to - direction (-1 means "up", +1 means "down")
@@ -473,11 +428,9 @@ oo::class create ::apave::APaveDialog {
     }
     return
   }
-
-  #########################################################################
+  #_______________________
 
   method selectedWordText {txt} {
-
     # Returns a word under the cursor or a selected text.
     #   txt - the text's path
 
@@ -504,11 +457,9 @@ oo::class create ::apave::APaveDialog {
     }
     return $seltxt
   }
-
-  #########################################################################
+  #_______________________
 
   method InitFindInText { {ctrlf 0} {txt {}} } {
-
     # Initializes the search in the text.
     #   ctrlf - "1" means that the method is called by Ctrl+F
     #   txt - path to the text widget
@@ -522,11 +473,9 @@ oo::class create ::apave::APaveDialog {
     }
     return
   }
-
-  #########################################################################
+  #_______________________
 
   method findInText {{donext 0} {txt ""} {varFind ""}} {
-
     # Finds a string in text widget.
     #   donext - "1" means 'from a current position'
     #   txt - path to the text widget
@@ -566,11 +515,9 @@ oo::class create ::apave::APaveDialog {
     }
     return
   }
-
-  #########################################################################
+  #_______________________
 
   method GetLinkLab {m} {
-
     # Gets a link for label.
     #   m - label with possible link (between <link> and </link>)
     # Returns: list of "pure" message and link for label.
@@ -583,11 +530,9 @@ oo::class create ::apave::APaveDialog {
     set m [string range $m 0 $i1-1][string range $m $i2+7 end]
     return [list $m [list -link $link]]
   }
-
-  #########################################################################
+  #_______________________
 
   method popupFindCommands {pop {txt {}} {com1 ""} {com2 ""}} {
-
     # Returns find commands for a popup menu on a text.
     #   pop - path to the menu
     #   txt - path to the text
@@ -603,11 +548,9 @@ oo::class create ::apave::APaveDialog {
       \$pop add command [my iconA none] -accelerator $accF3 -label \"Find Next\" \\
         -command {$com2}"
   }
-
-  #########################################################################
+  #_______________________
 
   method popupBlockCommands {pop {txt {}}} {
-
     # Returns block commands for a popup menu on a text.
     #   pop - path to the menu
     #   txt - path to the text
@@ -625,13 +568,9 @@ oo::class create ::apave::APaveDialog {
        -command \"[self] linesMove {$txt} +1 0\""
   }
 
-
 # ________________________ Highlighting _________________________ #
 
-  #########################################################################
-
   method popupHighlightCommands {{pop ""} {txt ""}} {
-
     # Returns highlighting commands for a popup menu on a text.
     #   pop - path to the menu
     #   txt - path to the text
@@ -652,8 +591,7 @@ oo::class create ::apave::APaveDialog {
     if {$txt ne ""} {set res [string map [list %w $txt] $res]}
     return $res
   }
-
-  #########################################################################
+  #_______________________
 
   method set_HighlightedString {sel} {
     # Saves a string got from highlighting by Alt+left/right/q/w.
@@ -664,6 +602,7 @@ oo::class create ::apave::APaveDialog {
       set ${_pdg(ns)}PD::fnd $sel
     }
   }
+  #_______________________
 
   method get_HighlightedString {} {
     # Returns a string got from highlighting by Alt+left/right/q/w.
@@ -673,8 +612,7 @@ oo::class create ::apave::APaveDialog {
     }
     return ""
   }
-
-  #########################################################################
+  #_______________________
 
   method set_highlight_matches {w} {
     # Creates bindings to highlight matches in a text.
@@ -693,8 +631,7 @@ oo::class create ::apave::APaveDialog {
       bind $w <$k> [list [self] seek_highlight $w 3]
     }
   }
-
-  #########################################################################
+  #_______________________
 
   method get_highlighted {txt} {
     # Gets a selected word after double-clicking on a text.
@@ -721,8 +658,7 @@ oo::class create ::apave::APaveDialog {
     if {[string length $sel] == 0} {set pos ""}
     return [list $sel $pos $pos2]
   }
-
-  #########################################################################
+  #_______________________
 
   method highlight_matches {txt} {
     # Highlights matches of selected word in a text.
@@ -750,8 +686,7 @@ oo::class create ::apave::APaveDialog {
     }
     set ::apave::_AP_VARS(HILI,$txt) yes
   }
-
-  #########################################################################
+  #_______________________
 
   method unhighlight_matches {txt} {
     # Unhighlights matches of selected word in a text.
@@ -763,8 +698,7 @@ oo::class create ::apave::APaveDialog {
       set ::apave::_AP_VARS(HILI,$txt) no
     }
   }
-
-  #########################################################################
+  #_______________________
 
   method seek_highlight {txt mode} {
     # Seeks the selected word forward/backward/to first/to last in a text.
@@ -797,24 +731,23 @@ oo::class create ::apave::APaveDialog {
     }
   }
 
-# ________________________ Query procs _________________________ #
+# ________________________ Query's auxiliaries _________________________ #
 
   method FieldName {name} {
-
     # Gets a field name.
 
     return fraM.fra$name.$name
   }
+  #_______________________
 
   method VarName {name} {
-
     # Gets a variable name associated with a field name.
 
     return [namespace current]::var$name
   }
+  #_______________________
 
   method GetVarsValues {lwidgets} {
-
     # Gets values of entries passed (or set) in -tvar.
     #   lwidgets - list of widget items
 
@@ -839,9 +772,9 @@ oo::class create ::apave::APaveDialog {
     }
     return $res
   }
+  #_______________________
 
   method SetGetTexts {oper w iopts lwidgets} {
-
     # Sets/gets contents of text fields.
     #   oper - "set" to set, "get" to get contents of text field
     #   w - window's name
@@ -863,11 +796,9 @@ oo::class create ::apave::APaveDialog {
     }
     return
   }
-
-  #########################################################################
+  #_______________________
 
   method AppendButtons {widlistName buttons neighbor pos defb timeout} {
-
     # Adds buttons to the widget list from a position of neighbor widget.
     #   widlistName - variable name for widget list
     #   buttons - buttons to add
@@ -904,11 +835,9 @@ oo::class create ::apave::APaveDialog {
     lassign [my LowercaseWidgetName $_pdg(dlg).fra.$defb2] _pdg(defb2)
     return
   }
-
-  ###################################################################
+  #_______________________
 
   method GetLinePosition {txt ind} {
-
     # Gets a line's position.
     #   txt - text widget
     #   ind - index of the line
@@ -918,20 +847,17 @@ oo::class create ::apave::APaveDialog {
     set lineend   [expr {$linestart + 1.0}]
     return [list $linestart $lineend]
   }
-
-  #########################################################################
+  #_______________________
 
   method Pdg {name} {
-
     # Gets a value of _pdg(name).
 
     return $_pdg($name)
   }
 
-  #########################################################################
+  # ________________________ Query the terrible _________________________ #
 
   method Query {icon ttl msg buttons defb inopts argdia {precom ""} args} {
-
     # Makes a query (or a message) and gets the user's response.
     #   icon    - icon name (info, warn, ques, err)
     #   ttl     - title

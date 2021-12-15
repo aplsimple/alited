@@ -1,53 +1,14 @@
-###########################################################################
-#
-# This script contains the APave class, sort of wrapper around the grid
-# geometry manager.
-#
-# Use:
-#    package require apave
-#    ...
-#    ::apave::APave create pave
-#    catch {destroy .win}
-#    pave makeWindow .win "TITLE"
-#    pave paveWindow .win LISTW
-#    pave showModal .win OPTIONS
-#
-# where:
-#    TITLE - title of window
-#    LISTW - list of widgets and their options
-#    OPTIONS - geometry and other options of paved window
-#
-# LISTW's entries have the following structure:
-#   {NAME NEIGHBOR POSN RSPAN CSPAN OPTGRID OPTWIDG}
-#
-# where:
-#   NAME     - name of current widget that can begin with letters
-#              defining the type of widget (see widgetType below)
-#   NEIGHBOR - name of neighboring widget
-#   POSN     - position of neighboring widget: T or L (top or left)
-#   RSPAN    - rowspan of current widget
-#   CSPAN    - columnspan of current widget
-#   OPTGRID  - options of grid command
-#   OPTWIDG  - options of widget's command
-# If NAME begins with letters other than listed in widgetType below,
-# the NAME widget should be created before calling "pave window" command.
-#
-# For example,
-#   {ch2 ch1 T 1 5 {-st w} {-t "Match case" -var t::c2}}
-# means the widget's options:
-#   ch2 - name of current widget (checkbox)
-#   ch1 - name of neighboring widget (checkbox)
-#   T   - position of neighboring widget is TOP
-#   1   - rowspan of current widget
-#   5   - columnspan of current widget
-#   {-st w} - option "-sticky" of grid command
-#   {-t ...} - option "-text" of widget's (checkbox's) command
-#
-# See tests/test*.tcl files for the detailed examples of use.
-#
-###########################################################################
+###########################################################
+# Name:    apave.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    12/09/2021
+# Brief:   Handles APave class, sort of geometry manager.
+# License: MIT.
+###########################################################
 
 package require Tk
+
+# ________________________ TCLLIBPATH _________________________ #
 
 # use TCLLIBPATH variable (some tclkits don't see it)
 catch {
@@ -63,6 +24,8 @@ catch {
   unset _apave_
   unset _apave_tcllibpath_
 }
+
+# ________________________ apave NS _________________________ #
 
 namespace eval ::apave {
 
@@ -2398,12 +2361,12 @@ oo::class create ::apave::APave {
         }
         -entrypop - -entrypopRO {
           if {[winfo exists $v]} {
-            my makePopup $v [expr {$a eq "-entrypopRO"}]
+            my makePopup $v [expr {$a eq {-entrypopRO}}]
           }
         }
         -textpop - -textpopRO {
           if {[winfo exists $v]} {
-            set ro [expr {$a eq "-textpopRO"}]
+            set ro [expr {$a eq {-textpopRO}}]
             my makePopup $v $ro yes
             set w $v
           } elseif {[string length $v]>5} {
@@ -2413,13 +2376,13 @@ oo::class create ::apave::APave {
         }
         -notebazook {
           foreach {fr attr} $v {
-            if {[string match "-tr*" $fr]} {
+            if {[string match -tr* $fr]} {
               if {[string is boolean -strict $attr] && $attr} {
                 ttk::notebook::enableTraversal $w
               }
-            } elseif {[string match "-sel*" $fr]} {
+            } elseif {[string match -sel* $fr]} {
               $w select $w.$attr
-            } elseif {![string match "#*" $fr]} {
+            } elseif {![string match #* $fr]} {
               set attr [my GetMC $attr]
               set attr [subst $attr]
               lassign [::apave::extractOptions attr -tip {} -tooltip {}] tip t2
@@ -2437,14 +2400,14 @@ oo::class create ::apave::APave {
           if {![winfo exists $canvas]} {set canvas [my $canvas]}
           set bind [list [self] fillGutter $w $canvas $width $shift]
           bind $w <Configure> $bind
-          if {[trace info execution $w] eq ""} {
+          if {[trace info execution $w] eq {}} {
             trace add execution $w leave $bind
           }
         }
         -onReturn {   ;# makes a command run at Enter key pressing
           lassign $v cmd from to
-          if {[set tvar [$w cget -textvariable]] ne ""} {
-            if {$from ne ""} {
+          if {[set tvar [$w cget -textvariable]] ne {}} {
+            if {$from ne {}} {
               set cmd "if {\$$tvar < $from} {set $tvar $from}; $cmd"
             }
             if {$to ne ""} {
@@ -2452,7 +2415,7 @@ oo::class create ::apave::APave {
             }
           }
           foreach k {<Return> <KP_Enter>} {
-            if {$v ne ""} {bind $w $k $cmd}
+            if {$v ne {}} {bind $w $k $cmd}
           }
         }
         -linkcom {
@@ -2461,7 +2424,7 @@ oo::class create ::apave::APave {
         }
         -callF2 {
           if {[llength $v]==1} {set w2 $v} {set w2 [string map $v $w]}
-          if {[string first $w2 [bind $w "<F2>"]] < 0} {
+          if {[string first $w2 [bind $w <F2>]] < 0} {
             ::apave::bindToEvent $w <F2> $w2 invoke
           }
         }
@@ -2517,10 +2480,10 @@ oo::class create ::apave::APave {
         set ::apave::_AP_VISITED(ALL) [lreplace $::apave::_AP_VISITED(ALL) $i $i]
       }
     }
-    if {$wr ne ""} {
+    if {$wr ne {}} {
       for {set i [llength $::apave::_AP_VARS(TIMW)]} {[incr i -1]>=0} {} {
         set w [lindex $::apave::_AP_VARS(TIMW) $i]
-        if {[string first $wr $w]==0 && ![catch {baltip::hide $w}]} {
+        if {[string first $wr $w]==0 && ![catch {::baltip::hide $w}]} {
           set ::apave::_AP_VARS(TIMW) [lreplace $::apave::_AP_VARS(TIMW) $i $i]
         }
       }
@@ -3069,7 +3032,7 @@ oo::class create ::apave::APave {
         set tattrs ""
       }
       set tooltip [my MC $tooltip]
-      lappend addcomms [list baltip::tip $wdg $tooltip {*}$tattrs]
+      lappend addcomms [list ::baltip::tip $wdg $tooltip {*}$tattrs]
       lappend ::apave::_AP_VARS(TIMW) $wdg
       set attrs [::apave::removeOptions $attrs -tooltip -tip]
     }

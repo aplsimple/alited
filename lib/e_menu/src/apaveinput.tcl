@@ -1,45 +1,21 @@
-###########################################################################
-#
-# This script contains the APaveInput class that allows:
-#   - to create input dialogs
-#   - to view/edit text files
-#
-# Use for input dialogs:
-#   package require apave  ;# or 'source apaveinput.tcl'
-#   ::apave::APaveInput create pinp $win
-#   pinp input $icon $ttl $iopts $args
-# where:
-#   win     - window's path
-#   icon    - window's icon ("" or "-" means 'no icon')
-#   ttl     - title of window
-#   iopts   - list of input options:
-#     - name of field
-#     - prompt (and possibly gridopts, widopts) of field
-#     - options for value of field
-#   args - APaveDialog options
-#
-# Use for editing files:
-#   package require apave
-#   ::apave::APaveInput create pinp $win
-#   pinp editfile $fname $fg $bg $cc $prepost $args
-# where:
-#   fname - name of edited file
-#   fg, bg, cc - colors of background, foreground and cursor
-#   prepost - optional command (or "") to be executed before editing
-#   args - optional arguments of text widget
-#
-# See test_pavedialog.tcl for the detailed examples of use.
-#
-###########################################################################
+###########################################################
+# Name:    apaveinput.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    12/09/2021
+# Brief:   Handles APaveInput class creating input dialogs.
+# License: MIT.
+###########################################################
 
 package require Tk
 
-package provide apave 3.4.6b19
+package provide apave 3.4.6
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
 namespace eval ::apave {
 }
+
+# ________________________ APaveInput _________________________ #
 
 oo::class create ::apave::APaveInput {
 
@@ -50,7 +26,6 @@ oo::class create ::apave::APaveInput {
   variable _savedvv
 
   constructor {args} {
-
     # Creates APaveInput object.
     #   win - window's name (path)
     #   args - additional arguments
@@ -60,18 +35,15 @@ oo::class create ::apave::APaveInput {
   }
 
   destructor {
-
     # Clears variables used in the object.
 
     my initInput
     unset _savedvv
     if {[llength [self next]]} next
   }
-
-  #########################################################################
+  #_______________________
 
   method initInput {} {
-
     # Initializes input and clears variables made in previous session.
 
     foreach {vn vv} $_savedvv {
@@ -81,22 +53,18 @@ oo::class create ::apave::APaveInput {
     set _pav(widgetopts) [list]
     return
   }
-
-  #########################################################################
+  #_______________________
 
   method varInput {} {
-
     # Gets variables made and filled in a previous session
     # as a list of "varname varvalue" pairs where varname
     # is of form: namespace::var$widgetname.
 
     return $_savedvv
   }
-
-  #########################################################################
+  #_______________________
 
   method valueInput {} {
-
     # Gets input variables' values.
 
     set _values {}
@@ -105,11 +73,9 @@ oo::class create ::apave::APaveInput {
     }
     return $_values
   }
-
-  #########################################################################
+  #_______________________
 
   method input {icon ttl iopts args} {
-
     # Makes and runs an input dialog.
     #  icon - icon (omitted if equals to "")
     #  ttl - title of window
@@ -312,11 +278,9 @@ oo::class create ::apave::APaveInput {
     }
     return $res
   }
-
-  #########################################################################
+  #_______________________
 
   method vieweditFile {fname {prepost ""} args} {
-
     # Views or edits a file.
     #   fname - name of file
     #   prepost - a command performing before and after creating a dialog
@@ -326,11 +290,9 @@ oo::class create ::apave::APaveInput {
 
     return [my editfile $fname "" "" "" $prepost {*}$args]
   }
-
-  #########################################################################
+  #_______________________
 
   method editfile {fname fg bg cc {prepost ""} args} {
-
     # Edits or views a file with a set of main colors
     #   fname - name of file
     #   fg - foreground color of text widget
@@ -378,6 +340,9 @@ oo::class create ::apave::APaveInput {
     }
     return $res
   }
+
+
+# ________________________ EONS _________________________ #
 
 }
 # _________________________________ EOF _________________________________ #
