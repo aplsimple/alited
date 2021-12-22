@@ -553,7 +553,7 @@ proc tree::ShowPopupMenu {ID X Y} {
     if {$isfile} {set fname [file dirname $fname]}
     set sname [file tail $fname]
     $popm add separator
-    $popm add command {*}[$obPav iconA OpenFile] -label {Open Selected File(s)} \
+    $popm add command {*}[$obPav iconA OpenFile] -label $al(MC,openselfile) \
       -command ::alited::file::OpenFiles
     set msg [string map [list %n $sname] $al(MC,openofdir)]
     $popm add command {*}[$obPav iconA none] -label $msg \

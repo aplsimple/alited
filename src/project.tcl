@@ -39,16 +39,9 @@ namespace eval project {
   # data of projects top save/restore
   variable data; array set data [list]
 
-  # name of file containing project notes
-  variable fnotes {}
-
-  # name of file containing project reminders
-  variable frems {}
-
   # calendar's data
   variable klnddata; array set klnddata [list]
   set klnddata(dateformat) {%Y/%m/%d}
-  set klnddata(ansdel) 0
 }
 
 # ________________________ Common _________________________ #
@@ -63,67 +56,6 @@ proc project::TabFileInfo {} {
     set fname [lindex [split $tab \t] 0]
     $lbx insert end $fname
   }
-}
-#_______________________
-
-proc project::SaveCurrFileList {title {isnew no}} {
-  # Actions with a file list of project.
-  #   title - title of the message box "What to do"
-  #   isnew - yes, if it's a new project to be added
-  # A result of action is saved to al(tablist).
-  # Returns yes, if an action is chosen, no - if canceled.
-
-  namespace upvar ::alited al al obDl3 obDl3
-  variable win
-  set asks [list $al(MC,prjaddfl) add $al(MC,prjsubstfl) change $al(MC,prjdelfl) delete \
-    $al(MC,prjnochfl) file Cancel cancel]
-  set msg [string map [list %n [string toupper $title]] $al(MC,prjgoing)]
-  append msg \n\n $al(MC,prjsavfl)
-  if {[info exists al(ANSWERED,SaveCurrFileList)]} {
-    set ans $al(ANSWERED,SaveCurrFileList)
-  } else {
-    set ans [$obDl3 misc ques $title $msg $asks file -ch $al(MC,noask)]
-    if {[string last {10} $ans]>-1} {
-      set ans [string map {10 {}} $ans]
-      set al(ANSWERED,SaveCurrFileList) $ans
-    }
-  }
-  switch $ans {
-    "delete" {
-      set al(tablist) [list]
-      TabFileInfo
-    }
-    "add" - "change" {
-      if {$ans eq "change" || $isnew} {
-        set al(tablist) [list]
-      }
-      lassign [alited::bar::GetBarState] TIDcur - wtxt
-      foreach tab [alited::bar::BAR listTab] {
-        set TID [lindex $tab 0]
-        if {$TID eq $TIDcur} {
-          set pos [$wtxt index insert]
-        } else {
-          set pos [alited::bar::GetTabState $TID --pos]
-        }
-        set fname [set fn [alited::bar::FileName $TID]]
-        append fn \t $pos
-        if {$fname ne $al(MC,nofile) && [lsearch -exact $al(tablist) $fn]<0} {
-          lappend al(tablist) $fn
-        }
-      }
-      TabFileInfo
-    }
-    "file" {
-      if {$isnew} {
-        set al(tablist) [list]
-        TabFileInfo
-      }
-    }
-    default {
-      return no
-    }
-  }
-  return yes
 }
 #_______________________
 
@@ -275,10 +207,11 @@ proc project::GetProjectOpts {fname} {
 }
 #_______________________
 
-proc project::PutProjectOpts {fname oldname} {
+proc project::PutProjectOpts {fname oldname dorename} {
   # Writes a project's settings to a project settings file.
   #   fname - the project settings file's name
   #   oldname - old name of the project file
+  #   dorename - yes, if rename of old -notes/-rems
 
   namespace upvar ::alited al al obDl2 obDl2
   variable prjinfo
@@ -307,41 +240,76 @@ proc project::PutProjectOpts {fname oldname} {
     append newcont $line \n
   }
   ::apave::writeTextFile $fname newcont
-  if {$oldname ne $fname} {catch {file delete $oldname}}
+  if {$oldname ne $fname} {
+    catch {file delete $oldname}
+    if {$dorename} {
+      foreach ftyp {notes rems} {
+        set oldtyp [file rootname $oldname]-$ftyp.txt
+        set newtyp [file rootname $fname]-$ftyp.txt
+        catch {file rename $oldtyp $newtyp}
+      }
+    }
+  }
+}
+
+# ________________________ Text fields _________________________ #
+
+proc project::SaveNotesRems {} {
+  # Saves notes and reminders.
+
+  Klnd_save
+  SaveNotes
+}
+#_______________________
+
+proc project::CurrProject {} {
+  # Gets a current project name, from a current item of project list.
+
+  namespace upvar ::alited obDl2 obDl2
+  variable prjlist
+  set prj {}
+  catch {
+    set tree [$obDl2 TreePrj]
+    set item [Selected item no]
+    set isel [$tree index $item]
+    set prj [lindex $prjlist $isel]
+  }
+  return $prj
 }
 #_______________________
 
 proc project::SaveNotes {} {
-  # Saves a file of notes.
+  # Saves a file of notes, for a current item of project list.
 
   namespace upvar ::alited obDl2 obDl2
-  variable fnotes
-  if {$fnotes ne {}} {
+  variable klnddata
+  if {[set prj $klnddata(SAVEPRJ)] ne {}} {
+    set fnotes [NotesFile $prj]
     set fcont [[$obDl2 TexPrj] get 1.0 {end -1c}]
     ::apave::writeTextFile $fnotes fcont 0 0
   }
 }
 #_______________________
 
-proc project::SaveRems {} {
-  # Saves a file of reminders.
+proc project::NotesFile {prj} {
+  # Gets a file name of notes.
 
-  namespace upvar ::alited al al
-  variable frems
-  variable prjinfo
-  if {$frems ne {}} {
-    set fcont $prjinfo($al(prjname),prjrem)
-    ::apave::writeTextFile $frems fcont 0 0
-  }
+  return [file join $::alited::PRJDIR $prj-notes.txt]
+}
+#_______________________
+
+proc project::RemsFile {prj} {
+  # Gets a file name of reminders.
+
+  return [file join $::alited::PRJDIR $prj-rems.txt]
 }
 #_______________________
 
 proc project::ReadRems {prj} {
   # Reads a file of reminders.
 
-  variable frems
   variable klnddata
-  set frems [file join $::alited::PRJDIR $prj-rems.txt]
+  set frems [RemsFile $prj]
   if {[file exists $frems]} {
     set res [::apave::readTextFile $frems]
   } else {
@@ -381,7 +349,129 @@ proc project::SortRems {rems} {
 }
 #_______________________
 
+proc project::Klnd_delete {} {
+  # Clears a reminder.
+
+  namespace upvar ::alited obDl2 obDl2
+  [$obDl2 TexKlnd] replace 1.0 end {}
+}
+#_______________________
+
+proc project::Klnd_save {} {
+  # Saves a reminder on a date.
+
+  namespace upvar ::alited obDl2 obDl2 al al
+  variable prjinfo
+  variable klnddata
+  set wtxt [$obDl2 TexKlnd]
+  if {$klnddata(SAVEDATE) eq {} || ![$wtxt edit canundo]} {
+    return ;# no changes
+  }
+  if {[set prjname $klnddata(SAVEPRJ)] eq {}} return
+  set text [string trim [$wtxt get 1.0 end]]
+  set date $klnddata(SAVEDATE)
+  set info [list $date $text "TODO opt."]  ;# + possible options for future
+  set i [KlndSearch $date $prjname]
+  if {$text eq {}} {
+    if {$i>-1} {
+      set prjinfo($prjname,prjrem) [lreplace $prjinfo($prjname,prjrem) $i $i]
+    }
+  } elseif {$i>-1} {
+    set prjinfo($prjname,prjrem) [lreplace $prjinfo($prjname,prjrem) $i $i $info]
+  } else {
+    lappend prjinfo($prjname,prjrem) $info
+  }
+  ::klnd::update {} {} {} $prjinfo($prjname,prjrem)
+  set frems [RemsFile $prjname]
+  if {$frems ne {}} {
+    set fcont $prjinfo($prjname,prjrem)
+    ::apave::writeTextFile $frems fcont 0 0
+  }
+}
+#_______________________
+
+proc project::KlndBorderText {{clr {}}} {
+  # Highlights/unhighlights a reminder's border.
+  #   clr - color of border
+
+  namespace upvar ::alited obDl2 obDl2
+  if {$clr eq {}} {set clr [lindex [::apave::obj csGet] 8]}
+  [$obDl2 TexKlnd] configure -highlightbackground $clr
+}
+
 # ________________________ GUI helpers _________________________ #
+
+proc project::Select {{item ""}} {
+  # Handles a selection in a list of projects.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  variable prjinfo 
+  variable OPTS
+  variable klnddata
+  Klnd_save
+  if {$item eq {}} {set item [Selected item no]}
+  if {$item ne {}} {
+    set tree [$obDl2 TreePrj]
+    if {[string is digit $item]} {  ;# the item is an index
+      if {$item<0 || $item>=[llength $prjlist]} return
+      set prj [lindex $prjlist $item]
+      set item $prjinfo($prj,ID)
+    } elseif {![$tree exists $item]} {
+      return
+    }
+    set isel [$tree index $item]
+    if {$isel<0 || $isel>=[llength $prjlist]} return
+    set prj [lindex $prjlist $isel]
+    set fnotes [NotesFile $prj]
+    set wtxt [$obDl2 TexPrj]
+    $wtxt delete 1.0 end
+    if {[file exists $fnotes]} {
+      $wtxt insert end [::apave::readTextFile $fnotes]
+    }
+    $wtxt edit reset; $wtxt edit modified no
+    lassign [SortRems [ReadRems $prj]] dmin prjinfo($prj,prjrem)
+    foreach opt $OPTS {
+      set al($opt) $prjinfo($prj,$opt)
+    }
+    set al(tablist) $prjinfo($prj,tablist)
+    TabFileInfo
+    if {[$tree selection] ne $item} {
+      $tree selection set $item
+    }
+    if {$dmin>0} {
+      KlndGoto $dmin
+    } else {
+      KlndBorderText
+    }
+    $tree see $item
+    $tree focus $item
+    ::klnd::blinking no
+    set klnddata(SAVEDATE) {}
+    catch {after cancel $klnddata(AFTERKLND)}
+    set klnddata(AFTERKLND) [after 200 alited::project::KlndUpdate]
+  }
+}
+#_______________________
+
+proc project::Selected {what {domsg yes}} {
+  # Gets a currently selected project's index.
+  #   what - if "index", selected item's index is returned
+  #   domsg - if "no", no message displayed if there is no selected project
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  set tree [$obDl2 TreePrj]
+  if {[set isel [$tree selection]] eq {} && [set isel [$tree focus]] eq "" \
+  && $domsg} {
+    alited::Message2 $al(MC,prjsel) 4
+  }
+  if {$isel ne {} && $what eq {index}} {
+    set isel [$tree index $isel]
+  }
+  return $isel
+}
+#_______________________
 
 proc project::UpdateTree {} {
   # Fills a list of projects.
@@ -421,11 +511,40 @@ proc project::CheckNewDir {} {
 
 #_______________________
 
+proc project::ExistingProject {msgOnExist} {
+  # Checks if a project (of entry field) exists.
+  #   msgOnExist - yes, if message on existing, else on non-existing project
+  # Returns a project name if it exists or {} otherwise.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  set pname $al(prjname)
+  if {[lsearch -exact $prjlist $pname]>-1} {
+    if {$msgOnExist} {
+      focus [$obDl2 EntName]
+      set msg [string map [list %n $pname] $al(MC,prjexists)]
+      alited::Message2 $msg 4
+    }
+  } else {
+    if {!$msgOnExist} {
+      focus [$obDl2 EntName]
+      set msg [msgcat::mc \
+        "A project \"%n\" doesn't exists. Hit \[+\] button to create it."]
+      set msg [string map [list %n $pname] $msg]
+      alited::Message2 $msg 4
+    }
+    set pname {}
+  }
+  return $pname
+}
+#_______________________
+
 proc project::ValidProject {} {
   # Checks if a project's options are valid.
 
   namespace upvar ::alited al al obDl2 obDl2
-  if {[string trim $al(prjname)] eq {} || ![CheckProjectName]} {
+  set al(prjname) [string trim $al(prjname)]
+  if {$al(prjname) eq {} || ![CheckProjectName]} {
     bell
     focus [$obDl2 EntName]
     return no
@@ -448,73 +567,6 @@ proc project::ValidProject {} {
 }
 #_______________________
 
-proc project::Selected {what {domsg yes}} {
-  # Gets a currently selected project's index.
-  #   what - if "index", selected item's index is returned
-  #   domsg - if "no", no message displayed if there is no selected project
-
-  namespace upvar ::alited al al obDl2 obDl2
-  variable prjlist
-  set tree [$obDl2 TreePrj]
-  if {[set isel [$tree selection]] eq {} && [set isel [$tree focus]] eq "" \
-  && $domsg} {
-    alited::Message2 $al(MC,prjsel) 4
-  }
-  if {$isel ne {} && $what eq {index}} {
-    set isel [$tree index $isel]
-  }
-  return $isel
-}
-#_______________________
-
-proc project::Select {{item ""}} {
-  # Handles a selection in a list of projects.
-
-  namespace upvar ::alited al al obDl2 obDl2
-  variable prjlist
-  variable prjinfo 
-  variable OPTS
-  variable fnotes
-  variable frems
-  if {$item eq {}} {set item [Selected item no]}
-  if {$item ne {}} {
-    set tree [$obDl2 TreePrj]
-    if {[string is digit $item]} {  ;# the item is an index
-      if {$item<0 || $item>=[llength $prjlist]} return
-      set prj [lindex $prjlist $item]
-      set item $prjinfo($prj,ID)
-    } elseif {![$tree exists $item]} {
-      return
-    }
-    set isel [$tree index $item]
-    if {$isel<0 || $isel>=[llength $prjlist]} return
-    set prj [lindex $prjlist $isel]
-    set fnotes [file join $::alited::PRJDIR $prj-notes.txt]
-    set wtxt [$obDl2 TexPrj]
-    $wtxt delete 1.0 end
-    if {[file exists $fnotes]} {
-      $wtxt insert end [::apave::readTextFile $fnotes]
-    }
-    $wtxt edit reset; $wtxt edit modified no
-    lassign [SortRems [ReadRems $prj]] dmin prjinfo($prj,prjrem)
-    foreach opt $OPTS {
-      set al($opt) $prjinfo($prj,$opt)
-    }
-    set al(tablist) $prjinfo($prj,tablist)
-    TabFileInfo
-    if {[$tree selection] ne $item} {
-      $tree selection set $item
-    }
-    if {$dmin>0} {
-      KlndGoto $dmin
-    }
-    KlndUpdate
-    $tree see $item
-    $tree focus $item
-  }
-}
-#_______________________
-
 proc project::KlndGoto {dmin} {
   # Selects a date of reminder before a current one.
   #   dmin - date in seconds to select
@@ -525,8 +577,84 @@ proc project::KlndGoto {dmin} {
   set m [string trimleft $m { 0}]
   set d [string trimleft $d { 0}]
   ::klnd::selectedDay {} $y $m $d
+  after idle {::alited::project::KlndBorderText red}
 }
 #_______________________
+
+  proc project::SelFiles {} {
+    # Checks for a selection of file listbox.
+    # Returns: list of listbox's path and the selection or {}.
+
+  namespace upvar ::alited obDl2 obDl2
+  set lbx [$obDl2 LbxFlist]
+  if {![llength [set selidx [$lbx curselection]]]} {
+    alited::Message2 [msgcat::mc {No selected files}] 4
+    return {}
+  }
+  return [list $lbx $selidx]
+}
+#_______________________
+
+proc project::OpenSelFiles {} {
+  # Opens selected files of listbox.
+
+  lassign [SelFiles] lbx selidx
+  if {$lbx ne {}} {
+    foreach idx $selidx {lappend fnames [$lbx get $idx]}
+    alited::file::OpenFile $fnames yes yes
+  }
+}
+#_______________________
+
+proc project::CloseSelFiles {} {
+  # Closes selected files of listbox.
+
+  lassign [SelFiles] lbx selidx
+  if {$lbx ne {}} {
+    set closecurr no
+    set fnamecurr [alited::bar::FileName]
+    foreach idx $selidx {
+      set fname [$lbx get $idx]
+      if {[set TID [alited::bar::FileTID $fname]] ne {}} {
+        if {$fname eq $fnamecurr} {
+          set closecurr yes
+        } else {
+          alited::bar::BAR $TID close no
+        }
+      }
+    }
+    if {$closecurr && [set TID [alited::bar::FileTID $fnamecurr]] ne {}} {
+      alited::bar::BAR $TID close ;# this should be last to check for "No name" tab
+    }
+    alited::bar::BAR draw
+  }
+}
+#_______________________
+
+proc project::SelectAllFiles {} {
+  # Selects all files of listbox.
+
+  namespace upvar ::alited obDl2 obDl2
+  [$obDl2 LbxFlist] selection set 0 end
+}
+#_______________________
+
+proc project::LbxPopup {X Y} {
+  # Runs a popup menu on the project files listbox.
+  #   X - x-coordinate of mouse pointer
+  #   Y - y-coordinate of mouse pointer
+
+  namespace upvar ::alited obDl2 obDl2 al al
+  set popm [$obDl2 LbxFlist].popup
+  catch {destroy $popm}
+  menu $popm -tearoff 0
+  $popm add command -label $al(MC,openselfile) -command alited::project::OpenSelFiles
+  $popm add command -label [msgcat::mc {Close Selected File(s)}] -command alited::project::CloseSelFiles
+  $popm add separator
+  $popm add command -label [msgcat::mc {Select All}] -command alited::project::SelectAllFiles
+  baltip::sleep 1000
+  tk_popup $popm $X $Y
+}
 
 # ________________________ Buttons for project list _________________________ #
 
@@ -537,15 +665,11 @@ proc project::Add {} {
   variable prjlist
   variable prjinfo
   variable OPTS
-  if {![ValidProject]} return
+  SaveNotesRems ;# --> old project's notes & rems
+  if {![ValidProject] || [ExistingProject yes] ne {}} return
+  set al(tablist) [list]
+  TabFileInfo
   set pname $al(prjname)
-  if {[lsearch -exact $prjlist $pname]>-1} {
-    focus [$obDl2 EntName]
-    set msg [string map [list %n $pname] $al(MC,prjexists)]
-    alited::Message2 $msg 4
-    return
-  }
-  if {![SaveCurrFileList $al(MC,prjadd) yes]} return
   set al(tabs) $al(tablist)
   set al(prjfile) [ProjectFileName $pname]
   set al(prjbeforerun) {}
@@ -559,7 +683,8 @@ proc project::Add {} {
   foreach opt $OPTS {
     set prjinfo($pname,$opt) $al($opt)
   }
-  PutProjectOpts $al(prjfile) $al(prjfile)
+  set prjinfo($pname,prjrem) {} ;# reminders
+  PutProjectOpts $al(prjfile) $al(prjfile) no
   GetProjects
   UpdateTree
   Select $prjinfo($pname,ID)
@@ -567,14 +692,15 @@ proc project::Add {} {
 }
 #_______________________
 
-proc project::Change {{askappend yes} {isel -1}} {
+proc project::Change {} {
   # "Change project" button's handler.
 
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al
   variable data
   variable prjlist
   variable prjinfo
-  if {$isel==-1 && [set isel [Selected index]] eq ""} return
+  SaveNotesRems
+  if {[set isel [Selected index]] eq {}} return
   if {![ValidProject]} return
   for {set i 0} {$i<[llength $prjlist]} {incr i} {
     if {$i!=$isel && [lindex $prjlist $i] eq $al(prjname)} {
@@ -583,7 +709,6 @@ proc project::Change {{askappend yes} {isel -1}} {
       return
     }
   }
-  if {$askappend && ![SaveCurrFileList $al(MC,prjchg)]} return
   set oldprj [lindex $prjlist $isel]
   set newprj $al(prjname)
   catch {unset prjinfo($oldprj,tablist)}
@@ -592,7 +717,8 @@ proc project::Change {{askappend yes} {isel -1}} {
   set prjlist [lreplace $prjlist $isel $isel $newprj]
   set fname [ProjectFileName $newprj]
   if {$newprj eq $data(prjname)} SaveSettings
-  PutProjectOpts $fname $oldname
+  set prjinfo($newprj,prjrem) $prjinfo($oldprj,prjrem) ;# reminders
+  PutProjectOpts $fname $oldname yes
   GetProjects
   UpdateTree
   Select $prjinfo($newprj,ID)
@@ -608,8 +734,6 @@ proc project::Delete {} {
   variable prjinfo
   variable win
   variable data
-  variable fnotes
-  variable frems
   if {[set isel [Selected index]] eq ""} return
   set geo "-geometry root=$win"
   set nametodel [lindex $prjlist $isel]
@@ -625,15 +749,15 @@ proc project::Delete {} {
     alited::msg ok err $err {*}$geo
     return
   }
-  catch {file delete $fnotes}
-  catch {file delete $frems}
+  catch {file delete [NotesFile $nametodel]}
+  catch {file delete [RemsFile $nametodel]}
   if {[set llen [llength $prjlist]] && $isel>=$llen} {
     set isel [incr llen -1]
   }
   GetProjects
   UpdateTree
   Select $isel
-  alited::Message2 [string map [list %n $nametodel] $al(MC,prjdel)]
+  alited::Message2 [string map [list %n $nametodel] $al(MC,prjdel2)]
 }
 
 # ________________________ Buttons _________________________ #
@@ -647,10 +771,11 @@ proc project::Ok {args} {
   variable prjlist
   variable prjinfo
   variable data
+  Klnd_save
   set msec [clock milliseconds]
-  if {($msec-$data(_MSEC))<10000} {
+  if {($msec-$data(_MSEC))<5000} {
     # disables entering twice (at multiple double-clicks)
-    # 10 sec. of clicking seems to be enough at opening a file
+    # 5 sec. of clicking seems to be enough for opening a file
     return
   }
   set data(_MSEC) $msec
@@ -658,6 +783,8 @@ proc project::Ok {args} {
     focus [$obDl2 TreePrj]
     return
   }
+  if {![ValidProject]} return
+  if {[set pname [ExistingProject no]] eq {}} return
   if {[set N [llength [alited::bar::BAR listFlag m]]]} {
     set msg [msgcat::mc "All modified files (%n) will be saved.\n\nDo you agree?"]
     set msg [string map [list %n $N] $msg]
@@ -672,7 +799,6 @@ proc project::Ok {args} {
     set msg [string map [list %n $N] $msg]
     if {![alited::msg yesno ques $msg NO -geometry root=$win]} return
   }
-  set pname [string trim $al(prjname)]
   set fname [ProjectFileName $pname]
   RestoreSettings
   alited::ini::SaveIni
@@ -700,10 +826,10 @@ proc project::Ok {args} {
   alited::file::MakeThemHighlighted
   alited::favor::ShowFavVisit
   [$obPav Tree] selection set {}  ;# new project - no group selected
+  update
+  alited::main::ShowText
   if {!$al(TREE,isunits)} {after idle alited::tree::RecreateTree}
-  after 10 alited::main::ShowText
   $obDl2 res $win 1
-  return
 }
 #_______________________
 
@@ -714,6 +840,7 @@ proc project::Cancel {args} {
   namespace upvar ::alited obDl2 obDl2
   variable win
   SaveData
+  SaveNotesRems
   RestoreSettings
   $obDl2 res $win 0
 }
@@ -724,6 +851,14 @@ proc project::Help {} {
 
   variable win
   alited::Help $win
+}
+#_______________________
+
+proc project::HelpMe {} {
+  # 'Help' for start.
+
+  variable win
+  alited::HelpMe $win
 }
 #_______________________
 
@@ -746,6 +881,35 @@ proc project::ProjectEnter {} {
   Ok
 }
 #_______________________
+
+proc project::Klnd_button {ev} {
+  # Fire an event handler (paste/undo/redo) on a reminder.
+  #   ev - event to fire
+
+  namespace upvar ::alited obDl2 obDl2
+  ::apave::eventOnText [$obDl2 TexKlnd] $ev
+}
+#_______________________
+
+proc project::Klnd_paste {} {
+  # Pastes a text to a reminder.
+
+  Klnd_button <<Paste>>
+}
+#_______________________
+
+proc project::Klnd_undo {} {
+  # Undoes changes of a reminder.
+
+  Klnd_button <<Undo>>
+}
+#_______________________
+
+proc project::Klnd_redo {} {
+  # Redoes changes of a reminder.
+
+  Klnd_button <<Redo>>
+}
 
 # ________________________ Calendar _________________________ #
 
@@ -811,7 +975,7 @@ proc project::KlndText {dt} {
 
   namespace upvar ::alited al al
   variable prjinfo
-  if {[set i [KlndSearch $dt]]>-1} {
+  if {[set i [KlndSearch $dt $al(prjname)]]>-1} {
     return [lindex $prjinfo($al(prjname),prjrem) $i 1]
   }
   return {}
@@ -825,90 +989,30 @@ proc project::KlndClick {y m d} {
   #   d - day
 
   namespace upvar ::alited obDl2 obDl2 al al
-  variable prjinfo
   variable klnddata
   set klnddata(date) [KlndOutDate $y $m $d]
-  set text [KlndText $klnddata(date)]
-  [$obDl2 TexKlnd] replace 1.0 end $text
+  # first, save a previous reminder at need
+  Klnd_save
+  set klnddata(SAVEDATE) $klnddata(date)
+  set klnddata(SAVEPRJ) [CurrProject]
+  # then display a new reminder's text
+  $obDl2 displayText [$obDl2 TexKlnd] [KlndText $klnddata(date)]
   [$obDl2 LabKlndDate] configure -text [KlndDate $klnddata(date)]
 }
 #_______________________
 
-proc project::KlndSearch {date} {
+proc project::KlndSearch {date prjname} {
   # Search a date in calendar data.
   # Returns index of found item or -1 if not found.
 
   namespace upvar ::alited al al
   variable prjinfo
   variable klnddata
-  return [lsearch -index 0 -exact $prjinfo($al(prjname),prjrem) $date]
-}
-#_______________________
-
-proc project::KlndAfterChange {msg} {
-  # Actions after changing calendar's reminders.
-  #    msg - message of change made
-
-  namespace upvar ::alited obDl2 obDl2 al al
-  variable prjinfo
-  variable klnddata
-  KlndUpdate
-  alited::Message2 "$msg: [KlndDate $klnddata(date)]"
-  SaveRems
-}
-#_______________________
-
-proc project::Klnd_add {} {
-  # Adds/updates a remander for current data.
-
-  namespace upvar ::alited obDl2 obDl2 al al
-  variable prjinfo
-  variable klnddata
-  set text [string trim [[$obDl2 TexKlnd] get 1.0 end]]
-  if {$text eq {}} {
-    Klnd_delete
-    return
+  set res -1
+  catch {
+    set res [lsearch -index 0 -exact $prjinfo($prjname,prjrem) $date]
   }
-  set data [list $klnddata(date) $text "TODO opt."]
-  if {[set i [KlndSearch $klnddata(date)]]>-1} {
-    set prjinfo($al(prjname),prjrem) [lreplace $prjinfo($al(prjname),prjrem) $i $i $data]
-    set msg [msgcat::mc {Reminder updated}]
-  } else {
-    lappend prjinfo($al(prjname),prjrem) $data
-    set msg [msgcat::mc {Reminder added}]
-  }
-  KlndAfterChange $msg
-}
-#_______________________
-
-proc project::Klnd_delete {} {
-
-  namespace upvar ::alited obDl2 obDl2 al al
-  variable klnddata
-  variable prjinfo
-  set wtxt [$obDl2 TexKlnd]
-  if {[string trim [$wtxt get 1.0 end]] eq {}} return
-  set msg [msgcat::mc {Reminder will be deleted:\n}]
-  if {$klnddata(ansdel)==11 || [set klnddata(ansdel) \
-  [alited::msg okcancel ques "$msg [KlndDate $klnddata(date)]" \
-  YES -geometry pointer+-200+-100 -ch $al(MC,noask)]]} {
-    if {[set i [KlndSearch $klnddata(date)]]>-1} {
-      set prjinfo($al(prjname),prjrem) [lreplace $prjinfo($al(prjname),prjrem) $i $i]
-    }
-    $wtxt replace 1.0 end {}
-    KlndAfterChange [msgcat::mc {Reminder deleted}]
-  }
-}
-#_______________________
-
-proc project::KlndTip {w d} {
-  # Processes a highlighted day.
-  #   w - button's path
-  #   d - day (Y/M/D)
-
-  set msg [KlndText $d]
-  ::baltip hide $w
-  if {$msg ne {}} {::baltip tip $w $msg -force yes}
+  return $res
 }
 
 # ________________________ GUI _________________________ #
@@ -929,7 +1033,7 @@ proc project::MainFrame {} {
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
     {.buTad - - - - {pack -side left -anchor n} {-takefocus 0 -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big}}
     {.buTch - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big}}
-    {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel)} -image alimg_delete-big}}
+    {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 seh T 1 2 {-st nsew} {-padding {2 2}}}
@@ -946,11 +1050,12 @@ proc project::Tab1 {} {
 
   variable klnddata
   variable prjinfo
-  set klnddata(toobar) "LabKlndDate {} sev 6"
-  foreach img {add delete} {
-    # -method option for possible disable/enable BuT_alimg_add & BuT_alimg_delete
+  set klnddata(SAVEDATE) [set klnddata(SAVEPRJ) {}]
+  set klnddata(toobar) "labKlndProm {TODO } LabKlndDate {} sev 6"
+  foreach img {delete paste undo redo} {
+    # -method option for possible disable/enable BuT_alimg_delete etc.
     append klnddata(toobar) " alimg_$img \{{} \
-      -tip {$alited::al(MC,prjT$img)@@ -under 4} \
+      -tip {-BALTIP {$alited::al(MC,prjT$img)} -MAXEXP 1@@ -under 4} \
       -com alited::project::Klnd_$img -method yes \}"
   }
   set klnddata(vsbltext) yes
@@ -969,11 +1074,11 @@ proc project::Tab1 {} {
     {.sbv .TexPrj L - - {pack -side left}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
-    {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate} -dateformat $alited::project::klnddata(dateformat) -tip {alited::project::KlndTip %W %D}}}
+    {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate; alited::project::KlndBorderText} -dateformat $alited::project::klnddata(dateformat) -tip {alited::project::KlndText %D}}}
     {fra3.fra - - - - {pack -fill both -expand 1} {}}
     {.seh2 - - - - {pack -side top -fill x}}
     {.too - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::project::klnddata(toobar)}}}
-    {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext $alited::project::win.fra.fraB2.butHelp -w 4 -h 8 -tip {$alited::al(MC,prjTtext)}}}
+    {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext $alited::project::win.fra.fraB2.butHelp -w 4 -h 8 -tip {-BALTIP {$alited::al(MC,prjTtext)} -MAXEXP 1}}}
 }
 }
 #_______________________
@@ -1003,11 +1108,10 @@ proc project::Tab2 {} {
     {.swiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labFlist .labMult T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
     {fraFlist .labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
-    {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0}}
+    {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -tip {-BALTIP {$alited::al(MC,TipLbx)} -MAXEXP 1} -popup {::alited::project::LbxPopup %X %Y}}}
     {.sbvFlist .lbxFlist L - - {pack -side left}}
   }
 }
-#_______________________
 
 # ________________________ Main _________________________ #
 
@@ -1045,7 +1149,9 @@ proc project::_create {} {
       set ::alited::project::minsize "-minsize {[winfo width $::alited::project::win] [winfo height $::alited::project::win]}"
     }]
   }
-  bind [$obDl2 TexPrj] <FocusOut> "alited::project::SaveNotes"
+  after 500 ::alited::project::HelpMe ;# show an introduction after a short pause
+  bind [$obDl2 TexPrj] <FocusOut> alited::project::SaveNotes
+  bind [$obDl2 EntName] <FocusIn> alited::project::Klnd_save ;# before possible renaming
   set res [$obDl2 showModal $win  -geometry $geo {*}$minsize \
     -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
   set oldTab [$win.fra.fraR.nbk select]

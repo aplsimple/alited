@@ -387,7 +387,7 @@ proc tool::BeforeRun {} {
   set runs [string map [list $alited::EOL \n] $al(prjbeforerun)]
   foreach run [split $runs \n] {
     if {[set run [string trim $run]] ne {}} {
-      catch {exec {*}$run} e
+      catch {exec -- {*}$run} e
       alited::info::Put "$al(MC,beforerun): \"$run\" -> $e"
     }
   }

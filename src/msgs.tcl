@@ -86,7 +86,7 @@ namespace eval ::alited {
     set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
     set al(MC,beforerun)   [msgcat::mc {Commands before "Run"}]
     set al(MC,locale)      [msgcat::mc "This is a country code: ru, ua, cz...\nIn alited, \"en\" means American English."]
-    set al(MC,noask)       [msgcat::mc {Don't ask anymore}]
+    set al(MC,noask)       [msgcat::mc {Don't show anymore}]
     set al(MC,hue)         [msgcat::mc {Makes colors darker .. lighter}]
     set al(MC,maxbak)      [msgcat::mc {Maximum of backup copies per a file}]
 
@@ -107,11 +107,11 @@ namespace eval ::alited {
     set al(MC,prjgoing)    [msgcat::mc {You are going to %n!}]
     set al(MC,prjadd)      [msgcat::mc {Add a project}]
     set al(MC,prjchg)      [msgcat::mc {Change a project}]
-    set al(MC,prjdel)      [msgcat::mc {Delete a project}]
+    set al(MC,prjdel1)     [msgcat::mc {Delete a project}]
     set al(MC,prjcantdel)  [msgcat::mc {Don't delete the current project!}]
     set al(MC,prjnew)      [msgcat::mc "The project \"%n\" added"]
     set al(MC,prjupd)      [msgcat::mc "The project \"%n\" updated"]
-    set al(MC,prjdel)      [msgcat::mc "The project \"%n\" removed"]
+    set al(MC,prjdel2)     [msgcat::mc "The project \"%n\" removed"]
     set al(MC,prjOptions)  [msgcat::mc Options]
     set al(MC,prjName)     [msgcat::mc {Project name:}]
     set al(MC,prjsavfl)    [msgcat::mc "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n"]
@@ -123,11 +123,12 @@ namespace eval ::alited {
     set al(MC,prjdelq)     [msgcat::mc "Delete a project \"%n\" ?"]
     set al(MC,prjexists)   [msgcat::mc "A project \"%n\" already exists."]
     set al(MC,DEFopts)     [msgcat::mc {Options for new projects are set in "Preferences/General/Projects"}]
-    set al(MC,prjTactions) [msgcat::mc {List of reminders}]
-    set al(MC,prjTadd)     [msgcat::mc {Add a reminder}]
-    set al(MC,prjTchange)  [msgcat::mc {Change a reminder}]
-    set al(MC,prjTdelete)  [msgcat::mc {Delete a reminder}]
+    set al(MC,prjTdelete)  [msgcat::mc {Erase a text}]
+    set al(MC,prjTpaste)   [msgcat::mc {Paste a text}]
+    set al(MC,prjTundo)    [msgcat::mc {Undo changes}]
+    set al(MC,prjTredo)    [msgcat::mc {Redo changes}]
     set al(MC,prjTtext)    [msgcat::mc {Text of a reminder}]
+    set al(MC,TipLbx)      [msgcat::mc "You may select file(s)\nand open them with a context menu.\n\nOr just double-click."]
 
     ## _ favorites _ ##
     set al(MC,favsel)      [msgcat::mc {Click a list of favorites}]
@@ -156,6 +157,7 @@ namespace eval ::alited {
     set al(MC,removed)     [msgcat::mc "\"%f\" removed to \"%d\""]
     set al(MC,nottoopen)   [msgcat::mc "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?"]
     set al(MC,renamefile)  [msgcat::mc {Rename File}]
+    set al(MC,openselfile) [msgcat::mc {Open Selected File(s)}]
 
     ## _ checking ini directory _ ##
     set al(MC,chini1)      [msgcat::mc {Choosing Directory for Settings}]

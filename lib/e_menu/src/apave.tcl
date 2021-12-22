@@ -121,7 +121,7 @@ namespace eval ::apave {
   variable _OBJ_ ""
   variable MC_NS ""
 
-# _______________________ A bit of apave procedures _____________________ #
+# _______________________ Helpers _____________________ #
 
   proc obj {com args} {
 
@@ -378,6 +378,36 @@ namespace eval ::apave {
     #   acc - key name, may contain 2 items (e.g. Control-D Control-d)
     set acc [lindex $acc 0]
     return [string map {Control Ctrl - + bracketleft [ bracketright ]} $acc]
+  }
+  #_______________________
+
+  proc TreSelect {w idx} {
+    # Selects a treeview item.
+    #   w - treeview's path
+    #   idx - item index
+
+    set items [$w children {}]
+    catch {
+      set it [lindex $items $idx]
+      $w see $it
+      $w focus $it
+      $w selection set $it  ;# generates <<TreeviewSelect>>
+    }
+  }
+  #_______________________
+
+  proc LbxSelect {w idx} {
+    # Selects a listbox item.
+    #   w - listbox's path
+    #   idx - item index
+
+    $w activate $idx
+    $w see $idx
+    if {[$w cget -selectmode] in {single browse}} {
+      $w selection clear 0 end
+      $w selection set $idx
+      event generate $w <<ListboxSelect>>
+    }
   }
 
 # _______________________ Text little procs _________________________ #
@@ -1103,6 +1133,9 @@ oo::class create ::apave::APave {
         set attrs "[my FCfieldAttrs $wnamefull $attrs -lvar]"
         set attrs "[my ListboxesAttrs $wnamefull $attrs]"
         my AddPopupAttr $wnamefull attrs -entrypop 1
+        foreach {ev com} {Home {::apave::LbxSelect %w 0} End {::apave::LbxSelect %w end}} {
+          append attrs " -bindEC {<$ev> {$com}} "
+        }
       }
       meb {set widget ttk::menubutton}
       meB {set widget menubutton}
@@ -1184,7 +1217,12 @@ oo::class create ::apave::APave {
           set attrs "$attrs -gutter {-canvas $g1 -width $g2 -shift $g3}"
         }
       }
-      tre {set widget ttk::treeview}
+      tre {
+        set widget ttk::treeview
+        foreach {ev com} {Home {::apave::TreSelect %w 0} End {::apave::TreSelect %w end}} {
+          append attrs " -bindEC {<$ev> {$com}} "
+        }
+      }
       h_* {set widget ttk::frame}
       v_* {set widget ttk::frame}
       default {set widget {}}
@@ -2295,7 +2333,7 @@ oo::class create ::apave::APave {
         -entrypop - -entrypopRO - -textpop - -textpopRO - -ListboxSel - \
         -callF2 - -timeout - -bartabs - -onReturn - -linkcom - -selcombobox - \
         -afteridle - -gutter - -propagate - -columnoptions - -selborderwidth -
-        -selected {
+        -selected - -popup - -bindEC {
           # attributes specific to apave, processed below in "Post"
           set v2 [string trimleft $v "\{"]
           set v2 [string range $v2 0 end-[expr {[string length $v]-[string length $v2]}]]
@@ -2424,9 +2462,12 @@ oo::class create ::apave::APave {
         }
         -callF2 {
           if {[llength $v]==1} {set w2 $v} {set w2 [string map $v $w]}
-          if {[string first $w2 [bind $w <F2>]] < 0} {
-            ::apave::bindToEvent $w <F2> $w2 invoke
-          }
+          ::apave::bindToEvent $w <F2> $w2 invoke
+        }
+        -bindEC {
+          set v [string map [list %w $w] $v]
+          lassign $v ev com
+          ::apave::bindToEvent $w $ev {*}$com
         }
         -timeout {
           lassign $v timo lbl
@@ -2463,6 +2504,9 @@ oo::class create ::apave::APave {
           if {[string is true $v]} {
             after idle "$w selection range 0 end"
           }
+        }
+        -popup {
+          after 50 "bind $w <Button-3> {$v}" ;# redefines other possible popups
         }
       }
     }

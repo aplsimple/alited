@@ -186,7 +186,7 @@ proc ::apave::openDoc {url} {
   set url [string trimright $url]
   if {[string match "* &" $url]} {set url [string range $url 0 end-2]}
   set url [string trim $url]
-  if {[catch {exec {*}$command $url &} error]} {
+  if {[catch {exec -- {*}$command $url &} error]} {
     puts "ERROR: couldn't execute '$command':\n$error"
   }
 }
@@ -231,17 +231,20 @@ proc ::apave::blinkWidget {w {fg #000} {bg #fff} {fg2 {}} {bg2 red} \
 
   if {![winfo exists $w]} return
   if {$count==0 || $fg2 eq {}} {
-    $w configure -foreground $fg
-    $w configure -background $bg
+    catch {after cancel $::apave::BLINKWIDGET1}
+    catch {after cancel $::apave::BLINKWIDGET2}
+    after idle "$w configure -foreground $fg; $w configure -background $bg"
   } elseif {$mode==1} {
     incr count -1
     $w configure -foreground $fg2
     $w configure -background $bg2
-    after $pause ::apave::blinkWidget $w $fg $bg $fg2 $bg2 $pause $count 2
+    set ::apave::BLINKWIDGET1 [after \
+      $pause ::apave::blinkWidget $w $fg $bg $fg2 $bg2 $pause $count 2]
   } elseif {$mode==2} {
     $w configure -foreground $fg
     $w configure -background $bg
-    after $pause ::apave::blinkWidget $w $fg $bg $fg2 $bg2 $pause $count 1
+    set ::apave::BLINKWIDGET2 [after \
+      $pause ::apave::blinkWidget $w $fg $bg $fg2 $bg2 $pause $count 1]
   }
 }
 

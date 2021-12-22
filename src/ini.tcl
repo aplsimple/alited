@@ -46,6 +46,7 @@ namespace eval ::alited {
   set al(moveall) 0             ;# "move all" of color chooser
   set al(tonemoves) 1           ;# "tone moves" of color chooser
   set al(checkgeo) {}           ;# geometry of "Check Tcl" window
+  set al(HelpedMe) {}             ;# list of helped windows shown by HelpMe proc
 
   # flag "use special RE for leafs of unit tree"
   set al(INI,LEAF) 0
@@ -435,6 +436,7 @@ proc ini::ReadIniMisc {nam val} {
     moveall {set al(moveall) $val}
     tonemoves {set al(tonemoves) $val}
     checkgeo {set al(checkgeo) $val}
+    HelpedMe {set al(HelpedMe) $val}
   }
 }
 
@@ -703,6 +705,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "moveall=$al(moveall)"
   puts $chan "tonemoves=$al(tonemoves)"
   puts $chan "checkgeo=$al(checkgeo)"
+  puts $chan "HelpedMe=$al(HelpedMe)"
   close $chan
   SaveIniPrj $newproject
 }
@@ -781,6 +784,13 @@ proc ini::CheckIni {} {
   if {[file exists $::alited::INIDIR] && [file exists $::alited::PRJDIR]} {
     return
   }
+  if {[catch {
+    [text .tex] edit canundo  ;# text's canundo seems to appear in Tcl/Tk 8.6.6
+  }]} {
+    tk_messageBox -message "alited needs Tcl/Tk 8.6.6+\n\nany with 'text edit canundo'"
+    exit
+  }
+  destroy .tex
   ::apave::APaveInput create pobj
   set head [string map [list %d $::alited::USERDIRSTD] $al(MC,chini2)]
   set res [pobj input info $al(MC,chini1) [list \
@@ -1013,7 +1023,7 @@ proc ini::_init {} {
   # the below icons' order defines their order in the toolbar
   foreach {icon} {none gulls heart add change delete up down paste plus minus \
   retry misc previous next folder file OpenFile SaveFile saveall categories \
-  undo redo replace ok color date help run e_menu other trash actions} {
+  undo redo replace ok color date help run e_menu other trash actions paste} {
     set img [CreateIcon $icon]
     if {$icon in {"file" OpenFile categories SaveFile saveall help ok color other \
     replace e_menu run undo redo}} {

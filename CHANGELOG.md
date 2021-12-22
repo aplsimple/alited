@@ -1,10 +1,11 @@
 # LAST CHANGES:
 
 
-Version `1.0.6 (15 Dec'21)`
+Version `1.0.6 (29 Dec'21)`
 
   - TODO  : BUGFIX: issues with e_menu & tools in Windows
 
+  - BUGFIX: "--" added for all exec
   - BUGFIX: Ctrl+Tab at start (no switching tab yet)
   - BUGFIX: demo 2.Units 03:15 .. 04:18 - cursor position is 309.1 instead of 309.10
   - BUGFIX: treeview in sun-valley dark theme
@@ -16,7 +17,10 @@ Version `1.0.6 (15 Dec'21)`
   - BUGFIX: more time for gaining bar's width before calling FillBar
   - BUGFIX: o=-1 for e_menu calls (instead of old o=0)
   - BUGFIX: display redefined F3/Ctrl+D/Ctrl+Y in context menu
-  - NEW   : remind on events (calendar's option in "Projects")
+  - NEW   : check for consistency of "" in "Check Tcl"
+  - NEW   : "Open/Close selected files" from context menu of Project's file list
+  - NEW   : show introductions on some dialogues
+  - NEW   : remind on events & TODOs (calendar's option in "Projects")
   - NEW   : call a list of templates from Preferences/Templates
   - NEW   : F1 in main dialogues for calling help
   - NEW   : run alited.tcl by tclsh/tclkit, alited.kit by tclkit
@@ -26,6 +30,10 @@ Version `1.0.6 (15 Dec'21)`
   - NEW   : tips for tab list (full file names)
   - NEW   : "Utils / Diff to LEFT/RIGHT tab" of e_menu
   - NEW   : ru.msg, ua.msg for klnd
+  - CHANGE: [info nameofexecutable] for "Restart" & "About..."
+  - CHANGE: .mnu corrected for Windows
+  - CHANGE: "Differences" of menu.mnu includes choosing SCM
+  - CHANGE: revised add/change/delete/select in "Projects"
   - CHANGE: toolbar rearranged (date removed, tkcon moved)
   - CHANGE: sourcing baltip.tcl rearranged
   - CHANGE: Ctrl+L corrected & message if not found

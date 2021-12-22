@@ -1,4 +1,6 @@
- Use buttons on the right to add, change or delete a template.
+ Use <bold><red>buttons</red></bold> on the right to <bold>add/change/delete</bold> a template.
+
+ Use <bold><red>"Add" and "Change" buttons</red></bold> after filling template's data.
 
  Choose or erase a template's hot keys from the dropdown combobox.
 

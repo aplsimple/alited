@@ -2,6 +2,10 @@
  Then choose a root directory of the project. Supposedly, it should
  contain all files and subdirectories of the project.
 
+ The <bold><red>buttons</red></bold> under the list are used to <bold>add/change/delete</bold> a project.
+
+ Use <bold><red>"Add" and "Change" buttons</red></bold> after filling project's data.
+
  The "Notes" field may be used as a sort of diary for the project.
 
  The "Options" tab contains other details of the project:
@@ -29,7 +33,3 @@
 
  NOTE: for new projects (if this mode is checked), these options may be
  defined by "Preferences/General/Projects".
-
- The buttons under the list are used to add / change / delete a project.
- At adding / changing a project, you can choose to include the current
- files into it. Other choices are "replace", "clear" and "don't change".

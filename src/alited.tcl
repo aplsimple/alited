@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.6b13  ;# for documentation (esp. for Ruff!)
+package provide alited 1.0.6b23  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -263,9 +263,9 @@ namespace eval alited {
         default {set title $al(MC,info)}
      }
     }
-    #TODO: if {!$noesc} {set message [string map [list \\ \\\\] $message]}
+#TODO: if {!$noesc} {set message [string map [list \\ \\\\] $message]}
     set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
-    after idle {catch alited::main::UpdateGutter}
+#TODO: after idle {catch alited::main::UpdateGutter}
     return [lindex $res 0]
   }
   #_______________________
@@ -350,25 +350,74 @@ namespace eval alited {
   }
   #_______________________
 
-  proc Help {win {suff ""}} {
+  proc HelpFile {win fname args} {
     # Reads and shows a help file.
     #   win - currently active window
-    #   suff - suffix for a help file's name
+    #   fname - the file's name
+    #   args - option of msg
 
-    variable DATADIR
-    variable al
-    variable obDlg
-    set fname [lindex [split [dict get [info frame -1] proc] :] end-2]
-    set fname [file join [file join $DATADIR help] $fname$suff.txt]
+    set fS [lindex [FgFgBold] 1]
+    set ::alited::textTags [list \
+      [list "red" " -font {-weight bold} -foreground $fS"] \
+      [list "bold" " -font {-weight bold}"] \
+      [list "link" "::apave::openDoc %t@@https://%l@@"] \
+      ]
     if {[file exists $fname]} {
       set msg [::apave::readTextFile $fname]
     } else {
       set msg "Here should be a text of\n\"$fname\""
     }
-    if {$alited::DEBUG} {
-      puts "help file: $fname"
+    if {$alited::DEBUG} {puts "help file: $fname"}
+    set wmax 1
+    foreach ln [split $msg \n] {
+      set occ 0
+      foreach tag {red bold link} {
+        foreach yn {{} /} {
+          set ln2 $ln
+          set t <$yn$tag>
+          set ln [string map [list $t {}] $ln]
+          incr occ [expr {([string length $ln2]-[string length $ln])/[string length $t]}]
+        }
+      }
+      set wmax [expr {max($wmax,[string length $ln]+$occ)}]
     }
-    msg ok {} $msg -title Help -text 1 -geometry root=$win -scroll no -noesc 1
+    return [msg ok {} $msg -title Help -text 1 -geometry root=$win -scroll no \
+      -tags ::alited::textTags -w [incr wmax] {*}$args]
+  }
+  #_______________________
+
+  proc HelpFname {win {suff ""}} {
+    # Gets a help file's name.
+    #   win - currently active window
+    #   suff - suffix for a help file's name
+
+    variable DATADIR
+    set fname [lindex [split [dict get [info frame -2] proc] :] end-2]
+    set fname [file join [file join $DATADIR help] $fname$suff.txt]
+    return $fname
+  }
+  #_______________________
+
+  proc HelpMe {win {suff ""}} {
+    # Shows a help file for a procedure with "Don't show again" checkbox.
+    #   win - currently active window
+    #   suff - suffix for a help file's name
+
+    variable al
+    if {[lsearch -exact $al(HelpedMe) $win]>-1} return
+    set ans [HelpFile $win [HelpFname $win $suff] -ch $al(MC,noask)]
+    if {$ans==11} {
+      lappend al(HelpedMe) $win
+    }
+  }
+  #_______________________
+
+  proc Help {win {suff ""}} {
+    # Shows a help file for a procedure.
+    #   win - currently active window
+    #   suff - suffix for a help file's name
+
+    HelpFile $win [HelpFname $win $suff]
   }
   #_______________________
 
@@ -400,7 +449,7 @@ namespace eval alited {
     # Runs Tcl/Tk script.
     #   args - script's name and arguments
 
-    exec {*}[Tclexe] {*}$args &
+    exec -- {*}[Tclexe] {*}$args &
   }
   #_______________________
 
@@ -487,10 +536,10 @@ if {[info exists ALITED_NOSEND]} {
     if {$alited::LOG ne {}} {
       ::apave::logMessage "QUIT :: $alited::DIR :: $alited::SCRIPT NOSEND $alited::ARGV"
     }
-    cd $alited::DIR
-    alited::Run $alited::SCRIPT NOSEND {*}$alited::ARGV
     catch {wm attributes . -alpha 0.0}
     catch {wm withdraw $alited::al(WIN)}
+    cd $alited::DIR
+    exec -- {*}[info nameofexecutable] $alited::SCRIPT NOSEND {*}$alited::ARGV &
   } elseif {$alited::LOG ne {}} {
     ::apave::logMessage {QUIT ------------}
   }

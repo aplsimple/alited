@@ -108,12 +108,13 @@ namespace eval ::alited {
     {Back} {Откат}
     {File not found: %f} {Файл не найден: %f}
     {Unit not found: %u} {Юнит не найден: %u}
-    {Don't ask anymore} {Больше не спрашивать}
+    {Don't show anymore} {Больше не показывать}
     {%f is a directory} {%f - это каталог}
     {THE EXTERNAL FILE IS MOVED TO THE PROJECT!} {ВНЕШНИЙ ФАЙЛ ПЕРЕМЕЩАЕТСЯ В ПРОЕКТ!}
     {Drop Selected Units Here} {Кинуть сюда выбранные юниты}
     {Drop Selected Files Here} {Кинуть сюда выбранные файлы}
     "All Tcl files of this directory:\n  \"%f\"  \nwill be open.\n\nThis may be expensive!" "Все Tcl файлы каталога:\n  \"%f\"  \nбудут открыты.\n\nЭта операция может быть затратной!"
+    {Select All} {Выделить все}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -135,7 +136,8 @@ namespace eval ::alited {
     {Tip File Info} {Данные о файлах}
     {Rename File} {Переименовать файл}
     {Select one file in the tree.} {Выберите один файл в списке.}
-    {Open Selected File(s)} {Открыть файл(ы)}
+    {Open Selected File(s)} {Открыть выделенные файл(ы)}
+    {Close Selected File(s)} {Закрыть выделенные файл(ы)}
   }
 
   ## ________________________ Templates ________________________ ##
@@ -199,6 +201,7 @@ namespace eval ::alited {
     {Click a project} {Выберите проект}
     "Delete a project \"%n\" ?" "Удалить проект \"%n\" ?"
     "A project \"%n\" already exists." "Проект \"%n\" уже существует."
+    "A project \"%n\" doesn't exists. Hit \[+\] button to create it." "Проект \"%n\" не существует. Чтобы создать, кликните \[+\]."
     "All modified files (%n) will be saved.\n\nDo you agree?" "Все измененные файлы (%n) будут сохранены.\n\nСогласны?"
     "All selected files (%n) will remain open\nin the project you are switching to.\n\nDo you agree?" "Все выделенные файлы (%n) останутся открытыми\nи в выбранном вами проекте.\n\nСогласны?"
     "Directory \"%d\"\ndoesn't exist.\n\nCreate it?" "Каталог \"%d\"\nне существует.\n\nСоздать его?"
@@ -207,16 +210,14 @@ namespace eval ::alited {
     {Options for new projects are set in "Preferences/General/Projects"} {Опции для новых проектов берутся из "Опции/Общее/Проекты"}
     {Date} {Дата}
     {Reminder} {Напоминание}
-    {List of reminders} {Список напоминаний}
-    {Add a reminder} {Добавить напоминание}
-    {Change a reminder} {Изменить напоминание}
-    {Delete a reminder} {Удалить напоминание}
+    {Erase a text} {Стереть текст}
+    {Paste a text} {Вставить текст}
+    {Undo changes} {Отменить изменения}
+    {Redo changes} {Переотменить изменения}
     {Text of a reminder} {Текст напоминания}
-    {Reminder added} {Напоминание добавлено}
-    {Reminder updated} {Напоминание обновлено}
-    {Reminder deleted} {Напоминание удалено}
-    {Reminder will be deleted:\n} {Напоминание будет удалено:\n}
     {TODO reminders for the past: %d. Delete them or try "Select".} {TODO напоминания прошлого: %d. Удалите их или попробуйте "Выбор".}
+    "You may select file(s)\nand open them with a context menu.\n\nOr just double-click." "Вы можете выделить файл(ы)\nи через контекстное меню открыть их.\n\nИли откройте двойным кликом."
+    {No selected files} {Нет выделенных файлов}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -486,6 +487,7 @@ namespace eval ::alited {
     {Consistency of {} } {Соответствие {}}
     {Consistency of []} {Соответствие []}
     {Consistency of ()} {Соответствие ()}
+    {Consistency of ""} {Соответствие ""}
     {all of session files} {все файлы сеанса}
     {current file} {текущий файл}
     {Found %f file error(s), %u unit error(s).} {Найдено ошибок: %f файлов, %u юнитов.}

@@ -7,6 +7,8 @@
 # License: MIT.
 ###########################################################
 
+#package require control
+
 namespace eval file {}
 
 # _________________________ Common ________________________ #
@@ -368,6 +370,7 @@ proc file::DisplayFile {TID fname wtxt doreload} {
 
   namespace upvar ::alited al al obPav obPav
   # this is most critical: displayed text should correspond to the tab
+  #control::assert {$wtxt eq [alited::main::GetWTXT $TID]}
   if {$wtxt ne [alited::main::GetWTXT $TID]} {
     set errmsg "\n ERROR file::DisplayFile: \
       \n ($TID) $wtxt != [alited::main::GetWTXT $TID] \
@@ -550,7 +553,7 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
 
   namespace upvar ::alited al al obPav obPav
   set res 1
-  if {$TID eq ""} {set TID [alited::bar::CurrentTabID]}
+  if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
   lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
   if {$TID ni {{-1} {}} && $wtxt ne {}} {
@@ -635,7 +638,7 @@ proc file::OpenOfDir {dname} {
 
   set msg [msgcat::mc "All Tcl files of this directory:\n  \"%f\"  \nwill be open.\n\nThis may be expensive!"]
   set msg [string map [list %f [file tail $dname]] $msg]
-  if {[alited::msg okcancel warn $msg NO]} {
+  if {[alited::msg okcancel warn $msg OK]} {
     if {![catch {set flist [glob -directory $dname *]}]} {
       set fnames [list]
       foreach fname [lsort -decreasing -dictionary $flist] {

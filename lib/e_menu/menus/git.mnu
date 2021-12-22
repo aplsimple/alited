@@ -3,12 +3,12 @@
 [OPTIONS]
 o=-1
 in=1.0
-pos=14.38
+pos=4.0
 w=35
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT ""}
-%C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
-%C set ::EMENUFILE [string map {\\ /} "$::EMENUFILE"]
+%C if {![info exist ::EMENUFILE]} { \
+  set ::EMENUFILE "%f" ; if {[::iswindows]} {set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
 %C if {![info exist ::EMENUGREP]} {set ::EMENUGREP ""}
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]

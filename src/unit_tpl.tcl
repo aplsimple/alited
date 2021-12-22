@@ -254,6 +254,14 @@ proc unit_tpl::Help {args} {
   variable win
   alited::Help $win
 }
+#_______________________
+
+proc unit_tpl::HelpMe {args} {
+  # 'Help' for start.
+
+  variable win
+  alited::HelpMe $win
+}
 
 ## ________________________ GUI cont. _________________________ ##
 
@@ -446,6 +454,7 @@ proc unit_tpl::_create {{geom ""}} {
     Select $ilast
     after idle "alited::unit_tpl::Select $ilast"  ;# just to highlight
   }
+  after 500 ::alited::unit_tpl::HelpMe ;# show an introduction after a short pause
   set res [$obDl3 showModal $win -resizable {0 0} \
     -onclose ::alited::unit_tpl::Cancel -focus $foc {*}$geom]
   if {[llength $res] < 2} {set res {}}

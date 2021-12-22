@@ -124,6 +124,7 @@ proc complete::PickCommand {wtxt} {
   wm withdraw $win
   wm overrideredirect $win 1
   set obj pavedPickCommand
+  catch {$obj destroy}
   ::apave::APaveInput create $obj $win
   $obj paveWindow $win {
     {LbxPick - - - - {pack -side left -expand 1 -fill both} {-h 16 -w 32 -lvar ::alited::complete::comms}}

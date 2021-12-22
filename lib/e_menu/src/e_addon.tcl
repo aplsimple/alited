@@ -292,7 +292,7 @@ proc ::em::edit {fname {prepost ""}} {
     $dialog destroy
     return $res
   } else {
-    if {[catch {exec $::em::editor {*}$fname &} e]} {
+    if {[catch {exec -- $::em::editor {*}$fname &} e]} {
       em_message "ERROR: couldn't call $::em::editor'\n
 to edit $fname.\n\nCurrent directory is [pwd]\n\nMaybe $::em::editor\n is worth including in PATH?"
       return false
@@ -380,9 +380,9 @@ proc ::em::is_s_menu {} {
 #___ restart the app
 proc ::em::restart_e_menu {} {
   if {[is_s_menu] && [file extension $::em::Argv0] ne ".tcl"} {
-    exec $::em::Argv0 {*}$::em::Argv &
+    exec -- $::em::Argv0 {*}$::em::Argv &
   } else {
-    exec [::em::Tclexe] $::em::Argv0 {*}$::em::Argv &
+    exec -- [::em::Tclexe] $::em::Argv0 {*}$::em::Argv &
   }
   on_exit
 }
@@ -848,7 +848,7 @@ proc ::em::IF {sel {callcommName ""}} {
               if {[::iswindows]} {
                 set comm "cmd.exe /c $comm"
               }
-              if {[catch {exec {*}$comm &} e]} {
+              if {[catch {exec -- {*}$comm &} e]} {
                 em_message "ERROR: incorrect command of IF:\n$comm\n\n($e)"
               }
             }

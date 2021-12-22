@@ -1,4 +1,6 @@
- Use buttons on the right to add/change/delete a list of favorites.
+ Use <bold><red>buttons</red></bold> on the right to <bold>add/change/delete</bold> a list of favorites.
+
+ Use <bold><red>"Add" and "Change" buttons</red></bold> after filling list's name.
 
  The current list of favorites is displayed in the bottom listbox.
  Enter a name for the list and click "Add" button to use it aftewards.

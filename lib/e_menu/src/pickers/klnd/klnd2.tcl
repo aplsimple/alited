@@ -203,21 +203,6 @@ proc ::klnd::my::FormatDay2 {obj y m d} {
   variable p
   return [clock format [clock scan $m/$d/$y -format %D] -format $p(dformat$obj) -locale $p(loc$obj)]
 }
-#_______________________
-
-proc ::klnd::my::Blinking {doit} {
-  # Makes a calendar label blink.
-  #   doit - if yes, starts blinking, else stops it
-
-  lassign [::apave::obj csGet] - fgnorm - bgnorm
-  lassign [::apave::obj csGet 45] - - - - - bgblink fgblink
-  set lab [::klnd::labelPath]
-  if {$doit} {
-    after idle "::apave::blinkWidget $lab $fgnorm $bgnorm $fgblink $bgblink 100 5"
-  } else {
-    ::apave::blinkWidget $lab $fgnorm $bgnorm
-  }
-}
 
 ## ________________________ Event handlers _________________________ ##
 
@@ -313,14 +298,16 @@ proc ::klnd::my::ButtonTip {obj tipcom w} {
   #   %D - a current day's value as Y/M/D
 
   variable p
+  set res {}
   catch {
     set y $p(yvis$obj)
     set m $p(mvis$obj)
     set d [string trim [$w cget -text]]
     set d [::klnd::my::FormatDay2 $obj $y $m $d]
     set tipcom [string map [list %W $w %D $d] $tipcom]
-    eval {*}$tipcom
+    set res [eval {*}$tipcom]
   }
+  return $res
 }
 
 ## ________________________ Widgets _________________________ ##
@@ -336,7 +323,7 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
     if {$p(tip$obj) ne {}} {
       set tipcom [list $p(tip)] ;# possible bad list
       set ::klnd::TMPTIP \
-        "-tip { -BALTIP %W -COMMAND {::klnd::my::ButtonTip $obj $tipcom %t} }"
+        "-tip { -BALTIP %W -COMMAND {::klnd::my::ButtonTip $obj {$tipcom} %w} }"
     }
   }
   set p(tipF3$obj) \
@@ -396,6 +383,21 @@ proc ::klnd::labelPath {{obj {}}} {
 }
 #_______________________
 
+proc ::klnd::blinking {doit} {
+  # Makes a calendar label blink.
+  #   doit - if yes, starts blinking, else stops it
+
+  lassign [::apave::obj csGet] - fgnorm - bgnorm
+  lassign [::apave::obj csGet 45] - - - - - bgblink fgblink
+  set lab [::klnd::labelPath]
+  if {$doit} {
+    after idle "::apave::blinkWidget $lab $fgnorm $bgnorm $fgblink $bgblink 100 5"
+  } else {
+    ::apave::blinkWidget $lab $fgnorm $bgnorm
+  }
+}
+#_______________________
+
 proc ::klnd::update {{obj {}} {year {}} {month {}} {hllist {}}} {
   # Redraws a calendar.
   #   obj - index of the calendar
@@ -433,7 +435,7 @@ proc ::klnd::selectedDay {{obj {}} {y {}} {m {}} {d {}}} {
       set $my::p(tvar$obj) $p(olddate$obj)
     }
     set my::p(currentmonth$obj) "$y/$m"
-    after idle "::klnd::my::ShowMonth2 $obj $m $y yes yes; ::klnd::my::Blinking yes"
+    after idle "::klnd::my::ShowMonth2 $obj $m $y yes yes; ::klnd::blinking yes"
   }
   return [list $my::p(yvis$obj) $my::p(mvis$obj) $my::p(dvis$obj)]
 }

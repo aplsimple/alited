@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.3.4
+package provide baltip 1.3.6
 
 package require Tk
 
@@ -131,8 +131,15 @@ proc ::baltip::tip {w text args} {
     set optvals [lrange $optvals 9 end]  ;# get rid of special options
     # end of block
     set my::ttdata(global,$w) no
-    set my::ttdata(command,$w) $command
-    set my::ttdata(maxexp,$w) $maxexp
+    # no redefining a command once set
+    if {[info exists ttdata(command,$w)] && [string is false $reset]} {
+      set command $my::ttdata(command,$w)
+    } else {
+      set my::ttdata(command,$w) $command
+    }
+    if {![info exists my::ttdata(maxexp,$w)]} {
+      set my::ttdata(maxexp,$w) $maxexp
+    }
     set text [my::OptionsFromText $w $text]  ;# may reset -command and -maxexp
     set onopt [expr {[string length $text] && $my::ttdata(on)}]
     set my::ttdata(optvals,$w) [dict set optvals -text $text]
@@ -403,12 +410,14 @@ proc ::baltip::my::Command {w text} {
   # The command allows wildcards:
   #   %w - window's path
   #   %t - text of the tip
+  # Returns: list of "yes/no" and a result of the command.
+  # The result of the command can be a new tip if "yes" and the result ne {}.
 
   variable ttdata
   if {![info exists ttdata(command,$w)] || $ttdata(command,$w) eq {}} {return no}
   set com [string map [list %w $w %t $text] $ttdata(command,$w)]
-  if {[catch {eval $com} e]} {return no}
-  return yes
+  if {[catch {set res [eval $com]} e]} {return no}
+  return [list yes $res]
 }
 #_______________________
 
@@ -500,10 +509,18 @@ proc ::baltip::my::Show {w text force geo optvals} {
   if {$geo eq {}} {::baltip::hide $w}
   set icount [string length [string trim $text]]
   if {!$icount || (!$ttdata(on) && !$data(-on))} return
-  if {[Command $w $text]} return
+  lassign [Command $w $text] ans res
+  if {$ans} {
+    if {$res eq {}} {
+      # the command displayed the tip somewhere
+      return
+    }
+    # the command redefined the tip's text
+    set text $res
+  }
   if {[info exists ttdata(maxexp,$w)] && \
   [string is integer -strict $ttdata(maxexp,$w)]} {
-    if {[incr ttdata(maxexp,$w) -1]<0} return
+    if {$ttdata(maxexp,$w)<=0} return
   }
   lappend ttdata(REGISTERED) $w
   foreach wold [lrange $ttdata(REGISTERED) 0 end-1] {::baltip::hide $wold}
@@ -546,14 +563,14 @@ proc ::baltip::my::Show {w text force geo optvals} {
       catch {wm attributes $win -alpha $data(-alpha)}
     } else {
       Fade $win $aint [expr {round(1.0*$data(-pause)/$aint)}] \
-        0 Un $data(-alpha) 1 $geo
+        0 Un $data(-alpha) 1 $geo {} $w
     }
     if {$force} {
-      Fade $win $aint $fint $icount {} $data(-alpha) 1 $geo
+      Fade $win $aint $fint $icount {} $data(-alpha) 1 $geo {} $w
     } elseif {$widgetclass ne {TNotebook}} {
       catch {after cancel $ttdata(after)}
       set ttdata(after) [after $data(-pause) [list \
-        ::baltip::my::Fade $win $aint $fint $icount {} $data(-alpha) 1 $geo]]
+        ::baltip::my::Fade $win $aint $fint $icount {} $data(-alpha) 1 $geo {} $w]]
     }
   } else {
     # just showing, no fading
@@ -566,9 +583,9 @@ proc ::baltip::my::Show {w text force geo optvals} {
 
 ## ________________________ Fade _________________________ ##
 
-proc ::baltip::my::Fade {w aint fint icount Un alpha show geo {geos ""}} {
+proc ::baltip::my::Fade {win aint fint icount Un alpha show geo {geos ""} {w {}}} {
   # Fades/unfades the tip's window.
-  #   w - the tip's window
+  #   win - the tip's window
   #   aint - interval for 'after'
   #   fint - interval for fading
   #   icount - counter of intervals
@@ -577,14 +594,19 @@ proc ::baltip::my::Fade {w aint fint icount Un alpha show geo {geos ""}} {
   #   show - flag "show the window"
   #   geo - coordinates (+X+Y) of balloon
   #   geos - saved coordinates (+X+Y) of shown tip
+  #   w - a host window
   # See also: FadeNext, UnFadeNext
 
   variable ttdata
-  if {[winfo exists $w]} {
+  if {[winfo exists $win]} {
+    if {$show && [info exists ttdata(maxexp,$w)] && \
+    [string is integer -strict $ttdata(maxexp,$w)]} {
+      incr ttdata(maxexp,$w) -1
+    }
     update
     catch {after cancel $ttdata(after)}
     set ttdata(after) [after idle [list after $aint \
-      [list ::baltip::my::${Un}FadeNext $w $aint $fint $icount $alpha $show $geo $geos]]]
+      [list ::baltip::my::${Un}FadeNext $win $aint $fint $icount $alpha $show $geo $geos]]]
   }
 }
 #_______________________
@@ -749,7 +771,16 @@ proc ::baltip::my::PrepareNbkTip {w x y} {
     if {$tab ne {} && $tab2 ni "$tab -"} {
       ::baltip hide $w
       lassign [::baltip cget -SPECTIP$nbktab] -> tip
-      if {![Command $w $tip]} {
+      lassign [Command $w $tip] ans res
+      if {$ans} {
+        if {$res ne {}} {
+          # the command should be displayed here (not somewhere else)
+          set $ans no
+        }
+        # the command redefined the tip's text
+        set tip $res
+      }
+      if {!$ans} {
         set optafter -SPECTIPafter$w
         catch {
           after cancel [lindex [::baltip cget $optafter] 1]
@@ -847,7 +878,16 @@ proc ::baltip::my::PrepareLbxTip {w x y} {
         return  ;# tip for a whole listbox at entering
       }
       ::baltip hide $w
-      if {![Command $w $text]} {
+      lassign [Command $w $text] ans res
+      if {$ans} {
+        if {$res ne {}} {
+          # the command should be displayed here (not somewhere else)
+          set $ans no
+        }
+        # the command redefined the tip's text
+        set text $res
+      }
+      if {!$ans} {
         set optafter -SPECTIPafter$w
         catch {after cancel [lindex [::baltip cget $optafter] 1]}
         set aftid [after $pause "::baltip::my::ShowLbxTip $w $optid $idx $whole"]
@@ -950,7 +990,16 @@ proc ::baltip::my::PrepareTreTip {w x y} {
         Command $w $text
         return  ;# tip for a whole treeview at entering
       }
-      if {![Command $w $text]} {
+      lassign [Command $w $text] ans res
+      if {$ans} {
+        if {$res ne {}} {
+          # the command should be displayed here (not somewhere else)
+          set $ans no
+        }
+        # the command redefined the tip's text
+        set text $res
+      }
+      if {!$ans} {
         ::baltip hide $w
         set optafter -SPECTIPafter$w
         catch {after cancel [lindex [::baltip cget $optafter] 1]}

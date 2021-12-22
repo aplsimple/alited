@@ -31,7 +31,7 @@ proc about::About {} {
     ]
   set long1 [msgcat::mc {And well fit for programming with it.}]
   set long2 __________________________________________
-  set long3 [alited::Tclexe]
+  set long3 [info nameofexecutable]
   set msg "  <red>alited v[package require alited]</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
     [msgcat::mc {Written in pure Tcl/Tk.}] \n \
     $long1\n\n \

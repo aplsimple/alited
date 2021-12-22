@@ -78,6 +78,14 @@ proc favor_ls::Help {args} {
   variable win
   alited::Help $win
 }
+#_______________________
+
+proc favor_ls::HelpMe {args} {
+  # 'Help' for start.
+
+  variable win
+  alited::HelpMe $win
+}
 # _______________________ List events handlers _______________________ #
 
 proc favor_ls::GetCurrentList {args} {
@@ -366,6 +374,7 @@ proc favor_ls::_create {} {
   bind $lbx <Double-Button-1> ::alited::favor_ls::Ok
   bind $lbx <Return> ::alited::favor_ls::Ok
   bind $win <F1> "[$obDl2 ButHelp] invoke"
+  after 500 ::alited::favor_ls::HelpMe ;# show an introduction after a short pause
   set res [$obDl2 showModal $win -resizable {0 0} \
     -onclose ::alited::favor_ls::Cancel -focus [$obDl2 EntFav]]
   return $res

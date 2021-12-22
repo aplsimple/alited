@@ -2,11 +2,14 @@
 in=1.0
 bd=1
 w=25
-pos=23.51
+pos=12.39
 ::EMENUTMPFILE=%mn.tmp~
-%C set ::EMENUFILE [string map {\\ /} "%f"]
+%C if {![info exist ::EMENU_FOSGIT]} {set ::EMENU_FOSGIT Fossil}
+%C if {![info exist ::EMENUFILE]} { \
+  set ::EMENUFILE "%f" ; if {[::iswindows]} {set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
 %C set ::FILETAIL {"$::EMENUFILETAIL"}
+%C set ::DIRTAIL "\"[file tail {%d}]\""
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
 %C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT ""}
 ::EMENUBAKCNT=0
@@ -83,23 +86,24 @@ RW: Differences of $::FILETAIL (fossil/git) ... RW: fossil tim -t ci -n 9999 > $
    fil1 {{   File:} {} {-w 60}} {"$::EMENUFILE"} \
    fco1 {{Version:} {} {-h 10 -state readonly -inpval "$::EMENUCOMMIT"}} \
      {@@-div1 "\[" -div2 "\]" -ret 1 $::EMENUTMPFILE@@    INFO: @@-div1 "\] " -list {{}} $::EMENUTMPFILE@@} \
+   rad  {{    SCM:}} {"$::EMENU_FOSGIT" {Fossil} {Git}} \
    seh {{} {-pady 3} {}} {} \
    chb {{With .bak version:} {} {-w 6 -state $::EMENUCHBSTATE}} {"$::EMENUCHB"} \
    seh2 {{} {-pady 3} {}} {} \
    texc {{   Hint:} {} {-h 12 -w 60 -ro 1 -wrap word}} \
    {\n Select a version from the combobox to be compared to tip.\n\n If it's blank, the current file is compared to tip.\n\n No response means no differences.\n\n Or you can compare a current file with its .bak version\n saved in .bak subdirectory of project, before last changes.\n\n (temp file: $::EMENUTMPFILE)} \
-   } -head {\n This will compare a selected version of\n     $::EMENUFILE\n to its tip.} -weight bold == ::EMENUFILE ::EMENUCOMMIT ::EMENUCHB
+   } -head {\n This will compare a selected version of\n     $::EMENUFILE\n to its tip.} -weight bold == ::EMENUFILE ::EMENUCOMMIT ::EMENU_FOSGIT ::EMENUCHB
  R: Differences of $::FILETAIL (fossil/git) ... R: %IF {$::EMENUCHB} %THEN "%DF" "$::EMENUFILE" "$::EMENUBAKFILE"
  R: Differences of $::FILETAIL (fossil/git) ... R: %C if {"$::EMENUCOMMIT" eq ""} \
    {set ::EMENUTMP ""} {set ::EMENUTMP "--from $::EMENUCOMMIT --to tip"}
- R: Differences of $::FILETAIL (fossil/git) ... R: %IF [file exists .fslckout] %THEN \
+ R: Differences of $::FILETAIL (fossil/git) ... R: %IF {$::EMENU_FOSGIT} eq {Fossil} %THEN \
   fossil gdiff $::EMENUTMP "$::EMENUFILE" %ELSE git difftool $::EMENUCOMMIT HEAD -- "$::EMENUFILE"
 
  # call TKE/Geany with all *.tcl of current file's directory
- R: Edit *.tcl of %d R: %q "EDIT ALL *.tcl" "This will edit all .tcl files of\n\n%d"
- R: Edit *.tcl of %d R: %C set ::ALLFILES [glob "%d/*.tcl"]
- R: Edit *.tcl of %d R: %IF [auto_execok geany]!={} %THEN geany $::ALLFILES %ELSE tke $::ALLFILES
-RE: Edit *.tcl of %d RE: %C unset ::ALLFILES
+ R: Edit *.tcl of $::DIRTAIL R: %q "EDIT ALL *.tcl" "This will edit all .tcl files of\n\n%d"
+ R: Edit *.tcl of $::DIRTAIL R: %C set ::ALLFILES [glob "%d/*.tcl"]
+ R: Edit *.tcl of $::DIRTAIL R: %IF [auto_execok geany]!={} %THEN geany $::ALLFILES %ELSE tke $::ALLFILES
+RE: Edit *.tcl of $::DIRTAIL RE: %C unset ::ALLFILES
 
  M:  M: 3
  ME: Fossil ME: m=fossil.mnu "u=%s" o=-1

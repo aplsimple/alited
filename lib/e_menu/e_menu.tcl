@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.6b20"
+  variable em_version "e_menu 3.4.7a2"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -99,7 +99,7 @@ proc ::S {incomm} {
       if {$com0 eq "cd"} {
         ::em::vip comm
       } elseif {[set com1 [auto_execok $com0]] ne ""} {
-        exec $com1 {*}[lrange $clst 1 end] &
+        exec -ignorestderr -- $com1 {*}[lrange $clst 1 end] &
       } else {
         M Can't find the command: \n$com0
       }
@@ -682,7 +682,7 @@ proc ::em::term {sel amp {term ""}} {
 #___ exec for ex= parameter
 proc ::em::execcom {args} {
   if {$::em::EX eq {} || [string is false $::em::PI]} {
-    exec -ignorestderr {*}$args
+    exec -ignorestderr -- {*}$args
   } else {
     catch {
       set com [string trim "$args" &]
@@ -717,7 +717,7 @@ proc ::em::shell0 {sel amp {silent -1}} {
       close $cho
       set composite "$::em::win_console.bat $amp"
     }
-    if {[catch {exec {*}[auto_execok start] \
+    if {[catch {exec -- {*}[auto_execok start] \
       cmd.exe /c {*}"$composite"} e]} {
       if {$silent < 0} {
         set ret false
@@ -730,7 +730,7 @@ proc ::em::shell0 {sel amp {silent -1}} {
     } elseif {[set term [auto_execok lxterminal]] ne "" } {
       set sel [string map [list "\""  "\\\""] $sel]
       set composite "$::em::lin_console $sel $amp"
-      exec -ignorestderr {*}$term --geometry=$::em::tg -e {*}$composite
+      exec -ignorestderr -- {*}$term --geometry=$::em::tg -e {*}$composite
     } elseif {[set term [auto_execok xterm]] ne "" } {
       ::em::xterm $sel $amp $term
     } else {
@@ -773,7 +773,7 @@ proc ::em::execom {comm} {
     ::apave::openDoc $argm
   } else {
     set comm2 [auto_execok $comm1]
-    if {[catch {exec $comm2 {*}$argm} e]} {
+    if {[catch {exec -- $comm2 {*}$argm} e]} {
       if {$comm2 eq ""} {
         return "couldn't execute \"$comm1\": no such file or directory"
       }
@@ -1005,7 +1005,7 @@ proc ::em::callmenu {typ s1 {amp ""} {from ""}} {
   set sel "\"$::em::Argv0\""
   prepr_win sel "M/"  ;# force converting
   if {$::em::solo} {
-    catch {exec [::em::Tclexe] {*}$sel {*}$pars $amp}
+    catch {exec -- [::em::Tclexe] {*}$sel {*}$pars $amp}
     if {$amp eq ""} {
       ::em::reread_menu $::em::lasti  ;# changes possible
     }

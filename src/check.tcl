@@ -18,13 +18,14 @@ namespace eval check {
   variable chBrace 1
   variable chBracket 1
   variable chParenthesis 1
+  variable chQuotes 1
   variable chDuplUnits 1
 
   # what to check: 1 - current file, 2 - all files
   variable what 1
 
   # counts for errors in units and in whole files
-  variable errors 0 errors1 0 errors2 0 errors3 0 fileerrors 0
+  variable errors 0 errors1 0 errors2 0 errors3 0 errors4 0 fileerrors 0
 }
 
 # ________________________ Checking _________________________ #
@@ -71,11 +72,13 @@ proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""}} {
   variable chBrace
   variable chBracket
   variable chParenthesis
+  variable chQuotes
   variable chDuplUnits
   variable errors1
   variable errors2
   variable errors3
-  set cc1 [set cc2 [set ck1 [set ck2 [set cp1 [set cp2 0]]]]]
+  variable errors4
+  set cc1 [set cc2 [set ck1 [set ck2 [set cp1 [set cp2 [set cq1 0]]]]]]
   foreach line [split [$wtxt get $pos1 $pos2] \n] {
     if {$chBrace} {
       incr cc1 [::apave::countChar $line \{]
@@ -88,6 +91,9 @@ proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""}} {
     if {$chParenthesis} {
       incr cp1 [::apave::countChar $line (]
       incr cp2 [::apave::countChar $line )]
+    }
+    if {$chQuotes} {
+      incr cq1 [::apave::countChar $line \"]
     }
   }
   set err 0
@@ -107,6 +113,11 @@ proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""}} {
     incr errors3
     if {$TID ne {}} {alited::info::Put "$title: inconsistent (): $cp1 != $cp2" $info}
   }
+  if {$cq1 % 2} {
+    incr err
+    incr errors4
+    if {$TID ne {}} {alited::info::Put "$title: inconsistent \"\": $cq1" $info}
+  }
   return $err
 }
 #_______________________
@@ -122,6 +133,7 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
   variable errors1
   variable errors2
   variable errors3
+  variable errors4
   variable chDuplUnits
   if {$fname eq {}} {
     set fname [alited::bar::FileName]
@@ -133,7 +145,7 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
   set textcont [$wtxt get 1.0 end]
   set unittree [alited::unit::GetUnits $TID $textcont]
   # check for errors of a whole file
-  set errors1 [set errors2 [set errors3 0]]
+  set errors1 [set errors2 [set errors3 [set errors4 0]]]
   set fileerrs [CheckUnit $wtxt 1.0 end]
   # check for duplicate units
   set errduplist [list]
@@ -157,7 +169,7 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
   set pos1 [alited::bar::GetTabState $TID --pos]
   if {![string is double -strict $$pos1]} {set pos1 1.0}
   set info [list $TID [expr {int($pos1)}]]
-  alited::info::Put "$und $fileerrs ($errors1/$errors2/$errors3) file errors of $curfile $und$und$und" $info
+  alited::info::Put "$und $fileerrs ($errors1/$errors2/$errors3/$errors4) file errors of $curfile $und$und$und" $info
   # put a list of duplicate units
   foreach errdup $errduplist {
     lassign $errdup msg pos1
@@ -251,8 +263,9 @@ proc check::_create {} {
     {chb1 labHead T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chBrace -t {Consistency of {} }}}
     {chb2 chb1 T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chBracket -t {Consistency of []}}}
     {chb3 chb2 T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chParenthesis -t {Consistency of ()}}}
-    {chb4 chb3 T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chDuplUnits -t {Duplicate units}}}
-    {v_2 chb4 T}
+    {chb4 chb3 T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chQuotes -t {Consistency of ""}}}
+    {chb9 chb4 T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chDuplUnits -t {Duplicate units}}}
+    {v_2 chb9 T}
     {fra v_2 T 1 1 {-st nsew -pady 0 -padx 3} {-padding {5 5 5 5} -relief groove}}
     {fra.lab - - - - {pack -side left} {-t "Check:"}}
     {fra.radA - - - - {pack -side left -padx 9}  {-t "current file" -var ::alited::check::what -value 1}}

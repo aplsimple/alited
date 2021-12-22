@@ -1,4 +1,4 @@
-package ifneeded baltip 1.3.4 [list source [file join $dir baltip.tcl]]
+package ifneeded baltip 1.3.6 [list source [file join $dir baltip.tcl]]
 
 namespace eval ::baltip {
   variable _ruff_preamble {
@@ -20,6 +20,7 @@ The original code has been modified to make the tip:
   * be displayed with given font, colors, paddings, border, relief, opacity, bell
   * have -image and -compound options to display images
   * have -command option to be displayed in a status bar instead of a balloon
+  * have -command option to be changed dynamically, with each tip's exposition
   * have -maxexp option to limit the number of tip's expositions
   * have configure/cget etc. wrapped in Tcl ensemble for convenience
 
@@ -169,6 +170,14 @@ To avoid this, use *::baltip::sleep* before *tk_popup*, for example:
       ::baltip::sleep 1000        ;# disables tips for 1000 milliseconds
       tk_popup $popupmenu $X $Y   ;# calls a popup menu at $X $Y coordinates
 
+As for [tablelist](https://wiki.tcl-lang.org/page/tablelist) widget, I would like to cite an advice by [Csaba Nemethi](https://www.nemethi.de/) :
+
+    The support for tablelist is a special case, don't waste your time with
+    it.  I have already tested that the built-in tooltip support of
+    Tablelist will work just fine when replacing tklib's tooltip package
+    with baltip (after fixing the reported bugs), and I intend to extend the
+    description of the -tooltipaddcommand option by hints showing how to use
+    this option with baltip instead of BWidget and tklib's tooltip.
 
 ## Balloon
 
@@ -198,10 +207,15 @@ For example:
 
 The "-command" option allows to display tips in other places, for example in a status bar. At that, the command can include %t and %w wildcards, meaning "text" and "widget path". Such tips are well fit for menu items, as seen in *test.tcl*.
 
+The command of this option must return {}, if no tips should be displayed.
+
+Also, it can return a new tip to display as a usual balloon tip, which fits for "dynamic tips" that are changed *at each exposition* of a tip.
+
 For example:
 
       proc ::Status {tip} {
         .labelstatus configure -text $tip
+        return {}  ;# no redefining the tip
       }
       ::baltip::tip .menu "File actions" -index 0 -command {::Status {%t}}
       ::baltip::tip .menu "Help, hints, Q&A, about etc." -index 1 -command {::Status {%t}}
@@ -231,6 +245,7 @@ For example:
       }
       ::baltip::tip .listbox {Listbox %i} -command {::SomeProc {%t}}
       ::baltip::tip .treeview {Treeview %i %c} -command {::SomeProc {%t}}
+      return {}  ;# means the proc executed and no tip needed
 
 
 ## Options
@@ -296,7 +311,7 @@ Also, you can test *baltip* with *test2_pave.tcl* of [apave package](https://chi
 
 The *baltip* package has been developed with help of these kind people:
 
-  * [Nicolas Bats](https://github.com/sl1200mk2) prompted to add canvas tags' tips
+  * [Nicolas Bats](https://github.com/sl1200mk2) prompted to add canvas tags' tips and tested *baltip* in MacOS
 
   * [Csaba Nemethi](https://www.nemethi.de/) sent several bug fixes and advices, especially on listbox, treeview and menu tips
 
