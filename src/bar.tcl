@@ -304,6 +304,7 @@ proc bar::OnTabSelection {TID} {
 
   namespace upvar ::alited al al
   alited::main::ShowText
+  alited::file::SbhText
   alited::find::ClearTags
   alited::ini::SaveCurrentIni $al(INI,save_onselect)
   alited::edit::CheckSaveIcons [alited::file::IsModified $TID]

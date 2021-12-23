@@ -391,7 +391,7 @@ proc ::klnd::blinking {doit} {
   lassign [::apave::obj csGet 45] - - - - - bgblink fgblink
   set lab [::klnd::labelPath]
   if {$doit} {
-    after idle "::apave::blinkWidget $lab $fgnorm $bgnorm $fgblink $bgblink 100 5"
+    after idle "::apave::blinkWidget $lab $fgnorm $bgnorm $fgblink $bgblink 100 4"
   } else {
     ::apave::blinkWidget $lab $fgnorm $bgnorm
   }

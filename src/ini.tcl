@@ -451,8 +451,9 @@ proc ini::ReadIniPrj {} {
   alited::favor_ls::GetIni ""  ;# initializes favorites' lists
   set al(prjdirign) $al(DEFAULT,prjdirign)
   if {![file exists $al(prjfile)]} {
-    set al(prjfile) [file join $alited::PRJDIR [file tail $al(prjfile)]]
+    set al(prjfile) [file join $alited::PRJDIR default.ale]
   }
+  set al(prjname) [file tail [file rootname $al(prjfile)]]
   if {[catch {
     puts "alited project: $al(prjfile)"
     set chan [open $::alited::al(prjfile) r]
@@ -478,9 +479,9 @@ proc ini::ReadIniPrj {} {
     if {$al(prjroot) eq ""} {set al(prjroot) $alited::DIR}
   }]} then {
     puts "Not open: $al(prjfile)"
-    set al(prjname) ""
-    set al(prjfile) ""
-    set al(prjroot) ""
+    set al(prjname) {}
+    set al(prjfile) {}
+    set al(prjroot) {}
   }
   catch {close $chan}
   catch {cd $al(prjroot)}
@@ -512,7 +513,9 @@ proc ini::ReadPrjOptions {nam val} {
   #   nam - name of option
   #   val - value of option
 
-  if {$nam in {"" "prjfile"}} return ;# to avoid resetting the current project file name
+  if {$nam in {{} prjfile prjname}} {
+    return ;# to avoid resetting the current project file name
+  }
   namespace upvar ::alited al al
   set al($nam) $val
 }

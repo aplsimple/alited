@@ -17,6 +17,7 @@ Version `1.0.6 (29 Dec'21)`
   - BUGFIX: more time for gaining bar's width before calling FillBar
   - BUGFIX: o=-1 for e_menu calls (instead of old o=0)
   - BUGFIX: display redefined F3/Ctrl+D/Ctrl+Y in context menu
+  - NEW   : horizontal scrollbar for texts with lines unwrapped
   - NEW   : check for consistency of "" in "Check Tcl"
   - NEW   : "Open/Close selected files" from context menu of Project's file list
   - NEW   : show introductions on some dialogues
@@ -30,6 +31,7 @@ Version `1.0.6 (29 Dec'21)`
   - NEW   : tips for tab list (full file names)
   - NEW   : "Utils / Diff to LEFT/RIGHT tab" of e_menu
   - NEW   : ru.msg, ua.msg for klnd
+  - CHANGE: Project's file list sorted
   - CHANGE: [info nameofexecutable] for "Restart" & "About..."
   - CHANGE: .mnu corrected for Windows
   - CHANGE: "Differences" of menu.mnu includes choosing SCM

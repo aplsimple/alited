@@ -667,15 +667,16 @@ proc main::_create {} {
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
     {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3}}
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
-    {#.fraTop.panTop.CanDiff - - - - {pack -side left -expand 0 -fill y} {-w 4}}
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both} {-background $::alited::FRABG}}
-    {.fraTop.panTop.frAText.Text - - - - {pack forget -side left -expand 1 -fill both} {-borderwidth 1 -w 2 -h 20 -gutter GutText -gutterwidth $::alited::al(ED,gutterwidth) -guttershift $::alited::al(ED,guttershift) $alited::al(TEXT,opts)}}
+    {.fraTop.panTop.frAText.Text - - - - {pack -expand 1 -fill both} {-borderwidth 1 -w 2 -h 20 -gutter GutText -gutterwidth $::alited::al(ED,gutterwidth) -guttershift $::alited::al(ED,guttershift) $alited::al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
     {.fraTop.panTop.fraSbv.SbvText .fraTop.panTop.frAText.text L - - {pack -fill y}}
+    {.fraTop.FraSbh  - - - - {pack forget -fill x}}
+    {.fraTop.fraSbh.SbhText .fraTop.panTop.frAText.text T - - {pack -fill x}}
     {.fraTop.FraHead  - - - - {pack forget -side bottom -fill x} {-padding {4 4 4 4} -relief groove}}
     {.fraTop.fraHead.labFind - - - - {pack -side left} {-t "    Unit: "}}
     {.fraTop.fraHead.CbxFindSTD - - - - {pack -side left} {-tvar alited::al(findunit) -values {$alited::al(findunitvals)} -w 30 -tip {$al(MC,findunit)}}}
-    {.fraTop.fraHead.buT - - - - {pack -side left -padx 4} {-t "Find: " -relief flat -com alited::find::DoFindUnit -takefocus 0 -bd 0 -highlightthickness 0 -w 8 -anchor e}}
+    {.fraTop.fraHead.buT - - - - {pack -side left -padx 4} {-t "Find: " -relief flat -com alited::find::DoFindUnit -takefocus 0 -bd 0 -highlightthickness 0 -w 8 -anchor e -tip {Find Unit}}}
     {.fraTop.fraHead.rad1 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in all} -value 1}}
     {.fraTop.fraHead.rad2 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in current} -value 2}}
     {.fraTop.fraHead.h_ - - - - {pack -side left -fill x -expand 1}}

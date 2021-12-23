@@ -36,8 +36,8 @@ namespace eval project {
   # data of projects
   variable prjinfo; array set prjinfo [list]
 
-  # data of projects top save/restore
-  variable data; array set data [list]
+  # data of currently open project (to save/restore)
+  variable curinfo; array set curinfo [list]
 
   # calendar's data
   variable klnddata; array set klnddata [list]
@@ -52,7 +52,7 @@ proc project::TabFileInfo {} {
   namespace upvar ::alited al al obDl2 obDl2
   set lbx [$obDl2 LbxFlist]
   $lbx delete 0 end
-  foreach tab $al(tablist) {
+  foreach tab [lsort -index 0 -dictionary $al(tablist)] {
     set fname [lindex [split $tab \t] 0]
     $lbx insert end $fname
   }
@@ -141,28 +141,28 @@ proc project::ProcEOL {val mode} {
 #_______________________
 
 proc project::SaveSettings {} {
-  # Saves project settings to a data array.
+  # Saves project settings to curinfo array.
 
   namespace upvar ::alited al al
-  variable data
+  variable curinfo
   variable OPTS
   foreach v $OPTS {
-    set data($v) $al($v)
+    set curinfo($v) $al($v)
   }
-  set data(prjfile) $al(prjfile)
+  set curinfo(prjfile) $al(prjfile)
 }
 #_______________________
 
 proc project::RestoreSettings {} {
-  # Restores project settings from a data array.
+  # Restores project settings from curinfo array.
 
   namespace upvar ::alited al al
-  variable data
+  variable curinfo
   variable OPTS
   foreach v $OPTS {
-    set al($v) $data($v)
+    set al($v) $curinfo($v)
   }
-  set al(prjfile) $data(prjfile)
+  set al(prjfile) $curinfo(prjfile)
   TabFileInfo
 }
 #_______________________
@@ -175,7 +175,7 @@ proc project::GetProjectOpts {fname} {
   variable prjlist
   variable prjinfo
   variable OPTS
-  variable data
+  variable curinfo
   set pname [ProjectName $fname]
   # save project names to 'prjlist' variable to display it by treeview widget
   lappend prjlist $pname
@@ -184,11 +184,8 @@ proc project::GetProjectOpts {fname} {
   foreach opt $OPTS {
     catch {set prjinfo($pname,$opt) $al($opt)}  ;#defaults
   }
-  set prjinfo($pname,prjfile) $fname
-  set prjinfo($pname,prjname) $pname
-  set prjinfo($pname,prjdirign) $al(DEFAULT,prjdirign)
   set prjinfo($pname,tablist) [list]
-  if {[set currentprj [expr {$data(prjname) eq $pname}]]} {
+  if {[set currentprj [expr {$curinfo(prjname) eq $pname}]]} {
     foreach tab [alited::bar::BAR listTab] {
       set tid [lindex $tab 0]
       lappend prjinfo($pname,tablist) [alited::bar::FileName $tid]
@@ -202,6 +199,9 @@ proc project::GetProjectOpts {fname} {
       lappend prjinfo($pname,tablist) $val
     }
   }
+  set prjinfo($pname,prjfile) $fname
+  set prjinfo($pname,prjdirign) $al(DEFAULT,prjdirign)
+  set prjinfo($pname,prjname) $pname
   set al(tablist) $prjinfo($pname,tablist)
   return $pname
 }
@@ -224,7 +224,7 @@ proc project::PutProjectOpts {fname oldname dorename} {
       foreach tab $al(tablist) {
         append line \n "tab=$tab"
       }
-    } elseif {$opt in [list tab rem {*}$OPTS]} {
+    } elseif {$opt in [list tab rem tablist {*}$OPTS]} {
       continue
     } elseif {$opt in {curtab}} {
       # 
@@ -446,6 +446,7 @@ proc project::Select {{item ""}} {
     }
     $tree see $item
     $tree focus $item
+    alited::Message2 {}
     ::klnd::blinking no
     set klnddata(SAVEDATE) {}
     catch {after cancel $klnddata(AFTERKLND)}
@@ -462,8 +463,7 @@ proc project::Selected {what {domsg yes}} {
   namespace upvar ::alited al al obDl2 obDl2
   variable prjlist
   set tree [$obDl2 TreePrj]
-  if {[set isel [$tree selection]] eq {} && [set isel [$tree focus]] eq "" \
-  && $domsg} {
+  if {[set isel [$tree selection]] eq {} && [set isel [$tree focus]] eq {} && $domsg} {
     alited::Message2 $al(MC,prjsel) 4
   }
   if {$isel ne {} && $what eq {index}} {
@@ -597,18 +597,43 @@ proc project::KlndGoto {dmin} {
 
 proc project::OpenSelFiles {} {
   # Opens selected files of listbox.
+  # Files are open in a currently open project.
 
+  namespace upvar ::alited al al
+  variable prjinfo
+  variable curinfo
+  set prj $al(prjname)
+  set cprj $curinfo(prjname)
+  set al(prjname) $curinfo(prjname)
   lassign [SelFiles] lbx selidx
   if {$lbx ne {}} {
-    foreach idx $selidx {lappend fnames [$lbx get $idx]}
-    alited::file::OpenFile $fnames yes yes
+    set llen [llength $selidx]
+    set msg [string map [list %n $llen] [msgcat::mc {Open files: %n}]]
+    alited::Message2 $msg 3
+    update
+    foreach idx [lreverse $selidx] {
+      set fn [$lbx get $idx]
+      lappend fnames $fn
+      if {[lsearch -index 0 -exact $prjinfo($cprj,tablist) $fn]<0} {
+        set prjinfo($cprj,tablist) [linsert $prjinfo($cprj,tablist) 0 $fn]
+      }
+    }
+    alited::file::OpenFile $fnames yes yes alited::info::Put
   }
+  set al(prjname) $prj
 }
 #_______________________
 
 proc project::CloseSelFiles {} {
   # Closes selected files of listbox.
+  # Files are closed in a currently open project.
 
+  namespace upvar ::alited al al
+  variable prjinfo
+  variable curinfo
+  if {[set pname [ExistingProject no]] eq {}} return
+  set prj $al(prjname)
+  set cprj $curinfo(prjname)
   lassign [SelFiles] lbx selidx
   if {$lbx ne {}} {
     set closecurr no
@@ -622,11 +647,19 @@ proc project::CloseSelFiles {} {
           alited::bar::BAR $TID close no
         }
       }
+      if {$prj eq $cprj &&
+      [set i [lsearch -index 0 -exact $prjinfo($cprj,tablist) $fname]]>=0} {
+        set prjinfo($cprj,tablist) [lreplace $prjinfo($cprj,tablist) $i $i]
+      }
     }
     if {$closecurr && [set TID [alited::bar::FileTID $fnamecurr]] ne {}} {
       alited::bar::BAR $TID close ;# this should be last to check for "No name" tab
     }
     alited::bar::BAR draw
+    if {$prj eq $cprj} {
+      set al(tablist) $prjinfo($cprj,tablist)
+      TabFileInfo
+    }
   }
 }
 #_______________________
@@ -651,7 +684,7 @@ proc project::LbxPopup {X Y} {
   $popm add command -label $al(MC,openselfile) -command alited::project::OpenSelFiles
   $popm add command -label [msgcat::mc {Close Selected File(s)}] -command alited::project::CloseSelFiles
   $popm add separator
-  $popm add command -label [msgcat::mc {Select All}] -command alited::project::SelectAllFiles
+  $popm add command -label [msgcat::mc {Select All}] -command alited::project::SelectAllFiles -accelerator Ctrl+A
   baltip::sleep 1000
   tk_popup $popm $X $Y
 }
@@ -670,7 +703,6 @@ proc project::Add {} {
   set al(tablist) [list]
   TabFileInfo
   set pname $al(prjname)
-  set al(tabs) $al(tablist)
   set al(prjfile) [ProjectFileName $pname]
   set al(prjbeforerun) {}
   if {$al(PRJDEFAULT)} {
@@ -696,7 +728,7 @@ proc project::Change {} {
   # "Change project" button's handler.
 
   namespace upvar ::alited al al
-  variable data
+  variable curinfo
   variable prjlist
   variable prjinfo
   SaveNotesRems
@@ -711,12 +743,16 @@ proc project::Change {} {
   }
   set oldprj [lindex $prjlist $isel]
   set newprj $al(prjname)
+  set prjinfo($newprj,tablist) $prjinfo($oldprj,tablist)
   catch {unset prjinfo($oldprj,tablist)}
-  set prjinfo($newprj,tablist) $al(tablist)
   set oldname [ProjectFileName $oldprj]
   set prjlist [lreplace $prjlist $isel $isel $newprj]
   set fname [ProjectFileName $newprj]
-  if {$newprj eq $data(prjname)} SaveSettings
+  if {$newprj eq $curinfo(prjname)} SaveSettings
+  if {$oldprj eq $curinfo(prjname)} {
+    set curinfo(prjname) $newprj
+    set curinfo(prjfile) $fname
+  }
   set prjinfo($newprj,prjrem) $prjinfo($oldprj,prjrem) ;# reminders
   PutProjectOpts $fname $oldname yes
   GetProjects
@@ -733,11 +769,11 @@ proc project::Delete {} {
   variable prjlist
   variable prjinfo
   variable win
-  variable data
+  variable curinfo
   if {[set isel [Selected index]] eq ""} return
   set geo "-geometry root=$win"
   set nametodel [lindex $prjlist $isel]
-  if {$nametodel eq $data(prjname)} {
+  if {$nametodel eq $curinfo(prjname)} {
     alited::msg ok err $al(MC,prjcantdel) {*}$geo
     return
   }
@@ -770,15 +806,15 @@ proc project::Ok {args} {
   variable win
   variable prjlist
   variable prjinfo
-  variable data
+  variable curinfo
   Klnd_save
   set msec [clock milliseconds]
-  if {($msec-$data(_MSEC))<5000} {
+  if {($msec-$curinfo(_MSEC))<5000} {
     # disables entering twice (at multiple double-clicks)
     # 5 sec. of clicking seems to be enough for opening a file
     return
   }
-  set data(_MSEC) $msec
+  set curinfo(_MSEC) $msec
   if {[set isel [Selected index]] eq {} || ![ValidProject]} {
     focus [$obDl2 TreePrj]
     return
@@ -867,10 +903,15 @@ proc project::ProjectEnter {} {
   # Cancels selecting projects if there are old reminders.
 
   namespace upvar ::alited al al
+  variable win
   variable prjinfo
   variable klnddata
   lassign [SortRems $prjinfo($al(prjname),prjrem)] dmin
   if {$dmin && $dmin<[clock seconds]} {
+    set tab1 $win.fra.fraR.nbk.f1
+    if {[$win.fra.fraR.nbk select] ne $tab1} {
+      $win.fra.fraR.nbk select $tab1
+    }
     KlndGoto $dmin
     set msg [msgcat::mc {TODO reminders for the past: %d. Delete them or try "Select".}]
     set dmin [clock format $dmin -format $klnddata(dateformat)]
@@ -1125,8 +1166,8 @@ proc project::_create {} {
   variable prjlist
   variable oldTab
   variable ilast
-  variable data
-  set data(_MSEC) 0
+  variable curinfo
+  set curinfo(_MSEC) 0
   $obDl2 makeWindow $win.fra "$al(MC,projects) :: $::alited::PRJDIR"
   $obDl2 paveWindow \
     $win.fra [MainFrame] \
@@ -1134,15 +1175,18 @@ proc project::_create {} {
     $win.fra.fraR.nbk.f2 [Tab2]
   set tree [$obDl2 TreePrj]
   $tree heading C1 -text $al(MC,projects)
-  if {$oldTab ne ""} {
+  if {$oldTab ne {}} {
     $win.fra.fraR.nbk select $oldTab
   }
   UpdateTree
-  bind $tree <<TreeviewSelect>> "::alited::project::Select"
-  bind $tree <Delete> "::alited::project::Delete"
-  bind $tree <Double-Button-1> "::alited::project::ProjectEnter"
-  bind $tree <Return> "::alited::project::ProjectEnter"
+  bind $tree <<TreeviewSelect>> ::alited::project::Select
+  bind $tree <Delete> ::alited::project::Delete
+  bind $tree <Double-Button-1> ::alited::project::ProjectEnter
+  bind $tree <Return> ::alited::project::ProjectEnter
   bind $win <F1> "[$obDl2 ButHelp] invoke"
+  foreach a {a A} {
+    bind [$obDl2 LbxFlist] <Control-$a> alited::project::SelectAllFiles
+  }
   if {$ilast>-1} {Select $ilast}
   if {$minsize eq ""} {      ;# save default min.sizes
     after idle [list after 100 {
@@ -1159,6 +1203,7 @@ proc project::_create {} {
   # save the new geometry of the dialogue
   set geo [wm geometry $win]
   destroy $win
+  alited::main::ShowHeader yes
   return $res
 }
 #_______________________

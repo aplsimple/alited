@@ -230,16 +230,48 @@ proc file::UpdateFileStat {} {
 }
 #_______________________
 
+proc file::SbhText {} {
+  # Shows/hides the horizontal scrollbar of the text.
+
+  namespace upvar ::alited al al obPav obPav
+  if {[info exist al(isSbhText)]} {
+    set wtxt [alited::main::CurrentWTXT]
+    set wfra [$obPav FraSbh]
+    set wsbh [$obPav SbhText]
+    set wrap [$wtxt cget -wrap]
+    if {$wrap eq {word}} {
+      if {$al(isSbhText)} {pack forget $wfra}
+      set al(isSbhText) no
+    } else {
+      if {!$al(isSbhText)} {
+        if {![info exist al(isfindunit)] || !$al(isfindunit)} {
+          pack $wfra -side bottom -fill x -after [$obPav GutText]
+        } else {
+          pack forget [$obPav FraHead]
+          pack $wfra -side bottom -fill x -after [$obPav GutText]
+          pack [$obPav FraHead] -side bottom -fill x -pady 3 -after [$obPav GutText]
+        }
+      }
+       $wtxt configure -xscrollcommand "$wsbh set"
+       $wsbh configure -command "$wtxt xview"
+       set al(isSbhText) yes
+    }
+  }
+}
+#_______________________
+
 proc file::WrapLines {} {
   # Switches wrap word mode for a current text.
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al obPav obPav
   set wtxt [alited::main::CurrentWTXT]
   if {[set al(wrapwords) [expr {[$wtxt cget -wrap] ne {word}}]]} {
     $wtxt configure -wrap word
   } else {
     $wtxt configure -wrap none
   }
+  if {![info exist al(isSbhText)]} {set al(isSbhText) no}
+  SbhText
 }
 
 # ________________________ Helpers _________________________ #
@@ -399,11 +431,12 @@ proc file::NewFile {} {
 }
 #_______________________
 
-proc file::OpenFile {{fnames ""} {reload no} {islist no}} {
+proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
   # Handles "Open file" menu item.
   #   fnames - file name (if not set, asks for it)
   #   reload - if yes, loads the file even if it has a "strange" extension
   #   islist - if yes, *fnames* is a file list
+  #   Message - name of procedure for "open file" message
   # Returns the file's tab ID if it's loaded, or {} if not loaded.
 
   namespace upvar ::alited al al obPav obPav
@@ -446,6 +479,9 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no}} {
         set tab [alited::bar::UniqueListTab $fname]
         set TID [alited::bar::InsertTab $tab [FileStat $fname]]
         alited::file::AddRecent $fname
+        if {$Message ne {}} {
+          $Message "[msgcat::mc {Open file:}] $fname"
+        }
       }
     }
   }

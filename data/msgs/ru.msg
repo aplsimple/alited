@@ -218,6 +218,8 @@ namespace eval ::alited {
     {TODO reminders for the past: %d. Delete them or try "Select".} {TODO напоминания прошлого: %d. Удалите их или попробуйте "Выбор".}
     "You may select file(s)\nand open them with a context menu.\n\nOr just double-click." "Вы можете выделить файл(ы)\nи через контекстное меню открыть их.\n\nИли откройте двойным кликом."
     {No selected files} {Нет выделенных файлов}
+    {Open file:} {Открыт файл:}
+    {Open files: %n} {Открываемых файлов: %n}
   }
 
   ## ________________________ Favorites ________________________ ##
