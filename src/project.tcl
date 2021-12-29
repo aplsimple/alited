@@ -395,7 +395,7 @@ proc project::KlndBorderText {{clr {}}} {
   #   clr - color of border
 
   namespace upvar ::alited obDl2 obDl2
-  if {$clr eq {}} {set clr [lindex [::apave::obj csGet] 8]}
+  if {$clr eq {}} {set clr [lindex [::apave::obj csGet] 8]} bell
   [$obDl2 TexKlnd] configure -highlightbackground $clr
 }
 

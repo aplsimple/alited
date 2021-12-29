@@ -113,7 +113,7 @@ proc menu::FillMenu {} {
   ## ________________________ Search _________________________ ##
   set m [set al(SEARCH) $al(WIN).menu.search]
   $m add command -label $al(MC,findreplace) -command alited::find::_run -accelerator Ctrl+F
-  $m add command -label $al(MC,findnext) -command alited::find::Next -accelerator $al(acc_12)
+  $m add command -label $al(MC,findnext) -command {alited::find::Next ; after idle alited::main::SaveVisitInfo} -accelerator $al(acc_12)
   $m add separator
   $m add command -label [msgcat::mc {Look for Declaration}] -command alited::find::SearchUnit -accelerator $al(acc_13)
   $m add command -label [msgcat::mc {Look for Word}] -command alited::find::SearchWordInSession -accelerator $al(acc_14)
@@ -121,7 +121,7 @@ proc menu::FillMenu {} {
   $m add command -label [msgcat::mc {Find by List}] -command alited::find::SearchByList
   $m add separator
   $m add command -label [msgcat::mc {To Last Visited}] -command alited::unit::SwitchUnits -accelerator Alt+BackSpace
-  $m add command -label [msgcat::mc {To Matched Bracket}] -command alited::main::GotoBracket -accelerator $al(acc_20)
+  $m add command -label [msgcat::mc {To Matched Bracket}] -command {alited::main::GotoBracket yes} -accelerator $al(acc_20)
   $m add separator
   $m add command -label [msgcat::mc {Go to Line}] -command alited::main::GotoLine -accelerator $al(acc_17)
 

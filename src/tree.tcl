@@ -982,7 +982,7 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
     }
   }
   catch {$wtree see [lindex $selection 0]}
-  alited::main::SaveVisitInfo
+#  alited::main::SaveVisitInfo
 }
 #_______________________
 
@@ -1006,7 +1006,8 @@ proc tree::UpdateFileTree {{doit no}} {
       }
     }
   } else {
-    after idle {alited::tree::UpdateFileTree yes}
+    catch {after cancel $al(_UPDATEFILETREE_)}
+    set al(_UPDATEFILETREE_) [after idle {alited::tree::UpdateFileTree yes}]
   }
 }
 

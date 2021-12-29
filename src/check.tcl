@@ -228,7 +228,6 @@ proc check::Ok {args} {
   namespace upvar ::alited obCHK obCHK
   variable win
   $obCHK res $win 1
-  return
 }
 #_______________________
 

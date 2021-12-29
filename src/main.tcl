@@ -366,8 +366,9 @@ proc main::InsertLine {} {
 }
 #_______________________
 
-proc main::GotoBracket {} {
+proc main::GotoBracket {{frommenu no}} {
   # Processes Alt+B keypressing: "go to a matched bracket".
+  #   frommenu - yes, if run from a menu
 
   # search a pair for a bracket highlighted
   set wtxt [CurrentWTXT]
@@ -378,6 +379,7 @@ proc main::GotoBracket {} {
     foreach {pos1 pos2} $tagged {
       if {[incr -]==2 || ($pos1!=$p && $pos1!=$p1 && $pos1!=$p2)} {
         alited::main::FocusText [alited::bar::CurrentTabID] $pos1
+        if {$frommenu} SaveVisitInfo
         break
       }
     }
@@ -461,6 +463,9 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
   set pos [$wtxt index insert]
   lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name l1
   set header [alited::unit::GetHeader $wtree $itemID]
+  if {$K eq {}} {
+    set l1 -1 ;# to avoid a unit's name spawned in last visits at its change
+  }
   alited::favor::LastVisited [$wtree item $itemID] $header $l1
   set selID [$wtree selection]
   if {[llength $selID]<2 && $selID ne $itemID} {
@@ -484,7 +489,7 @@ proc main::AfterUndoRedo {} {
   # Actions after undo/redo.
 
   HighlightLine
-  after idle alited::main::UpdateUnitTree
+  after idle {alited::main::SaveVisitInfo ; alited::main::UpdateUnitTree}
 }
 #_______________________
 

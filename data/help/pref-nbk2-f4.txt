@@ -1,0 +1,6 @@
+ In the "Plain texts' extensions" field, you can set any
+ additional extensions for the plain text files you use.
+
+ Enter the extensions separated by spaces.
+
+ Use "Default" button to restore the default setting.

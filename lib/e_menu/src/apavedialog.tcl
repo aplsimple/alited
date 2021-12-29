@@ -193,7 +193,7 @@ oo::class create ::apave::APaveDialog {
 
     foreach {nam num} $butts {
       lappend apave_msc_bttns But$num "$nam" $num
-      if {$defb eq ""} {
+      if {$defb eq {}} {
         set defb $num
       }
     }
@@ -340,7 +340,7 @@ oo::class create ::apave::APaveDialog {
     #
     # If not set, the text widget is identified as `my TexM`.
 
-    if {$txt eq ""} {set txt [my TexM]}
+    if {$txt eq {}} {set txt [my TexM]}
     set err [catch {$txt tag ranges sel} sel]
     if {!$err && [llength $sel]==2} {
       lassign $sel pos pos2
@@ -366,7 +366,7 @@ oo::class create ::apave::APaveDialog {
     #
     # If not set, the text widget is identified as `my TexM`.
 
-    if {$txt eq ""} {set txt [my TexM]}
+    if {$txt eq {}} {set txt [my TexM]}
     lassign [my GetLinePosition $txt insert] linestart lineend
     $txt delete $linestart $lineend
     if {$dobreak} {return -code break}
@@ -390,7 +390,7 @@ oo::class create ::apave::APaveDialog {
       set row [string range $ind 0 $i-1]
       return [incr row $rn][string range $ind $i end]
     }
-    if {$txt eq ""} {set txt [my TexM]}
+    if {$txt eq {}} {set txt [my TexM]}
     set err [catch {$txt tag ranges sel} sel]
     lassign [$txt index insert] pos  ;# position of caret
     if {[set issel [expr {!$err && [llength $sel]==2}]]} {
@@ -398,7 +398,7 @@ oo::class create ::apave::APaveDialog {
       set l1 [expr {int($pos1)}]
       set l2 [expr {int($pos2)}]
       set pos21 [$txt index "$pos2 linestart"]
-      if {[$txt get $pos21 $pos2] eq ""} {incr l2 -1}
+      if {[$txt get $pos21 $pos2] eq {}} {incr l2 -1}
       set lfrom [expr {$to>0 ? $l2+1 : $l1-1}]
       set lto   [expr {$to>0 ? $l1-1 : $l2-1}]
     } else {
@@ -434,9 +434,9 @@ oo::class create ::apave::APaveDialog {
     # Returns a word under the cursor or a selected text.
     #   txt - the text's path
 
-    set seltxt ""
+    set seltxt {}
     if {![catch {$txt tag ranges sel} seltxt]} {
-      if {[set forword [expr {$seltxt eq ""}]]} {
+      if {[set forword [expr {$seltxt eq {}}]]} {
         set pos  [$txt index "insert wordstart"]
         set pos2 [$txt index "insert wordend"]
         set seltxt [string trim [$txt get $pos $pos2]]
@@ -450,7 +450,7 @@ oo::class create ::apave::APaveDialog {
       }
       catch {
         set seltxt [$txt get $pos $pos2]
-        if {[set sttrim [string trim $seltxt]] ne ""} {
+        if {[set sttrim [string trim $seltxt]] ne {}} {
           if {$forword} {set seltxt $sttrim}
         }
       }
@@ -464,11 +464,11 @@ oo::class create ::apave::APaveDialog {
     #   ctrlf - "1" means that the method is called by Ctrl+F
     #   txt - path to the text widget
 
-    if {$txt eq ""} {set txt [my TexM]}
+    if {$txt eq {}} {set txt [my TexM]}
     if {$ctrlf} {  ;# Ctrl+F moves cursor 1 char ahead
       ::tk::TextSetCursor $txt [$txt index "insert -1 char"]
     }
-    if {[set seltxt [my selectedWordText $txt]] ne ""} {
+    if {[set seltxt [my selectedWordText $txt]] ne {}} {
       set ${_pdg(ns)}PD::fnd $seltxt
     }
     return
@@ -481,13 +481,13 @@ oo::class create ::apave::APaveDialog {
     #   txt - path to the text widget
     #   varFind - variable
 
-    if {$txt eq ""} {
+    if {$txt eq {}} {
       if {![info exists ${_pdg(ns)}PD::fnd]} return
       set txt [my TexM]
       set sel [set ${_pdg(ns)}PD::fnd]
-    } elseif {$donext && [set sel [my get_HighlightedString]] ne ""} {
+    } elseif {$donext && [set sel [my get_HighlightedString]] ne {}} {
       # find a string got with alt+left/right
-    } elseif {$varFind eq ""} {
+    } elseif {$varFind eq {}} {
       if {![info exists ${_pdg(ns)}PD::fnd]} return
       set sel [set ${_pdg(ns)}PD::fnd]
     } else {
@@ -500,8 +500,8 @@ oo::class create ::apave::APaveDialog {
       }
       set pos [$txt search -- $sel $pos end]
     } else {
-      set pos ""
-      my set_HighlightedString ""
+      set pos {}
+      my set_HighlightedString {}
     }
     if {![string length "$pos"]} {
       set pos [$txt search -- $sel 1.0 end]
@@ -540,8 +540,8 @@ oo::class create ::apave::APaveDialog {
     #   com2 - user's command "find next"
 
     set accF3 [::apave::KeyAccelerator [::apave::getTextHotkeys F3]]
-    if {$com1 eq ""} {set com1 "[self] InitFindInText 0 $txt; focus \[[self] Entfind\]"}
-    if {$com2 eq ""} {set com2 "[self] findInText 1 $txt"}
+    if {$com1 eq {}} {set com1 "[self] InitFindInText 0 $txt; focus \[[self] Entfind\]"}
+    if {$com2 eq {}} {set com2 "[self] findInText 1 $txt"}
     return "\$pop add separator
       \$pop add command [my iconA find] -accelerator Ctrl+F -label \"Find First\" \\
         -command {$com1}
@@ -588,7 +588,7 @@ oo::class create ::apave::APaveDialog {
       -label \"Highlight Next\" -command \"[self] seek_highlight %w 1\"
       \$pop add command [my iconA none] -accelerator Dbl.Click \\
       -label \"Highlight All\" -command \"[self] highlight_matches %w\""
-    if {$txt ne ""} {set res [string map [list %w $txt] $res]}
+    if {$txt ne {}} {set res [string map [list %w $txt] $res]}
     return $res
   }
   #_______________________
@@ -598,7 +598,7 @@ oo::class create ::apave::APaveDialog {
     #   sel - the string to be saved
 
     set _pdg(hlstring) $sel
-    if {[info exist ${_pdg(ns)}PD::fnd] && $sel ne ""} {
+    if {[info exist ${_pdg(ns)}PD::fnd] && $sel ne {}} {
       set ${_pdg(ns)}PD::fnd $sel
     }
   }
@@ -610,7 +610,7 @@ oo::class create ::apave::APaveDialog {
     if {[info exists _pdg(hlstring)]} {
       return $_pdg(hlstring)
     }
-    return ""
+    return {}
   }
   #_______________________
 
@@ -642,7 +642,7 @@ oo::class create ::apave::APaveDialog {
     if {!$err && [llength $sel]==2} {
       set sel [$txt get $pos $pos2]  ;# single selection
     } else {
-      if {$err || [string trim $sel] eq ""} {
+      if {$err || [string trim $sel] eq {}} {
         set pos  [$txt index "insert wordstart"]
         set pos2 [$txt index "insert wordend"]
         set sel [string trim [$txt get $pos $pos2]]
@@ -655,7 +655,7 @@ oo::class create ::apave::APaveDialog {
         }
       }
     }
-    if {[string length $sel] == 0} {set pos ""}
+    if {[string length $sel] == 0} {set pos {}}
     return [list $sel $pos $pos2]
   }
   #_______________________
@@ -665,12 +665,12 @@ oo::class create ::apave::APaveDialog {
     #   w - path to the text
 
     lassign [my get_highlighted $txt] sel pos
-    if {$pos eq ""} return
+    if {$pos eq {}} return
     my set_HighlightedString $sel
     set lenList {}
     set posList [$txt search -all -count lenList -- "$sel" 1.0 end]
     foreach pos2 $posList len $lenList {
-      if {$len eq ""} {set len [string length $sel]}
+      if {$len eq {}} {set len [string length $sel]}
       set pos3 [$txt index "$pos2 + $len chars"]
       if {$pos2 == $pos} {
         lappend matches2 $pos2 $pos3
@@ -759,7 +759,7 @@ oo::class create ::apave::APaveDialog {
       if {[string match "ra*" $ownname]} {
         # only for widgets with a common variable (e.g. radiobuttons):
         foreach t {-var -tvar} {
-          if {[set v [::apave::getOption $t {*}$attrs]] ne ""} {
+          if {[set v [::apave::getOption $t {*}$attrs]] ne {}} {
             array set a $attrs
             set vv $v
           }
@@ -781,7 +781,7 @@ oo::class create ::apave::APaveDialog {
     #   iopts - equals to "" if no operation
     #   lwidgets - list of widget items
 
-    if {$iopts eq ""} return
+    if {$iopts eq {}} return
     foreach widg $lwidgets {
       set wname [lindex $widg 0]
       set name [my ownWName $wname]
@@ -808,23 +808,23 @@ oo::class create ::apave::APaveDialog {
     #   timeout  - timeout (to count down seconds and invoke a button)
 
     upvar $widlistName widlist
-    set defb1 [set defb2 ""]
+    set defb1 [set defb2 {}]
     foreach {but txt res} $buttons {
-      if {$defb1 eq ""} {
+      if {$defb1 eq {}} {
         set defb1 $but
-      } elseif {$defb2 eq ""} {
+      } elseif {$defb2 eq {}} {
         set defb2 $but
       }
       if {[set _ [string first "::" $txt]]>-1} {
         set tt " -tip {[string range $txt $_+2 end]}"
         set txt [string range $txt 0 $_-1]
       } else {
-        set tt ""
+        set tt {}
       }
-      if {$timeout ne "" && ($defb eq $but || $defb eq "")} {
+      if {$timeout ne {} && ($defb eq $but || $defb eq {})} {
         set tmo "-timeout {$timeout}"
       } else {
-        set tmo ""
+        set tmo {}
       }
       lappend widlist [list $but $neighbor $pos 1 1 "-st we" \
         "-t \"$txt\" -com \"${_pdg(ns)}my res $_pdg(dlg) $res\"$tt $tmo"]
@@ -887,7 +887,7 @@ oo::class create ::apave::APaveDialog {
     set qdlg [set _pdg(dlg) $wdia[incr _pdg(idxdlg)]]
     # remember the focus (to restore it after closing the dialog)
     set focusback [focus]
-    set focusmatch ""
+    set focusmatch {}
     # options of dialog
     lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM root ontop \
                rotext head optsHead hsz binds postcom onclose timeout
@@ -895,7 +895,7 @@ oo::class create ::apave::APaveDialog {
     set tags {}
     set themed 0
     set wasgeo [set textmode 0]
-    set cc [set themecolors [set optsGrid [set addpopup ""]]]
+    set cc [set themecolors [set optsGrid [set addpopup {}]]]
     set readonly [set hidefind [set scroll 1]]
     set curpos "1.0"
     set ${_pdg(ns)}PD::ch 0
@@ -957,7 +957,7 @@ oo::class create ::apave::APaveDialog {
         }
       }
     }
-    if {[set wprev [::apave::infoFind $wdia $modal]] ne ""} {
+    if {[set wprev [::apave::InfoFind $wdia $modal]] ne {}} {
       catch {
         wm withdraw $wprev
         wm deiconify $wprev
@@ -997,7 +997,7 @@ oo::class create ::apave::APaveDialog {
     set optsFontM [string trim $optsFontM]
     set optsFontM "-font \{$optsFontM $textfont\}"
     # layout: add the icon
-    if {$icon ni {"" "-"}} {
+    if {$icon ni {{} -}} {
       set widlist [list [list labBimg - - 99 1 \
       "-st n -pady 7" "-image [::apave::iconImage $icon]"]]
       set prevl labBimg
@@ -1006,14 +1006,14 @@ oo::class create ::apave::APaveDialog {
       set prevl labimg ;# this trick would hide the prevw at all
     }
     set prevw labBimg
-    if {$head ne ""} {
+    if {$head ne {}} {
       # set the dialog's heading (-head option)
-      if {$optsHeadFont ne "" || $hsz ne ""} {
-        if {$hsz eq ""} {set hsz "-size [::apave::obj basicFontSize]"}
+      if {$optsHeadFont ne {} || $hsz ne {}} {
+        if {$hsz eq {}} {set hsz "-size [::apave::obj basicFontSize]"}
         set optsHeadFont [string trim "$optsHeadFont $hsz"]
         set optsHeadFont "-font \"$optsHeadFont\""
       }
-      set optsFont ""
+      set optsFont {}
       set prevp "L"
       set head [string map {\\n \n} $head]
       foreach lh [split $head "\n"] {
@@ -1049,7 +1049,7 @@ oo::class create ::apave::APaveDialog {
       set prevw Lab$il
       set prevp T
     }
-    if {$inopts ne ""} {
+    if {$inopts ne {}} {
       # here are widgets for input (in fraM frame)
       set io0 [lindex $inopts 0]
       lset io0 1 $prevh
@@ -1066,14 +1066,14 @@ oo::class create ::apave::APaveDialog {
           upvar $limits lim
           lassign $lim l1 l2
           set val [expr {min($val,$l1)}] ;# forced low
-          if {$l2 ne ""} {set val [expr {max($val,$l2)}]} ;# forced high
+          if {$l2 ne {}} {set val [expr {max($val,$l2)}]} ;# forced high
         }
         return $val
       }
       set il [vallimits $il 1 [info exists charheight] charheight]
       incr maxw
       set maxw [vallimits $maxw 20 [info exists charwidth] charwidth]
-      rename vallimits ""
+      rename vallimits {}
       lappend widlist [list fraM $prevh T 10 7 "-st nswe -pady 3 -rw 1"]
       lappend widlist [list TexM - - 1 7 {pack -side left -expand 1 -fill both -in \
         $qdlg.fra.fraM} [list -h $il -w $maxw {*}$optsFontM {*}$optsMisc \
@@ -1099,7 +1099,7 @@ oo::class create ::apave::APaveDialog {
           menu \$pop
            \$pop add command [my iconA copy] -accelerator Ctrl+C -label \"Copy\" \\
             -command \"event generate $wt <<Copy>>\""
-        if {$hidefind || $chmsg ne ""} {
+        if {$hidefind || $chmsg ne {}} {
           append binds "
             \$pop configure -tearoff 0
             \$pop add separator
@@ -1110,10 +1110,10 @@ oo::class create ::apave::APaveDialog {
       }
     }
     set appendHL no
-    if {$chmsg eq ""} {
+    if {$chmsg eq {}} {
       if {$textmode} {
         if {![info exists ${_pdg(ns)}PD::fnd]} {
-          set ${_pdg(ns)}PD::fnd ""
+          set ${_pdg(ns)}PD::fnd {}
         }
         set noIMG "[my iconA none]"
         if {$hidefind} {
@@ -1192,10 +1192,10 @@ oo::class create ::apave::APaveDialog {
     # make & display the dialog's window
     set wtop [my makeWindow $qdlg.fra $ttl]
     set widlist [my paveWindow $qdlg.fra $widlist]
-    if {$precom ne ""} {
+    if {$precom ne {}} {
       {*}$precom  ;# actions before showModal
     }
-    if {$themecolors ne ""} {
+    if {$themecolors ne {}} {
       # themed colors are set as sequentional '-theme' args
       if {[llength $themecolors]==2} {
         # when only 2 main fb/bg colors are set (esp. for TKE)
@@ -1229,7 +1229,7 @@ oo::class create ::apave::APaveDialog {
         my readonlyWidget ::[my TexM] true false
       }
     }
-    if {$focusmatch ne ""} {
+    if {$focusmatch ne {}} {
       foreach w $widlist {
         lassign $w widname
         lassign [my LowercaseWidgetName $widname] wn rn
@@ -1251,32 +1251,32 @@ oo::class create ::apave::APaveDialog {
     if { [string is integer $res] } {
       if {$res && $chv} { incr result 10 }
     } else {
-      set res [expr {$result ne "" ? 1 : 0}]
+      set res [expr {$result ne {} ? 1 : 0}]
       if {$res && $chv} { append result 10 }
     }
     if {$textmode && !$readonly} {
       set focusnow [my TexM]
       set textcont [$focusnow get 1.0 end]
-      if {$res && $postcom ne ""} {
+      if {$res && $postcom ne {}} {
         {*}$postcom textcont [my TexM] ;# actions after showModal
       }
       set textcont " [$focusnow index insert] $textcont"
     } else {
-      set textcont ""
+      set textcont {}
     }
-    if {$res && $inopts ne ""} {
+    if {$res && $inopts ne {}} {
       my SetGetTexts get $qdlg.fra $inopts $widlist
       set inopts " [my GetVarsValues $widlist]"
     } else {
-      set inopts ""
+      set inopts {}
     }
-    if {$textmode && $rotext ne ""} {
+    if {$textmode && $rotext ne {}} {
       set $rotext [string trimright [[my TexM] get 1.0 end]]
     }
     destroy $qdlg
     update
     # pause a bit and restore the old focus
-    if {$focusback ne "" && [winfo exists $focusback]} {
+    if {$focusback ne {} && [winfo exists $focusback]} {
       set w ".[lindex [split $focusback .] 1]"
       after 50 [list if "\[winfo exist $focusback\]" "focus -force $focusback" elseif "\[winfo exist $w\]" "focus $w"]
     } else {

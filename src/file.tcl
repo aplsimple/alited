@@ -252,9 +252,9 @@ proc file::SbhText {} {
           pack [$obPav FraHead] -side bottom -fill x -pady 3 -after [$obPav GutText]
         }
       }
-       $wtxt configure -xscrollcommand "$wsbh set"
-       $wsbh configure -command "$wtxt xview"
-       set al(isSbhText) yes
+      $wtxt configure -xscrollcommand "$wsbh set"
+      $wsbh configure -command "$wtxt xview"
+      set al(isSbhText) yes
     }
   }
 }
@@ -263,7 +263,7 @@ proc file::SbhText {} {
 proc file::WrapLines {} {
   # Switches wrap word mode for a current text.
 
-  namespace upvar ::alited al al obPav obPav
+  namespace upvar ::alited al al
   set wtxt [alited::main::CurrentWTXT]
   if {[set al(wrapwords) [expr {[$wtxt cget -wrap] ne {word}}]]} {
     $wtxt configure -wrap word
@@ -455,8 +455,8 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
     if {[file exists $fname]} {
       set exts $al(TclExtensions)
       append exts { } $al(ClangExtensions)
+      append exts { } $al(TextExtensions)
       set exts [string trim [string map {{ } {, } . {}} $exts]]
-      append exts "\nhtml, htm, css, md, txt, sh, bat, ini"
       set ext [string tolower [string trim [file extension $fname] .]]
       set esp [split [string map [list { } {} \n ,] $exts] ,]
       if {!$reload && $ext ni $esp} {
@@ -608,8 +608,8 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
     }
     if {$checknew} CheckForNew
     alited::ini::SaveCurrentIni $al(INI,save_onclose)
-    alited::tree::UpdateFileTree
   }
+  alited::tree::UpdateFileTree
   if {$al(closefunc) != 1} {  ;# close func = 1 means "close all"
     alited::file::AddRecent $fname
   }

@@ -14,8 +14,8 @@ proc set_theme {mode} {
     array set colors {
       -fg             "#ffffff"
       -bg             "#333333"
-      -disabledfg     "#ffffff"
-      -disabledbg     "#737373"
+      -disabledfg     "#7e7e7e"
+      -disabledbg     "#434343"
       -selectfg       "#ffffff"
       -selectbg       "#007fff"
     }
@@ -93,4 +93,3 @@ proc set_theme {mode} {
     option add *Menu.background #e1e1df
   }
 }
-#RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

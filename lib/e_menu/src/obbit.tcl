@@ -25,6 +25,7 @@ namespace eval ::apave {
   set _PU_opts(_ERROR_) {}
   set _PU_opts(_EOL_) {}
   set _PU_opts(_LOGFILE_) {}
+  set _PU_opts(_MODALWIN_) [list]
   # - main color scheme data
   variable _CS_
   array set _CS_ [list]
@@ -44,54 +45,101 @@ namespace eval ::apave {
   fI     bI  --12--  bM    fW      bW     itemHL2 tabHL chkHL #005...reserved... #007
 
   set ::apave::_CS_(ALL) {
-{{ 0: AwLight} "#141414" #151616 #dfdfde #d1d1d0 #28578a #85b4e7 #000 #444 grey #4776a9 #000 #97c6f9 - #bebebd #000 #FBFB96 #cacaca #a20000 #76b2f1 #005 #006 #007}
-{{ 1: AzureLight} "#050b0d" #050b0d #fff #e1e1e1 #0b8aa4 #7feaff #000 #444 grey #22a1bb #000 #93e8ff - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
-{{ 2: ForestLight} "#050b0d" #050b0d #fff #e1e1e1 #1d5d1d #A8CCA8 #000 #185818 grey #328457 #000 #b6cbb6 - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
-{{ 3: SunValleyLight} "#050b0d" #050b0d #fff #e1e1e1 #1056af #86d2ff #000 #444 grey #1574cd #000 #7fcbff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #76b2f1 #005 #006 #007}
-{{ 4: Grey1} "#050b0d" #050b0d #F8F8F8 #dadad8 #933232 #b8b8b8 #000 #444 grey #843e3e #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #76b2f1 #005 #006 #007}
-{{ 5: Grey2} "#050b0d" #050b0d #f4f4f4 #F8F8F8 #5c1616 #c8c8c8 #000 #444 grey #933232 #000 #c1c1c1 - #e7e7e7 #000 #FBFB95 #e5e5e5 #a20000 #76b2f1 #005 #006 #007}
-{{ 6: Rosy} "#2B122A" #000 #FFFFFF #F6E6E9 #712371 #d0b8d3 #000 #630063 grey #954799 #000 #ceb6d1 - #e3d3d6 #000 #FBFB95 #e5e3e1 #a20000 #76b2f1 #005 #006 #007}
-{{ 7: Clay} "#000" #000 #fdf4ed #e6dbd4 #6e300d #bcaea2 #000 #444 grey #813b3b #000 #c6b4ac - #d5c9c1 #000 #FBFB95 #e1dfde #a20000 #76b2f1 #005 #006 #007}
-{{ 8: Dawn} "#08085D" #030358 #FFFFFF #e4fafa #794545 #a3dce5 #000 #195999 grey #ae4d4d #000 #99d2db - #d3e9e9 #000 #FBFB96 #dbe9ed #a20000 #76b2f1 #005 #006 #007}
-{{ 9: Sky} "#102433" #0A1D33 #d0fdff #bdf6ff #713d3d #95ced7 #000 #195999 grey #a94848 #000 #9ad3dc - #b1eaf3 #000 #FBFB95 #c0e9ef #a20000 #76b2f1 #005 #006 #007}
-{{10: Florid} "#000" #004000 #e4fce4 #fff #8b4545 #93e493 #0F2D0F #185818 grey #9a481a #004000 #a7f8a7 - #d8e7d8 #000 #FBFB96 #d7e6d7 #a20000 #76b2f1 #005 #006 #007}
-{{11: LightGreen} "#122B05" #091900 #edffed #DEF8DE #764242 #A8CCA8 #000 #185818 grey #a34242 #000 #A8CCA8 - #cde7cd #000 #FBFB96 #dee9de #a20000 #76b2f1 #005 #006 #007}
-{{12: InverseGreen} "#122B05" #091900 #e5ffe1 #d7f1d7 #6d3939 #a7cba7 #000 #185818 grey #a94848 #000 #afd3af - #c9e3c9 #000 #FBFB96 #d6e8d5 #a20000 #76b2f1 #005 #006 #007}
-{{13: GreenPeace} "#001000" #001000 #e1ffdd #cfe4cf #733f3f #a5c3a1 #000 #185818 grey #af4e4e #000 #9cb694 - #c1dbc1 #000 #FBFB96 #d2e1d2 #a20000 #76b2f1 #005 #006 #007}
-{{14: African} "#000" #000 #fff #ffffe7 #8a4444 #ffd797 #000 #682800 #7e7e7e #a44a2d #000 #f7bf91 - #e7e7cf #000 #eded89 #ededd5 #a20000 #76b2f1 #005 #006 #007}
-{{15: African1} "#000" #000 #fff #ebebd3 #8a4444 #ebc383 #000 #682800 #7e7e7e #9d4326 #000 #f7bf91 - #dbdbc3 #000 #eded89 #ededd5 #a20000 #76b2f1 #005 #006 #007}
-{{16: African2} "#000" #000 #f7f7dc #dedbb4 #8e4848 #f2b482 #000 #682800 grey #9f4528 #000 #e6ae80 - #ccc9a2 #000 #fbfb74 #e7e7cb #a20000 #76b2f1 #005 #006 #007}
-{{17: African3} "#000" #000 #e2deb5 #ccc9a6 #813b3b #e1a97b #000 #682800 grey #a44a2d #000 #e6ae80 - #bbb895 #000 #fbfb74 #c9c9b0 #c10000 #76b2f1 #005 #006 #007}
-{{18: Yellowstone} "#00002f" #00003c #ffffd1 #d5d3b7 #7b3e30 #d59e6d #000 #682800 grey #93391c #000000 #cfab86 - #c2c0a4 #000 #ffff45 #e6e6bb #a30000 #76b2f1 #005 #006 #007}
-{{19: Notebook} "#000" #000 #e9e1c8 #d2ccb8 #692323 #d59d6f #000 #682800 #7e7e7e #92381b #000 #c09c77 - #dbd5c1 #000 #eded89 #dad2b9 #a20000 #76b2f1 #005 #006 #007}
-{{20: Notebook1} "#000" #000 #dad2b9 #bfb9a5 #692323 #d59d6f #000 #682800 #707070 #92381b #000 #ba9671 - #c5bfab #000 #eded89 #ccc4ab #a20000 #76b2f1 #005 #006 #007}
-{{21: Notebook2} "#000" #000 #d1c9b0 #b1ab97 #692323 #d59d6f #000 #682800 #606060 #92381b #000 #c38b5d - #bdb7a3 #000 #eded89 #c1b9a0 #980000 #76b2f1 #005 #006 #007}
-{{22: Notebook3} "#000" #000 #c2baa1 #a6a08c #793333 #cb9365 #000 #682800 #505050 #973d20 #000 #d59d6f - #b3ad99 #000 #eded89 #b2aa91 #7b1010 #76b2f1 #005 #006 #007}
-{{23: Darcula} "#ececec" #c7c7c7 #272727 #323232 #93baf6 #2F5692 #e1e1e1 #f4f49f grey #769dd9 #fff #2c538f - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
-{{24: Dusk} "#ececec" #ececec #1a1f21 #262b2d #9fc99f #217346 #FFF #f4f49f #585d5f #99c399 #fff #225c3b - #363b3d #000 #9d9d60 #23282a #ffc341 #99dd99 #005 #006 #007}
-{{25: AwDark} "#F0E8E8" #E7E7E7 #1f2223 #232829 #77b3f2 #215d9c #fff #f4f49f grey #5793d2 #fff #0d4988 - #313637 #000 #9d9d60 #292e2f #ffc341 #76b2f1 #005 #006 #007}
-{{26: AzureDark} "#ececec" #c7c7c7 #272727 #393939 #7fd5ff #0a89c1 #FFF #f4f49f grey #33b2ff #ffffff #0281b9 - #4a4a4a #000 #aaaa6d #383838 #ffc341 #76b2f1 #005 #006 #007}
-{{27: ForestDark} "#ececec" #c7c7c7 #272727 #393939 #a3cda3 #217346 #FFF #42ff42 grey #84ae84 #fff #247649 - #4a4a4a #000 #aaaa6d #383838 #efaf6f #99dd99 #005 #006 #007}
-{{28: SunValleyDark} "#dfdfdf" #dddddd #131313 #252525 #83cee9 #2a627f #FFF #f4f49f #6f6f6f #63a1c3 #fff #18506d - #323232 #000 #9d9d60 #2a2a2a #efaf6f #4273eb #005 #006 #007}
-{{29: Dark1} "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #ba8d4d #000 #767676 - #363636 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
-{{30: Dark2} "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #000 #f4f49f #616161 #b28545 #000 #767676 - #323232 #000 #9d9d60 #262626 #ffc341 #76b2f1 #005 #006 #007}
-{{31: Dark3} "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #000 #f4f49f #616161 #aa7d3d #000 #767676 - #303030 #000 #9d9d60 #131313 #ffc341 #76b2f1 #005 #006 #007}
-{{32: Oscuro} "#f1f1f1" #ffffff #314242 #3e5959 #f1b479 #6c8787 #fff #42ff42 #afafaf #d3a051 #fff #5b7676 - #4d6868 #000 #aaaa6d #425353 #ffc341 #94e2b8 #005 #006 #007}
-{{33: Oscuro1} "#e3e3e3" #f7f7f7 #233434 #304b4b #e3a66b #5e7979 #fff #42ff42 #a1a1a1 #d6a354 #fff #4e6969 - #3f5a5a #000 #aaaa6d #344545 #ffcb8b #86d4aa #005 #006 #007}
-{{34: Oscuro2} "#d5d5d5" #f1f1f1 #152626 #223d3d #d5985d #506b6b #fff #42ff42 #939393 #c69344 #fff #435e5e - #314c4c #000 #9d9d60 #263737 #ffc585 #78c69c #005 #006 #007}
-{{35: Oscuro3} "#c7c7c7" #eaeaea #071818 #142f2f #dfa267 #425d5d #fff #42ff42 #858585 #ba8738 #fff #324d4d - #233e3e #000 #9d9d60 #182929 #e9ae6e #6ab88e #005 #006 #007}
-{{36: MildDark} "#d2d2d2" #ffffff #223142 #2D435B #3ddbdb #517997 #fff #00ffff grey #18b6b6 #fff #3e6684 - #3a5068 #000 #aaaa6d #324152 #ffc341 #76b2f1 #005 #006 #007}
-{{37: MildDark1} "#c8c8c8" #f7f7f7 #1a2937 #24384f #3cdada #466e8c #fff #00ffff #757575 #19b7b7 #fff #3a6280 - #31455c #000 #aaaa6d #2b3a48 #f1b171 #76b2f1 #005 #006 #007}
-{{38: MildDark2} "#e2e2e2" #f1f1f1 #0e1d2c #1B3048 #3edddd #426a88 #fff #00ffff #6c6c6c #0ba9a9 #fff #355d7b - #2a3f57 #000 #9d9d60 #1d2c3b #f4b474 #76b2f1 #005 #006 #007}
-{{39: MildDark3} "#dbdbdb" #eaeaea #000c1b #031830 #35d4d4 #375f7d #fff #00ffff #6c6c6c #019f9f #fff #2f5775 - #162b43 #000 #9d9d60 #0a1f37 #e5a565 #76b2f1 #005 #006 #007}
-{{40: Inkpot} "#d3d3ff" #AFC2FF #16161f #1E1E27 #e39f51 #525293 #fff #f4f49f #6e6e6e #b57535 #fff #4d4d8e - #292936 #000 #9d9d60 #202029 #e7b070 #7a7abb #005 #006 #007}
-{{41: Quiverly} "#cdd8d8" #cdd8d8 #2b303b #333946 #eda95b #6f7582 #fff #f4f49f #757575 #cd8d4d #000 #9197a4 - #414650 #000 #aaaa6d #323742 #ffc341 #76b2f1 #005 #006 #007}
-{{42: Monokai} "#f8f8f2" #f8f8f2 #353630 #4e5044 #ffbb6d #707070 #fff #f4f49f #9a9a9a #db9e63 #000 #777777 - #46473d #000 #b7b77a #3c3d37 #ffc888 #cd994b #005 #006 #007}
-{{43: TKE Default} "#dbdbdb" #dbdbdb #000 #282828 #d3a85a #0a0acc #fff #f4f49f #6a6a6a #c58545 #fff #0000d3 - #383838 #000 #9d9d60 #0d0e0e #e5a565 #76b2f1 #005 #006 #007}
-{{44: Magenta} "#E8E8E8" #F0E8E8 #381e44 #4A2A4A #ffbb6d #846484 #fff #f4f49f grey #d6995e #000 #ad8dad - #573757 #000 #9d9d60 #42284e #ffc888 #ffafff #005 #006 #007}
-{{45: Red} "#fff" #e9e9e6 #340202 #440702 #ffbb6d #b05e5e #fff #f4f49f #828282 #ce9156 #000 #ba6868 - #521514 #000 #9d9d60 #461414 #ffcf8f #ff9a9a #005 #006 #007}
-{{46: Chocolate} "#d6d1ab" #d6d1ab #251919 #402020 #ebb474 #664D4D #fff #f4f49f #828282 #c08040 #fff #583f3f - #432a2a #000 #aaaa6d #2d2121 #eeb777 #cf9292 #005 #006 #007}
-{{47: Desert} "#fff" #fff #47382d #5a4b40 #ffbb6d #85766b #fff #f4f49f #a2a2a2 #d4975c #fff #7f7065 - #695a4f #000 #aaaa6d #503f34 #ffc341 #ead79b #005 #006 #007}
+{{ 0: AwLight}        "#141414" #151616 #dfdfde #d1d1d0 #28578a #85b4e7 #000 #444 grey #4776a9 #000 #97c6f9 - #bebebd #000 #FBFB96 #cacaca #a20000 #76b2f1 #005 #006 #007}
+
+{{ 1: AzureLight}     "#050b0d" #050b0d #ffffff #e1e1e1 #0b8aa4 #7feaff #000 #444 grey #22a1bb #000 #93e8ff - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
+
+{{ 2: ForestLight}    "#050b0d" #050b0d #ffffff #e1e1e1 #1d5d1d #A8CCA8 #000 #185818 grey #328457 #000 #b6cbb6 - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
+
+{{ 3: SunValleyLight} "#050b0d" #050b0d #ffffff #e1e1e1 #1056af #86d2ff #000 #444 grey #1574cd #000 #7fcbff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #76b2f1 #005 #006 #007}
+
+{{ 4: Grey1}          "#050b0d" #050b0d #F8F8F8 #dadad8 #933232 #b8b8b8 #000 #444 grey #843e3e #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #76b2f1 #005 #006 #007}
+
+{{ 5: Grey2}          "#050b0d" #050b0d #f4f4f4 #F8F8F8 #5c1616 #c8c8c8 #000 #444 grey #933232 #000 #c1c1c1 - #e7e7e7 #000 #FBFB95 #e5e5e5 #a20000 #76b2f1 #005 #006 #007}
+
+{{ 6: Rosy}           "#2B122A" #000000 #FFFFFF #F6E6E9 #712371 #d0b8d3 #000 #630063 grey #954799 #000 #ceb6d1 - #e3d3d6 #000 #FBFB95 #e5e3e1 #a20000 #76b2f1 #005 #006 #007}
+
+{{ 7: Clay}           "#000000" #000000 #fdf4ed #e6dbd4 #6e300d #bcaea2 #000 #444 grey #813b3b #000 #c6b4ac - #d5c9c1 #000 #FBFB95 #e1dfde #a20000 #76b2f1 #005 #006 #007}
+
+{{ 8: Dawn}           "#08085D" #030358 #FFFFFF #e4fafa #794545 #a3dce5 #000 #195999 grey #ae4d4d #000 #99d2db - #d3e9e9 #000 #FBFB96 #dbe9ed #a20000 #76b2f1 #005 #006 #007}
+
+{{ 9: Sky}            "#102433" #0A1D33 #d0fdff #bdf6ff #713d3d #95ced7 #000 #195999 grey #a94848 #000 #9ad3dc - #b1eaf3 #000 #FBFB95 #c0e9ef #a20000 #76b2f1 #005 #006 #007}
+
+{{10: Florid}         "#000000" #004000 #e4fce4 #fff #8b4545 #93e493 #0F2D0F #185818 grey #9a481a #004000 #a7f8a7 - #d8e7d8 #000 #FBFB96 #d7e6d7 #a20000 #76b2f1 #005 #006 #007}
+
+{{11: LightGreen}     "#122B05" #091900 #edffed #DEF8DE #764242 #A8CCA8 #000 #185818 grey #a34242 #000 #A8CCA8 - #cde7cd #000 #FBFB96 #dee9de #a20000 #76b2f1 #005 #006 #007}
+
+{{12: InverseGreen}   "#122B05" #091900 #e5ffe1 #d7f1d7 #6d3939 #a7cba7 #000 #185818 grey #a94848 #000 #afd3af - #c9e3c9 #000 #FBFB96 #d6e8d5 #a20000 #76b2f1 #005 #006 #007}
+
+{{13: GreenPeace}     "#001000" #001000 #e1ffdd #cfe4cf #733f3f #a5c3a1 #000 #185818 grey #af4e4e #000 #9cb694 - #c1dbc1 #000 #FBFB96 #d2e1d2 #a20000 #76b2f1 #005 #006 #007}
+
+{{14: African}        "#000000" #000000 #ffffff #ffffe7 #8a4444 #ffd797 #000 #682800 #7e7e7e #a44a2d #000 #f7bf91 - #e7e7cf #000 #eded89 #ededd5 #a20000 #76b2f1 #005 #006 #007}
+
+{{15: African1}       "#000000" #000000 #ffffff #ebebd3 #8a4444 #ebc383 #000 #682800 #7e7e7e #9d4326 #000 #f7bf91 - #dbdbc3 #000 #eded89 #ededd5 #a20000 #76b2f1 #005 #006 #007}
+
+{{16: African2}       "#000000" #000000 #f7f7dc #dedbb4 #8e4848 #f2b482 #000 #682800 grey #9f4528 #000 #e6ae80 - #ccc9a2 #000 #fbfb74 #e7e7cb #a20000 #76b2f1 #005 #006 #007}
+
+{{17: African3}       "#000000" #000000 #e2deb5 #ccc9a6 #813b3b #e1a97b #000 #682800 grey #a44a2d #000 #e6ae80 - #bbb895 #000 #fbfb74 #c9c9b0 #c10000 #76b2f1 #005 #006 #007}
+
+{{18: Yellowstone}    "#00002f" #00003c #ffffd1 #d5d3b7 #7b3e30 #d59e6d #000 #682800 grey #93391c #000000 #cfab86 - #c2c0a4 #000 #ffff45 #e6e6bb #a30000 #76b2f1 #005 #006 #007}
+
+{{19: Notebook}       "#000000" #000000 #e9e1c8 #d2ccb8 #692323 #d59d6f #000 #682800 #7e7e7e #92381b #000 #c09c77 - #dbd5c1 #000 #eded89 #dad2b9 #a20000 #76b2f1 #005 #006 #007}
+
+{{20: Notebook1}      "#000000" #000000 #dad2b9 #bfb9a5 #692323 #d59d6f #000 #682800 #707070 #92381b #000 #ba9671 - #c5bfab #000 #eded89 #ccc4ab #a20000 #76b2f1 #005 #006 #007}
+
+{{21: Notebook2}      "#000000" #000000 #d1c9b0 #b1ab97 #692323 #d59d6f #000 #682800 #606060 #92381b #000 #c38b5d - #bdb7a3 #000 #eded89 #c1b9a0 #980000 #76b2f1 #005 #006 #007}
+
+{{22: Notebook3}      "#000000" #000000 #c2baa1 #a6a08c #793333 #cb9365 #000 #682800 #505050 #973d20 #000 #d59d6f - #b3ad99 #000 #eded89 #b2aa91 #7b1010 #76b2f1 #005 #006 #007}
+
+{{23: Darcula}        "#ececec" #c7c7c7 #272727 #323232 #93baf6 #2F5692 #e1e1e1 #f4f49f grey #769dd9 #fff #2c538f - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
+
+{{24: Dusk}           "#ececec" #ececec #1a1f21 #262b2d #9fc99f #217346 #FFF #f4f49f #585d5f #99c399 #fff #225c3b - #363b3d #000 #9d9d60 #23282a #ffc341 #99dd99 #005 #006 #007}
+
+{{25: AwDark}         "#F0E8E8" #E7E7E7 #1f2223 #232829 #77b3f2 #215d9c #fff #f4f49f grey #5793d2 #fff #0d4988 - #313637 #000 #9d9d60 #292e2f #ffc341 #76b2f1 #005 #006 #007}
+
+{{26: AzureDark}      "#ececec" #c7c7c7 #272727 #393939 #7fd5ff #0a89c1 #FFF #f4f49f grey #33b2ff #ffffff #0281b9 - #4a4a4a #000 #aaaa6d #383838 #ffc341 #76b2f1 #005 #006 #007}
+
+{{27: ForestDark}     "#ececec" #c7c7c7 #272727 #393939 #a3cda3 #217346 #FFF #42ff42 grey #84ae84 #fff #247649 - #4a4a4a #000 #aaaa6d #383838 #efaf6f #99dd99 #005 #006 #007}
+
+{{28: SunValleyDark}  "#dfdfdf" #dddddd #131313 #252525 #83cee9 #2a627f #FFF #f4f49f #6f6f6f #63a1c3 #fff #18506d - #323232 #000 #9d9d60 #2a2a2a #efaf6f #4273eb #005 #006 #007}
+
+{{29: Dark1}          "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #ba8d4d #000 #767676 - #363636 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
+
+{{30: Dark2}          "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #000 #f4f49f #616161 #b28545 #000 #767676 - #323232 #000 #9d9d60 #262626 #ffc341 #76b2f1 #005 #006 #007}
+
+{{31: Dark3}          "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #000 #f4f49f #616161 #aa7d3d #000 #767676 - #303030 #000 #9d9d60 #131313 #ffc341 #76b2f1 #005 #006 #007}
+
+{{32: Oscuro}         "#f1f1f1" #ffffff #314242 #3e5959 #f1b479 #6c8787 #fff #42ff42 #afafaf #d3a051 #fff #5b7676 - #4d6868 #000 #aaaa6d #425353 #ffc341 #94e2b8 #005 #006 #007}
+
+{{33: Oscuro1}        "#e3e3e3" #f7f7f7 #233434 #304b4b #e3a66b #5e7979 #fff #42ff42 #a1a1a1 #d6a354 #fff #4e6969 - #3f5a5a #000 #aaaa6d #344545 #ffcb8b #86d4aa #005 #006 #007}
+
+{{34: Oscuro2}        "#d5d5d5" #f1f1f1 #152626 #223d3d #d5985d #506b6b #fff #42ff42 #939393 #c69344 #fff #435e5e - #314c4c #000 #9d9d60 #263737 #ffc585 #78c69c #005 #006 #007}
+
+{{35: Oscuro3}        "#c7c7c7" #eaeaea #071818 #142f2f #dfa267 #425d5d #fff #42ff42 #858585 #ba8738 #fff #324d4d - #233e3e #000 #9d9d60 #182929 #e9ae6e #6ab88e #005 #006 #007}
+
+{{36: MildDark}       "#d2d2d2" #ffffff #223142 #2D435B #3ddbdb #517997 #fff #00ffff grey #18b6b6 #fff #3e6684 - #3a5068 #000 #aaaa6d #324152 #ffc341 #76b2f1 #005 #006 #007}
+
+{{37: MildDark1}      "#c8c8c8" #f7f7f7 #1a2937 #24384f #3cdada #466e8c #fff #00ffff #757575 #19b7b7 #fff #3a6280 - #31455c #000 #aaaa6d #2b3a48 #f1b171 #76b2f1 #005 #006 #007}
+
+{{38: MildDark2}      "#e2e2e2" #f1f1f1 #0e1d2c #1B3048 #3edddd #426a88 #fff #00ffff #6c6c6c #0ba9a9 #fff #355d7b - #2a3f57 #000 #9d9d60 #1d2c3b #f4b474 #76b2f1 #005 #006 #007}
+
+{{39: MildDark3}      "#dbdbdb" #eaeaea #000c1b #031830 #35d4d4 #375f7d #fff #00ffff #6c6c6c #019f9f #fff #2f5775 - #162b43 #000 #9d9d60 #0a1f37 #e5a565 #76b2f1 #005 #006 #007}
+
+{{40: Inkpot}         "#d3d3ff" #AFC2FF #16161f #1E1E27 #e39f51 #525293 #fff #f4f49f #6e6e6e #b57535 #fff #4d4d8e - #292936 #000 #9d9d60 #202029 #e7b070 #7a7abb #005 #006 #007}
+
+{{41: Quiverly}       "#cdd8d8" #cdd8d8 #2b303b #333946 #eda95b #6f7582 #fff #f4f49f #757575 #cd8d4d #000 #9197a4 - #414650 #000 #aaaa6d #323742 #ffc341 #76b2f1 #005 #006 #007}
+
+{{42: Monokai}        "#f8f8f2" #f8f8f2 #353630 #4e5044 #ffbb6d #707070 #fff #f4f49f #9a9a9a #db9e63 #000 #777777 - #46473d #000 #b7b77a #3c3d37 #ffc888 #cd994b #005 #006 #007}
+
+{{43: TKE Default}    "#dbdbdb" #dbdbdb #000000 #282828 #d3a85a #0a0acc #fff #f4f49f #6a6a6a #c58545 #fff #0000d3 - #383838 #000 #9d9d60 #0d0e0e #e5a565 #76b2f1 #005 #006 #007}
+
+{{44: Magenta}        "#E8E8E8" #F0E8E8 #381e44 #4A2A4A #ffbb6d #846484 #fff #f4f49f grey #d6995e #000 #ad8dad - #573757 #000 #9d9d60 #42284e #ffc888 #ffafff #005 #006 #007}
+
+{{45: Red}            "#ffffff" #e9e9e6 #340202 #440702 #ffbb6d #b05e5e #fff #f4f49f #828282 #ce9156 #000 #ba6868 - #521514 #000 #9d9d60 #461414 #ffcf8f #ff9a9a #005 #006 #007}
+
+{{46: Chocolate}      "#d6d1ab" #d6d1ab #251919 #402020 #ebb474 #664D4D #fff #f4f49f #828282 #c08040 #fff #583f3f - #432a2a #000 #aaaa6d #2d2121 #eeb777 #cf9292 #005 #006 #007}
+
+{{47: Desert}         "#ffffff" #ffffff #47382d #5a4b40 #ffbb6d #85766b #fff #f4f49f #a2a2a2 #d4975c #fff #7f7065 - #695a4f #000 #aaaa6d #503f34 #ffc341 #ead79b #005 #006 #007}
 }
   set ::apave::_CS_(initall) 1
   set ::apave::_CS_(initWM) 1
@@ -394,7 +442,30 @@ proc ::apave::initWM {args} {
 
   initPOP .
   initStyles
-  return
+}
+#_______________________
+
+proc ::apave::endWM {args} {
+
+  # Finishes the window management by apave, closing and clearing all.
+  #   args - if any set, means "ask if apave's WM is finished"
+
+  variable _PU_opts
+  if {[llength $args]} {
+    return [expr {[info exists _PU_opts(_ENDWM_)]}]
+  }
+  # Check existing windows, except for the first one.
+  while {1} {
+    set i [expr {[llength $_PU_opts(_MODALWIN_)] - 1}]
+    if {$i>0} {
+      lassign [lindex $_PU_opts(_MODALWIN_) $i] w var
+      if {[winfo exists $w]} {set $var 0}
+      catch {set _PU_opts(_MODALWIN_) [lreplace $_PU_opts(_MODALWIN_) $i $i]}
+    } else {
+      break
+    }
+  }
+  set _PU_opts(_ENDWM_) yes
 }
 #_______________________
 
@@ -702,6 +773,7 @@ proc ::apave::textEOL {{EOL "-"}} {
   }
   set _PU_opts(_EOL_) [string trim [string tolower $EOL]]
 }
+#_______________________
 
 proc ::apave::textChanConfigure {channel {coding {}} {eol {}}} {
   # Configures a channel for text file.
@@ -847,6 +919,88 @@ proc ::apave::bindCantagToEvent {w tag event args} {
   #   args - the command
 
   ::baltip::my::BindCantagToEvent $w $tag $event {*}$args
+}
+
+## ________________________ Helpers _________________________ ##
+
+proc ::apave::InfoWindow {{val ""} {w .} {modal no} {var ""} {regist no}} {
+
+  # Registers/unregisters windows. Also sets/gets 'count of open modal windows'.
+  #   val - current number of open modal windows
+  #   w - root window's path
+  #   modal - yes, if the window is modal
+  #   var - variable's name for tkwait
+  #   regist - yes or no for registering/unregistering
+  # See also: APave::showWindow
+
+  variable _PU_opts
+  if {$modal || $regist} {
+    set info [list $w $var $modal]
+    set i [lsearch -exact $_PU_opts(_MODALWIN_) $info]
+    if {$regist} {
+      lappend _PU_opts(_MODALWIN_) $info
+    } else {
+      catch {set _PU_opts(_MODALWIN_) [lreplace $_PU_opts(_MODALWIN_) $i $i]}
+    }
+    set res [IntStatus . MODALS $val]
+  } else {
+    set res [IntStatus . MODALS]
+  }
+  return $res
+}
+#_______________________
+
+proc ::apave::InfoFind {w modal} {
+
+  # Searches data of a window in a list of registered windows.
+  #   w - root window's path
+  #   modal - yes, if the window is modal
+  # Returns: the window's path or "" if not found.
+  # See also: InfoWindow
+
+  variable _PU_opts
+  foreach winfo [lrange $_PU_opts(_MODALWIN_) 1 end] {  ;# skip 1st window
+    incr i
+    lassign $winfo w1 var1 modal1
+    if {[winfo exists $w1]} {
+      if {[string first $w $w1]==0 && $modal==$modal1} {
+        return $w1
+      }
+    } else {
+      catch {set _PU_opts(_MODALWIN_) [lreplace $_PU_opts(_MODALWIN_) $i $i]}
+    }
+  }
+  return {}
+}
+#_______________________
+
+proc ::apave::TreSelect {w idx} {
+  # Selects a treeview item.
+  #   w - treeview's path
+  #   idx - item index
+
+  set items [$w children {}]
+  catch {
+    set it [lindex $items $idx]
+    $w see $it
+    $w focus $it
+    $w selection set $it  ;# generates <<TreeviewSelect>>
+  }
+}
+#_______________________
+
+proc ::apave::LbxSelect {w idx} {
+  # Selects a listbox item.
+  #   w - listbox's path
+  #   idx - item index
+
+  $w activate $idx
+  $w see $idx
+  if {[$w cget -selectmode] in {single browse}} {
+    $w selection clear 0 end
+    $w selection set $idx
+    event generate $w <<ListboxSelect>>
+  }
 }
 
 # ________________________ ObjectProperty _________________________ #

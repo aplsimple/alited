@@ -1,4 +1,4 @@
-package ifneeded alited 1.0.6b24 [list source [file join $dir alited.tcl]]
+package ifneeded alited 1.0.6 [list source [file join $dir alited.tcl]]
 
 namespace eval ::alited {
 
@@ -41,7 +41,7 @@ It's quick at saving [Tcl/Tk](https://wiki.tcl-lang.org/) code.
 
 It's quick at maintaining [Tcl/Tk](https://wiki.tcl-lang.org/) code.
 
-*Briefly, alited is totally quick while being still in its embryonic days a pure [Tcl/Tk](https://wiki.tcl-lang.org/) application.*
+Briefly, alited is totally quick, being at that *a pure [Tcl/Tk](https://wiki.tcl-lang.org/) application.*
 
 ## Links
 

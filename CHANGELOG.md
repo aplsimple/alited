@@ -3,8 +3,8 @@
 
 Version `1.0.6 (29 Dec'21)`
 
-  - TODO  : BUGFIX: issues with e_menu & tools in Windows
-
+  - BUGFIX: updating file tree after closing files (colors remain as if "open")
+  - BUGFIX: issues with e_menu & tools in Windows (current file name for dialogues)
   - BUGFIX: "--" added for all exec
   - BUGFIX: Ctrl+Tab at start (no switching tab yet)
   - BUGFIX: demo 2.Units 03:15 .. 04:18 - cursor position is 309.1 instead of 309.10
@@ -17,6 +17,8 @@ Version `1.0.6 (29 Dec'21)`
   - BUGFIX: more time for gaining bar's width before calling FillBar
   - BUGFIX: o=-1 for e_menu calls (instead of old o=0)
   - BUGFIX: display redefined F3/Ctrl+D/Ctrl+Y in context menu
+  - NEW   : "Plain texts' extensions" setting in "Preferences"
+  - NEW   : combobox of "Linux terminal" setting
   - NEW   : horizontal scrollbar for texts with lines unwrapped
   - NEW   : check for consistency of "" in "Check Tcl"
   - NEW   : "Open/Close selected files" from context menu of Project's file list
@@ -43,7 +45,7 @@ Version `1.0.6 (29 Dec'21)`
   - CHANGE: get rid of package duplicates (apave, baltip)
   - CHANGE: at switching projects, strings to be only restored for "Find/Replace"
   - CHANGE: colors of tips for dark CS
-  - CHANGE: rdbende themes: check/radio buttons hovered
+  - CHANGE: rdbende themes: check/radio hovered; disabled colors; combobox relief
   - CHANGE: app's icon
   - CHANGE: add space after completed command
   - CHANGE: "Check Tcl" window be non-modal topmost

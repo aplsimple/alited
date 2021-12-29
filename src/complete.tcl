@@ -11,6 +11,7 @@
 
 namespace eval complete {
   variable comms [list]  ;# list of available commands
+  variable maxwidth 0    ;# maximum width of command
 }
 
 # ________________________ Common _________________________ #
@@ -70,8 +71,10 @@ proc complete::AllSessionCommands {{currentTID ""}} {
 
 proc complete::MatchedCommands {} {
   # Gets commands that are matched to a current (under cursor) word.
-  # Returns list of current word, begin and end of it, matched commands.
+  # Returns list of current word, begin and end of it.
 
+  variable comms
+  variable maxwidth
   lassign [alited::find::GetWordOfText noselect2] curword idx1 idx2
   if {![namespace exists ::alited::repl]} {
     namespace eval ::alited {
@@ -82,6 +85,7 @@ proc complete::MatchedCommands {} {
   lappend allcomms {*}[AllSessionCommands [alited::bar::CurrentTabID]]
   set comms [list]
   set excluded [list {[._]*} alimg_* bts_* \$*]
+  set maxwidth 20
   foreach com $allcomms {
     set incl 1
     foreach ex $excluded {
@@ -90,9 +94,12 @@ proc complete::MatchedCommands {} {
         break
       }
     }
-    if {$incl && [string match "${curword}*" $com]} {lappend comms $com}
+    if {$incl && [string match "${curword}*" $com]} {
+      lappend comms $com
+      set maxwidth [expr {max($maxwidth,[string length $com])}]
+    }
   }
-  return [list $curword $idx1 $idx2 [lsort $comms]]
+  return [list $curword $idx1 $idx2]
 }
 
 # ________________________ GUI _________________________ #
@@ -127,7 +134,7 @@ proc complete::PickCommand {wtxt} {
   catch {$obj destroy}
   ::apave::APaveInput create $obj $win
   $obj paveWindow $win {
-    {LbxPick - - - - {pack -side left -expand 1 -fill both} {-h 16 -w 32 -lvar ::alited::complete::comms}}
+    {LbxPick - - - - {pack -side left -expand 1 -fill both} {-h 16 -w $alited::complete::maxwidth -lvar ::alited::complete::comms}}
     {sbvPick LbxPick L - - {pack -side left -fill both} {}}
   }
   set lbx [$obj LbxPick]
@@ -158,7 +165,7 @@ proc complete::PickCommand {wtxt} {
 proc complete::AutoCompleteCommand {} {
   # Runs auto completion of commands.
   
-  lassign [MatchedCommands] curword idx1 idx2 alited::complete::comms
+  lassign [MatchedCommands] curword idx1 idx2
   set wtxt [alited::main::CurrentWTXT]
   if {[set com [PickCommand $wtxt]] ne {}} {
     set TID [alited::bar::CurrentTabID]

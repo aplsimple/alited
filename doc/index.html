@@ -96,7 +96,7 @@ It's quick at starting.
 <br>It's quick at maintaining <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> code.
 </p>
 <p>
-<em>Briefly, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is totally quick while being still in its embryonic days a pure <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> application.</em>
+Briefly, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is totally quick, being at that <em>a pure <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> application.</em>
 </p>
 <p>
 For a <em>quick</em> acquaintance of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, a few of demo videos are available:
@@ -183,11 +183,11 @@ In Linux, you can run <em>tclsh</em> instead of <em>wish</em>.
 </p>
 
 <p>
-Being written in pure <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> 8.6, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> needs only the core <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> packages.
+Being written in pure <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> 8.6.6+, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> needs only the core <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> packages.
 </p>
 
 <p>
-If you are a novice to <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> 8.6, try and install it. Then try and install the  <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> and its dependencies, noticing the messages of CLI at <a href="#start">running alited</a>. Let the installations be a sort of exercise in <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a>.
+If you are a novice to <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> 8.6.6+, try and install it. Then try and install the  <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> and its dependencies, noticing the messages of CLI at <a href="#start">running alited</a>. Let the installations be a sort of exercise in <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a>.
 </p>
 
 <p>
@@ -224,18 +224,23 @@ As noticed above, the <span class="curid"><a href="#" class="wikilink1" title="T
 </p>
 
 <p>
-No need for a stand-alone <em>alited executable</em>. Also, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s license allows using its open source for a further customization.
+No need for a stand-alone <em>alited executable</em>. Hence, two advantages: 1) <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> can be a source of code snippets available in <a href=#projects>default</a> project, for those who intends to use <a href="../pave/index.html" title="Description of apave" rel="nofollow">apave</a>, <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a>, <a href="../bartabs/index.html" title="Description of bartabs" rel="nofollow">bartabs</a>, <a href="../baltip/baltip.html" title="Reference of baltip" rel="nofollow">baltip</a> and <a href="../hl_tcl/hl_tcl.html" title="Reference of hl_tcl" rel="nofollow">hl_tcl</a>
+packages; 2) <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s license allows using its code for a further customization.
 </p>
 
 <p>
-However, if you use a stand-alone <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkit</a> instead of fully installed <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> (or just a specific version of tclsh/wish), then you can set it as "tclsh, wish or tclkit" option in "Preferences / Tools" and run <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> with a command:
+Besides, a stand-alone <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> would be unusable at all, because <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> needs <em>tclsh</em>, <em>wish</em> or <em>tclkit</em> to run <a href=#tools>its tools</a>.
+</p>
+
+<p>
+If you use a stand-alone <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkit</a> instead of fully installed <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a>, run <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> with a command:
 <pre class="code">
 tclkit ~/PG/alited/src/alited.tcl</code></li>
 </pre>
 </p>
 
 <p>
-While <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> works fine under <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkits</a> based on Tcl/Tk 8.6 (as it uses core <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> packages only), you may develop programs requiring non-core packages. In such cases, these programs should append to <code>auto_path</code> the appropriate pathes to the non-core packages. Preferably these pathes should be subdirectories of your project, so that you make your project independent on the availability of packages at other machines.
+While <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> works fine under <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkits</a> based on Tcl/Tk 8.6.6+ (as it uses core <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> packages only), you may develop programs requiring non-core packages. In such cases, these programs should append to <code>auto_path</code> the appropriate pathes to the non-core packages. Preferably these pathes should be subdirectories of your project, so that you make your project independent on the availability of packages at other machines.
 </p>
 
 <p>Another way to have <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkits</a> be friendly with the non-core packages is setting <code>TCLLIBPATH</code> environment variable before running <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>:
@@ -261,6 +266,10 @@ These stand-alone tclkits are available by the following links:
 </ul>
 </p>
 -->
+
+<p>
+You can set a specific version of tclsh / wish / tclkit as "tclsh, wish or tclkit" option in "Preferences / Tools". This way you can test your scripts by a specific version of <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> (still it should be 8.6.6 or later).
+</p>
 
 <p>
 <br>
@@ -1144,6 +1153,8 @@ The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">
 <br><br></li>
 <li><em>Ctrl+Down</em> moves the cursor to a next paragraph
 </ul>
+</p>
+<p>By default, <em>Tab</em> key is used in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> for "Command complete" tool. Refer to "Preferences/Keys" to redefine it.
 </p>
 
 <p>

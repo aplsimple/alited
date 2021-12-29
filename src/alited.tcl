@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.6b24  ;# for documentation (esp. for Ruff!)
+package provide alited 1.0.6  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -172,6 +172,7 @@ namespace eval alited {
   variable obDl3 ::alited::aliteddl3  ;# dialog of 3rd level
   variable obCHK ::alited::alitedCHK  ;# dialog of "Check Tcl"
   variable obFND ::alited::alitedFND  ;# dialog of "Find/Replace"
+  variable obFN2 ::alited::alitedFN2  ;# dialog of "Find by list"
 
   # misc. vars
   variable DirGeometry {}  ;# saved geometry of "Choose Directory" dialogue (for Linux)
@@ -194,8 +195,10 @@ namespace eval alited {
   set al(TITLE) {%f :: %d :: %p}               ;# alited title's template
   set al(TclExtensionsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
   set al(ClangExtensionsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
+  set al(TextExtensionsDef) {html htm css md txt sh bat ini} ;# extensions of plain texts
   set al(TclExtensions) $al(TclExtensionsDef)
   set al(ClangExtensions) $al(ClangExtensionsDef)
+  set al(TextExtensions) $al(TextExtensionsDef)
 }
 
 # _____________________________ Packages used __________________________ #

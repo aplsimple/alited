@@ -204,7 +204,8 @@ proc find::SearchUnit {{wtxt ""}} {
     alited::bar::BAR $TID show
     after idle " \
       alited::main::FocusText $TID $found.0 ; \
-      alited::tree::NewSelection"
+      alited::tree::NewSelection ; \
+      alited::main::SaveVisitInfo"
   } else {
     set msg [string map [list %u $what] $al(MC,notfndunit)]
     alited::Message $msg 4
@@ -881,24 +882,28 @@ proc find::SearchByList_Do {} {
 proc find::SearchByList {} {
   # Searches words by list.
 
-  namespace upvar ::alited al al obDl3 obDl3
+  namespace upvar ::alited al al obFN2 obFN2
   set head [msgcat::mc {\n Enter a list of words divided by spaces: \n}]
-  set text [string map [list $alited::EOL \n] $al(listSBL)]
-  if {$al(matchSBL) eq {}} {set al(matchSBL) $al(MC,frExact)}
-  lassign [$obDl3 input {} [msgcat::mc {Find by List}] [list \
-    tex "{[msgcat::mc List:]} {} {-w 50 -h 8}" "$text" \
-    seh1  {{} {} {}} {} \
-    radA  {$::alited::al(MC,frMatch)} {"$::alited::al(matchSBL)" "$::alited::al(MC,frExact)" Glob RE} \
-    seh2  {{} {} {}} {} \
-    chb1  {$::alited::al(MC,frWord)} {$::alited::al(wordonlySBL)} \
-    chb2  {$::alited::al(MC,frCase)} {$::alited::al(caseSBL)} \
-    ] -head $head -weight bold] res list match wordonly case
-  if {$res} {
-    set al(listSBL) $list
-    set al(matchSBL) $match
-    set al(wordonlySBL) $wordonly
-    set al(caseSBL) $case
-    SearchByList_Do
+  while {1} {
+    set text [string map [list $alited::EOL \n] $al(listSBL)]
+    if {$al(matchSBL) eq {}} {set al(matchSBL) $al(MC,frExact)}
+    lassign [$obFN2 input {} [msgcat::mc {Find by List}] [list \
+      tex "{[msgcat::mc List:]} {} {-w 50 -h 8}" "$text" \
+      seh1  {{} {} {}} {} \
+      radA  {$::alited::al(MC,frMatch)} {"$::alited::al(matchSBL)" "$::alited::al(MC,frExact)" Glob RE} \
+      seh2  {{} {} {}} {} \
+      chb1  {$::alited::al(MC,frWord)} {$::alited::al(wordonlySBL)} \
+      chb2  {$::alited::al(MC,frCase)} {$::alited::al(caseSBL)} \
+      ] -head $head -weight bold -modal no] res list match wordonly case
+    if {$res} {
+      set al(listSBL) $list
+      set al(matchSBL) $match
+      set al(wordonlySBL) $wordonly
+      set al(caseSBL) $case
+      SearchByList_Do
+    } else {
+      break
+    }
   }
 }
 

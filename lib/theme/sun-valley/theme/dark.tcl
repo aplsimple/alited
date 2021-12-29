@@ -398,7 +398,7 @@ namespace eval ttk::theme::sun-valley-dark {
                 pressed #cfcfcf
             ]
 
-        ttk::style configure ComboboxPopdownFrame -borderwidth 1 -relief solid
+        ttk::style configure ComboboxPopdownFrame -borderwidth 1 -relief groove
 
         ttk::style map TCombobox -selectbackground [list \
             {readonly hover} $colors(-selectbg) \
@@ -498,4 +498,3 @@ namespace eval ttk::theme::sun-valley-dark {
         ttk::style configure Sash -gripcount 0
     }
 }
-#RUNF1: ../../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

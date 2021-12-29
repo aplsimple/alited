@@ -23,7 +23,7 @@ namespace eval ttk::theme::sun-valley-light {
         array set colors {
             -fg             "#202020"
             -bg             "#fafafa"
-            -disabledfg     "#a0a0a0"
+            -disabledfg     "#7f7f7f"
             -selectfg       "#ffffff"
             -selectbg       "#196ebf"
         }
@@ -191,7 +191,7 @@ namespace eval ttk::theme::sun-valley-light {
         ttk::style configure TButton -padding {8 4} -anchor center -foreground $colors(-fg)
 
         ttk::style map TButton -foreground \
-            [list disabled #a2a2a2 \
+            [list disabled #7f7f7f \
                 pressed #636363 \
                 active #1a1a1a]
         ttk::style element create Button.button image \
@@ -301,7 +301,7 @@ namespace eval ttk::theme::sun-valley-light {
                 {selected pressed} #636363 \
                 selected #ffffff \
                 pressed #c1d8ee \
-                disabled #a2a2a2 \
+                disabled #7f7f7f \
                 active #1a1a1a
             ]
 
@@ -382,7 +382,7 @@ namespace eval ttk::theme::sun-valley-light {
         ttk::style configure TEntry -foreground $colors(-fg)
 
         ttk::style map TEntry -foreground \
-            [list disabled #0a0a0a \
+            [list disabled #7f7f7f \
                 pressed #636363 \
                 active #626262
             ]
@@ -399,10 +399,10 @@ namespace eval ttk::theme::sun-valley-light {
         # _ Combobox _ #
         ttk::style configure TCombobox -foreground $colors(-fg)
 
-        ttk::style configure ComboboxPopdownFrame -borderwidth 1 -relief solid
+        ttk::style configure ComboboxPopdownFrame -borderwidth 1 -relief groove
 
         ttk::style map TCombobox -foreground \
-            [list disabled #0a0a0a \
+            [list disabled #7f7f7f \
                 pressed #636363 \
                 active #626262
             ]
@@ -432,7 +432,7 @@ namespace eval ttk::theme::sun-valley-light {
         ttk::style configure TSpinbox -foreground $colors(-fg)
 
         ttk::style map TSpinbox -foreground \
-            [list disabled #0a0a0a \
+            [list disabled #7f7f7f \
                 pressed #636363 \
                 active #626262
             ]
@@ -506,4 +506,3 @@ namespace eval ttk::theme::sun-valley-light {
         ttk::style configure Sash -gripcount 0
     }
 }
-#RUNF1: ../../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

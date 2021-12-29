@@ -106,6 +106,7 @@ namespace eval ::alited {
   set al(EM,TclList) [list]
   set al(EM,h=) ~/DOC/www.tcl.tk/man/tcl8.6
   set al(EM,tt=) {xterm -fs 12 -geometry 90x30+1+1}
+  set al(EM,tt=List) "$al(EM,tt=)\tlxterminal --geometry=220x55\tx-terminal-emulator"
   set al(EM,menu) menu.mnu
   set al(EM,menudir) {}
   set al(EM,CS) 33
@@ -236,7 +237,6 @@ proc ini::ReadIni {{projectfile ""}} {
     }
     ReadIniOptions project $projectfile
   }
-#  set al(EM,Tcl) [::alited::Tclexe]
   ReadIniPrj
   set al(TEXT,opts) "-padx 3 -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3)"
   if {!$al(INI,belltoll)} {
@@ -313,6 +313,7 @@ proc ini::ReadIniOptions {nam val} {
     save_onadd - save_onclose - save_onsave {set al(INI,$nam) $val}
     TclExts       {set al(TclExtensions) $val}
     ClangExts     {set al(ClangExtensions) $val}
+    TextExts      {set al(TextExtensions) $val}
     REbranch      {set al(RE,branch) $val}
     REproc        {set al(RE,proc) $val}
     REproc2       {set al(RE,proc2) $val}
@@ -396,6 +397,7 @@ proc ini::ReadIniEM {nam val emiName} {
     emTclList  {set al(EM,TclList) $val}
     emh        {set al(EM,h=) $val}
     emtt       {set al(EM,tt=) $val}
+    emttList   {set al(EM,tt=List) $val}
     emmenu     {set al(EM,menu) $val}
     emmenudir  {set al(EM,menudir) $val}
     emcs       {set al(EM,CS) $val}
@@ -612,6 +614,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "save_onsave=$al(INI,save_onsave)"
   puts $chan "TclExts=$al(TclExtensions)"
   puts $chan "ClangExts=$al(ClangExtensions)"
+  puts $chan "TextExts=$al(TextExtensions)"
   puts $chan "REbranch=$al(RE,branch)"
   puts $chan "REproc=$al(RE,proc)"
   puts $chan "REproc2=$al(RE,proc2)"
@@ -657,6 +660,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "emTclList=$al(EM,TclList)"
   puts $chan "emh=$al(EM,h=)"
   puts $chan "emtt=$al(EM,tt=)"
+  puts $chan "emttList=$al(EM,tt=List)"
   puts $chan "emmenu=$al(EM,menu)"
   puts $chan "emmenudir=$al(EM,menudir)"
   puts $chan "emcs=$al(EM,CS)"
@@ -992,7 +996,7 @@ proc ini::_init {} {
   # Initializes alited app.
 
   namespace upvar ::alited al al \
-    obPav obPav obDlg obDlg obDl2 obDl2 obDl3 obDl3 obFND obFND obCHK obCHK
+    obPav obPav obDlg obDlg obDl2 obDl2 obDl3 obDl3 obFND obFND obFN2 obFN2 obCHK obCHK
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
@@ -1019,6 +1023,7 @@ proc ini::_init {} {
   ::apave::APaveInput create $obDl2 $al(WIN)
   ::apave::APaveInput create $obDl3 $al(WIN)
   ::apave::APaveInput create $obFND $al(WIN)
+  ::apave::APaveInput create $obFN2 $al(WIN)
   ::apave::APaveInput create $obCHK $al(WIN)
 
   # here, the order of icons defines their order in the toolbar

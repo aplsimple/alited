@@ -107,7 +107,6 @@ namespace eval ::apave {
   set _AP_VARS(.,SHADOW) 0
   set _AP_VARS(.,MODALS) 0
   set _AP_VARS(TIMW) [list]
-  set _AP_VARS(MODALWIN) [list]
   set _AP_VARS(LINKFONT) [list -underline 1]
   set _AP_VARS(INDENT) "  "
   set _AP_VARS(KEY,F3) F3
@@ -118,8 +117,8 @@ namespace eval ::apave {
   variable _AP_VISITED;  array set _AP_VISITED [list]
   set _AP_VISITED(ALL) [list]
   variable UFF "\uFFFF"
-  variable _OBJ_ ""
-  variable MC_NS ""
+  variable _OBJ_ {}
+  variable MC_NS {}
 
 # _______________________ Helpers _____________________ #
 
@@ -135,7 +134,7 @@ namespace eval ::apave {
     # Returns the command's result.
 
     variable _OBJ_
-    if {$_OBJ_ eq ""} {set _OBJ_ [::apave::APaveInput new]}
+    if {$_OBJ_ eq {}} {set _OBJ_ [::apave::APaveInput new]}
     if {[set exported [expr {$com eq "EXPORT"}]]} {
       set com [lindex $args 0]
       set args [lrange $args 1 end]
@@ -146,30 +145,6 @@ namespace eval ::apave {
       oo::objdefine $_OBJ_ "unexport $com"
     }
     return $res
-  }
-  #_______________________
-
-  proc endWM {args} {
-
-    # Finishes the window management by apave, closing and clearing all.
-    #   args - if any set, means "ask if apave's WM is finished"
-
-    variable _AP_VARS
-    if {[llength $args]} {
-      return [expr {[info exists _AP_VARS(EOP)]}]
-    }
-    # Check existing windows, except for the first one.
-    while {1} {
-      set i [expr {[llength $_AP_VARS(MODALWIN)] - 1}]
-      if {$i>0} {
-        lassign [lindex $_AP_VARS(MODALWIN) $i] w var
-        if {[winfo exists $w]} {set $var 0}
-        catch {set _AP_VARS(MODALWIN) [lreplace $_AP_VARS(MODALWIN) $i $i]}
-      } else {
-        break
-      }
-    }
-    set _AP_VARS(EOP) yes
   }
   #_______________________
 
@@ -184,7 +159,7 @@ namespace eval ::apave {
     # See also: IntStatus
 
     variable _AP_VARS
-    if {$val eq ""} {  ;# getting
+    if {$val eq {}} {  ;# getting
       if {[info exist _AP_VARS($w,$name)]} {
         return $_AP_VARS($w,$name)
       }
@@ -204,8 +179,8 @@ namespace eval ::apave {
     # Returns an old value of status.
     # See also: WindowStatus
 
-    set old [WindowStatus $w $name "" 0]
-    if {$val ne ""} {WindowStatus $w $name $val 1}
+    set old [WindowStatus $w $name {} 0]
+    if {$val ne {}} {WindowStatus $w $name $val 1}
     return $old
   }
   #_______________________
@@ -222,58 +197,6 @@ namespace eval ::apave {
   }
   #_______________________
 
-  proc infoWindow {{val ""} {w .} {modal no} {var ""} {regist no}} {
-
-    # Registers/unregisters windows. Also sets/gets 'count of open modal windows'.
-    #   val - current number of open modal windows
-    #   w - root window's path
-    #   modal - yes, if the window is modal
-    #   var - variable's name for tkwait
-    #   regist - yes or no for registering/unregistering
-    # See also: APave::showWindow
-
-    variable _AP_VARS
-    if {$modal || $regist} {
-      set info [list $w $var $modal]
-      set i [lsearch -exact $_AP_VARS(MODALWIN) $info]
-      if {$regist} {
-        lappend _AP_VARS(MODALWIN) $info
-      } else {
-        catch {set _AP_VARS(MODALWIN) [lreplace $_AP_VARS(MODALWIN) $i $i]}
-      }
-      set res [IntStatus . MODALS $val]
-    } else {
-      set res [IntStatus . MODALS]
-    }
-    return $res
-  }
-  #_______________________
-
-  proc infoFind {w modal} {
-
-    # Searches data of a window in a list of registered windows.
-    #   w - root window's path
-    #   modal - yes, if the window is modal
-    # Returns: the window's path or "" if not found.
-    # See also: infoWindow
-
-   variable _AP_VARS
-   foreach winfo [lrange $_AP_VARS(MODALWIN) 1 end] {  ;# skip 1st window
-     incr i
-     lassign $winfo w1 var1 modal1
-     if {[winfo exists $w1]} {
-       if {[string first $w $w1]==0 && $modal==$modal1} {
-         return $w1
-       }
-     } else {
-       catch {set _AP_VARS(MODALWIN) [lreplace $_AP_VARS(MODALWIN) $i $i]}
-     }
-   }
-   return ""
-
-  }
-  #_______________________
-
   proc iconImage {{icon ""} {iconset "small"}} {
 
     # Gets a defined icon's image or list of icons.
@@ -285,7 +208,7 @@ namespace eval ::apave {
 
     variable _AP_IMG
     variable _AP_ICO
-    if {$icon eq ""} {return $_AP_ICO}
+    if {$icon eq {}} {return $_AP_ICO}
     proc imagename {icon} {   # Get a defined icon's image name
       return _AP_IMG(img$icon)
     }
@@ -330,7 +253,7 @@ namespace eval ::apave {
 
     variable _AP_IMG
     iconImage -init
-    if {$iconset ne "" && "_AP_IMG(img$icon-$iconset)" in [image names]} {
+    if {$iconset ne {} && "_AP_IMG(img$icon-$iconset)" in [image names]} {
       return [set _AP_IMG($icon-$iconset)]
     }
     return [set _AP_IMG($icon)]
@@ -346,13 +269,13 @@ namespace eval ::apave {
     # a file's name containing th image data.
     # If it fails to find an image in either, no icon is set.
 
-    set appIcon ""
-    if {$winicon ne ""} {
+    set appIcon {}
+    if {$winicon ne {}} {
       if {[catch {set appIcon [image create photo -data $winicon]}]} {
         catch {set appIcon [image create photo -file $winicon]}
       }
     }
-    if {$appIcon ne ""} {wm iconphoto $win -default $appIcon}
+    if {$appIcon ne {}} {wm iconphoto $win -default $appIcon}
   }
   #_______________________
 
@@ -378,36 +301,6 @@ namespace eval ::apave {
     #   acc - key name, may contain 2 items (e.g. Control-D Control-d)
     set acc [lindex $acc 0]
     return [string map {Control Ctrl - + bracketleft [ bracketright ]} $acc]
-  }
-  #_______________________
-
-  proc TreSelect {w idx} {
-    # Selects a treeview item.
-    #   w - treeview's path
-    #   idx - item index
-
-    set items [$w children {}]
-    catch {
-      set it [lindex $items $idx]
-      $w see $it
-      $w focus $it
-      $w selection set $it  ;# generates <<TreeviewSelect>>
-    }
-  }
-  #_______________________
-
-  proc LbxSelect {w idx} {
-    # Selects a listbox item.
-    #   w - listbox's path
-    #   idx - item index
-
-    $w activate $idx
-    $w see $idx
-    if {[$w cget -selectmode] in {single browse}} {
-      $w selection clear 0 end
-      $w selection set $idx
-      event generate $w <<ListboxSelect>>
-    }
   }
 
 # _______________________ Text little procs _________________________ #
@@ -502,15 +395,15 @@ oo::class create ::apave::APave {
     set _pav(lwidgets) [list]
     set _pav(moveall) 0
     set _pav(tonemoves) 1
-    set _pav(initialcolor) ""
-    set _pav(modalwin) "."
+    set _pav(initialcolor) {}
+    set _pav(modalwin) {.}
     set _pav(fgbut) [ttk::style lookup TButton -foreground]
     set _pav(bgbut) [ttk::style lookup TButton -background]
     set _pav(fgtxt) [ttk::style lookup TEntry -foreground]
     set _pav(prepost) [list]
     set _pav(widgetopts) [list]
-    set _pav(edge) "@@"
-    if {$_pav(fgtxt) in {"black" "#000000"}} {
+    set _pav(edge) {@@}
+    if {$_pav(fgtxt) in {black #000000}} {
       set _pav(bgtxt) white
     } else {
       set _pav(bgtxt) [ttk::style lookup TEntry -background]
@@ -548,7 +441,7 @@ oo::class create ::apave::APave {
       # Restricts the window's sizes (thus fixing Tk's issue with a menubar)
       #   win - path to a window to be of restricted sizes
 
-      if {[lindex [$win configure -menu] 4] ne ""} {
+      if {[lindex [$win configure -menu] 4] ne {}} {
         lassign [split [wm geometry $win] x+] w y
         lassign [wm minsize $win] wmin ymin
         if {$w<$wmin && $y<$ymin} {
@@ -677,7 +570,7 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
-  method iconA {icon {iconset "small"}} {
+  method iconA {icon {iconset small}} {
 
     # Gets icon attributes for buttons, menus etc.
     #   icon - name of icon
@@ -705,15 +598,15 @@ oo::class create ::apave::APave {
     # Expands shortened options.
 
     set options [string map {
-      " -st " " -sticky "
-      " -com " " -command "
-      " -t " " -text "
-      " -w " " -width "
-      " -h " " -height "
-      " -var " " -variable "
-      " -tvar " " -textvariable "
-      " -lvar " " -listvariable "
-      " -ro " " -readonly "
+      { -st } { -sticky }
+      { -com } { -command }
+      { -t } { -text }
+      { -w } { -width }
+      { -h } { -height }
+      { -var } { -variable }
+      { -tvar } { -textvariable }
+      { -lvar } { -listvariable }
+      { -ro } { -readonly }
     } " $options"]
     return $options
   }
@@ -728,8 +621,8 @@ oo::class create ::apave::APave {
 
     upvar 1 $attrsName attrs
     set txt [::apave::getOption -t {*}$attrs]
-    if {$txt eq ""} { set txt [::apave::getOption -text {*}$attrs] }
-    set im ""
+    if {$txt eq {}} { set txt [::apave::getOption -text {*}$attrs] }
+    set im {}
     set icolist [list {exit abort} {exit close} \
       {SaveFile save} {OpenFile open}]
     # ok, yes, cancel, apply buttons should be at the end of list
@@ -739,7 +632,7 @@ oo::class create ::apave::APave {
       lassign $icon ic1 ic2
       # text of button is of highest priority at defining its icon
       if {[string match -nocase $ic1 $txt] || \
-      [string match -nocase but$ic1 $w] || ($ic2 ne "" && ( \
+      [string match -nocase but$ic1 $w] || ($ic2 ne {} && ( \
       [string match -nocase but$ic2 $w] || [string match -nocase $ic2 $txt]))} {
         append attrs " [my iconA $ic1 small]"
         break
@@ -758,7 +651,7 @@ oo::class create ::apave::APave {
     #   2. https://stackoverflow.com, the question:
     #        the-tablelist-curselection-goes-at-calling-the-directory-dialog
 
-    if {"-exportselection" ni $attrs} {
+    if {{-exportselection} ni $attrs} {
       append attrs " -ListboxSel $w -selectmode extended -exportselection 0"
     }
     return $attrs
@@ -779,20 +672,20 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
-  method findWidPath {wid {mode "exact"} {visible yes}} {
+  method findWidPath {wid {mode exact} {visible yes}} {
     # Searches a widget's path among the active widgets.
     #   w - widget name, set partially e.g. "wid" instead of ".win.wid"
     #   mode - if "exact", searches *.wid; if "globe", searches *wid*
     # Returns the widget's full path or "" if the widget isn't active.
 
     my getWidChildren . tree
-    if {$mode eq "exact"} {
+    if {$mode eq {exact}} {
       set i [lsearch -glob $tree "*.$wid"]
     } else {
       set i [lsearch -glob $tree "*$wid*"]
     }
     if {$i>-1} {return [lindex $tree $i]}
-    return ""
+    return {}
   }
 
   ## _______________________ File content widget _______________________ ##
@@ -811,21 +704,21 @@ oo::class create ::apave::APave {
     #
     # Returns *attrs* without -inpval and -retpos options.
 
-    lassign [::apave::parseOptions $attrs $varopt "" -retpos "" -inpval ""] \
+    lassign [::apave::parseOptions $attrs $varopt {} -retpos {} -inpval {}] \
       vn rp iv
-    if {[string first "-state disabled" $attrs]<0 && $vn ne ""} {
-      set all ""
-      if {$varopt eq "-lvar"} {
-        lassign [::apave::extractOptions attrs -values "" -ALL 0] iv a
-        if {[string is boolean -strict $a] && $a} {set all "ALL"}
+    if {[string first {-state disabled} $attrs]<0 && $vn ne {}} {
+      set all {}
+      if {$varopt eq {-lvar}} {
+        lassign [::apave::extractOptions attrs -values {} -ALL 0] iv a
+        if {[string is boolean -strict $a] && $a} {set all ALL}
         lappend _pav(widgetopts) "-lbxname$all $wnamefull $vn"
       }
-      if {$rp ne ""} {
-        if {$all ne ""} {set rp "0:end"}
+      if {$rp ne {}} {
+        if {$all ne {}} {set rp 0:end}
         lappend _pav(widgetopts) "-retpos $wnamefull $vn $rp"
       }
     }
-    if {$iv ne ""} { set $vn $iv }
+    if {$iv ne {}} { set $vn $iv }
     return [::apave::removeOptions $attrs -retpos -inpval]
   }
   #_______________________
@@ -839,11 +732,11 @@ oo::class create ::apave::APave {
     proc readFCO {fname} {
       # Reads a file's content.
       # Returns a list of (non-empty) lines of the file.
-      if {$fname eq ""} {
+      if {$fname eq {}} {
         set retval {{}}
       } else {
         set retval {}
-        foreach ln [split [::apave::readTextFile $fname "" 1] \n] {
+        foreach ln [split [::apave::readTextFile $fname {} 1] \n] {
           set ln [string map [list \\ \\\\ \{ \\\{ \} \\\}] $ln]
           if {$ln ne {}} {lappend retval $ln}
         }
@@ -888,7 +781,7 @@ oo::class create ::apave::APave {
         set retval $fline
         set filterfile no
       }
-      if {$retval eq "" && $filterfile} {return $edge}
+      if {$retval eq {} && $filterfile} {return $edge}
       set retval [string map [list "\}" "\\\}"  "\{" "\\\{"] $retval]
       return [list $retval $ret]
     }
@@ -897,14 +790,14 @@ oo::class create ::apave::APave {
     set ldv1 [string length $edge]
     set filecontents {}
     set optionlists {}
-    set tplvalues ""
-    set retpos ""
+    set tplvalues {}
+    set retpos {}
     set values [::apave::getOption -values {*}$attrs]
     if {[string first $edge $values]<0} { ;# if 1 file, edge
       set values "$edge$values$edge"      ;# may be omitted
     }
     # get: files' contents, files' options, template line
-    set lopts "-list {} -div1 {} -div2 {} -pos {} -len {} -RE {} -ret 0"
+    set lopts {-list {} -div1 {} -div2 {} -pos {} -len {} -RE {} -ret 0}
     while {1} {
       set i1 [string first $edge $values]
       set i2 [string first $edge $values $i1+1]
@@ -923,11 +816,11 @@ oo::class create ::apave::APave {
     }
     # fill the combobox lines, using files' contents and options
     if {[set leno [llength $optionlists]]} {
-      set newvalues ""
+      set newvalues {}
       set ilin 0
       lassign $filecontents firstFCO
       foreach fline $firstFCO { ;# lines of first file for a base
-        set line ""
+        set line {}
         set tplline $tplvalues
         for {set io 0} {$io<$leno} {incr io} {
           set opts [lindex $optionlists $io]
@@ -984,7 +877,7 @@ oo::class create ::apave::APave {
     if {$tmo>0} {
       catch {set lbl [my $lbl]}
       if {[winfo exist $lbl]} {
-        if {$lbltext eq ""} {
+        if {$lbltext eq {}} {
           set lbltext [$lbl cget -text]
           lappend ::apave::_AP_VARS(TIMW) $w
         }
@@ -1009,7 +902,7 @@ oo::class create ::apave::APave {
     #   lbltext - original text of label
 
     if {[winfo exists $lbl]} {
-      if {[focus] in [list $w ""]} {
+      if {[focus] in [list $w {}]} {
         if {$w in $::apave::_AP_VARS(TIMW)} {
           my timeoutButton $w $tmo $lbl $lbltext
         }
@@ -1185,7 +1078,7 @@ oo::class create ::apave::APave {
       sev {set widget ttk::separator}
       siz {set widget ttk::sizegrip}
       spx - spX {
-         if {$nam3 eq {spx}} {set widget "ttk::spinbox"} {set widget "spinbox"}
+         if {$nam3 eq {spx}} {set widget ttk::spinbox} {set widget spinbox}
          lassign [::apave::parseOptions $attrs -command {} -from {} -to {}] cmd from to
          lassign [::apave::extractOptions attrs -tip {} -tooltip {}] t1 t2
          set t2 "$t1$t2"
@@ -1262,9 +1155,9 @@ oo::class create ::apave::APave {
     #   - if set 'typ' only: a list of options and attributes of 'typ'
     #   - else: a list of updated options and attributes of the widget type
 
-    if {$typ eq ""} {return $::apave::_Defaults}
+    if {$typ eq {}} {return $::apave::_Defaults}
     set def1 [subst [dict get $::apave::_Defaults $typ]]
-    if {"$opt$atr" eq ""} {return $def1}
+    if {"$opt$atr" eq {}} {return $def1}
     lassign $def1 defopts defattrs
     set newval [list "$defopts $opt" "$defattrs $atr"]
     dict set ::apave::_Defaults $typ $newval
@@ -1278,7 +1171,7 @@ oo::class create ::apave::APave {
 
     # to use a preset namespace name, we need a fully qualified variable
     set ::apave::_MC_TEXT_ [string trim $msg \{\}]
-    if {$::apave::MC_NS ne ""} {
+    if {$::apave::MC_NS ne {}} {
       namespace eval $::apave::MC_NS {
         set ::apave::_MC_TEXT_ [msgcat::mc $::apave::_MC_TEXT_]
       }
@@ -1293,9 +1186,9 @@ oo::class create ::apave::APave {
     # Gets localized -text attribute.
     #   attrs - list of attributes
 
-    lassign [::apave::extractOptions attrs -t "" -text ""] t text
-    if {$t ne "" || $text ne ""} {
-      if {$text eq ""} {set text $t}
+    lassign [::apave::extractOptions attrs -t {} -text {}] t text
+    if {$t ne {} || $text ne {}} {
+      if {$text eq {}} {set text $t}
       set attrs [dict set attrs -t [my MC $text]]
     }
     return $attrs
@@ -1324,7 +1217,7 @@ oo::class create ::apave::APave {
     # The options are set in grid options as "-rw <int>", "-cw <int>" etc.
     # Returns the resulting grid options.
 
-    set opts ""
+    set opts {}
     foreach {opt val} [list {*}$options] {
       switch -- $opt {
         -rw  {my SpanConfig $w row $row $rowspan -weight $val}
@@ -1497,12 +1390,12 @@ oo::class create ::apave::APave {
     # The code is borrowed from open source tedit project.
 
     if {![winfo exists $txt]} return
-    if {$canvas eq ""} {
+    if {$canvas eq {}} {
       event generate $txt <Configure> ;# repaints the gutter
       return
     }
     set oper [lindex $args 0 1]
-    if {![llength $args] || [lindex $args 0 4] eq "-elide" || \
+    if {![llength $args] || [lindex $args 0 4] eq {-elide} || \
     $oper in {configure delete insert see yview}} {
       set i [$txt index @0,0]
       set gcont [list]
@@ -1511,7 +1404,7 @@ oo::class create ::apave::APave {
         if {[llength $dline] == 0} break
         set height [lindex $dline 3]
         set y [expr {[lindex $dline 1]}]
-        set linenum [format "%${width}d" [lindex [split $i "."] 0]]
+        set linenum [format "%${width}d" [lindex [split $i .] 0]]
         set i [$txt index "$i +1 lines linestart"]
         lappend gcont [list $y $linenum]
       }
@@ -1552,7 +1445,7 @@ oo::class create ::apave::APave {
     set wchooser [lindex $parent 1].$widname
     catch {
       lassign [set $vargeo] -> geom
-      if {[string match "*x*+*+*" $geom] && [::islinux]} {
+      if {[string match *x*+*+* $geom] && [::islinux]} {
         after idle "catch {wm geometry $wchooser $geom}"
       }
     }
@@ -1606,18 +1499,18 @@ oo::class create ::apave::APave {
     set isfilename 0
     lassign [::apave::extractOptions args -ftxvar {} -tname {}] ftxvar tname
     lassign [::apave::getProperty DirFilGeoVars] dirvar filvar
-    set vargeo [set dirgeo [set filgeo ""]]
+    set vargeo [set dirgeo [set filgeo {}]]
     set parent [my ParentOpt]
     if {$dirvar ne {}} {set dirgeo [set $dirvar]}
     if {$filvar ne {}} {set filgeo [set $filvar]}
-    if {$nchooser eq "ftx_OpenFile"} {
-      set nchooser "tk_getOpenFile"
+    if {$nchooser eq {ftx_OpenFile}} {
+      set nchooser tk_getOpenFile
     }
-    set widname ""
+    set widname {}
     set choosname $nchooser
     if {$choosname in {"fontChooser" "colorChooser" "dateChooser"}} {
       set nchooser "my $choosname $tvar"
-    } elseif {$choosname in {"tk_getOpenFile" "tk_getSaveFile"}} {
+    } elseif {$choosname in {tk_getOpenFile tk_getSaveFile}} {
       set vargeo $filvar
       set widname [my AuxSetChooserGeometry $vargeo $parent __tk_filedialog]
       if {[set fn [set $tvar]] eq {}} {
@@ -1629,17 +1522,17 @@ oo::class create ::apave::APave {
       set dn [::apave::extractOptions args -initialdir $dn]
       set args "-initialfile \"$fn\" -initialdir \"$dn\" $parent $args"
       incr isfilename
-    } elseif {$nchooser eq "tk_chooseDirectory"} {
+    } elseif {$nchooser eq {tk_chooseDirectory}} {
       set vargeo $dirvar
       set widname [my AuxSetChooserGeometry $vargeo $parent __tk_choosedir]
       set args "-initialdir \"[set $tvar]\" $parent $args"
       incr isfilename
     }
-    if {$::tcl_platform(platform) eq "unix" && $choosname ne "dateChooser"} {
+    if {$::tcl_platform(platform) eq {unix} && $choosname ne {dateChooser}} {
       my themeExternal *.foc.* *f1.demo  ;# don't touch tkcc's boxes
     }
     set res [{*}$nchooser {*}$args]
-    if {"$res" ne "" && "$tvar" ne ""} {
+    if {"$res" ne {} && "$tvar" ne {}} {
       if {$isfilename} {
         lassign [my SplitContentVariable $ftxvar] -> txtnam wid
         if {[info exist $ftxvar] && \
@@ -1682,10 +1575,10 @@ oo::class create ::apave::APave {
     #
     # Returns a selected color.
 
-    if {$_pav(initialcolor) eq "" && $::tcl_platform(platform) eq "unix"} {
+    if {$_pav(initialcolor) eq {} && $::tcl_platform(platform) eq {unix}} {
       source [file join $::apave::apaveDir pickers color clrpick.tcl]
     }
-    if {[set _ [string trim [set $tvar]]] ne ""} {
+    if {[set _ [string trim [set $tvar]]] ne {}} {
       set ic $_
       set _ [. cget -background]
       if {[catch {. configure -background $ic}]} {
@@ -1907,8 +1800,8 @@ oo::class create ::apave::APave {
     if {$view ne {}} {set anc n} {set anc center}
     set butf [list [my Transname buT $name] - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
     if {$view ne {}} {
-      set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $inname" ""]
-      set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname" ""]
+      set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $inname" {}]
+      set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname" {}]
       set lwidgets [linsert $lwidgets [expr {$i+1}] $butf]
       set lwidgets [linsert $lwidgets [expr {$i+2}] $entf]
       set lwidgets [linsert $lwidgets [expr {$i+3}] $scrolv]
@@ -1957,7 +1850,7 @@ oo::class create ::apave::APave {
     lassign $args name neighbor posofnei rowspan colspan options1 attrs1
     my MakeWidgetName $w $name
     set name [lindex [my LowercaseWidgetName $name] 0]
-    set wpar ""
+    set wpar {}
     switch -glob -- [my ownWName $name] {
       men* {set typ menuBar}
       too* {set typ toolBar}
@@ -1970,7 +1863,7 @@ oo::class create ::apave::APave {
     set namvar [list]
     # get array of pairs (e.g. image-command for toolbar)
     foreach {nam val} $attrs1 {
-      if {$nam eq "-array"} {
+      if {$nam eq {-array}} {
         catch {set val [subst $val]}
         set ind -1
         foreach {v1 v2} $val {
@@ -1984,15 +1877,15 @@ oo::class create ::apave::APave {
       }
     }
     # make a frame in the widget list
-    if {$typ eq "menuBar"} {
-      if {[set fillmenu [lindex $args 7]] ne ""} {
+    if {$typ eq {menuBar}} {
+      if {[set fillmenu [lindex $args 7]] ne {}} {
         after idle $fillmenu
       }
-      set args ""
+      set args {}
     } else {
       set ispack 0
       if {![catch {set gm [lindex [lindex $lwidgets $i] 5]}]} {
-        set ispack [expr [string first "pack" $gm]==0]
+        set ispack [expr [string first pack $gm]==0]
       }
       if {$ispack} {
         set args [list $name - - - - "pack -expand 0 -fill x -side bottom [string range $gm 5 end]" $attcur]
@@ -2005,7 +1898,7 @@ oo::class create ::apave::APave {
     set k [set j [set j2 [set wasmenu 0]]]
     foreach {nam v1 v2} $namvar {
       if {[string first # $v1]==0} continue
-      if {$v1 eq "h_"} {  ;# horisontal space
+      if {$v1 eq {h_}} {  ;# horisontal space
         set ntmp [my Transname fra ${name}[incr j2]]
         set wid1 [list $ntmp - - - - "pack -side left -in $w.$name -fill y"]
         set wid2 [list $ntmp.[my ownWName [my Transname h_ $name$j]] - - - - "pack -fill y -expand 1 -padx $v2"]
@@ -2013,13 +1906,13 @@ oo::class create ::apave::APave {
         set ntmp [my Transname fra ${name}[incr j2]]
         set wid1 [list $ntmp - - - - "pack -side left -in $w.$name -fill y"]
         set wid2 [list $ntmp.[my ownWName [my Transname sev $name$j]] - - - - "pack -fill y -expand 1 -padx $v2"]
-      } elseif {$typ eq "statusBar"} {  ;# statusbar
+      } elseif {$typ eq {statusBar}} {  ;# statusbar
         my NormalizeName name i lwidgets
         set dattr [lrange $v1 1 end]
         if {[::apave::extractOptions dattr -expand 0]} {
-          set expand "-expand 1 -fill x"
+          set expand {-expand 1 -fill x}
         } else {
-          set expand ""
+          set expand {}
         }
         set font " -font {[font actual TkSmallCaptionFont]}"
         # status prompt
@@ -2027,8 +1920,8 @@ oo::class create ::apave::APave {
         # status value
         if {$::apave::_CS_(LABELBORDER)} {set relief sunken} {set relief flat}
         set wid2 [list .[my ownWName [my Transname Lab $name$j]] - - - - "pack -side left $expand -in $w.$name" "-style TLabelSTD -relief $relief -w $v2 -t { } $font $dattr"]
-      } elseif {$typ eq "toolBar"} {  ;# toolbar
-        set packreq ""
+      } elseif {$typ eq {toolBar}} {  ;# toolbar
+        set packreq {}
         switch -nocase -glob -- $v1 {
           lab* - laB* { ;# label
             lassign $v2 txt packreq att
@@ -2072,7 +1965,7 @@ oo::class create ::apave::APave {
           set lwidgets [linsert $lwidgets [incr itmp] $wid1]
           continue
         }
-      } elseif {$typ eq "menuBar"} {
+      } elseif {$typ eq {menuBar}} {
         ;# menubar: making it here; filling it outside of 'pave window'
         if {[incr wasmenu]==1} {
           set menupath [my MakeWidgetName $winname $name]
@@ -2081,7 +1974,7 @@ oo::class create ::apave::APave {
         set menuitem [my MakeWidgetName $menupath $v1]
         menu $menuitem -tearoff 0
         set ampos [string first & [string trimleft $v2  \{]]
-        set v2 [string map {& ""} $v2]
+        set v2 [string map {& {}} $v2]
         $menupath add cascade -label [lindex $v2 0] {*}[lrange $v2 1 end] -menu $menuitem -underline $ampos
         continue
       } else {
@@ -2171,10 +2064,10 @@ oo::class create ::apave::APave {
 
     upvar $refname name $refi i $reflwidgets lwidgets
     set wname $name
-    if {[string index $name 0]=="."} {
+    if {[string index $name 0] eq {.}} {
       for {set i2 [expr {$i-1}]} {$i2 >=0} {incr i2 -1} {
         lassign [lindex $lwidgets $i2] name2
-        if {[string index $name2 0] ne "."} {
+        if {[string index $name2 0] ne {.}} {
           set name2 [lindex [my LowercaseWidgetName $name2] 0]
           set wname "$name2$name"
           set name [lindex [my LowercaseWidgetName $name] 0]
@@ -2287,7 +2180,7 @@ oo::class create ::apave::APave {
               -command "::apave::eventOnText $w <<Redo>>"
         eval [my popupBlockCommands $pop $w]
         eval [my popupHighlightCommands $pop $w]
-        if {$addpop ne ""} {
+        if {$addpop ne {}} {
           lassign $addpop com par1 par2
           eval [my $com $pop $w {*}$par1 {*}$par2]
         }
@@ -2448,7 +2341,7 @@ oo::class create ::apave::APave {
             if {$from ne {}} {
               set cmd "if {\$$tvar < $from} {set $tvar $from}; $cmd"
             }
-            if {$to ne ""} {
+            if {$to ne {}} {
               set cmd "if {\$$tvar >$to} {set $tvar $to}; $cmd"
             }
           }
@@ -2593,9 +2486,9 @@ oo::class create ::apave::APave {
     if {![winfo exists $w1]} return
     if {$first} {
       lassign [::apave::parseOptions $args \
-        -file "" -data "" -label "" -incr 0.01 -pause 3.0 -after 10 -squeeze "" -static 0] \
+        -file {} -data {} -label {} -incr 0.01 -pause 3.0 -after 10 -squeeze {} -static 0] \
         ofile odata olabel oincr opause oafter osqueeze ostatic
-      if {$osqueeze ne ""} {set osqueeze "-subsample $osqueeze"}
+      if {$osqueeze ne {}} {set osqueeze "-subsample $osqueeze"}
       lassign {0 -2 0 1} idx incev waitev direv
     } else {
       lassign $args ofile odata olabel oincr opause oafter osqueeze ostatic \
@@ -2637,7 +2530,7 @@ oo::class create ::apave::APave {
       ${NS}::Img$w1 copy ${NS}::ImgT$w1 {*}$osqueeze
       $w1 configure -image ${NS}::Img$w1
     }
-    if {$w2 ne ""} {
+    if {$w2 ne {}} {
       if {$alphaev<0.33 && !$ostatic} {
         set fg [$w1 cget -background]
       } else {
@@ -2665,9 +2558,9 @@ oo::class create ::apave::APave {
     #   bg - background of label
 
     set styl [ttk::style configure TLabel]
-    if {$fg eq ""} {lassign [my csGet] - fg - bg}
-    set vst [string map {" " "_"} $cmd]
-    if {$on eq ""} {
+    if {$fg eq {}} {lassign [my csGet] - fg - bg}
+    set vst [string map {{ } _} $cmd]
+    if {$on eq {}} {
       set on [expr {[info exists ::apave::_AP_VISITED($vst)]}]
     }
     if {$on} {
@@ -2683,7 +2576,7 @@ oo::class create ::apave::APave {
       }
     }
     $w configure -foreground $fg -background $bg
-    if {[set font [$w cget -font]] eq ""} {
+    if {[set font [$w cget -font]] eq {}} {
       set font $::apave::FONTMAIN
     } else {
       catch {set font [font actual $font]}
@@ -2704,10 +2597,10 @@ oo::class create ::apave::APave {
     #   bg - background of label
 
     if {$on} {
-      if {$fg eq ""} {lassign [my csGet] fg - bg}
+      if {$fg eq {}} {lassign [my csGet] fg - bg}
       $w configure -background $bg
     } else {
-      my VisitedLab $w $cmd "" $fg $bg
+      my VisitedLab $w $cmd {} $fg $bg
     }
     return
   }
@@ -2722,7 +2615,7 @@ oo::class create ::apave::APave {
     if {[info exists ::apave::__TEXTLINKS__($w)]} {
       return [lindex $::apave::__TEXTLINKS__($w) $idx]
     }
-    return ""
+    return {}
   }
   #_______________________
 
@@ -2877,7 +2770,7 @@ oo::class create ::apave::APave {
         # right brace pressed: if no other chars in the line, shift the brace
         set idx1 [$w index "insert"]
         set st [$w get "$idx1 linestart" "$idx1 lineend"]
-        if {[string trim $st] eq "" && [string length $st]>=$lindt} {
+        if {[string trim $st] eq {} && [string length $st]>=$lindt} {
           $w delete "$idx1 lineend -$lindt char" "$idx1 lineend"
         }
       }
@@ -2890,7 +2783,7 @@ oo::class create ::apave::APave {
     # Returns bindings for a text widget.
     #   wt - the text's path
 
-    if {[bind $wt <<Paste>>] eq ""} {
+    if {[bind $wt <<Paste>>] eq {}} {
       set res " \
       ::apave::bindToEvent $wt <<Paste>> [self] pasteText $wt ;\
       ::apave::bindToEvent $wt <KP_Enter> [self] onKeyTextM $wt %K %s ;\
@@ -2921,13 +2814,13 @@ oo::class create ::apave::APave {
 
     set newcom $w.internal
     if {!$on} {
-      if {[info commands ::$newcom] ne ""} {
-        rename ::$w ""
+      if {[info commands ::$newcom] ne {}} {
+        rename ::$w {}
         rename ::$newcom ::$w
       }
-    } elseif {[info commands ::$newcom] eq ""} {
+    } elseif {[info commands ::$newcom] eq {}} {
       rename $w ::$newcom
-      if {$com eq ""} {
+      if {$com eq {}} {
         # text to be readonly
         proc ::$w {args} "
           switch -exact -- \[lindex \$args 0\] \{
@@ -2950,7 +2843,7 @@ oo::class create ::apave::APave {
           return \$_res_of_TextCommandForChange"
       }
     }
-    if {$com2 ne ""} {
+    if {$com2 ne {}} {
       {*}$com2
     }
   }
@@ -2965,7 +2858,7 @@ oo::class create ::apave::APave {
     # See also:
     #   [wiki.tcl-lang.org](https://wiki.tcl-lang.org/page/Read-only+text+widget)
 
-    my TextCommandForChange $w "" $on
+    my TextCommandForChange $w {} $on
     if {$popup} {my makePopup $w $on yes}
     return
   }
@@ -2987,7 +2880,7 @@ oo::class create ::apave::APave {
             lassign [$vn curselection] s1
             if {$s1 eq {}} {set s1 0}
             set w [string range $vn [string last . $vn]+1 end]
-            if {$optnam eq "-lbxnameALL"} {
+            if {$optnam eq {-lbxnameALL}} {
               # when -ALL option is set to 1, listbox returns
               # a list of 3 items - sel index, sel contents and all contents
               set $v1 [list $s1 [$vn get $s1] [set $v1]]
@@ -3003,7 +2896,7 @@ oo::class create ::apave::APave {
           # then if the value is from the list, it's fully returned
           foreach aop2 $_pav(widgetopts) {
             lassign $aop2 optnam2 vn2 lst2
-            if {$optnam2 eq "-list" && $vn eq $vn2} {
+            if {$optnam2 eq {-list} && $vn eq $vn2} {
               foreach val2 $lst2 {
                 if {$val1 eq $val2} {
                   set p1 0
@@ -3029,17 +2922,17 @@ oo::class create ::apave::APave {
     #   wnext - next widget's name
     #   wnext0 - core next name (used internally, for recursive search)
 
-    if {$wnext eq ""} return
+    if {$wnext eq {}} return
     if {[winfo exist $wnext]} {
       focus $wnext  ;# direct path to the next widget
       return
     }
     # try to find the next widget in hierarchy of widgets
     set ws $wnext
-    if {$wnext0 eq ""} {
+    if {$wnext0 eq {}} {
       # get the real next widget (wnext can be uppercased or calculated)
       catch {set wnext [subst $wnext]}
-      if {![string match "my *" $wnext]} {
+      if {![string match {my *} $wnext]} {
         catch {set wnext [my [my ownWName $wnext]]}
       }
       my focusNext $w $wnext $wnext
@@ -3066,28 +2959,28 @@ oo::class create ::apave::APave {
 
     upvar $attrsName attrs
     set addcomms {}
-    if {[set tooltip [::apave::getOption -tooltip {*}$attrs]] ne "" ||
-    [set tooltip [::apave::getOption -tip {*}$attrs]] ne ""} {
+    if {[set tooltip [::apave::getOption -tooltip {*}$attrs]] ne {} ||
+    [set tooltip [::apave::getOption -tip {*}$attrs]] ne {}} {
       if {[set i [string first $_pav(edge) $tooltip]]>=0} {
         set tooltip [string range $tooltip 1 end-1]
         set tattrs [string range $tooltip [incr i -1]+[string length $_pav(edge)] end]
         set tooltip "{[string range $tooltip 0 $i-1]}"
       } else {
-        set tattrs ""
+        set tattrs {}
       }
       set tooltip [my MC $tooltip]
       lappend addcomms [list ::baltip::tip $wdg $tooltip {*}$tattrs]
       lappend ::apave::_AP_VARS(TIMW) $wdg
       set attrs [::apave::removeOptions $attrs -tooltip -tip]
     }
-    if {[::apave::getOption -ro {*}$attrs] ne "" || \
-    [::apave::getOption -readonly {*}$attrs] ne ""} {
+    if {[::apave::getOption -ro {*}$attrs] ne {} || \
+    [::apave::getOption -readonly {*}$attrs] ne {}} {
       lassign [::apave::extractOptions attrs -ro 0 -readonly 0] ro readonly
       lappend addcomms [list my readonlyWidget $wdg [expr $ro||$readonly]]
     }
-    if {[set wnext [::apave::getOption -tabnext {*}$attrs]] ne ""} {
+    if {[set wnext [::apave::getOption -tabnext {*}$attrs]] ne {}} {
       set wnext [string trim $wnext "\{\}"]
-      if {$wnext eq "0"} {set wnext $wdg} ;# disables Tab on this widget
+      if {$wnext eq {0}} {set wnext $wdg} ;# disables Tab on this widget
       after idle [list if "\[winfo exists $wdg\]" [list bind $wdg <Key> \
         [list if {{%K} eq {Tab}} "[self] focusNext $w $wnext ; break" ] ] ]
       set attrs [::apave::removeOptions $attrs -tabnext]
@@ -3103,7 +2996,7 @@ oo::class create ::apave::APave {
     #   widget - the widget's type
     # This may be disabled by including "STD" in the widget's name.
 
-    if {[string first "STD" $wname]>0} return
+    if {[string first STD $wname]>0} return
     if {($widget in {ttk::entry entry})} {
       bind $wname <Up>  \
         "$wname selection clear ; \
@@ -3119,7 +3012,7 @@ oo::class create ::apave::APave {
     ttk::radiobutton radiobutton "my tk_optionCascade"}} {
       foreach k {<Up> <Left>} {
         bind $wname $k [list \
-          if {$::tcl_platform(platform) eq "windows"} [list \
+          if {$::tcl_platform(platform) eq {windows}} [list \
             event generate $wname <Shift-Tab> \
           ] else [list \
             event generate $wname <Key> -keysym ISO_Left_Tab] \
@@ -3185,7 +3078,7 @@ oo::class create ::apave::APave {
     set lwidgets [list]
     # comments be skipped
     foreach lst $inplists {
-      if {[string index [string index $lst 0] 0] ne "#"} {
+      if {[string index [string index $lst 0] 0] ne {#}} {
         lappend lwidgets $lst
       }
     }
@@ -3238,21 +3131,21 @@ oo::class create ::apave::APave {
       # The type of widget (if defined) means its creation
       # (if not defined, it was created after "makewindow" call
       # and before "window" call)
-      if { !($widget eq "" || [winfo exists $widget])} {
+      if { !($widget eq {} || [winfo exists $widget])} {
         set attrs [my GetAttrs $attrs $nam3 $dsbl]
         set attrs [my ExpandOptions $attrs]
         # for scrollbars - set up the scrolling commands
-        if {$widget in {"ttk::scrollbar" "scrollbar"}} {
+        if {$widget in {ttk::scrollbar scrollbar}} {
           set neighbor [lindex [my LowercaseWidgetName $neighbor] 0]
           set wneigb [my WidgetNameFull $w $neighbor]
-          if {$posofnei eq "L"} {
+          if {$posofnei eq {L}} {
             $wneigb config -yscrollcommand "$wname set"
             set attrs "$attrs -com \\\{$wneigb yview\\\}"
-            append options " -side right -fill y" ;# -after $wneigb"
-          } elseif {$posofnei eq "T"} {
+            append options { -side right -fill y} ;# -after $wneigb"
+          } elseif {$posofnei eq {T}} {
             $wneigb config -xscrollcommand "$wname set"
             set attrs "$attrs -com \\\{$wneigb xview\\\}"
-            append options " -side bottom -fill x" ;# -before $wneigb"
+            append options { -side bottom -fill x} ;# -before $wneigb"
           }
           set options [string map [list %w $wneigb] $options]
         }
@@ -3270,19 +3163,19 @@ oo::class create ::apave::APave {
         # for buttons and entries - set up the hotkeys (Up/Down etc.)
         my DefineWidgetKeys $wname $widget
       }
-      if {$neighbor eq "-" || $row < 0} {
+      if {$neighbor eq {-} || $row < 0} {
         set row [set col 0]
       }
       # check for simple creation of widget (without pack/grid)
-      if {$neighbor ne "#"} {
+      if {$neighbor ne {#}} {
         set options [my GetIntOptions $w $options $row $rowspan $col $colspan]
         set pack [string trim $options]
-        if {[string first "add" $pack]==0} {
+        if {[string first add $pack]==0} {
           set comm "[winfo parent $wname] add $wname [string range $pack 4 end]"
           {*}$comm
-        } elseif {[string first "pack" $pack]==0} {
+        } elseif {[string first pack $pack]==0} {
           set opts [string trim [string range $pack 5 end]]
-          if {[string first "forget" $opts]==0} {
+          if {[string first forget $opts]==0} {
             pack forget {*}[string range $opts 6 end]
           } else {
             pack $wname {*}$opts
@@ -3295,7 +3188,7 @@ oo::class create ::apave::APave {
       lappend lused [list $name $row $col $rowspan $colspan]
       if {[incr i] < $lwlen} {
         lassign [lindex $lwidgets $i] name neighbor posofnei
-        if {$neighbor eq "+"} {
+        if {$neighbor eq {+}} {
           set neighbor $prevw
         }
         set neighbor [lindex [my LowercaseWidgetName $neighbor] 0]
@@ -3305,9 +3198,9 @@ oo::class create ::apave::APave {
           if {[lindex [my LowercaseWidgetName $uname] 0] eq $neighbor} {
             set col $ucol
             set row $urow
-            if {$posofnei eq "T" || $posofnei eq ""} {
+            if {$posofnei eq {T} || $posofnei eq {}} {
               incr row $urowspan
-            } elseif {$posofnei eq "L"} {
+            } elseif {$posofnei eq {L}} {
               incr col $ucolspan
             }
           }
@@ -3341,11 +3234,11 @@ oo::class create ::apave::APave {
   # "win / lwidgets" pair.
 
     set res [list]
-    set wmain [set wdia ""]
+    set wmain [set wdia {}]
     foreach {w lwidgets} $args {
       lappend res {*}[my Window $w $lwidgets]
       lappend _pav(lwidgets) $lwidgets ;# possibly useful
-      if {[set ifnd [regexp -indices -inline {[.]dia\d+} $w]] ne ""} {
+      if {[set ifnd [regexp -indices -inline {[.]dia\d+} $w]] ne {}} {
         set wdia [string range $w 0 [lindex $ifnd 0 1]]
       } else {
         set wmain .[lindex [split $w .] 1]
@@ -3374,13 +3267,13 @@ oo::class create ::apave::APave {
     #   var - variable's name to receive a result (tkwait's variable)
     #   minsize - list {minwidth minheight} or {}
 
-    ::apave::infoWindow [expr {[::apave::infoWindow] + 1}] $win $modal $var yes
+    ::apave::InfoWindow [expr {[::apave::InfoWindow] + 1}] $win $modal $var yes
     if {[::iswindows]} {
       if {[wm attributes $win -alpha] < 0.1} {wm attributes $win -alpha 1.0}
     } else {
       catch {wm deiconify $win ; raise $win}
     }
-    if {$minsize eq ""} {
+    if {$minsize eq {}} {
       set minsize [list [winfo width $win] [winfo height $win]]
     }
     wm minsize $win {*}$minsize
@@ -3388,14 +3281,14 @@ oo::class create ::apave::APave {
     if {$ontop} {wm attributes $win -topmost 1}
     if {$modal} {
       grab set $win
-    } elseif {[set wgr [grab current]] ne ""} {
+    } elseif {[set wgr [grab current]] ne {}} {
       grab release $wgr
     }
     if {![::iswindows]} {tkwait visibility $win}
     if {$var ne {}} {
       tkwait variable $var
       if {$modal} {grab release $win}
-      ::apave::infoWindow [expr {[::apave::infoWindow] - 1}] $win $modal $var
+      ::apave::InfoWindow [expr {[::apave::InfoWindow] - 1}] $win $modal $var
     }
   }
   #_______________________
@@ -3439,8 +3332,8 @@ oo::class create ::apave::APave {
     }
     set minsize [::apave::getOption -minsize {*}$args]
     set args [::apave::removeOptions $args -centerme -ontop -modal -minsize -themed]
-    array set opt [list -focus "" -onclose "" -geometry "" -decor 1 \
-      -root $root -resizable "" -variable "" -escape 1 {*}$args]
+    array set opt [list -focus {} -onclose {} -geometry {} -decor 1 \
+      -root $root -resizable {} -variable {} -escape 1 {*}$args]
     lassign [split [wm geometry $root] x+] rw rh rx ry
     if {[winfo parent $win] ni {{} .}} {
       set opt(-decor) 0
@@ -3448,42 +3341,42 @@ oo::class create ::apave::APave {
     if {!$opt(-decor)} {
       wm transient $win $root
     }
-    if {$opt(-onclose) eq ""} {
+    if {$opt(-onclose) eq {}} {
       set opt(-onclose) [list set ${_pav(ns)}PN::AR($win) 0]
     } else {
       set opt(-onclose) [list $opt(-onclose) ${_pav(ns)}PN::AR($win)]
     }
-    if {$opt(-resizable) ne ""} {
+    if {$opt(-resizable) ne {}} {
        wm resizable $win {*}$opt(-resizable)
     }
     set opt(-onclose) "::apave::obj EXPORT CleanUps $win; $opt(-onclose)"
     wm protocol $win WM_DELETE_WINDOW $opt(-onclose)
     # get the window's geometry from its requested sizes
     set inpgeom $opt(-geometry)
-    if {$inpgeom eq ""} {
+    if {$inpgeom eq {}} {
       # this is for less blinking:
       set opt(-geometry) [my CenteredXY $rw $rh $rx $ry \
         [winfo reqwidth $win] [winfo reqheight $win]]
-    } elseif {[string first "pointer" $inpgeom]==0} {
+    } elseif {[string first pointer $inpgeom]==0} {
       lassign [split $inpgeom+0+0 +] -> x y
       set inpgeom +[expr {$x+[winfo pointerx .]}]+[expr {$y+[winfo pointery .]}]
       set opt(-geometry) $inpgeom
-    } elseif {[string first "root" $inpgeom]==0} {
+    } elseif {[string first root $inpgeom]==0} {
       set root .[string trimleft [string range $inpgeom 5 end] .]
-      set opt(-geometry) [set inpgeom ""]
+      set opt(-geometry) [set inpgeom {}]
     }
     if {[set pp [string first + $opt(-geometry)]]>=0} {
       wm geometry $win [string range $opt(-geometry) $pp end]
     }
-    if {$opt(-focus) eq ""} {
+    if {$opt(-focus) eq {}} {
       set opt(-focus) $win
     }
-    set ${_pav(ns)}PN::AR($win) "-"
+    set ${_pav(ns)}PN::AR($win) {-}
     if {$opt(-escape)} {bind $win <Escape> $opt(-onclose)}
     update
     set w [winfo width $win]
     set h [winfo height $win]
-    if {$inpgeom eq ""} {  ;# final geometrizing with actual sizes
+    if {$inpgeom eq {}} {  ;# final geometrizing with actual sizes
       if {($h/2-$ry-$rh/2)>30 && $root ne "."} {
         # ::tk::PlaceWindow needs correcting in rare cases, namely:
         # when 'root' is of less sizes than 'win' and at screen top
@@ -3493,12 +3386,12 @@ oo::class create ::apave::APave {
       }
     } else {
       lassign [lrange [split $inpgeom +] end-1 end] x y
-      if {$x ne "" && $y ne "" && [string first x $inpgeom]<0} {
+      if {$x ne {} && $y ne {} && [string first x $inpgeom]<0} {
         set inpgeom [my checkXY $w $h $x $y]
       }
       wm geometry $win $inpgeom
     }
-    if {[set var $opt(-variable)] eq ""} {set var ${_pav(ns)}PN::AR($win)}
+    if {[set var $opt(-variable)] eq {}} {set var ${_pav(ns)}PN::AR($win)}
     after 50 [list if "\[winfo exist $opt(-focus)\]" "focus -force $opt(-focus)"]
     my showWindow $win $modal $ontop $var $minsize
     set res 0
@@ -3511,7 +3404,7 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
-  method res {win {result "get"}} {
+  method res {win {result get}} {
 
     # Gets/sets a variable for *vwait* command.
     #   win - window's path
@@ -3584,6 +3477,7 @@ oo::class create ::apave::APave {
     }
     return
   }
+  #_______________________
 
   method resetText {w state {contsName {}}} {
     # Resets a text widget to edit/view from scratch.
@@ -3654,16 +3548,16 @@ oo::class create ::apave::APave {
         set nrnc $irow.[string length $newline]
         foreach tagi $tags pos $tagpos len $taglen {
           lassign $tagi tag
-          if {[string first "\<$tag\>" $line]==0} {
+          if {[string first <$tag> $line]==0} {
             if {$pos ne {0}} {
-              error "\napaveme.tcl: mismatched \<$tag\> in line $irow.\n"
+              error "\napaveme.tcl: mismatched <$tag> in line $irow.\n"
             }
             lset tagpos $i $nrnc
             set line [string range $line $len+2 end]
             break
-          } elseif {[string first "\</$tag\>" $line]==0} {
+          } elseif {[string first </$tag> $line]==0} {
             if {$pos eq {0}} {
-              error "\napaveme.tcl: mismatched \</$tag\> in line $irow.\n"
+              error "\napaveme.tcl: mismatched </$tag> in line $irow.\n"
             }
             lappend taglist [list $i $pos $nrnc]
             lset tagpos $i 0
@@ -3708,7 +3602,6 @@ oo::class create ::apave::APave {
     my resetText $w $state
     return
   }
-
 }
 
 # _____________________________ EOF _____________________________________ #

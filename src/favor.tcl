@@ -41,13 +41,17 @@ proc favor::LastVisited {item header {l1 -1}} {
   foreach it $al(FAV,visited) {
     lassign $it - - ID - values
     lassign $values name2 fname2 header2
-    if {$ln eq $l1 || $fname eq $fname2 && $header eq $header2} {
+    if {$fname eq $fname2 && $header eq $header2} {
       set found yes
       # if found, move it to 0th position
       set al(FAV,visited) [lreplace $al(FAV,visited) $i $i]
       break
     }
     incr i
+  }
+  if {!$found && $ln eq $l1} {
+    # already 1st in last visits, maybe with a changed name
+    set al(FAV,visited) [lreplace $al(FAV,visited) 0 0]
   }
   set al(FAV,visited) [linsert $al(FAV,visited) 0 [list - - - - [list $name $fname $header]]]
   # delete last items if the list's limit is exceeded

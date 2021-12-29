@@ -12,7 +12,7 @@ namespace eval ttk::theme::forest-light {
     array set colors {
         -fg             "#313131"
         -bg             "#ffffff"
-        -disabledfg     "#595959"
+        -disabledfg     "#7f7f7f"
         -disabledbg     "#ffffff"
         -selectfg       "#000000"
         -selectbg       "#A8CCA8"
@@ -453,6 +453,9 @@ namespace eval ttk::theme::forest-light {
             ] -border 5 -padding {8} -sticky nsew
 
         # _ Combobox _ #
+
+        ttk::style configure ComboboxPopdownFrame -borderwidth 1 -relief groove
+
         ttk::style map TCombobox -selectbackground [list \
             {!focus} $colors(-selectbg) \
             {readonly hover} $colors(-selectbg) \
@@ -566,4 +569,3 @@ namespace eval ttk::theme::forest-light {
         #ttk::style map TPanedwindow -background [list hover $colors(-bg)]
     }
 }
-#RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

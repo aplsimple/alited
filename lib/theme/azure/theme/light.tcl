@@ -124,6 +124,8 @@ namespace eval ttk::theme::azure-light {
             }
         }
 
+        ttk::style configure ComboboxPopdownFrame -borderwidth 1 -relief groove
+
         ttk::style layout TCombobox {
             Combobox.field -sticky nswe -children {
                 Combobox.padding -expand true -sticky nswe -children {
@@ -556,4 +558,3 @@ namespace eval ttk::theme::azure-light {
         ttk::style configure Sash -gripcount 0
     }
 }
-#RUNF1: ../../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

@@ -422,8 +422,10 @@ namespace eval ::alited {
   ::msgcat::mcmset ru {
     {Tcl syntax} {Синтаксис Tcl}
     {C/C++ syntax} {Синтаксис C/C++}
+    {Plain text} {Просто текст}
     {Tcl files' extensions:} {Расширения файлов Tcl:}
     {C/C++ files' extensions:} {Расширения файлов C/C++:}
+    {Plain texts' extensions:} {Расширения текстовых файлов:}
     {Color of Tcl commands:} {Цвет команд Tcl:}
     {Color of Tk commands:} {Цвет команд Tk:}
     {Color of strings:} {Цвет значений строк:}

@@ -243,6 +243,7 @@ proc pref::MainFrame {} {
         f1 {-t Editor}
         f2 {-t "Tcl syntax"}
         f3 {-t "C/C++ syntax"}
+        f4 {-t "Plain text"}
     }}
     {fraR.nbk3 - - - - {pack forget -side top} {
         f1 {-t Units}
@@ -297,14 +298,18 @@ proc pref::Ok {args} {
     set al(ED,CKeyWords) [[$obDl2 TexCKeys] get 1.0 {end -1c}]
     set al(ED,CKeyWords) [string map [list \n { }] $al(ED,CKeyWords)]
     set al(BACKUP) [string trim $al(BACKUP)]
-    if {$al(EM,Tcl) ne {}} {set al(TCLPREV) $al(EM,Tcl)}  ;# to remove "bad one"
-    if {[set i [lsearch -exact $al(TCLLIST) $al(TCLPREV)]]>-1} {
-      set al(TCLLIST) [lreplace $al(TCLLIST) $i $i]
-    }
-    set al(TCLLIST) [lreplace $al(TCLLIST) 16 end]
+    set al(TCLLIST) [lreplace $al(TCLLIST) 32 end]
     set al(EM,TclList) $al(EM,Tcl)
-    foreach tcl $al(TCLLIST) {append al(EM,TclList) \t $tcl}
+    foreach tcl $al(TCLLIST) {
+      if {$tcl ni [split $al(EM,TclList) \t]} {append al(EM,TclList) \t $tcl}
+    }
     set al(EM,TclList) [string trim $al(EM,TclList)]
+    set al(TTLIST) [lreplace $al(TTLIST) 32 end]
+    set al(EM,tt=List) $al(EM,tt=)
+    foreach tt $al(TTLIST) {
+      if {$tt ni [split $al(EM,tt=List) \t]} {append al(EM,tt=List) \t $tt}
+    }
+    set al(EM,tt=List) [string trim $al(EM,tt=List)]
     set al(EM,DiffTool) [file join {*}[file split $al(EM,DiffTool)]]
     $obDl2 res $win 1
     if {$ans == 1} {alited::Exit - 1 no}
@@ -736,6 +741,21 @@ proc pref::Edit_Tab3 {} {
 }
 #_______________________
 
+proc pref::Edit_Tab4 {} {
+  # Serves to layout "Misc syntax" tab.
+
+  return {
+    {v_ - - 1 1}
+    {FraTab4 v_ T 1 1 {-st nsew -cw 1 -rw 1}}
+    {fraTab4.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
+    {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "Plain texts' extensions:"}}
+    {.entExt .labExt L 1 1 {-st swe -pady 3} {-tvar alited::al(TextExtensions) -w 30}}
+    {.seh .labExt T 1 2 {-pady 3}}
+    {.but .seh T 1 1 {-st w} {-t Default -com alited::pref::Text_Default}}
+  }
+}
+#_______________________
+
 proc pref::TclSyntax_Default {{init no}} {
   # Sets default colors to highlight Tcl.
   #   init - yes, if only variables should be initialized.
@@ -766,6 +786,15 @@ proc pref::CSyntax_Default {{init no}} {
     set al(ED,C$nam) $val
   }
   if {!$init} {UpdateSyntaxTab 2}
+}
+#_______________________
+
+proc pref::Text_Default {} {
+  # Sets defaults for plain text.
+
+  fetchVars
+  set al(TextExtensions) $al(TextExtensionsDef)
+  update
 }
 #_______________________
 
@@ -1004,8 +1033,8 @@ proc pref::Common_Tab {} {
     set al(TCLINIDIR) $al(EM,Tcl)
   }
   set al(TCLINIDIR) [file dirname $al(TCLINIDIR)]
-  set al(TCLPREV) $al(EM,Tcl)
   set al(TCLLIST) [split $al(EM,TclList) \t]
+  set al(TTLIST) [split $al(EM,tt=List) \t]
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
@@ -1015,7 +1044,7 @@ proc pref::Common_Tab {} {
     {.labDoc .labTcl T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl8.6:"}}
     {.dirDoc .labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 48}}
     {.labTT .labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
-    {.entTT .labTT L 1 1 {-st swe -pady 5} {-tvar alited::al(EM,tt=) -w 48}}
+    {.cbxTT .labTT L 1 1 {-st swe -pady 5} {-tvar alited::al(EM,tt=) -w 48 -values {$alited::al(TTLIST)}}}
     {.labDF .labTT T 1 1 {-st w -pady 1 -padx 3} {-t "Diff tool:"}}
     {.filDF .labDF L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 48}}
   }
@@ -1316,6 +1345,7 @@ proc pref::_create {tab} {
     $win.fra.fraR.nbk2.f1 [Edit_Tab1] \
     $win.fra.fraR.nbk2.f2 [Edit_Tab2] \
     $win.fra.fraR.nbk2.f3 [Edit_Tab3] \
+    $win.fra.fraR.nbk2.f4 [Edit_Tab4] \
     $win.fra.fraR.nbk3.f1 [Units_Tab] \
     $win.fra.fraR.nbk4.f1 [Template_Tab] \
     $win.fra.fraR.nbk5.f1 [Keys_Tab1] \
