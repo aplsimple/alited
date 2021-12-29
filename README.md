@@ -40,16 +40,17 @@ Briefly, alited is totally quick, being at that *a pure [Tcl/Tk](https://wiki.tc
 
    * [Description](https://aplsimple.github.io/en/tcl/alited)
    * [Reference](https://aplsimple.github.io/en/tcl/alited/alited.html)
-   * [Download](https://chiselapp.com/user/aplsimple/repository/alited/download)
+   * [Download #1](https://chiselapp.com/user/aplsimple/repository/alited/download)
+   * [Download #2](https://github.com/aplsimple/alited)
 
 For a quick acquaintance of *alited*, a few of demo videos are available:
 
-   * [1. First start](https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.0.4/1.Start_alited-1.0.4.mp4)
-   * [2. Units](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.5/2.Units_alited-1.0.5.mp4)
-   * [3. Projects](https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.0.4/3.Projects_alited-1.0.4.mp4)
-   * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.0.4/4.Find_alited-1.0.4.mp4)
-   * [5. Tools](https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.0.4/5.Tools_alited-1.0.4.mp4)
-   * [6. Themes](https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.0.5/6.Themes_alited-1.0.5.mp4)
+   * [1. First start](https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.0.6/1.Start_alited-1.0.6.mp4)
+   * [2. Units](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.6/2.Units_alited-1.0.6.mp4)
+   * [3. Projects](https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.0.6/3.Projects_alited-1.0.6.mp4)
+   * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.0.6/4.Find_alited-1.0.6.mp4)
+   * [5. Tools](https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.0.6/5.Tools_alited-1.0.6.mp4)
+   * [6. Themes](https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.0.6/6.Themes_alited-1.0.6.mp4)
 
 # Inevitable blah-blah
 
