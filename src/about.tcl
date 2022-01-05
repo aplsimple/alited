@@ -24,9 +24,12 @@ proc about::About {} {
   set textTags [list \
     [list "red" " -font {[::apave::obj csFontDef] -weight bold} -foreground $fS -background $bS"] \
     [list "link1" "::apave::openDoc %t@@https://%l@@"] \
-    [list "link2" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/%l/%l.html@@"] \
-    [list "link3" "::apave::openDoc %t@@https://wiki.tcl-lang.org@@"] \
+    [list "link2" "::apave::openDoc %t@@https://wiki.tcl-lang.org@@"] \
     [list "linkapl" "::apave::openDoc %t@@https://github.com/aplsimple/@@"] \
+    [list "linkCN" "::apave::openDoc %t@@https://www.nemethi.de/@@"] \
+    [list "linkSH" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Steve+Huntley@@"] \
+    [list "linkHE" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/HE@@"] \
+    [list "linkRD" "::apave::openDoc %t@@https://github.com/rdbende@@"] \
     [list "linkMIT" "::apave::openDoc %t@@https://en.wikipedia.org/wiki/MIT_License@@"] \
     ]
   set long1 [msgcat::mc {And well fit for programming with it.}]
@@ -46,14 +49,23 @@ proc about::About {} {
     \n \
     <red> $long3 </red>\n \
     \n \
-    <red> $alited::tcltk_version </red> <link3></link3>\n \
+    <red> $alited::tcltk_version </red> <link2></link2>\n \
     \n \
     <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>"
-  set wmax [expr {max([string length $long1], \
+  set wmax [expr {4+max([string length $long1], \
     [string length $long2],[string length $long3])}]
+  set ackn [msgcat::mc "Many thanks to the following people\n who have contributed to this project:"]
+  set ::alited::AcknText "\n $ackn\n\n \
+      \u2022 <linkCN>Csaba Nemethi</linkCN>\n \
+      \u2022 <linkSH>Steve Huntley</linkSH>\n \
+      \u2022 <linkHE>Holger Ewert</linkHE>\n \
+      \u2022 <linkRD>rdbende</linkRD>\n \
+      "
+  set tab2 [list Information Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AcknText -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
   ::alited::msg ok {} $msg \
-    -title [msgcat::mc About] -t 1 -w [incr wmax 4] -h {30 30} -scroll 0 \
-    -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}"
+    -title [msgcat::mc About] -t 1 -w $wmax -h {30 30} -scroll 0 \
+    -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}" \
+    -tab2 $tab2
 }
 #_______________________
 

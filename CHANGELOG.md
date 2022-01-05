@@ -1,6 +1,16 @@
 # LAST CHANGES:
 
 
+Version `1.1.0a3 (5 Jan'22)`
+
+  - BUGFIX: Tab key (command completion) in kubuntu, reported and fixed by Steve
+  - BUGFIX: saving modified files by "Preferences/Save", reported by Steve
+  - NEW   : de.msg by Holger
+  - NEW   : acknoledgements tab in About
+  - CHANGE: port to listen made customizable, as suggested by Holger
+  - CHANGE: apave package
+
+
 Version `1.0.6 (29 Dec'21)`
 
   - BUGFIX: updating file tree after closing files (colors remain as if "open")

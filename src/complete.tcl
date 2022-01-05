@@ -11,7 +11,7 @@
 
 namespace eval complete {
   variable comms [list]  ;# list of available commands
-  variable maxwidth 0    ;# maximum width of command
+  variable maxwidth 20   ;# maximum width of command
 }
 
 # ________________________ Common _________________________ #
@@ -127,6 +127,8 @@ proc complete::PickCommand {wtxt} {
   } else {
     frame $win
     wm manage $win
+    # the line below is of an issue in kubuntu (KDE?): small sizes of the popup window
+    after idle [subst -nocom {wm geometry $win [regsub {([0-9]+x[0-9]+)} [wm geometry $win] 220x325]}]
   }
   wm withdraw $win
   wm overrideredirect $win 1
@@ -134,7 +136,7 @@ proc complete::PickCommand {wtxt} {
   catch {$obj destroy}
   ::apave::APaveInput create $obj $win
   $obj paveWindow $win {
-    {LbxPick - - - - {pack -side left -expand 1 -fill both} {-h 16 -w $alited::complete::maxwidth -lvar ::alited::complete::comms}}
+    {LbxPick - - - - {pack -side left -expand 1 -fill both} {-h 16 -w $::alited::complete::maxwidth -lvar ::alited::complete::comms}}
     {sbvPick LbxPick L - - {pack -side left -fill both} {}}
   }
   set lbx [$obj LbxPick]

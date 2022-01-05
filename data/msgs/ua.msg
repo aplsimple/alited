@@ -19,7 +19,7 @@ namespace eval ::alited {
   ## ________________________ Common _________________________ ##
 
   ::msgcat::mcmset ua {
-    {No name} {...TEST...}
+    {No name} {Без імені}
     "\"%f\" wasn't saved.\n\nSave it?" "\"%f\" не збережений.\n\nЗберігти?"
     {About} {Про програму}
     {About...} {Про програму...}
@@ -332,6 +332,9 @@ namespace eval ::alited {
     {Details:} {Підробиці:}
     {Authors:} {Автори:}
     {License:} {Ліцензія:}
+    {Common} {Загальне}
+    {Acknowledgements} {Вдячності}
+    "Many thanks to the following people\n who have contributed to this project:" "Щира подяка всім людям,\n що внесли свій вклад в цей проект:"
   }
 
   ## ________________________ Preferences ________________________ ##
@@ -397,6 +400,8 @@ namespace eval ::alited {
     {  Maximum:} {  Максимум:}
     {Maximum of backup copies per a file} {Максимальна кількість копій файлу}
     {Bell at warnings:} {Звук попереджень:}
+    {Port to listen alited:} {Порт слідкування за alited:}
+    "The empty value allows\nmultiple alited apps." "Пуста опція дозволяє\nзапускати декілька alited."
   }
 
   ### ________________________ Keys _________________________ ###

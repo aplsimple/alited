@@ -310,6 +310,12 @@ proc pref::Ok {args} {
       if {$tt ni [split $al(EM,tt=List) \t]} {append al(EM,tt=List) \t $tt}
     }
     set al(EM,tt=List) [string trim $al(EM,tt=List)]
+    set plst [lsort [list {} $al(comm_port) {*}$al(comm_port_list)]]
+    set al(comm_port_list) [list]
+    foreach pt $plst {
+      if {$pt ni $al(comm_port_list)} {lappend al(comm_port_list) $pt}
+      if {[llength $al(comm_port_list)]>32} break
+    }
     set al(EM,DiffTool) [file join {*}[file split $al(EM,DiffTool)]]
     $obDl2 res $win 1
     if {$ans == 1} {alited::Exit - 1 no}
@@ -475,7 +481,9 @@ proc pref::General_Tab2 {} {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
-    {.labConf - - 1 1 {-st w -pady 1 -padx 3} {-t "Confirm exit:"}}
+    {.labport - - 1 1 {-st w -pady 1 -padx 3} {-t "Port to listen alited:"}}
+    {.cbxport .labport L 1 1 {-st sw -pady 5} {-tvar alited::al(comm_port) -values {$alited::al(comm_port_list)} -w 8 -tip "The empty value allows\nmultiple alited apps."}}
+    {.labConf .labport T 1 1 {-st w -pady 1 -padx 3} {-t "Confirm exit:"}}
     {.swiConf .labConf L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,confirmexit)}}
     {.seh1 .labConf T 1 4 {-st ew -pady 5}}
     {.labS .seh1 T 1 1 {-st w -pady 1 -padx 3} {-t "Save configuration on"}}

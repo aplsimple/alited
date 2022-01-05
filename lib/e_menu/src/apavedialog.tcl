@@ -890,14 +890,14 @@ oo::class create ::apave::APaveDialog {
     set focusmatch {}
     # options of dialog
     lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM root ontop \
-               rotext head optsHead hsz binds postcom onclose timeout
+               rotext head optsHead hsz binds postcom onclose timeout tab2
     set modal yes
     set tags {}
     set themed 0
     set wasgeo [set textmode 0]
     set cc [set themecolors [set optsGrid [set addpopup {}]]]
     set readonly [set hidefind [set scroll 1]]
-    set curpos "1.0"
+    set curpos {1.0}
     set ${_pdg(ns)}PD::ch 0
     foreach {opt val} {*}$argdia {
       if {$opt in {-c -color -fg -bg -fgS -bgS -cc -hfg -hbg}} {
@@ -949,6 +949,7 @@ oo::class create ::apave::APaveDialog {
         -popup {set addpopup [string map [list %w $qdlg.fra.texM] "$val"]}
         -scroll {set scroll "$val"}
         -themed {set themed $val}
+        -tab2 {set tab2 $val}
         default {
           append optsFont " $opt $val"
           if {$opt ne "-family"} {
@@ -999,7 +1000,7 @@ oo::class create ::apave::APaveDialog {
     # layout: add the icon
     if {$icon ni {{} -}} {
       set widlist [list [list labBimg - - 99 1 \
-      "-st n -pady 7" "-image [::apave::iconImage $icon]"]]
+        {-st n -pady 7} "-image [::apave::iconImage $icon]"]]
       set prevl labBimg
     } else {
       set widlist [list [list labimg - - 99 1]]
@@ -1014,20 +1015,20 @@ oo::class create ::apave::APaveDialog {
         set optsHeadFont "-font \"$optsHeadFont\""
       }
       set optsFont {}
-      set prevp "L"
+      set prevp L
       set head [string map {\\n \n} $head]
       foreach lh [split $head "\n"] {
         set labh "labheading[incr il]"
-        lappend widlist [list $labh $prevw $prevp 1 99 "-st we" \
+        lappend widlist [list $labh $prevw $prevp 1 99 {-st we} \
           "-t \"$lh\" $optsHeadFont $optsHead"]
         set prevw [set prevh $labh]
-        set prevp "T"
+        set prevp T
       }
     } else {
       # add the upper (before the message) blank frame
-      lappend widlist [list h_1 $prevw L 1 1 "-pady 3"]
+      lappend widlist [list h_1 $prevw L 1 1 {-pady 3}]
       set prevw [set prevh h_1]
-      set prevp "T"
+      set prevp T
     }
     # add the message lines
     set il [set maxw 0]
@@ -1074,7 +1075,7 @@ oo::class create ::apave::APaveDialog {
       incr maxw
       set maxw [vallimits $maxw 20 [info exists charwidth] charwidth]
       rename vallimits {}
-      lappend widlist [list fraM $prevh T 10 7 "-st nswe -pady 3 -rw 1"]
+      lappend widlist [list fraM $prevh T 10 7 {-st nswe -pady 3 -rw 1}]
       lappend widlist [list TexM - - 1 7 {pack -side left -expand 1 -fill both -in \
         $qdlg.fra.fraM} [list -h $il -w $maxw {*}$optsFontM {*}$optsMisc \
         -wrap word -textpop 0 -tabnext $qdlg.fra.[lindex $buttons 0]]]
@@ -1084,11 +1085,11 @@ oo::class create ::apave::APaveDialog {
       set prevw fraM
     }
     # add the lower (after the message) blank frame
-    lappend widlist [list h_2 $prevw T 1 1 "-pady 0 -ipady 0 -csz 0"]
+    lappend widlist [list h_2 $prevw T 1 1 {-pady 0 -ipady 0 -csz 0}]
     # underline the message
-    lappend widlist [list seh $prevl T 1 99 "-st ew"]
+    lappend widlist [list seh $prevl T 1 99 {-st ew}]
     # add left frames and checkbox (before buttons)
-    lappend widlist [list h_3 seh T 1 1 "-pady 0 -ipady 0 -csz 0"]
+    lappend widlist [list h_3 seh T 1 1 {-pady 0 -ipady 0 -csz 0}]
     if {$textmode} {
       # binds to the special popup menu of the text widget
       set wt "\[[self] TexM\]"
@@ -1117,11 +1118,11 @@ oo::class create ::apave::APaveDialog {
         }
         set noIMG "[my iconA none]"
         if {$hidefind} {
-          lappend widlist [list h__ h_3 L 1 4 "-cw 1"]
+          lappend widlist [list h__ h_3 L 1 4 {-cw 1}]
         } else {
           lappend widlist [list labfnd h_3 L 1 1 "-st e" "-t {[msgcat::mc {Find: }]}"]
           lappend widlist [list Entfind labfnd L 1 1 \
-            "-st ew -cw 1" "-tvar ${_pdg(ns)}PD::fnd -w 10"]
+            {-st ew -cw 1} "-tvar ${_pdg(ns)}PD::fnd -w 10"]
           lappend widlist [list labfnd2 Entfind L 1 1 "-cw 2" "-t {}"]
           lappend widlist [list h__ labfnd2 L 1 1]
           append binds "
@@ -1172,13 +1173,13 @@ oo::class create ::apave::APaveDialog {
         lappend args -onclose [namespace current]::exitEditor
         oo::objdefine [self] export InitFindInText Pdg
       } else {
-        lappend widlist [list h__ h_3 L 1 4 "-cw 1"]
+        lappend widlist [list h__ h_3 L 1 4 {-cw 1}]
       }
     } else {
       lappend widlist [list chb h_3 L 1 1 \
-        "-st w" "-t {$chmsg} -var ${_pdg(ns)}PD::ch"]
+        {-st w} "-t {$chmsg} -var ${_pdg(ns)}PD::ch"]
       lappend widlist [list h_ chb L 1 1]
-      lappend widlist [list sev h_ L 1 1 "-st nse -cw 1"]
+      lappend widlist [list sev h_ L 1 1 {-st nse -cw 1}]
       lappend widlist [list h__ sev L 1 1]
       set appendHL $textmode
     }
@@ -1189,9 +1190,30 @@ oo::class create ::apave::APaveDialog {
     }
     # add the buttons
     my AppendButtons widlist $buttons h__ L $defb $timeout
-    # make & display the dialog's window
+    # make the dialog's window
     set wtop [my makeWindow $qdlg.fra $ttl]
-    set widlist [my paveWindow $qdlg.fra $widlist]
+    # pave the dialog's window
+    if {$tab2 eq {}} {
+      set widlist [my paveWindow $qdlg.fra $widlist]
+    } else {
+      # pave with the notebook tabs (titl1 title2 [title3...] widlist2 [widlist3...])
+      lassign $tab2 ttl1 ttl2 widlist2
+      set widlist0 [list {nbk - - - - {pack -side top -expand 1 -fill both} {
+        f1 "-t {$ttl1}"
+        f2 "-t {$ttl2}"
+      }}]
+      set widlist1 [list]
+      foreach it $widlist {
+        lassign $it w nei pos r c opt atr
+        set opt [string map {$qdlg.fra $qdlg.fra.nbk.f1} $opt]
+        lappend widlist1 [list $w $nei $pos $r $c $opt $atr]
+      }
+      set widlist [my paveWindow $qdlg.fra $widlist0 \
+        $qdlg.fra.nbk.f1 $widlist1 \
+        $qdlg.fra.nbk.f2 $widlist2 \
+      ]
+      set tab2 nbk.f1.
+    }
     if {$precom ne {}} {
       {*}$precom  ;# actions before showModal
     }
@@ -1212,7 +1234,7 @@ oo::class create ::apave::APaveDialog {
     }
     # after creating widgets - show dialog texts if any
     my SetGetTexts set $qdlg.fra $inopts $widlist
-    lassign [my LowercaseWidgetName $qdlg.fra.$defb] focusnow
+    lassign [my LowercaseWidgetName $qdlg.fra.$tab2$defb] focusnow
     if {$textmode} {
       my displayTaggedText [my TexM] msg $tags
       if {$defb eq "ButTEXT"} {
@@ -1296,6 +1318,5 @@ oo::class create ::apave::APaveDialog {
 
 }
 # _____________________________ EOF _____________________________________ #
+#RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#RUNF1: ~/PG/github/pave/tests/test2_pave.tcl -1 9 12 "small icons"
-#RUNF1: ./tests/test_pavedialog.tcl

@@ -2226,7 +2226,7 @@ oo::class create ::apave::APave {
         -entrypop - -entrypopRO - -textpop - -textpopRO - -ListboxSel - \
         -callF2 - -timeout - -bartabs - -onReturn - -linkcom - -selcombobox - \
         -afteridle - -gutter - -propagate - -columnoptions - -selborderwidth -
-        -selected - -popup - -bindEC {
+        -selected - -popup - -bindEC - -tags {
           # attributes specific to apave, processed below in "Post"
           set v2 [string trimleft $v "\{"]
           set v2 [string range $v2 0 end-[expr {[string length $v]-[string length $v2]}]]
@@ -2253,22 +2253,28 @@ oo::class create ::apave::APave {
     # Processes the same *apave* options that are processed in Pre method.
     # See also: Pre
 
+    if {[set i [lsearch -index 0 $_pav(prepost) -tags]]>-1} {
+      set v [lindex $_pav(prepost) $i 1]
+      set tags [set $v]
+    } else {
+      set tags {}
+    }
     foreach pp $_pav(prepost) {
       lassign $pp a v
       set v [string trim $v $::apave::UFF]
       switch -- $a {
         -disabledtext {
           $w configure -state normal
-          my displayTaggedText $w v {}
+          my displayTaggedText $w v $tags
           $w configure -state disabled
           my readonlyWidget $w no
         }
         -rotext {
           if {[info exist v]} {
             if {[info exist $v]} {
-              my displayTaggedText $w $v {}
+              my displayTaggedText $w $v $tags
             } else {
-              my displayTaggedText $w v {}
+              my displayTaggedText $w v $tags
             }
           }
           my readonlyWidget $w yes

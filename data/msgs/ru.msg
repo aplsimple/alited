@@ -326,6 +326,9 @@ namespace eval ::alited {
     {Details:} {Подробности:}
     {Authors:} {Авторы:}
     {License:} {Лицензия:}
+    {Common} {Общее}
+    {Acknowledgements} {Благодарности}
+    "Many thanks to the following people\n who have contributed to this project:" "Огромное спасибо всем людям,\n внесшим свой вклад в этот проект:"
   }
 
   ## ________________________ Preferences ________________________ ##
@@ -391,6 +394,8 @@ namespace eval ::alited {
     {  Maximum:} {  Максимум:}
     {Maximum of backup copies per a file} {Максимальное число копий файла}
     {Bell at warnings:} {Звук предупреждений:}
+    {Port to listen alited:} {Порт слежения за alited:}
+    "The empty value allows\nmultiple alited apps." "Пустая опция позволяет\nзапускать несколько alited."
   }
 
   ### ________________________ Keys _________________________ ###

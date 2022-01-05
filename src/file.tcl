@@ -286,7 +286,7 @@ proc file::AllSaved {} {
         return no
       }
       1 { ;# "Save" chosen for a modified
-        set res [SaveFile $TID]
+        set res [SaveFile $TID yes]
       }
     }
   }
@@ -514,9 +514,11 @@ proc file::SaveFileByName {TID fname} {
 }
 #_______________________
 
-proc file::SaveFile {{TID ""}} {
+proc file::SaveFile {{TID ""} {doit no}} {
   # Saves the current file.
   #   TID - ID of tab
+  #   doit - flag "do save now, without any GUI"
+  # See also: ini::SaveCurrentIni
 
   namespace upvar ::alited al al
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
@@ -525,10 +527,12 @@ proc file::SaveFile {{TID ""}} {
     return [SaveFileAs $TID]
   }
   set res [SaveFileByName $TID $fname]
-  alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)"
-  alited::main::ShowHeader yes
-  alited::tree::RecreateTree {} $fname
-  alited::tree::SeeSelection
+  alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)" $doit
+  if {!$doit} {
+    alited::main::ShowHeader yes
+    alited::tree::RecreateTree {} $fname
+    alited::tree::SeeSelection
+  }
   return $res
 }
 #_______________________

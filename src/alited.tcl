@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.0.6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.1.0a3  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -18,11 +18,85 @@ namespace eval alited {
 
   variable tcltk_version "Tcl/Tk [package versions Tk]"
 
+  ## ________________________ Main variables _________________________ ##
+
   set DEBUG no  ;# debug mode
   set LOG {}    ;# log file in develop mode
 
   variable al; array set al [list]
-  set al(WIN) .alwin  ;# main form's path
+  set al(WIN) .alwin    ;# main form's path
+  set al(comm_port) {}  ;# port to listen
+  set al(comm_port_list) {{} 51807 51817 51827 51837}  ;# list of ports to listen
+  set al(ini_file) {}  ;# alited.ini contents
+
+  # main data of alited (others are in ini.tcl)
+
+  variable FILEDIR [file normalize [file dirname ::argv0]]
+  variable SCRIPT $::argv0
+  variable SCRIPTNORMAL [file normalize $SCRIPT]
+  variable DIR [file dirname [file dirname [file normalize [info script]]]]
+
+  # directories of sources
+  variable SRCDIR [file join $DIR src]
+  variable LIBDIR [file join $DIR lib]
+
+  # directories of required packages
+  variable BARSDIR [file join $LIBDIR bartabs]
+  variable HLDIR   [file join $LIBDIR hl_tcl]
+
+  set ::e_menu_dir [file join $LIBDIR e_menu]
+  variable MNUDIR [file join $::e_menu_dir menus]
+
+  # apave & baltip packages are located in e_menu's subdirectory
+  variable PAVEDIR [file join $::e_menu_dir src]
+  variable BALTDIR [file join $PAVEDIR baltip]
+
+  # directories of key data
+  variable DATADIR [file join $DIR data]
+  variable IMGDIR  [file join $DATADIR img]
+  variable MSGSDIR [file join $DATADIR msgs]
+
+  # directories of user's data
+  variable USERDIRSTD [file normalize {~/.config}]
+  variable USERDIRROOT $USERDIRSTD
+
+  # two main objects to build forms (just some unique names)
+  variable obPav ::alited::alitedpav
+  variable obDlg ::alited::aliteddlg  ;# dialog of 1st level
+  variable obDl2 ::alited::aliteddl2  ;# dialog of 2nd level
+  variable obDl3 ::alited::aliteddl3  ;# dialog of 3rd level
+  variable obCHK ::alited::alitedCHK  ;# dialog of "Check Tcl"
+  variable obFND ::alited::alitedFND  ;# dialog of "Find/Replace"
+  variable obFN2 ::alited::alitedFN2  ;# dialog of "Find by list"
+
+  # misc. vars
+  variable DirGeometry {}  ;# saved geometry of "Choose Directory" dialogue (for Linux)
+  variable FilGeometry {}  ;# saved geometry of "Choose File" dialogue (for Linux)
+
+  # misc. consts
+  variable PRJEXT .ale     ;# project file's extension
+  variable EOL {@~}        ;# "end of line" for ini-files
+
+  set al(prjname) {}      ;# current project's name
+  set al(prjfile) {}      ;# current project's file name
+  set al(prjroot) {}      ;# current project's directory name
+  set al(prjindent) 4     ;# current project's indentation
+  set al(prjindentAuto) 1 ;# auto detection of indentation
+  set al(prjmultiline) 0  ;# current project's multiline mode
+  set al(prjEOL) {}       ;# current project's end of line
+  set al(prjredunit) 20   ;# current project's unit lines per 1 red bar
+  set al(prjbeforerun) {} ;# a command to be run before "Tools/Run"
+
+  set al(TITLE) {%f :: %d :: %p}               ;# alited title's template
+  set al(TclExtensionsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
+  set al(ClangExtensionsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
+  set al(TextExtensionsDef) {html htm css md txt sh bat ini} ;# extensions of plain texts
+  set al(TclExtensions) $al(TclExtensionsDef)
+  set al(ClangExtensions) $al(ClangExtensionsDef)
+  set al(TextExtensions) $al(TextExtensionsDef)
+
+
+  ## __________________ Procs to raise the alited app ___________________ ##
 
   proc raise_window {} {
     # Raises the app's window.
@@ -71,17 +145,18 @@ namespace eval alited {
 # ________________________ ::argv, ::argc _________________________ #
 
 # this "if" satisfies the Ruff doc generator "package require":
+# (without 'package require alited', it's a regular run of alited)
 if {[package versions alited] eq {}} {
   wm withdraw .
   if {$::tcl_platform(platform) eq {windows}} {
     wm attributes . -alpha 0.0
   }
-  set ALITED_NOSEND no
+  set ALITED_PORT yes
   foreach - {1 2 3} {  ;# for inverted order of these arguments
-    if {[lindex $::argv 0] eq {NOSEND}} {
+    if {[lindex $::argv 0] eq {-NOPORT}} {
       set ::argv [lreplace $::argv 0 0]
       incr ::argc -1
-      set ALITED_NOSEND yes
+      set ALITED_PORT no
     }
     if {[string match LOG=* [lindex $::argv 0]]} {
       set alited::LOG [string range [lindex $::argv 0] 4 end]
@@ -94,111 +169,58 @@ if {[package versions alited] eq {}} {
       incr ::argc -1
     }
   }
-  set ALITED_FNAMES {}
-  foreach - $::argv {
-    lappend ALITED_FNAMES [file normalize ${-}]
+  set ALITED_ARGV [list]
+  foreach _ $::argv {lappend ALITED_ARGV [file normalize $_]}
+
+# ____________________ Get a port to listen __________________ #
+  set _ [lindex $ALITED_ARGV 0]
+  if {![llength $ALITED_ARGV] || ![file isdirectory $_]} {
+    set _ $alited::USERDIRROOT
+  } else {
+    set alited::USERDIRROOT $_
+    set ALITED_ARGV [lrange $ALITED_ARGV 1 end]
+  }
+  # try to read alited.ini
+  set _ [file join $_ alited ini alited.ini]
+  if {![catch {set _ [open $_]}]} {
+    set alited::al(ini_file) [split [read $_] \n]
+    close $_
+    set _ [lindex $alited::al(ini_file) 1]
+    if {[string match comm_port=* $_]} {
+      set alited::al(comm_port) [string range $_ 10 end]
+    } else {
+      set alited::al(comm_port) 51837 ;# to be compatible with old style
+    }
   }
 
 # ____________________ Open an existing app __________________ #
 
-  set comm_port 51837
-  set already_running [catch { ::comm::comm config -port $comm_port }]
-  if {!$alited::DEBUG && !$ALITED_NOSEND} {
+  if {[string is integer -strict $alited::al(comm_port)]} {
     # Code borrowed from TKE editor.
     # Set the comm port that we will use
     # Change our comm port to a known value
     # (if we fail, the app is already running at that port so connect to it)
-    if {$already_running} {
-      # Attempt to add files or raise the existing application
-      if {[llength $ALITED_FNAMES]} {
-        if {![catch {::comm::comm send $comm_port ::alited::run_remote ::alited::open_files_and_raise 0 {*}$ALITED_FNAMES}]} {
-          destroy .
-          exit
-        }
-      } else {
-        if {![catch { ::comm::comm send $comm_port ::alited::run_remote ::alited::::raise_window }]} {
-          destroy .
-          exit
-        }
+    if {![catch { ::comm::comm config -port $alited::al(comm_port) }]} {
+      set ALITED_PORT no ;# no running app
+    }
+  } else {
+    set ALITED_PORT no
+  }
+  if {!$alited::DEBUG && $ALITED_PORT} {
+    if {[llength $ALITED_ARGV]} {
+      # Attempt to add files & raise the existing application
+      if {![catch {::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::open_files_and_raise 0 {*}$ALITED_ARGV}]} {
+        destroy .
+        exit
+      }
+    } else {
+      # Attempt to raise the existing application
+      if {![catch { ::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::::raise_window }]} {
+        destroy .
+        exit
       }
     }
   }
-  unset comm_port
-  unset already_running
-}
-
-set ALITED_ONFILES [expr {$::argc>1 || ($::argc==1 && [file isfile [lindex $::argv 0]])}]
-
-# ________________________ Main variables _________________________ #
-
-namespace eval alited {
-
-  # main data of alited (others are in ini.tcl)
-
-  variable FILEDIR [file normalize [file dirname ::argv0]]
-  variable SCRIPT $::argv0
-  variable SCRIPTNORMAL [file normalize $SCRIPT]
-  variable DIR [file dirname [file dirname [file normalize [info script]]]]
-
-  # directories of sources
-  variable SRCDIR [file join $DIR src]
-  variable LIBDIR [file join $DIR lib]
-
-  # directories of required packages
-  variable BARSDIR [file join $LIBDIR bartabs]
-  variable HLDIR   [file join $LIBDIR hl_tcl]
-
-  set ::e_menu_dir [file join $LIBDIR e_menu]
-  variable MNUDIR [file join $::e_menu_dir menus]
-
-  # apave & baltip packages are located in e_menu's subdirectory
-  variable PAVEDIR [file join $::e_menu_dir src]
-  variable BALTDIR [file join $PAVEDIR baltip]
-
-  # directories of key data
-  variable DATADIR [file join $DIR data]
-  variable IMGDIR  [file join $DATADIR img]
-  variable MSGSDIR [file join $DATADIR msgs]
-
-  # directories of user's data
-  variable USERDIRSTD [file normalize {~/.config}]
-  variable USERDIRROOT $USERDIRSTD
-  if {$::argc && !$ALITED_ONFILES} {set USERDIRROOT [lindex $::argv 0]}
-
-  # two main objects to build forms (just some unique names)
-  variable obPav ::alited::alitedpav
-  variable obDlg ::alited::aliteddlg  ;# dialog of 1st level
-  variable obDl2 ::alited::aliteddl2  ;# dialog of 2nd level
-  variable obDl3 ::alited::aliteddl3  ;# dialog of 3rd level
-  variable obCHK ::alited::alitedCHK  ;# dialog of "Check Tcl"
-  variable obFND ::alited::alitedFND  ;# dialog of "Find/Replace"
-  variable obFN2 ::alited::alitedFN2  ;# dialog of "Find by list"
-
-  # misc. vars
-  variable DirGeometry {}  ;# saved geometry of "Choose Directory" dialogue (for Linux)
-  variable FilGeometry {}  ;# saved geometry of "Choose File" dialogue (for Linux)
-
-  # misc. consts
-  variable PRJEXT .ale     ;# project file's extension
-  variable EOL {@~}        ;# "end of line" for ini-files
-
-  set al(prjname) {}      ;# current project's name
-  set al(prjfile) {}      ;# current project's file name
-  set al(prjroot) {}      ;# current project's directory name
-  set al(prjindent) 4     ;# current project's indentation
-  set al(prjindentAuto) 1 ;# auto detection of indentation
-  set al(prjmultiline) 0  ;# current project's multiline mode
-  set al(prjEOL) {}       ;# current project's end of line
-  set al(prjredunit) 20   ;# current project's unit lines per 1 red bar
-  set al(prjbeforerun) {} ;# a command to be run before "Tools/Run"
-
-  set al(TITLE) {%f :: %d :: %p}               ;# alited title's template
-  set al(TclExtensionsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
-  set al(ClangExtensionsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
-  set al(TextExtensionsDef) {html htm css md txt sh bat ini} ;# extensions of plain texts
-  set al(TclExtensions) $al(TclExtensionsDef)
-  set al(ClangExtensions) $al(ClangExtensionsDef)
-  set al(TextExtensions) $al(TextExtensionsDef)
 }
 
 # _____________________________ Packages used __________________________ #
@@ -506,17 +528,16 @@ if {$alited::LOG ne {}} {
   ::apave::logMessage "START ------------"
 }
 # this "if" satisfies the Ruff doc generator "package require":
-if {[info exists ALITED_NOSEND]} {
-  unset ALITED_NOSEND
+if {[info exists ALITED_PORT]} {
+  unset ALITED_PORT
 #  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
-  if {$ALITED_ONFILES} {
+  if {[llength $ALITED_ARGV]} {
     set ::argc 0
     set ::argv {}
-    after 10 [list ::alited::open_files_and_raise 0 {*}$ALITED_FNAMES]
+    after 10 [list ::alited::open_files_and_raise 0 {*}$ALITED_ARGV]
   }
   set alited::ARGV $::argv
-  unset ALITED_FNAMES
-  unset ALITED_ONFILES
+  unset ALITED_ARGV
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
@@ -537,18 +558,18 @@ if {[info exists ALITED_NOSEND]} {
       set alited::SCRIPT $alited::SCRIPTNORMAL
     }
     if {$alited::LOG ne {}} {
-      ::apave::logMessage "QUIT :: $alited::DIR :: $alited::SCRIPT NOSEND $alited::ARGV"
+      ::apave::logMessage "QUIT :: $alited::DIR :: $alited::SCRIPT PORT $alited::ARGV"
     }
     catch {wm attributes . -alpha 0.0}
     catch {wm withdraw $alited::al(WIN)}
     cd $alited::DIR
-    exec -- {*}[info nameofexecutable] $alited::SCRIPT NOSEND {*}$alited::ARGV &
+    exec -- {*}[info nameofexecutable] $alited::SCRIPT -NOPORT {*}$alited::ARGV &
   } elseif {$alited::LOG ne {}} {
     ::apave::logMessage {QUIT ------------}
   }
   exit
 } else {
-  # these are sourced by demand while alited really running,
+  # these are sourced by demand when alited really running;
   # here exclusively for Ruff doc generator
   namespace eval alited {
     source [file join $alited::SRCDIR about.tcl]
@@ -557,4 +578,5 @@ if {[info exists ALITED_NOSEND]} {
   }
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#-RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#EXEC1: /home/apl/PG/github/freewrap/TEST-kit/tclkit-gui-8.6.11 /home/apl/PG/github/alited/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

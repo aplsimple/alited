@@ -1,3 +1,7 @@
+ If it is empty, "Port to listen alited" option allows multiple aliteds
+ working simultaneously. Otherwise, alited would listen the chosen port
+ and arise (with passed file names) when you try to start it again.
+
  Switch "Confirm exit" on to secure alited against an unintended quit,
  i.e. at clicking [x] button or pressing Alt+F4.
 
@@ -6,7 +10,7 @@
    - closing a file
    - saving a file
 
- The last option can work together with the option
+ This option works together with the option (highly recommended "All"!):
    "Save before bar/menu runs"
  which means saving file(s) at running a bar/menu action.
 

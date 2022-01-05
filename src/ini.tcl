@@ -198,10 +198,12 @@ proc ini::ReadIni {{projectfile ""}} {
   catch {
     puts "alited pwd    : [pwd]"
     puts "alited reading: $al(INI)"
-    set chan [open $::alited::al(INI)]
+    if {$al(ini_file) eq {}} {
+      # al(ini_file) may be already filled (see alited.tcl)
+      set al(ini_file) [split [::apave::readTextFile $::alited::al(INI)] \n]
+    }
     set mode ""
-    while {![eof $chan]} {
-      set stini [string trim [gets $chan]]
+    foreach stini $al(ini_file) {
       switch -exact $stini {
         {[Geometry]} - {[Options]} - {[Projects]} - {[Templates]} - {[Keys]} - {[EM]} - {[Tkcon]} - {[Misc]} {
           set mode $stini
@@ -223,7 +225,6 @@ proc ini::ReadIni {{projectfile ""}} {
       }
     }
   }
-  catch {close $chan}
   if {$projectfile eq {} && $al(prjfile) eq {}} {
     # some options may be active outside of any project; fill them with defaults
     foreach opt {multiline indent indentAuto EOL} {
@@ -289,6 +290,7 @@ proc ini::ReadIniOptions {nam val} {
     }
   }
   switch -glob -- $nam {
+    comm_port_list {set al(comm_port_list) $val}
     project {
       set al(prjfile) $val
       set al(prjname) [file tail [file rootname $val]]
@@ -586,6 +588,8 @@ proc ini::SaveIni {{newproject no}} {
   puts "alited storing: $al(INI)"
   set chan [open $::alited::al(INI) w]
   puts $chan {[Options]}
+  puts $chan "comm_port=$al(comm_port)"
+  puts $chan "comm_port_list=$al(comm_port_list)"
   puts $chan "project=$al(prjfile)"
   puts $chan "theme=$al(THEME)"
   puts $chan "cs=$al(INI,CS)"
@@ -722,7 +726,7 @@ proc ini::SaveIniPrj {newproject} {
   # Saves settings of project.
   #   newproject - flag "for a new project"
 
-  namespace upvar ::alited al al obPav obPav
+  namespace upvar ::alited al al
   set tabs $al(tabs)
   set al(tabs) [list]
   if {$al(prjroot) eq ""} return
@@ -872,7 +876,6 @@ proc ini::EditSettings {} {
   # Displays the settings file, just to look behind the wall.
 
   namespace upvar ::alited al al obPav obPav
-  set filecont [::apave::readTextFile $al(INI)]
   $obPav vieweditFile $al(INI) {} -rotext 1 -h 25
 }
 
