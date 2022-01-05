@@ -328,7 +328,6 @@ namespace eval ::alited {
     {Details:} {Details:}
     {Authors:} {Authoren:}
     {License:} {Lizens:}
-    {Common} {Gemein}
     {Acknowledgements} {Anerkennungen}
     "Many thanks to the following people\n who have contributed to this project:" "Vielen Dank an die folgenden Personen,\n die zu diesem Projekt beigetragen haben:"
   }

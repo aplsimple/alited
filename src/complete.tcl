@@ -137,7 +137,7 @@ proc complete::PickCommand {wtxt} {
   ::apave::APaveInput create $obj $win
   $obj paveWindow $win {
     {LbxPick - - - - {pack -side left -expand 1 -fill both} {-h 16 -w $::alited::complete::maxwidth -lvar ::alited::complete::comms}}
-    {sbvPick LbxPick L - - {pack -side left -fill both} {}}
+    {#sbvPick LbxPick L - - {pack -side left -fill both} {}}
   }
   set lbx [$obj LbxPick]
   foreach ev {ButtonPress-1 Return KP_Enter KeyPress-space} {
@@ -154,7 +154,7 @@ proc complete::PickCommand {wtxt} {
       incr Y 40
       after 100 "wm deiconify $win"
     }
-    set res [$obj showModal $win -decor 0 -focus $lbx -geometry +$X+$Y]
+    set res [$obj showModal $win -focus $lbx -geometry +$X+$Y]
   }
   destroy $win
   $obj destroy

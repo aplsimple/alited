@@ -271,9 +271,11 @@ proc main::FocusInText {TID wtxt} {
 
   namespace upvar ::alited obPav obPav
   if {![alited::bar::BAR isTab $TID]} return
-  ::alited::main::CursorPos $wtxt
-  [$obPav TreeFavor] selection set {}
-  alited::file::OutwardChange $TID
+  catch {
+    ::alited::main::CursorPos $wtxt
+    [$obPav TreeFavor] selection set {}
+    alited::file::OutwardChange $TID
+  }
 }
 
 # ________________________ highlights _________________________ #
@@ -553,7 +555,7 @@ proc main::BindsForText {TID wtxt} {
   #   wtxt - text widget's path
 
   if {[alited::bar::BAR isTab $TID]} {
-    bind $wtxt <FocusIn> [list after 200 "::alited::main::FocusInText $TID $wtxt"]
+    bind $wtxt <FocusIn> [list after 500 "::alited::main::FocusInText $TID $wtxt"]
   }
   bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
   bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
@@ -699,7 +701,8 @@ proc main::_create {} {
     }}}
   }
   UpdateProjectInfo
-  after 100 {after 100 {alited::main::InitActions}}
+  # there should be a pause enough for FillBar got -wbar option normally sized
+  after 500 {after idle alited::main::InitActions}
   bind [$obPav Pan] <ButtonRelease> ::alited::tree::AdjustWidth
   set sbhi [$obPav SbhInfo]
   set lbxi [$obPav LbxInfo]
