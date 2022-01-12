@@ -439,7 +439,13 @@ proc tool::e_menu1 {opts} {
   #   opts - options of e_menu
   # The e_menu is run as an external application.
 
-  alited::Run [file join $::e_menu_dir e_menu.tcl] {*}[EM_Options $opts] c=$alited::al(EM,CS)
+  namespace upvar ::alited al al obPav obPav
+  if {$al(EM,ownCS)} {
+    set cs $al(EM,CS)
+  } else {
+    set cs [$obPav csCurrent]
+  }
+  alited::Run [file join $::e_menu_dir e_menu.tcl] {*}[EM_Options $opts] c=$cs
 }
 #_______________________
 

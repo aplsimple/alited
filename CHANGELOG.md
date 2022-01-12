@@ -1,15 +1,24 @@
 # LAST CHANGES:
 
 
-Version `1.1.0a4 (5 Jan'22)`
+Version `1.1.0a9 (12 Jan'22)`
 
   - BUGFIX: Tab key (command completion) in kubuntu, reported and fixed by Steve
   - BUGFIX: saving modified files by "Preferences/Save", reported by Steve
+  - BUGFIX: catch for lreplace (this commy) at saving ini
+  - BUGFIX: command completion at column=1
+  - NEW   : code snippets in "Tcl/C syntax" tabs
+  - NEW   : 4 default buttons in "Tcl/C syntax" tabs
+  - NEW   : check for Tab character in "Correct Indentation"
+  - NEW   : e_menu's "own CS" option
   - NEW   : de.msg by Holger
   - NEW   : acknoledgements tab in About
+  - CHANGE: visited units' color of tree changed to proc/return color
+  - CHANGE: indentation can be from 0 (spec. for "1 Tab" indents)
+  - CHANGE: install defaults: emtt=x-terminal-emulator, emcs=-1
   - CHANGE: port to listen made customizable, as suggested by Holger
   - CHANGE: no scrollbar in "Complete Command" window
-  - CHANGE: apave package
+  - CHANGE: apave, hl_tcl packages
 
 
 Version `1.0.6 (29 Dec'21)`

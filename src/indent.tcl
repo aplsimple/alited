@@ -10,17 +10,19 @@
 namespace eval indent {
 }
 
-proc indent::indent {tclcode pad indcnt} {
+proc indent::indent {tclcode pad padchar indcnt} {
   # Indents Tcl code.
   #   tclcode - text of Tcl code
-  #   pad - string of spaces per 1 indent
+  #   pad - number of spaces per 1 indent
+  #   padchar - indenting character
   #   indcnt - initial indent
 
   set lines [split $tclcode \n]
   set out {}
   set nquot 0   ;# count of quotes
   set ncont 0   ;# count of continued strings
-  set padst [string repeat { } $pad]
+  if {$padchar ne "\t"} {set padchar { }}
+  set padst [string repeat $padchar $pad]
   foreach orig $lines {
     incr lineindex
     if {$lineindex>1} {append out \n}
@@ -95,18 +97,21 @@ proc indent::normalize {} {
   # Normalizes all indents of the current Tcl text.
 
   set txt [alited::main::CurrentWTXT]
-  set pad [alited::main::CalcIndentation]
+  lassign [alited::main::CalcIndentation] pad padchar
   set indcnt 0
   if {$pad<1} {
     alited::msg ok err "No indentation set.\nSee 'Setup/Projects/Options'."
     return
   }
   set msg [msgcat::mc "Correct the indentation of \"%f\"\nwith indenting %i spaces?"]
-  set msg [string map [list %i $pad] $msg]
+  set ipad $pad
+  if {$padchar eq "\t"} {append ipad { Tab}}
+  set msg [string map [list %i $ipad] $msg]
   set msg [string map [list %f [file tail [alited::bar::FileName]]] $msg]
   if {[alited::msg yesno ques $msg YES]} {
+    ::apave::setTextIndent $pad $padchar
     set contents [$txt get 1.0 {end -1 chars}]
-    set contents [indent $contents $pad $indcnt]
+    set contents [indent $contents $pad $padchar $indcnt]
     if {$contents ne {}} {
       $txt replace 1.0 end $contents
     }

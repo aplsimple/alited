@@ -64,6 +64,9 @@ namespace eval ::alited {
     {Quit alited?} {Выйти из alited?}
     {Wait a little ...} {Ожидайте ...}
     {Default} {По умолчанию}
+    {Default 2} {По умолчанию 2}
+    {Default 3} {По умолчанию 3}
+    {Default 4} {По умолчанию 4}
     {Test} {Проверка}
     {Correct Indentation} {Править отступы}
     "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Править отступы \"%f\",\nпо %i на каждый?"
@@ -327,7 +330,8 @@ namespace eval ::alited {
     {Authors:} {Авторы:}
     {License:} {Лицензия:}
     {Acknowledgements} {Благодарности}
-    "Many thanks to the following people\n who have contributed to this project:" "Огромное спасибо всем людям,\n внесшим свой вклад в этот проект:"
+    "Many thanks to the following people\n who have contributed to this project" "Огромное спасибо всем людям,\n внесшим свой вклад в этот проект"
+    {Special thanks also to} {Особая благодарность также}
   }
 
   ## ________________________ Preferences ________________________ ##
@@ -373,6 +377,7 @@ namespace eval ::alited {
     {Tab bar label's length:} {Длина имен панели файлов:}
     {Tab bar tip's length:} {Длина подсказок панели файлов:}
     {Color scheme's light changed. Color fields disabled.} {Тон цветовой схемы изменен. Поля цветов недоступны.}
+    {Code snippet:} {Фрагмент кода:}
   }
 
   ### ________________________ Saving _________________________ ###
@@ -484,6 +489,7 @@ namespace eval ::alited {
     {Commands:} {Команды:}
     {Commands before "Run"} {Команды перед "Запуском"}
     "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Введите команды, выполняемые перед \"Снасти/Запуск\".\n Это может быть полезно в некоторых проектах. Что-то типа инициализации перед запуском.  \n"
+    {e_menu's own} {своя в e_menu}
   }
 
   ## ________________________ Checks ________________________ ##

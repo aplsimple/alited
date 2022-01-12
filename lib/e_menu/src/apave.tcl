@@ -29,8 +29,37 @@ catch {
 
 namespace eval ::apave {
 
-  ;# default grid options & attributes of widgets (no abbreviations here)
+  ## ________________________ apave variables _________________________ ##
+
   variable cursorwidth 1
+  variable apaveDir [file dirname [info script]]
+  variable _AP_ICO { none folder OpenFile SaveFile saveall print font color \
+    date help home misc terminal run tools file find replace other view \
+    categories actions config pin cut copy paste plus minus add delete \
+    change diagram box trash double more undo redo up down previous next \
+    previous2 next2 upload download tag tagoff tree lock light restricted \
+    attach share mail www map umbrella gulls sound heart clock people info \
+    err warn ques retry yes no ok cancel exit }
+  variable _AP_IMG;  array set _AP_IMG [list]
+  variable _AP_VARS; array set _AP_VARS [list]
+  set _AP_VARS(.,SHADOW) 0
+  set _AP_VARS(.,MODALS) 0
+  set _AP_VARS(TIMW) [list]
+  set _AP_VARS(LINKFONT) [list -underline 1]
+  set _AP_VARS(INDENT) "  "
+  set _AP_VARS(KEY,F3) F3
+  set _AP_VARS(KEY,CtrlD) [list Control-D Control-d]
+  set _AP_VARS(KEY,CtrlY) [list Control-Y Control-y]
+  set _AP_VARS(KEY,AltQ) [list Alt-Q Alt-q]
+  set _AP_VARS(KEY,AltW) [list Alt-W Alt-w]
+  variable _AP_VISITED;  array set _AP_VISITED [list]
+  set _AP_VISITED(ALL) [list]
+  variable UFF "\uFFFF"
+  variable _OBJ_ {}
+  variable MC_NS {}
+
+  ## _ default options & attributes of widgets _ ##
+
   variable _Defaults [dict create \
     bts {{} {}} \
     but {{} {}} \
@@ -94,31 +123,6 @@ namespace eval ::apave {
     tre {{} {-selectmode browse}} \
     "h_" {{-sticky ew -csz 3 -padx 3} {}} \
     "v_" {{-sticky ns -rsz 3 -pady 3} {}}]
-  variable apaveDir [file dirname [info script]]
-  variable _AP_ICO { none folder OpenFile SaveFile saveall print font color \
-    date help home misc terminal run tools file find replace other view \
-    categories actions config pin cut copy paste plus minus add delete \
-    change diagram box trash double more undo redo up down previous next \
-    previous2 next2 upload download tag tagoff tree lock light restricted \
-    attach share mail www map umbrella gulls sound heart clock people info \
-    err warn ques retry yes no ok cancel exit }
-  variable _AP_IMG;  array set _AP_IMG [list]
-  variable _AP_VARS; array set _AP_VARS [list]
-  set _AP_VARS(.,SHADOW) 0
-  set _AP_VARS(.,MODALS) 0
-  set _AP_VARS(TIMW) [list]
-  set _AP_VARS(LINKFONT) [list -underline 1]
-  set _AP_VARS(INDENT) "  "
-  set _AP_VARS(KEY,F3) F3
-  set _AP_VARS(KEY,CtrlD) [list Control-D Control-d]
-  set _AP_VARS(KEY,CtrlY) [list Control-Y Control-y]
-  set _AP_VARS(KEY,AltQ) [list Alt-Q Alt-q]
-  set _AP_VARS(KEY,AltW) [list Alt-W Alt-w]
-  variable _AP_VISITED;  array set _AP_VISITED [list]
-  set _AP_VISITED(ALL) [list]
-  variable UFF "\uFFFF"
-  variable _OBJ_ {}
-  variable MC_NS {}
 
 # _______________________ Helpers _____________________ #
 
@@ -345,12 +349,14 @@ namespace eval ::apave {
   }
   #_______________________
 
-  proc setTextIndent {len} {
+  proc setTextIndent {len {padchar { }}} {
     # Sets an indenting for text widgets.
     #   len - length of indenting
+    #   padchar - indenting character
 
     variable _AP_VARS
-    set _AP_VARS(INDENT) [string repeat " " $len]
+    if {$padchar ne "\t"} {set padchar { }}
+    set _AP_VARS(INDENT) [string repeat $padchar $len]
   }
 
 }  ;# ::apave
@@ -2367,6 +2373,16 @@ oo::class create ::apave::APave {
           set v [string map [list %w $w] $v]
           lassign $v ev com
           ::apave::bindToEvent $w $ev {*}$com
+          switch -- [winfo class $w] {
+            Treeview {
+              ::apave::bindToEvent $w <ButtonPress> selection clear
+              ::apave::bindToEvent $w <KeyPress> selection clear
+            }
+            Listbox {
+              ::apave::bindToEvent $w <ButtonPress> selection clear
+              ::apave::bindToEvent $w <KeyPress> selection clear
+            }
+          }
         }
         -timeout {
           lassign $v timo lbl

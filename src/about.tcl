@@ -30,6 +30,8 @@ proc about::About {} {
     [list "linkSH" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Steve+Huntley@@"] \
     [list "linkHE" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/HE@@"] \
     [list "linkRD" "::apave::openDoc %t@@https://github.com/rdbende@@"] \
+    [list "linkPO" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Paul+Obermeier@@"] \
+    [list "linkRK" "::apave::openDoc %t@@https://rkeene.org/projects/info@@"] \
     [list "linkMIT" "::apave::openDoc %t@@https://en.wikipedia.org/wiki/MIT_License@@"] \
     ]
   set long1 [msgcat::mc {And well fit for programming with it.}]
@@ -54,12 +56,16 @@ proc about::About {} {
     <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>"
   set wmax [expr {4+max([string length $long1], \
     [string length $long2],[string length $long3])}]
-  set ackn [msgcat::mc "Many thanks to the following people\n who have contributed to this project:"]
+  set ackn [msgcat::mc "Many thanks to the following people\n who have contributed to this project"]
+  set spec [msgcat::mc "Special thanks also to"]
   set ::alited::AcknText "\n $ackn\n\n \
       \u2022 <linkCN>Csaba Nemethi</linkCN>\n \
       \u2022 <linkSH>Steve Huntley</linkSH>\n \
       \u2022 <linkHE>Holger Ewert</linkHE>\n \
       \u2022 <linkRD>rdbende</linkRD>\n \
+      \n $spec\n\n \
+      \u2022 <linkPO>Paul Obermeier</linkPO>\n \
+      \u2022 <linkRK>Roy Keene</linkRK>\n \
       "
   set tab2 [list Information Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AcknText -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
   ::alited::msg ok {} $msg \

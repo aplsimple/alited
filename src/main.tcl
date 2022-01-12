@@ -519,14 +519,20 @@ proc main::CalcIndentation {} {
   # Check for "Auto detection of indentation" and calculates it at need.
 
   namespace upvar ::alited al al
-  set res $al(prjindent)
+  set res [list $al(prjindent) { }]
   if {$al(prjindentAuto)} {
     catch {
       set wtxt [CurrentWTXT]
       foreach line [split [$wtxt get 1.0 end] \n] {
         if {[set lsp [::apave::obj leadingSpaces $line]]>0} {
-          set res $lsp
-          break
+          # check if the indentation is homogeneous
+          if {[string first [string repeat { } $lsp] $line]==0} {
+            set res [list $lsp { }]
+            break
+          } elseif {[string first [string repeat \t $lsp] $line]==0} {
+            set res [list $lsp \t]
+            break
+          }
         }
       }
     }
@@ -542,7 +548,7 @@ proc main::UpdateProjectInfo {{indent {}}} {
   if {$al(prjroot) ne {}} {set stsw normal} {set stsw disabled}
   [$obPav BuTswitch] configure -state $stsw
   if {[set eol $al(prjEOL)] eq {}} {set eol auto}
-  if {$indent eq {}} {set indent [CalcIndentation]}
+  if {$indent eq {}} {set indent [lindex [CalcIndentation] 0]}
   set info "eol=$eol, [msgcat::mc ind]=$indent"
   if {$al(prjindentAuto)} {append info /auto}
   [$obPav Labstat4] configure -text $info

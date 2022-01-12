@@ -105,11 +105,12 @@ namespace eval ::alited {
   set al(EM,Tcl) {}
   set al(EM,TclList) [list]
   set al(EM,h=) ~/DOC/www.tcl.tk/man/tcl8.6
-  set al(EM,tt=) {xterm -fs 12 -geometry 90x30+1+1}
+  set al(EM,tt=) x-terminal-emulator
   set al(EM,tt=List) "$al(EM,tt=)\tlxterminal --geometry=220x55\tx-terminal-emulator"
   set al(EM,menu) menu.mnu
   set al(EM,menudir) {}
   set al(EM,CS) 33
+  set al(EM,ownCS) no
   set al(EM,exec) no
   set al(EM,DiffTool) kdiff3
 
@@ -168,6 +169,9 @@ namespace eval ::alited {
 
   # list of "Find Unit" combobox's values
   set al(findunitvals) {}
+
+  # index of syntax colors
+  set al(syntaxidx) 0
 }
 
 # ________________________ Variables _________________________ #
@@ -403,6 +407,7 @@ proc ini::ReadIniEM {nam val emiName} {
     emmenu     {set al(EM,menu) $val}
     emmenudir  {set al(EM,menudir) $val}
     emcs       {set al(EM,CS) $val}
+    emowncs    {set al(EM,ownCS) $val}
     emexec     {set al(EM,exec) $val}
     emdiff     {set al(EM,DiffTool) $val}
     em_run {
@@ -668,6 +673,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "emmenu=$al(EM,menu)"
   puts $chan "emmenudir=$al(EM,menudir)"
   puts $chan "emcs=$al(EM,CS)"
+  puts $chan "emowncs=$al(EM,ownCS)"
   puts $chan "emgeometry=$al(EM,geometry)"
   puts $chan "emexec=$al(EM,exec)"
   puts $chan "emdiff=$al(EM,DiffTool)"
@@ -891,8 +897,8 @@ proc ini::InitGUI {} {
   set Dark [::apave::obj csDarkEdit]
   if {![info exists al(ED,clrCOM)] || ![info exists al(ED,CclrCOM)] || \
   ![info exists al(ED,Dark)] || $al(ED,Dark) != $Dark} {
-    alited::pref::TclSyntax_Default yes
-    alited::pref::CSyntax_Default yes
+    alited::pref::Tcl_Default $al(syntaxidx) yes
+    alited::pref::C_Default $al(syntaxidx) yes
   }
   set clrnams [::hl_tcl::hl_colorNames]
   set clrvals [list]

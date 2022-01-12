@@ -1439,12 +1439,12 @@ oo::class create ::apave::ObjectTheming {
       if {$i in $mainc} {
         set color [string map {black #000000 white #ffffff grey #808080 \
           red #ff0000 yellow #ffff00 orange #ffa500 #000 #000000 #fff #ffffff} $color]
-        scan $color "#%2x%2x%2x" R G B
+        scan $color #%2x%2x%2x R G B
         foreach valname {R G B} {
           set val [expr {int([set $valname]*$hue)}]
           set $valname [expr {max(min($val,255),0)}]
         }
-        set color [format "#%02x%02x%02x" $R $G $B]
+        set color [format #%02x%02x%02x $R $G $B]
       }
       lappend TWargs $color
     }
@@ -1486,11 +1486,11 @@ oo::class create ::apave::ObjectTheming {
     # Gets a full record of color scheme from a list of available ones
     #   ncolor - index of color scheme
 
-    if {"$ncolor" eq "" || $ncolor<0} {
+    if {$ncolor eq {} || $ncolor<0} {
       # basic color scheme: get colors from a current ttk::style colors
       set fW black
       set bW #FBFB95
-      set bg2 #d8d8d8
+      set bg2 #e4e4e4
       if {[info exists ::apave::_CS_(def_fg)]} {
         if {$ncolor == $::apave::_CS_(NONCS)} {set bg2 #e5e5e5}
         set fg $::apave::_CS_(def_fg)
@@ -1559,7 +1559,7 @@ oo::class create ::apave::ObjectTheming {
 
     if {![catch {set oldval [ttk::style $oper $ts $opt]}]} {
       catch {ttk::style $oper $ts $opt $val}
-      if {$oldval eq "" && $oper eq "configure"} {
+      if {$oldval eq {} && $oper eq {configure}} {
         switch -- $opt {
           -foreground - -background {
             set oldval [ttk::style $oper . $opt]

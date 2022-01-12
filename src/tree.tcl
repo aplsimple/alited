@@ -416,7 +416,7 @@ proc tree::AddTags {wtree} {
   #   wtree - the tree's path
 
   namespace upvar ::alited al al
-  lassign [::hl_tcl::hl_colors {-AddTags} [::apave::obj csDarkEdit]] - fgred fgbr
+  lassign [::hl_tcl::hl_colors {-AddTags} [::apave::obj csDarkEdit]] - - fgbr - - fgred
   append fontN "-font $alited::al(FONT,defsmall)"
   append fontS $fontN " -foreground $fgred"
   $wtree tag configure tagNorm {*}$fontN

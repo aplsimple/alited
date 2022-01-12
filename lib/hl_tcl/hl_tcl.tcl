@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.28
+package provide hl_tcl 0.9.30
 
 # ______________________ Common data ____________________ #
 
@@ -15,70 +15,89 @@ namespace eval ::hl_tcl {
 
   namespace eval my {
 
-  variable data;  array set data [list]
+    variable data;  array set data [list]
 
-  # Tcl commands
-  set data(PROC_TCL) [lsort [list \
-    return proc method self my coroutine yield yieldto constructor destructor \
-    oo::define oo::class oo::objdefine oo::object
-  ]]
-  set data(CMD_TCL) [lsort [list \
-    set incr if else elseif string expr list lindex lrange llength lappend \
-    lreplace lsearch lassign append split info array dict foreach for while \
-    break continue switch default linsert lsort lset lmap lrepeat catch variable \
-    concat format scan regexp regsub upvar uplevel namespace try throw read eval \
-    after update error global puts file chan open close eof seek flush mixin \
-    msgcat gets rename glob fconfigure fblocked fcopy cd pwd mathfunc then \
-    mathop apply fileevent unset join next exec refchan package source \
-    exit vwait binary lreverse registry auto_execok subst encoding load \
-    auto_load tell auto_mkindex memory trace time clock auto_qualify \
-    auto_reset socket bgerror oo::copy unload history tailcall \
-    interp parray pid transchan nextto unknown dde pkg_mkIndex zlib auto_import \
-    pkg::create tcl::prefix \
-    http::config http::geturl http::formatQuery http::reset http::wait \
-    http::status http::size http::code http::ncode http::meta http::data \
-    http::error http::cleanup http::register http::unregister * \
-  ]]
+    # Tcl commands
+    set data(PROC_TCL) [lsort [list \
+      return proc method self my coroutine yield yieldto constructor destructor \
+      namespace oo::define oo::class oo::objdefine oo::object
+    ]]
+    set data(CMD_TCL) [lsort [list \
+      set incr if else elseif string expr list lindex lrange llength lappend \
+      lreplace lsearch lassign append split info array dict foreach for while \
+      break continue switch default linsert lsort lset lmap lrepeat catch variable \
+      concat format scan regexp regsub upvar uplevel try throw read eval \
+      after update error global puts file chan open close eof seek flush mixin \
+      msgcat gets rename glob fconfigure fblocked fcopy cd pwd mathfunc then \
+      mathop apply fileevent unset join next exec refchan package source \
+      exit vwait binary lreverse registry auto_execok subst encoding load \
+      auto_load tell auto_mkindex memory trace time clock auto_qualify \
+      auto_reset socket bgerror oo::copy unload history tailcall \
+      interp parray pid transchan nextto unknown dde pkg_mkIndex zlib auto_import \
+      pkg::create tcl::prefix \
+      http::config http::geturl http::formatQuery http::reset http::wait \
+      http::status http::size http::code http::ncode http::meta http::data \
+      http::error http::cleanup http::register http::unregister * \
+    ]]
 
-  # Ttk commands
-  set data(CMD_TTK) [list \
-    ttk::button ttk::frame ttk::label ttk::entry ttk::checkbutton \
-    ttk::radiobutton ttk::combobox ttk::labelframe ttk::scrollbar \
-    tk_optionMenu ttk::menubutton ttk::style ttk::notebook ttk::panedwindow \
-    ttk::separator ttk::progressbar ttk::scale ttk::sizegrip ttk::spinbox \
-    ttk::treeview ttk::intro ttk::widget tk_focusNext tk_getOpenFile \
-  ]
+    # Ttk commands
+    set data(CMD_TTK) [list \
+      ttk::button ttk::frame ttk::label ttk::entry ttk::checkbutton \
+      ttk::radiobutton ttk::combobox ttk::labelframe ttk::scrollbar \
+      tk_optionMenu ttk::menubutton ttk::style ttk::notebook ttk::panedwindow \
+      ttk::separator ttk::progressbar ttk::scale ttk::sizegrip ttk::spinbox \
+      ttk::treeview ttk::intro ttk::widget tk_focusNext tk_getOpenFile \
+    ]
 
-  # Tk commands
-  set data(CMD_TK2) [list \
-    tk_popup tk tkwait tkerror tk_setPalette tk_textCut tk_textCopy tk_bisque \
-    tk_chooseDirectory tk_textPaste ttk_vsapi tk_focusPrev tk_messageBox \
-    tk_focusFollowsMouse tk_getSaveFile tk_menuSetFocus tk_dialog tk_chooseColor \
-  ]
+    # Tk commands
+    set data(CMD_TK2) [list \
+      tk_popup tk tkwait tkerror tk_setPalette tk_textCut tk_textCopy tk_bisque \
+      tk_chooseDirectory tk_textPaste ttk_vsapi tk_focusPrev tk_messageBox \
+      tk_focusFollowsMouse tk_getSaveFile tk_menuSetFocus tk_dialog tk_chooseColor \
+    ]
 
-  # Tk/ttk commands united
-  set data(CMD_TK) [concat $data(CMD_TTK) $data(CMD_TK2) [list \
-    button entry checkbutton radiobutton label menubutton menu wm winfo bind \
-    grid pack event bell text canvas frame listbox grab scale scrollbar \
-    labelframe focus font bindtags image selection toplevel destroy \
-    option options spinbox bitmap photo keysyms send lower clipboard colors \
-    console message cursors panedwindow place raise \
-  ]]
+    # Tk/ttk commands united
+    set data(CMD_TK) [concat $data(CMD_TTK) $data(CMD_TK2) [list \
+      button entry checkbutton radiobutton label menubutton menu wm winfo bind \
+      grid pack event bell text canvas frame listbox grab scale scrollbar \
+      labelframe focus font bindtags image selection toplevel destroy \
+      option options spinbox bitmap photo keysyms send lower clipboard colors \
+      console message cursors panedwindow place raise \
+    ]]
 
-  # allowed edges of string (as one and only)
-  set data(S_LEFT) [list \{ \[]
-  set data(S_RIGHT) [list \} \]]
-  # allowed edges of string (as one or both)
-  set data(S_SPACE) [list {} { } \t {;}]
-  set data(S_SPACE2) [concat $data(S_SPACE) [list \{]]
-  set data(S_BOTH) [concat $data(S_SPACE) [list \" \}]]
+    # allowed edges of string (as one and only)
+    set data(S_LEFT) [list \{ \[]
+    set data(S_RIGHT) [list \} \]]
+    # allowed edges of string (as one or both)
+    set data(S_SPACE) [list {} { } \t {;}]
+    set data(S_SPACE2) [concat $data(S_SPACE) [list \{]]
+    set data(S_BOTH) [concat $data(S_SPACE) [list \" \}]]
 
-  set data(RE0) {(^|[\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
-  set data(RE1) {([\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
-  set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})}
+    set data(RE0) {(^|[\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
+    set data(RE1) {([\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
+    set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})}
 
-  set data(LBR) {\{(\[}
-  set data(RBR) {\})\]}
+    set data(LBR) {\{(\[}
+    set data(RBR) {\})\]}
+
+    # default syntax colors arrays (for a light & black themes)
+    #  COM     COMTK    STR      VAR     CMN     PROC    OPT    BRAC
+    set data(SYNTAXCOLORS,0) {
+      {#923B23 #7d1c00 #035103 #4A181B #4b5d50 #ca14ca #463e11 #FF0000}
+      {orange #ff7e00 lightgreen #f1b479 #76a396 #fe6efe #b9b96e #ff33ff}
+    }
+    set data(SYNTAXCOLORS,1) {
+      {#3a6797 #134070 #7d1a1a #0000dd #4b5d50 #ca14ca #6c3e67 #FF0000}
+      {#95c2f2 #73a0d0 #caca3f #9e9eff #76a396 #fe6efe #e2b4dd #ff33ff}
+    }
+    set data(SYNTAXCOLORS,2) {
+      {#0086b3 #006a97 #dd1144 #990000 #606060 #bd00bd #463e11 #FF0000}
+      {#68d2ff #43adda #ffbaed #ff83b6 #848484 orange #b1a97c #ff33ff}
+    }
+    set data(SYNTAXCOLORS,3) {
+      {#121212 #000000 #0c560c #4A181B #606060 #923B23 #463e11 #FF0000}
+      {#e9e9e9 #ffffff #84e284 #eebabf #848484 orange #a79f72 #ff33ff}
+    }
   }
 }
 
@@ -277,8 +296,9 @@ proc ::hl_tcl::my::FirstQtd {lineName iName currQtd} {
       if {[NotEscaped $line $i1]} {
         set c1 [string index $line $i1]  ;# check the string ends
         set c2 [string index $line $i2]
-        if {$c1 in $data(S_BOTH) || $c2 in $data(S_BOTH) ||
-        $c1 in $data(S_LEFT) && $c2 ni $data(S_RIGHT) || $c1 ni $data(S_LEFT) && $c2 in $data(S_RIGHT)} {
+        # not needed: $c1 in $data(S_BOTH) && $c2 ni $data(S_BOTH) ||
+        if {$c1 in $data(S_LEFT) && $c2 ni $data(S_RIGHT)
+        || $c1 ni $data(S_LEFT) && $c2 in $data(S_RIGHT)} {
           return yes
         }
         # last reverence: for braced expression
@@ -1117,7 +1137,7 @@ proc ::hl_tcl::hl_colorNames {} {
 
 proc ::hl_tcl::hl_colors {txt {dark ""} args} {
   # Gets/sets the main colors for highlighting (except for "curr.line").
-  #   txt - text widget's path
+  #   txt - text widget's path or {} or an index of default colors
   #   dark - flag "dark scheme"
   #   args - a list of colors to set for *txt*
   # Returns a list of colors for COM COMTK STR VAR CMN PROC OPT BRAC \
@@ -1131,11 +1151,9 @@ proc ::hl_tcl::hl_colors {txt {dark ""} args} {
     return $::hl_tcl::my::data(COLORS,$txt)
   }
   if {$dark eq {}} {set dark $::hl_tcl::my::data(DARK,$txt)}
-  if {$dark} {
-    return [list orange #ff7e00 lightgreen #f1b479 #76a396 #d485d4 #b9b96e #ff33ff]
-  } else {
-    return [list #923B23 #7d1c00 #035103 #4A181B #505050 #A106A1 #463e11 #FF0000]
-  }
+  if {![string is integer -strict $txt] || $txt<0 || $txt>3} {set txt 0}
+  if {$dark} {set dark 1} {set dark 0}
+  return [lindex $::hl_tcl::my::data(SYNTAXCOLORS,$txt) $dark]
 }
 #_____
 
@@ -1150,7 +1168,7 @@ proc ::hl_tcl::hl_line {txt} {
     set ln2 [expr {int([$txt index end])}]
     set ln1 [expr {max (1,$ln0-1)}]
     set ln2 [expr {min ($ln2,$ln0+1)}]
-    # update lines: previous, current, next 
+    # update lines: previous, current, next
     ::hl_tcl::my::RunCoroAfterIdle $txt $ln1 $ln2 no
   }
   ::hl_tcl::my::MemPos $txt yes

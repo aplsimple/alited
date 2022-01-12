@@ -46,14 +46,6 @@ namespace eval ::hl_c {
     # C++ united
     set data(CMD_CPP) [lsort [concat $data(CMD_CPP1) $data(CMD_CPP2)]]
 
-    # allowed edges of string (as one and only)
-    set data(S_LEFT) [list "\{" "\["]
-    set data(S_RIGHT) [list "\}" "\]"]
-    # allowed edges of string (as one or both)
-    set data(S_SPACE) [list "" " " "\t" ";"]
-    set data(S_SPACE2) [concat $data(S_SPACE) [list "\{"]]
-    set data(S_BOTH) [concat $data(S_SPACE) [list "\"" "="]]
-
     # regexp for key words and punctuation
     set data(RE0) {\w+}
     set data(RE1) {[<>(){};=!%&^*+-.,\|:/\\#]+}
@@ -662,7 +654,8 @@ proc ::hl_c::hl_all {args} {
 
 proc ::hl_c::hl_colors {txt {dark ""}} {
   # Gets the main colors for highlighting (except for "curr.line").
-  #   txt - text widget's path
+  #   txt - text widget's path or {} or an index of default colors
+  #   dark - flag "dark scheme"
   # Returns a list of colors for COM COMTK STR VAR CMN PROC OPT BRAC \
    or, if the colors aren't initialized, "standard" colors.
 
@@ -670,11 +663,12 @@ proc ::hl_c::hl_colors {txt {dark ""}} {
     return $::hl_c::my::data(COLORS,$txt)
   }
   if {$dark eq {}} {set dark $::hl_c::my::data(DARK,$txt)}
-  if {$dark} {
-    return [list orange #ff7e00 lightgreen #deab41 #76a396 #d485d4 #ff624e #ff33ff]
-  } else {
-    return [list #923B23 #7d1c00 #035103 #5c254e #5f6162 #A106A1 #c82b17 #FF0000]
-  }
+  if {![string is integer -strict $txt] || $txt<0 || $txt>3} {set txt 0}
+  if {$dark} {set dark 1} {set dark 0}
+  set res [lindex $::hl_tcl::my::data(SYNTAXCOLORS,$txt) $dark]
+  # user keywords' color = Tk color
+  set res [lreplace $res 6 6 [lindex $res 1]]
+  return $res
 }
 #_____
 

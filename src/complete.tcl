@@ -128,7 +128,7 @@ proc complete::PickCommand {wtxt} {
     frame $win
     wm manage $win
     # the line below is of an issue in kubuntu (KDE?): small sizes of the popup window
-    after idle [subst -nocom {wm geometry $win [regsub {([0-9]+x[0-9]+)} [wm geometry $win] 220x325]}]
+    set afterid [after idle [subst -nocom {wm geometry $win [regsub {([0-9]+x[0-9]+)} [wm geometry $win] 220x325]}]]
   }
   wm withdraw $win
   wm overrideredirect $win 1
@@ -146,6 +146,7 @@ proc complete::PickCommand {wtxt} {
   $lbx selection set 0
   lassign [TextCursorCoordinates $wtxt] X Y
   if {$X==-1} {
+    catch {after cancel $afterid}
     bell
     set res {}
   } else {

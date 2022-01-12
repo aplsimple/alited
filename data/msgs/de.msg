@@ -28,7 +28,7 @@ namespace eval ::alited {
     {Conversions} {Umwandlungen}
     {Change Encoding...} {Ändere Encoding ...}
     {Change EOL...} {Ändere EOL ...}
-    {Tools} {Wekzeuge}
+    {Tools} {Werkzeuge}
     {Setup} {Einstellungen}
     {Help} {Hilfe}
     {Yes} {Ja}
@@ -65,6 +65,9 @@ namespace eval ::alited {
     {Quit alited?} {Alited beenden?}
     {Wait a little ...} {Einen Augenblick ...}
     {Default} {Voreinstellung}
+    {Default 2} {Voreinstellung 2}
+    {Default 3} {Voreinstellung 3}
+    {Default 4} {Voreinstellung 4}
     {Test} {Test}
     {Correct Indentation} {Richtig einrücken}
     "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Das Einrücken von \"%f\" anpassen\ndurch Einrückem mit %i Leerzeichen?"
@@ -329,7 +332,8 @@ namespace eval ::alited {
     {Authors:} {Authoren:}
     {License:} {Lizens:}
     {Acknowledgements} {Anerkennungen}
-    "Many thanks to the following people\n who have contributed to this project:" "Vielen Dank an die folgenden Personen,\n die zu diesem Projekt beigetragen haben:"
+    "Many thanks to the following people\n who have contributed to this project" "Vielen Dank an die folgenden Personen,\n die zu diesem Projekt beigetragen haben"
+    {Special thanks also to} {Besonderen Dank auch an}
   }
 
   ## ________________________ Preferences ________________________ ##
@@ -375,6 +379,7 @@ namespace eval ::alited {
     {Tab bar label's length:} {Tab-Leiste Beschriftungslänge:}
     {Tab bar tip's length:} {Tab-Leiste Tiplänge:}
     {Color scheme's light changed. Color fields disabled.} {Helligkeit des Farbschema hat sich geändert. Farbfelder deaktiviert.}
+    {Code snippet:} {Codeausschnitt:}
   }
 
   ### ________________________ Saving _________________________ ###
@@ -487,6 +492,7 @@ namespace eval ::alited {
     {Commands:} {Befehle:}
     {Commands before "Run"} {Befehle vor "Ausführen"}
     "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Eingabe von Befehlen, die ausgeführt werde bevor die aktuelle Datei ausgeführt wird mit \"Werkzeuge/ausführen\".\n Dies kann für bestimmte Projekte notwendig sein. Das entspricht in etwa einer Initialisierung bevor \"Ausführen\". \n"
+    {e_menu's own} {e_menu eigen}
   }
 
   ## ________________________ Checks ________________________ ##

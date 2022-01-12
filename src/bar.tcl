@@ -319,8 +319,8 @@ proc bar::OnTabSelection {TID} {
   }
   CurrentControlTab [FileName $TID]
   alited::main::HighlightLine
-  set indent [alited::main::CalcIndentation]
-  ::apave::setTextIndent $indent
+  lassign [alited::main::CalcIndentation] indent indentchar
+  ::apave::setTextIndent $indent $indentchar
   if {$al(prjindentAuto)} {alited::main::UpdateProjectInfo $indent}
   after 10 ::alited::tree::SeeSelection
 }

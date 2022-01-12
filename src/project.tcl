@@ -1141,7 +1141,7 @@ proc project::Tab2 {} {
     {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
     {.cbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
-    {.spxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 9 -from 2 -to 8 -justify center}}
+    {.spxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 9 -from 0 -to 8 -justify center}}
     {.chbIndAuto .spxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjindentAuto) -t "Auto detection"}}
     {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Unit lines per 1 red bar:"}}
     {.spxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 9 -from 10 -to 100 -justify center}}
@@ -1179,7 +1179,7 @@ proc project::_create {} {
     $win.fra.fraR.nbk select $oldTab
   }
   UpdateTree
-  bind $tree <<TreeviewSelect>> ::alited::project::Select
+  ::apave::bindToEvent $tree <<TreeviewSelect>> ::alited::project::Select
   bind $tree <Delete> ::alited::project::Delete
   bind $tree <Double-Button-1> ::alited::project::ProjectEnter
   bind $tree <Return> ::alited::project::ProjectEnter
