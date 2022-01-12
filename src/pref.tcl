@@ -393,6 +393,12 @@ proc pref::Tab {tab {nt ""} {doit no}} {
         }
       }
     }
+    # disable Default buttons
+    foreach fra {FraDefClr1 FraDefClr2} {
+      foreach a [winfo children [$obDl2 $fra]] {
+        catch {$a configure -state $state}
+      }
+    }
   }
 }
 #_______________________
@@ -705,12 +711,12 @@ proc pref::Edit_Tab2 {} {
     {.labBRA .labOPT T 1 1 {-st w -pady 3 -padx 3} {-t "Color of brackets:"}}
     {.clrBRA .labBRA L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,clrBRA) -w 20}}
     {.seh .labBRA T 1 2 {-pady 3}}
-    {fraTab2.scf.fra1 .seh T 1 2 {-st nsew}}
+    {fraTab2.scf.FraDefClr1 .seh T 1 2 {-st nsew}}
     {.but - - 1 1 {-st w -padx 0} {-t {Default} -com {alited::pref::Tcl_Default 0}}}
     {.but1 .but L 1 1 {-st w -padx 8} {-t {Default 2} -com {alited::pref::Tcl_Default 1}}}
     {.but2 .but1 L 1 1 {-st w -padx 0} {-t {Default 3} -com {alited::pref::Tcl_Default 2}}}
     {.but3 .but2 L 1 1 {-st w -padx 8} {-t {Default 4} -com {alited::pref::Tcl_Default 3}}}
-    {fraTab2.scf.fra2 fraTab2.scf.fra1 T 1 2 {-st nsew}}
+    {fraTab2.scf.fra2 fraTab2.scf.fraDefClr1 T 1 2 {-st nsew}}
     {.lab - - 1 1 {-st nw -pady 3} {-t "Code snippet:" -w 25}}
     {.TexSample .lab L 1 1 {-st new} {-h 5 -w 48 -afteridle alited::pref::UpdateSyntaxTab}}
     {fraTab2.scf.seh3 fraTab2.scf.fra2 T 1 2 {-pady 10}}
@@ -747,12 +753,12 @@ proc pref::Edit_Tab3 {} {
     {.labBRA2 .labOPT2 T 1 1 {-st w -pady 3 -padx 3} {-t "Color of brackets:"}}
     {.clrBRA2 .labBRA2 L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrBRA) -w 20}}
     {.seh .labBRA2 T 1 2 {-pady 3}}
-    {fraTab3.scf.fra1 .seh T 1 2 {-st nsew}}
+    {fraTab3.scf.FraDefClr2 .seh T 1 2 {-st nsew}}
     {.but - - 1 1 {-st w -padx 0} {-t {Default} -com {alited::pref::C_Default 0}}}
     {.but1 .but L 1 1 {-st w -padx 8} {-t {Default 2} -com {alited::pref::C_Default 1}}}
     {.but2 .but1 L 1 1 {-st w -padx 0} {-t {Default 3} -com {alited::pref::C_Default 2}}}
     {.but3 .but2 L 1 1 {-st w -padx 8} {-t {Default 4} -com {alited::pref::C_Default 3}}}
-    {fraTab3.scf.fra2 fraTab3.scf.fra1 T 1 2 {-st nsew}}
+    {fraTab3.scf.fra2 fraTab3.scf.fraDefClr2 T 1 2 {-st nsew}}
     {.lab - - 1 1 {-st nw -pady 3} {-t "Code snippet:" -w 25}}
     {.TexCSample .lab L 1 1 {-st new} {-h 5 -w 48 -wrap word}}
     {fraTab3.scf.seh3 fraTab3.scf.fra2 T 1 2 {-pady 10}}
