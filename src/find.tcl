@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    find.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -21,7 +20,7 @@ namespace eval find {
   variable geo root=$::alited::al(WIN)
 
   # -minsize option of the dialogue
-  variable minsize {}
+  variable minsize {-minsize {400 100}}
 
   # common data of procs
   variable data; array set data [list]
@@ -201,6 +200,7 @@ proc find::SearchUnit {{wtxt ""}} {
   }
   if {$found ne {}} {
     alited::main::SaveVisitInfo
+    alited::favor::SkipVisited yes
     alited::bar::BAR $TID show
     after idle " \
       alited::main::FocusText $TID $found.0 ; \
@@ -965,11 +965,6 @@ proc find::_create {} {
     foreach k {f F} {bind $w.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}
     bind $w.cbx1 <Return> "$w.but1 invoke"  ;# hot in comboboxes
     bind $w.cbx2 <Return> "$w.but4 invoke"
-    if {$minsize eq ""} {      ;# save default min.sizes
-      after idle [list after 100 {
-        set ::alited::find::minsize "-minsize {[winfo width $::alited::find::win] [winfo height $::alited::find::win]}"
-      }]
-    }
     after idle "$w.cbx1 selection range 0 end"
     set res [$obFND showModal $win -geometry $geo {*}$minsize -focus $w.cbx1 -modal no]
     set geo [wm geometry $win] ;# save the new geometry of the dialogue

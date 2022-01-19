@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 # ________________________ ru.msg _________________________ #
 # Name:    ru.msg
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -376,7 +375,7 @@ namespace eval ::alited {
     {Space between wraps:} {Отступ сворачиваемых строк:}
     {Tab bar label's length:} {Длина имен панели файлов:}
     {Tab bar tip's length:} {Длина подсказок панели файлов:}
-    {Color scheme's light changed. Color fields disabled.} {Тон цветовой схемы изменен. Поля цветов недоступны.}
+    {Color scheme's light changed.} {Тон цветовой схемы изменен.}
     {Code snippet:} {Фрагмент кода:}
   }
 

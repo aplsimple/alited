@@ -1,9 +1,10 @@
-#! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# A calendar widget for apave package.
-#
-# _______________________________________________________________________ #
+###########################################################
+# Name:    klnd2.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    01/18/2022
+# Brief:   Handles calendar widget for apave package.
+# License: MIT.
+###########################################################
 
 package require Tk
 
@@ -213,7 +214,8 @@ proc ::klnd::my::Enter2 {obj i {focusin 0}} {
   #   focusin - yes, if the button is clicked and focused
 
   variable p
-  if {![IsDay2 $obj $i]} return
+  if {[catch {set isday [IsDay2 $obj $i]}]} {set isday no}
+  if {!$isday} return
   set w [$p($obj) BuT$obj-${i}KLND]
   set p(dvis$obj) [$w cget -text]
   set date [FormatDay2 $obj $p(yvis$obj) $p(mvis$obj) $p(dvis$obj)]

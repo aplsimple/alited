@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    complete.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)

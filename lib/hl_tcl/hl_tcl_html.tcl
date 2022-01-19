@@ -58,10 +58,12 @@ proc ::hl_tcl_html::highlight {htmlfile darkedit args} {
           }
           set code [string map [list "&quot;" \" "&amp;" &] $code]
           ::hl_tcl::hl_init $txt -dark $darkedit -seen 99999999
+          lassign [::hl_tcl::hl_colors 1 $darkedit] clrCOM clrCOMTK clrSTR \
+            clrVAR clrCMN clrPROC clrOPT clrBRA - clrCMN2
           $txt replace 1.0 end $code
           ::hl_tcl::hl_text $txt
           set taglist [list]
-          foreach tag {tagCOM tagCOMTK tagSTR tagVAR tagCMN tagPROC tagOPT} {
+          foreach tag {tagCOM tagCOMTK tagSTR tagVAR tagCMN tagCMN2 tagPROC tagOPT} {
             foreach {p1 p2} [$txt tag ranges $tag] {
               lassign [split $p1 .] l1 c1
               lassign [split $p2 .] l2 c2
@@ -75,31 +77,35 @@ proc ::hl_tcl_html::highlight {htmlfile darkedit args} {
             lassign $tagdat -> tag typ pos
             switch $tag {
               tagCOM {
-                set t1 "<b><font color=#923B23>"
+                set t1 "<b><font color=$clrCOM>"
                 set t2 "</font></b>"
               }
               tagCOMTK {
-                set t1 "<b><font color=#7A040E>"
+                set t1 "<b><font color=$clrCOMTK>"
                 set t2 "</font></b>"
               }
               tagPROC {
-                set t1 "<b><font color=#A106A1>"
+                set t1 "<b><font color=$clrPROC>"
                 set t2 "</font></b>"
               }
               tagSTR {
-                set t1 "<font color=#035103>"
+                set t1 "<font color=$clrSTR>"
                 set t2 "</font>"
               }
               tagVAR {
-                set t1 "<font color=#4A181B>"
+                set t1 "<font color=$clrVAR>"
                 set t2 "</font>"
               }
               tagCMN {
-                set t1 "<i><font color=#646464>"
+                set t1 "<i><font color=$clrCMN>"
+                set t2 "</font></i>"
+              }
+              tagCMN2 {
+                set t1 "<i><font color=$clrCMN2>"
                 set t2 "</font></i>"
               }
               tagOPT {
-                set t1 "<font color=#463e11>"
+                set t1 "<font color=$clrOPT>"
                 set t2 "</font>"
               }
             }

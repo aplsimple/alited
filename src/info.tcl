@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    info.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -90,6 +89,7 @@ proc info::ListboxSelect {w {checkit no}} {
       lassign [lindex $info $sel] TID line
       if {[alited::bar::BAR isTab $TID]} {
         if {$TID ne [alited::bar::CurrentTabID]} {
+          alited::favor::SkipVisited yes
           alited::bar::BAR $TID show
         }
         after idle "catch { \

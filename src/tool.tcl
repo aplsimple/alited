@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    tool.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)

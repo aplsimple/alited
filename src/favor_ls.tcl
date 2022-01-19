@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    favor_ls.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)

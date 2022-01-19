@@ -1,9 +1,10 @@
-#! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# A calendar picker for apave package.
-#
-# _______________________________________________________________________ #
+###########################################################
+# Name:    klnd.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    01/18/2022
+# Brief:   Handles calendar picker for apave package.
+# License: MIT.
+###########################################################
 
 package require Tk
 package provide klnd 1.4

@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    about.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)

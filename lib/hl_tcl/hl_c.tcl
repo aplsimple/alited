@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    hl_c.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -677,8 +676,6 @@ proc ::hl_c::hl_line {txt} {
   #   txt - text's path
 
   if {!$::hl_c::my::data(PLAINTEXT,$txt)} {
-    set tSTR [$txt tag ranges tagSTR]
-    set tCMN [$txt tag ranges tagCMN]
     set ln0 [expr {int([$txt index insert])}]
     set ln2 [expr {int([$txt index end])}]
     set ln1 [expr {max (1,$ln0-1)}]

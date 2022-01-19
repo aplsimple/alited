@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    main.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -393,9 +392,9 @@ proc main::GotoLine {} {
   # Processes Ctrl+G keypressing: "go to a line".
 
   namespace upvar ::alited al al obDl2 obDl2
-  set head [msgcat::mc "Go to Line"]
-  set prompt1 [msgcat::mc "Line number:"]
-  set prompt2 [msgcat::mc "    In unit:"]
+  set head [msgcat::mc {Go to Line}]
+  set prompt1 [msgcat::mc {Line number:}]
+  set prompt2 [msgcat::mc {    In unit:}]
   set wtxt [CurrentWTXT]
   set ln 1 ;#[expr {int([$wtxt index insert])}]
   set lmax [expr {int([$wtxt index "end -1c"])}]
@@ -454,8 +453,8 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
   #   s - key's state
 
   namespace upvar ::alited al al obPav obPav
-  # only for unit tree and not navigation key and not Alt-BackSpace
-  if {!$al(TREE,isunits) || ($K eq {BackSpace} && $s!=0) || \
+  # only for unit tree and not navigation key and not Alt/Ctrl pressed
+  if {!$al(TREE,isunits) || ($s!=0 && $s!=1) || \
   $K in {Up Down Left Right Next Prior Home End}} {
     return
   }
@@ -563,7 +562,7 @@ proc main::BindsForText {TID wtxt} {
   if {[alited::bar::BAR isTab $TID]} {
     bind $wtxt <FocusIn> [list after 500 "::alited::main::FocusInText $TID $wtxt"]
   }
-  bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit $wtxt ; break"
+  bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit ; break"
   bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
   bind $wtxt <Control-Tab> {::alited::bar::ControlTab}
   bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}

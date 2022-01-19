@@ -131,7 +131,7 @@ namespace eval ::apave {
 
 {{42: Monokai}        "#f8f8f2" #f8f8f2 #353630 #4e5044 #ffbb6d #707070 #fff #f4f49f #9a9a9a #db9e63 #000 #777777 - #46473d #000 #b7b77a #3c3d37 #ffc888 #cd994b #005 #006 #007}
 
-{{43: TKE Default}    "#dbdbdb" #dbdbdb #000000 #282828 #d3a85a #0a0acc #fff #f4f49f #6a6a6a #c58545 #fff #0000d3 - #383838 #000 #9d9d60 #0d0e0e #e5a565 #76b2f1 #005 #006 #007}
+{{43: TKE Default}    "#dbdbdb" #dbdbdb #000000 #282828 #d3a85a #0a0acc #fff #f4f49f #6a6a6a #c58545 #fff #0000d3 - #383838 #000 #9d9d60 #1b1c1c #e5a565 #76b2f1 #005 #006 #007}
 
 {{44: Magenta}        "#E8E8E8" #F0E8E8 #381e44 #4A2A4A #ffbb6d #846484 #fff #f4f49f grey #d6995e #000 #ad8dad - #573757 #000 #9d9d60 #42284e #ffc888 #ffafff #005 #006 #007}
 
@@ -1243,12 +1243,12 @@ oo::class create ::apave::ObjectTheming {
   }
   #_______________________
 
-  method csDarkEdit {{cs -3}} {
+  method csDarkEdit {{cs ""}} {
 
     # Returns a flag "the editor of CS is dark"
     #   cs - color scheme to be checked (the current one, if not set)
 
-    if {$cs eq -3} {set cs [my csCurrent]}
+    if {$cs eq {} || $cs==-3} {set cs [my csCurrent]}
     lassign $::apave::_CS_(TONED) csbasic cstoned
     if {$cs==$cstoned} {set cs $csbasic}
     return [expr {$cs>22}]

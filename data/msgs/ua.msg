@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 # ________________________ ua.msg _________________________ #
 # Name:    ua.msg
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -69,16 +68,16 @@ namespace eval ::alited {
     {Screen Loupe} {Екранна лупа}
     {Quit alited?} {Вийти з alited?}
     {Wait a little ...} {Чекайте ...}
-    {Default} {По вмовчанню}
-    {Default 2} {По вмовчанню 2}
-    {Default 3} {По вмовчанню 3}
-    {Default 4} {По вмовчанню 4}
+    {Default} {За замовчуванням}
+    {Default 2} {За замовчуванням 2}
+    {Default 3} {За замовчуванням 3}
+    {Default 4} {За замовчуванням 4}
     {Test} {Перевірка}
     {Correct Indentation} {Правити відступи}
     "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Правити відступи \"%f\",\nпо %i на кожний?"
     {The line %n: unbalanced brace!} {Рядок %n: незбалансована скобка!}
     {Wrap Lines} {Згортати рядки}
-    {Default values for new projects:} {Опції по вмовчанню для проектів:}
+    {Default values for new projects:} {Опції за замовчуванням для проектів:}
   }
 
   ::msgcat::mcmset ua {
@@ -112,7 +111,7 @@ namespace eval ::alited {
     {To Matched Bracket} {На парну скобку}
     {Go to Line} {Перейти на рядок}
     {Line number:} {Номер рядку:}
-    {    In unit:} {     У юніті:}
+    {    In unit:} {    У юніті:}
     "\"%n\" contains unbalanced \{\}: %1!=%2" "\"%n\" має незбалансовані \{\}: %1!=%2"
     {Back} {Откат}
     {File not found: %f} {Файл не знайдений: %f}
@@ -323,7 +322,7 @@ namespace eval ::alited {
   ## ________________________ Checking ini directory ________________________ ##
   ::msgcat::mcmset ua {
     {Choosing Directory for Settings} {Вибір каталогу для опцій}
-    "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" "\n Програма \"alited\" мусить мати каталог для збереження своїх опцій.\n Ви можете задати його як аргумент при виклику alited.\n\n По вмовчанню, каталог збереження опцій - \"%d\".\n Це рекомендований каталог, що дозволяє викликати \"alited\" без аргументів.\n"
+    "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" "\n Програма \"alited\" мусить мати каталог для збереження своїх опцій.\n Ви можете задати його як аргумент при виклику alited.\n\n За замовчуванням, каталог збереження опцій - \"%d\".\n Це рекомендований каталог, що дозволяє викликати \"alited\" без аргументів.\n"
     {Choose a directory} {Вибір каталогу}
   }
 
@@ -382,7 +381,7 @@ namespace eval ::alited {
     {Space between wraps:} {Відступ згортованих рядків:}
     {Tab bar label's length:} {Довжина назв панелі файлів:}
     {Tab bar tip's length:} {Довжина підказок панелі файлів:}
-    {Color scheme's light changed. Color fields disabled.} {Тон колірної схеми змінений. Поля колірів недоступні.}
+    {Color scheme's light changed.} {Тон колірної схеми змінений.}
     {Code snippet:} {Фрагмент коду:}
   }
 
@@ -494,7 +493,7 @@ namespace eval ::alited {
     {Before Run...} {Перед Запуском...}
     {Commands:} {Команди:}
     {Commands before "Run"} {Команди перед "Запуском"}
-    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Введіть команди, виконувані перед \"Струменти/Запуск\".\n Це може бути корисно у деяких проектах. Щось типа іниціалізації перед запуском.  \n"
+    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Введіть команди, виконувані перед \"Струменти/Запуск\".\n Це може бути корисно у деяких проектах. Щось типа ініціалізації перед запуском.  \n"
     {e_menu's own} {своя в e_menu}
   }
 

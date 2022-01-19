@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 # ________________________ de.msg _________________________ #
 # Name:    de.msg
 # Author:  Holger Ewert  (holger.ewert.wiki@arcor.de)
@@ -103,11 +102,11 @@ namespace eval ::alited {
     {Contract All} {Alle kolabieren}
     {Expand All} {Alle erweitern}
     "Move %f\nto\n%d\n?" "Verschiebe %f\nnach\n%d\n?"
-    {To Last Visited} {Zu zuletzt bBsuchten}
+    {To Last Visited} {Zu zuletzt Besuchten}
     {To Matched Bracket} {Zur passenden Klammer}
     {Go to Line} {Gehe zu Zeile}
     {Line number:} {Zeilennummer:}
-    {    In unit:} {     In Einheit:}
+    {    In unit:} {  In Einheit:}
     "\"%n\" contains unbalanced \{\}: %1!=%2" "\"%n\" unausgeglichene  \{\}: %1!=%2"
     {Back} {Zurück}
     {File not found: %f} {Datei nicht gefunden: %f}
@@ -285,7 +284,7 @@ namespace eval ::alited {
     {Exact} {Exakt}
     {Match whole word only} {Nur ganze Wörter vergleichen}
     {Match case} {Groß.-/Kleinschreibung}
-    {Wrap around} {Suche am Ende/Anfang fortsetzen}
+    {Wrap around} {Fortsetze am Ende/Anfang}
     {Replace by blank} {Ersetzte durch freie Stelle}
     {Direction:} {Richtung:}
     {Down} {Abwärts}
@@ -356,7 +355,7 @@ namespace eval ::alited {
     {Tint} {Farbton}
     {Tint:} {Farbton:}
     "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Damit die Konfigurationsänderunge aktiv werden\nmuss die Applikation neu gestartet werden.\n\nJetzt neu starten?"
-    {Preferable locale:} {Bvorzugte Sprache:}
+    {Preferable locale:} {Bevorzugte Sprache:}
     "This is a country code: ru, ua, cz, de...\nIn alited, \"en\" means American English." "Das ist einer der folgenden Länderkodes: ru, ua, cz, de ...\nIn alited \"en\" bedeutet American English."
     {Small font size:} {Schmaler Zeichensatz:}
     {Middle font size:} {Mittlerer Zeichensatz:}
@@ -378,7 +377,7 @@ namespace eval ::alited {
     {Space between wraps:} {Platz zwischen Umbrüche:}
     {Tab bar label's length:} {Tab-Leiste Beschriftungslänge:}
     {Tab bar tip's length:} {Tab-Leiste Tiplänge:}
-    {Color scheme's light changed. Color fields disabled.} {Helligkeit des Farbschema hat sich geändert. Farbfelder deaktiviert.}
+    {Color scheme's light changed.} {Helligkeit des Farbschema hat sich geändert.}
     {Code snippet:} {Codeausschnitt:}
   }
 
@@ -526,7 +525,7 @@ namespace eval ::alited {
   ::msgcat::mcmset de {
     {Find Unit} {Einheit finden}
     {in all} {in allen}
-    {in current} {aktuell}
+    {in current} {in aktuell}
     "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored." "Glob-Muster verwenden, um Deklarationen von Einheiten zu finden:\nzum Beispiel, \"s*rt\" findet \"start\" und \"insert\".\nGroß.-/Kleinschreibung wird ignoriert."
     {Incorrect name for a unit.} {Inkorrekter Name für eine Einheit.}
   }

@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    tree.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)

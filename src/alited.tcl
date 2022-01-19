@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.1.0a9  ;# for documentation (esp. for Ruff!)
+package provide alited 1.1.0b4  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -288,9 +288,9 @@ namespace eval alited {
         default {set title $al(MC,info)}
      }
     }
-#TODO: if {!$noesc} {set message [string map [list \\ \\\\] $message]}
+    #! if {!$noesc} {set message [string map [list \\ \\\\] $message]}
     set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
-#TODO: after idle {catch alited::main::UpdateGutter}
+    #! after idle {catch alited::main::UpdateGutter}
     return [lindex $res 0]
   }
   #_______________________

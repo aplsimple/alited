@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    pref.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -173,6 +172,7 @@ proc pref::SaveSettings {} {
       set data(em_inf,$i) $em_inf($i)
     }
   }
+  set data(INI,CSsaved) $data(INI,CS)
 }
 #_______________________
 
@@ -369,36 +369,21 @@ proc pref::Tab {tab {nt ""} {doit no}} {
   }
   if {$tab eq {nbk2}} {
     # check if a color scheme is switched light/dark - if yes, disable colors
-    set light1 [::apave::obj csDarkEdit $data(INI,CS)]
-    set light2 [::apave::obj csDarkEdit [GetCS]]
+    set cs [GetCS]
+    set light1 [CsDark $data(INI,CSsaved)]
+    set light2 [CsDark $cs]
     if { $light1 != $light2} {
-      set msg [msgcat::mc {Color scheme's light changed. Color fields disabled.}]
+      set msg [msgcat::mc {Color scheme's light changed.}]
       alited::Message $msg 3 [$obDl2 LabMess]
-      set state disabled
-    } else {
-      set state normal
+      Tcl_Default 0 yes
+      C_Default 0 yes
+      UpdateSyntaxTab
+      UpdateSyntaxTab 2
     }
-    foreach fra {FraTab2 FraTab3} {
-      foreach a [winfo children [$obDl2 $fra]] {
-        foreach b [winfo children $a] {
-          foreach c [winfo children $b] {
-            foreach d [winfo children $c] {
-              foreach e [winfo children $d] {
-                if {[string first clr $e]>0 || [string first but $e]>0} {
-                  catch {$e configure -state $state}
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    # disable Default buttons
-    foreach fra {FraDefClr1 FraDefClr2} {
-      foreach a [winfo children [$obDl2 $fra]] {
-        catch {$a configure -state $state}
-      }
-    }
+    lassign [$obDl2 csGet $cs] fg - bg
+    [$obDl2 TexSample] configure -fg $fg -bg $bg
+    [$obDl2 TexCSample] configure -fg $fg -bg $bg
+    set data(INI,CSsaved) $cs
   }
 }
 #_______________________
@@ -452,9 +437,9 @@ proc pref::General_Tab1 {} {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labTheme - - 1 1 {-st w -pady 1 -padx 3} {-t "Ttk theme:"}}
-    {.opc1 .labTheme L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 20 -com alited::pref::CbxTheme} {}}}
+    {.opc1 .labTheme L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 16 -com alited::pref::CbxTheme} {}}}
     {.labCS .labTheme T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
-    {.opc2 .labCS L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 20 -com alited::pref::CbxTheme} {alited::pref::opcToolPre %a}}}
+    {.opc2 .labCS L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 16 -com alited::pref::CbxTheme} {alited::pref::opcToolPre %a}}}
     {.labHue .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Tint:"}}
     {.SpxHue .labHue L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 9 -afteridle alited::pref::CbxTheme -tip {$alited::al(MC,hue)}}}
     {seh_ .labHue T 1 2 {-pady 4}}
@@ -534,7 +519,7 @@ proc pref::General_Tab3 {} {
     {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
     {.CbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjEOL) -values {{} LF CR CRLF} -state readonly -w 9}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
-    {.SpxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjindent) -w 9 -from 0 -to 8 -justify center}}
+    {.SpxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjindent) -w 9 -from 0 -to 8 -justify center -com ::alited::pref::CheckIndent}}
     {.ChbIndAuto .SpxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjindentAuto) -t "Auto detection"}}
     {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Unit lines per 1 red bar:"}}
     {.SpxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjredunit) -w 9 -from 10 -to 100 -justify center}}
@@ -631,6 +616,15 @@ proc pref::GetCS {{ncc {}}} {
 }
 #_______________________
 
+proc pref::CsDark {{cs ""}} {
+  # Gets a lightness of a color scheme.
+  #   cs - the color scheme's index (if omitted, the chosen one's)
+  
+  if {$cs eq {}} {set cs [GetCS]}
+  return [::apave::obj csDarkEdit $cs]
+}
+#_______________________
+
 proc pref::GetLocaleImage {} {
 
   fetchVars
@@ -652,6 +646,15 @@ proc pref::InitLocales {} {
       lappend locales $loc
     }
   }
+}
+#_______________________
+
+proc pref::CheckIndent {{pre "DEFAULT,"}} {
+  # Sets "auto indentation", if indent is 1 (for indentation by Tabs)
+  #   pre - prefix: if {}, refers to a project's settings, by default to preferences'
+
+  namespace upvar ::alited al al
+  if {$al(${pre}prjindent)<=1} {set al(${pre}prjindentAuto) 1}
 }
 
 # ________________________ Tab "Editor" _________________________ #
@@ -694,7 +697,7 @@ proc pref::Edit_Tab2 {} {
     {fraTab2.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "Tcl files' extensions:"}}
     {.entExt .labExt L 1 1 {-st swe -pady 3} {-tvar alited::al(TclExtensions) -w 40}}
-    {.LabCOM .labExt T 1 1 {-st w -pady 3 -padx 3} {-t "Color of Tcl commands:"}}
+    {.labCOM .labExt T 1 1 {-st w -pady 3 -padx 3} {-t "Color of Tcl commands:"}}
     {.clrCOM .labCOM L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,clrCOM) -w 20}}
     {.labCOMTK .labCOM T 1 1 {-st w -pady 3 -padx 3} {-t "Color of Tk commands:"}}
     {.clrCOMTK .labCOMTK L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,clrCOMTK) -w 20}}
@@ -736,7 +739,7 @@ proc pref::Edit_Tab3 {} {
     {fraTab3.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "C/C++ files' extensions:"}}
     {.entExt .labExt L 1 1 {-st swe -pady 3} {-tvar alited::al(ClangExtensions) -w 40}}
-    {.LabCOM2 .labExt T 1 1 {-st w -pady 3 -padx 3} {-t "Color of C key words:"}}
+    {.labCOM2 .labExt T 1 1 {-st w -pady 3 -padx 3} {-t "Color of C key words:"}}
     {.clrCOM2 .labCOM2 L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrCOM) -w 20}}
     {.labCOMTK2 .labCOM2 T 1 1 {-st w -pady 3 -padx 3} {-t "Color of C++ key words:"}}
     {.clrCOMTK2 .labCOMTK2 L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrCOMTK) -w 20}}
@@ -777,7 +780,7 @@ proc pref::Edit_Tab4 {} {
     {FraTab4 v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fraTab4.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "Plain texts' extensions:"}}
-    {.entExt .labExt L 1 1 {-st swe -pady 3} {-tvar alited::al(TextExtensions) -w 40}}
+    {.entExt .labExt L 1 1 {-st swe -pady 3} {-tvar alited::al(TextExtensions) -w 54}}
     {.seh .labExt T 1 2 {-pady 3}}
     {.but .seh T 1 1 {-st w} {-t Default -com alited::pref::Text_Default}}
   }
@@ -791,7 +794,7 @@ proc pref::Tcl_Default {isyn {init no}} {
 
   fetchVars
   set al(TclExtensions) $al(TclExtensionsDef)
-  set Dark [::apave::obj csDarkEdit]
+  set Dark [CsDark]
   set clrnams [::hl_tcl::hl_colorNames]
   set clrvals [::hl_tcl::hl_colors $isyn $Dark]
   foreach nam $clrnams val $clrvals {
@@ -810,7 +813,7 @@ proc pref::C_Default {isyn {init no}} {
 
   fetchVars
   set al(ClangExtensions) $al(ClangExtensionsDef)
-  set Dark [::apave::obj csDarkEdit]
+  set Dark [CsDark]
   set clrnams [::hl_tcl::hl_colorNames]
   set clrvals [::hl_c::hl_colors $isyn $Dark]
   foreach nam $clrnams val $clrvals {
@@ -835,10 +838,9 @@ proc pref::InitSyntax {lng} {
   #   lng - {} for Tcl, {2} for C/C++
 
   fetchVars
-  set lab1 [$obDl2 LabCOM$lng]
   foreach nam {COM COMTK STR VAR CMN PROC OPT BRA} {
-    set lab [string map [list labCOM labclr$nam] $lab1]
-    set ent [string map [list labCOM entclr$nam] $lab1]
+    set ent [$obDl2 Entclr$nam$lng] ;# method's name, shown by -debug attribute
+    set lab [string map [list .entclr .labclr] $ent]  ;# colored label
     $lab configure -background [$ent get]
     ::apave::bindToEvent $ent <FocusIn> alited::pref::UpdateSyntaxTab $lng
     ::apave::bindToEvent $ent <FocusOut> alited::pref::UpdateSyntaxTab $lng
@@ -859,11 +861,11 @@ proc pref::InitSyntaxTcl {colornames} {
       Args=$args"
     winfo interps -displayof [lindex $args 0]
     return $var
-  }}}
+}}}
   set wk [$obDl2 TexTclKeys]
   ::apave::bindToEvent $wk <FocusOut> alited::pref::UpdateSyntaxTab
   set keywords [string trim [$wk get 1.0 end]]
-  ::hl_tcl::hl_init $tex -dark [$obDl2 csDarkEdit] \
+  ::hl_tcl::hl_init $tex -dark [CsDark] \
     -multiline 1 -keywords $keywords \
     -font $al(FONT,txt) -colors $colornames \
     -insertwidth $al(CURSORWIDTH)
@@ -887,11 +889,11 @@ proc pref::InitSyntaxC {colornames} {
     text += strlen(st);
     ptr = strstr(text + 1, "My string"); // error
     return TRUE
-  }}}
+}}}
   set wk [$obDl2 TexCKeys]
   ::apave::bindToEvent $wk <FocusOut> alited::pref::UpdateSyntaxTab 2
   set keywords [string trim [$wk get 1.0 end]]
-  ::hl_c::hl_init $tex -dark [$obDl2 csDarkEdit] \
+  ::hl_c::hl_init $tex -dark [CsDark] \
     -multiline 1 -keywords $keywords \
     -font $al(FONT,txt) -colors $colornames \
     -insertwidth $al(CURSORWIDTH)
@@ -1168,15 +1170,15 @@ proc pref::Emenu_Tab {} {
     {.swiExe .labExe L 1 1 {-st sw -pady 5} {-var alited::al(EM,exec) -onvalue yes -offvalue no -com alited::pref::OwnCS}}
     {.labCS .labExe T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.SwiCS .labCS L 1 1 {-st sw -pady 5} {-t {e_menu's own} -var alited::al(EM,ownCS) -com alited::pref::OwnCS -afteridle alited::pref::OwnCS}}
-    {.OpcCS .swiCS L 1 1 {-st se -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 18} {alited::pref::opcToolPre %a}}}
+    {.OpcCS .swiCS L 1 1 {-st sw -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 16} {alited::pref::opcToolPre %a}}}
     {.labGeo .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
     {.entGeo .labGeo L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,geometry) -w 22}}
     {.labDir .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Directory of menus:"}}
-    {.dirEM .labDir L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,menudir) -w 40}}
+    {.dirEM .labDir L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,menudir) -w 48}}
     {.labMenu .labDir T 1 1 {-st w -pady 1 -padx 3} {-t "Main menu:"}}
-    {.filMenu .labMenu L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,menu) -w 40 -filetypes {{{Menus} .mnu} {{All files} .* }}}}
+    {.filMenu .labMenu L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,menu) -w 48 -filetypes {{{Menus} .mnu} {{All files} .* }}}}
     {.labPD .labMenu T 1 1 {-st w -pady 1 -padx 3} {-t "Projects (%PD wildcard):"}}
-    {.filPD .labPD L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,PD=) -w 40}}
+    {.filPD .labPD L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,PD=) -w 48}}
   }
 }
 #_______________________

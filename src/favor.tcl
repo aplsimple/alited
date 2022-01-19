@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    favor.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -17,6 +16,18 @@ namespace eval favor {
 
 # ________________________ Common _________________________ #
 
+proc favor::SkipVisited {{flag ""}} {
+  # Sets/gets a flag to skip remembering a last visit.
+
+  namespace upvar ::alited al al
+  set fln _FLAGSKIPLV
+  if {$flag eq {}} {
+    return [expr {[info exists al($fln)] && $al($fln)}]
+  }
+  set al($fln) $flag
+}
+#_______________________
+
 proc favor::LastVisited {item header {l1 -1}} {
   # Puts an item to "Last visited" list.
   #   item - list of tree's item data (first two: -text {label})
@@ -24,6 +35,11 @@ proc favor::LastVisited {item header {l1 -1}} {
   #   l1 - starting line of a last visited unit, if any
 
   namespace upvar ::alited al al obPav obPav
+  if {[SkipVisited]} {
+    # avoid a false run at switching to a file from infobar/favorites
+    SkipVisited no
+    return
+  }
   # check for "All of..." - don't save it
   set allof [string range $al(MC,alloffile) 0 [string first \" $al(MC,alloffile)]]
   if {[string first $allof $header]==0} return

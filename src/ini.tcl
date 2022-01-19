@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    ini.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -266,7 +265,6 @@ proc ini::ReadIniGeometry {nam val} {
       set ::alited::al(GEOM) "-geometry +$x+$y"
     }
     geomfind       {set ::alited::find::geo $val}
-    minsizefind    {set ::alited::find::minsize $val}
     geomproject    {set ::alited::project::geo $val}
     minsizeproject {set ::alited::project::minsize $val}
     geompref       {set ::alited::pref::geo $val}
@@ -702,7 +700,6 @@ proc ini::SaveIni {{newproject no}} {
   }
   puts $chan "GEOM=[wm geometry $al(WIN)]"
   puts $chan "geomfind=$::alited::find::geo"
-  puts $chan "minsizefind=$::alited::find::minsize"
   puts $chan "geomproject=$::alited::project::geo"
   puts $chan "minsizeproject=$::alited::project::minsize"
   puts $chan "geompref=$::alited::pref::geo"
@@ -1118,10 +1115,6 @@ proc ini::_init {} {
   }
   image create photo alimg_tclfile -data [set alited::img::_AL_IMG(Tcl)]
   image create photo alimg_kbd -data [set alited::img::_AL_IMG(kbd)]
-  # new find/repl. geometry
-  if {$al(FONTSIZE,small) ne $al(FONTSIZE,small)} {
-    set ::alited::find::geo [set ::alited::find::minsize ""]
-  }
   # styles & fonts used in "small" dialogues
   ::apave::initStylesFS -size $al(FONTSIZE,small)
   lassign [::apave::obj create_FontsType small -size $al(FONTSIZE,small)] \

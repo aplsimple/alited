@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    edit.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
@@ -62,11 +61,12 @@ proc edit::UnIndent {} {
 
   lassign [SelectedLines] wtxt l1 l2
   set len [string length $::apave::_AP_VARS(INDENT)]
+  set spaces [list { } \t]
   for {set l $l1} {$l<=$l2} {incr l} {
     set line [$wtxt get $l.0 $l.end]
     if {[string trim $line] eq {}} {
       $wtxt replace $l.0 $l.end {}
-    } elseif {[string index $line 0] eq { }} {
+    } elseif {[string index $line 0] in $spaces} {
       set leadsp [::apave::obj leadingSpaces $line]
       # align by the indent edge
       set sp [expr {$leadsp % $len}]

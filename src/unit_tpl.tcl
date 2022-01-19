@@ -1,4 +1,3 @@
-#! /usr/bin/env tclsh
 ###########################################################
 # Name:    unit_tpl.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
