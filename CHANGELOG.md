@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.1.0b3 (16 Jan'22)`
+Version `1.1.0b4 (19 Jan'22)`
 
   - BUGFIX: Tab key (command completion) in kubuntu, reported and fixed by Steve
   - BUGFIX: saving modified files by "Preferences/Save", reported by Steve
