@@ -46,24 +46,34 @@ proc complete::AllSessionCommands {{currentTID ""}} {
   # If currentTID is set, the commands of this TID are shown unqualified.
 
   namespace upvar ::alited al al
+  if {[set isread [info exists al(_SessionCommands)]]} {
+    unset al(_SessionCommands)
+  } else {
+    alited::info::Put $al(MC,wait) {} yes yes
+    update
+  }
+  set al(_SessionCommands) [dict create]
   set res [list]
   foreach tab [alited::find::SessionList] {
     set TID [lindex $tab 0]
-    alited::file::ReadFileByTID $TID
+    lassign [alited::main::GetText $TID no no] curfile wtxt
     foreach it $al(_unittree,$TID) {
       lassign $it lev leaf fl1 ttl l1 l2
       if {$leaf && [llength $ttl]==1} {
         if {$TID eq $currentTID} {
-          lappend res [lindex [split $ttl :] end]
-        } else {
-          lappend res $ttl
+          set ttl [lindex [split $ttl :] end]
         }
+        lappend res $ttl
+        # save arguments of proc/method
+        set h [alited::unit::GetHeader {} {} 0 $wtxt $ttl $l1 $l2]
+        dict set al(_SessionCommands) $ttl [lindex [split $h \n] 0 2]
       }
     }
   }
   if {[llength $al(ED,TclKeyWords)]} {
     lappend res {*}$al(ED,TclKeyWords)  ;# user's commands
   }
+  if {!$isread} {alited::info::Clear end}
   return $res
 }
 #_______________________
@@ -98,6 +108,7 @@ proc complete::MatchedCommands {} {
       set maxwidth [expr {max($maxwidth,[string length $com])}]
     }
   }
+  set comms [lsort -dictionary -unique $comms]
   return [list $curword $idx1 $idx2]
 }
 
@@ -154,7 +165,7 @@ proc complete::PickCommand {wtxt} {
       incr Y 40
       after 100 "wm deiconify $win"
     }
-    set res [$obj showModal $win -focus $lbx -geometry +$X+$Y]
+    set res [$obj showModal $win -focus $lbx -geometry +$X+$Y -ontop yes]
   }
   destroy $win
   $obj destroy
@@ -167,6 +178,7 @@ proc complete::PickCommand {wtxt} {
 proc complete::AutoCompleteCommand {} {
   # Runs auto completion of commands.
   
+  namespace upvar ::alited al al
   lassign [MatchedCommands] curword idx1 idx2
   set wtxt [alited::main::CurrentWTXT]
   if {[set com [PickCommand $wtxt]] ne {}} {
@@ -174,7 +186,22 @@ proc complete::AutoCompleteCommand {} {
     set row [expr {int([$wtxt index insert])}]
     $wtxt delete $row.$idx1 $row.[incr idx2]
     set pos $row.$idx1
-    $wtxt insert $pos "$com "
+    if {[dict exists $al(_SessionCommands) $com]
+    && [set argums [dict get $al(_SessionCommands) $com]] ne {}} {
+      # add all of the unit's arguments
+      catch {
+        foreach ar $argums {
+          if {[llength $ar]==1} {
+            append com " \$$ar"
+          } else {
+            append com " {\$$ar}" ;# default value to be seen
+          }
+        }
+      }
+    } else {
+      append com { }
+    }
+    $wtxt insert $pos $com
     ::alited::main::HighlightLine
   }
   focus -force $wtxt

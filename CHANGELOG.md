@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.1.0b4 (19 Jan'22)`
+Version `1.1.0 (26 Jan'22)`
 
   - BUGFIX: Tab key (command completion) in kubuntu, reported and fixed by Steve
   - BUGFIX: saving modified files by "Preferences/Save", reported by Steve
@@ -9,12 +9,15 @@ Version `1.1.0b4 (19 Jan'22)`
   - BUGFIX: command completion at column=1
   - BUGFIX: false last visit from infobar/find-declaration
   - BUGFIX: cancel Projects dialogue at a changed reminder
+  - BUGFIX: bells at finding in session with empty "Find" field
+  - BUGFIX: potential issue with switching last visit
   - NEW   : code snippets in "Tcl/C syntax" tabs
   - NEW   : 4 default buttons in "Tcl/C syntax" tabs
   - NEW   : check for Tab character in "Correct Indentation"
   - NEW   : e_menu's "own CS" option
   - NEW   : de.msg by Holger
   - NEW   : acknowledgements tab in About
+  - NEW   : at completion: put unit's declaration; sort list; "wait a little"
   - CHANGE: "small restriction" gone: at changing Preferences' CS
   - CHANGE: "Find/Replace" dialogue's min.sizes made liberal
   - CHANGE: visited units' color of tree changed to proc/return color
@@ -22,7 +25,9 @@ Version `1.1.0b4 (19 Jan'22)`
   - CHANGE: install defaults: emtt=x-terminal-emulator, emcs=-1
   - CHANGE: port to listen made customizable, as suggested by Holger
   - CHANGE: no scrollbar in "Complete Command" window
-  - CHANGE: apave, hl_tcl packages
+  - CHANGE: sorting locale items in Preferences
+  - CHANGE: "wait a little"'s red foreground
+  - CHANGE: apave, hl_tcl, clrpick, e_menu packages
 
 
 Version `1.0.6 (29 Dec'21)`

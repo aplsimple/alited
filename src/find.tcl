@@ -436,7 +436,7 @@ proc find::InitShowResults {} {
 
   namespace upvar ::alited al al
   alited::info::Clear
-  alited::info::Put $al(MC,wait) "" yes
+  alited::info::Put $al(MC,wait) {} yes yes
   update
 }
 
@@ -492,7 +492,7 @@ proc find::Search {wtxt} {
   lassign [FindOptions $wtxt] findstr options
   if {![CheckData find]} {return {}}
   $obPav set_HighlightedString $findstr
-  if {[$obPav csDarkEdit]} {
+  if {[$obPav csDark]} {
     set fg white
     set bg #1c1cff
   } else {
@@ -621,6 +621,7 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
   #   inv - index of a button that was hit (3 means "All in Session" button)
 
   variable data
+  if {![CheckData find]} return
   if {$inv>-1} {set data(lastinvoke) $inv}
   InitShowResults
   set allfnd [list]

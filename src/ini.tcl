@@ -42,7 +42,7 @@ namespace eval ::alited {
   set al(INI,confirmexit) 1     ;# flag "confirm exiting alited"
   set al(INI,belltoll) 1        ;# flag "bell at warnings"
   set al(INI,LINES1) 10         ;# number of initial "untouched" lines (to ban moves in it)
-  set al(moveall) 0             ;# "move all" of color chooser
+  set al(moveall) 1             ;# "move all" of color chooser
   set al(tonemoves) 1           ;# "tone moves" of color chooser
   set al(checkgeo) {}           ;# geometry of "Check Tcl" window
   set al(HelpedMe) {}             ;# list of helped windows shown by HelpMe proc
@@ -246,6 +246,7 @@ proc ini::ReadIni {{projectfile ""}} {
   if {!$al(INI,belltoll)} {
     proc ::bell args {}  ;# no bells
   }
+  set al(ini_file) {}  ;# to reread alited.ini contents, at need in next time
 }
 #_______________________
 
@@ -891,7 +892,7 @@ proc ini::InitGUI {} {
   ::apave::obj basicFontSize $al(FONTSIZE,std)
   ::apave::obj csSet $al(INI,CS) . -doit
   if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE)}
-  set Dark [::apave::obj csDarkEdit]
+  set Dark [::apave::obj csDark]
   if {![info exists al(ED,clrCOM)] || ![info exists al(ED,CclrCOM)] || \
   ![info exists al(ED,Dark)] || $al(ED,Dark) != $Dark} {
     alited::pref::Tcl_Default $al(syntaxidx) yes
@@ -956,17 +957,6 @@ proc ini::InitFonts {} {
   # Loads main fonts for alited to use as default and mono.
 
   namespace upvar ::alited al al
-#  if {[catch {
-#    package require extrafont
-#    set ttflist [glob [file join $alited::DATADIR fonts *]]
-#  }]} {
-#    set ttflist [list]
-#  }
-#  foreach ttf $ttflist {
-#    catch {extrafont::load $ttf}
-#puts "[incr ::-ALE-] ini::InitFonts $ttf"
-#  }
-#puts "[incr ::-ALE-] ini::InitFonts ....[font families]"
 
   if {$al(FONT) ne {}} {
     catch {

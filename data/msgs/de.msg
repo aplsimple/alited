@@ -534,10 +534,10 @@ namespace eval ::alited {
   #   Line - 2nd column's title of unit tree
   #   ind = indentation
   ::msgcat::mcmset de {
-    {ind} {Index}
+    {ind} {einr}
     {Row} {Zeile}
-    {Row: } {Zeile: }
-    { Col: } { Spalte: }
+    {Row: } {Zeil: }
+    { Col: } { Spal: }
     {    Unit: } {   Einheit: }
   }
 

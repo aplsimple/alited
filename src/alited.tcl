@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.1.0b4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.1.0  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport

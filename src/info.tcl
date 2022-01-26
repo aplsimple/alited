@@ -30,21 +30,28 @@ proc info::Get {i} {
 }
 #_______________________
 
-proc info::Put {msg {inf ""} {bold no}} {
+proc info::Put {msg {inf ""} {bold no} {see no}} {
   # Puts a message to the info listbox widget.
   #   msg - the message
   #   inf - additional data for the message (1st line of unit etc.)
   #   bold - if yes, displays the message bolded
+  #   see - if yes, makes the message seen
 
+  namespace upvar ::alited obPav obPav
   variable list
   variable info
   lappend list $msg
   lappend info $inf
-  if {$bold} {
-    namespace upvar ::alited obPav obPav
+  set lbx [$obPav LbxInfo]
+  if {$see} {
+    lassign [::hl_tcl::addingColors] -> fgbold
+    $lbx see end
+  } elseif {$bold} {
     lassign [alited::FgFgBold] -> fgbold
-    [$obPav LbxInfo] itemconfigure end -foreground $fgbold
+  } else {
+    return
   }
+  $lbx itemconfigure end -foreground $fgbold
 }
 #_______________________
 
@@ -52,17 +59,17 @@ proc info::Clear {{i -1}} {
   # Clears the info listbox widget and the related data.
   #   i - index of message (if omitted, clears all messages)
 
+  namespace upvar ::alited obPav obPav
   variable list
   variable info
   if {$i == -1} {
     set list [list]
     set info [list]
   } else {
+    lassign [$obPav csGet] fg
+    catch {[$obPav LbxInfo] itemconfigure $i -foreground $fg}
     set list [lreplace $list $i $i]
     set info [lreplace $info $i $i]
-    namespace upvar ::alited obPav obPav
-    lassign [alited::FgFgBold] fg
-    catch {[$obPav LbxInfo] itemconfigure 0 -foreground $fg}
   }
 }
 

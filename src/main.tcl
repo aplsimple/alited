@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-# _________________________ variables ________________________ #
+# _________________________ Variables ________________________ #
 
 namespace eval main {
   variable findunits 1     ;# where to find units: 1 current file, 2 all
@@ -15,7 +15,7 @@ namespace eval main {
   variable gotolineTID {}  ;# tab ID last used in "Go to Line" dialogue
 }
 
-# ________________________ common _________________________ #
+# ________________________ Common _________________________ #
 
 proc main::CurrentWTXT {} {
   # Gets a current text widget's path.
@@ -31,7 +31,7 @@ proc main::GetWTXT {TID} {
   return [alited::bar::GetTabState $TID --wtxt]
 }
 
-# ________________________ get and show text widget _________________________ #
+# ________________________ Get and show text widget _________________________ #
 
 proc main::GetText {TID {doshow no} {dohighlight yes}} {
   # Creates or gets a text widget for a tab.
@@ -143,7 +143,7 @@ proc main::ShowText {} {
   ShowHeader
 }
 
-# ________________________ updating gutter & text _________________________ #
+# ________________________ Updating gutter & text _________________________ #
 
 proc main::UpdateGutter {} {
   # Redraws the gutter.
@@ -213,11 +213,11 @@ proc main::UpdateTextGutterTree {} {
   UpdateUnitTree
 }
 
-# ________________________ focus _________________________ #
+# ________________________ Focus _________________________ #
 
 proc main::FocusText {args} {
   # Sets a focus on a current text.
-  #   args - contains tab's ID and a cursor positition.
+  #   args - contains tab's ID and a cursor position.
 
   namespace upvar ::alited al al obPav obPav
   lassign $args TID pos
@@ -277,7 +277,7 @@ proc main::FocusInText {TID wtxt} {
   }
 }
 
-# ________________________ highlights _________________________ #
+# ________________________ Highlight _________________________ #
 
 proc main::HighlightText {TID curfile wtxt} {
   # Highlights a file's syntax constructs.
@@ -300,14 +300,14 @@ proc main::HighlightText {TID curfile wtxt} {
       lappend "${lng}colors" $clrCURL
     }
     if {[alited::file::IsClang $curfile]} {
-      ::hl_c::hl_init $wtxt -dark [$obPav csDarkEdit] \
+      ::hl_c::hl_init $wtxt -dark [$obPav csDark] \
         -multiline 1 -keywords $al(ED,CKeyWords) \
         -cmd "::alited::edit::Modified $TID" \
         -cmdpos ::alited::main::CursorPos \
         -font $al(FONT,txt) -colors $Ccolors \
         -insertwidth $al(CURSORWIDTH)
     } else {
-      ::hl_tcl::hl_init $wtxt -dark [$obPav csDarkEdit] \
+      ::hl_tcl::hl_init $wtxt -dark [$obPav csDark] \
         -multiline $al(prjmultiline) -keywords $al(ED,TclKeyWords) \
         -cmd "::alited::edit::Modified $TID" \
         -cmdpos ::alited::main::CursorPos \
@@ -332,7 +332,7 @@ proc main::HighlightLine {} {
   }
 }
 
-# ________________________ line _________________________ #
+# ________________________ Line _________________________ #
 
 proc main::CursorPos {wtxt args} {
   # Displays a current text's row and column in the status bar.
@@ -454,17 +454,26 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
 
   namespace upvar ::alited al al obPav obPav
   # only for unit tree and not navigation key and not Alt/Ctrl pressed
-  if {!$al(TREE,isunits) || ($s!=0 && $s!=1) || \
-  $K in {Up Down Left Right Next Prior Home End}} {
+  if {!$al(TREE,isunits) || ($s!=0 && $s!=1 && $s!=8) || \
+  ($K in {Up Down Left Right Next Prior Home End} && $s!=8)} {
+    return
+  }
+  # check for current text and current unit's lines
+  set wcur [CurrentWTXT]
+  if {$wtxt eq {}} {
+    set wtxt $wcur
+  } elseif {$wtxt ne $wcur} {
     return
   }
   set wtree [$obPav Tree]
-  # check for current text and current unit's lines
-  if {$wtxt eq {}} {set wtxt [CurrentWTXT]}
   set pos [$wtxt index insert]
   lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name l1
   set header [alited::unit::GetHeader $wtree $itemID]
-  if {$K eq {}} {
+  set gokeys [list {}]
+  foreach gk {F3 AltQ AltW} {
+    lappend gokeys {*}[apave::getTextHotkeys $gk]
+  }
+  if {$K in $gokeys || $s==8} {
     set l1 -1 ;# to avoid a unit's name spawned in last visits at its change
   }
   alited::favor::LastVisited [$wtree item $itemID] $header $l1
@@ -604,9 +613,8 @@ proc main::InitActions {} {
     alited::project::_run
   }
 }
-#_______________________
 
-# ________________________ main _________________________ #
+# ________________________ Main _________________________ #
 
 proc main::_create {} {
   # Creates a main form of the alited.
@@ -699,10 +707,10 @@ proc main::_create {} {
     {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - {pack}}
     {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
-      {{$alited::al(MC,Row:)}} 12
-      {{$alited::al(MC,Col:)}} 5
+      {{$alited::al(MC,Row:)}} 13
+      {{$alited::al(MC,Col:)}} 4
       {{} -anchor w -expand 1} 50
-      {{} -anchor e} 18
+      {{} -anchor e} 21
     }}}
   }
   UpdateProjectInfo

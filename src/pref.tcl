@@ -621,7 +621,7 @@ proc pref::CsDark {{cs ""}} {
   #   cs - the color scheme's index (if omitted, the chosen one's)
   
   if {$cs eq {}} {set cs [GetCS]}
-  return [::apave::obj csDarkEdit $cs]
+  return [::apave::obj csDark $cs]
 }
 #_______________________
 
@@ -646,6 +646,7 @@ proc pref::InitLocales {} {
       lappend locales $loc
     }
   }
+  set locales [lsort $locales]
 }
 #_______________________
 

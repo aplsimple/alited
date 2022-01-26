@@ -209,7 +209,7 @@ proc check::Check {} {
   variable errors
   variable fileerrors
   alited::info::Clear
-  alited::info::Put $al(MC,wait) {} yes
+  alited::info::Put $al(MC,wait) {} yes yes
   set errors [set fileerrors 0]
   switch $what {
     1 CheckFile

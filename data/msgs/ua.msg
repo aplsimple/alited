@@ -67,7 +67,7 @@ namespace eval ::alited {
     {Date Picker} {Вибір дати}
     {Screen Loupe} {Екранна лупа}
     {Quit alited?} {Вийти з alited?}
-    {Wait a little ...} {Чекайте ...}
+    {Wait a little ...} {Почекайте ...}
     {Default} {За замовчуванням}
     {Default 2} {За замовчуванням 2}
     {Default 3} {За замовчуванням 3}
@@ -537,7 +537,7 @@ namespace eval ::alited {
   #   Line - 2nd column's title of unit tree
   #   ind = indentation
   ::msgcat::mcmset ua {
-    {ind} {від}
+    {ind} {відс}
     {Row} {Ряд.}
     {Row: } {Ряд: }
     { Col: } { Поз: }

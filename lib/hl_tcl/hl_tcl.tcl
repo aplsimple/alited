@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.33
+package provide hl_tcl 0.9.34
 
 # ______________________ Common data ____________________ #
 
@@ -1207,7 +1207,7 @@ proc ::hl_tcl::hl_line {txt} {
 }
 #_____
 
-proc ::hl_tcl::addingColors {dark {txt ""}} {
+proc ::hl_tcl::addingColors {{dark ""} {txt ""}} {
   # Sets/gets colors for a text syntax highlighting.
   #   dark - yes, if the current theme is dark
   #   txt - path to the text or {}
@@ -1217,8 +1217,14 @@ proc ::hl_tcl::addingColors {dark {txt ""}} {
   #   - #TODO and #! comment's foreground
 
   variable my::data
+  # try to get color options from current apave settings
   if {[catch {set clrCURL [lindex [::apave::obj csGet] 16]}]} {
     set clrCURL {}
+  }
+  if {$dark eq {}} {
+    if {[catch {set dark [::apave::obj csDark]}]} {
+      set dark no
+    }
   }
   if {$dark} {
     if {$clrCURL eq {}} {set clrCURL #29383c}

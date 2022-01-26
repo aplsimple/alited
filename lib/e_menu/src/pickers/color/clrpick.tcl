@@ -535,7 +535,12 @@ proc ::tk::dialog::color::CreateSelector {w sel c } {
 proc ::tk::dialog::color::InvertBg {r g b} {
   set c [expr {$r<100 && $g<100 || $r<100 && $b<100 || $b<100 && $g<100 ||
     ($r+$g+$b)<300 ? 255 : 0}]
-  return [string toupper [format "#%02x%02x%02x" $c $c $c]]
+  set res [string toupper [format "#%02x%02x%02x" $c $c $c]]
+  switch -exact $res {
+    {#000000} {set res black}
+    {#FFFFFF} {set res white}
+  }
+  return $res
 }
 
 proc ::tk::dialog::color::ReverseFinalFg {w} {

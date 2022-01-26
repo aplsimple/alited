@@ -1243,10 +1243,10 @@ oo::class create ::apave::ObjectTheming {
   }
   #_______________________
 
-  method csDarkEdit {{cs ""}} {
+  method csDark {{cs ""}} {
 
-    # Returns a flag "the editor of CS is dark"
-    #   cs - color scheme to be checked (the current one, if not set)
+    # Returns a flag "a color scheme is dark"
+    #   cs - the color scheme to be checked (the current one, if not set)
 
     if {$cs eq {} || $cs==-3} {set cs [my csCurrent]}
     lassign $::apave::_CS_(TONED) csbasic cstoned
@@ -1368,7 +1368,7 @@ oo::class create ::apave::ObjectTheming {
     set ::apave::FGMAIN $fg
     set ::apave::BGMAIN $bg
     catch {
-      if {[my csDarkEdit $ncolor]} {::baltip::configure -relief groove}
+      if {[my csDark $ncolor]} {::baltip::configure -relief groove}
     }
     return [list $fg $bg $fE $bE $fS $bS $hh $grey $cc $ht $tfgI $tbgI $fM $bM $tfgW $tbgW $tHL2 $tbHL $chkHL $res5 $res6 $res7]
   }
@@ -1781,7 +1781,7 @@ oo::class create ::apave::ObjectTheming {
     foreach ts {TRadiobutton TCheckbutton} {
       ttk::style map $ts -background [list focus $tbg2 !focus $tbg1]
     }
-    if {[my csDarkEdit]} {
+    if {[my csDark]} {
       # esp. for default/alt/classic themes and dark CS:
       # checked buttons to be lighter
       foreach ts {TCheckbutton TRadiobutton} {
@@ -1826,7 +1826,7 @@ oo::class create ::apave::ObjectTheming {
               set ::apave::_C_($ts,7) {-borderwidth 1}
               set ::apave::_C_($ts,8) {-relief groove}
           }
-          if {[my csDarkEdit]} {set c white} {set c black}
+          if {[my csDark]} {set c white} {set c black}
           set ::apave::_C_($ts,9) "-selectcolor $c"
         }
         canvas {

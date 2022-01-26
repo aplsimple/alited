@@ -11,24 +11,32 @@ namespace eval unit {
 
 # ________________________ Common _________________________ #
 
-proc unit::GetHeader {wtree ID {NC ""}} {
+proc unit::GetHeader {wtree ID {NC ""} {wtxt ""} {tip ""} {l1 0} {l2 0}} {
   # Gets a header of unit: declaration + initial comments.
   #   wtree - unit tree widget
   #   ID - ID of item in the unit tree
   #   NC - index of column of the unit tree
+  #   wtxt - text widget
+  #   tip - unit's name
+  #   l1 - 1st line of unit
+  #   l2 - last line of unit
 
   namespace upvar ::alited al al
-  set tip [string trim [$wtree item $ID -text]]
-  lassign [$wtree item $ID -values] l1 l2 - id
-  if {!$al(TREE,isunits)} {
-    return $l2  ;# for file tree, it's a full file name
+  if {$wtree ne {}} {
+    set tip [string trim [$wtree item $ID -text]]
+    lassign [$wtree item $ID -values] l1 l2 - id
+    if {!$al(TREE,isunits)} {
+      return $l2  ;# for file tree, it's a full file name
+    }
   }
   if {$NC eq {#1}} {
     set tip "[string map {al #} $id]\n$l1 - [expr {max($l1,$l2)}]"
     set ID {}
   } else {
     catch {
-      set wtxt [alited::main::CurrentWTXT]
+      if {$wtxt eq {}} {
+        set wtxt [alited::main::CurrentWTXT]
+      }
       set tip2 [string trim [$wtxt get $l1.0 $l1.end]]
       if {[string match "*\{" $tip2]} {
         set tip [string trim $tip2 " \{"]
@@ -557,17 +565,6 @@ proc unit::SearchByHeader {header} {
     if {$header eq $header2} {return $ID}
   }
   return {}
-}
-#_______________________
-
-proc unit::SelectByHeader {header line} {
-  # Selects a unit in the text, by the unit's header.
-  #   header - unit's header (declaration+initial comment)
-  #   line - relational line number inside the unit
-
-  if {[set ID [SearchByHeader $header]] ne ""} {
-    after idle "alited::tree::NewSelection $ID $line"
-  }
 }
 
 # _________________________________ EOF _________________________________ #
