@@ -412,7 +412,12 @@ proc tool::e_menu {args} {
   if {{EX=Help} ni $args} {
     EM_SaveFiles
     if {![is_submenu $args]} {
-      append args " g="  ;# should be last, to override previous settings
+      if {[set p [string first + $al(EM,geometry)]]>-1} {
+        set g [string range $al(EM,geometry) $p end]
+      } else {
+        set g {}
+      }
+      append args " g=$g"  ;# should be last, to override previous settings
     }
     if {{m=grep.mnu} in $args} {
       append args " NE=1"  ;# let him search till closing the search dialogue

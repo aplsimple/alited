@@ -42,7 +42,7 @@ proc ::eh::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {
   lappend opts {*}$args
   switch -glob -- $typ {
     okcancel - yesno - yesnocancel {
-      if {$defb eq "OK" && $typ ne "okcancel" } {
+      if {$defb eq {OK} && $typ ne {okcancel} } {
         set defb YES
       }
       set ans [::apave::obj $typ $icon $ttl \n$mes\n $defb {*}$opts]
@@ -56,8 +56,8 @@ proc ::eh::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {
 #=== get terminal's name
 proc ::eh::get_tty {inconsole} {
   if {[::iswindows]} {set tty "cmd.exe /K"} \
-  elseif {$inconsole ne ""} {set tty $inconsole} \
-  elseif {[auto_execok lxterminal] ne ""} {set tty lxterminal} \
+  elseif {$inconsole ne {}} {set tty $inconsole} \
+  elseif {[auto_execok lxterminal] ne {}} {set tty lxterminal} \
   else {set tty xterm}
   return $tty
 }
@@ -155,7 +155,7 @@ proc ::eh::mouse_drag {win mode x y} {
 }
 #=== Gets/sets file attributes
 proc ::eh::fileAttributes {fname {attrs "-"} {atime ""} {mtime ""} } {
-    if {$attrs eq "-"} {
+    if {$attrs eq {-}} {
       # get file attributes
       set attrs [file attributes $fname]
       return [list $attrs [file atime $fname] [file mtime $fname]]
@@ -171,7 +171,7 @@ proc ::eh::write_file_untouched {fname data} {
   lassign [::eh::fileAttributes $fname] f_attrs f_atime f_mtime
   set ch [open $fname w]
   chan configure $ch -encoding utf-8
-  foreach line $data { puts $ch "$line" }
+  foreach line $data { puts $ch $line }
   close $ch
   ::eh::fileAttributes $fname $f_attrs $f_atime $f_mtime
 }
@@ -222,81 +222,88 @@ proc ::eh::lexists {url} {
 }
 #=== check if links exist
 proc ::eh::links_exist {h1 h2 h3} {
-  if {[lexists "$h1"]} {
-    return "$h1"            ;# Tcl commands help
-  } elseif {[lexists "$h2"]} {
-    return "$h2"            ;# Tk commands help
-  } elseif {[lexists "$h3"]} {
-    return "$h3"            ;# Tcl/Tk keywords help (by first letter)
+  if {[lexists $h1]} {
+    return $h1            ;# Tcl commands help
+  } elseif {[lexists $h2]} {
+    return $h2            ;# Tk commands help
+  } elseif {[lexists $h3]} {
+    return $h3            ;# Tcl/Tk keywords help (by first letter)
   } else {
-    return ""
+    return {}
   }
 }
 #=== offline help
 proc ::eh::local { {help ""} } {
-  set l1 [string toupper [string range "$help" 0 0]]
-  if {[string first "http" "$::eh::hroot"]==0} {
+  set l1 [string toupper [string range $help 0 0]]
+  if {[string first http $::eh::hroot]==0} {
     set http true
-    set ext "htm"
+    set ext htm
   } else {
     set http false
-    set ext "htm"  ;# this extention was returned by wget, change if need
+    set ext htm  ;# this extention was returned by wget, change if need
   }
   set help [string tolower $help]
-  set h1 "$::eh::hroot/TclCmd/$help.$ext"
-  set h2 "$::eh::hroot/TkCmd/$help.$ext"
-  set h3 "$::eh::hroot/Keywords/$l1.$ext"
+  set h1 ${::eh::hroot}/TclCmd/$help.$ext
+  set h2 ${::eh::hroot}/TkCmd/$help.$ext
+  set h3 ${::eh::hroot}/Keywords/$l1.$ext
   if {$http} {
     set link [links_exist $h1 $h2 $h3]
     if {[string length $link] > 0} {
-      return "$link"             ;# try local help pages
+      return $link             ;# try local help pages
     }
   } else {
-    if {[file exists $h1]} {
-      return "file://$h1"        ;# view Tcl commands help
-    } elseif {[file exists $h2]} {
-      return "file://$h2"        ;# view Tk commands help
-    } elseif {[file exists $h3]} {
-      return "file://$h3"        ;# view Keywords help (by first letter)
+    set h0 ${::eh::hroot}/TclCmd/contents.$ext ;# Tcl index, if nothing found
+    if {![file exists $h0]} {
+      append h0 l ;# html
+      append h1 l
+      append h2 l
+      append h3 l
     }
-    set h1 "$::eh::hroot/TclCmd/contents.$ext" ;# Tcl index, if nothing found
+    if {[file exists $h1]} {
+      return file://$h1        ;# view Tcl commands help
+    } elseif {[file exists $h2]} {
+      return file://$h2        ;# view Tk commands help
+    } elseif {[file exists $h3]} {
+      return file://$h3        ;# view Keywords help (by first letter)
+    }
+    set h1 $h0
   }
-  return "$h1"
+  return $h1
 }
 #=== online help, change links if need
 proc ::eh::html { {help ""} {local 0}} {
   if {$local} {
-    return [local "$help"]
+    return [local $help]
   }
-  set l1 [string toupper [string range "$help" 0 0]]
-  set h1 "https://www.tcl.tk/man/tcl8.6/TclCmd/$help.htm"   ;# Tcl
-  set h2 "https://www.tcl.tk/man/tcl8.6/TkCmd/$help.htm"    ;# Tk
-  set h3 "https://www.tcl.tk/man/tcl8.6/Keywords/$l1.htm"   ;# keywords A-Z
+  set l1 [string toupper [string range $help 0 0]]
+  set h1 https://www.tcl.tk/man/tcl8.6/TclCmd/$help.htm   ;# Tcl
+  set h2 https://www.tcl.tk/man/tcl8.6/TkCmd/$help.htm    ;# Tk
+  set h3 https://www.tcl.tk/man/tcl8.6/Keywords/$l1.htm   ;# keywords A-Z
   set link [links_exist $h1 $h2 $h3]
   if {[string length $link] == 0} {
-    return [local "$help"]       ;# try local help pages
+    return [local $help]       ;# try local help pages
   }
   return $link
 }
 #=== call browser
 proc ::eh::browse { {help ""} } {
-  if {$::eh::my_browser ne ""} {
+  if {$::eh::my_browser ne {}} {
     # my_browser may contain options, e.g. "chromium --no-sandbox" for root
-    exec {*}${::eh::my_browser} "$help" &
+    exec {*}$::eh::my_browser $help &
   } else {
-    ::apave::openDoc "$help"
+    ::apave::openDoc $help
   }
 }
 # _______________________________________________________________________ #
 
 if {$::eh::solo} {
   if {$argc > 0} {
-    if {[lindex $::argv 0] eq "-local"} {
+    if {[lindex $::argv 0] eq {-local}} {
       set page [::eh::local [lindex $::argv 1]]
     } else {
       set page [::eh::html [lindex $::argv 0]]
     }
-    ::eh::browse "$page"
+    ::eh::browse $page
   } else {
     puts "
 Run:

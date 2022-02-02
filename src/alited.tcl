@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.1.0  ;# for documentation (esp. for Ruff!)
+package provide alited 1.1.2a2  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -31,10 +31,10 @@ namespace eval alited {
 
   # main data of alited (others are in ini.tcl)
 
-  variable FILEDIR [file normalize [file dirname ::argv0]]
   variable SCRIPT $::argv0
   variable SCRIPTNORMAL [file normalize $SCRIPT]
-  variable DIR [file dirname [file dirname [file normalize [info script]]]]
+  variable FILEDIR [file dirname [file normalize [info script]]]
+  variable DIR [file dirname $FILEDIR]
 
   # directories of sources
   variable SRCDIR [file join $DIR src]
@@ -545,7 +545,6 @@ if {[info exists ALITED_PORT]} {
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
     update
-    update idletasks
     if {$alited::LOG ne {}} {
       set alited::ARGV [linsert $alited::ARGV 0 LOG=$alited::LOG]
     }
@@ -563,7 +562,7 @@ if {[info exists ALITED_PORT]} {
     catch {wm attributes . -alpha 0.0}
     catch {wm withdraw $alited::al(WIN)}
     cd $alited::DIR
-    exec -- {*}[info nameofexecutable] $alited::SCRIPT -NOPORT {*}$alited::ARGV &
+    exec -- [info nameofexecutable] $alited::SCRIPT -NOPORT {*}$alited::ARGV &
   } elseif {$alited::LOG ne {}} {
     ::apave::logMessage {QUIT ------------}
   }
@@ -578,5 +577,5 @@ if {[info exists ALITED_PORT]} {
   }
 }
 # _________________________________ EOF _________________________________ #
-#-RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#EXEC1: /home/apl/PG/github/freewrap/TEST-kit/tclkit-gui-8.6.11 /home/apl/PG/github/alited/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#~EXEC1: /home/apl/PG/github/freewrap/TEST-kit/tclkit-gui-8.6.11 /home/apl/PG/github/alited/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

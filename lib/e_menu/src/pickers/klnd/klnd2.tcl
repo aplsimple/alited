@@ -24,7 +24,7 @@ proc ::klnd::my::IsDay2 {obj i} {
 
   variable p
   return [expr {![catch {set w [$p($obj) BuT$obj-${i}KLND]}] && \
-    [string length [string trim [$w cget -text]]]}]
+    [string length [TrimN [$w cget -text]]]}]
 }
 #_______________________
 
@@ -73,8 +73,8 @@ proc ::klnd::my::fgMayHL {obj fg y m d} {
   foreach item $p(hllist$obj) {
     # date format for highlighting is %Y/%m/%d
     lassign [split [lindex $item 0] /] yh mh dh
-    set dh [string trimleft $dh { 0}]
-    set mh [string trimleft $mh { 0}]
+    set dh [TrimN $dh]
+    set mh [TrimN $mh]
     if {$y==$yh && $m==$mh && $d==$dh} {
       set fg red
       break
@@ -122,8 +122,7 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
       set att "-takefocus 0 -text {[incr iday]} -activeforeground $p(fg0) -activebackground $p(bg0)"
       if {$doenter && ($iday==$p(dvis$obj) || ($iday==$lday && $iday<$p(dvis$obj)))} {
         catch {after cancel $p(after$obj)}
-        set p(after$obj) [after idle \
-          "::klnd::my::Enter2 $obj $i; ::klnd::my::HighlightCurrentDay2 $obj"]
+        set p(after$obj) [after idle "::klnd::my::Enter2 $obj $i"]
       }
       if {$iday==1} {set p(d1st) $i}
       if {$y==$p(y) && $m==$p(m) && $iday==$p(d)} {
@@ -172,13 +171,13 @@ proc ::klnd::my::HighlightCurrentDay2 {obj} {
   #   obj - index of calendar
 
   variable p
-  if {$p(currentmonth$obj) eq "$p(yvis$obj)/$p(mvis$obj)"} {
+  if {$p(currentmonth) eq "$p(yvis$obj)/[TrimN $p(mvis$obj)]"} {
     if {![info exists p(wcurr$obj)]} {
       catch {set p(wcurr$obj) [$p($obj) BuT$obj-$p(icurr$obj)KLND]}
     }
     catch {
-      if {[$p(wcurr$obj) cget -bg] ne $p(bgsel)} {
-        set day [$p(wcurr$obj) cget -text]
+      set day [$p(wcurr$obj) cget -text]
+      if {[$p(wcurr$obj) cget -bg] ne $p(bgsel) && [TrimN $day] ne {}} {
         set fg [fgMayHL $obj $p(fg2) $p(yvis$obj) $p(mvis$obj) $day]
         $p(wcurr$obj) configure -fg $fg -bg $p(bg2)
       }
@@ -304,7 +303,7 @@ proc ::klnd::my::ButtonTip {obj tipcom w} {
   catch {
     set y $p(yvis$obj)
     set m $p(mvis$obj)
-    set d [string trim [$w cget -text]]
+    set d [TrimN [$w cget -text]]
     set d [::klnd::my::FormatDay2 $obj $y $m $d]
     set tipcom [string map [list %W $w %D $d] $tipcom]
     set res [eval {*}$tipcom]
@@ -436,7 +435,6 @@ proc ::klnd::selectedDay {{obj {}} {y {}} {m {}} {d {}}} {
       set p(olddate$obj) [my::FormatDay2 $obj $y $m $d]
       set $my::p(tvar$obj) $p(olddate$obj)
     }
-    set my::p(currentmonth$obj) "$y/$m"
     after idle "::klnd::my::ShowMonth2 $obj $m $y yes yes; ::klnd::blinking yes"
   }
   return [list $my::p(yvis$obj) $my::p(mvis$obj) $my::p(dvis$obj)]
@@ -500,7 +498,7 @@ proc ::klnd::calendar2 {pobj w ownname args} {
     foreach date $my::p(daylist) {
       set d [clock format [clock scan $date -format $my::p(dformat)] -format %Y/%N/%d]
       lassign [split $d /] y m
-      set m [string trim $m]
+      set m [my::TrimN $m]
       lappend my::p(daylist$obj) $date
     }
   }

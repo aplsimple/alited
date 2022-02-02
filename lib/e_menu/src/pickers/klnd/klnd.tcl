@@ -40,6 +40,14 @@ namespace eval ::klnd {
 
 ## ________________________ Go month/year _________________________ ##
 
+proc ::klnd::my::TrimN {n} {
+  # Strips day/month of leading 0 and space.
+  #   n - day/month
+
+  return [string trimleft $n { 0}]
+}
+#_______________________
+
 proc ::klnd::my::IsDay {i} {
   # Check if a button shows a day.
   #   i - button index

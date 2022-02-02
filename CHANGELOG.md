@@ -1,6 +1,17 @@
 # LAST CHANGES:
 
 
+Version `1.1.2a2 (2 Feb'22)`
+
+  - BUGFIX: in "Projects", switching to other project after changing a reminder
+  - BUGFIX: in alited.tcl: mistaken FILEDIR variable; mistaken exec {*}; clearances
+  - CHANGE: reminder's saves simplified
+  - CHANGE: notes and reminders got a current line highlighted
+  - CHANGE: html Tcl/Tk man pages allowed along with htm
+  - CHANGE: e_menu's menus shown at position of Preference/Tools/e_menu/Geometry
+  - CHANGE: apave, e_menu package
+
+
 Version `1.1.0 (26 Jan'22)`
 
   - BUGFIX: Tab key (command completion) in kubuntu, reported and fixed by Steve

@@ -146,7 +146,7 @@ proc edit::ChangeEOL {} {
 
 tk_messageBox -message "edit::ChangeEOL - stub"
 }
-# ________________________ Modified _________________________ #
+# ________________________ At modifications _________________________ #
 
 proc edit::BackupFile {TID {mode {}}} {
   # Makes a backup copy of a file after the first modification of it.

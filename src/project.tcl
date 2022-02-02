@@ -253,14 +253,6 @@ proc project::PutProjectOpts {fname oldname dorename} {
 
 # ________________________ Text fields _________________________ #
 
-proc project::SaveNotesRems {} {
-  # Saves notes and reminders.
-
-  Klnd_save
-  SaveNotes
-}
-#_______________________
-
 proc project::CurrProject {} {
   # Gets a current project name, from a current item of project list.
 
@@ -408,7 +400,6 @@ proc project::Select {{item ""}} {
   variable prjinfo 
   variable OPTS
   variable klnddata
-  Klnd_save
   if {$item eq {}} {set item [Selected item no]}
   if {$item ne {}} {
     set tree [$obDl2 TreePrj]
@@ -697,7 +688,7 @@ proc project::Add {} {
   variable prjlist
   variable prjinfo
   variable OPTS
-  SaveNotesRems ;# --> old project's notes & rems
+  SaveNotes
   if {![ValidProject] || [ExistingProject yes] ne {}} return
   set al(tablist) [list]
   TabFileInfo
@@ -730,7 +721,7 @@ proc project::Change {} {
   variable curinfo
   variable prjlist
   variable prjinfo
-  SaveNotesRems
+  SaveNotes
   if {[set isel [Selected index]] eq {}} return
   if {![ValidProject]} return
   for {set i 0} {$i<[llength $prjlist]} {incr i} {
@@ -806,7 +797,6 @@ proc project::Ok {args} {
   variable prjlist
   variable prjinfo
   variable curinfo
-  Klnd_save
   set msec [clock milliseconds]
   if {($msec-$curinfo(_MSEC))<5000} {
     # disables entering twice (at multiple double-clicks)
@@ -875,7 +865,7 @@ proc project::Cancel {args} {
   namespace upvar ::alited obDl2 obDl2
   variable win
   SaveData
-  SaveNotesRems
+  SaveNotes
   RestoreSettings
   $obDl2 res $win 0
 }
@@ -1032,7 +1022,6 @@ proc project::KlndClick {y m d} {
   variable klnddata
   set klnddata(date) [KlndOutDate $y $m $d]
   # first, save a previous reminder at need
-  Klnd_save
   set klnddata(SAVEDATE) $klnddata(date)
   set klnddata(SAVEPRJ) [CurrProject]
   # then display a new reminder's text
@@ -1054,7 +1043,18 @@ proc project::KlndSearch {date prjname} {
   }
   return $res
 }
+#_______________________
 
+proc project::KlndTextModified {wtxt args} {
+  # Processes modifications of calendar text.
+  #   wtxt - text's path
+  #   args - not used arguments
+
+  namespace upvar ::alited al al
+  set aft _KLND_TextModified
+  catch {after cancel $al($aft)}
+  set al($aft) [after idle ::alited::project::Klnd_save]
+}
 # ________________________ GUI _________________________ #
 
 proc project::MainFrame {} {
@@ -1193,8 +1193,16 @@ proc project::_create {} {
     }]
   }
   after 500 ::alited::project::HelpMe ;# show an introduction after a short pause
-  bind [$obDl2 TexPrj] <FocusOut> alited::project::SaveNotes
-  bind [$obDl2 EntName] <FocusIn> alited::project::Klnd_save ;# before possible renaming
+  set prjtex [$obDl2 TexPrj]
+  set klndtex [$obDl2 TexKlnd]
+  bind $prjtex <FocusOut> alited::project::SaveNotes
+  ::hl_tcl::hl_init $prjtex -dark [$obDl2 csDark] -plaintext 1 \
+    -font $al(FONT) -insertwidth $al(CURSORWIDTH)
+  ::hl_tcl::hl_init $klndtex -dark [$obDl2 csDark] -plaintext 1 \
+    -cmd ::alited::project::KlndTextModified \
+    -font $al(FONT) -insertwidth $al(CURSORWIDTH)
+  ::hl_tcl::hl_text $prjtex
+  ::hl_tcl::hl_text $klndtex
   set res [$obDl2 showModal $win  -geometry $geo {*}$minsize \
     -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
   set oldTab [$win.fra.fraR.nbk select]

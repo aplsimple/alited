@@ -97,7 +97,7 @@ RW: Differences of $::FILETAIL (fossil/git) ... RW: fossil tim -t ci -n 9999 > $
  R: Differences of $::FILETAIL (fossil/git) ... R: %C if {"$::EMENUCOMMIT" eq ""} \
    {set ::EMENUTMP ""} {set ::EMENUTMP "--from $::EMENUCOMMIT --to tip"}
  R: Differences of $::FILETAIL (fossil/git) ... R: %IF {$::EMENU_FOSGIT} eq {Fossil} %THEN \
-  fossil gdiff $::EMENUTMP "$::EMENUFILE" %ELSE git difftool $::EMENUCOMMIT HEAD -- "$::EMENUFILE"
+  fossil gdiff $::EMENUTMP "$::EMENUFILE" %ELSE git difftool -y $::EMENUCOMMIT HEAD -- "$::EMENUFILE"
 
  # call TKE/Geany with all *.tcl of current file's directory
  R: Edit *.tcl of $::DIRTAIL R: %q "EDIT ALL *.tcl" "This will edit all .tcl files of\n\n%d"

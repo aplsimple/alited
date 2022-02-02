@@ -47,7 +47,7 @@ There are "tricky" highlighters (like <a href="https://wiki.gnome.org/Apps/Gedit
    * doesn't highlight the above mentioned Tcl lines properly
    * doesn't highlight `${var}` in contrast with `$var`
    * tries to highlight any (even hexidecimal) number it encounters, thus `set a 1fix` or `set b #abxxx` looks a bit peculiar
-   * `set c {#000000 #FFFFFF}` is quite a legal Tcl command, not for Geany
+   * `set c {{#000} #FFF}` is quite a legal Tcl command as well as `set c {#000 #FFF}`, not for Geany
    * no highlighting TclOO (`method, mixin, my` etc.)
 
 <a href="http://www.vim.org/" title="Vim editor">Vim</a>. Probably, the fastest Tcl highlighter. Great and awful. Nonetheless:
