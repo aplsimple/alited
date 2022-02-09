@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version "e_menu 3.4.8a2"
+  variable em_version "e_menu 3.4.8a4"
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -108,8 +108,8 @@ proc ::S {incomm} {
 }
 proc ::EXIT {} {::em::on_exit}
 
-# *******************************************************************
-# e_menu's procedures
+# ________________________ em's procedures _________________________ #
+
 
 namespace eval ::em {
 
@@ -122,6 +122,9 @@ namespace eval ::em {
       }
     }
   }
+
+## ________________________ Variables _________________________ ##
+
   variable menuttl "$::em::em_version"
   variable thisapp emenuapp
   variable appname $::em::thisapp
@@ -175,7 +178,7 @@ namespace eval ::em {
   variable commands [list]
   variable pause 0
   variable appN 0
-  variable tasks [list] taski [list] ex {} EX {} ipos 0 TN 0
+  variable tasks [list] taski [list] ex {} EX {} tc {} ipos 0 TN 0
   variable isep 0
   variable start0 1
   variable prjset 0
@@ -289,7 +292,7 @@ proc ::em::theming_pave {} {
 #___ own message/question box
 proc ::em::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {
   return [::eh::dialog_box $ttl $mes $typ $icon $defb \
-    -centerme .em {*}$args] ;# {*}[::em::theming_pave]]
+    -centerme .em {*}$args] ;# {*}[::em::theming_pave]
 }
 #___ own message box
 proc ::em::em_message {mes {typ ok} {ttl "Info"} args} {
@@ -507,7 +510,7 @@ proc ::em::vip {refcmd} {
       # prepare the command for processing
     set cmd [string range $cmd 3 end]
     set cmd [string map {"\\n" "\n"} $cmd]
-    if {[string first "\$::env(" $cmd]>=0} {
+    if {[string first "\$::env\(" $cmd]>=0} {
       catch {set cmd [subst $cmd]}
     }
   }
@@ -612,8 +615,12 @@ proc ::em::checkForWilds {rsel} {
 }
 #___ tclsh/tclkit executable
 proc ::em::Tclexe {} {
-  if {[set tclexe [info nameofexecutable]] eq {}} {
+  if {[set tclexe $::em::tc] eq {} && [set tclexe [info nameofexecutable]] eq {}} {
     set tclexe [auto_execok tclsh]
+  }
+  if {$tclexe eq {}} {
+    ::em::em_message "ERROR:\n\nNo Tcl/Tk executable found."
+    exit
   }
   return $tclexe
 }
@@ -1145,9 +1152,11 @@ proc ::em::get_AR {} {
       } elseif {[regexp $ee $st] && $EE eq {}} {
         lassign [regexp -inline $ee $st] => EE
       }
-      if {$AR ne {} || $RF ne {} || $EE ne {}} break
+      if {$AR ne {} || $RF ne {} || $EE ne {}} {
+        if {"$AR$RF$EE" eq {OFF}} {return {}}
+        return [list $AR $RF $EE]
+      }
     }
-    return [list $AR $RF $EE]
   }
   return {}
 }
@@ -1758,7 +1767,7 @@ proc ::em::focused_win {focused} {
   if {$focused && ![isMenuFocused]} {
     foreach wc [array names ::em::bgcolr] {
       if {[winfo exists $wc]} {
-        if {![string match ".em.fr.win.fr*butt" $wc]} {
+        if {![string match .em.fr.win.fr*butt $wc]} {
           catch {$wc configure -bg $::em::bgcolr($wc)}
         }
       }
@@ -1766,7 +1775,7 @@ proc ::em::focused_win {focused} {
     set ::em::skipfocused 1  ;# to disable blinking FocusOut/FocusIn
     ::em::repaint_menu  ;# important esp. for Windows
   } elseif {!$focused && [isMenuFocused]} {
-    # only 2 generations of fathers & sons :(as nearly everywhere :(
+    # only 2 generations of fathers & sons
     foreach w [winfo children .em.fr] {
       shadow_win $w
       foreach wc [winfo children $w] {
@@ -1888,7 +1897,7 @@ proc ::em::get_menutitle {} {
 #___ initialize ::em::commands from argv and menu
 proc ::em::initcommands {lmc amc osm {domenu 0}} {
   set resetpercent2 0
-  foreach s1 {a0= P= N= PD= PN= F= o= ln= cn= s= u= w= sh= \
+  foreach s1 {tc= a0= P= N= PD= PN= F= o= ln= cn= s= u= w= sh= \
         qq= dd= ss= pa= ah= += bd= b0= b1= b2= b3= b4= dk= \
         f1= f2= f3= fs= a1= a2= ed= tf= tg= md= wc= tt= pk= \
         t0= t1= t2= t3= t4= t5= t6= t7= t8= t9= \
@@ -2019,11 +2028,11 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
         ss= {set ::em::sseltd [string trim $seltd]}
         +=  {set ::em::pseltd [::eh::escape_links $seltd]}
         pa= {set ::em::pause [::apave::getN $seltd $::em::pause]}
-        wc= - bd= - b0= - b1= - b2= - b3= - b4 {
+        wc= - bd= - b0= - b1= - b2= - b3= - b4= {
           set ::em::$s01 [::apave::getN $seltd [set ::em::$s01]]
         }
         ed= {set ::em::editor $seltd}
-        tg= - om= - dk= - ls= - DF= - BF= - pd= - PI= - NE= {
+        tg= - om= - dk= - ls= - DF= - BF= - pd= - PI= - NE= - tc= {
           set ::em::$s01 $seltd
         }
         ex= - EX= {
@@ -2480,7 +2489,7 @@ proc ::em::initauto {} {
     # only 1st start for 1st window (non-solo)
     set ::em::Argv [::apave::removeOptions $::em::Argv a=* a0=* a1=* a2=* ah=*]
     set ::em::Argc [llength $::em::Argv]
-    lassign "" ::em::autorun ::em::autohidden ::em::commandA1 ::em::commandA2
+    lassign {} ::em::autorun ::em::autohidden ::em::commandA1 ::em::commandA2
   }
   if {[is_child]} {
     bind .em <Left> [::eh::ctrl_alt_off "::em::on_exit"]

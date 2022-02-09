@@ -1527,6 +1527,7 @@ proc pref::_run {{tab {}}} {
   # Runs "Preferences" dialogue.
   # Returns "true", if settings were saved.
 
+  update  ;# if run from menu: there may be unupdated space under it (in some DE)
   _init
   set res [_create $tab]
   return $res

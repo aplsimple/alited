@@ -349,11 +349,6 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
   lappend res "$ownname.fraDays $ownname.fra T - - {-st nsew}"
   lappend res \
     [list $ownname.fraDays.tcl " \
-      if {{$::tcl_platform(platform)} eq {windows}} { \
-        set att {-highlightthickness 1 -w 6} \
-      } else { \
-        set att {-highlightthickness 0 -w 3} \
-      } ; \
       set wt - ; \
       for {set i 1} {\$i<50} {incr i} { \
         if {\$i<8} {set cur $ownname.fraDays.LabDay$obj\$i} {set cur $ownname.fraDays.BuT$obj-\[expr {\$i-7}\]KLND} ; \
@@ -361,7 +356,7 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
         if {\$i<8} { \
           set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh)}\" \
         } else { \
-          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0  -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP \$att}\" \
+          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0  -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w 3}\" \
         } ; \
         %C \$lwid ; \
         set pr \$cur \

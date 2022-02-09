@@ -24,6 +24,7 @@ namespace eval ::klnd {
       ru %u \
       ru_ru %u \
       ru_ua %u \
+      uk %u \
       ua %u \
       uk_ua %u \
       ua_ua %u \
@@ -314,10 +315,10 @@ proc ::klnd::my::MainWidgets {} {
     {.fraDays .fraTool T - - {-st nsew}}
     {.fraDays.tcl {
       # make headers and buttons of days
-      if {$::tcl_platform(platform) eq "windows"} {
-        set att "-highlightthickness 1 -w 6"
+      if {$::tcl_platform(platform) eq {windows}} {
+        set att {-highlightthickness 1}
       } else {
-        set att "-highlightthickness 0 -w 3"
+        set att {-highlightthickness 0}
       }
       set wt -
       for {set i 1} {$i<50} {incr i} {
@@ -326,7 +327,7 @@ proc ::klnd::my::MainWidgets {} {
         if {$i<8} {
           set lwid "$cur $pw $p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh)}"
         } else {
-          set lwid "$cur $pw $p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0 -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter [expr {$i-7}] 1} $::klnd::TMPTIP $att}"
+          set lwid "$cur $pw $p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0 -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter [expr {$i-7}] 1} $::klnd::TMPTIP $att -w 3}"
         }
         %C $lwid
         set pr $cur

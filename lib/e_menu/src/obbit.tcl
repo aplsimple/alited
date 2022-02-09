@@ -149,6 +149,7 @@ namespace eval ::apave {
   set ::apave::_CS_(expo,tfg1) "-"
   set ::apave::_CS_(defFont) [font actual TkDefaultFont -family]
   set ::apave::_CS_(textFont) [font actual TkFixedFont -family]
+  set ::apave::_CS_(smallFont) [font actual TkSmallCaptionFont]
   set ::apave::_CS_(fs) [font actual TkDefaultFont -size]
   set ::apave::_CS_(untouch) [list]
   set ::apave::_CS_(STDCS) [expr {[llength $::apave::_CS_(ALL)] - 1}]
@@ -1196,6 +1197,22 @@ oo::class create ::apave::ObjectTheming {
       return [set ::apave::_CS_(textFont) $textfont]
     } else {
       return $::apave::_CS_(textFont)
+    }
+  }
+  #_______________________
+
+  method basicSmallFont {{smallfont ""}} {
+
+    # Gets/Sets a basic small font used in status bar etc.
+    #    smallfont - font
+    #
+    # If 'smallfont' is omitted or =="", this method gets it.
+    # If 'smallfont' is set, this method sets it.
+
+    if {$smallfont ne ""} {
+      return [set ::apave::_CS_(smallFont) $smallfont]
+    } else {
+      return $::apave::_CS_(smallFont)
     }
   }
   #_______________________

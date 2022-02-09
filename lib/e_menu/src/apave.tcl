@@ -1887,7 +1887,7 @@ oo::class create ::apave::APave {
         } else {
           set expand {}
         }
-        set font " -font {[font actual TkSmallCaptionFont]}"
+        set font " -font {[my basicSmallFont]}"
         # status prompt
         set wid1 [list .[my ownWName [my Transname Lab ${name}_[incr j]]] - - - - "pack -side left -in $w.$name" "-t {[lindex $v1 0]} $font $dattr"]
         # status value
@@ -3287,6 +3287,7 @@ oo::class create ::apave::APave {
     [my csCurrent] != [apave::cs_Non]} {
       my colorWindow $win
     }
+    set ::apave::MODALWINDOW $win
     ::apave::setAppIcon $win
     lassign  [my csGet] - - - bg
     $win configure -bg $bg  ;# removes blinking by default bg

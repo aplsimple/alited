@@ -199,8 +199,8 @@ SW:Save your stuff SW: $::EMENU7ZCOM $::EMENUTMP $::EMENU7ZDIR_LIST ; mplayer %m
  R: 5. poApps        R: tclsh /home/apl/PG/github/poApps/poApps.tcl --dirdiff
 RW: 5. poApps        RW: sleep 4
  R: 5. poApps        R: tclsh /home/apl/PG/github/alited.release/src/alited.tcl LOG=~/TMP/alited.log /home/apl/.config/alited.release
-RW: 6. FVords       RW: sleep 4
+RW: 6. FVords        RW: sleep 4
  R: 6. FVords        R: wine /media/apl/KINGSTON/APLinkee.Shk/APLinkee.exe
  R: 6. FVords        R: ~/PROGRAMS/C_COMM/commw /media/apl/KINGSTON/FVords_Prepare fvords.exe
  R: 7. Edit          R: cd ~/PG/github/TKE
- R: 7. Edit          R: wish ~/PG/github/TKE/tke/lib/tke.tcl
+ R: 7. Edit          R: "wish" ~/PG/github/TKE/tke/lib/tke.tcl

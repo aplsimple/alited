@@ -1,10 +1,17 @@
 # LAST CHANGES:
 
 
-Version `1.1.2a2 (2 Feb'22)`
+Version `1.1.2a5 (8 Feb'22)`
 
   - BUGFIX: in "Projects", switching to other project after changing a reminder
   - BUGFIX: in alited.tcl: mistaken FILEDIR variable; mistaken exec {*}; clearances
+  - BUGFIX: closing "Check Tcl" and "Find be List" at closing app
+  - BUGFIX: at starting, message "The file %f seems to be not of types"
+  - BUGFIX: passing alited (if open) a file name containing spaces
+  - BUGFIX: "update" after selection from menu (some DEs need it)
+  - BUGFIX: uk.msg instead of ua.msg
+  - CHANGE: statusbar font size = small font size of Preferences
+  - CHANGE: "Comment/Uncomment" enabled for all
   - CHANGE: reminder's saves simplified
   - CHANGE: notes and reminders got a current line highlighted
   - CHANGE: html Tcl/Tk man pages allowed along with htm

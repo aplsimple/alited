@@ -888,6 +888,7 @@ proc find::SearchByList {} {
   while {1} {
     set text [string map [list $alited::EOL \n] $al(listSBL)]
     if {$al(matchSBL) eq {}} {set al(matchSBL) $al(MC,frExact)}
+    after idle [list catch {set ::alited::al(FN2WINDOW) $::apave::MODALWINDOW}]
     lassign [$obFN2 input {} [msgcat::mc {Find by List}] [list \
       tex "{[msgcat::mc List:]} {} {-w 50 -h 8}" "$text" \
       seh1  {{} {} {}} {} \
@@ -981,6 +982,7 @@ proc find::_run {} {
 
   namespace upvar ::alited obFND obFND
   variable win
+  update  ;# if run from menu: there may be unupdated space under it (in some DE)
   GetFindEntry
   if {[winfo exists $win]} {
     SessionButtons

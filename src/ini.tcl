@@ -974,6 +974,11 @@ proc ini::InitFonts {} {
     }
     ::baltip::configure -font $smallfont
   }
+  set statusfont [::apave::obj basicSmallFont]
+  catch {
+    set statusfont [dict set statusfont -size $al(FONTSIZE,small)]
+  }
+  ::apave::obj basicSmallFont $statusfont
   ::apave::obj basicFontSize $al(FONTSIZE,std)
   set gl [file join $alited::MSGSDIR $al(LOCAL)]
   if {[catch {glob "$gl.msg"}]} {set al(LOCAL) en}
@@ -1015,12 +1020,9 @@ proc ini::_init {} {
 
   # create main apave objects
   ::apave::APaveInput create $obPav $al(WIN)
-  ::apave::APaveInput create $obDlg $al(WIN)
-  ::apave::APaveInput create $obDl2 $al(WIN)
-  ::apave::APaveInput create $obDl3 $al(WIN)
-  ::apave::APaveInput create $obFND $al(WIN)
-  ::apave::APaveInput create $obFN2 $al(WIN)
-  ::apave::APaveInput create $obCHK $al(WIN)
+  foreach ob [::alited::ListPaved] {
+    ::apave::APaveInput create [set $ob] $al(WIN)
+  }
 
   # here, the order of icons defines their order in the toolbar
   set listIcons [::apave::iconImage]

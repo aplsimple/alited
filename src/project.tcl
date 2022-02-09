@@ -1218,6 +1218,7 @@ proc project::_create {} {
 proc project::_run {} {
   # Runs "Projects" dialogue.
 
+  update  ;# if run from menu: there may be unupdated space under it (in some DE)
   SaveSettings
   GetProjects
   set res [_create]

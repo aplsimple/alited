@@ -96,12 +96,10 @@ proc edit::CommentChar {} {
   # Returns the commenting chars for a current file.
 
   set fname [alited::bar::FileName]
-  if {[alited::file::IsTcl $fname]} {
-    return #
-  } elseif {[alited::file::IsClang $fname]} {
+  if {[alited::file::IsClang $fname]} {
     return //
   }
-  return {}
+  return #
 }
 
 proc edit::Comment {} {

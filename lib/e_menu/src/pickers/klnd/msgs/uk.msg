@@ -1,5 +1,5 @@
 namespace eval ::klnd::my {
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Calendar} {Календар}
     {Current date} {Поточна дата}
     {Previous year} {Попередній рік}

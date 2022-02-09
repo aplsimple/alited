@@ -1,5 +1,5 @@
-# ________________________ ua.msg _________________________ #
-# Name:    ua.msg
+# ________________________ uk.msg _________________________ #
+# Name:    uk.msg
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
 # Date:    10/15/2021
 # Brief:   Handles Ukranian localization.
@@ -17,7 +17,7 @@ namespace eval ::alited {
 
   ## ________________________ Common _________________________ ##
 
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {No name} {Без імені}
     "\"%f\" wasn't saved.\n\nSave it?" "\"%f\" не збережений.\n\nЗберігти?"
     {About} {Про програму}
@@ -80,7 +80,7 @@ namespace eval ::alited {
     {Default values for new projects:} {Опції за замовчуванням для проектів:}
   }
 
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Select} {Вибір}
     {Save as} {Зберігти як}
     {Files} {Файли}
@@ -126,13 +126,13 @@ namespace eval ::alited {
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {First Lines} {Перші рядки}
     {Can't touch the first %n lines.} {Перші %n рядків нерухомі.}
   }
 
   ## ________________________ Tree ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     "Click \"%t\"" "Кликнить \"%t\""
     {Copy Declaration} {Копіювати декларацію}
     "Open All Tcl Files of \"%n\"" "Відкрити всі файли Tcl з \"%n\""
@@ -149,7 +149,7 @@ namespace eval ::alited {
   }
 
   ## ________________________ Templates ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Template} {Шаблон}
     {Templates} {Шаблони}
     {List of Templates} {Список шаблонів}
@@ -180,7 +180,7 @@ namespace eval ::alited {
   }
 
   ## ________________________ Projects ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Projects} {Проекти}
     {You are going to %n!} {Ви збираєтеся %n!}
     {Add a project} {Додати проект}
@@ -231,7 +231,7 @@ namespace eval ::alited {
   }
 
   ## ________________________ Favorites ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Lists of favorites:} {Списки Вибраного}
     {Current list of favorites:} {Поточний список Вибраного}
     {New list of favorites:} {Новий список Вибраного:}
@@ -267,7 +267,7 @@ namespace eval ::alited {
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     "Create a file\nCtrl+N" "Утворити файл\nCtrl+N"
     "Open a file\nCtrl+O" "Відкрити файл\nCtrl+O"
     "Save the file\nF2" "Зберегти файл\nF2"
@@ -282,7 +282,7 @@ namespace eval ::alited {
   }
 
   ## ________________________ Find-replace dialogue ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Find: } {Шукати: }
     {Replace: } {Замінити: }
     {Match: } {Збіг: }
@@ -320,14 +320,14 @@ namespace eval ::alited {
   }
 
   ## ________________________ Checking ini directory ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Choosing Directory for Settings} {Вибір каталогу для опцій}
     "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" "\n Програма \"alited\" мусить мати каталог для збереження своїх опцій.\n Ви можете задати його як аргумент при виклику alited.\n\n За замовчуванням, каталог збереження опцій - \"%d\".\n Це рекомендований каталог, що дозволяє викликати \"alited\" без аргументів.\n"
     {Choose a directory} {Вибір каталогу}
   }
 
   ## ________________________ "About" dialogue ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {stands for} {значить}
     {Written in pure Tcl/Tk.} {Зроблений на чистому Tcl/Tk.}
     {And well fit for programming with it.} {Та гідний для програмування на ньому.}
@@ -340,7 +340,7 @@ namespace eval ::alited {
   }
 
   ## ________________________ Preferences ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {General} {Загальне}
     {Editor} {Редактор}
     {Units} {Юніти}
@@ -351,7 +351,7 @@ namespace eval ::alited {
   }
 
   ### ________________________ General _________________________ ###
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Ttk theme:} {Тема Ttk:}
     {Color scheme:} {Колірна схема:}
     {Darker:} {Темніше:}
@@ -360,7 +360,7 @@ namespace eval ::alited {
     {Tint:} {Відтінок:}
     "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Щоб зміни вступили в силу,\nпрограму треба перезавантажити.\n\nЗробити це прямо зараз?"
     {Preferable locale:} {Бажана локаль:}
-    "This is a country code: ru, ua, cz...\nIn alited, \"en\" means American English." "Це код держави: ru, ua, cz...\nВ alited \"en\" значить American English."
+    "This is a country code: ru, uk, de...\nIn alited, \"en\" means American English." "Це код держави: ru, uk, de...\nВ alited \"en\" значить American English."
     {Small font size:} {Розмір малого шрифту:}
     {Middle font size:} {Розмір середнього шрифту:}
     {Cursor width:} {Ширина курсора:}
@@ -371,7 +371,7 @@ namespace eval ::alited {
   }
 
   ### ________________________ Editor _________________________ ###
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Font:} {Шрифт:}
     {Font size:} {Розмір шрифта:}
     {Gutter's width:} {Ширина жолобу}
@@ -386,7 +386,7 @@ namespace eval ::alited {
   }
 
   ### ________________________ Saving _________________________ ###
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Save before bar/menu runs:} {Зберігати при викликах bar/menu:}
     {Current file} {Поточний файл}
     {All files} {Всі файли}
@@ -408,7 +408,7 @@ namespace eval ::alited {
   }
 
   ### ________________________ Keys _________________________ ###
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Save File} {Зберегти файл}
     {Save File as} {Зберегти файл як}
     {Run e_menu} {Запуск e_menu}
@@ -424,7 +424,7 @@ namespace eval ::alited {
   }
 
   ### ________________________ Templates _________________________ ###
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Enter %U, %u, %m, %w, %d, %t wildcards of templates:} {Введіть токени  %U, %u, %m, %w, %d, %t для шаблонів:}
     {User name:} {Ім'я користувача:}
     {Login:} {Логін:}
@@ -433,7 +433,7 @@ namespace eval ::alited {
   }
 
   ### ________________________ Syntax _________________________ ###
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Tcl syntax} {Синтаксис Tcl}
     {C/C++ syntax} {Синтаксис C/C++}
     {Plain text} {Просто текст}
@@ -459,7 +459,7 @@ namespace eval ::alited {
   }
 
   ### ________________________ Units _________________________ ###
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Branch's regexp:} {RE для гілці:}
     {Proc's regexp:} {RE для функції:}
     {Check branch's regexp:} {Перевірка на гілку:}
@@ -470,7 +470,7 @@ namespace eval ::alited {
   }
 
   ### ________________________ Tools _________________________ ###
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Open bar/menu settings} {Відкрити настройки bar/menu}
     "An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar." "Іконка включить запуск з тулбару.\nПуста або 'none' іконка виключить запуск з тулбару."
     "The run item for the menu and/or the toolbar.\nSelect it from the e_menu items." "Виклик команди для меню та/або тулбара.\nВиберіть ії з команд e_menu."
@@ -498,7 +498,7 @@ namespace eval ::alited {
   }
 
   ## ________________________ Checks ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Check Tcl} {Перевірка Tcl}
     {Check} {Перевірка}
     {Check:} {Перевірити:}
@@ -516,7 +516,7 @@ namespace eval ::alited {
   }
 
   ## ________________________ Misc. ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     "Can't backup \"%f\" to\n\"%d\"!\n\nDelete it anyway?" "Не можу зробити копію \"%f\" в\n\"%d\"!\n\nВидалити цей файл все одно?"
     "\"%f\" removed to \"%d\"" "\"%f\" видалений до \"%d\""
     {File name:} {Ім'я файлу:}
@@ -525,7 +525,7 @@ namespace eval ::alited {
   }
 
   ## ________________________ Find units ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {Find Unit} {Шукати юніт}
     {in all} {у всіх}
     {in current} {у поточному}
@@ -536,7 +536,7 @@ namespace eval ::alited {
   ## ________________________ Abbreviations etc. ________________________ ##
   #   Line - 2nd column's title of unit tree
   #   ind = indentation
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {ind} {відс}
     {Row} {Ряд.}
     {Row: } {Ряд: }
@@ -545,7 +545,7 @@ namespace eval ::alited {
   }
 
   ## ________________________ Bar of tabs ________________________ ##
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {(Un)Select} {Відділити / ні}
     {... Visible} {... видимі}
     {... All at Left} {... всі злева}
@@ -562,7 +562,7 @@ namespace eval ::bartabs {
 
   ## ________________________ Popup menu _________________________ ##
 
-  ::msgcat::mcmset ua {
+  ::msgcat::mcmset uk {
     {List} {Список}
     {behind} {слід за}
     {Close} {Закрити}

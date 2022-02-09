@@ -311,8 +311,6 @@ proc bar::OnTabSelection {TID} {
   if {[alited::file::IsTcl [FileName]]} {set indst normal} {set indst disabled}
   $al(MENUEDIT) entryconfigure 5 -state $indst
   if {[alited::edit::CommentChar] ne {}} {set cmnst normal} {set cmnst disabled}
-  $al(MENUEDIT) entryconfigure 7 -state $cmnst
-  $al(MENUEDIT) entryconfigure 8 -state $cmnst
   if {[set wtxt [alited::main::GetWTXT $TID]] ne {}} {
     set al(wrapwords) [expr {[$wtxt cget -wrap] eq {word}}]
   }

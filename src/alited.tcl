@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.1.2a2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.1.2a5  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -122,7 +122,7 @@ namespace eval alited {
       }
       foreach fname [lreverse $args] {
         if {[file isfile $fname]} {
-          alited::file::OpenFile $fname
+          alited::file::OpenFile $fname yes
         }
       }
     }
@@ -173,6 +173,7 @@ if {[package versions alited] eq {}} {
   foreach _ $::argv {lappend ALITED_ARGV [file normalize $_]}
 
 # ____________________ Get a port to listen __________________ #
+
   set _ [lindex $ALITED_ARGV 0]
   if {![llength $ALITED_ARGV] || ![file isdirectory $_]} {
     set _ $alited::USERDIRROOT
@@ -209,7 +210,7 @@ if {[package versions alited] eq {}} {
   if {!$alited::DEBUG && $ALITED_PORT} {
     if {[llength $ALITED_ARGV]} {
       # Attempt to add files & raise the existing application
-      if {![catch {::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::open_files_and_raise 0 {*}$ALITED_ARGV}]} {
+      if {![catch {::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::open_files_and_raise 0 $ALITED_ARGV}]} {
         destroy .
         exit
       }
@@ -261,7 +262,13 @@ namespace eval alited {
     lassign [$obPav csGet] - fg - - fgbold
     return [list $fg $fgbold]
   }
+  #_______________________
 
+  proc ListPaved {} {
+    # Return a list of apave objects for dialogues.
+
+    return [list obDlg obDl2 obDl3 obFND obFN2 obCHK]
+  }
   #_______________________
 
   proc msg {type icon message {defb ""} args} {
@@ -454,7 +461,6 @@ namespace eval alited {
     }
     check::_run
   }
-
   #_______________________
 
   proc Tclexe {} {
@@ -486,12 +492,15 @@ namespace eval alited {
 
     variable al
     variable obPav
+    variable obFN2
     if {!$ask || !$al(INI,confirmexit) || \
     [msg yesno ques [msgcat::mc {Quit alited?}]]} {
       if {[alited::file::AllSaved]} {
-        $obPav res $al(WIN) $res
         alited::find::_close
         alited::tool::_close
+        catch {alited::check::Cancel}
+        catch {$obFN2 res $::alited::al(FN2WINDOW) 0}
+        $obPav res $al(WIN) $res
       }
     }
   }

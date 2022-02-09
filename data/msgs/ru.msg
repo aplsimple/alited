@@ -354,7 +354,7 @@ namespace eval ::alited {
     {Tint:} {Оттенок:}
     "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?"
     {Preferable locale:} {Предпочтительная локаль:}
-    "This is a country code: ru, ua, cz...\nIn alited, \"en\" means American English." "Это код страны: ru, ua, cz...\nВ alited \"en\" значит American English."
+    "This is a country code: ru, uk, de...\nIn alited, \"en\" means American English." "Это код страны: ru, uk, de...\nВ alited \"en\" значит American English."
     {Small font size:} {Размер малого шрифта:}
     {Middle font size:} {Размер среднего шрифта:}
     {Cursor width:} {Ширина курсора:}
