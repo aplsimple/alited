@@ -141,7 +141,7 @@ proc ::eh::destroyed {app} {
 }
 #=== drag window by snatching header
 proc ::eh::mouse_drag {win mode x y} {
-  switch -- $mode {
+  switch -exact -- $mode {
     1 { lassign [list $x $y] ::eh::mx ::eh::my }
     2 -
     3 {

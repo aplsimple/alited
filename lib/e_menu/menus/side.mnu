@@ -11,6 +11,7 @@ pos=100.0
 %C set ::FILETAIL {"$::EMENUFILETAIL"}
 ::EMENU7ZCNT=0
 ::EMENU7ZCOM=zip -r
+::EMENU7ZSUFF=big
 ::EMENU7ZARC=~/PG/github/apl-github
 ::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/pave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/klnd/*\n~/PG/github/ale_themes/*\n~/PG/github/wiki.tcl-lang.org/*
 ::EMENU7ZSKIP=
@@ -19,6 +20,7 @@ pos=100.0
 %#W geo=1089x560+0+56;pos=23.62 # Below are the commands to get the Web page by wget.|!|# The downloaded pages are stored in ~/WGET directory (change this if needed).|!|#|!|# Note that .+ are used to edge "some unique string of the page address", e.g.|!|#   wget -r -k -l 2 -p --accept-regex=.+/UNIQUE/.+ https://www.some.com/UNIQUE/some|!|# would download all of https://www.some.com/UNIQUE/some|!|# excluding all external links that don't most likely match /UNIQUE/.|!|#|!|# Note also that -l option means "maximum level to dig".|!|###################################################################################|!||!|mkdir ~/WGET|!|cd ~/WGET|!||!|# wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6/|!||!|# wget -r -k -l 2 -p --accept-regex=.+tablelist/.+ https://www.nemethi.de/tablelist/index.html|!|# wget -r -k -l 2 -p --accept-regex=.+mentry/.+ https://www.nemethi.de/mentry/index.html|!||!|# wget -r -k -l 2 -p --accept-regex=.+/manual3.1/.+ http://tcl.apache.org/rivet/manual3.1/|!||!|# wget -r -k -l 2 -p --accept-regex=.+letter-to-peter.+ http://catesfamily.org.uk/letter-to-peter/|!|wget -r -k -l 2 -p --accept-regex=.+/tcart.+ http://tcart.com/
 
 [MENU]
+
  R:git status R: cd %PD
  S:git status S:pwd\necho %PD\ngit status
 
@@ -147,7 +149,7 @@ SW:Save your stuff SW: cd %PD
    ent1 {{Archive command:}} {"$::EMENU7ZCOM"} \
    chb1 {{   Include .git:}} {"$::EMENU7ZGIT"} \
    fil1 {{ Archive file-$::EMENU7ZCNT:}} {"$::EMENU7ZARC"} \
-   ent2 {{ ... its suffix:} {} {-tooltip {Add anything you think\nbe specific for this stuff\ne.g. "spec-edition"\n\navoid special characters:\nspaces, quotes, ?, *, \{, \}}}} {} \
+   ent2 {{ ... its suffix:} {} {-tooltip {Add anything you think\nbe specific for this stuff\ne.g. "spec-edition"\n\navoid special characters:\nspaces, quotes, ?, *, \{, \}}}} {"$::EMENU7ZSUFF"} \
    seh1 {{} {-pady 7} {}} {} \
    tex1 {{    Directories \n      to backup:} {} {-h 8 -w 60 -tabnext tex2}} {$::EMENU7ZDIR} \
    tex2 {{    Directories \n      postponed:} {} {-h 8 -w 60 -tabnext entdir3}} {$::EMENU7ZSKIP} \

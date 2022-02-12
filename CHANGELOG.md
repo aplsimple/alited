@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.1.2a5 (8 Feb'22)`
+Version `1.1.2a7 (12 Feb'22)`
 
   - BUGFIX: in "Projects", switching to other project after changing a reminder
   - BUGFIX: in alited.tcl: mistaken FILEDIR variable; mistaken exec {*}; clearances
@@ -10,6 +10,8 @@ Version `1.1.2a5 (8 Feb'22)`
   - BUGFIX: passing alited (if open) a file name containing spaces
   - BUGFIX: "update" after selection from menu (some DEs need it)
   - BUGFIX: uk.msg instead of ua.msg
+  - BUGFIX: "Run me" at setting e_menu as non-external app
+  - CHANGE: running e_menu faster
   - CHANGE: statusbar font size = small font size of Preferences
   - CHANGE: "Comment/Uncomment" enabled for all
   - CHANGE: reminder's saves simplified

@@ -419,7 +419,7 @@ oo::class create ::apave::APaveDialog {
       if {$issel} {
         $txt tag add sel [NewRow $pos1 $to] [NewRow $pos2 $to]
       }
-      if {[lsearch [$txt tag names] tagCOM*]>-1} {
+      if {[lsearch -glob [$txt tag names] tagCOM*]>-1} {
         catch {::hl_tcl::my::Modified $txt insert $lto.0 $lto.end}
       }
       $txt edit separator

@@ -420,7 +420,7 @@ proc tool::e_menu {args} {
       append args " g=$g"  ;# should be last, to override previous settings
     }
     if {{m=grep.mnu} in $args} {
-      append args " NE=1"  ;# let him search till closing the search dialogue
+      append args { NE=1}  ;# let him search till closing the search dialogue
     }
   }
   if {{m=menu.mnu} in $args && {ex=d} in $args && $al(BACKUP) ne {}} {
@@ -429,6 +429,9 @@ proc tool::e_menu {args} {
     lassign [alited::edit::BackupDirFileNames $TID] dir fname fname2
     #set fname2 [alited::edit::BackupFileName $fname2 0]
     append args " \"BF=$fname2\""  ;# version before 1st change
+  }
+  if {{EX=1} ni $args} {
+    append args { AL=1}  ;# to read a current file only at "Run me"
   }
   if {$alited::al(EM,exec)} {
     e_menu1 $args

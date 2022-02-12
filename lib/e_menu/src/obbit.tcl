@@ -493,7 +493,7 @@ proc ::apave::setProperty {name args} {
   # If *args* is set, the method sets a property's value as $args.
 
   variable _AP_Properties
-  switch [llength $args] {
+  switch -exact [llength $args] {
     0 {return [getProperty $name]}
     1 {return [set _AP_Properties($name) [lindex $args 0]]}
   }
@@ -1052,7 +1052,7 @@ oo::class create ::apave::ObjectProperty {
     #
     # If *args* is set, the method sets a property's value as $args.
 
-    switch [llength $args] {
+    switch -exact [llength $args] {
       0 {return [my getProperty $name]}
       1 {return [set _OP_Properties($name) [lindex $args 0]]}
     }
@@ -1577,7 +1577,7 @@ oo::class create ::apave::ObjectTheming {
     if {![catch {set oldval [ttk::style $oper $ts $opt]}]} {
       catch {ttk::style $oper $ts $opt $val}
       if {$oldval eq {} && $oper eq {configure}} {
-        switch -- $opt {
+        switch -exact -- $opt {
           -foreground - -background {
             set oldval [ttk::style $oper . $opt]
           }
@@ -1815,7 +1815,7 @@ oo::class create ::apave::ObjectTheming {
       set ::apave::_C_($ts,4) "-activebackground $tbg2"
       set ::apave::_C_($ts,5) "-font {$fontdef}"
       set ::apave::_C_($ts,6) "-highlightbackground $tfgD"
-      switch -- $ts {
+      switch -exact -- $ts {
         checkbutton - radiobutton {
           set ::apave::_C_($ts,0) 8
           set ::apave::_C_($ts,7) "-selectcolor $tbg1"
@@ -1856,7 +1856,7 @@ oo::class create ::apave::ObjectTheming {
       set ::apave::_C_($ts,1) "-foreground $tfg2"
       set ::apave::_C_($ts,2) "-background $tbg2"
       set ::apave::_C_($ts,3) "-highlightbackground $tfgD"
-      switch -- $ts {
+      switch -exact -- $ts {
         tcombobox - tmatchbox {
           set ::apave::_C_($ts,0) 8
           set ::apave::_C_($ts,4) "-disabledforeground $tfgD"
@@ -1992,7 +1992,7 @@ oo::class create ::apave::ObjectTheming {
           catch {
             if {[string first __tooltip__.label $w1]<0} {
               $w1 configure $opt $val
-              switch -- [$w1 cget -state] {
+              switch -exact -- [$w1 cget -state] {
                 disabled {
                   $w1 configure {*}[my NonTtkStyle $w1 1]
                 }
@@ -2019,7 +2019,7 @@ oo::class create ::apave::ObjectTheming {
     #   selector - sets a widget group to return as a list
     # The `selector` can be `entry`, `button` or `all`.
 
-    switch -- $selector {
+    switch -exact -- $selector {
       entry {
         return [list tspinbox tcombobox tentry entry text listbox spinbox tablelist tmatchbox]
       }
@@ -2072,63 +2072,63 @@ oo::class create ::apave::ObjectTheming {
     # See also: APave::widgetType
 
     if {$dsbl} {
-      set disopt ""
+      set disopt {}
       if {$dsbl==1 && [info exist ::apave::_C_(disabled,0)]} {
         set typ [string range [lindex [split $typ .] end] 0 2]
-        switch -- $typ {
+        switch -exact -- $typ {
           frA - lfR {
-            append disopt " " $::apave::_C_(disabled,2)
+            append disopt { } $::apave::_C_(disabled,2)
           }
           enT - spX {
-            append disopt " " $::apave::_C_(disabled,1) \
-                          " " $::apave::_C_(disabled,2) \
-                          " " $::apave::_C_(disabled,3) \
-                          " " $::apave::_C_(disabled,4)
+            append disopt { } $::apave::_C_(disabled,1) \
+                          { } $::apave::_C_(disabled,2) \
+                          { } $::apave::_C_(disabled,3) \
+                          { } $::apave::_C_(disabled,4)
           }
           laB - tex - chB - raD - lbx - scA {
-            append disopt " " $::apave::_C_(disabled,1) \
-                          " " $::apave::_C_(disabled,2)
+            append disopt { } $::apave::_C_(disabled,1) \
+                          { } $::apave::_C_(disabled,2)
           }
         }
       } elseif {$dsbl==2 && [info exist ::apave::_C_(readonly,0)]} {
-        append disopt " " \
-          $::apave::_C_(readonly,1) " " $::apave::_C_(readonly,2) \
+        append disopt { } \
+          $::apave::_C_(readonly,1) { } $::apave::_C_(readonly,2) \
       }
       return $disopt
     }
     set opts {-foreground -foreground -background -background}
     lassign "" ts2 ts3 opts2 opts3
-    switch -- $typ {
-      "buT" {set ts TButton}
-      "chB" {set ts TCheckbutton
+    switch -exact -- $typ {
+      buT {set ts TButton}
+      chB {set ts TCheckbutton
         lappend opts -background -selectcolor
       }
-      "enT" {
+      enT {
         set ts TEntry
         set opts  {-foreground -foreground -fieldbackground -background \
           -insertbackground -insertcolor}
       }
-      "tex" {
+      tex {
         set ts TEntry
         set opts {-foreground -foreground -fieldbackground -background \
           -insertcolor -insertbackground \
           -selectforeground -selectforeground -selectbackground -selectbackground
         }
       }
-      "frA" {set ts TFrame; set opts {-background -background}}
-      "laB" {set ts TLabel}
-      "lbx" {set ts TLabel}
-      "lfR" {set ts TLabelframe}
-      "raD" {set ts TRadiobutton}
-      "scA" {set ts TScale}
-      "sbH" -
-      "sbV" {set ts TScrollbar; set opts {-background -background}}
-      "spX" {set ts TSpinbox}
+      frA {set ts TFrame; set opts {-background -background}}
+      laB {set ts TLabel}
+      lbx {set ts TLabel}
+      lfR {set ts TLabelframe}
+      raD {set ts TRadiobutton}
+      scA {set ts TScale}
+      sbH -
+      sbV {set ts TScrollbar; set opts {-background -background}}
+      spX {set ts TSpinbox}
       default {
-        return ""
+        return {}
       }
     }
-    set att ""
+    set att {}
     for {set i 1} {$i<=3} {incr i} {
       if {$i>1} {
         set ts [set ts$i]
@@ -2138,17 +2138,16 @@ oo::class create ::apave::ObjectTheming {
         if {[catch {set val [ttk::style configure $ts $opt1]}]} {
           return $att
         }
-        if {$val eq ""} {
+        if {$val eq {}} {
           catch { set val [ttk::style $oper . $opt2] }
         }
-        if {$val ne ""} {
+        if {$val ne {}} {
           append att " $opt2 $val"
         }
       }
     }
     return $att
   }
-
 
 ## ________________________ Popup menus _________________________ ##
 
@@ -2162,7 +2161,7 @@ oo::class create ::apave::ObjectTheming {
     if {[set last [$mnu index end]] ne {none}} {
       $mnu configure {*}$args
       for {set i 0} {$i <= $last} {incr i} {
-        switch -- [$mnu type $i] {
+        switch -exact -- [$mnu type $i] {
           cascade {
             my ThemePopup [$mnu entrycget $i -menu] {*}$args
           }

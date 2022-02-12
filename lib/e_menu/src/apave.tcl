@@ -2218,7 +2218,7 @@ oo::class create ::apave::APave {
     # Processes the same *apave* options that are processed in Pre method.
     # See also: Pre
 
-    if {[set i [lsearch -index 0 $_pav(prepost) -tags]]>-1} {
+    if {[set i [lsearch -exact -index 0 $_pav(prepost) -tags]]>-1} {
       set v [lindex $_pav(prepost) $i 1]
       set tags [set $v]
     } else {

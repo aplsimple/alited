@@ -59,7 +59,7 @@ proc ::em::countCh {str ch {plistName ""}} {
   # See also:
   # [wiki.tcl-lang.org](https://wiki.tcl-lang.org/page/Reformatting+Tcl+code+indentation)
 
-  if {$plistName ne ""} {
+  if {$plistName ne {}} {
     upvar 1 $plistName plist
     set plist [list]
   }
@@ -72,7 +72,7 @@ proc ::em::countCh {str ch {plistName ""}} {
     }
     if {$backslashes % 2 == 0} {
       incr icnt
-      if {$plistName ne ""} {lappend plist [expr {$begidx+$idx}]}
+      if {$plistName ne {}} {lappend plist [expr {$begidx+$idx}]}
     }
     incr begidx [incr idx]
     set str [string range $str $idx end]
@@ -89,7 +89,7 @@ proc ::em::countCh2 {str ch {plistName ""}} {
   # Returns a number of ANY occurences of character *ch* in string *str*.
   # See also: countCh
 
-  if {$plistName ne ""} {
+  if {$plistName ne {}} {
     upvar 1 $plistName plist
     set plist [list]
   }
@@ -97,7 +97,7 @@ proc ::em::countCh2 {str ch {plistName ""}} {
   while {[set idx [string first $ch $str]] >= 0} {
     set nidx $idx
     incr icnt
-    if {$plistName ne ""} {lappend plist [expr {$begidx+$idx}]}
+    if {$plistName ne {}} {lappend plist [expr {$begidx+$idx}]}
     incr begidx [incr idx]
     set str [string range $str $idx end]
   }
@@ -117,7 +117,7 @@ proc ::em::matchedBrackets {inplist curpos schar dchar dir} {
 
   lassign [split $curpos .] nl nc
   if {$dir==1} {set rng1 "$nc end"} else {set rng1 "0 $nc"; set nc 0}
-  set retpos ""
+  set retpos {}
   set scount [set dcount 0]
   incr nl -1
   set inplen [llength $inplist]
@@ -135,9 +135,9 @@ proc ::em::matchedBrackets {inplist curpos schar dchar dir} {
         break
       }
     }
-    if {$retpos ne ""} break
+    if {$retpos ne {}} break
     set nc 0
-    set rng1 "0 end"
+    set rng1 {0 end}
     incr nl $dir
   }
   return $retpos
@@ -150,34 +150,34 @@ proc ::em::createpopup {} {
   menu .em.emPopupMenu
   if {$::eh::pk ne {}} {
     .em.emPopupMenu add command {*}[iconA ok] \
-      -label "Select" -command {::em::Select_Item}
+      -label Select -command {::em::Select_Item}
   } else {
     .em.emPopupMenu add command {*}[iconA folder] -accelerator Ctrl+P \
-      -label "Project..." -command {::em::change_PD}
+      -label Project... -command {::em::change_PD}
   }
   .em.emPopupMenu add separator
   .em.emPopupMenu add command {*}[iconA change] -accelerator Ctrl+E \
-    -label "Edit the menu" -command {after 50 ::em::edit_menu}
+    -label {Edit the menu} -command {after 50 ::em::edit_menu}
   if {($::em::solo || [is_s_menu]) && ![is_child]} {
     .em.emPopupMenu add command {*}[iconA retry] -accelerator Ctrl+R \
-      -label "Restart e_menu" -command ::em::restart_e_menu
+      -label {Restart e_menu} -command ::em::restart_e_menu
   } else {
     .em.emPopupMenu add command {*}[iconA retry] -accelerator Ctrl+R \
-      -label "Reread the menu" -command ::em::reread_init
+      -label {Reread the menu} -command ::em::reread_init
   }
   .em.emPopupMenu add command {*}[iconA delete] -accelerator Ctrl+D \
-    -label "Destroy other menus" -command ::em::destroy_emenus
+    -label {Destroy other menus} -command ::em::destroy_emenus
   .em.emPopupMenu add separator
   .em.emPopupMenu add command {*}[iconA plus] -accelerator Ctrl+> \
-    -label "Increase the menu's width" -command {::em::win_width 1}
+    -label {Increase the menu's width} -command {::em::win_width 1}
   .em.emPopupMenu add command {*}[iconA minus] -accelerator Ctrl+< \
-    -label "Decrease the menu's width" -command  {::em::win_width -1}
+    -label {Decrease the menu's width} -command  {::em::win_width -1}
   .em.emPopupMenu add separator
   .em.emPopupMenu add command {*}[iconA info] -accelerator F1 \
-    -label "About" -command ::em::about
+    -label About... -command ::em::about
   .em.emPopupMenu add separator
   .em.emPopupMenu add command {*}[iconA exit] -accelerator Esc \
-    -label "Exit" -command ::em::on_exit
+    -label Exit -command ::em::on_exit
   .em.emPopupMenu configure -tearoff 0
 }
 #___ call the e_menu's popup menu
@@ -247,7 +247,7 @@ proc ::em::highlightBrackets {w fg boldfont} {
   $w tag configure tagBRACKET -foreground $fg -font $boldfont
   $w tag configure tagBRACKETERR -foreground white -background red
   set curpos [$w index insert]
-  set curpos2 [$w index "insert -1 chars"]
+  set curpos2 [$w index {insert -1 chars}]
   set ch [$w get $curpos]
   set lbr "\{(\["
   set rbr "\})\]"
@@ -271,7 +271,7 @@ proc ::em::highlightBrackets {w fg boldfont} {
   } else {
     return
   }
-  if {$brcpos ne ""} {
+  if {$brcpos ne {}} {
     $w tag add tagBRACKET $brcpos
     $w tag add tagBRACKET $curpos
   } else {
@@ -281,7 +281,7 @@ proc ::em::highlightBrackets {w fg boldfont} {
 #___ edit file(s)
 proc ::em::edit {fname {prepost ""}} {
   set fname [string trim $fname]
-  if {$::em::editor eq ""} {
+  if {$::em::editor eq {}} {
     set bfont [::apave::obj boldTextFont [::apave::obj basicFontSize]]
     set dialog [::apave::APaveInput new]
     set res [$dialog editfile $fname $::em::clrtitf $::em::clrtitb $::em::clrtitf \
@@ -304,7 +304,7 @@ to edit $fname.\n\nCurrent directory is [pwd]\n\nMaybe $::em::editor\n is worth 
 proc ::em::prepost_edit {refdata {txt ""}} {
   upvar 1 $refdata data
   set opt [set i 0]
-  set attr "pos="
+  set attr pos=
   set datalist [split [string trimright $data] \n]
   foreach line $datalist {
     if {$line eq {[OPTIONS]}} {
@@ -316,11 +316,11 @@ proc ::em::prepost_edit {refdata {txt ""}} {
     }
     incr i
   }
-  if {!$opt && $txt eq ""} {return ""}  ;# if no OPTIONS section, nothing to do
-  if {$txt eq ""} {
+  if {!$opt && $txt eq {}} {return {}}  ;# if no OPTIONS section, nothing to do
+  if {$txt eq {}} {
     # it's PRE
     lassign [regexp -inline "^${attr}(.*)" $line] line pos
-    if {$line ne ""} {set line "-pos $pos"}
+    if {$line ne {}} {set line "-pos $pos"}
     return $line  ;# 'position of cursor' attribute
   } else {
     # it's POST
@@ -351,15 +351,15 @@ proc ::em::edit_menu {} {
 }
 #___ help
 proc ::em::about {} {
-  set textTags [list [list "red" " -font {-weight bold -size 12} \
+  set textTags [list [list red " -font {-weight bold -size 12} \
     -foreground $::em::clractf -background $::em::clractb"] \
-    [list "link" "::eh::browse %t@@https://%l"] \
-    [list "linkM" "::apave::openDoc %l@@e-mail: %l"] \
+    [list link {::eh::browse %t@@https://%l}] \
+    [list linkM {::apave::openDoc %l@@e-mail: %l}] \
     ]
   set width [expr {max(33,[string length $::em::Argv0])}]
-  set doc "https://aplsimple.github.io/en/tcl/e_menu"
+  set doc https://aplsimple.github.io/en/tcl/e_menu
   set dialog [::apave::APaveInput new]
-  set res [$dialog misc info "About e_menu" "
+  set res [$dialog misc info {About e_menu} "
   <red> $::em::em_version </red>
   [file dirname $::em::Argv0] \n
   by Alex Plotnikov
@@ -402,7 +402,7 @@ proc ::em::destroy_emenus {} {
         if {$nap != $::em::appN} {::eh::destroyed $app}
       }
     }
-    if {$::em::ischild || $::em::geometry eq ""} {
+    if {$::em::ischild || $::em::geometry eq {}} {
       destroy .  ;# do not kill self if am a parent app with geometry passed
     }
   }
@@ -427,10 +427,9 @@ proc ::em::change_PD {} {
 
  \"PD=file of project directories\"
  should be an argument of e_menu to use %PD in menus.  \n"
-    set fco1 ""
+    set fco1 {}
   } else {
-    set em_message "
- Select a project directory from the list of file:\n $::em::PD  \n"
+    set em_message "\n Select a project directory from the list of file:\n $::em::PD  \n"
     set fco1 [list \
       fco1 [list {Project:} {} \
       [list -h 10 -state readonly -inpval [get_PD]]] \
@@ -440,8 +439,8 @@ proc ::em::change_PD {} {
         -toprev 1 -image [::apave::iconImage change]"] {}]
   }
   if {[::iswindows]} {
-    set dkst "disabled"
-    set ::em::dk ""
+    set dkst disabled
+    set ::em::dk {}
   } else {
     set dkst "normal"
   }
@@ -451,7 +450,7 @@ proc ::em::change_PD {} {
   set ncolorsav $::em::ncolor
   set geo [wm geometry .em]
   set ornams [list {-2 None} {-1 Top line only} { 0 Help/Exec/Shell} { 1 Help/Exec/Shell + Header} { 2 Help/Exec/Shell + Prompts} { 3 All}]
-  switch $::em::ornament {
+  switch -exact -- $::em::ornament {
     -2 - -1 - 0 - 1 - 2 - 3 {set ornam [lindex $ornams [expr {$::em::ornament+2}]]}
     default {set ornam [lindex $ornams 3]}
   }
@@ -460,7 +459,7 @@ proc ::em::change_PD {} {
   while {$r == -1} {
     after idle ::em::change_PD_Spx
     set tip1 "Applied anyhow\nexcept for Default CS"
-    set res [::em::dialog input "" "Project..." [list \
+    set res [::em::dialog input {} Project... [list \
       {*}$fco1 \
       seh_1 {{} {-pady 10}} {} \
       Spx [list "    Color scheme:" {} \
@@ -492,7 +491,7 @@ proc ::em::change_PD {} {
   set ::em::ncolor [::apave::getN $::em::ncolor $ncolorsav -2 [::apave::cs_Max]]
   if {$r} {
     if {$::em::ncolor==-2} {set ::em::ncolor -1}
-    if {$fco1 eq ""} {
+    if {$fco1 eq {}} {
       lassign $res - - chb1 - chb12 orn chb22 geo chb2 chbT dk chb3
     } else {
       lassign $res - PD - - chb1 - chb12 orn chb22 geo chb2 chbT dk chb3
@@ -567,7 +566,7 @@ proc ::em::change_PD {} {
 #___ Input dialog for getting data
 proc ::em::input {cmd} {
   set dialog [::apave::APaveInput new]
-  set dp [string last " == " $cmd]
+  set dp [string last { == } $cmd]
   if {$dp < 0} {set dp 999999}
   set data [string range $cmd $dp+4 end]
   set cmd "$dialog input [string range $cmd 2 $dp-1] -centerme .em -ontop $::em::ontop"
@@ -579,7 +578,7 @@ proc ::em::input {cmd} {
   set res [eval $cmd [::em::theming_pave]]
   $dialog destroy
   set r [lindex $res 0]
-  if {$r && $data ne ""} {
+  if {$r && $data ne {}} {
     lassign $res -> {*}$data
     foreach n [split $data " "] {
       catch {
@@ -638,8 +637,8 @@ proc ::em::writeable_command {cmd} {
     }
   }
   set dialog [::apave::APaveInput new]
-  set cmd [string map {"|!|" "\n"} $cmd]
-  set res [$dialog misc "" "EDIT: $mark" "$cmd" {"Save & Run" 1 Cancel 0} TEXT \
+  set cmd [string map {|!| "\n"} $cmd]
+  set res [$dialog misc {} "EDIT: $mark" "$cmd" {"Save & Run" 1 Cancel 0} TEXT \
     -text 1 -ro 0 -w 70 -h 10 -pos $pos {*}[::em::theming_pave] -ontop $::em::ontop \
     -head "UNCOMMENT usable commands, COMMENT unusable ones.\nUse  \\\\\\\\ \
     instead of  \\\\  in patterns." -family Times -hsz 14 -size 12 -g $geo]
@@ -647,7 +646,7 @@ proc ::em::writeable_command {cmd} {
   lassign $res res geo cmd
   if {$res} {
     set cmd [string trim $cmd " \{\}\n"]
-    set data [string map {"\n" "|!|"} $cmd]
+    set data [string map {"\n" |!|} $cmd]
     set data "$mark geo=$geo;pos=$data"
     set cmd [string range $cmd [string first " " $cmd]+1 end]
     if {$iw} {
@@ -659,7 +658,7 @@ proc ::em::writeable_command {cmd} {
     set cmd [string map {"\n" "\\n"} $cmd]
     prepr_name cmd
   } else {
-    set cmd ""
+    set cmd {}
   }
   ::em::focused_win 1
   return $cmd
@@ -667,7 +666,7 @@ proc ::em::writeable_command {cmd} {
 #___ start subtask(s)
 proc ::em::start_sub {ind istart ipos sub typ c1 sel} {
   set ::em::ipos $ipos
-  if {$ipos == 0 || $sub eq ""} {
+  if {$ipos == 0 || $sub eq {}} {
     shell_run "Nobutt" $typ $c1 - "&" $sel  ;# this task is current menu item
     if {$ind == $istart} {return true}  ;# safeguard from double start
   } else {
@@ -677,7 +676,7 @@ proc ::em::start_sub {ind istart ipos sub typ c1 sel} {
 }
 #___ get subtask info
 proc ::em::get_subtask {linf ipos} {
-  return [split [lindex $linf $ipos] ":"]
+  return [split [lindex $linf $ipos] :]
 }
 #___ start timed task(s)
 proc ::em::start_timed {{istart -1}} {
@@ -707,21 +706,21 @@ proc ::em::start_timed {{istart -1}} {
           lassign [get_subtask $linf $ipos] isec sub ;# 1st subtask
         } else {  ;# process subtask
           lassign [get_subtask $linf $ipos] isec sub ;# new subtask
-          if {[string first "TN=" $isec]==0} {
+          if {[string first TN= $isec]==0} {
             if {$iN >= [::apave::getN [string range $isec 3 end]]} {
               run_a_ah $sub
-              ttask "del" $ind  ;# end of task if TN of cycles
+              ttask del $ind  ;# end of task if TN of cycles
               set repeat 1      ;# are completed
               break
             }
             if {[incr ipos] >= $ll} {
               set ipos 0
-              set isec "0"
+              set isec 0
             } else {
               lassign [get_subtask $linf $ipos] isec sub
             }
           } else {  ;# if interval>0, run now
-            if {$isec ne "" && [string range $isec 0 0] ne "-"} {
+            if {$isec ne {} && [string range $isec 0 0] ne {-}} {
               if {[start_sub $ind $istart $ipos $sub $typ $c1 $sel]} {
                 set istarted 1
               }
@@ -729,7 +728,7 @@ proc ::em::start_timed {{istart -1}} {
           }
         }
           # update the current task
-        ttask "upd" $ind $inf $typ $c1 $sel $isec $ipos $iN
+        ttask upd $ind $inf $typ $c1 $sel $isec $ipos $iN
       }
       incr ind
     }
@@ -743,19 +742,19 @@ proc ::em::ttask {oper ind {inf 0} {typ 0} {c1 0} {sel 0} {tsec 0} {ipos 0} {iN 
 
   set task [list $inf $typ $c1 $sel]
   set it [list [expr [clock seconds] + abs(int($tsec))] $ipos $iN]
-  switch -- $oper {
-    "add" {
-      set i [lsearch $::em::tasks $task]
+  switch -exact -- $oper {
+    add {
+      set i [lsearch -exact $::em::tasks $task]
       if {$i >= 0} {return [list $i 0]}  ;# already exists, no new adding
       lappend ::em::tasks $task
       lappend ::em::taski $it
       set started [start_timed [expr {[llength $::em::tasks] - 1}]]
     }
-    "upd" {
+    upd {
       set ::em::tasks [lreplace $::em::tasks $ind $ind $task]
       set ::em::taski [lreplace $::em::taski $ind $ind $it]
     }
-    "del" {
+    del {
       set ::em::tasks [lreplace $::em::tasks $ind $ind]
       set ::em::taski [lreplace $::em::taski $ind $ind]
     }
@@ -801,8 +800,8 @@ proc ::em::create_template {fname} {
 #___ process %IF wildcard
 proc ::em::IF {sel {callcommName ""}} {
   set sel [string range $sel 4 end]
-  set pthen [string first " %THEN " $sel]
-  set pelse [string first " %ELSE " $sel]
+  set pthen [string first { %THEN } $sel]
+  set pelse [string first { %ELSE } $sel]
   if {$pthen > 0} {
     if {$pelse < 0} {set pelse 1000000}
     set ifcond [string trim [string range $sel 0 $pthen-1]]
@@ -817,23 +816,23 @@ proc ::em::IF {sel {callcommName ""}} {
     }
     set comm [string trim $comm]
     catch {set comm [subst -nobackslashes $comm]}
-    set ::em::IF_exit [expr {$comm ne ""}]
-    if {$callcommName ne ""} {
+    set ::em::IF_exit [expr {$comm ne {}}]
+    if {$callcommName ne {}} {
       upvar 2 $callcommName callcomm ;# to run in a caller
       set callcomm $comm
       return true
     }
     if {$::em::IF_exit} {
-      switch -- [string range $comm 0 2] {
-        "%I " {
+      switch -exact -- [string range $comm 0 2] {
+        {%I } {
           # ::Input variable can be used for the input
           # (others can be set beforehand by "%C set varname varvalue")
           if {![info exists ::Input]} {
-            set ::Input ""
+            set ::Input {}
           }
           return [::em::addon input $comm]
         }
-        "%C " {set comm [string range $comm 3 end]}
+        {%C } {set comm [string range $comm 3 end]}
         default {
           if {[lindex [set _ [checkForWilds comm]] 0]} {
             return [lindex $_ 1]
@@ -842,7 +841,7 @@ proc ::em::IF {sel {callcommName ""}} {
           } else {
             set argm [lrange $comm 1 end]
             set comm1 [lindex $comm 0]
-            if {$comm1 eq "%O"} {
+            if {$comm1 eq {%O}} {
               ::apave::openDoc $argm
             } else {
               if {[::iswindows]} {

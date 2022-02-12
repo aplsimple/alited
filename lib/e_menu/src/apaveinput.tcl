@@ -8,7 +8,7 @@
 
 package require Tk
 
-package provide apave 3.4.8a4
+package provide apave 3.4.8a5
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -112,7 +112,7 @@ oo::class create ::apave::APaveInput {
       set toprev [::apave::getOption -toprev {*}$attrs]
       set attrs [::apave::removeOptions $attrs -toprev]
       set tvar "-tvar"
-      switch -- $typ {
+      switch -exact -- $typ {
         ch { set tvar "-var" }
         sp { set gopts "$gopts -expand 0 -side left"}
       }
@@ -155,7 +155,7 @@ oo::class create ::apave::APaveInput {
         set attrs [::apave::removeOptions $attrs -msgLab]
       }
       # define a current widget's info
-      switch -- $typ {
+      switch -exact -- $typ {
         lb - tb {
           set $vv $vlist
           lappend attrs -lvar $vv
