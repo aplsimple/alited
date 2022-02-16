@@ -394,6 +394,50 @@ proc ::apave::initStylesFS {args} {
 }
 #_______________________
 
+proc ::apave::InitTheme {intheme libdir} {
+  # Initializes app's theme.
+  #   intheme - name of the theme
+  #   libdir - root directory of themes (where 'theme' subdirectory is)
+  # Returns a list of theme name and label's border (for status bar).
+  # The returned values are used in ::apave::initWM procedure.
+
+  set theme {}
+  switch -glob -- $intheme {
+    azure* - sun-valley* {
+      set i [string last - $intheme]
+      set name [string range $intheme 0 $i-1]
+      set type [string range $intheme $i+1 end]
+      catch {source [file join $libdir theme $name $name.tcl]}
+      catch {set_theme $type}
+      set lbd 0
+    }
+    forest* {
+      set i [string last - $intheme]
+      set name [string range $intheme 0 $i-1]
+      set type [string range $intheme $i+1 end]
+      catch {
+        source [file join $libdir theme $name $intheme.tcl]
+        set theme $intheme
+      }
+      set lbd 0
+    }
+    awdark - awlight {
+      global auto_path
+      lappend auto_path [file join $libdir theme awthemes-10.4.0]
+      package require awthemes
+      package require ttk::theme::$intheme
+      set theme $intheme
+      set lbd 1
+    }
+    default {
+      set theme $intheme
+      set lbd 1
+    }
+  }
+  return [list $theme $lbd]
+}
+#_______________________
+
 proc ::apave::initWM {args} {
 
   # Initializes Tcl/Tk session. Used to be called at the beginning of it.

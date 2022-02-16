@@ -400,6 +400,7 @@ proc project::Select {{item ""}} {
   variable prjinfo 
   variable OPTS
   variable klnddata
+  variable curinfo
   if {$item eq {}} {set item [Selected item no]}
   if {$item ne {}} {
     set tree [$obDl2 TreePrj]
@@ -442,6 +443,7 @@ proc project::Select {{item ""}} {
     catch {after cancel $klnddata(AFTERKLND)}
     set klnddata(AFTERKLND) [after 200 alited::project::KlndUpdate]
   }
+  set curinfo(_MSEC) 0
 }
 #_______________________
 

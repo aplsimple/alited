@@ -911,48 +911,6 @@ proc ini::InitGUI {} {
 }
 #_______________________
 
-proc ini::InitTheme {} {
-  # Initializes alited's theme.
-  # Returns a list of theme name and label's border (for status bar).
-
-  namespace upvar ::alited al al
-  set theme {}
-  switch -glob -- $al(THEME) {
-    azure* - sun-valley* {
-      set i [string last - $al(THEME)]
-      set name [string range $al(THEME) 0 $i-1]
-      set type [string range $al(THEME) $i+1 end]
-      catch {source [file join $::alited::LIBDIR theme $name $name.tcl]}
-      catch {set_theme $type}
-      set lbd 0
-    }
-    forest* {
-      set i [string last - $al(THEME)]
-      set name [string range $al(THEME) 0 $i-1]
-      set type [string range $al(THEME) $i+1 end]
-      catch {
-        source [file join $::alited::LIBDIR theme $name $al(THEME).tcl]
-        set theme $al(THEME)
-      }
-      set lbd 0
-    }
-    awdark - awlight {
-      global auto_path
-      lappend auto_path [file join $alited::LIBDIR theme awthemes-10.4.0]
-      package require awthemes
-      package require ttk::theme::$al(THEME)
-      set theme $al(THEME)
-      set lbd 1
-    }
-    default {
-      set theme $al(THEME)
-      set lbd 1
-    }
-  }
-  return [list $theme $lbd]
-}
-#_______________________
-
 proc ini::InitFonts {} {
   # Loads main fonts for alited to use as default and mono.
 
@@ -1005,7 +963,7 @@ proc ini::_init {} {
   ReadIni
   InitFonts
 
-  lassign [InitTheme] theme lbd
+  lassign [::apave::InitTheme $al(THEME) $::alited::LIBDIR] theme lbd
   ::apave::initWM -cursorwidth $al(CURSORWIDTH) -theme $theme -labelborder $lbd
   ::apave::iconImage -init $al(INI,ICONS)
   set ::apave::MC_NS ::alited

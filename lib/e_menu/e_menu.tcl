@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.4.8a6}
+  variable em_version {e_menu 3.4.8b1}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -199,6 +199,7 @@ namespace eval ::em {
   variable DF kdiff3 BF {}
   variable PI 0
   variable NE 0
+  variable th {alt} td {} g1 {} g2 {}
 }
 #___ creates an item for the menu pool
 proc ::em::pool_item_create {} {
@@ -1928,7 +1929,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
   a= d= e= f= p= l= h= b= cs= c= t= g= n= \
   fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= \
   cc= gr= ht= hh= rt= DF= BF= pd= m= om= ts= \
-  TF= yn= in= ex= EX= PI= NE= ls= SD=} { ;# the processing order is important
+  TF= yn= in= ex= EX= PI= NE= ls= SD= g1= g2= th= td= } { ;# the processing order matters
     if {($s1 in {o= s= m=}) && !($s1 in $osm)} {
       continue
     }
@@ -1944,6 +1945,10 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
       }
       set s01 [string range $s1 0 1]
       switch -exact -- $s1 {
+        tg= - om= - dk= - ls= - DF= - BF= - pd= - PI= - NE= - tc= - th= - td= {
+          # these are set as simply as ::em::NN
+          set ::em::$s01 $seltd
+        }
         P= {
           if {$seltd ne {}} {
             set ::em::percent2 $seltd  ;# set % substitution
@@ -2050,9 +2055,6 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           set ::em::$s01 [::apave::getN $seltd [set ::em::$s01]]
         }
         ed= {set ::em::editor $seltd}
-        tg= - om= - dk= - ls= - DF= - BF= - pd= - PI= - NE= - tc= {
-          set ::em::$s01 $seltd
-        }
         ex= - EX= {
           set ::em::$s01 [set ::em::ex $seltd]
         }
@@ -2086,6 +2088,10 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
               $i1!=0 && $i2!=0 && $i1/$i2<=1} {
             set ::em::ratiomin "$i1/$i2"
           }
+        }
+        g1= - g2= { ;# geometry of directory/file chooser
+          set ::em::$s01 $seltd
+          ::apave::setProperty DirFilGeoVars [list ::em::g1 ::em::g2]
         }
         tt= { ;# terminal (e.g. "tt=xterm -fs 12 -geometry 90x30+400+100")
           set ::em::linuxconsole $seltd
@@ -2405,7 +2411,7 @@ proc ::em::initmenu {} {
   }
   wm minsize .em $::em::minwidth $minheight
   if {$::em::start0} {
-    wm geometry .em [winfo width .em]x${minheight}
+#    wm geometry .em [winfo width .em]x${minheight}
     if {$::em::wc || [::iswindows] && $::em::start0==1} {
       ::eh::center_window .em 0   ;# omitted in Linux as 'wish' is centered in it
     }
@@ -2630,7 +2636,20 @@ proc ::em::main {args} {
 }
 
 if {$::em::solo} {
-  ::apave::initWM
+  # theming at the app's start: th= a theme name, td= a theme directory
+  foreach ::em::TMP1 {th td} {
+    if {[set ::em::TMP2 [lsearch -glob $::argv $::em::TMP1=*]]>-1} {
+      set ::em::$::em::TMP1 [string range [lindex $::argv $::em::TMP2] 3 end]
+    }
+  }
+  if {$::em::th eq {} || $::em::td eq {}} {
+    ::apave::initWM
+  } else {
+    lassign [::apave::InitTheme $::em::th $::em::td] ::em::TMP1 ::em::TMP2
+    ::apave::initWM -theme $::em::TMP1 -labelborder $::em::TMP2
+  }
+  unset ::em::TMP1
+  unset ::em::TMP2
   ::apave::iconImage -init small
   ::em::main -modal 0 -remain 0 {*}$::argv
 }

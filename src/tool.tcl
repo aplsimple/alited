@@ -200,10 +200,21 @@ proc tool::EM_Options {opts} {
   if {$al(EM,DiffTool) ne {}} {append ls " DF=$al(EM,DiffTool)"}
   set l [[alited::main::CurrentWTXT] index insert]
   set l [expr {int($l)}]
+  set dirvar [set filvar [set tdir {}]]
+  if {$al(EM,exec)} {
+    lassign [::apave::getProperty DirFilGeoVars] dirvar filvar
+    if {$dirvar ne {} && [set dirvar [set $dirvar]] ne {}} {
+      set dirvar "\"g1=$dirvar\""
+    }
+    if {$filvar ne {} && [set filvar [set $filvar]] ne {}} {
+      set filvar "\"g2=$filvar\""
+    }
+    set tdir $::alited::LIBDIR
+  }
   set R [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
-    o=-1 g=$al(EM,geometry) $z6 $z7 {*}$ls {*}$opts {*}$srcdir]
-  # quote all options
+    o=-1 g=$al(EM,geometry) $z6 $z7 {*}$ls {*}$opts {*}$srcdir \
+    {*}$dirvar {*}$filvar th=$al(THEME) td=$tdir]
   set res {}
   foreach r $R {append res "\"$r\" "}
   return $res
