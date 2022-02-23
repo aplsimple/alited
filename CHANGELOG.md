@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.1.2b1 (16 Feb'22)`
+Version `1.2.0a1 (18 Feb'22)`
 
   - BUGFIX: in "Projects", switching to other project after changing a reminder
   - BUGFIX: in alited.tcl: mistaken FILEDIR variable; mistaken exec {*}; clearances
@@ -11,7 +11,9 @@ Version `1.1.2b1 (16 Feb'22)`
   - BUGFIX: "update" after selection from menu (some DEs need it)
   - BUGFIX: uk.msg instead of ua.msg
   - BUGFIX: "Run me" at setting e_menu as non-external app
-  - BUGFIX: double click on a project list in "Projects" (first failed)
+  - BUGFIX: failed double click on a project list in "Projects" (annoying bug)
+  - BUGFIX: text selection fg/bg at tinting
+  - NEW   : restoring selected texts at switching tabs
   - NEW   : passing dir&file choosers' geometry to "external" e_menu
   - NEW   : passing theme name to "external" e_menu
   - CHANGE: running e_menu faster

@@ -443,7 +443,6 @@ proc project::Select {{item ""}} {
     catch {after cancel $klnddata(AFTERKLND)}
     set klnddata(AFTERKLND) [after 200 alited::project::KlndUpdate]
   }
-  set curinfo(_MSEC) 0
 }
 #_______________________
 
@@ -799,13 +798,10 @@ proc project::Ok {args} {
   variable prjlist
   variable prjinfo
   variable curinfo
-  set msec [clock milliseconds]
-  if {($msec-$curinfo(_MSEC))<5000} {
+  if {$curinfo(_NO2ENT)} {
     # disables entering twice (at multiple double-clicks)
-    # 5 sec. of clicking seems to be enough for opening a file
     return
   }
-  set curinfo(_MSEC) $msec
   if {[set isel [Selected index]] eq {} || ![ValidProject]} {
     focus [$obDl2 TreePrj]
     return
@@ -826,6 +822,7 @@ proc project::Ok {args} {
     set msg [string map [list %n $N] $msg]
     if {![alited::msg yesno ques $msg NO -geometry root=$win]} return
   }
+  set curinfo(_NO2ENT) 1
   set fname [ProjectFileName $pname]
   RestoreSettings
   alited::ini::SaveIni
@@ -1168,7 +1165,7 @@ proc project::_create {} {
   variable oldTab
   variable ilast
   variable curinfo
-  set curinfo(_MSEC) 0
+  set curinfo(_NO2ENT) 0
   $obDl2 makeWindow $win.fra "$al(MC,projects) :: $::alited::PRJDIR"
   $obDl2 paveWindow \
     $win.fra [MainFrame] \

@@ -56,6 +56,9 @@ proc menu::SetTint {tint} {
 
   namespace upvar ::alited al al obPav obPav
   $obPav csToned $al(INI,CS) $tint
+  alited::file::MakeThemHighlighted
+  alited::main::ShowText
+  alited::bar::BAR update
 }
 
 #_______________________

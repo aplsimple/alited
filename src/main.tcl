@@ -42,6 +42,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
   # wtxt (text's path), wsbv (scrollbar's path),
   # pos (cursor's position), doinit (flag "initialized")
   # dopack (flag "packed")
+  # selrange (selected text's range)
 
   namespace upvar ::alited al al obPav obPav
   set curfile [alited::bar::FileName $TID]
@@ -50,7 +51,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
   set wsbv [$obPav SbvText]
   # get data of the current tab
   lassign [alited::bar::GetBarState] TIDold fileold wold1 wold2
-  lassign [alited::bar::GetTabState $TID --pos] pos
+  lassign [alited::bar::GetTabState $TID --pos --selection] pos selrange
   set doreload no  ;# obsolete
   set doinit yes
   if {$TIDold eq "-1"} {
@@ -90,7 +91,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
   }
   if {[winfo exists $wold1]} {
     # previous text: save its state
-    alited::bar::SetTabState $TIDold --pos [$wold1 index insert]
+    alited::bar::SetTabState $TIDold --pos [$wold1 index insert] --selection [$wold1 tag ranges sel]
     if {$dopack && $doshow} {
       # hide both previous
       pack forget $wold1  ;# a text
@@ -114,7 +115,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
     HighlightText $TID $curfile $wtxt
     if {$al(TREE,isunits)} alited::tree::RecreateTree
   }
-  return [list $curfile $wtxt $wsbv $pos $doinit $dopack]
+  return [list $curfile $wtxt $wsbv $pos $doinit $dopack $selrange]
 }
 #_______________________
 
@@ -123,7 +124,7 @@ proc main::ShowText {} {
 
   namespace upvar ::alited al al obPav obPav
   set TID [alited::bar::CurrentTabID]
-  lassign [GetText $TID yes] curfile wtxt wsbv pos doinit dopack
+  lassign [GetText $TID yes] curfile wtxt wsbv pos doinit dopack selrange
   if {$dopack} {
     PackTextWidgets $wtxt $wsbv
   }
@@ -138,6 +139,9 @@ proc main::ShowText {} {
     [$obPav Tree] see $itemID
   }
   focus $wtxt
+  if {$selrange ne {}} {
+    catch {$wtxt tag add sel {*}$selrange}
+  }
   # update "File" menu and app's header
   alited::menu::CheckMenuItems
   ShowHeader

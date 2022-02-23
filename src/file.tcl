@@ -59,8 +59,9 @@ proc file::MakeThemHighlighted {{tabs ""}} {
     set tabs [alited::bar::BAR listTab]
   }
   foreach tab $tabs {
-    set wtxt [alited::main::GetWTXT [lindex $tab 0]]
-    set al(HL,$wtxt) {..}
+    if {[set wtxt [alited::main::GetWTXT [lindex $tab 0]]] ne {}} {
+      set al(HL,$wtxt) {..}
+    }
   }
 }
 
