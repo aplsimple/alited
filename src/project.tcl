@@ -23,9 +23,6 @@ namespace eval project {
   # initial geometry of "Projects" dialogue (centered in the main form)
   variable geo root=$::alited::al(WIN)
 
-  # -minsize oprion of "Projects" dialogue
-  variable minsize {}
-
   # saved index of last selected project
   variable ilast -1
 
@@ -1160,7 +1157,6 @@ proc project::_create {} {
   namespace upvar ::alited al al obDl2 obDl2
   variable win
   variable geo
-  variable minsize
   variable prjlist
   variable oldTab
   variable ilast
@@ -1186,11 +1182,6 @@ proc project::_create {} {
     bind [$obDl2 LbxFlist] <Control-$a> alited::project::SelectAllFiles
   }
   if {$ilast>-1} {Select $ilast}
-  if {$minsize eq ""} {      ;# save default min.sizes
-    after idle [list after 100 {
-      set ::alited::project::minsize "-minsize {[winfo width $::alited::project::win] [winfo height $::alited::project::win]}"
-    }]
-  }
   after 500 ::alited::project::HelpMe ;# show an introduction after a short pause
   set prjtex [$obDl2 TexPrj]
   set klndtex [$obDl2 TexKlnd]
@@ -1202,7 +1193,7 @@ proc project::_create {} {
     -font $al(FONT) -insertwidth $al(CURSORWIDTH)
   ::hl_tcl::hl_text $prjtex
   ::hl_tcl::hl_text $klndtex
-  set res [$obDl2 showModal $win  -geometry $geo {*}$minsize \
+  set res [$obDl2 showModal $win  -geometry $geo -minsize {600 400} \
     -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
   set oldTab [$win.fra.fraR.nbk select]
   if {[llength $res] < 2} {set res ""}

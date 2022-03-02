@@ -766,7 +766,13 @@ proc tree::GetDirectoryContents {dirname} {
   #   DirContents
 
   namespace upvar ::alited al al
-  set al(_dirtree) [list]
+  set al(_dirtree) [set al(_dirignore) [list]]
+  catch {    ;# there might be an incorrect list -> catch it
+    foreach d $al(prjdirign) {
+      lappend al(_dirignore) [string toupper [string trim $d \"]]
+    }
+  }
+  lappend al(_dirignore) [string toupper [file tail [alited::Tclexe]]]
   DirContents $dirname
   return $al(_dirtree)
 }
@@ -854,18 +860,8 @@ proc tree::IgnoredDir {dir} {
   #   dir - the directory's name
 
   namespace upvar ::alited al al
-  set res no
   set dir [string toupper [file tail $dir]]
-  catch {    ;# there might be an incorrect list -> catch it
-    foreach d $al(prjdirign) {
-      set d [string toupper [string trim $d \"]]
-      if {$dir eq $d} {
-        set res yes
-        break
-      }
-    }
-  }
-  return $res
+  return [expr {[lsearch -exact $al(_dirignore) $dir]>-1}]
 }
 
 # ________________________ Tree procs _________________________ #

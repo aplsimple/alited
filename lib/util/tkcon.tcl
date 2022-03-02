@@ -444,12 +444,23 @@ proc ::tkcon::Init {args} {
     }
 
     ## Source extra command line argument files into slave executable
+    if {[llength $slavefiles]} {
+        # apl: exit with a prompt & pause when running tcl source
+        rename ::exit ::_OLD_exit
+        proc ::exit {args} {
+            if {[info exists ::_OLD_exit]} ::_OLD_exit
+            set ::_OLD_exit yes
+            chan puts stdout "\nPress Return / Enter to continue"
+            chan gets stdin
+            ::_OLD_exit
+        }
+    }
     foreach fn $slavefiles {
-	puts -nonewline "slave sourcing \"$fn\" ... "
+	puts "slave sourcing \"$fn\""
 	if {[catch {EvalSlave uplevel \#0 [list source $fn]} fnerr]} {
-	    puts stderr "error:\n$fnerr"
+	    puts stderr " ==> error:\n$fnerr"
 	    append PRIV(errorInfo) $errorInfo\n
-	} else { puts "OK" }
+	} else { puts " ==> OK" }
     }
 
     ## Evaluate slaveeval in slave
@@ -5210,7 +5221,10 @@ proc ::tkcon::Bindings {} {
 	::tkcon::RePrompt "\n" [::tkcon::CmdGet $::tkcon::PRIV(console)]
     }
     bind $PRIV(root) <<TkCon_Popup>> {
+      # apl: no popup when running tcl source
+      if {[info commands ::_OLD_exit] eq {}} {
 	::tkcon::PopupMenu %X %Y
+      }
     }
 
     ## Menu items need null TkConsolePost bindings to avoid the TagProc

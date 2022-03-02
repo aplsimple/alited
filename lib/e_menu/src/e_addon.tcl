@@ -106,9 +106,10 @@ proc ::em::countCh2 {str ch {plistName ""}} {
 
 ###########################################################################
 
-proc ::em::matchedBrackets {inplist curpos schar dchar dir} {
+proc ::em::matchedBrackets {w inplist curpos schar dchar dir} {
 
   # Finds a match of characters (dchar for schar).
+  #   w - text's path
   #   inplist - list of strings where to find a match
   #   curpos - position of schar in nl.nc form where nl=1.., nc=0..
   #   schar - source character
@@ -116,6 +117,19 @@ proc ::em::matchedBrackets {inplist curpos schar dchar dir} {
   #   dir - search direction: 1 to the end, -1 to the beginning of list
 
   lassign [split $curpos .] nl nc
+  if {$schar eq {"}} {
+    # for plain texts:
+    set npos $nl.$nc
+    if {[$w search -exact \" "$npos +1 char" end] eq {}} {
+      set dir -1
+    } else {
+      set lfnd [$w search -backwards -all -exact \" "$npos -1 char" 1.0]
+      if {[llength $lfnd] % 2} {
+        set dir -1
+      }
+    }
+    incr nc $dir
+  }
   if {$dir==1} {set rng1 "$nc end"} else {set rng1 "0 $nc"; set nc 0}
   set retpos {}
   set scount [set dcount 0]
@@ -249,24 +263,24 @@ proc ::em::highlightBrackets {w fg boldfont} {
   set curpos [$w index insert]
   set curpos2 [$w index {insert -1 chars}]
   set ch [$w get $curpos]
-  set lbr "\{(\["
-  set rbr "\})\]"
+  set lbr "\{(\[\""
+  set rbr "\})\]\""
   set il [string first $ch $lbr]
   set ir [string first $ch $rbr]
   set txt [split [$w get 1.0 end] \n]
   if {$il>-1} {
-    set brcpos [matchedBrackets $txt $curpos \
+    set brcpos [matchedBrackets $w $txt $curpos \
       [string index $lbr $il] [string index $rbr $il] 1]
   } elseif {$ir>-1} {
-    set brcpos [matchedBrackets $txt $curpos \
+    set brcpos [matchedBrackets $w $txt $curpos \
       [string index $rbr $ir] [string index $lbr $ir] -1]
   } elseif {[set il [string first [$w get $curpos2] $lbr]]>-1} {
     set curpos $curpos2
-    set brcpos [matchedBrackets $txt $curpos \
+    set brcpos [matchedBrackets $w $txt $curpos \
       [string index $lbr $il] [string index $rbr $il] 1]
   } elseif {[set ir [string first [$w get $curpos2] $rbr]]>-1} {
     set curpos $curpos2
-    set brcpos [matchedBrackets $txt $curpos \
+    set brcpos [matchedBrackets $w $txt $curpos \
       [string index $rbr $ir] [string index $lbr $ir] -1]
   } else {
     return

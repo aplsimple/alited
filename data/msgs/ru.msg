@@ -484,10 +484,13 @@ namespace eval ::alited {
     {separator} {разделитель}
     {Item} {Пункт}
     {If 'yes', means a separator of the toolbar/menu.} {Если включено, означает разделитель в тулбаре/меню.}
+    {After Start...} {После старта...}
     {Before Run...} {Перед Запуском...}
     {Commands:} {Команды:}
+    {Commands after start} {Команды после старта}
     {Commands before "Run"} {Команды перед "Запуском"}
-    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Введите команды, выполняемые перед \"Снасти/Запуск\".\n Это может быть полезно в некоторых проектах. Что-то типа инициализации перед запуском.  \n"
+    "\n Enter commands to be run after starting alited. They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific environment.\n" "\n Введите команды, выполняемые после старта alited,\n т.е. команды Tcl или внешние команды, например:\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n Это может потребоваться в некоторых окружениях.\n"
+    "\n Enter commands to be run before running a current file with \"Tools/Run\". They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific project. Something like an initialization before \"Run\".\n" "\n Введите команды, выполняемые перед \"Снасти/Запуск\",\n т.е. команды Tcl или внешние команды, например:\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n Это может быть полезно в некоторых проектах. Что-то типа инициализации перед запуском.  \n"
     {e_menu's own} {своя в e_menu}
   }
 

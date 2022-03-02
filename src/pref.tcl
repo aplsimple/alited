@@ -16,9 +16,6 @@ namespace eval pref {
   # geometry for message boxes: to center in "Preferences" dialogue
   variable geo root=$::alited::al(WIN)
 
-  # saved -minsize option of "Preferences" dialogue
-  variable minsize {}
-
   # saved data of settings
   variable data; array set data [list]
 
@@ -121,7 +118,6 @@ proc pref::fetchVars {} {
     namespace upvar ::alited al al obDl2 obDl2
     variable win
     variable geo
-    variable minsize
     variable data
     variable keys
     variable prevkeys
@@ -1472,11 +1468,6 @@ proc pref::_create {tab} {
     $win.fra.fraR.nbk6.f2 [Emenu_Tab] \
     $win.fra.fraR.nbk6.f3 [Runs_Tab] \
     $win.fra.fraR.nbk6.f4 [Tkcon_Tab]
-  if {$minsize eq ""} {      ;# save default min.sizes
-    after idle [list after 100 {
-      set ::alited::pref::minsize "-minsize {[winfo width $::alited::pref::win] [winfo height $::alited::pref::win]}"
-    }]
-  }
   set wtxt [$obDl2 TexNotes]
   set fnotes [file join $::alited::USERDIR notes.txt]
   if {[file exists $fnotes]} {
@@ -1500,7 +1491,7 @@ proc pref::_create {tab} {
   }
   bind $win <Control-o> alited::ini::EditSettings
   bind $win <F1> "[$obDl2 ButHelp] invoke"
-  set res [$obDl2 showModal $win -geometry $geo {*}$minsize \
+  set res [$obDl2 showModal $win -geometry $geo -minsize {600 400} \
     -onclose ::alited::pref::Cancel]
   set fcont [$wtxt get 1.0 {end -1c}]
   ::apave::writeTextFile $fnotes fcont

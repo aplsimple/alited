@@ -183,6 +183,8 @@ proc menu::FillMenu {} {
     -variable alited::al(wrapwords) -command alited::file::WrapLines
   $m add checkbutton -label [msgcat::mc {Tip File Info}] \
     -variable alited::al(TREE,showinfo) -command alited::file::UpdateFileStat
+  $m add separator
+  $m add command -label [msgcat::mc {After Start...}] -command alited::tool::AfterStartDlg
   $m add command -label [msgcat::mc {Before Run...}] -command alited::tool::BeforeRunDlg
   $m add separator
   $m add command -label $al(MC,pref...) -command alited::pref::_run

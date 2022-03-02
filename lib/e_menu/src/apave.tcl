@@ -21,9 +21,9 @@ catch {
     }
   }
   set ::env(TCLLIBPATH) $_apave_tcllibpath_
-  unset _apave_
-  unset _apave_tcllibpath_
 }
+unset -nocomplain _apave_tcllibpath_
+unset -nocomplain _apave_
 
 # ________________________ apave NS _________________________ #
 
@@ -121,8 +121,8 @@ namespace eval ::apave {
           -showseparators 1}} \
     tex {{} {-undo 1 -maxundo 0 -highlightthickness 2 -insertofftime 250 -insertontime 750 -insertwidth $::apave::cursorwidth -wrap word -selborderwidth 1}} \
     tre {{} {-selectmode browse}} \
-    "h_" {{-sticky ew -csz 3 -padx 3} {}} \
-    "v_" {{-sticky ns -rsz 3 -pady 3} {}}]
+    h_ {{-sticky ew -csz 3 -padx 3} {}} \
+    v_ {{-sticky ns -rsz 3 -pady 3} {}}]
 
 # _______________________ Helpers _____________________ #
 
@@ -3052,8 +3052,6 @@ oo::class create ::apave::APave {
     #   colspan - column span of the widget
     #   options - grid/pack options
     #   attrs - attributes of widget
-    #   add - if set, replaces grid/pack with "add" command
-    #   comm - a command executed after the creation of widget ("%w" is its name)
     # First 3 items are mandatory, others are set at need.
     #
     # Called by *paveWindow* method to process a portion of widgets.
@@ -3195,6 +3193,7 @@ oo::class create ::apave::APave {
     }
     return $lwidgets
   }
+  #_______________________
 
   method paveWindow {args} {
     # Processes "win / list_of_widgets" pairs.
@@ -3211,8 +3210,6 @@ oo::class create ::apave::APave {
     #   colspan - column span of the widget
     #   options - grid/pack options
     #   attrs - attributes of widget
-    #   add - if set, replaces grid/pack with "add" command
-    #   comm - a command executed after the creation of widget ("%w" is its name)
     # First 3 items are mandatory, others are set at need.
     #
     # This method calls *paveWindow* in a cycle, to process a current
@@ -3234,6 +3231,7 @@ oo::class create ::apave::APave {
         [winfo exists $wmain]} {::apave::initPOP $wmain}
     return $res
   }
+  #_______________________
 
   method window {args} {
     # Obsolete version of paveWindow (remains for compatibility).

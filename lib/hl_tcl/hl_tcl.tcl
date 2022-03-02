@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.34
+package provide hl_tcl 0.9.36
 
 # ______________________ Common data ____________________ #
 
@@ -76,8 +76,8 @@ namespace eval ::hl_tcl {
     set data(RE1) {([\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
     set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})}
 
-    set data(LBR) {\{(\[}
-    set data(RBR) {\})\]}
+    set data(LBR) {\{(\[\"}
+    set data(RBR) {\})\]\"}
 
     # default syntax colors arrays (for a light & black themes)
     #  COM     COMTK    STR      VAR     CMN     PROC    OPT    BRAC
@@ -295,7 +295,7 @@ proc ::hl_tcl::my::FirstQtd {lineName iName currQtd} {
   while {1} {
     if {[set i [string first \" $line $i]]==-1} {return no}
     if {[NotEscaped $line $i]} {
-      if {$currQtd} {return yes}
+      if {$currQtd||$i==0} {return yes}
       set i1 [expr {$i-1}]
       set i2 [expr {$i+1}]
       if {[NotEscaped $line $i1]} {
@@ -906,8 +906,9 @@ proc ::hl_tcl::my::Escaped {line curpos} {
 }
 #_____
 
-proc ::hl_tcl::my::MatchedBrackets {inplist curpos schar dchar dir} {
+proc ::hl_tcl::my::MatchedBrackets {w inplist curpos schar dchar dir} {
   # Finds a match of characters (dchar for schar).
+  #   w - text widget's path
   #   inplist - list of strings where to find a match
   #   curpos - position of schar in nl.nc form where nl=1.., nc=0..
   #   schar - source character
@@ -915,6 +916,27 @@ proc ::hl_tcl::my::MatchedBrackets {inplist curpos schar dchar dir} {
   #   dir - search direction: 1 to the end, -1 to the beginning of list
 
   lassign [split $curpos .] nl nc
+  if {$schar eq {"}} {
+    set npos $nl.$nc
+    set hlpr [$w tag prevrange tagSTR $npos]
+    if {[llength $hlpr] && [$w compare "$npos +1 char" == [lindex $hlpr 1]]} {
+      set dir -1  ;# <- quotes are scanned depending on their range (for tcl/c)
+    } else {
+      set hlpr [$w tag nextrange tagSTR $npos]
+      if {![llength $hlpr] || [$w compare $npos != [lindex $hlpr 0]]} {
+        # for plain texts:
+        if {[$w search -exact \" "$npos +1 char" end] eq {}} {
+          set dir -1
+        } else {
+          set lfnd [$w search -backwards -all -exact \" "$npos -1 char" 1.0]
+          if {[llength $lfnd] % 2} {
+            set dir -1
+          }
+        }
+      }
+    }
+    incr nc $dir
+  }
   set escaped [Escaped [lindex $inplist $nl-1] $nc]
   if {$dir==1} {set rng1 "$nc end"} else {set rng1 "0 $nc"; set nc 0}
   set retpos {}
@@ -956,18 +978,18 @@ proc ::hl_tcl::my::HighlightBrackets {w} {
   set ir [string first $ch $data(RBR)]
   set txt [split [$w get 1.0 end] \n]
   if {$il>-1} {
-    set brcpos [MatchedBrackets $txt $curpos \
+    set brcpos [MatchedBrackets $w $txt $curpos \
       [string index $data(LBR) $il] [string index $data(RBR) $il] 1]
   } elseif {$ir>-1} {
-    set brcpos [MatchedBrackets $txt $curpos \
+    set brcpos [MatchedBrackets $w $txt $curpos \
       [string index $data(RBR) $ir] [string index $data(LBR) $ir] -1]
   } elseif {[set il [string first [$w get $curpos2] $data(LBR)]]>-1} {
     set curpos $curpos2
-    set brcpos [MatchedBrackets $txt $curpos \
+    set brcpos [MatchedBrackets $w $txt $curpos \
       [string index $data(LBR) $il] [string index $data(RBR) $il] 1]
   } elseif {[set ir [string first [$w get $curpos2] $data(RBR)]]>-1} {
     set curpos $curpos2
-    set brcpos [MatchedBrackets $txt $curpos \
+    set brcpos [MatchedBrackets $w $txt $curpos \
       [string index $data(RBR) $ir] [string index $data(LBR) $ir] -1]
   } else {
     return

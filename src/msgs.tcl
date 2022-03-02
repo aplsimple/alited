@@ -83,6 +83,7 @@ namespace eval ::alited {
     set al(MC,Col:)        [msgcat::mc { Col: }]
     set al(MC,Item)        [msgcat::mc Item]
     set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
+    set al(MC,afterstart)  [msgcat::mc {Commands after start}]
     set al(MC,beforerun)   [msgcat::mc {Commands before "Run"}]
     set al(MC,locale)      [msgcat::mc "This is a country code: ru, uk, de...\nIn alited, \"en\" means American English."]
     set al(MC,noask)       [msgcat::mc {Don't show anymore}]

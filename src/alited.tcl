@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.0a1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.0b3  ;# for documentation (esp. for Ruff!)
 
 package require Tk
 catch {package require comm}  ;# Generic message transport
@@ -480,7 +480,9 @@ namespace eval alited {
     # Runs Tcl/Tk script.
     #   args - script's name and arguments
 
-    exec -- {*}[Tclexe] {*}$args &
+    set com [string trimright "$args" &]
+    set pid [pid [open "|[Tclexe] $com"]]
+    return $pid
   }
   #_______________________
 
@@ -550,6 +552,7 @@ if {[info exists ALITED_PORT]} {
   alited::ini::_init     ;# initialize GUI & data
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
+  alited::tool::AfterStart
 #  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting

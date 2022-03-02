@@ -1,8 +1,9 @@
 # LAST CHANGES:
 
 
-Version `1.2.0a1 (18 Feb'22)`
+Version `1.2.0b3 (2 Mar'22)`
 
+  - BUGFIX: issue with debug & log 'puts' at using tclkits
   - BUGFIX: in "Projects", switching to other project after changing a reminder
   - BUGFIX: in alited.tcl: mistaken FILEDIR variable; mistaken exec {*}; clearances
   - BUGFIX: closing "Check Tcl" and "Find be List" at closing app
@@ -13,9 +14,17 @@ Version `1.2.0a1 (18 Feb'22)`
   - BUGFIX: "Run me" at setting e_menu as non-external app
   - BUGFIX: failed double click on a project list in "Projects" (annoying bug)
   - BUGFIX: text selection fg/bg at tinting
+  - BUGFIX: issue with ignored dirs at using tclkits
+  - NEW   : running tcl source in tkcon (with benefits of introspection)
   - NEW   : restoring selected texts at switching tabs
   - NEW   : passing dir&file choosers' geometry to "external" e_menu
   - NEW   : passing theme name to "external" e_menu
+  - NEW   : "Setup/After Start" setting to run Tcl & external commands
+  - NEW   : "Setup/Before Run" setting allows Tcl commands
+  - CHANGE: tkcon.tcl modified for sourcing a Tcl/Tk script
+  - CHANGE: tkcon's geometry & 'stay on top' modified for sourcing a Tcl/Tk script
+  - CHANGE: minsizes for Projects & Preferences set static
+  - CHANGE: saving "Setup/Before Run" setting in project.ale
   - CHANGE: running e_menu faster
   - CHANGE: statusbar font size = small font size of Preferences
   - CHANGE: "Comment/Uncomment" enabled for all
@@ -23,7 +32,7 @@ Version `1.2.0a1 (18 Feb'22)`
   - CHANGE: notes and reminders got a current line highlighted
   - CHANGE: html Tcl/Tk man pages allowed along with htm
   - CHANGE: e_menu's menus shown at position of Preference/Tools/e_menu/Geometry
-  - CHANGE: apave, e_menu package
+  - CHANGE: apave, e_menu, hl_tcl packages
 
 
 Version `1.1.0 (26 Jan'22)`

@@ -169,6 +169,9 @@ namespace eval ::alited {
   # list of "Find Unit" combobox's values
   set al(findunitvals) {}
 
+  # commands after starting alited
+  set al(afterstart) {}
+
   # index of syntax colors
   set al(syntaxidx) 0
 }
@@ -267,9 +270,7 @@ proc ini::ReadIniGeometry {nam val} {
     }
     geomfind       {set ::alited::find::geo $val}
     geomproject    {set ::alited::project::geo $val}
-    minsizeproject {set ::alited::project::minsize $val}
     geompref       {set ::alited::pref::geo $val}
-    minsizepref    {set ::alited::pref::minsize $val}
     dirgeometry    {set ::alited::DirGeometry $val}
     filgeometry    {set ::alited::FilGeometry $val}
     treecw0        {set al(TREE,cw0) $val}
@@ -342,6 +343,7 @@ proc ini::ReadIniOptions {nam val} {
     prjdefault    {set al(PRJDEFAULT) $val}
     DEFAULT,*     {set al($nam) $val}
     findunit      {set al(findunitvals) $val}
+    afterstart    {set al(afterstart) $val}
   }
 }
 #_______________________
@@ -644,8 +646,9 @@ proc ini::SaveIni {{newproject no}} {
     puts $chan "$k=$al($k)"
   }
   puts $chan "findunit=$al(findunitvals)"
+  puts $chan "afterstart=$al(afterstart)"
 
-  puts $chan ""
+  puts $chan {}
   puts $chan {[Templates]}
   foreach t $al(TPL,list) {
     puts $chan "tpl=$t"
@@ -653,14 +656,14 @@ proc ini::SaveIni {{newproject no}} {
   foreach n {%d %t %u %U %m %w %a} {
     puts $chan "$n=$al(TPL,$n)"
   }
-  puts $chan ""
+  puts $chan {}
   puts $chan {[Keys]}
   foreach k $al(KEYS,bind) {
     if {![string match template* $k] && ![string match action* $k]} {
       puts $chan "key=$k"
     }
   }
-  puts $chan ""
+  puts $chan {}
   puts $chan {[EM]}
   puts $chan "emsave=$al(EM,save)"
   puts $chan "emPD=$al(EM,PD=)"
@@ -683,13 +686,13 @@ proc ini::SaveIni {{newproject no}} {
       puts $chan "em_run=$em_run"
     }
   }
-  puts $chan ""
+  puts $chan {}
   puts $chan {[Tkcon]}
   foreach k [array names al tkcon,*] {
     puts $chan "[string range $k 6 end]=$al($k)"
   }
   # save the geometry options
-  puts $chan ""
+  puts $chan {}
   puts $chan {[Geometry]}
   foreach v {Pan PanL PanR PanBM PanTop} {
     if {[info exists al(width$v)]} {
@@ -702,15 +705,13 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "GEOM=[wm geometry $al(WIN)]"
   puts $chan "geomfind=$::alited::find::geo"
   puts $chan "geomproject=$::alited::project::geo"
-  puts $chan "minsizeproject=$::alited::project::minsize"
   puts $chan "geompref=$::alited::pref::geo"
-  puts $chan "minsizepref=$::alited::pref::minsize"
   puts $chan "treecw0=[[$obPav Tree] column #0 -width]"
   puts $chan "treecw1=[[$obPav Tree] column #1 -width]"
   puts $chan "dirgeometry=$::alited::DirGeometry"
   puts $chan "filgeometry=$::alited::FilGeometry"
   # save other options
-  puts $chan ""
+  puts $chan {}
   puts $chan {[Misc]}
   puts $chan "isfavor=$al(FAV,IsFavor)"
   puts $chan "chosencolor=$al(chosencolor)"
@@ -726,14 +727,15 @@ proc ini::SaveIni {{newproject no}} {
 }
 #_______________________
 
-proc ini::SaveIniPrj {newproject} {
+proc ini::SaveIniPrj {{newproject no}} {
   # Saves settings of project.
   #   newproject - flag "for a new project"
 
   namespace upvar ::alited al al
+  if {$al(prjroot) eq {}} return
   set tabs $al(tabs)
   set al(tabs) [list]
-  if {$al(prjroot) eq ""} return
+  puts "alited storing: $al(prjfile)"
   set chan [open $al(prjfile) w]
   puts $chan {[Tabs]}
   lassign [alited::bar::GetBarState] TIDcur - wtxt
@@ -760,14 +762,14 @@ proc ini::SaveIniPrj {newproject} {
       puts $chan "recent=$rf"
     }
   }
-  puts $chan ""
+  puts $chan {}
   puts $chan {[Options]}
   puts $chan "curtab=[alited::bar::CurrentTab 3]"
   foreach {opt val} [array get al prj*] {
     puts $chan "$opt=$val"
   }
   if {!$newproject} {
-    puts $chan ""
+    puts $chan {}
     puts $chan {[Favorites]}
     if {$al(FAV,IsFavor)} {
       set favlist [alited::tree::GetTree {} TreeFavor]
@@ -783,7 +785,7 @@ proc ini::SaveIniPrj {newproject} {
     foreach visited $al(FAV,visited) {
       puts $chan "visited=$visited"
     }
-    puts $chan ""
+    puts $chan {}
     puts $chan {[Misc]}
     puts $chan "datafind=[array get ::alited::find::data]"
   }

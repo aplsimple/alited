@@ -137,8 +137,9 @@ proc tool::Loupe {} {
 }
 #_______________________
 
-proc tool::tkcon {} {
+proc tool::tkcon {args} {
   # Calls Tkcon application.
+  #   args - additional arguments for tkcon
 
   namespace upvar ::alited al al
   foreach opt [array names al tkcon,clr*] {
@@ -148,7 +149,10 @@ proc tool::tkcon {} {
     lappend opts -apl-$opt $al(tkcon,$opt)
   }
   set tkcon [SrcPath [file join $::alited::LIBDIR util tkcon.tcl]]
-  alited::Run $tkcon {*}$opts
+  set pid [alited::Run $tkcon {*}$opts {*}$args]
+  if {[llength $args]} {
+    catch {::apave::writeTextFile [file join $al(EM,menudir) .pid~] pid}
+  }
 }
 #_______________________
 
@@ -374,33 +378,127 @@ proc tool::EM_command {im} {
   return "alited::tool::e_menu \"m=$mnu\" $ex"
 }
 
+
+## _____________________ run Tcl/ext commands ___________________ ##
+
+proc tool::Runs {mc runs} {
+  # Runs a list of Tcl/ext commands.
+  #   mc - message for infobar
+  #   runs - list of commands
+
+  set runs [string map [list $alited::EOL \n] $runs]
+  foreach run [split $runs \n] {
+    if {[set run [string trim $run]] ne {} && [string first # $run]!=0} {
+      if {[catch {eval {*}$run} e]} {
+        catch {exec -- {*}$run} e
+      }
+      alited::info::Put "$mc: \"$run\" -> $e"
+      update
+    }
+  }
+}
+
+## ________________________ after start _________________________ ##
+
+proc tool::AfterStartDlg {} {
+  # Dialogue to enter a command before running "Tools/Run"
+
+  namespace upvar ::alited al al obDl2 obDl2
+  set head [msgcat::mc "\n Enter commands to be run after starting alited. They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific environment.\n"]
+  set run [string map [list $alited::EOL \n] $al(afterstart)]
+  lassign [$obDl2 input {} $al(MC,afterstart) [list \
+    tex "{[msgcat::mc Commands:]} {} {-w 80 -h 8}" "$run" ] -head $head] res run
+  if {$res} {
+    set al(afterstart) [string map [list \n $alited::EOL] [string trim $run]]
+    alited::ini::SaveIni
+  }
+}
+#_______________________
+
+proc tool::AfterStart {} {
+  # Runs commands after starting alited.
+
+  namespace upvar ::alited al al
+  Runs $al(MC,afterstart) $al(afterstart)
+}
+
 ## ________________________ before run _________________________ ##
 
 proc tool::BeforeRunDlg {} {
   # Dialogue to enter a command before running "Tools/Run"
 
   namespace upvar ::alited al al obDl2 obDl2
-  set head [msgcat::mc "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n"]
+  set head [msgcat::mc "\n Enter commands to be run before running a current file with \"Tools/Run\". They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific project. Something like an initialization before \"Run\".\n"]
   set run [string map [list $alited::EOL \n] $al(prjbeforerun)]
   lassign [$obDl2 input {} $al(MC,beforerun) [list \
-    tex "{[msgcat::mc Commands:]} {} {-w 60 -h 8}" "$run" ] -head $head] res run
+    tex "{[msgcat::mc Commands:]} {} {-w 80 -h 8}" "$run" ] -head $head] res run
   if {$res} {
     set al(prjbeforerun) [string map [list \n $alited::EOL] [string trim $run]]
+    alited::ini::SaveIniPrj
   }
 }
 #_______________________
 
 proc tool::BeforeRun {} {
-  # Runs a command before running "Tools/Run"
+  # Runs commands before running "Tools/Run"
 
   namespace upvar ::alited al al
-  set runs [string map [list $alited::EOL \n] $al(prjbeforerun)]
-  foreach run [split $runs \n] {
-    if {[set run [string trim $run]] ne {}} {
-      catch {exec -- {*}$run} e
-      alited::info::Put "$al(MC,beforerun): \"$run\" -> $e"
+  Runs $al(MC,beforerun) $al(prjbeforerun)
+}
+
+## ________________________ run tcl source _________________________ ##
+
+proc tool::RunArgs {} {
+  # Gets ARGS/RUNF arguments (similar to ::em::get_AR of e_menu.tcl).
+  # Returns a list of ARGS and RUNF arguments found in the current file.
+
+  set res {}
+  set ar {^[[:space:]#/*]*#[ ]?ARGS[0-9]+:[ ]*(.*)}
+  set rf {^[[:space:]#/*]*#[ ]?RUNF[0-9]+:[ ]*(.*)}
+  set AR [set RF {}]
+  set filecontent [split [[alited::main::CurrentWTXT] get 1.0 end] \n]
+  foreach st $filecontent {
+    if {[regexp $ar $st] && $AR eq {}} {
+      lassign [regexp -inline $ar $st] => AR
+    } elseif {[regexp $rf $st] && $RF eq {}} {
+      lassign [regexp -inline $rf $st] => RF
+    }
+    if {$AR ne {} || $RF ne {}} {
+      if {"$AR$RF" ne {OFF}} {
+        set res [list $AR $RF]
+      }
+      break
     }
   }
+  return $res
+}
+#_______________________
+
+proc tool::RunTcl {} {
+  # Try to run tcl source file by means of tkcon utility.
+  # Returns yes if a tcl file was started.
+
+  lassign [RunArgs] ar rf
+  set tclfile {}
+  catch {  ;# ar & rf can be badly formed => catch
+    set fname [alited::bar::FileName]
+    if {[llength $ar] || (![llength $rf] && [alited::file::IsTcl $fname])} {
+      set rf $fname
+      append rf { } $ar
+    }
+    if {[set tclfile [lindex $rf 0]] ne {}} {
+      cd [file dirname $fname]
+      set tclfile [file normalize $tclfile]
+      set rf [lreplace $rf 0 0 $tclfile]
+    }
+  }
+  if {$tclfile ne {} && [file exists $tclfile]} {
+    # run tkcon with file.tcl & argv
+    EM_SaveFiles
+    tkcon {*}$rf
+    return yes
+  }
+  return no
 }
 
 ## ________________________ run/close _________________________ ##
@@ -505,6 +603,7 @@ proc tool::_run {{what ""}} {
     }
     set opts {EX=1 PI=1}
     BeforeRun
+    if {[RunTcl]} return
   }
   e_menu {*}$opts
 }

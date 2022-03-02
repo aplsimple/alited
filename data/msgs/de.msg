@@ -487,10 +487,13 @@ namespace eval ::alited {
     {separator} {Trennezichen}
     {Item} {Element}
     {If 'yes', means a separator of the toolbar/menu.} {'ja' bedeutet Trennzeichen in der Werkzeugliste/Menü.}
+    {After Start...} {Nach dem Starten...}
     {Before Run...} {Bevor Ausführen ...}
     {Commands:} {Befehle:}
+    {Commands after start} {Befehle nach dem Starten}
     {Commands before "Run"} {Befehle vor "Ausführen"}
-    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n It can be necessary for a specific project. Something like an initialization before \"Run\".  \n" "\n Eingabe von Befehlen, die ausgeführt werde bevor die aktuelle Datei ausgeführt wird mit \"Werkzeuge/ausführen\".\n Dies kann für bestimmte Projekte notwendig sein. Das entspricht in etwa einer Initialisierung bevor \"Ausführen\". \n"
+    "\n Enter commands to be run after starting alited. They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific environment.\n" "\n Geben Sie Befehle ein, die nach dem Starten von alited ausgeführt werden sollen,\n das heißt Tcl Befehle oder ausführbare Dateien, z.B.:\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n Es kann für eine bestimmte Umgebung notwendig sein.\n"
+    "\n Enter commands to be run before running a current file with \"Tools/Run\". They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific project. Something like an initialization before \"Run\".\n" "\n Eingabe von Befehlen, die ausgeführt werde bevor die aktuelle Datei ausgeführt wird mit \"Werkzeuge/ausführen\",\n das heißt Tcl Befehle oder ausführbare Dateien, z.B.:\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n Dies kann für bestimmte Projekte notwendig sein. Das entspricht in etwa einer Initialisierung bevor \"Ausführen\". \n"
     {e_menu's own} {e_menu eigen}
   }
 
