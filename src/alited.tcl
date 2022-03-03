@@ -7,9 +7,15 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.0b3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.0b4  ;# for documentation (esp. for Ruff!)
 
-package require Tk
+set _ [package require Tk]
+if {![package vsatisfies $_ 8.6.10-]} {
+  wm withdraw .
+  tk_messageBox -message "\nalited needs Tcl/Tk v8.6.10+ \
+    \n\nwhile the current is v$_\n"
+  exit
+}
 catch {package require comm}  ;# Generic message transport
 
 # __________________________ alited NS _________________________ #
@@ -152,7 +158,7 @@ if {[package versions alited] eq {}} {
     wm attributes . -alpha 0.0
   }
   set ALITED_PORT yes
-  foreach - {1 2 3} {  ;# for inverted order of these arguments
+  foreach _ {1 2 3} {  ;# for inverted order of these arguments
     if {[lindex $::argv 0] eq {-NOPORT}} {
       set ::argv [lreplace $::argv 0 0]
       incr ::argc -1
@@ -193,6 +199,7 @@ if {[package versions alited] eq {}} {
       set alited::al(comm_port) 51837 ;# to be compatible with old style
     }
   }
+  unset _
 
 # ____________________ Open an existing app __________________ #
 

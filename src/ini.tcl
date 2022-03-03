@@ -801,12 +801,6 @@ proc ini::CheckIni {} {
   if {[file exists $::alited::INIDIR] && [file exists $::alited::PRJDIR]} {
     return
   }
-  if {[catch {
-    [text .tex] edit canundo  ;# text's canundo seems to appear in Tcl/Tk 8.6.6
-  }]} {
-    tk_messageBox -message "alited needs Tcl/Tk 8.6.6+\n\nany with 'text edit canundo'"
-    exit
-  }
   destroy .tex
   ::apave::APaveInput create pobj
   set head [string map [list %d $::alited::USERDIRSTD] $al(MC,chini2)]

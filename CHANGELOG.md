@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.0b3 (2 Mar'22)`
+Version `1.2.0b4 (3 Mar'22)`
 
   - BUGFIX: issue with debug & log 'puts' at using tclkits
   - BUGFIX: in "Projects", switching to other project after changing a reminder
@@ -15,14 +15,16 @@ Version `1.2.0b3 (2 Mar'22)`
   - BUGFIX: failed double click on a project list in "Projects" (annoying bug)
   - BUGFIX: text selection fg/bg at tinting
   - BUGFIX: issue with ignored dirs at using tclkits
-  - NEW   : running tcl source in tkcon (with benefits of introspection)
+  - NEW   : "Run me" runs tcl source in tkcon (with benefits of introspection)
+  - NEW   : "Run me" runs tcl source in console, if "Preferences/Tools/Tkcon/Stay on top"
   - NEW   : restoring selected texts at switching tabs
   - NEW   : passing dir&file choosers' geometry to "external" e_menu
   - NEW   : passing theme name to "external" e_menu
   - NEW   : "Setup/After Start" setting to run Tcl & external commands
   - NEW   : "Setup/Before Run" setting allows Tcl commands
+  - CHANGE: required version of Tcl/Tk is 8.6.10+
   - CHANGE: tkcon.tcl modified for sourcing a Tcl/Tk script
-  - CHANGE: tkcon's geometry & 'stay on top' modified for sourcing a Tcl/Tk script
+  - CHANGE: tkcon's default settings modified
   - CHANGE: minsizes for Projects & Preferences set static
   - CHANGE: saving "Setup/Before Run" setting in project.ale
   - CHANGE: running e_menu faster

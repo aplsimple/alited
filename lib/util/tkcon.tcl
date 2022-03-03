@@ -369,7 +369,7 @@ proc ::tkcon::Init {args} {
     } else {
 	set argc [llength $slaveargs]
 	set args $slaveargs
-	uplevel \#0 $slaveargs
+	catch {uplevel \#0 $slaveargs}
     }
 
     # Try not to make tkcon override too many standard defaults, and only
@@ -453,6 +453,16 @@ proc ::tkcon::Init {args} {
             chan puts stdout "\nPress Return / Enter to continue"
             chan gets stdin
             ::_OLD_exit
+        }
+        rename ::wm ::_OLD_wm
+        proc ::wm {args} {
+          # ignore 'wm withdraw .'
+          lassign $args oper w
+          if {$oper ne {withdraw} || $w ne {.}} {
+            ::_OLD_wm {*}$args
+          } elseif {$::tcl_platform(platform) eq {windows}} {
+            after idle {wm attributes . -alpha 1.0}
+          }
         }
     }
     foreach fn $slavefiles {

@@ -412,7 +412,7 @@ namespace eval ttk::theme::sun-valley-dark {
             image [list $images(entry-rest) \
                 {readonly disabled} $images(button-disabled) \
                 {readonly pressed} $images(button-pressed) \
-                {readonly focus} $images(button-hover) \
+                {readonly focus} $images(button-accent-pressed) \
                 invalid $images(entry-invalid) \
                 disabled $images(entry-disabled) \
                 {!readonly focus} $images(entry-focus) \

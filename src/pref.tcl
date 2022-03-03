@@ -1202,11 +1202,11 @@ proc pref::Tkcon_Default {} {
   var #602B06 prompt #66FF10 stdin #FFFFFF stdout #CECECE stderr #FB44C0} {
     set al(tkcon,clr$clr) $val
   }
-  set al(tkcon,rows) 10
-  set al(tkcon,cols) 80
+  set al(tkcon,rows) 20
+  set al(tkcon,cols) 100
   set al(tkcon,fsize) 13
-  set al(tkcon,geo) +300+100
-  set al(tkcon,topmost) 1
+  set al(tkcon,geo) +1+1
+  set al(tkcon,topmost) 0
 }
 #_______________________
 

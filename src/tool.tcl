@@ -478,25 +478,27 @@ proc tool::RunTcl {} {
   # Try to run tcl source file by means of tkcon utility.
   # Returns yes if a tcl file was started.
 
-  lassign [RunArgs] ar rf
-  set tclfile {}
-  catch {  ;# ar & rf can be badly formed => catch
-    set fname [alited::bar::FileName]
-    if {[llength $ar] || (![llength $rf] && [alited::file::IsTcl $fname])} {
-      set rf $fname
-      append rf { } $ar
+  if {!$alited::al(tkcon,topmost)} {
+    lassign [RunArgs] ar rf
+    set tclfile {}
+    catch {  ;# ar & rf can be badly formed => catch
+      set fname [alited::bar::FileName]
+      if {[llength $ar] || (![llength $rf] && [alited::file::IsTcl $fname])} {
+        set rf $fname
+        append rf { } $ar
+      }
+      if {[set tclfile [lindex $rf 0]] ne {}} {
+        cd [file dirname $fname]
+        set tclfile [file normalize $tclfile]
+        set rf [lreplace $rf 0 0]
+      }
     }
-    if {[set tclfile [lindex $rf 0]] ne {}} {
-      cd [file dirname $fname]
-      set tclfile [file normalize $tclfile]
-      set rf [lreplace $rf 0 0 $tclfile]
+    if {$tclfile ne {} && [file exists $tclfile]} {
+      # run tkcon with file.tcl & argv
+      EM_SaveFiles
+      tkcon $tclfile -argv {*}$rf
+      return yes
     }
-  }
-  if {$tclfile ne {} && [file exists $tclfile]} {
-    # run tkcon with file.tcl & argv
-    EM_SaveFiles
-    tkcon {*}$rf
-    return yes
   }
   return no
 }
