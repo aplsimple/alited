@@ -77,12 +77,22 @@ namespace eval sframe {
     # Make adjustments when the sframe is resized or the contents change size.
     bind $path.canvas <Configure> [list [namespace current]::resize $path]
 
-    # Mousewheel bindings for scrolling.
-    ::apave::bindToEvent [winfo toplevel $path] <MouseWheel> \
-      [namespace current] scroll $path yview %W %D
-    ::apave::bindToEvent [winfo toplevel $path] <Shift-MouseWheel> \
-      [namespace current] scroll $path xview %W %D
-
+    # Mousewheel bindings for scrolling
+    set w [winfo toplevel $path]
+    catch {
+      if {$::tcl_platform(platform) eq {unix}} {
+        ::apave::bindToEvent $w <Button-4> \
+          event generate $w <MouseWheel> -delta 1
+        ::apave::bindToEvent $w <Button-5> \
+          event generate $w <MouseWheel> -delta -1
+        ::apave::bindToEvent $w <Shift-Button-4> \
+          event generate $w <Shift-MouseWheel> -delta 1
+        ::apave::bindToEvent $w <Shift-Button-5> \
+          event generate $w <Shift-MouseWheel> -delta -1
+      }
+    }
+    ::apave::bindToEvent $w <MouseWheel> [namespace current] scroll $path yview %D
+    ::apave::bindToEvent $w <Shift-MouseWheel> [namespace current] scroll $path xview %D
     return $path
   }
 
@@ -113,7 +123,8 @@ namespace eval sframe {
     $container configure  -width $width  -height $height
 
     # Configure the canvas's scroll region to match the height and width of the container.
-    $canvas configure -scrollregion [list 0 0 $width $height]
+    set bg [lindex [::apave::obj csGet] 3]
+    $canvas configure -scrollregion [list 0 0 $width $height] -bg $bg
 
     # Show or hide the scrollbars as necessary.
     # Horizontal scrolling.
@@ -136,13 +147,13 @@ namespace eval sframe {
   }
 
   # Handle mousewheel scrolling.
-  proc scroll {path view W D} {
-    if { [winfo exists $path.canvas]  &&  [string match $path.canvas* $W] } {
+  proc scroll {path view D} {
+    if { [winfo exists $path.canvas] } {
       $path.canvas $view scroll [expr {-$D}] units
     }
     return
   }
 }
 # _____________________________ EOF _____________________________________ #
-#RUNF1: ../../src/alited.tcl DEBUG
+#RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 0 9 12 "middle icons"
