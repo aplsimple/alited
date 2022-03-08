@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.0b4 (3 Mar'22)`
+Version `1.2.0 (8 Mar'22)`
 
   - BUGFIX: issue with debug & log 'puts' at using tclkits
   - BUGFIX: in "Projects", switching to other project after changing a reminder

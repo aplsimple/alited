@@ -272,6 +272,7 @@ proc ::eh::local { {help ""} } {
 }
 #=== online help, change links if need
 proc ::eh::html { {help ""} {local 0}} {
+  if {$help eq {}} {set help contents}
   if {$local} {
     return [local $help]
   }

@@ -39,17 +39,21 @@
 <li class="level3"><div class="li"><a href="#units">Units</a></div></li>
 <li class="level3"><div class="li"><a href="#projects">Projects</a></div></li>
 <li class="level3"><div class="li"><a href="#search">Search</a></div></li>
-<li class="level3"><div class="li"><a href="#tools">Tools</a></div></li>
+<li class="level3"><div class="li"><a href="#tools">Tools</a></div>
+<ol>
+<li class="level4"><div class="li"><a href="#runtool">"Run" tool</a></div></li>
+<li class="level4"><div class="li"><a href="#helptool">"Tcl/Tk help" tool</a></div></li>
+<li class="level4"><div class="li"><a href="#custtool">Customizing tools</a></div></li>
+</ol></li>
 <li class="level3"><div class="li"><a href="#edit">Editing</a></div>
 <ol>
-<li class="level4"><div class="li"><a href="#contextmenu">Context menu</a></div>
-<li class="level4"><div class="li"><a href="#editmenu">Edit menu</a></div>
-<li class="level4"><div class="li"><a href="#searchmenu">Search menu</a></div>
-<li class="level4"><div class="li"><a href="#templates">Templates</a></div>
-<li class="level4"><div class="li"><a href="#keyssetup">Keys setup</a></div>
-<li class="level4"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div>
-</ol>
-</li>
+<li class="level4"><div class="li"><a href="#contextmenu">Context menu</a></div></li>
+<li class="level4"><div class="li"><a href="#editmenu">Edit menu</a></div></li>
+<li class="level4"><div class="li"><a href="#searchmenu">Search menu</a></div></li>
+<li class="level4"><div class="li"><a href="#templates">Templates</a></div></li>
+<li class="level4"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
+<li class="level4"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
+</ol></li>
 <li class="level3"><div class="li"><a href="#options">Options</a></div></li>
 <li class="level3"><div class="li"><a href="#links">Links</a></div></li>
 </div>
@@ -142,7 +146,7 @@ Below is a screenshot of <span class="curid"><a href="#" class="wikilink1" title
 </p>
 <p>
 <br>
-... and its themed variant on Windows 10:
+... and its themed variant on MS Windows 10:
 </p>
 <p>
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited-win10.png" class="media" alt="">
@@ -155,7 +159,7 @@ Below is a screenshot of <span class="curid"><a href="#" class="wikilink1" title
 
 </div>
 
-<h2 id="installation">Installation</h3>
+<h2 id="installation">Installation</h2>
 <div class="level2">
 
 <p>
@@ -191,7 +195,7 @@ If you are a novice to <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> 8.6.6+, t
 </p>
 
 <p>
-Still in Windows, it's enough to install <a href="https://www.activestate.com/products/tcl"> ActiveTcl</a> or <a href="https://www.magicsplat.com/tcl-installer">Magicsplat</a> distribution.
+Still in MS Windows, it's enough to install <a href="https://www.activestate.com/products/tcl"> ActiveTcl</a> or <a href="https://www.magicsplat.com/tcl-installer">Magicsplat</a> distribution.
 </p>
 
 <p>
@@ -216,7 +220,7 @@ In Linux, possibly you need to install the packages:
 
 </div>
 
-<h2 id="tclkit">Usage with tclkits</h3>
+<h2 id="tclkit">Usage with tclkits</h2>
 <div class="level2">
 
 <p>
@@ -247,7 +251,7 @@ While <span class="curid"><a href="#" class="wikilink1" title="Table of Contents
 <pre class="code">
 # in Linux:
 export TCLLIBPATH="~/myPrj/package1 ~/myPrj/package2"
-# in Windows:
+# in MS Windows:
 set TCLLIBPATH=~/myPrj/package1 ~/myPrj/package2
 # run alited to edit/run/debug a script
 tclkit alited.tcl myScript.tcl
@@ -319,7 +323,7 @@ In <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">a
 
 </div>
 
-<h2 id="start">First start</h3>
+<h2 id="start">First start</h2>
 <div class="level2">
 
 <p>
@@ -327,23 +331,23 @@ At the very first start, <span class="curid"><a href="#" class="wikilink1" title
 </p>
 
 <p>
-Namely: you are offered to choose a directory where <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> will store its settings.
+Namely: you are offered to choose a configuration directory where <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> will store its settings.
 </p>
 
 <p>
-The default <i>~/.config</i> is probably the best choice if you don't have several type of projects at your machine. When you use the default <i>~/.config</i>, it needs not to be passed to <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> as an argument.
+The default <i>~/.config</i> is probably the best choice if you don't have several type of projects at your machine. When you use the default <i>~/.config</i>, it needs not to be passed to <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>.
 </p>
 
 <p>
-On the other side, if you choose some other configuration directory, this directory's name should be passed to <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> as an argument.
+On the other side, if you choose some other configuration directory, this directory's name should be passed to <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> as <em>its first argument</em>.
 </p>
 
 <p>
-You can have several copies of your configuration directories, e.g. ~/.config1, ~/.config2 etc. each of them customized for its own type of projects: public/private, for work/fun and so on. You might configure <i>fun projects</i> to have "Florid" color scheme or a big funny font for editing.
+You can have several copies of your configuration directories, e.g. ~/.config1, ~/.config2 etc. each of them customized for its own type of projects: public/private, for work/fun and so on. For example, you might want <i>fun projects</i> to have "Florid" color scheme or a funny font for editing.
 </p>
 
 <p>
-For example, I have two configuration directories of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> - one for a development version and one for a  release version of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>. The latter is used for other projects, though it might be divided into several types and links to run.
+For example, I have two configuration directories of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> - one for a development version and one for a  release version of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>. The latter is used for other projects, though it might be divided into several types, with their own links to start <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>.
 </p>
 
 <p>
@@ -356,7 +360,7 @@ For example, I have two configuration directories of <span class="curid"><a href
 
 </div>
 
-<h2 id="units">Units</h3>
+<h2 id="units">Units</h2>
 <div class="level2">
 
 <p>
@@ -441,7 +445,7 @@ This example will produce the following unit tree:
 ROOT
   |__ Lines 1-4
   |__ Packages used
-  |   "example"
+  |__ "example"
   |     |__ example's variables
   |     |__ example's procedures
   |     |     |__ one
@@ -652,7 +656,7 @@ The unit tree and the file tree are switched to / from by appropriate buttons of
 
 </div>
 
-<h2 id="projects">Projects</h3>
+<h2 id="projects">Projects</h2>
 <div class="level2">
 
 <p>
@@ -757,7 +761,7 @@ So, when you switch to another project, <span class="curid"><a href="#" class="w
 
 </div>
 
-<h2 id="search">Search</h3>
+<h2 id="search">Search</h2>
 <div class="level2">
 
 <p>
@@ -904,7 +908,7 @@ Other "grep" facilities are available in "e_menu". Run it with F4 key and hit "S
 
 </div>
 
-<h2 id="tools">Tools</h3>
+<h2 id="tools">Tools</h2>
 <div class="level2">
 
 <p>
@@ -928,16 +932,20 @@ Some of tools are provided by <span class="curid"><a href="#" class="wikilink1" 
 Other tools are collected in "Tools / bar/menu" submenu. These are provided by <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> application. All of them (even installed by default) can be removed or substituted with other tools.
 </p>
 
+<br>
 <p>
-In fact, "Run" and "Tcl/Tk help" are both provided by <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> application. Namely:
+<h3 id=runtool>"Run" tool</h3>
+</p>
+
+<p>
+In fact, "Run" tool is provided by <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> application. Namely:
 <ul>
 <li>"Run" is "Run me..." item of menu.mnu</li>
-"Tcl/Tk help" is one of e_menu's "ornamental items"</li>
 </ul>
 </p>
 
 <p>
-The "Run" tool tries to run an application chosen as default for the currently edited file. For Tcl files, it is "tclsh".
+The "Run" tool tries to run an application chosen as default for the currently edited file. For Tcl files, it is <em>tclsh</em>.
 </p>
 
 <p>
@@ -947,12 +955,12 @@ which means running "tclsh <em>currentfile</em> args".
 </p>
 
 <p><pre class="code">#RUNF1: file.tcl args</pre>
-which means running "tclsh <em>file.tcl</em> args".
+which means running "tclsh <em>file.tcl</em> args". Use <em>Alt+R</em> hot keys to insert its template into a text.
 </p>
 
 <p>
 <pre class="code">#EXEC1: command args</pre>
-which means running "<em>command</em> args".
+which means running "<em>command</em> args". Use <em>Alt+E</em> hot keys to insert its template into a text.
 </p>
 
 <p>
@@ -960,21 +968,34 @@ There may be many those comments, from #ARGS1: (#RUNF1:, #EXEC1:) to #ARGS99: (#
 </p>
 
 <p>
-So, it's possible to run a main Tcl script at editing any Tcl script of an application. Or test a singular script in many applications, while editing it.
+So, it's possible to run a main Tcl script at editing any Tcl script of an application. Or test a specific script in many applications, while editing it.
+</p>
+
+<p>The "Setup / Before Run" menu item allows setting command(s) to be executed before "Run" tool. This setting is per a project (some specific projects may need it).
 </p>
 
 <p>
-<b>Note:</b> The Tcl scripts are run in a console or Tkcon depending on the <em>Preferences / Tools / tkcon / Stay on top</em> setting: if it's on, the Tcl scripts are started inside a console. In particular, this mode may be useful in Windows.
+<b>Note:</b> The Tcl scripts are run by a console or <em>tkcon</em> tool depending on the <em>Preferences / Tools / tkcon / Stay on top</em> setting: if it's on, the Tcl scripts are started by a console. Otherwise, they are started by <em>tkcon</em> tool. This mode may be useful in MS Windows.
 </p>
 
 <p>
+In <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, <em>tkcon</em> tool is customizable in "Setup / Preferences / Tools / tkcon" tab. Use <em>Test</em> button to preview <em>tkcon</em>.
 </p>
 
-<p>The "Setup / Before Run" menu item allows setting command(s) to be executed before "Run" tool, sort of preparatory steps. You can enter several commands, one per a line.
+<br>
+<p>
+<h3 id=helptool>"Tcl/Tk help" tool</h3>
 </p>
 
 <p>
-The "Tcl/Tk help" tool shows <a href="https://www.tcl.tk/man/tcl8.6/">Tcl/Tk</a> man page for a word the cursor is on. Or for a selected text.
+In fact, "Tcl/Tk help" tool is provided by <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> application. Namely:
+<ul>
+<li>"Tcl/Tk help" is one of e_menu's ornamental items (HELP)</li>
+</ul>
+</p>
+
+<p>
+The "Tcl/Tk help" tool shows <a href="https://www.tcl.tk/man/tcl8.6/">Tcl/Tk</a> man page for a word the cursor is on (or for a selected text). Use <em>F1</em> key to get the man page.
 </p>
 
 <p>
@@ -984,15 +1005,24 @@ Still, this context help is available only if <a href="https://www.tcl.tk/man/tc
 </p>
 
 <p>
-In <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, <em>tkcon</em> tool is customizable in "Setup / Preferences"  menu item, "Tools / tkcon" tab. Use <em>Test</em> button to preview <em>tkcon</em>.
+You may find the following link useful:
+<ul><li> <a href=https://github.com/aplsimple/alited/releases/download/TclTk-docs-8.6.11/TclTk-docs-8.6.11.zip>TclTk-docs-8.6.11.zip</a></li></ul>
 </p>
 
 <p>
-Some tools, though default, can be changed or removed. These tools are listed in "Tools / bar/menu" submenu and are customized in "Setup / Preferences / Tools".
+You can unpack this zip file to some directory and set a path to it in "Preferences / Tools / Path to man/tcl8.6" field. After that, the Tcl/Tk context help will be called at pressing <em>F1</em> key.
+</p>
+
+<br>
+<p>
+<h3 id=custtool>Customizing tools</h3>
+</p>
+<p>
+Some tools, though default, can be replaced or removed. These tools are listed in "Tools / bar/menu" submenu and are customized in "Setup / Preferences / Tools".
 </p>
 
 <p>
-This settings are also available through a popup menu called by right click on the toolbar.
+These settings are also available through a popup menu called by right click on the toolbar.
 </p>
 
 <p>
@@ -1028,7 +1058,7 @@ As <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">a
 <ul>
 <li><a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">Description of e_menu</a></li>
 <li><a href="../e_menu/index.html#tclkits" title="tclkits & e_menu" rel="nofollow">Using e_menu with tclkits</a></li>
-<li><a href="../e_menu/index.html#tips_and_hints" title="Tips & hints" rel="nofollow">Tips and hints</a></li>
+<li><a href="../e_menu/index.html#tips_and_hints" title="Tips & hints" rel="nofollow">Tips and hints on e_menu</a></li>
 </ul>
 </p>
 
@@ -1039,7 +1069,7 @@ As <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">a
 
 </div>
 
-<h2 id="edit">Editing</h3>
+<h2 id="edit">Editing</h2>
 <div class="level2">
 
 <p>
@@ -1163,7 +1193,7 @@ The search facilities of <span class="curid"><a href="#" class="wikilink1" title
 </p>
 
 <p>
-<b>Note</b> again: if Ctrl+F (or Ctrl+Shift+F) keys are pressed twice, a last performed search starts immediately. When you need to repeat a search in text/session with many words of a text, this feature will help a lot: just repeatedly set the cursor on the words and do it.
+<b>Note</b>: if Ctrl+F (or Ctrl+Shift+F) keys are pressed twice, a last performed search starts immediately. When you need to repeat a search in text/session with many words of a text, this feature will help a lot: just repeatedly set the cursor on the words and do it.
 </p>
 <p>Also, for  highlighting words / selected strings, use <a href="#highlightcom">alited's context menu</a> on a text or double-click on a word. If there are multiple highlighted instances, they are highlighted with reddish color, otherwise the only instance is highlighted as a usual selection. This feature is very useful for example when you need to see all uses of a variable in a procedure: double click the variable and you'll see all of its occurences. At that, mouse moves and clicks on the text don't remove the highlighting, only a keypressing does.
 </p>
@@ -1221,7 +1251,7 @@ The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">
 
 </div>
 
-<h2 id="options">Options</h3>
+<h2 id="options">Options</h2>
 <div class="level2">
 
 <p>
@@ -1255,11 +1285,21 @@ It's rarely needed, so the wrapping is normally on. This option acts per a file.
 This option allows to view an information of file attributes displayed in tips of the tab bar and the file tree.
 </p>
 
+<em>After Start</em>
+<p>
+This option allows to set command(s) that would be executed just after starting <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>.
+<br>
+You can set as many commands as you like, one command per a line. The commands may be Tcl/Tk commands or external executables.
+<br>
+These commands are sort of initialization depending on a type of projects, i.e. on a configuration described in <a href="#start">First start</a> section.
+<br>
+</p>
+
 <em>Before Run</em>
 <p>
 This option allows to set command(s) that would be executed before "Tools / Run". It's per a project.
 <br>
-You can set as many commands as you like, one command per a line.
+You can set as many commands as you like, one command per a line. The commands may be Tcl/Tk commands or external executables.
 <br>
 These commands are sort of initialization depending on a project.
 <br>
@@ -1275,7 +1315,7 @@ These commands are sort of initialization depending on a project.
 
 </div>
 
-<h2 id="links">Links</h3>
+<h2 id="links">Links</h2>
 <div class="level2">
 
 <p>
@@ -1361,6 +1401,8 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 </li>
 </ul>
 </li>
+
+<li> <a href=https://github.com/aplsimple/alited/releases/download/TclTk-docs-8.6.11/TclTk-docs-8.6.11.zip>TclTk-docs-8.6.11.zip</a></li>
 
 <li>
 <a href="../e_menu/index.html">Description of e_menu</a>
