@@ -330,14 +330,14 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
   set p(tipF3$obj) \
     "[::msgcat::mc {Current date}]: \
       [clock format [CurrentDate] -format $p(dformat$obj) -locale $p(loc$obj)]"
-  set res [list "$ownname.fra - - 1 10 {-st new} {}"]
+  set res [list "$ownname.frA - - 1 10 {-st new} {-bg $::klnd::my::p(bg1)}"]
   # if calendars are united, no display of tool bar
   if {$p(united$obj)} {
     lappend res \
-      "$ownname.fra.LabMonth$obj - - - - {pack -fill x -expand 1} {-anchor center -w 14}"
+      "$ownname.frA.LabMonth$obj - - - - {pack -fill x -expand 1} {-anchor center -w 14}"
   } else {
     lappend res \
-    "$ownname.fra.tool - - - - {pack -side top} {-array { \
+    "$ownname.frA.tool - - - - {pack -side top} {-array { \
       IM_KLND_0 {{::klnd::my::SetCurrentDay2 $obj} -tip {$::klnd::my::p(tipF3$obj)@@-under 5}} sev 6 \
       IM_KLND_1 {{::klnd::my::GoYear2 $obj -1} -tip {$::klnd::my::prevY\n(Home)@@-under 5}} h_ 2 \
       IM_KLND_2 {{::klnd::my::GoMonth2 $obj -1} -tip {$::klnd::my::prevM\n(PageUp)@@-under 5}} h_ 3 \
@@ -346,17 +346,17 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
       IM_KLND_4 {{::klnd::my::GoYear2 $obj 1} -tip {$::klnd::my::nextY\n(End)@@-under 5}} h_ 2 \
     }}"
   }
-  lappend res "$ownname.fraDays $ownname.fra T - - {-st nsew}"
+  lappend res "$ownname.frADays $ownname.frA T - - {-st nsew} {-bg $::klnd::my::p(bg1)}"
   lappend res \
-    [list $ownname.fraDays.tcl " \
+    [list $ownname.frADays.tcl " \
       set wt - ; \
       for {set i 1} {\$i<50} {incr i} { \
-        if {\$i<8} {set cur $ownname.fraDays.LabDay$obj\$i} {set cur $ownname.fraDays.BuT$obj-\[expr {\$i-7}\]KLND} ; \
+        if {\$i<8} {set cur $ownname.frADays.LabDay$obj\$i} {set cur $ownname.frADays.BuT$obj-\[expr {\$i-7}\]KLND} ; \
         if {(\$i%7)!=1} {set p L; set pw \$pr} {set p T; set pw \$wt; set wt \$cur} ; \
         if {\$i<8} { \
-          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh)}\" \
+          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh) -background $::klnd::my::p(bg1)}\" \
         } else { \
-          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0  -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w 3}\" \
+          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0  -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w 3 -background $::klnd::my::p(bg1)}\" \
         } ; \
         %C \$lwid ; \
         set pr \$cur \

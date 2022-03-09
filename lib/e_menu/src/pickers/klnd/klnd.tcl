@@ -303,8 +303,8 @@ proc ::klnd::my::MainWidgets {} {
   }
   return {
     {fra - - 1 7 {-st new} {}} \
-    {.fraTool - - 1 7 {-st new} {}}
-    {.fraTool.tool - - - - {pack -side top} {-array {
+    {.frATool - - 1 7 {-st new} {-bg $::klnd::my::p(bg1)}}
+    {.frATool.tool - - - - {pack -side top} {-array {
       IM_KLND_0 {::klnd::my::SetCurrentDay} sev 6
       IM_KLND_1 {{::klnd::my::GoYear -1} -tip "$::klnd::my::prevY\n(Home)@@-under 5"} h_ 2
       IM_KLND_2 {{::klnd::my::GoMonth -1} -tip "$::klnd::my::prevM\n(PageUp)@@-under 5"} h_ 3
@@ -312,8 +312,8 @@ proc ::klnd::my::MainWidgets {} {
       IM_KLND_3 {{::klnd::my::GoMonth 1} -tip "$::klnd::my::nextM\n(PageDown)@@-under 5"} h_ 3
       IM_KLND_4 {{::klnd::my::GoYear 1} -tip "$::klnd::my::nextY\n(End)@@-under 5"} h_ 2
     }}}
-    {.fraDays .fraTool T - - {-st nsew}}
-    {.fraDays.tcl {
+    {.frADays .frATool T - - {-st nsew} {-bg $::klnd::my::p(bg1)}}
+    {.frADays.tcl {
       # make headers and buttons of days
       if {$::tcl_platform(platform) eq {windows}} {
         set att {-highlightthickness 1}
@@ -322,12 +322,12 @@ proc ::klnd::my::MainWidgets {} {
       }
       set wt -
       for {set i 1} {$i<50} {incr i} {
-        if {$i<8} {set cur ".fraDays.LabDay$i"} {set cur ".fraDays.BuT_KLNDSTD[expr {$i-7}]"}
+        if {$i<8} {set cur ".frADays.LabDay$i"} {set cur ".frADays.BuT_KLNDSTD[expr {$i-7}]"}
         if {($i%7)!=1} {set p L; set pw $pr} {set p T; set pw $wt; set wt $cur}
         if {$i<8} {
-          set lwid "$cur $pw $p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh)}"
+          set lwid "$cur $pw $p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh) -background $::klnd::my::p(bg1)}"
         } else {
-          set lwid "$cur $pw $p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0 -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter [expr {$i-7}] 1} $::klnd::TMPTIP $att -w 3}"
+          set lwid "$cur $pw $p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0 -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter [expr {$i-7}] 1} $::klnd::TMPTIP $att -w 3 -background $::klnd::my::p(bg1)}"
         }
         %C $lwid
         set pr $cur
