@@ -94,6 +94,7 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
 
   variable p
   set y [expr {max($y,[::klnd::minYear])}]
+  set m [TrimN $m]
   # if calendars are linked with united, no display of year in a title
   if {$p(united$obj)} {set yd {}} {set yd " $y"}
   [$p($obj) LabMonth$obj] configure -text  "[lindex $p(months$obj) [expr {$m-1}]]$yd" \
@@ -128,15 +129,13 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
       if {$y==$p(y) && $m==$p(m) && $iday==$p(d)} {
         set p(icurr$obj) $i  ;# button's index of the current date
       }
-      if {$p(daylist$obj) ne {-}} {
-        set dt [FormatDay2 $obj $y $m $iday]
-        if {[lsearch -exact $p(daylist$obj) $dt]>-1} {
-          set fg $p(fgsel)
-          set bg $p(bgsel)
-        } elseif {$p(currentdate) eq "$y/$m/$iday"} {
-          set fg $p(fg2)
-          set bg $p(bg2)
-        }
+      set dt [FormatDay2 $obj $y $m $iday]
+      if {[lsearch -exact $p(daylist$obj) $dt]>-1} {
+        set fg $p(fgsel)
+        set bg $p(bgsel)
+      } elseif {$p(currentdate) eq "$y/$m/$iday"} {
+        set fg $p(fg2)
+        set bg $p(bg2)
       }
       if {$dopopup} {
         set script [MapYMD $p(popup$obj) $y $m $iday]
@@ -509,5 +508,5 @@ proc ::klnd::calendar2 {pobj w ownname args} {
 
 # _________________________________ EOF _________________________________ #
 
-#-RUNF1: ../../tests/test2_pave.tcl 1 13 12 'small icons'
+#RUNF1: ../../tests/test2_pave.tcl alt 24 9 12 "small icons"
 #RUNF1: ~/PG/github/alited/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
