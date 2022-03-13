@@ -6,7 +6,7 @@ Version `1.2.0 (8 Mar'22)`
   - BUGFIX: issue with debug & log 'puts' at using tclkits
   - BUGFIX: in "Projects", switching to other project after changing a reminder
   - BUGFIX: in alited.tcl: mistaken FILEDIR variable; mistaken exec {*}; clearances
-  - BUGFIX: closing "Check Tcl" and "Find be List" at closing app
+  - BUGFIX: closing "Check Tcl" and "Find by List" at closing app
   - BUGFIX: at starting, message "The file %f seems to be not of types"
   - BUGFIX: passing alited (if open) a file name containing spaces
   - BUGFIX: "update" after selection from menu (some DEs need it)
