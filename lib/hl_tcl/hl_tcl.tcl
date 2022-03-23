@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.36
+package provide hl_tcl 0.9.37
 
 # ______________________ Common data ____________________ #
 
@@ -928,7 +928,7 @@ proc ::hl_tcl::my::MatchedBrackets {w inplist curpos schar dchar dir} {
         if {[$w search -exact \" "$npos +1 char" end] eq {}} {
           set dir -1
         } else {
-          set lfnd [$w search -backwards -all -exact \" "$npos -1 char" 1.0]
+          set lfnd [$w search -backwards -all -exact \" $npos 1.0]
           if {[llength $lfnd] % 2} {
             set dir -1
           }

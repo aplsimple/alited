@@ -1,6 +1,11 @@
 # LAST CHANGES:
 
 
+Version `1.2.0.1 (23 Mar'22)`
+
+  - BUGFIX: hl_tcl, klnd packages
+
+
 Version `1.2.0 (8 Mar'22)`
 
   - BUGFIX: issue with debug & log 'puts' at using tclkits
