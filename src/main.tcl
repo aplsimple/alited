@@ -154,7 +154,7 @@ proc main::UpdateGutter {} {
 
   namespace upvar ::alited obPav obPav
   set wtxt [CurrentWTXT]
-  after idle "$obPav fillGutter $wtxt"
+  after idle [list after 0 "$obPav fillGutter $wtxt"]
 }
 #_______________________
 

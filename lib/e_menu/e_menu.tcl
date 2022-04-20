@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.4.8}
+  variable em_version {e_menu 3.4.9}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -710,6 +710,13 @@ proc ::em::shell0 {sel amp {silent -1}} {
   checkForShell sel
   if {[string first {%IF } $sel] == 0} {
     if {![::em::addon IF $sel sel]} {return false}
+  }
+  catch {
+    # only for Tcl files: run them by the Tcl executable (that runs e_menu)
+    lassign $sel flname
+    if {[string tolower [file extension $flname]] eq {.tcl}} {
+      set sel [::em::Tclexe]\ $sel
+    }
   }
   if {[lindex [set _ [checkForWilds sel]] 0]} {
     return [lindex $_ 1]

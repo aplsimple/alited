@@ -2,34 +2,23 @@
  Then choose a root directory of the project. Supposedly, it should
  contain all files and subdirectories of the project.
 
- The <bold><red>buttons</red></bold> under the list are used to <bold>add/change/delete</bold> a project.
+ The buttons under the list are used to <bold>add/change/delete</bold> a project.
 
  Use <bold><red>"Add" and "Change" buttons</red></bold> after filling project's data.
 
  The "Notes" field may be used as a sort of diary for the project.
+ Also, you can keep a list of TODOs in "Notes" and allocate them
+ to days of the calendar.
 
- The "Options" tab contains other details of the project:
+ The calendar and the text below are used to set deadlines of TODO.
+ It's very useful, esp. for projects developed unsteadily.
 
-   - "Skip subdirectories" - if the project directory contains some
-     subdirectories which should be ignored (most often, SCM ones like
-     ".git"), enter their tail names; separate them with spaces; use
-     double quotes if they include spaces;
+ To set a deadline:
+   - select a day in the calendar
+   - enter a text (reminder) of TODO
+   - use buttons to <bold>erase/paste/undo/redo</bold> the text
 
-   - "End of line" - if this field is empty, the EOLs for saved files
-     are defined by your platform; but if you have some projects with
-     other EOLs, set the field accordingly;
-
-   - "Indentation" is a number of spaces to indent your texts' lines;
-     if "Auto detection" is on, a text indentation is defined by its
-     first indented line while for a new file it's set by "Indentation"
-
-   - "Unit lines per 1 red bar" is a number of lines to mark a unit
-     (proc/method) with 1 red bar in its icon; a fully red icon is bad!
-
-   - "Multi-line strings" is recommended be OFF for projects with large
-     files; it's only for granular (with small source files) projects
-     that ON value could be a good choice because it can slow your work;
-     use it on your own risk.
-
- NOTE: for new projects (if this mode is checked), these options may be
- defined by "Preferences/General/Projects".
+ When the present day reaches a deadline, its TODO is highlighted
+ and the bell rings, to remind of the TODO. If the TODO is done,
+ just erase it with <red><bold>"Erase" button</red></bold>. Or click <red><bold>"Select" button</red></bold> if
+ you want to continue with doing the TODO.

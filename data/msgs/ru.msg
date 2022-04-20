@@ -47,6 +47,10 @@ namespace eval ::alited {
     {Restart} {Перезапуск}
     {Quit} {Выход}
     {Put New Line} {Добавить строку}
+    {Remove Trailing Whitespaces} {Удалить хвостовые пробелы}
+    {Remove trailing whitespaces} {Удалить хвостовые пробелы}
+    {Remove trailing whitespaces:} {Удалять хвостовые пробелы:}
+    {Remove trailing whitespaces of all lines?} {Удалить хвостовые пробелы во всех строках?}
     {Indent} {Добавить отступ}
     {Unindent} {Убрать отступ}
     {Comment} {Закомментить}
@@ -572,4 +576,4 @@ namespace eval ::bartabs {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: tclsh ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

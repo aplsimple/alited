@@ -1,4 +1,4 @@
-package ifneeded alited 1.2.0.1 [list source [file join $dir alited.tcl]]
+package ifneeded alited 1.2.1 [list source [file join $dir alited.tcl]]
 
 namespace eval ::alited {
 

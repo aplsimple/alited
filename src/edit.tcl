@@ -8,25 +8,28 @@
 
 
 namespace eval edit {
+  variable ansRemoveTrSp 0
 }
 # ________________________ Indent _________________________ #
 
-proc edit::SelectedLines {} {
+proc edit::SelectedLines {{wtxt ""}} {
   # Gets a range of lines of text that are selected at least partly.
+  #   wtxt - text's path
+  # Returns a list of the text widget's path, the range of lines, "selection".
 
-  set wtxt [alited::main::CurrentWTXT]
+  if {$wtxt eq {}} {set wtxt [alited::main::CurrentWTXT]}
   lassign [$wtxt tag ranges sel] pos1 pos2
-  if {$pos1 eq ""} {
-    set pos1 [set pos2 [$wtxt index insert]]
-  } else {
+  if {[set selection $pos1] ne {}} {
     set pos21 [$wtxt index "$pos2 linestart"]
-    if {[$wtxt get $pos21 $pos2] eq ""} {
+    if {[$wtxt get $pos21 $pos2] eq {}} {
       set pos2 [$wtxt index "$pos2 - 1 line"]
     }
+  } else {
+    set pos1 [set pos2 [$wtxt index insert]]
   }
   set l1 [expr {int($pos1)}]
   set l2 [expr {int($pos2)}]
-  return [list $wtxt $l1 $l2]
+  return [list $wtxt $l1 $l2 $selection]
 }
 #_______________________
 
@@ -289,7 +292,7 @@ proc edit::Modified {TID wtxt {l1 0} {l2 0} args} {
         set doit no
         if {[set llen [llength $al(_unittree,$TID)]]} {
           set lastrow [lindex $al(_unittree,$TID) $llen-1 5]
-          set doit [expr {$lastrow != int([$wtxt index "end -1c"])}]
+          set doit [expr {$lastrow != int([$wtxt index {end -1c}])}]
         }
         set l1 [expr {int([$wtxt index insert])}]
         set notfound [catch {set ifound [lsearch -index 4 $al(_unittree,$TID) $l1]}]
@@ -310,7 +313,38 @@ proc edit::Modified {TID wtxt {l1 0} {l2 0} args} {
   }
   alited::main::ShowHeader
 }
+#_______________________
 
+proc edit::RemoveTrailWhites {{wtxt ""} {doit 0}} {
+  # Removes trailing spaces of lines - all of lines or a selection of lines.
+  #   wtxt - text's path
+  #   doit - if 11, trimright all of text without questions
+
+  namespace upvar ::alited al al
+  variable ansRemoveTrSp
+  lassign [SelectedLines $wtxt] wtxt l1 l2
+  # ask about trailing all lines or a current line / selection
+  if {$doit<10} {
+    if {$ansRemoveTrSp<10} {
+      set ansRemoveTrSp [alited::msg yesnocancel ques \
+        {Remove trailing whitespaces of all lines?} \
+        YES -title {Remove trailing whitespaces} -ch $al(MC,noask)]
+    }
+    set doit $ansRemoveTrSp
+  }
+  if {!$doit} {
+    return
+  } elseif {$doit in {1 11}} {
+    set l1 1
+    set l2 [expr {int([$wtxt index {end -1c}])}]
+  }
+  for {set l $l1} {$l<=$l2} {incr l} {
+    set line [$wtxt get $l.0 $l.end]
+    if {[set trimmed [string trimright $line]] ne $line} {
+      $wtxt replace $l.0 $l.end $trimmed
+    }
+  }
+}
 
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

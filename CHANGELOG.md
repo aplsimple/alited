@@ -1,6 +1,16 @@
 # LAST CHANGES:
 
 
+Version `1.2.1 (20 Apr'22)`
+
+  - BUGFIX: default option values for projects (ignored dirs etc.)
+  - BUGFIX: line numbers in the gutter
+  - NEW   : "Edit / Remove Trailing Whitespaces" to trimright line/selection/text
+  - NEW   : "Preferences / Edit / Remove trailing whitespaces" option (for all texts)
+  - CHANGE: helps for Preferences & Projects dialogues
+  - CHANGE: apave, e_menu packages
+
+
 Version `1.2.0.1 (23 Mar'22)`
 
   - BUGFIX: hl_tcl, klnd packages

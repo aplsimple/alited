@@ -48,6 +48,10 @@ namespace eval ::alited {
     {Restart} {Neustart}
     {Quit} {Beenden}
     {Put New Line} {Neue Zeile einfügen}
+    {Remove Trailing Whitespaces} {Rechte Leerzeichen löschen}
+    {Remove trailing whitespaces} {Rechte Leerzeichen löschen}
+    {Remove trailing whitespaces:} {Rechte Leerzeichen löschen:}
+    {Remove trailing whitespaces of all lines?} {Rechte Leerzeichen aller Zeilen löschen?}
     {Indent} {Einrücken}
     {Unindent} {Nicht einrücken}
     {Comment} {Kommentieren}
@@ -575,4 +579,4 @@ namespace eval ::bartabs {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: tclsh ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

@@ -319,6 +319,7 @@ proc bar::OnTabSelection {TID} {
   lassign [alited::main::CalcIndentation] indent indentchar
   ::apave::setTextIndent $indent $indentchar
   if {$al(prjindentAuto)} {alited::main::UpdateProjectInfo $indent}
+  alited::menu::CheckPrjItems 
   after 10 ::alited::tree::SeeSelection
 }
 

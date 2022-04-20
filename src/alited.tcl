@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.0.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.1  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -92,6 +92,7 @@ namespace eval alited {
   set al(prjEOL) {}       ;# current project's end of line
   set al(prjredunit) 20   ;# current project's unit lines per 1 red bar
   set al(prjbeforerun) {} ;# a command to be run before "Tools/Run"
+  set al(prjtrailwhite) 0 ;# "remove trailing whitespaces" flag
 
   set al(TITLE) {%f :: %d :: %p}               ;# alited title's template
   set al(TclExtensionsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
@@ -301,7 +302,10 @@ namespace eval alited {
         ques {set title [msgcat::mc Question]}
         default {set title $al(MC,info)}
      }
+    } else {
+      set title [msgcat::mc $title]
     }
+    set message [msgcat::mc $message]
     #! if {!$noesc} {set message [string map [list \\ \\\\] $message]}
     set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
     #! after idle {catch alited::main::UpdateGutter}

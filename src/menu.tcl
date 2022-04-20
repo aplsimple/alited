@@ -31,6 +31,18 @@ proc menu::CheckMenuItems {} {
 }
 #_______________________
 
+proc menu::CheckPrjItems {} {
+  # Checks for states of menu items related to projects.
+
+  namespace upvar ::alited al al
+  if {![info exists al(_check_menu_state_)] || $al(_check_menu_state_)} {
+    if {$al(prjtrailwhite)} {set state disabled} {set state normal}
+    $al(MENUEDIT) entryconfigure 11 -state $state
+    set al(_check_menu_state_) 0
+  }
+}
+#_______________________
+
 proc menu::FillRecent {} {
   # Creates "Recent Files" menu items.
 
@@ -103,9 +115,9 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,uncomment) -command alited::edit::UnComment -accelerator $al(acc_9)
   $m add separator
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
+  $m add command -label [msgcat::mc {Remove Trailing Whitespaces}] -command alited::edit::RemoveTrailWhites
 
     ### ________________________ Conversions _________________________ ###
-
 #  $m add separator
 #  menu $m.convert -tearoff 0
 #  $m add cascade -label [msgcat::mc Conversions] -menu $m.convert

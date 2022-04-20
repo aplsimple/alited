@@ -510,17 +510,20 @@ proc pref::General_Tab3 {} {
     {.labDef - - 1 1 {-st w -pady 1 -padx 3} {-t {Default values for new projects:}}}
     {.swiDef .labDef L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(PRJDEFAULT) -com alited::pref::CheckUseDef -afteridle alited::pref::CheckUseDef}}
     {.seh .labDef T 1 10 {-st ew -pady 3 -padx 3}}
-    {.labIgn .seh T 1 1 {-st w -pady 8 -padx 3} {-t "Skip subdirectories:"}}
+    {.labIgn .seh T 1 1 {-st w -pady 8 -padx 3} {-t {$alited::al(MC,Ign:)}}}
     {.EntIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(DEFAULT,prjdirign) -w 50}}
-    {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
+    {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,EOL:)}}}
     {.CbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjEOL) -values {{} LF CR CRLF} -state readonly -w 9}}
-    {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
+    {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,indent:)}}}
     {.SpxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjindent) -w 9 -from 0 -to 8 -justify center -com ::alited::pref::CheckIndent}}
-    {.ChbIndAuto .SpxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjindentAuto) -t "Auto detection"}}
-    {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Unit lines per 1 red bar:"}}
+    {.ChbIndAuto .SpxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjindentAuto) -t {$alited::al(MC,indentAuto)}}}
+    {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,redunit)}}}
     {.SpxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjredunit) -w 9 -from 10 -to 100 -justify center}}
-    {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
+    {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.SwiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
+    {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t 
+{$alited::al(MC,trailwhite)}}}
+    {.swiTrWs .labTrWs L 1 1 {-st sw -pady 1} {-var alited::al(DEFAULT,prjtrailwhite)}}
   }
 }
 #_______________________

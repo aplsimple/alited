@@ -1,5 +1,4 @@
- Here, default values for new projects can be set. When you create
- a new project, its initial options are taken from these defaults:
+ Options of the project:
 
    - "Skip subdirectories" - if the project directory contains some
      subdirectories which should be ignored (most often, SCM ones like
@@ -26,6 +25,9 @@
      whitespaces of all texts' lines are removed at saving. Otherwise,
      "Edit" menu item can be used to do this for a current text.
 
- If you don't want to use these defaults for new projects, switch the
- top checkbox off. While preparing a new project in "Projects" dialogue,
- you can input its options in the "Options" tab.
+ NOTE: for new projects (if this mode is checked), these options may be
+ defined by "Preferences/General/Projects".
+
+ In the list of files, you can select file(s) with left-click, then use
+ right-click to invoke the context menu and open/close the files in the
+ current session.

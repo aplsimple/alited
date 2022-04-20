@@ -148,6 +148,7 @@ namespace eval ::alited {
   set al(DEFAULT,prjindentAuto) 1
   set al(DEFAULT,prjredunit) 20
   set al(DEFAULT,prjmultiline) 0
+  set al(DEFAULT,prjtrailwhite) 0
 
   # use localized messages
   set al(LOCAL) {}
@@ -233,7 +234,7 @@ proc ini::ReadIni {{projectfile ""}} {
   }
   if {$projectfile eq {} && $al(prjfile) eq {}} {
     # some options may be active outside of any project; fill them with defaults
-    foreach opt {multiline indent indentAuto EOL} {
+    foreach opt {multiline indent indentAuto EOL trailwhite} {
       set al(prj$opt) $al(DEFAULT,prj$opt)
     }
   } else {
@@ -458,8 +459,8 @@ proc ini::ReadIniPrj {} {
   namespace upvar ::alited al al
   set al(tabs) [list]
   set al(curtab) 0
-  alited::favor_ls::GetIni ""  ;# initializes favorites' lists
-  set al(prjdirign) $al(DEFAULT,prjdirign)
+  set al(_check_menu_state_) 1
+  alited::favor_ls::GetIni {}  ;# initializes favorites' lists
   if {![file exists $al(prjfile)]} {
     set al(prjfile) [file join $alited::PRJDIR default.ale]
   }

@@ -498,7 +498,9 @@ proc file::SaveFileByName {TID fname} {
   #   TID - ID of tab
   #   fname - file name
 
+  namespace upvar ::alited al al
   set wtxt [alited::main::GetWTXT $TID]
+  if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $wtxt 11}
   set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
   if {![::apave::writeTextFile $fname fcont]} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1

@@ -90,6 +90,15 @@ namespace eval ::alited {
     set al(MC,hue)         [msgcat::mc {Makes colors darker .. lighter}]
     set al(MC,maxbak)      [msgcat::mc {Maximum of backup copies per a file}]
 
+    ## _  project options _ ##
+    set al(MC,Ign:)        [msgcat::mc {Skip subdirectories:}]
+    set al(MC,EOL:)        [msgcat::mc {End of line:}]
+    set al(MC,indent:)     [msgcat::mc {Indentation:}]
+    set al(MC,indentAuto)  [msgcat::mc {Auto detection}]
+    set al(MC,redunit)     [msgcat::mc {Unit lines per 1 red bar:}]
+    set al(MC,multiline)   [msgcat::mc {Multi-line strings:}]
+    set al(MC,trailwhite)  [msgcat::mc {Remove trailing whitespaces:}]
+
     ## _ templates _ ##
     set al(MC,tpl)         [msgcat::mc Templates]
     set al(MC,tpllist)     [msgcat::mc {List of Templates}]

@@ -15,7 +15,7 @@ namespace eval project {
 
   # project options' names
   variable OPTS [list \
-    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun]
+    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite]
 
   # list of projects
   variable prjlist [list]
@@ -31,6 +31,9 @@ namespace eval project {
 
   # data of projects
   variable prjinfo; array set prjinfo [list]
+  foreach _ $OPTS {
+    catch {set prjinfo(*DEFAULT*,$_) $::alited::al(DEFAULT,$_)}  ;#default options
+  }
 
   # data of currently open project (to save/restore)
   variable curinfo; array set curinfo [list]
@@ -178,7 +181,7 @@ proc project::GetProjectOpts {fname} {
   # save project files' settings in prjinfo array
   set filecont [::apave::readTextFile $fname]
   foreach opt $OPTS {
-    catch {set prjinfo($pname,$opt) $al($opt)}  ;#defaults
+    catch {set prjinfo($pname,$opt) $prjinfo(*DEFAULT*,$opt)}  ;#defaults
   }
   set prjinfo($pname,tablist) [list]
   if {[set currentprj [expr {$curinfo(prjname) eq $pname}]]} {
@@ -191,12 +194,11 @@ proc project::GetProjectOpts {fname} {
     lassign [GetOptVal $line] opt val
     if {[lsearch $OPTS $opt]>-1} {
       set prjinfo($pname,$opt) [ProcEOL $val in]
-    } elseif {$opt eq "tab" && !$currentprj} {
+    } elseif {$opt eq {tab} && !$currentprj} {
       lappend prjinfo($pname,tablist) $val
     }
   }
   set prjinfo($pname,prjfile) $fname
-  set prjinfo($pname,prjdirign) $al(DEFAULT,prjdirign)
   set prjinfo($pname,prjname) $pname
   set al(tablist) $prjinfo($pname,tablist)
   return $pname
@@ -871,7 +873,8 @@ proc project::Help {} {
   # 'Help' button handler.
 
   variable win
-  alited::Help $win
+  if {[string match *f1 [$win.fra.fraR.nbk select]]} {set curTab {}} {set curTab 2}
+  alited::Help $win $curTab
 }
 #_______________________
 
@@ -1085,7 +1088,6 @@ proc project::Tab1 {} {
   # Creates a main tab of "Project".
 
   variable klnddata
-  variable prjinfo
   set klnddata(SAVEDATE) [set klnddata(SAVEPRJ) {}]
   set klnddata(toobar) "labKlndProm {TODO } LabKlndDate {} sev 6"
   foreach img {delete paste undo redo} {
@@ -1131,18 +1133,21 @@ proc project::Tab2 {} {
     {v_ - - 1 10}
     {lab1 v_ T 1 2 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,DEFopts)} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fra2 lab1 T 1 2 {-st nsew -cw 1}}
-    {.labIgn - - 1 1 {-st w -pady 1 -padx 3} {-t "Skip subdirectories:"}}
+    {.labIgn - - 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,Ign:)}}}
     {.entIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 50}}
-    {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t "End of line:"}}
+    {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,EOL:)}}}
     {.cbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
-    {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t "Indentation:"}}
+    {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,indent:)}}}
     {.spxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 9 -from 0 -to 8 -justify center -com {::alited::pref::CheckIndent ""}}}
-    {.chbIndAuto .spxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjindentAuto) -t "Auto detection"}}
-    {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t "Unit lines per 1 red bar:"}}
+    {.chbIndAuto .spxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjindentAuto) -t {$alited::al(MC,indentAuto)}}}
+    {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
     {.spxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 9 -from 10 -to 100 -justify center}}
-    {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t "Multi-line strings:" -tip {$alited::al(MC,notrecomm)}}}
+    {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.swiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
-    {.labFlist .labMult T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
+    {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t 
+{$alited::al(MC,trailwhite)}}}
+    {.swiTrWs .labTrWs L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite)}}
+    {.labFlist .labTrWs T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
     {fraFlist .labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -tip {-BALTIP {$alited::al(MC,TipLbx)} -MAXEXP 1} -popup {::alited::project::LbxPopup %X %Y}}}
     {.sbvFlist .lbxFlist L - - {pack -side left}}
