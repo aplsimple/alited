@@ -198,7 +198,7 @@ proc complete::AutoCompleteCommand {} {
           }
         }
       }
-    } else {
+    } elseif {$com ni {exit return break continue pwd pid}} {
       append com { }
     }
     $wtxt insert $pos $com

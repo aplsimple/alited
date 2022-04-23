@@ -1,6 +1,19 @@
 # LAST CHANGES:
 
 
+Version `1.2.2a2 (23 Apr'22)`
+
+  - CHANGE: Preferences' code snippets: curr.line & TODO comment (#!..) colors
+  - CHANGE: hl_tcl package
+
+
+Version `1.2.2a1 (21 Apr'22)`
+
+  - CHANGE: at completion, some commands need no adding a space
+  - CHANGE: additional checking to avoid duplicates in "Last Visited"
+  - CHANGE: separator on the undo stack for trailing spaces removed
+
+
 Version `1.2.1 (20 Apr'22)`
 
   - BUGFIX: default option values for projects (ignored dirs etc.)

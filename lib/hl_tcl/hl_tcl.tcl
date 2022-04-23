@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.37
+package provide hl_tcl 0.9.38
 
 # ______________________ Common data ____________________ #
 
@@ -1053,11 +1053,12 @@ proc ::hl_tcl::hl_init {txt args} {
   #   -multiline - flag "allowed multi-line strings"
   #   -cmd - command to watch editing/viewing
   #   -cmdpos - command to watch cursor positioning
-  #   -colors - list of colors: clrCOM, clrCOMTK, clrSTR, clrVAR, clrCMN, clrPROC
+  #   -colors - list of colors as set in hl_tcl::hl_colorNames
   #   -font - attributes of font
   #   -seen - lines seen at start
   #   -keywords - additional commands to highlight (as Tk ones)
   # This procedure has to be called before writing a text in the text widget.
+  # See also: hl_colorNames
 
   if {[set setonly [expr {[lindex $args 0] eq {--}}]]} {
     set args [lrange $args 1 end]
@@ -1078,9 +1079,12 @@ proc ::hl_tcl::hl_init {txt args} {
   unset ::hl_tcl::my::data(KEYWORDS,$txt)
   if {[dict exists $args -colors]} {
     set colors [dict get $args -colors]
-    if {[llength $colors]==9} {
-      lassign [addingColors $::hl_tcl::my::data(DARK,$txt)] -> clrCMN2
-      lappend colors $clrCMN2  ;# if #TODO color omitted, add it
+    lassign [addingColors $::hl_tcl::my::data(DARK,$txt)] clrCURL clrCMN2
+    if {[set llen [llength $colors]]==8} {
+      lappend colors $clrCURL  ;# add curr.line color if omitted
+    }
+    if {$llen==9} {
+      lappend colors $clrCMN2  ;# add #TODO color if omitted
     }
     set ::hl_tcl::my::data(COLORS,$txt) $colors
     set ::hl_tcl::my::data(SETCOLORS,$txt) 1
@@ -1229,10 +1233,11 @@ proc ::hl_tcl::hl_line {txt} {
 }
 #_____
 
-proc ::hl_tcl::addingColors {{dark ""} {txt ""}} {
+proc ::hl_tcl::addingColors {{dark ""} {txt ""} {cs ""}} {
   # Sets/gets colors for a text syntax highlighting.
   #   dark - yes, if the current theme is dark
   #   txt - path to the text or {}
+  #   cs - color scheme
   # If *txt* omitted, returns a list of resting colors.
   # The resting colors are:
   #   - current line's background
@@ -1240,7 +1245,7 @@ proc ::hl_tcl::addingColors {{dark ""} {txt ""}} {
 
   variable my::data
   # try to get color options from current apave settings
-  if {[catch {set clrCURL [lindex [::apave::obj csGet] 16]}]} {
+  if {[catch {set clrCURL [lindex [::apave::obj csGet $cs] 16]}]} {
     set clrCURL {}
   }
   if {$dark eq {}} {
@@ -1259,7 +1264,6 @@ proc ::hl_tcl::addingColors {{dark ""} {txt ""}} {
     return [list $clrCURL $clrCMN2]
   }
   set my::data(COLORS,$txt) [list {*}[hl_colors $txt] $clrCURL $clrCMN2]
-  return
 }
 
 # _________________________________ EOF _________________________________ #

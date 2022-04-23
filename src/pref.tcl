@@ -366,11 +366,7 @@ proc pref::Tab {tab {nt ""} {doit no}} {
   if {$tab eq {nbk2}} {
     # check if a color scheme is switched light/dark - if yes, disable colors
     set cs [GetCS]
-    set light1 [CsDark $data(INI,CSsaved)]
-    set light2 [CsDark $cs]
-    if { $light1 != $light2} {
-      set msg [msgcat::mc {Color scheme's light changed.}]
-      alited::Message $msg 3 [$obDl2 LabMess]
+    if {$data(INI,CSsaved)!=$cs} {
       Tcl_Default 0 yes
       C_Default 0 yes
       UpdateSyntaxTab
@@ -856,11 +852,11 @@ proc pref::InitSyntaxTcl {colornames} {
   set tex [$obDl2 TexSample]
   if {[string trim [$tex get 1.0 end]] eq {}} {
   $obDl2 displayText $tex {proc foo {args} {
-    # Tcl code to test colors.
-    set var "(Multiline string)
-      Args=$args"
-    winfo interps -displayof [lindex $args 0]
-    return $var
+  # Tcl code to test colors.
+  set var "(Multiline string)
+    Args=$args"
+  winfo interps -displayof [lindex $args 0]
+  return $var ;#! TODO
 }}}
   set wk [$obDl2 TexTclKeys]
   ::apave::bindToEvent $wk <FocusOut> alited::pref::UpdateSyntaxTab
@@ -881,14 +877,14 @@ proc pref::InitSyntaxC {colornames} {
   set tex [$obDl2 TexCSample]
   if {[string trim [$tex get 1.0 end]] eq {}} {
     $obDl2 displayText $tex {static sample(const char *ptr) {
-    /*   C/C++ code to test colors.   */
-    char *text, *st;
-    text = read_text();
-    st   = read_string();
-    if (strstr(text, st) != text) return FALSE;
-    text += strlen(st);
-    ptr = strstr(text + 1, "My string"); // error
-    return TRUE
+  /*   C/C++ code to test colors.   */
+  char *text, *st;
+  text = read_text();
+  st   = read_string();
+  if (strstr(text, st) != text) return FALSE;
+  text += strlen(st);
+  ptr = strstr(text + 1, "My string"); // error
+  return TRUE
 }}}
   set wk [$obDl2 TexCKeys]
   ::apave::bindToEvent $wk <FocusOut> alited::pref::UpdateSyntaxTab 2
@@ -912,6 +908,9 @@ proc pref::UpdateSyntaxTab {{lng ""}} {
       lappend colors $al(ED,$nam)
       lappend Ccolors $al(ED,C$nam)
     }
+    lassign [::hl_tcl::addingColors [CsDark] {} [GetCS]] clrCURL clrCMN2
+    lappend colors $clrCURL $clrCMN2
+    lappend Ccolors $clrCURL $clrCMN2
     InitSyntaxTcl $colors
     InitSyntaxC $Ccolors
   }

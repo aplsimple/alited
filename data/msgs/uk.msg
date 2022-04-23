@@ -385,7 +385,6 @@ namespace eval ::alited {
     {Space between wraps:} {Відступ згортованих рядків:}
     {Tab bar label's length:} {Довжина назв панелі файлів:}
     {Tab bar tip's length:} {Довжина підказок панелі файлів:}
-    {Color scheme's light changed.} {Тон колірної схеми змінений.}
     {Code snippet:} {Фрагмент коду:}
   }
 

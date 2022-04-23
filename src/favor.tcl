@@ -58,6 +58,7 @@ proc favor::LastVisited {item header {l1 -1}} {
     lassign $it - - ID - values
     lassign $values name2 fname2 header2
     if {$fname eq $fname2 && $header eq $header2} {
+      if {$i==0} return ;# already 1st: no need to move it
       set found yes
       # if found, move it to 0th position
       set al(FAV,visited) [lreplace $al(FAV,visited) $i $i]

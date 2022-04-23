@@ -1,4 +1,3 @@
-
  In the "Tcl files' extensions" field, you can set any
  additional extensions for the Tcl files you use.
 

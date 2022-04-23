@@ -381,7 +381,6 @@ namespace eval ::alited {
     {Space between wraps:} {Platz zwischen Umbrüche:}
     {Tab bar label's length:} {Tab-Leiste Beschriftungslänge:}
     {Tab bar tip's length:} {Tab-Leiste Tiplänge:}
-    {Color scheme's light changed.} {Helligkeit des Farbschema hat sich geändert.}
     {Code snippet:} {Codeausschnitt:}
   }
 

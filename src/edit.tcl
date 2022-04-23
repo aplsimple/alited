@@ -338,12 +338,16 @@ proc edit::RemoveTrailWhites {{wtxt ""} {doit 0}} {
     set l1 1
     set l2 [expr {int([$wtxt index {end -1c}])}]
   }
+  set wasedit no
   for {set l $l1} {$l<=$l2} {incr l} {
     set line [$wtxt get $l.0 $l.end]
     if {[set trimmed [string trimright $line]] ne $line} {
+      if {!$wasedit} {$wtxt edit separator}
+      set wasedit yes
       $wtxt replace $l.0 $l.end $trimmed
     }
   }
+  if {$wasedit} {$wtxt edit separator}
 }
 
 # _________________________________ EOF _________________________________ #
