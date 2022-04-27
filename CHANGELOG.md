@@ -1,6 +1,11 @@
 # LAST CHANGES:
 
 
+Version `1.2.2b1 (27 Apr'22)`
+
+  - CHANGE: %D & %f wildcards filled in bar/menu icon tips & Tools/bar/menu items
+
+
 Version `1.2.2a2 (23 Apr'22)`
 
   - CHANGE: Preferences' code snippets: curr.line & TODO comment (#!..) colors

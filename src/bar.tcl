@@ -302,19 +302,21 @@ proc bar::OnTabSelection {TID} {
   #   TID - tab's ID
 
   namespace upvar ::alited al al
+  set fname [FileName $TID]
   alited::main::ShowText
   alited::file::SbhText
   alited::find::ClearTags
   alited::ini::SaveCurrentIni $al(INI,save_onselect)
   alited::edit::CheckSaveIcons [alited::file::IsModified $TID]
   alited::edit::CheckUndoRedoIcons [alited::main::CurrentWTXT] $TID
-  if {[alited::file::IsTcl [FileName]]} {set indst normal} {set indst disabled}
+  if {[alited::file::IsTcl $fname]} {set indst normal} {set indst disabled}
   $al(MENUEDIT) entryconfigure 5 -state $indst
   if {[alited::edit::CommentChar] ne {}} {set cmnst normal} {set cmnst disabled}
   if {[set wtxt [alited::main::GetWTXT $TID]] ne {}} {
     set al(wrapwords) [expr {[$wtxt cget -wrap] eq {word}}]
   }
-  CurrentControlTab [FileName $TID]
+  CurrentControlTab $fname
+  alited::menu::FillRunItems $fname
   alited::main::HighlightLine
   lassign [alited::main::CalcIndentation] indent indentchar
   ::apave::setTextIndent $indent $indentchar

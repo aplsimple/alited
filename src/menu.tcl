@@ -72,7 +72,36 @@ proc menu::SetTint {tint} {
   alited::main::ShowText
   alited::bar::BAR update
 }
+#_______________________
 
+proc menu::MapRunItems {fname} {
+  # Gets a map list to map %f & %D wildcards to the current file & directory names.
+  #  fname - the current file name
+
+  set ftail [file tail $fname]
+  return [list %D [file dirname $fname] %f $fname %F $ftail \$::FILETAIL $ftail]
+}
+#_______________________
+
+proc menu::FillRunItems {fname} {
+  # Fills Tools/e_menu items, depending on a currently edited file.
+  #   fname - the current file name
+  # Maps %f & %D wildcards to the current file & directory names.
+
+  namespace upvar ::alited al al
+  namespace upvar ::alited::pref em_Num em_Num \
+    em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
+  set m $al(TOOLS)
+  set maplist [MapRunItems $fname]
+  for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
+    if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
+      if {!$em_sep($i)} {
+        set txt [string map $maplist $em_mnu($i)]
+        $m.runs entryconfigure $i -label $txt
+      }
+    }
+  }
+}
 #_______________________
 
 proc menu::FillMenu {} {

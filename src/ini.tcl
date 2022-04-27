@@ -1052,7 +1052,7 @@ proc ini::_init {} {
           set txt {}
         }
         set tip [string map {% %%} $em_mnu($i)]
-        append al(atools) " $img \{{} -tip {$tip@@ -under 4} $txt "
+        append al(atools) " $img \{{} -tip {$tip@@ -under 4 -command {alited::ini::ToolbarTip %w {%t}}} $txt "
         append al(atools) "-com {[alited::tool::EM_command $i]}\}"
       }
     }
@@ -1066,6 +1066,17 @@ proc ini::_init {} {
   ::apave::initStylesFS -size $al(FONTSIZE,small)
   lassign [::apave::obj create_FontsType small -size $al(FONTSIZE,small)] \
      al(FONT,defsmall) al(FONT,monosmall)
+}
+#_______________________
+
+proc ini::ToolbarTip {w tip} {
+  # Gets a tip for a toolbar button.
+  #   w - the button's path
+  #   tip - original tip
+  # Maps %f & %D wildcards to the current file & directory names.
+
+  set maplist [alited::menu::MapRunItems [alited::bar::FileName]]
+  return [string map $maplist $tip]
 }
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
