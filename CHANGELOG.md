@@ -1,10 +1,11 @@
 # LAST CHANGES:
 
 
-Version `1.2.2b2 (30 Apr'22)`
+Version `1.2.2b3 (30 Apr'22)`
 
   - BUGFIX: save TODO of Projects at "Undo changes"
   - BUGFIX: disable "Remove trailing whitespaces" switch of Preferences/Projects
+  - BUGFIX: selection of unit/file tree at file operations
   - CHANGE: set the current month if no blinking TODO in Projects
   - CHANGE: %D & %f wildcards filled in bar/menu icon tips & Tools/bar/menu items
   - CHANGE: additional checking to avoid duplicates in "Last Visited"

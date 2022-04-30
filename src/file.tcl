@@ -133,6 +133,7 @@ proc file::OutwardChange {TID {docheck yes}} {
   alited::bar::BAR $TID configure --mtime $curtime --mtimefile $fname \
     -tip [FileStat $fname]
   if {[info exists do_update_tree]} {
+    if {$al(TREE,isunits)} {set fname {}}
     ::alited::tree::RecreateTree {} $fname
   }
 }
@@ -532,6 +533,7 @@ proc file::SaveFile {{TID ""} {doit no}} {
   alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)" $doit
   if {!$doit} {
     alited::main::ShowHeader yes
+    if {$al(TREE,isunits)} {set fname {}}
     alited::tree::RecreateTree {} $fname
     alited::tree::SeeSelection
   }
@@ -558,6 +560,7 @@ proc file::SaveFileAs {{TID ""}} {
   } elseif {[set res [SaveFileByName $TID $fname]]} {
     RenameFile $TID $fname
     alited::main::ShowHeader yes
+    if {$al(TREE,isunits)} {set fname {}}
     alited::tree::RecreateTree {} $fname
     alited::tree::SeeSelection
   }
@@ -735,8 +738,8 @@ proc file::MoveExternal {f1112} {
     return no  ;# no project directory or the file is inside it
   }
   set addmsg [msgcat::mc {THE EXTERNAL FILE IS MOVED TO THE PROJECT!}]
-  set fname2 [DoMoveFile $fname $al(prjroot) $f1112 "$addmsg\n\n"]
-  alited::tree::RecreateTree {} $fname2
+  set fname [DoMoveFile $fname $al(prjroot) $f1112 "$addmsg\n\n"]
+  alited::tree::RecreateTree {} $fname
   alited::main::ShowHeader yes
   return yes
 }
@@ -769,7 +772,9 @@ proc file::DropFiles {wtree fromIDs toID} {
       continue
     }
     if {[file dirname $curfile] ne $dirname} {
-      lappend newnames [DoMoveFile $curfile $dirname yes]
+      if {[set name [DoMoveFile $curfile $dirname yes]] ne {}} {
+        lappend newnames $name
+      }
     }
   }
   if {[info exists newnames]} {
@@ -833,20 +838,25 @@ proc file::MoveFiles {wtree to itemIDs f1112} {
       return
     }
   }
-  set movedfiles [list]
   if {$isexternal} {
     # this file is external to the project - ask to move it into the project
-    lappend movedfiles [DoMoveFile $curfile $dirname $f1112]
+    if {[set name [DoMoveFile $curfile $dirname $f1112]] ne {}} {
+      lappend movedfiles $name
+    }
   } else {
     set f1112 [expr {$f1112 || [llength $itemIDs]>1}]
     foreach ID $itemIDs {
       set curfile [lindex [$wtree item $ID -values] 1]
-      lappend movedfiles [DoMoveFile $curfile $dirname $f1112]
+      if {[set name [DoMoveFile $curfile $dirname $f1112]] ne {}} {
+        lappend movedfiles $name
+      }
     }
   }
-  $wtree selection set {}
-  alited::tree::RecreateTree {} $movedfiles
-  alited::main::ShowHeader yes
+  if {[info exists movedfiles]} {
+    $wtree selection set {}
+    alited::tree::RecreateTree {} $movedfiles
+    alited::main::ShowHeader yes
+  }
 }
 #_______________________
 

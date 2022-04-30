@@ -51,7 +51,7 @@ proc favor::LastVisited {item header {l1 -1}} {
   # checks done, save this last visit
   set fname [alited::bar::FileName] 
   set lvisit [list $name $fname $header]
-  if {$lvisit in [lindex $al(FAV,visited) 0]} {
+  if {$lvisit eq [lindex $al(FAV,visited) 0 4]} {
     return ;# already 1st: no need to put it
   }
   # search an old item
@@ -62,6 +62,7 @@ proc favor::LastVisited {item header {l1 -1}} {
     lassign $it - - ID - values
     lassign $values name2 fname2 header2
     if {$fname eq $fname2 && $header eq $header2} {
+      if {!$i} return ;# already 1st: no need to put it
       set found yes
       # if found, move it to 0th position
       set al(FAV,visited) [lreplace $al(FAV,visited) $i $i]
