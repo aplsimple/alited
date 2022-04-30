@@ -1,9 +1,15 @@
 # LAST CHANGES:
 
 
-Version `1.2.2b1 (27 Apr'22)`
+Version `1.2.2b2 (30 Apr'22)`
 
+  - BUGFIX: save TODO of Projects at "Undo changes"
+  - BUGFIX: disable "Remove trailing whitespaces" switch of Preferences/Projects
+  - CHANGE: set the current month if no blinking TODO in Projects
   - CHANGE: %D & %f wildcards filled in bar/menu icon tips & Tools/bar/menu items
+  - CHANGE: additional checking to avoid duplicates in "Last Visited"
+  - CHANGE: About/Acknowledgements
+  - CHANGE: klnd package
 
 
 Version `1.2.2a2 (23 Apr'22)`
@@ -15,7 +21,6 @@ Version `1.2.2a2 (23 Apr'22)`
 Version `1.2.2a1 (21 Apr'22)`
 
   - CHANGE: at completion, some commands need no adding a space
-  - CHANGE: additional checking to avoid duplicates in "Last Visited"
   - CHANGE: separator on the undo stack for trailing spaces removed
 
 

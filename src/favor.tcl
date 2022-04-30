@@ -50,6 +50,10 @@ proc favor::LastVisited {item header {l1 -1}} {
   if {[string trim $name] eq {}} return
   # checks done, save this last visit
   set fname [alited::bar::FileName] 
+  set lvisit [list $name $fname $header]
+  if {$lvisit in [lindex $al(FAV,visited) 0]} {
+    return ;# already 1st: no need to put it
+  }
   # search an old item
   set found no
   set i 0
@@ -58,7 +62,6 @@ proc favor::LastVisited {item header {l1 -1}} {
     lassign $it - - ID - values
     lassign $values name2 fname2 header2
     if {$fname eq $fname2 && $header eq $header2} {
-      if {$i==0} return ;# already 1st: no need to move it
       set found yes
       # if found, move it to 0th position
       set al(FAV,visited) [lreplace $al(FAV,visited) $i $i]
@@ -70,7 +73,7 @@ proc favor::LastVisited {item header {l1 -1}} {
     # already 1st in last visits, maybe with a changed name
     set al(FAV,visited) [lreplace $al(FAV,visited) 0 0]
   }
-  set al(FAV,visited) [linsert $al(FAV,visited) 0 [list - - - - [list $name $fname $header]]]
+  set al(FAV,visited) [linsert $al(FAV,visited) 0 [list - - - - $lvisit]]
   # delete last items if the list's limit is exceeded
   catch {set al(FAV,visited) [lreplace $al(FAV,visited) $al(FAV,MAXLAST) end]}
   # update the tree widget

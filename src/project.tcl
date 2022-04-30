@@ -354,9 +354,6 @@ proc project::Klnd_save {} {
   variable prjinfo
   variable klnddata
   set wtxt [$obDl2 TexKlnd]
-  if {$klnddata(SAVEDATE) eq {} || ![$wtxt edit canundo]} {
-    return ;# no changes
-  }
   if {[set prjname $klnddata(SAVEPRJ)] eq {}} return
   set text [string trim [$wtxt get 1.0 end]]
   set date $klnddata(SAVEDATE)
@@ -430,8 +427,9 @@ proc project::Select {{item ""}} {
       $tree selection set $item
     }
     if {$dmin>0} {
-      KlndGoto $dmin
+      KlndDayRem $dmin
     } else {
+      KlndDay [clock seconds] no
       KlndBorderText
     }
     $tree see $item
@@ -557,16 +555,25 @@ proc project::ValidProject {} {
 }
 #_______________________
 
-proc project::KlndGoto {dmin} {
-  # Selects a date of reminder before a current one.
-  #   dmin - date in seconds to select
+proc project::KlndDay {dsec {doblink yes}} {
+  # Selects a date of reminder.
+  #   dsec - date in seconds to select
+  #   doblink - if yes, make the month blink
 
   variable klnddata
-  set d [clock format $dmin -format $klnddata(dateformat)]
+  set d [clock format $dsec -format $klnddata(dateformat)]
   lassign [split $d /] y m d
   set m [string trimleft $m { 0}]
   set d [string trimleft $d { 0}]
-  ::klnd::selectedDay {} $y $m $d
+  ::klnd::selectedDay {} $y $m $d $doblink
+}
+#_______________________
+
+proc project::KlndDayRem {dmin} {
+  # Selects a date of reminder before a current one.
+  #   dmin - date in seconds to select
+
+  KlndDay $dmin
   after idle {::alited::project::KlndBorderText red}
 }
 #_______________________
@@ -900,7 +907,7 @@ proc project::ProjectEnter {} {
     if {[$win.fra.fraR.nbk select] ne $tab1} {
       $win.fra.fraR.nbk select $tab1
     }
-    KlndGoto $dmin
+    KlndDayRem $dmin
     set msg [msgcat::mc {TODO reminders for the past: %d. Delete them or try "Select".}]
     set dmin [clock format $dmin -format $klnddata(dateformat)]
     set msg [string map [list %d $dmin] $msg]

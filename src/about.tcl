@@ -30,8 +30,15 @@ proc about::About {} {
     [list "linkHE" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/HE@@"] \
     [list "linkRD" "::apave::openDoc %t@@https://github.com/rdbende@@"] \
     [list "linkPO" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Paul+Obermeier@@"] \
+    [list "linkPW" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/PW@@"] \
     [list "linkRK" "::apave::openDoc %t@@https://rkeene.org/projects/info@@"] \
     [list "linkMIT" "::apave::openDoc %t@@https://en.wikipedia.org/wiki/MIT_License@@"] \
+    [list "linkJS" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Jeff+Smith@@"] \
+    [list "linkRS" "::apave::openDoc %t@@http://wiki.tcl-lang.org/page/Richard+Suchenwirth@@"] \
+    [list "linkAN" "::apave::openDoc %t@@https://www.magicsplat.com/@@"] \
+    [list "linkDF" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Donal+Fellows@@"] \
+    [list "linkJO" "::apave::openDoc %t@@https://www.johann-oberdorfer.eu/@@"] \
+    [list "linkTW" "::apave::openDoc %t@@https://github.com/phase1geo@@"] \
     ]
   set long1 [msgcat::mc {And well fit for programming with it.}]
   set long2 __________________________________________
@@ -58,14 +65,21 @@ proc about::About {} {
   set ackn [msgcat::mc "Many thanks to the following people\n who have contributed to this project"]
   set spec [msgcat::mc "Special thanks also to"]
   set ::alited::AcknText "\n $ackn\n\n \
-      \u2022 <linkCN>Csaba Nemethi</linkCN>\n \
-      \u2022 <linkSH>Steve Huntley</linkSH>\n \
-      \u2022 <linkHE>Holger Ewert</linkHE>\n \
-      \u2022 <linkRD>rdbende</linkRD>\n \
-      \n $spec\n\n \
-      \u2022 <linkPO>Paul Obermeier</linkPO>\n \
-      \u2022 <linkRK>Roy Keene</linkRK>\n \
-      "
+    \u2022 <linkSH>Steve Huntley</linkSH>\n \
+    \u2022 <linkHE>Holger Ewert</linkHE>\n \
+    \u2022 <linkCN>Csaba Nemethi</linkCN>\n \
+    \u2022 <linkPO>Paul Obermeier</linkPO>\n \
+    \n $spec\n\n \
+    \u2022 <linkRS>Richard Suchenwirth</linkRS>\n \
+    \u2022 <linkJO>Johann Oberdorfer</linkJO>\n \
+    \u2022 <linkRD>rdbende</linkRD>\n \
+    \u2022 <linkPW>Paul Walton</linkPW>\n \
+    \u2022 <linkJS>Jeff Smith</linkJS>\n \
+    \u2022 <linkTW>Trevor Williams</linkTW>\n \
+    \u2022 <linkAN>Ashok P. Nadkarni</linkAN>\n \
+    \u2022 <linkDF>Donal K. Fellows</linkDF>\n \
+    \u2022 <linkRK>Roy Keene</linkRK>\n \
+    "
   set tab2 [list Information Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AcknText -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
   ::alited::msg ok {} $msg \
     -title [msgcat::mc About] -t 1 -w $wmax -h {30 30} -scroll 0 \

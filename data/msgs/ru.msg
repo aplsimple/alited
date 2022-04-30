@@ -333,7 +333,7 @@ namespace eval ::alited {
     {Authors:} {Авторы:}
     {License:} {Лицензия:}
     {Acknowledgements} {Благодарности}
-    "Many thanks to the following people\n who have contributed to this project" "Огромное спасибо всем людям,\n внесшим свой вклад в этот проект"
+    "Many thanks to the following people\n who have contributed to this project" "Огромное спасибо всем этим людям,\n внесшим свой вклад в этот проект"
     {Special thanks also to} {Особая благодарность также}
   }
 

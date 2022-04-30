@@ -519,7 +519,7 @@ proc pref::General_Tab3 {} {
     {.SwiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t 
 {$alited::al(MC,trailwhite)}}}
-    {.swiTrWs .labTrWs L 1 1 {-st sw -pady 1} {-var alited::al(DEFAULT,prjtrailwhite)}}
+    {.SwiTrWs .labTrWs L 1 1 {-st sw -pady 1} {-var alited::al(DEFAULT,prjtrailwhite)}}
   }
 }
 #_______________________
@@ -596,7 +596,7 @@ proc pref::CheckUseDef {} {
     set state disabled
     [$obDl2 CbxEOL] configure -state $state
   }
-  foreach w {EntIgn SpxIndent SpxRedunit SwiMult ChbIndAuto} {
+  foreach w {EntIgn SpxIndent SpxRedunit SwiMult ChbIndAuto SwiTrWs} {
     [$obDl2 $w] configure -state $state
   }
 }

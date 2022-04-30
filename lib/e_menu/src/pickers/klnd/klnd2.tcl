@@ -410,12 +410,13 @@ proc ::klnd::update {{obj {}} {year {}} {month {}} {hllist {}}} {
 }
 #_______________________
 
-proc ::klnd::selectedDay {{obj {}} {y {}} {m {}} {d {}}} {
+proc ::klnd::selectedDay {{obj {}} {y {}} {m {}} {d {}} {doblink yes}} {
   # Gets a selected day.
   #   obj - index of the calendar
   #   y - year
   #   m - month
   #   d - day
+  #   doblink - if yes, make the month blink
   # If y/m/d are set, they define currently selected date.
   # Returns a list of year, month, day
 
@@ -429,7 +430,7 @@ proc ::klnd::selectedDay {{obj {}} {y {}} {m {}} {d {}}} {
       set p(olddate$obj) [my::FormatDay2 $obj $y $m $d]
       set $my::p(tvar$obj) $p(olddate$obj)
     }
-    after idle "::klnd::my::ShowMonth2 $obj $m $y yes yes; ::klnd::blinking yes"
+    after idle "::klnd::my::ShowMonth2 $obj $m $y yes yes; ::klnd::blinking $doblink"
   }
   return [list $my::p(yvis$obj) $my::p(mvis$obj) $my::p(dvis$obj)]
 }
