@@ -1,44 +1,25 @@
 # LAST CHANGES:
 
 
-Version `1.2.2b3 (30 Apr'22)`
+Version `1.2.2 (4 May'22)`
 
   - BUGFIX: save TODO of Projects at "Undo changes"
-  - BUGFIX: disable "Remove trailing whitespaces" switch of Preferences/Projects
   - BUGFIX: selection of unit/file tree at file operations
-  - CHANGE: set the current month if no blinking TODO in Projects
-  - CHANGE: %D & %f wildcards filled in bar/menu icon tips & Tools/bar/menu items
-  - CHANGE: additional checking to avoid duplicates in "Last Visited"
-  - CHANGE: About/Acknowledgements
-  - CHANGE: klnd package
-
-
-Version `1.2.2a2 (23 Apr'22)`
-
-  - CHANGE: Preferences' code snippets: curr.line & TODO comment (#!..) colors
-  - CHANGE: hl_tcl package
-
-
-Version `1.2.2a1 (21 Apr'22)`
-
-  - CHANGE: at completion, some commands need no adding a space
-  - CHANGE: separator on the undo stack for trailing spaces removed
-
-
-Version `1.2.1 (20 Apr'22)`
-
   - BUGFIX: default option values for projects (ignored dirs etc.)
   - BUGFIX: line numbers in the gutter
   - NEW   : "Edit / Remove Trailing Whitespaces" to trimright line/selection/text
   - NEW   : "Preferences / Projects / Remove trailing whitespaces" option (for all texts)
   - NEW   : "Projects / Options / Remove trailing whitespaces" option (for all texts)
+  - CHANGE: set the current month if no blinking TODO in Projects
+  - CHANGE: %D & %f wildcards filled in bar/menu icon tips & Tools/bar/menu items
+  - CHANGE: additional checking to avoid duplicates in "Last Visited"
+  - CHANGE: Preferences' code snippets: curr.line & TODO comment (#!..) colors
+  - CHANGE: at completion, some commands need no adding a space
+  - CHANGE: separator on the undo stack for trailing spaces removed
+  - CHANGE: hl_tcl, klnd packages
   - CHANGE: helps for Preferences & Projects dialogues
+  - CHANGE: About / Acknowledgements
   - CHANGE: apave, e_menu packages
-
-
-Version `1.2.0.1 (23 Mar'22)`
-
-  - BUGFIX: hl_tcl, klnd packages
 
 
 Version `1.2.0 (8 Mar'22)`
