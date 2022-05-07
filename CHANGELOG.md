@@ -15,11 +15,9 @@ Version `1.2.2 (4 May'22)`
   - CHANGE: additional checking to avoid duplicates in "Last Visited"
   - CHANGE: Preferences' code snippets: curr.line & TODO comment (#!..) colors
   - CHANGE: at completion, some commands need no adding a space
-  - CHANGE: separator on the undo stack for trailing spaces removed
-  - CHANGE: hl_tcl, klnd packages
   - CHANGE: helps for Preferences & Projects dialogues
   - CHANGE: About / Acknowledgements
-  - CHANGE: apave, e_menu packages
+  - CHANGE: apave, e_menu, hl_tcl, klnd packages
 
 
 Version `1.2.0 (8 Mar'22)`
