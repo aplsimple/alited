@@ -1413,16 +1413,21 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
-  method AuxSetChooserGeometry {vargeo parent widname} {
+  method AuxSetChooserGeometry {vargeo vargeo2 parent widname} {
     # Auxiliary method to set some Linux choosers' geometry.
     #   vargeo - variable for geometry value
+    #   vargeo2 - variable for geometry value with second type of dialogue
     #   parent - list containing a parent's path
     #   widname - name of the chooser
+    # If there is no saved geometry with *vargeo*, tries to get it with *vargeo2*.
     # Returns a path to the chooser to be open.
 
     set wchooser [lindex $parent 1].$widname
+    if {[catch {lassign [set $vargeo] -> geom}] || $geom eq {}} {
+      # no saved geometry with *vargeo*, so get it with *vargeo2*
+      catch {lassign [set $vargeo2] -> geom}
+    }
     catch {
-      lassign [set $vargeo] -> geom
       if {[string match *x*+*+* $geom] && [::islinux]} {
         after idle "catch {wm geometry $wchooser $geom}"
       }
@@ -1489,7 +1494,7 @@ oo::class create ::apave::APave {
       set nchooser "my $choosname $tvar"
     } elseif {$choosname in {tk_getOpenFile tk_getSaveFile}} {
       set vargeo $filvar
-      set widname [my AuxSetChooserGeometry $vargeo $parent __tk_filedialog]
+      set widname [my AuxSetChooserGeometry $vargeo $dirvar $parent __tk_filedialog]
       if {[set fn [set $tvar]] eq {}} {
         set dn [pwd]
       } else {
@@ -1501,7 +1506,7 @@ oo::class create ::apave::APave {
       incr isfilename
     } elseif {$nchooser eq {tk_chooseDirectory}} {
       set vargeo $dirvar
-      set widname [my AuxSetChooserGeometry $vargeo $parent __tk_choosedir]
+      set widname [my AuxSetChooserGeometry $vargeo $filvar $parent __tk_choosedir]
       set args "-initialdir \"[set $tvar]\" $parent $args"
       incr isfilename
     }

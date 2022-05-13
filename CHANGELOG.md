@@ -1,6 +1,12 @@
 # LAST CHANGES:
 
 
+Version `1.2.3a1 (13 May'22)`
+
+  - BUGFIX: entering Projects first time after deploying alited (vars not existing)
+  - CHANGE: apave package
+
+
 Version `1.2.2 (4 May'22)`
 
   - BUGFIX: save TODO of Projects at "Undo changes"

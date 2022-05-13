@@ -142,6 +142,9 @@ namespace eval ::alited {
 
   # defaults for projects
   set al(PRJDEFAULT) 1
+  set al(DEFAULT,prjname) {}
+  set al(DEFAULT,prjroot) {}
+  set al(DEFAULT,prjbeforerun) {}
   set al(DEFAULT,prjdirign) {.git .bak}
   set al(DEFAULT,prjEOL) {}
   set al(DEFAULT,prjindent) 4
