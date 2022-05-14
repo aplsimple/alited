@@ -344,12 +344,16 @@ oo::class create ::apave::APaveDialog {
     set err [catch {$txt tag ranges sel} sel]
     if {!$err && [llength $sel]==2} {
       lassign $sel pos pos2
-      set pos3 "insert"  ;# single selection
+      set pos3 insert  ;# single selection
     } else {
       lassign [my GetLinePosition $txt insert] pos pos2  ;# current line
       set pos3 $pos2
     }
     set duptext [$txt get $pos $pos2]
+    if {$pos3 ne {insert} && $pos2==[$txt index end]} {
+      # current line is the last one: duplicate it properly
+      set duptext \n[string range $duptext 0 end-1]
+    }
     $txt insert $pos3 $duptext
     if {$dobreak} {return -code break}
     return

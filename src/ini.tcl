@@ -966,6 +966,7 @@ proc ini::_init {} {
   lassign [::apave::InitTheme $al(THEME) $::alited::LIBDIR] theme lbd
   ::apave::initWM -cursorwidth $al(CURSORWIDTH) -theme $theme -labelborder $lbd
   ::apave::iconImage -init $al(INI,ICONS)
+  ::apave::setProperty DirFilGeoVars [list ::alited::DirGeometry ::alited::FilGeometry]
   set ::apave::MC_NS ::alited
   InitGUI
   CheckIni

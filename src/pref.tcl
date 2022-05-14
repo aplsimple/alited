@@ -100,6 +100,7 @@ namespace eval pref {
     18 [list {Put New Line} Control-P] \
     19 [list {Complete Commands} Tab] \
     20 [list {To Matched Bracket} Alt-B] \
+    21 [list {File List} F9] \
   ]
 
   # size of standard keys' data

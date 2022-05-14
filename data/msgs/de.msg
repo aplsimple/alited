@@ -554,6 +554,7 @@ namespace eval ::alited {
     {... All} {... alles}
     {... All at Left} {... alles links}
     {... All at Right} {... alles rechts}
+    {File List} {Liste von Dateien}
   }
 
   ## ________________________ --EONS-- _________________________ ##

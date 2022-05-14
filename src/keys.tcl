@@ -193,6 +193,7 @@ proc keys::ReservedAdd {wtxt} {
   Add action insert-line  [alited::pref::BindKey 18 - Control-P] {alited::main::InsertLine; break}
   Add action autocomplete [alited::pref::BindKey 19 - Tab] {alited::complete::AutoCompleteCommand; break}
   Add action goto-bracket [alited::pref::BindKey 20 - Alt-B] {alited::main::GotoBracket; break}
+  Add action file-list [alited::pref::BindKey 21 - F9] {alited::bar::BAR popList %X %Y; break}
 }
 #_______________________
 

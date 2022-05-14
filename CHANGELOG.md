@@ -1,9 +1,11 @@
 # LAST CHANGES:
 
 
-Version `1.2.3a1 (13 May'22)`
+Version `1.2.3a2 (14 May'22)`
 
-  - BUGFIX: entering Projects first time after deploying alited (vars not existing)
+  - BUGFIX: Projects dialogue after deploying alited 1st time (vars not existing)
+  - NEW   : (customizable) F9 key to show a list of open files, at mouse pointer
+  - CHANGE: save dir chooser's geometry of choosing ~/.config (the very 1st dialogue)
   - CHANGE: apave package
 
 
