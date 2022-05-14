@@ -21,7 +21,7 @@ in=1.0
 ::EMENU7ZCNT=0
 ::EMENU7ZCOM=zip -r
 ::EMENU7ZARC=~/PG/github/apl-github
-::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/pave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/ale_themes/*
+::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/pave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/ale_themes/*\n~/PG/github/tclbag/*\n~/PG/github/osetr/*
 ::EMENU7ZSKIP=
 ::EMENU7ZBAK=/media/apl/KINGSTON/
 ::EMENU7ZGIT=0
@@ -29,7 +29,7 @@ in=1.0
 ::EMENU_MULST1=~/TMP/em_mulst.ini
 ::EMENU_MULST2=~/TMP/em_mulst.txt
 ::EMENU_MULST5=regexp--
-pos=13.0
+pos=84.81
 [MENU]
 
  R: Trimmer *.tcl R: cd $::EMENUDIR1
@@ -81,8 +81,7 @@ SW: Ruff! $::EMENUP2 ... SW: tclsh ~/UTILS/ruff.tcl "$::EMENUP2"
      cp -f ~/PG/github/mulster/tasks/ruff/mulstered/$::EMENUP2html $::EMENUMULSTRES2" ; \
      set ::EMENUP2html [file normalize [file join $::EMENUMULSTRES2 $::EMENUP2html]] \
    } else {set ::EMTMP ""}
-SW: Ruff! $::EMENUP2 ... SW: $::EMTMP
- R: Ruff! $::EMENUP2 ... R: tclsh ~/UTILS/highlight_tcl/tcl_html.tcl $::EMENUP2html
+SW: Ruff! $::EMENUP2 ... SW: $::EMTMP ; tclsh ~/UTILS/highlight_tcl/tcl_html.tcl "$::EMENUP2html"
  R: Ruff! $::EMENUP2 ... R: %B $::EMENUP2html
 
  R: Ruff! all ... R: %I {} "PROJECT NAME" { \
