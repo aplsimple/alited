@@ -389,7 +389,7 @@ proc tool::Runs {mc runs} {
   set runs [string map [list $alited::EOL \n] $runs]
   foreach run [split $runs \n] {
     if {[set run [string trim $run]] ne {} && [string first # $run]!=0} {
-      if {[catch {eval {*}$run} e]} {
+      if {[catch {eval $run} e]} {
         catch {exec -- {*}$run} e
       }
       alited::info::Put "$mc: \"$run\" -> $e"

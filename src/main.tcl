@@ -54,7 +54,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
   lassign [alited::bar::GetTabState $TID --pos --selection] pos selrange
   set doreload no  ;# obsolete
   set doinit yes
-  if {$TIDold eq "-1"} {
+  if {$TIDold eq {-1} && $TID eq {tab0}} {
     ;# first text to edit in original Text widget: create its scrollbar
     BindsForText $TID $wtxt
     ::apave::logMessage "first $curfile"
@@ -457,9 +457,8 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
   #   s - key's state
 
   namespace upvar ::alited al al obPav obPav
-  # only for unit tree and not navigation key and not Alt/Ctrl pressed
-  if {!$al(TREE,isunits) || ($s!=0 && $s!=1 && $s!=8) || \
-  ($K in {Up Down Left Right Next Prior Home End} && $s!=8)} {
+  # only for unit tree and not navigation key
+  if {!$al(TREE,isunits) || $K in {Up Down Left Right Next Prior Home End Insert}} {
     return
   }
   # check for current text and current unit's lines
@@ -493,7 +492,7 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
     lassign $it lev leaf fl1 title l1 l2
     if {$name eq [alited::tree::UnitTitle $title $l1 $l2]} {
       set al(CPOS,$TID,$header) [alited::p+ $pos -$l1]
-      break
+      return
     }
   }
 }
@@ -667,7 +666,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.buTExp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus -command {alited::tree::ExpandContractTree Tree} -tip "Expand All"}}
     {.fraBot.panBM.fraTree.fra1.sev3 - - - - {pack -side right -fill y -padx 0}}
     {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
-    {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1} 
+    {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1}
       {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0 -selectmode extended -tip {alited::tree::GetTooltip %i %c}}}
     {.fraBot.panBM.fraTree.fra.SbvTree .fraBot.panBM.fraTree.fra.Tree L - - {pack -side right -fill both}}
     {.FraFV - - - - {add}}

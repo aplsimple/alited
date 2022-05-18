@@ -370,8 +370,10 @@ proc file::CheckForNew {{docheck no}} {
   # Checks if there is a file in bar of tabs and creates "No name" tab, if no tab exists.
   #   docheck - if yes, does checking, if no - run itself with docheck=yes
 
+  namespace upvar ::alited al al
   if {$docheck} {
-    if {![llength [alited::bar::BAR listTab]]} {
+    if {![llength [alited::bar::BAR listTab]] && \
+    (![info exists al(skipnoN)] || !$al(skipnoN))} {
       alited::file::NewFile
     }
   } else {
@@ -526,7 +528,7 @@ proc file::SaveFile {{TID ""} {doit no}} {
   namespace upvar ::alited al al
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
-  if {$fname in [list {} $al(MC,nofile)]} {
+  if {[IsNoName $fname]} {
     return [SaveFileAs $TID]
   }
   set res [SaveFileByName $TID $fname]
@@ -549,13 +551,13 @@ proc file::SaveFileAs {{TID ""}} {
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
   set alited::al(filename) [file tail $fname]
-  if {$alited::al(filename) in [list {} $al(MC,nofile)]} {
+  if {[IsNoName $alited::al(filename)]} {
     set alited::al(filename) {}
   }
   set fname [$obPav chooser tk_getSaveFile alited::al(filename) -title \
     [msgcat::mc {Save as}] -initialdir [file dirname $fname] -parent $al(WIN) \
     -defaultextension .tcl]
-  if {$fname in [list {} $al(MC,nofile)]} {
+  if {[IsNoName $fname]} {
     set res 0
   } elseif {[set res [SaveFileByName $TID $fname]]} {
     RenameFile $TID $fname

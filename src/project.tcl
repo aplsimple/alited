@@ -13,10 +13,6 @@ namespace eval project {
   # "Projects" dialogue's path
   variable win $::alited::al(WIN).diaPrj
 
-  # project options' names
-  variable OPTS [list \
-    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite]
-
   # list of projects
   variable prjlist [list]
 
@@ -31,7 +27,7 @@ namespace eval project {
 
   # data of projects
   variable prjinfo; array set prjinfo [list]
-  foreach _ $OPTS {
+  foreach _ $::alited::OPTS {
     catch {set prjinfo(*DEFAULT*,$_) $::alited::al(DEFAULT,$_)}  ;#default options
   }
 
@@ -142,9 +138,8 @@ proc project::ProcEOL {val mode} {
 proc project::SaveSettings {} {
   # Saves project settings to curinfo array.
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al OPTS OPTS
   variable curinfo
-  variable OPTS
   foreach v $OPTS {
     set curinfo($v) $al($v)
   }
@@ -155,9 +150,8 @@ proc project::SaveSettings {} {
 proc project::RestoreSettings {} {
   # Restores project settings from curinfo array.
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al OPTS OPTS
   variable curinfo
-  variable OPTS
   foreach v $OPTS {
     set al($v) $curinfo($v)
   }
@@ -170,10 +164,9 @@ proc project::GetProjectOpts {fname} {
   # Reads a project's settings from a project settings file.
   #   fname - the project settings file's name
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al OPTS OPTS
   variable prjlist
   variable prjinfo
-  variable OPTS
   variable curinfo
   set pname [ProjectName $fname]
   # save project names to 'prjlist' variable to display it by treeview widget
@@ -187,14 +180,16 @@ proc project::GetProjectOpts {fname} {
   if {[set currentprj [expr {$curinfo(prjname) eq $pname}]]} {
     foreach tab [alited::bar::BAR listTab] {
       set tid [lindex $tab 0]
-      lappend prjinfo($pname,tablist) [alited::bar::FileName $tid]
+      if {[set val [alited::bar::FileName $tid]] ne {}} {
+        lappend prjinfo($pname,tablist) $val
+      }
     }
   }
   foreach line [::apave::textsplit $filecont] {
     lassign [GetOptVal $line] opt val
     if {[lsearch $OPTS $opt]>-1} {
       set prjinfo($pname,$opt) [ProcEOL $val in]
-    } elseif {$opt eq {tab} && !$currentprj} {
+    } elseif {$opt eq {tab} && !$currentprj && $val ne {}} {
       lappend prjinfo($pname,tablist) $val
     }
   }
@@ -211,9 +206,8 @@ proc project::PutProjectOpts {fname oldname dorename} {
   #   oldname - old name of the project file
   #   dorename - yes, if rename of old -notes/-rems
 
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al obDl2 obDl2 OPTS OPTS
   variable prjinfo
-  variable OPTS
   set filecont [::apave::readTextFile $oldname]
   set newcont {}
   foreach line [::apave::textsplit $filecont] {
@@ -225,7 +219,7 @@ proc project::PutProjectOpts {fname oldname dorename} {
     } elseif {$opt in [list tab rem tablist {*}$OPTS]} {
       continue
     } elseif {$opt in {curtab}} {
-      # 
+      #
     } elseif {$line eq {[Options]}} {
       foreach opt $OPTS {
         if {$opt ni {prjname tablist}} {
@@ -391,10 +385,9 @@ proc project::KlndBorderText {{clr {}}} {
 proc project::Select {{item ""}} {
   # Handles a selection in a list of projects.
 
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al obDl2 obDl2 OPTS OPTS
   variable prjlist
-  variable prjinfo 
-  variable OPTS
+  variable prjinfo
   variable klnddata
   variable curinfo
   if {$item eq {}} {set item [Selected item no]}
@@ -419,7 +412,10 @@ proc project::Select {{item ""}} {
     $wtxt edit reset; $wtxt edit modified no
     lassign [SortRems [ReadRems $prj]] dmin prjinfo($prj,prjrem)
     foreach opt $OPTS {
-      set al($opt) $prjinfo($prj,$opt)
+      if {[catch {set al($opt) $prjinfo($prj,$opt)} e]} {
+        alited::Message2 $e
+        return
+      }
     }
     set al(tablist) $prjinfo($prj,tablist)
     TabFileInfo
@@ -691,10 +687,9 @@ proc project::LbxPopup {X Y} {
 proc project::Add {} {
   # "Add project" button's handler.
 
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al obDl2 obDl2 OPTS OPTS
   variable prjlist
   variable prjinfo
-  variable OPTS
   SaveNotes
   if {![ValidProject] || [ExistingProject yes] ne {}} return
   set al(tablist) [list]
@@ -832,7 +827,8 @@ proc project::Ok {args} {
   set fname [ProjectFileName $pname]
   RestoreSettings
   alited::ini::SaveIni
-  alited::file::CloseAll 1 -skipsel  ;# the selected tabs aren't closed 
+  set al(skipnoN) 1 ;# to skip "No name" at closing all
+  alited::file::CloseAll 1 -skipsel  ;# the selected tabs aren't closed
   set selfiles [list]                ;# -> get their file names to reopen afterwards
   foreach tid [alited::bar::BAR listFlag s] {
     lappend selfiles [alited::bar::FileName $tid]
@@ -857,6 +853,8 @@ proc project::Ok {args} {
   alited::favor::ShowFavVisit
   [$obPav Tree] selection set {}  ;# new project - no group selected
   update
+  set al(skipnoN) 0
+  alited::file::CheckForNew yes
   alited::main::ShowText
   if {!$al(TREE,isunits)} {after idle alited::tree::RecreateTree}
   $obDl2 res $win 1
@@ -1151,8 +1149,7 @@ proc project::Tab2 {} {
     {.spxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 9 -from 10 -to 100 -justify center}}
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.swiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
-    {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t 
-{$alited::al(MC,trailwhite)}}}
+    {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
     {.swiTrWs .labTrWs L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite)}}
     {.labFlist .labTrWs T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
     {fraFlist .labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}

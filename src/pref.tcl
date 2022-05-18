@@ -85,22 +85,22 @@ namespace eval pref {
      3 [list {Run File} F5] \
      4 [list {Double Selection} Control-D] \
      5 [list {Delete Line} Control-Y] \
-     6 [list {Indent} Control-I] \
-     7 [list {Unindent} Control-U] \
-     8 [list {Comment} Control-bracketleft] \
-     9 [list {Uncomment} Control-bracketright] \
+     6 [list $::alited::al(MC,indent) Control-I] \
+     7 [list $::alited::al(MC,unindent) Control-U] \
+     8 [list $::alited::al(MC,comment) Control-bracketleft] \
+     9 [list $::alited::al(MC,uncomment) Control-bracketright] \
     10 [list {Highlight First} Alt-Q] \
     11 [list {Highlight Last} Alt-W] \
     12 [list {Find Next Match} F3] \
-    13 [list {Look for Declaration} Control-L] \
-    14 [list {Look for Word} Control-Shift-L] \
+    13 [list $::alited::al(MC,lookdecl) Control-L] \
+    14 [list $::alited::al(MC,lookword) Control-Shift-L] \
     15 [list {Item up} F11] \
     16 [list {Item down} F12] \
-    17 [list {Go to Line} Control-G] \
+    17 [list $::alited::al(MC,toline) Control-G] \
     18 [list {Put New Line} Control-P] \
     19 [list {Complete Commands} Tab] \
-    20 [list {To Matched Bracket} Alt-B] \
-    21 [list {File List} F9] \
+    20 [list $::alited::al(MC,tomatched) Alt-B] \
+    21 [list $::alited::al(MC,filelist) F9] \
   ]
 
   # size of standard keys' data
@@ -499,7 +499,7 @@ proc pref::General_Tab2 {} {
 #_______________________
 
 proc pref::General_Tab3 {} {
-  # Serves to layout "General/Defaults" tab.
+  # Serves to layout "General/Projects" tab.
 
   return {
     {v_ - - 1 10}
@@ -518,8 +518,7 @@ proc pref::General_Tab3 {} {
     {.SpxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjredunit) -w 9 -from 10 -to 100 -justify center}}
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.SwiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
-    {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t 
-{$alited::al(MC,trailwhite)}}}
+    {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
     {.SwiTrWs .labTrWs L 1 1 {-st sw -pady 1} {-var alited::al(DEFAULT,prjtrailwhite)}}
   }
 }
@@ -615,7 +614,7 @@ proc pref::GetCS {{ncc {}}} {
 proc pref::CsDark {{cs ""}} {
   # Gets a lightness of a color scheme.
   #   cs - the color scheme's index (if omitted, the chosen one's)
-  
+
   if {$cs eq {}} {set cs [GetCS]}
   return [::apave::obj csDark $cs]
 }

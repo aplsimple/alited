@@ -28,8 +28,8 @@ proc bar::PopupTip {wmenu idx TID} {
   # wmenu - path to popup menu
   # idx - index of item
   # TID - ID of item's tab
-  
-  ::baltip::tip $wmenu [FileName $TID] -index $idx -pause 800
+
+  ::baltip::tip $wmenu [alited::file::FileStat [FileName $TID]] -index $idx -pause 800
 }
 #_______________________
 
@@ -321,7 +321,7 @@ proc bar::OnTabSelection {TID} {
   lassign [alited::main::CalcIndentation] indent indentchar
   ::apave::setTextIndent $indent $indentchar
   if {$al(prjindentAuto)} {alited::main::UpdateProjectInfo $indent}
-  alited::menu::CheckPrjItems 
+  alited::menu::CheckPrjItems
   after 10 ::alited::tree::SeeSelection
 }
 

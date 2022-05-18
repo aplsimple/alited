@@ -158,15 +158,15 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,findreplace) -command alited::find::_run -accelerator Ctrl+F
   $m add command -label $al(MC,findnext) -command {alited::find::Next ; after idle alited::main::SaveVisitInfo} -accelerator $al(acc_12)
   $m add separator
-  $m add command -label [msgcat::mc {Look for Declaration}] -command alited::find::SearchUnit -accelerator $al(acc_13)
-  $m add command -label [msgcat::mc {Look for Word}] -command alited::find::SearchWordInSession -accelerator $al(acc_14)
+  $m add command -label $al(MC,lookdecl) -command alited::find::SearchUnit -accelerator $al(acc_13)
+  $m add command -label $al(MC,lookword) -command alited::find::SearchWordInSession -accelerator $al(acc_14)
   $m add command -label [msgcat::mc {Find Unit}] -command alited::find::FindUnit -accelerator Ctrl+Shift+F
   $m add command -label [msgcat::mc {Find by List}] -command alited::find::SearchByList
   $m add separator
   $m add command -label [msgcat::mc {To Last Visited}] -command alited::unit::SwitchUnits -accelerator Alt+BackSpace
-  $m add command -label [msgcat::mc {To Matched Bracket}] -command {alited::main::GotoBracket yes} -accelerator $al(acc_20)
+  $m add command -label $al(MC,tomatched) -command {alited::main::GotoBracket yes} -accelerator $al(acc_20)
   $m add separator
-  $m add command -label [msgcat::mc {Go to Line}] -command alited::main::GotoLine -accelerator $al(acc_17)
+  $m add command -label $al(MC,toline) -command alited::main::GotoLine -accelerator $al(acc_17)
 
   ## ________________________ Tools _________________________ ##
   set m [set al(TOOLS) $al(WIN).menu.tool]
@@ -193,6 +193,7 @@ proc menu::FillMenu {} {
     ### ________________________ Other tools _________________________ ###
   $m add separator
   $m add command -label $al(MC,checktcl) -command alited::CheckRun
+  $m add command -label $al(MC,filelist) -command {alited::bar::BAR popList} -accelerator $al(acc_21)
   $m add separator
   $m add command -label $al(MC,colorpicker) -command alited::tool::ColorPicker
   $m add command -label [msgcat::mc {Screen Loupe}] -command alited::tool::Loupe

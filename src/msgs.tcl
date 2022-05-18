@@ -90,6 +90,12 @@ namespace eval ::alited {
     set al(MC,hue)         [msgcat::mc {Makes colors darker .. lighter}]
     set al(MC,maxbak)      [msgcat::mc {Maximum of backup copies per a file}]
 
+    ## _  menu items _ ##
+    set al(MC,lookdecl)    [msgcat::mc {Look for Declaration}]
+    set al(MC,lookword)    [msgcat::mc {Look for Word}]
+    set al(MC,toline)      [msgcat::mc {Go to Line}]
+    set al(MC,tomatched)   [msgcat::mc {To Matched Bracket}]
+
     ## _  project options _ ##
     set al(MC,Ign:)        [msgcat::mc {Skip subdirectories:}]
     set al(MC,EOL:)        [msgcat::mc {End of line:}]
@@ -167,6 +173,7 @@ namespace eval ::alited {
     set al(MC,nottoopen)   [msgcat::mc "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?"]
     set al(MC,renamefile)  [msgcat::mc {Rename File}]
     set al(MC,openselfile) [msgcat::mc {Open Selected File(s)}]
+    set al(MC,filelist)    [msgcat::mc {File List}]
 
     ## _ checking ini directory _ ##
     set al(MC,chini1)      [msgcat::mc {Choosing Directory for Settings}]

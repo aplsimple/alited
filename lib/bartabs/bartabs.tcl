@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.5.4
+package provide bartabs 1.5.5
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -1878,7 +1878,7 @@ method tabID {txt} {
 }
 #_______________________
 
-method popList {X Y} {
+method popList {{X ""} {Y ""}} {
 # Shows a menu of tabs.
 #   X - x coordinate of mouse pointer
 #   Y - y coordinate of mouse pointer
@@ -1893,6 +1893,7 @@ method popList {X Y} {
     destroy $popi
   } else {
     my Bar_MenuList $BID -1 $popi $plist
+    if {$X eq {}} {lassign [winfo pointerxy .] X Y}
     tk_popup $popi $X $Y
   }
 }

@@ -1,12 +1,19 @@
 # LAST CHANGES:
 
+  - TODO - BUGFIX: messages in status bar of Projects
+  - TODO - BUGFIX: switching projects with no file or with "No name" tab
 
-Version `1.2.3a2 (14 May'22)`
+Version `1.2.3a5 (18 May'22)`
 
+  - BUGFIX: not save "No name" of project's file list
   - BUGFIX: Projects dialogue after deploying alited 1st time (vars not existing)
+  - BUGFIX: evaluation of Tcl commands of "Setup / After Start (Before Run)"
   - NEW   : (customizable) F9 key to show a list of open files, at mouse pointer
+  - NEW   : "Tools / File List" menu item
+  - CHANGE: simplify checking keys to save last visits
+  - CHANGE: tooltips of file list with (optional) file info
   - CHANGE: save dir chooser's geometry of choosing ~/.config (the very 1st dialogue)
-  - CHANGE: apave package
+  - CHANGE: apave, bartabs packages
 
 
 Version `1.2.2 (4 May'22)`

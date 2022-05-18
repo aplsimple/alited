@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.3a2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.3a5  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -83,6 +83,11 @@ namespace eval alited {
   variable PRJEXT .ale     ;# project file's extension
   variable EOL {@~}        ;# "end of line" for ini-files
 
+  # project options' names
+  variable OPTS [list \
+    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite]
+
+  # project options' values
   set al(prjname) {}      ;# current project's name
   set al(prjfile) {}      ;# current project's file name
   set al(prjroot) {}      ;# current project's directory name

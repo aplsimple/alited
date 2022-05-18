@@ -1,4 +1,4 @@
-package ifneeded alited 1.2.3a2 [list source [file join $dir alited.tcl]]
+package ifneeded alited 1.2.3a5 [list source [file join $dir alited.tcl]]
 
 namespace eval ::alited {
 
@@ -11,7 +11,7 @@ The *alited* stands for "a lite editor".
 
 The main features of *alited* are:
 
-  * structured code 
+  * structured code
   * easy access to the code
   * born for [Tcl/Tk](https://wiki.tcl-lang.org/) development only
 

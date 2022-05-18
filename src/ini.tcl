@@ -141,17 +141,8 @@ namespace eval ::alited {
   set al(CURSORWIDTH) 2
 
   # defaults for projects
-  set al(PRJDEFAULT) 1
-  set al(DEFAULT,prjname) {}
-  set al(DEFAULT,prjroot) {}
-  set al(DEFAULT,prjbeforerun) {}
-  set al(DEFAULT,prjdirign) {.git .bak}
-  set al(DEFAULT,prjEOL) {}
-  set al(DEFAULT,prjindent) 4
-  set al(DEFAULT,prjindentAuto) 1
-  set al(DEFAULT,prjredunit) 20
-  set al(DEFAULT,prjmultiline) 0
-  set al(DEFAULT,prjtrailwhite) 0
+  foreach _ $::alited::OPTS {set prjinfo(DEFAULT,$_) $::alited::al($_)}
+  set al(PRJDEFAULT) 1  ;# is Preferences/General/Projects/Default values for new projects
 
   # use localized messages
   set al(LOCAL) {}
@@ -594,7 +585,7 @@ proc ini::SaveIni {{newproject no}} {
 
   namespace upvar ::alited al al obPav obPav
   namespace upvar ::alited::pref em_Num em_Num em_sep em_sep em_ico em_ico em_inf em_inf
-  namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo OPTS OPTS
+  namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo
   puts "alited storing: $al(INI)"
   set chan [open $::alited::al(INI) w]
   puts $chan {[Options]}
