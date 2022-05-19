@@ -1,15 +1,18 @@
 # LAST CHANGES:
 
-  - TODO - BUGFIX: messages in status bar of Projects
-  - TODO - BUGFIX: switching projects with no file or with "No name" tab
 
-Version `1.2.3a5 (18 May'22)`
+Version `1.2.3b1 (19 May'22)`
 
+  - BUGFIX: switching projects with no file or with "No name" tab
   - BUGFIX: not save "No name" of project's file list
+  - BUGFIX: clearing messages in status bar of Projects
+  - BUGFIX: checking for duplicate icons of tools
   - BUGFIX: Projects dialogue after deploying alited 1st time (vars not existing)
   - BUGFIX: evaluation of Tcl commands of "Setup / After Start (Before Run)"
+  - NEW   : in Projects, clear project name and choose its dir -> make its name
   - NEW   : (customizable) F9 key to show a list of open files, at mouse pointer
   - NEW   : "Tools / File List" menu item
+  - NEW   : hint on running in console/tkcon (in Preferences/Tools/tkcon)
   - CHANGE: simplify checking keys to save last visits
   - CHANGE: tooltips of file list with (optional) file info
   - CHANGE: save dir chooser's geometry of choosing ~/.config (the very 1st dialogue)

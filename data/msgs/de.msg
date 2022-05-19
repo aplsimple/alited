@@ -321,7 +321,7 @@ namespace eval ::alited {
   ## ________________________ Checking ini directory ________________________ ##
   ::msgcat::mcmset de {
     {Choosing Directory for Settings} {Verzeichnis für die Konfiguration auswählen}
-    "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" 
+    "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n"
 	"\n \"alited\" benötigt ein Konfigurationsverzeichnis um die Einstellungen zu speichern.\n Du kannst den Namen an alited als Argument übergeben.\n\n Das vorgegebene Konfigurationsverzeichnis ist \"%d\".\n Dies ist zu bevorzugen um  \"alited\" ohne Argumente zu benuzten.\n"
     {Choose a directory} {Verzeichnis auswählen}
   }
@@ -498,6 +498,7 @@ namespace eval ::alited {
     "\n Enter commands to be run after starting alited. They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific environment.\n" "\n Geben Sie Befehle ein, die nach dem Starten von alited ausgeführt werden sollen,\n das heißt Tcl Befehle oder ausführbare Dateien, z.B.:\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n Es kann für eine bestimmte Umgebung notwendig sein.\n"
     "\n Enter commands to be run before running a current file with \"Tools/Run\". They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific project. Something like an initialization before \"Run\".\n" "\n Eingabe von Befehlen, die ausgeführt werde bevor die aktuelle Datei ausgeführt wird mit \"Werkzeuge/ausführen\",\n das heißt Tcl Befehle oder ausführbare Dateien, z.B.:\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n Dies kann für bestimmte Projekte notwendig sein. Das entspricht in etwa einer Initialisierung bevor \"Ausführen\". \n"
     {e_menu's own} {e_menu eigen}
+    {(if ON, Tcl scripts run in console, otherwise in tkcon)} {(wenn ON, werden Skripte in der Konsole ausgeführt, sonst in tkcon)}
   }
 
   ## ________________________ Checks ________________________ ##

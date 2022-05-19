@@ -1031,6 +1031,7 @@ proc ini::_init {} {
       }
     }
   }
+  set limgs [list]
   for {set i [set was 0]} {$i<$em_Num} {incr i} {
     if {[info exists em_ico($i)] && ($em_ico($i) ni {none {}} || $em_sep($i))} {
       if {[incr was]==1 && !$em_sep($i)} {
@@ -1046,6 +1047,13 @@ proc ini::_init {} {
           set img [CreateIcon $em_ico($i)]-big
           set txt {}
         }
+        if {[lsearch -exact $limgs $img]>-1} {
+          bell
+          set img [string map {-big {}} [lindex [split $img _] end]]
+          tk_messageBox -icon error -message "alited ERROR\n\nDuplicate tool icon: $img"
+          continue
+        }
+        lappend limgs $img
         set tip [string map {% %%} $em_mnu($i)]
         append al(atools) " $img \{{} -tip {$tip@@ -under 4 -command {alited::ini::ToolbarTip %w {%t}}} $txt "
         append al(atools) "-com {[alited::tool::EM_command $i]}\}"
@@ -1061,6 +1069,7 @@ proc ini::_init {} {
   ::apave::initStylesFS -size $al(FONTSIZE,small)
   lassign [::apave::obj create_FontsType small -size $al(FONTSIZE,small)] \
      al(FONT,defsmall) al(FONT,monosmall)
+  lassign [alited::FgFgBold] -> al(FG,Bold)
 }
 #_______________________
 

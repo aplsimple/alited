@@ -1244,15 +1244,16 @@ proc pref::Tkcon_Tab {} {
     {fra.scf.v_ fra.scf.lfr T 1 1  {pack} {-h 10}}
     {fra.scf.lfr2 fra.scf.v_ T 1 1  {pack -fill x} {-t Options}}
     {.labRows - - 1 1 {-st w -pady 1 -padx 3} {-t "Rows:"}}
-    {.spxRows .labRows L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,rows) -from 4 -to 40 -w 9}}
+    {.spxRows .labRows L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,rows) -from 4 -to 40 -w 9}}
     {.labCols .labRows T 1 1 {-st w -pady 1 -padx 3} {-t "Columns:"}}
-    {.spxCols .labCols L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,cols) -from 15 -to 150 -w 9}}
+    {.spxCols .labCols L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,cols) -from 15 -to 150 -w 9}}
     {.labFsize .labCols T 1 1 {-st w -pady 1 -padx 3} {-t "Font size:"}}
-    {.spxFS .labFsize L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,fsize) -from 8 -to 20 -w 9}}
+    {.spxFS .labFsize L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,fsize) -from 8 -to 20 -w 9}}
     {.labGeo .labFsize T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
-    {.entGeo .labGeo L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,geo) -w 20}}
+    {.entGeo .labGeo L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,geo) -w 20}}
     {.labTopmost .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Stay on top:"}}
     {.swiTopmost .labTopmost L 1 1 {-st sw -pady 1} {-var alited::al(tkcon,topmost)}}
+    {.labtmhint .swiTopmost L 1 1 {-st w -pady 1 -padx 3} {-t "(if ON, Tcl scripts run in console, otherwise in tkcon)"  -foreground $alited::al(FG,Bold)}}
     {fra.scf.but - - - - {pack -side left -pady 5} {-t Default -com {alited::pref::Tkcon_Default; alited::pref::UpdateTkconTab} -w 20}}
     {fra.scf.but2 - - - - {pack -side left -padx 5 -pady 5} {-t Test -com alited::tool::tkcon -w 20}}
   }

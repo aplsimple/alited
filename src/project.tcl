@@ -430,7 +430,7 @@ proc project::Select {{item ""}} {
     }
     $tree see $item
     $tree focus $item
-    alited::Message2 {}
+#    alited::Message2 {}
     ::klnd::blinking no
     set klnddata(SAVEDATE) {}
     catch {after cancel $klnddata(AFTERKLND)}
@@ -681,6 +681,18 @@ proc project::LbxPopup {X Y} {
   baltip::sleep 1000
   tk_popup $popm $X $Y
 }
+#_______________________
+
+proc project::ValidateDir {} {
+  # Tries to get a project name at choosing root dir.
+
+  namespace upvar ::alited al al
+  if {$al(prjname) eq {}} {
+    set al(prjname) [file tail $al(prjroot)]
+    update
+  }
+  return yes
+}
 
 # ________________________ Buttons for project list _________________________ #
 
@@ -695,13 +707,16 @@ proc project::Add {} {
   set al(tablist) [list]
   TabFileInfo
   set pname $al(prjname)
+  set proot $al(prjroot)
   set al(prjfile) [ProjectFileName $pname]
   set al(prjbeforerun) {}
   if {$al(PRJDEFAULT)} {
-    # use project defaults from "Setup/Common/Projects"
+    # use project defaults from "Setup/Common/Projects", except for prjname & prjroot
     foreach opt $OPTS {
       catch {set al($opt) $al(DEFAULT,$opt)}
     }
+    set al(prjname) $pname
+    set al(prjroot) $proot
   }
   alited::ini::SaveIni yes  ;# to initialize ini-file
   foreach opt $OPTS {
@@ -757,7 +772,7 @@ proc project::Change {} {
 proc project::Delete {} {
   # "Delete project" button's handler.
 
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al
   variable prjlist
   variable prjinfo
   variable win
@@ -1110,7 +1125,7 @@ proc project::Tab1 {} {
     {.labName - - 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,prjName)}}}
     {.EntName .labName L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 60}}
     {.labDir .labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
-    {.Dir .labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 60}}
+    {.Dir .labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 60 -validate all -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 lab T 2 1 {-st nsew -rw 1 -cw 99}}
     {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fra.fraB2.butHelp -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
