@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.3b1 (19 May'22)`
+Version `1.2.3b3 (21 May'22)`
 
   - BUGFIX: switching projects with no file or with "No name" tab
   - BUGFIX: not save "No name" of project's file list
@@ -9,14 +9,17 @@ Version `1.2.3b1 (19 May'22)`
   - BUGFIX: checking for duplicate icons of tools
   - BUGFIX: Projects dialogue after deploying alited 1st time (vars not existing)
   - BUGFIX: evaluation of Tcl commands of "Setup / After Start (Before Run)"
+  - NEW   : look for a declaration (Ctrl+L) in the current tab at first
+  - NEW   : "Tools / Run..." to choose console/tkcon to run Tcl code
   - NEW   : in Projects, clear project name and choose its dir -> make its name
   - NEW   : (customizable) F9 key to show a list of open files, at mouse pointer
   - NEW   : "Tools / File List" menu item
   - NEW   : hint on running in console/tkcon (in Preferences/Tools/tkcon)
+  - CHANGE: at closing a file by Ctrl+W, go to a previously viewed file
   - CHANGE: simplify checking keys to save last visits
   - CHANGE: tooltips of file list with (optional) file info
   - CHANGE: save dir chooser's geometry of choosing ~/.config (the very 1st dialogue)
-  - CHANGE: apave, bartabs packages
+  - CHANGE: apave, e_menu, bartabs packages
 
 
 Version `1.2.2 (4 May'22)`

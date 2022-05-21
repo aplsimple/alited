@@ -575,7 +575,12 @@ proc file::SaveFileAndClose {} {
   # This handles pressing Ctrl+W.
 
   if {[IsModified] && ![SaveFile]} return
+  set fname [lindex $::alited::bar::ctrltablist 1]
   alited::bar::BAR [alited::bar::CurrentTabID] close
+  # go to a previously viewed file
+  if {[set TID [alited::bar::FileTID $fname]] ne {}} {
+    alited::bar::BAR $TID show
+  }
 }
 #_______________________
 

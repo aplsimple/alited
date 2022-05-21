@@ -474,11 +474,12 @@ proc tool::RunArgs {} {
 }
 #_______________________
 
-proc tool::RunTcl {} {
+proc tool::RunTcl {{runmode ""}} {
   # Try to run tcl source file by means of tkcon utility.
+  #   runmode - mode of running (in console or in tkcon)
   # Returns yes if a tcl file was started.
 
-  if {!$alited::al(tkcon,topmost)} {
+  if {($runmode eq {} && !$alited::al(tkcon,topmost)) || $runmode eq {tkcon}} {
     lassign [RunArgs] ar rf
     set tclfile {}
     catch {  ;# ar & rf can be badly formed => catch
@@ -501,6 +502,29 @@ proc tool::RunTcl {} {
     }
   }
   return no
+}
+#_______________________
+
+proc tool::RunMode {} {
+  # Runs tcl source file with choosing the mode - in console or in tkcon.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  set fname  [file tail [alited::bar::FileName]]
+  if {![info exists al(RES,RunMode)] || ![string match *10 $al(RES,RunMode)]} {
+    if {$al(tkcon,topmost)} {
+      set foc *Terminal
+    } else {
+      set foc *Other
+    }
+    set al(RES,RunMode) [$obDl2 misc ques $al(MC,run) \
+      "\n $al(MC,run) $fname \n" \
+      {"In console" Terminal "In Tkcon" Other Cancel 0} \
+      1 -focus $foc -ch $al(MC,noask)]
+  }
+  switch -glob $al(RES,RunMode) {
+    Terminal* {_run {} terminal}
+    Other*    {_run {} tkcon}
+  }
 }
 
 ## ________________________ run/close _________________________ ##
@@ -585,9 +609,10 @@ proc tool::e_menu2 {opts} {
 }
 #_______________________
 
-proc tool::_run {{what ""}} {
+proc tool::_run {{what ""} {runmode ""}} {
   # Runs e_menu's item of menu.mnu.
   #   what - the item (by default, "Run me")
+  #   runmode - mode of running (in console or in tkcon)
 
   namespace upvar ::alited al al
   if {[winfo exists .em] && [winfo ismapped .em]} {
@@ -605,7 +630,7 @@ proc tool::_run {{what ""}} {
     }
     set opts {EX=1 PI=1}
     BeforeRun
-    if {[RunTcl]} return
+    if {[RunTcl $runmode]} return
   }
   e_menu {*}$opts
 }

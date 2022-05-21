@@ -1048,9 +1048,9 @@ proc ini::_init {} {
           set txt {}
         }
         if {[lsearch -exact $limgs $img]>-1} {
-          bell
-          set img [string map {-big {}} [lindex [split $img _] end]]
-          tk_messageBox -icon error -message "alited ERROR\n\nDuplicate tool icon: $img"
+          set msg [msgcat::mc {ERROR! Duplicate tool icon: }]
+          append msg [string map {-big {}} [lindex [split $img _] end]]
+          after idle [list alited::Message $msg 4]
           continue
         }
         lappend limgs $img

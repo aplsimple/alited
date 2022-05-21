@@ -165,12 +165,18 @@ proc find::SearchUnit1 {wtxt isNS} {
     set curr [lindex [alited::tree::CurrentItemByLine $idx yes] 4]
     set com2 [string cat [string range $curr 0 [string last ":" $curr]] $com1]
   }
+  set tab [alited::bar::CurrentTabID]
   if {$isNS} {
+    # search a qualified name: beginning from the current tab
     set tabs [SessionList]
+    if {[set i [lsearch -exact -index 0 $tabs $tab]]>0} {
+      set tabs [linsert [lreplace $tabs $i $i] 0 $tab]
+    }
     set what "*$com2"
   } else {
+    # search a non-qualified name: in the current tab only
     set what "*::$com2"
-    set tabs [alited::bar::CurrentTabID]  ;# not qualified
+    set tabs $tab
   }
   foreach tab $tabs {
     set TID [lindex $tab 0]

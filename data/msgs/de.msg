@@ -60,6 +60,9 @@ namespace eval ::alited {
     {Look for Declaration} {Suche nach Erklärung}
     {Look for Word} {Suche nach Wort}
     {Run} {Ausführen}
+    {Run...} {Ausführen...}
+    {In console} {In Konsole}
+    {In Tkcon} {In Tkcon}
     {Moving} {Verschieben}
     {Help of alited} {Hilfe von alited}
     {Color Picker} {Farbauswahl}

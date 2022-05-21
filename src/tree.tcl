@@ -61,6 +61,7 @@ proc tree::MoveItem {to {f1112 no}} {
 
 proc tree::OpenFile {{ID ""}} {
   # Opens file at clicking a file tree's item.
+  #   ID - ID of unit tree
 
   namespace upvar ::alited al al obPav obPav
   if {!$al(TREE,isunits)} {

@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.4.10}
+  variable em_version {e_menu 3.4.11}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -279,13 +279,13 @@ proc ::em::theming_pave {} {
       $::em::clrbE $::em::clrfS $::em::clrbS grey $::em::clrbg \
       $::em::clrcc $::em::clrht $::em::clrhh $::em::fI $::em::bI \
       $::em::fM $::em::bM]
-    ::apave::obj themeWindow . $themecolors false
   } else {
     set themecolors [list $::em::clrinaf $::em::clrinab $::em::clrtitf \
       $::em::clrtitb $::em::clractf $::em::clractb grey $::em::clrinab \
       $::em::clrcurs $::em::clrhotk $::em::clrhelp $::em::fI $::em::bI \
       $::em::fM $::em::bM]
   }
+  lappend themecolors {*}[lrange [::apave::obj csGet] 14 end] ;# rest colors of CS
   ::apave::obj themeWindow . $themecolors [expr {![::em::insteadCS]}]
   foreach clr $themecolors {append thclr "-theme $clr "}
   return $thclr

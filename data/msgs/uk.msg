@@ -65,6 +65,9 @@ namespace eval ::alited {
     {Look for Declaration} {Шукати декларацію}
     {Look for Word} {Шукати слово}
     {Run} {Запуск}
+    {Run...} {Запуск...}
+    {In console} {У консолі}
+    {In Tkcon} {У Tkcon}
     {Moving} {Переміщення}
     {Help of alited} {Допомога alited}
     {Color Picker} {Вибір коліру}
