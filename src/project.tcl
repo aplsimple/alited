@@ -1090,9 +1090,9 @@ proc project::MainFrame {} {
       -traverse yes -select f1
     }}
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
-    {.buTad - - - - {pack -side left -anchor n} {-takefocus 0 -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big}}
-    {.buTch - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big}}
-    {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big}}
+    {.buTad - - - - {pack -side left -anchor n} {-takefocus 0 -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big -relief flat -highlightthickness 0}}
+    {.buTch - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big -relief flat -highlightthickness 0}}
+    {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big -relief flat -highlightthickness 0}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 seh T 1 2 {-st nsew} {-padding {2 2}}}

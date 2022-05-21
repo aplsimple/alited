@@ -172,6 +172,7 @@ proc menu::FillMenu {} {
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label [msgcat::mc Run...] -command alited::tool::RunMode -accelerator $al(acc_3)
   $m add command -label e_menu -command {alited::tool::e_menu o=0} -accelerator $al(acc_2)
+  $m add command -label tkcon -command alited::tool::tkcon
 
     ### ________________________ Runs _________________________ ###
   for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
@@ -188,7 +189,6 @@ proc menu::FillMenu {} {
       }
     }
   }
-  $m add command -label tkcon -command alited::tool::tkcon
 
     ### ________________________ Other tools _________________________ ###
   $m add separator

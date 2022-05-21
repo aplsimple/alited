@@ -1295,9 +1295,9 @@ proc pref::Runs_Tab {} {
         set prt "- -"
         for {set i 0} {$i<$::alited::pref::em_Num} {incr i} {
           set nit [expr {$i+1}]
-          set lwid ".buTAdd$i $prt 1 1 {-padx 0} {-tip {Inserts a new line.} -com {::alited::pref::EmAddLine $i} -takefocus 0 -relief flat -image alimg_add}"
+          set lwid ".buTAdd$i $prt 1 1 {-padx 0} {-tip {Inserts a new line.} -com {::alited::pref::EmAddLine $i} -takefocus 0 -relief flat -highlightthickness 0 -image alimg_add}"
           %C $lwid
-          set lwid ".buTDel$i .buTAdd$i L 1 1 {-padx 1} {-tip {Deletes a line.} -com {::alited::pref::EmDelLine $i} -takefocus 0 -relief flat -image alimg_delete}"
+          set lwid ".buTDel$i .buTAdd$i L 1 1 {-padx 1} {-tip {Deletes a line.} -com {::alited::pref::EmDelLine $i} -takefocus 0 -relief flat -highlightthickness 0 -image alimg_delete}"
           %C $lwid
           set lwid ".lab$i .buTDel$i L 1 1 {-st w -padx 3} {-t {$alited::al(MC,Item)$nit}}"
           %C $lwid

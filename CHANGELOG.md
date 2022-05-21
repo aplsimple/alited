@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.3b3 (21 May'22)`
+Version `1.2.3b4 (21 May'22)`
 
   - BUGFIX: switching projects with no file or with "No name" tab
   - BUGFIX: not save "No name" of project's file list
@@ -9,12 +9,15 @@ Version `1.2.3b3 (21 May'22)`
   - BUGFIX: checking for duplicate icons of tools
   - BUGFIX: Projects dialogue after deploying alited 1st time (vars not existing)
   - BUGFIX: evaluation of Tcl commands of "Setup / After Start (Before Run)"
-  - NEW   : look for a declaration (Ctrl+L) in the current tab at first
+  - NEW   : in List of Templates: "Import templates" button; tiny-ups
+  - NEW   : new templates in alited.ini (view variables; enter a command)
+  - NEW   : look for a declaration (Ctrl+L) - at first in the current tab
   - NEW   : "Tools / Run..." to choose console/tkcon to run Tcl code
   - NEW   : in Projects, clear project name and choose its dir -> make its name
   - NEW   : (customizable) F9 key to show a list of open files, at mouse pointer
   - NEW   : "Tools / File List" menu item
   - NEW   : hint on running in console/tkcon (in Preferences/Tools/tkcon)
+  - CHANGE: "Tools / tkcon" and "Tools / e_menu/bar" exchanged seats
   - CHANGE: at closing a file by Ctrl+W, go to a previously viewed file
   - CHANGE: simplify checking keys to save last visits
   - CHANGE: tooltips of file list with (optional) file info

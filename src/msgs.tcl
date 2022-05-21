@@ -114,6 +114,11 @@ namespace eval ::alited {
     set al(MC,tplrem)      [msgcat::mc {The template #%n removed}]
     set al(MC,tplent1)     [msgcat::mc {Enter a name of the template}]
     set al(MC,tplent2)     [msgcat::mc {Enter a text of the template}]
+    set al(MC,tplent3)     [msgcat::mc "Choose a hot key combination\nfor the template insertion."]
+    set al(MC,tplaft1)     [msgcat::mc "Inserts a template\nbelow a current line"]
+    set al(MC,tplaft2)     [msgcat::mc "Inserts a template\nbelow a current unit"]
+    set al(MC,tplaft3)     [msgcat::mc "Inserts a template at the cursor\n(good for one-liners)"]
+    set al(MC,tplaft4)     [msgcat::mc "Inserts a template after 1st line of a file\n(License, Introduction etc.)"]
     set al(MC,tplexists)   [msgcat::mc {A template with the attribute(s) already exists.}]
     set al(MC,tpldelq)     [msgcat::mc {Delete a template #%n ?}]
 

@@ -178,7 +178,9 @@ namespace eval ::alited {
     "Inserts a template\nbelow a current unit" "Einfügen einer Vorlage\nunterhalb der aktuellen Einheit"
     "Inserts a template at the cursor\n(good for one-liners)" "Einfügen einer Vorlage beim Kursor \n(gut für Einzeiler)"
     "Inserts a template after 1st line of a file\n(License, Introduction etc.)" "Einfügen einer Vorlage nach der 1. Zeile einer Datei\n(Lizenz, Bedienungsanleitung usw.)"
-    {Delete a template #%n ?} {Eine Vorlage löschen #%n ?}
+    {Delete a template #%n ?} {Eine Vorlage #%n löschen ?}
+    "Import templates\nfrom external alited.ini" "Importieren die Vorlagen\nvon extern alited.ini"
+    {Number of imported templates: %n} {Anzahl der importierten Vorlagen: %n}
   }
 
   ## ________________________ Projects ________________________ ##

@@ -337,9 +337,9 @@ proc favor_ls::_create {} {
     {fraLbxFav - - 1 2 {-st nswe -pady 4} {}}
     {.labFavs - - - - {pack -side top -anchor nw -padx 4} {-t "Lists of favorites:"}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::favor_ls::Add -tip "Add a list of favorites" -image alimg_add-big}}
-    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Change -tip "Change a list of favorites" -image alimg_change-big}}
-    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Delete -tip "Delete a list of favorites" -image alimg_delete-big}}
+    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::favor_ls::Add -tip "Add a list of favorites" -image alimg_add-big -relief flat -highlightthickness 0}}
+    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Change -tip "Change a list of favorites" -image alimg_change-big -relief flat -highlightthickness 0}}
+    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Delete -tip "Delete a list of favorites" -image alimg_delete-big -relief flat -highlightthickness 0}}
     {.LbxFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 40 -lvar ::alited::favor_ls::favlist}}
     {.sbvFavs fraLbxFav.LbxFav L - - {pack -side left -fill both} {}}
     {fra1 fraLbxFav T 1 2 {-st nswe}}

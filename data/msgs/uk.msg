@@ -184,6 +184,8 @@ namespace eval ::alited {
     "Inserts a template at the cursor\n(good for one-liners)" "Вставити шиблон у позиції курсору\n(підходить для однорядкових шаблонів)"
     "Inserts a template after 1st line of a file\n(License, Introduction etc.)" "Вставити шаблон у початку файла\n(Лицензия, Вступ та інше.)"
     {Delete a template #%n ?} {Видалити шаблон #%n ?}
+    "Import templates\nfrom external alited.ini" "Імпортувати шаблони\nз зовнiшнього alited.ini"
+    {Number of imported templates: %n} {Кiлькiсть iмпортованих шаблонiв: %n}
   }
 
   ## ________________________ Projects ________________________ ##

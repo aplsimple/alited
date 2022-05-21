@@ -272,8 +272,10 @@ proc unit_tpl::ClearCbx {} {
 }
 #_______________________
 
-proc unit_tpl::Add {} {
+proc unit_tpl::Add {{inpos ""}} {
   # Handles "Add template" button.
+  #   inpos - cursor position in template text
+  # Returns 1, if the template was added, else returns 0.
 
   namespace upvar ::alited al al obDl3 obDl3
   variable tpllist
@@ -307,19 +309,20 @@ proc unit_tpl::Add {} {
       ::tk::TextSetCursor $wtxt $pos
     }
     alited::Message3 $al(MC,tplexists) 4
-    return
+    return 0
   } elseif {$tpl eq {}} {
     focus [$obDl3 EntTpl]
     alited::Message3 $al(MC,tplent1) 4
-    return
+    return 0
   } elseif {[string trim $txt] eq {}} {
     focus [$obDl3 TexTpl]
     alited::Message3 $al(MC,tplent2) 4
-    return
+    return 0
   }
+  if {$inpos eq {}} {set inpos [Pos]}
   lappend tpllist $tpl
   lappend tplcont $txt
-  lappend tplpos [Pos]
+  lappend tplpos $inpos
   lappend tplpla $place
   set msg [string map [list %n [llength $tpllist]] $al(MC,tplnew)]
   set item [$tree insert {} end -values [list $tpl $tplkey]]
@@ -329,6 +332,7 @@ proc unit_tpl::Add {} {
   lappend tplid $item
   Select [expr {[llength $tplid]-1}]
   alited::Message3 $msg
+  return 1
 }
 #_______________________
 
@@ -382,9 +386,45 @@ proc unit_tpl::Delete {} {
   set llen [expr {[llength $tpllist]-1}]
   if {$isel>$llen} {set isel $llen}
   UpdateTree
-  if {$llen>=0} {Select $isel}
+  if {$llen>=0} {after idle "alited::unit_tpl::Select $isel"}
   set msg [string map [list %n $nsel] $al(MC,tplrem)]
   alited::Message3 $msg
+}
+#_______________________
+
+proc unit_tpl::Import {} {
+  # Handles "Import templates" button.
+
+  namespace upvar ::alited al al obDl3 obDl3 DATADIR DATADIR
+  variable tpllist
+  variable tplcont
+  variable tplpos
+  variable tpl
+  variable tplkey
+  variable place
+  variable win
+  set al(filename) alited.ini
+  set fname [$obDl3 chooser tk_getOpenFile alited::al(filename) \
+    -initialdir [file join $DATADIR user ini] -parent $win]
+  if {$fname eq {}} return
+  set imported 0
+  set wtxt [$obDl3 TexTpl]
+  set filecont [::apave::readTextFile $fname]
+  foreach line [split $filecont \n] {
+    if {[string match tpl=* $line]} {
+      set line [string range $line 4 end]
+      if {![catch {lassign $line tpl tplkey cont pos place}]} {
+        set cont [string map [list $::alited::EOL \n] $cont]
+        if {$tpl ne {} && $cont ne {} && $pos ne {}} {
+          if {![string is double -strict $pos]} {set pos 1.0}
+          $wtxt delete 1.0 end
+          $wtxt insert end $cont
+          incr imported [Add $pos]
+        }
+      }
+    }
+  }
+  alited::Message3 [string map "%n $imported" [msgcat::mc "Number of imported templates: %n"]] 3
 }
 
 # ________________________ Main _________________________ #
@@ -410,24 +450,26 @@ proc unit_tpl::_create {{geom ""}} {
   $obDl3 paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
-    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
-    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big}}
+    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big -relief flat -highlightthickness 0}}
+    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big -relief flat -highlightthickness 0}}
+    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big -relief flat -highlightthickness 0}}
+    {.fra.seh - - - - {pack -side top -expand 1 -fill x -pady 2} {}}
+    {.fra.buTImp - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Import -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big -relief flat -highlightthickness 0}}
     {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 7 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-stretch 0}"}}
     {.sbvTpls fraTreeTpl.TreeTpl L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
     {.labTpl - - 1 1 {-st we} {-anchor center -t "Current template:"}}
-    {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {$alited::al(MC,tplent1)}}}
-    {.CbxKey .EntTpl L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip "Choose a hot key combination\nfor the template insertion."}}
+    {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {-BALTIP {$alited::al(MC,tplent1)} -MAXEXP 1}}}
+    {.CbxKey .EntTpl L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {-BALTIP {$alited::al(MC,tplent3)} -MAXEXP 1}}}
     {fra1.fratex fra1.labTpl T 10 10 {-st nsew} {}}
-    {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip {$alited::al(MC,tplent2)}}}
+    {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip  {-BALTIP {$alited::al(MC,tplent2)} -MAXEXP 1}}}
     {.sbvTpl .TexTpl L - - {pack -side left -fill both} {}}
     {fra2 fra1 T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Place after:"}}
-    {.radA - - - - {pack -side left -padx 8}  {-t "line" -var ::alited::unit_tpl::place -value 1 -tip "Inserts a template\nbelow a current line"}}
-    {.radB - - - - {pack -side left -padx 8}  {-t "unit" -var ::alited::unit_tpl::place -value 2 -tip "Inserts a template\nbelow a current unit"}}
-    {.radC - - - - {pack -side left -padx 8}  {-t "cursor" -var ::alited::unit_tpl::place -value 3 -tip "Inserts a template at the cursor\n(good for one-liners)"}}
-    {.radD - - - - {pack -side left -padx 8}  {-t "file's beginning" -var ::alited::unit_tpl::place -value 4 -tip "Inserts a template after 1st line of a file\n(License, Introduction etc.)"}}
+    {.radA - - - - {pack -side left -padx 8}  {-t "line" -var ::alited::unit_tpl::place -value 1 -tip {-BALTIP {$al(MC,tplaft1)} -UNDER 4}}}
+    {.radB - - - - {pack -side left -padx 8}  {-t "unit" -var ::alited::unit_tpl::place -value 2 -tip {-BALTIP {$al(MC,tplaft2)} -UNDER 4}}}
+    {.radC - - - - {pack -side left -padx 8}  {-t "cursor" -var ::alited::unit_tpl::place -value 3 -tip {-BALTIP {$al(MC,tplaft3)} -UNDER 4}}}
+    {.radD - - - - {pack -side left -padx 8}  {-t "file's beginning" -var ::alited::unit_tpl::place -value 4 -tip {-BALTIP {$al(MC,tplaft4)} -UNDER 4}}}
     {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 labMess T 1 10 {-st nsew}}
     {.ButHelp - - - - {pack -side left} {-t "$alited::al(MC,help)" -command ::alited::unit_tpl::Help}}
