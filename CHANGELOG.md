@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.3b5 (22 May'22)`
+Version `1.2.3b6 (22 May'22)`
 
   - BUGFIX: switching projects with no file or with "No name" tab
   - BUGFIX: not save "No name" of project's file list

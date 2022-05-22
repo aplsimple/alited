@@ -506,10 +506,14 @@ proc tool::RunTcl {{runmode ""}} {
 #_______________________
 
 proc tool::RunMode {} {
-  # Runs tcl source file with choosing the mode - in console or in tkcon.
+  # Runs Tcl source file with choosing the mode - in console or in tkcon.
 
   namespace upvar ::alited al al obDl2 obDl2
   set fname  [file tail [alited::bar::FileName]]
+  if {![alited::file::IsTcl $fname]} {
+    _run
+    return
+  }
   if {![info exists al(RES,RunMode)] || ![string match *10 $al(RES,RunMode)]} {
     if {$al(tkcon,topmost)} {
       set foc *Terminal
