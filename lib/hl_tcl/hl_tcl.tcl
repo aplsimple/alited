@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.38
+package provide hl_tcl 0.9.39
 
 # ______________________ Common data ____________________ #
 
@@ -72,7 +72,9 @@ namespace eval ::hl_tcl {
     set data(S_SPACE2) [concat $data(S_SPACE) [list \{]]
     set data(S_BOTH) [concat $data(S_SPACE) [list \" \}]]
 
-    set data(RE0) {(^|[\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
+#    set data(RE0) {(^|[\{\}\[;]+)\s*([:\w*]+)(\s|\]|\}|\\|$|;)}
+#    set data(RE0) {(^|[\{\}\[;]+)\s*([:\w*]+)(\s|\]|\}|\\|$|;)?}
+    set data(RE0) {(^|[\{\}\[;]+)\s*([:\w*]+)(\s|\]|\}|\\|$|;){0}} ;# test: pwd;pwd;pwd
     set data(RE1) {([\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
     set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})}
 
@@ -188,7 +190,7 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
       if {[lsearch -exact -sorted $data(CMD_TCL) $c]>-1} {
         $txt tag add tagCOM "$ln.$pri +$i1 char" "$ln.$pri +$i2 char"
       } elseif {[lsearch -exact -sorted $data(PROC_TCL) $c]>-1} {
-        if {$c eq {namespace} && 
+        if {$c eq {namespace} &&
         ![regexp {^namespace[\s]+eval([\s]|$)+} [string range $st $i1 end]]} {
           set tag tagCOM ;# let "namespace eval" only be highlighted as proc/return
         } else {

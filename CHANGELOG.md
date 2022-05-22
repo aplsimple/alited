@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.3b4 (21 May'22)`
+Version `1.2.3b5 (22 May'22)`
 
   - BUGFIX: switching projects with no file or with "No name" tab
   - BUGFIX: not save "No name" of project's file list
@@ -22,7 +22,7 @@ Version `1.2.3b4 (21 May'22)`
   - CHANGE: simplify checking keys to save last visits
   - CHANGE: tooltips of file list with (optional) file info
   - CHANGE: save dir chooser's geometry of choosing ~/.config (the very 1st dialogue)
-  - CHANGE: apave, e_menu, bartabs packages
+  - CHANGE: apave, e_menu, bartabs, hl_tcl packages
 
 
 Version `1.2.2 (4 May'22)`

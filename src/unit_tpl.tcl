@@ -331,7 +331,7 @@ proc unit_tpl::Add {{inpos ""}} {
   set item [lindex [$tree children {}] end]
   lappend tplid $item
   Select [expr {[llength $tplid]-1}]
-  alited::Message3 $msg
+  alited::Message3 $msg 3
   return 1
 }
 #_______________________
@@ -358,7 +358,7 @@ proc unit_tpl::Change {} {
   UpdateTree
   Select $isel
   set msg [string map [list %n [incr isel]] $al(MC,tplupd)]
-  alited::Message3 $msg
+  alited::Message3 $msg 3
 }
 #_______________________
 
@@ -388,7 +388,7 @@ proc unit_tpl::Delete {} {
   UpdateTree
   if {$llen>=0} {after idle "alited::unit_tpl::Select $isel"}
   set msg [string map [list %n $nsel] $al(MC,tplrem)]
-  alited::Message3 $msg
+  alited::Message3 $msg 3
 }
 #_______________________
 
@@ -396,9 +396,6 @@ proc unit_tpl::Import {} {
   # Handles "Import templates" button.
 
   namespace upvar ::alited al al obDl3 obDl3 DATADIR DATADIR
-  variable tpllist
-  variable tplcont
-  variable tplpos
   variable tpl
   variable tplkey
   variable place
