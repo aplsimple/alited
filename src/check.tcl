@@ -226,6 +226,7 @@ proc check::Ok {args} {
 
   namespace upvar ::alited obCHK obCHK
   variable win
+  alited::CloseDlg
   $obCHK res $win 1
 }
 #_______________________
@@ -235,6 +236,7 @@ proc check::Cancel {args} {
 
   namespace upvar ::alited obCHK obCHK
   variable win
+  alited::CloseDlg
   $obCHK res $win 0
 }
 #_______________________

@@ -852,7 +852,7 @@ proc ::apave::logName {fname} {
 proc ::apave::logMessage {msg} {
   # Logs messages to a log file.
   #   msg - the message
-  # A log file's name is set by _PU_opts(_LOGFILE_). If it's blank, 
+  # A log file's name is set by _PU_opts(_LOGFILE_). If it's blank,
   # no logging is made.
 
   variable _PU_opts;
@@ -1535,7 +1535,7 @@ oo::class create ::apave::ObjectTheming {
   10-emfg 11-embg 12-- 13-menubg 14-winfg 15-winbg 16-itemHL2 ...reserved...
     #
     # See also: themeWindow
-  
+
     return [list 1 3 0 2 6 5 8 3 7 9 4 10 11 1 13 14 15 16 17 18 19 20 21]
   }
 

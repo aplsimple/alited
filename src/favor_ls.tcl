@@ -47,6 +47,7 @@ proc favor_ls::Ok {{res 0}} {
   variable win
   variable favcont
   variable favpla
+  alited::CloseDlg
   if {!$res} {
     if {[set isel [Selected]] eq {}} {
       focus [$obDl2 LbxFav]
@@ -66,6 +67,7 @@ proc favor_ls::Cancel {args} {
 
   namespace upvar ::alited obDl2 obDl2
   variable win
+  alited::CloseDlg
   Save_favlist
   $obDl2 res $win 0
 }
@@ -102,7 +104,7 @@ proc favor_ls::GetCurrentList {args} {
       append currents $::alited::EOL
     }
     append text [lindex $it 4 0]
-    append currents $it 
+    append currents $it
   }
   set w [$obDl2 TexFav]
   $obDl2 readonlyWidget $w no

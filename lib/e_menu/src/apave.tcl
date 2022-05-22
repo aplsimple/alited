@@ -2867,7 +2867,7 @@ oo::class create ::apave::APave {
     foreach aop $_pav(widgetopts) {
       lassign $aop optnam vn v1 v2
       switch -glob -- $optnam {
-        -lbxname* { 
+        -lbxname* {
           # To get a listbox's value, its methods are used.
           # The widget may not exist when an apave object is used for
           # several dialogs which is a bad style (very very bad).

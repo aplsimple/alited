@@ -814,6 +814,7 @@ proc project::Ok {args} {
   variable prjlist
   variable prjinfo
   variable curinfo
+  alited::CloseDlg
   if {$curinfo(_NO2ENT)} {
     # disables entering twice (at multiple double-clicks)
     return
@@ -882,6 +883,7 @@ proc project::Cancel {args} {
 
   namespace upvar ::alited obDl2 obDl2
   variable win
+  alited::CloseDlg
   SaveData
   SaveNotes
   RestoreSettings

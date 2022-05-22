@@ -272,6 +272,7 @@ proc pref::Ok {args} {
   # Handler of "OK" button.
 
   fetchVars
+  alited::CloseDlg
   set ans [alited::msg yesnocancel info [msgcat::mc "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?"] YES -geometry root=$win]
   if {$ans in {1 2}} {
     GetEmSave out
@@ -326,6 +327,7 @@ proc pref::Cancel {args} {
   fetchVars
   RestoreSettings
   GetEmSave out
+  alited::CloseDlg
   $obDl2 res $win 0
 }
 #_______________________

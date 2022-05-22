@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.3b6 (22 May'22)`
+Version `1.2.3b7 (22 May'22)`
 
   - BUGFIX: switching projects with no file or with "No name" tab
   - BUGFIX: not save "No name" of project's file list
@@ -17,6 +17,7 @@ Version `1.2.3b6 (22 May'22)`
   - NEW   : (customizable) F9 key to show a list of open files, at mouse pointer
   - NEW   : "Tools / File List" menu item
   - NEW   : hint on running in console/tkcon (in Preferences/Tools/tkcon)
+  - CHANGE: Help window is made non-modal, to see the help & work together
   - CHANGE: "Tools / tkcon" and "Tools / e_menu/bar" exchanged seats
   - CHANGE: at closing a file by Ctrl+W, go to a previously viewed file
   - CHANGE: simplify checking keys to save last visits

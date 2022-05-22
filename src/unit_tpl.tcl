@@ -225,6 +225,7 @@ proc unit_tpl::Ok {args} {
   variable tplpla
   variable dosel
   namespace upvar ::alited al al obDl3 obDl3
+  alited::CloseDlg
   if {!$dosel || [set isel [Selected index]] eq {}} {
     focus [$obDl3 TreeTpl]
     return
@@ -242,6 +243,7 @@ proc unit_tpl::Cancel {args} {
 
   variable win
   namespace upvar ::alited obDl3 obDl3
+  alited::CloseDlg
   SaveIni
   $obDl3 res $win 0
 }

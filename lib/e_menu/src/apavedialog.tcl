@@ -211,10 +211,10 @@ oo::class create ::apave::APaveDialog {
     #   msg2 - bottom message
     #   maxvalue - maximum value
     #   args - additional attributes of the progress bar
-    # 
+    #
     # If type={}, widgetType method participates too in progress_Go, and also
     # progress_End puts out a little statistics.
-    # 
+    #
     # See also: APave::widgetType, progress_Go, progress_End
 
     set ::apave::_AP_VARS(win) .proSplashScreen
@@ -255,10 +255,10 @@ oo::class create ::apave::APaveDialog {
     #   value -  current value of the progress bar
     #   msg1 - top message
     #   msg2 - bottom message
-    # 
+    #
     # Returns current percents (value) of progress.
     # If it reaches 100, the progress_Go may continue from 0.
-    # 
+    #
     # See also: progress_Begin
 
     set ::apave::_AP_VARS(ProSplash,val1) $value

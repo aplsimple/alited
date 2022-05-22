@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.3b6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.3b7  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -432,7 +432,7 @@ namespace eval alited {
       set wmax [expr {max($wmax,[string length $ln]+$occ)}]
     }
     return [msg ok {} $msg -title Help -text 1 -geometry root=$win -scroll no \
-      -tags ::alited::textTags -w [incr wmax] {*}$args]
+      -tags ::alited::textTags -w [incr wmax] -modal no -ontop yes {*}$args]
   }
   #_______________________
 
@@ -471,11 +471,20 @@ namespace eval alited {
   }
   #_______________________
 
+  proc CloseDlg {} {
+    # Tries to close a Help dialogue, open non-modal aside by the current dialogue.
+
+    variable obDlg
+    catch {[$obDlg ButOK] invoke}
+  }
+  #_______________________
+
   proc CheckRun {} {
     # Runs "Check Tcl".
 
+    variable SRCDIR
     if {[info commands check::_run] eq {}} {
-      source [file join $alited::SRCDIR check.tcl]
+      source [file join $SRCDIR check.tcl]
     }
     check::_run
   }
