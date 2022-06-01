@@ -536,7 +536,7 @@ proc project::ValidProject {} {
   set al(prjroot) [file nativename $al(prjroot)]
   if {![CheckNewDir]} {return no}
   if {$al(prjindent)<0 || $al(prjindent)>8} {set al(prjindent) 2}
-  if {$al(prjredunit)<10 || $al(prjredunit)>100} {set al(prjredunit) 20}
+  if {$al(prjredunit)<$al(minredunit) || $al(prjredunit)>100} {set al(prjredunit) 20}
   set msg [string map [list %d $al(prjroot)] $al(checkroot)]
   alited::Message2 $msg 5
   if {[llength [alited::tree::GetDirectoryContents $al(prjroot)]] >= $al(MAXFILES)} {
@@ -574,9 +574,9 @@ proc project::KlndDayRem {dmin} {
 }
 #_______________________
 
-  proc project::SelFiles {} {
-    # Checks for a selection of file listbox.
-    # Returns: list of listbox's path and the selection or {}.
+proc project::SelFiles {} {
+  # Checks for a selection of file listbox.
+  # Returns: list of listbox's path and the selection or {}.
 
   namespace upvar ::alited obDl2 obDl2
   set lbx [$obDl2 LbxFlist]
@@ -727,7 +727,7 @@ proc project::Add {} {
   GetProjects
   UpdateTree
   Select $prjinfo($pname,ID)
-  alited::Message2 [string map [list %n $pname] $al(MC,prjnew)]
+  alited::Message2 [string map [list %n $pname] $al(MC,prjnew)] 3
 }
 #_______________________
 
@@ -765,7 +765,7 @@ proc project::Change {} {
   GetProjects
   UpdateTree
   Select $prjinfo($newprj,ID)
-  alited::Message2 [string map [list %n [lindex $prjlist $isel]] $al(MC,prjupd)]
+  alited::Message2 [string map [list %n [lindex $prjlist $isel]] $al(MC,prjupd)] 3
 }
 #_______________________
 
@@ -800,7 +800,7 @@ proc project::Delete {} {
   GetProjects
   UpdateTree
   Select $isel
-  alited::Message2 [string map [list %n $nametodel] $al(MC,prjdel2)]
+  alited::Message2 [string map [list %n $nametodel] $al(MC,prjdel2)] 3
 }
 
 # ________________________ Buttons _________________________ #
@@ -1163,7 +1163,7 @@ proc project::Tab2 {} {
     {.spxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 9 -from 0 -to 8 -justify center -com {::alited::pref::CheckIndent ""}}}
     {.chbIndAuto .spxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjindentAuto) -t {$alited::al(MC,indentAuto)}}}
     {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
-    {.spxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 9 -from 10 -to 100 -justify center}}
+    {.spxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 9 -from $alited::al(minredunit) -to 100 -justify center}}
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.swiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}

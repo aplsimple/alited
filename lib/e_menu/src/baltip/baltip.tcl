@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.3.6
+package provide baltip 1.3.7
 
 package require Tk
 
@@ -368,9 +368,18 @@ proc ::baltip::my::BindToEvent {w event args} {
   #   w - the widget's path
   #   event - the event
   #   args - the command
+  # The command can be ended with " ; break".
 
-  if {[string first $args [bind $w $event]]<0} {
-    bind $w $event [list + {*}$args]
+  if {[catch {set bound [bind $w $event]}]} {set bound {}}
+  if {[string first $args $bound]<0} {
+    catch {
+      if {[lrange $args end-1 end] eq "{;} break"} {
+        set com [lrange $args 0 end-2]
+        bind $w $event "$com ; break"
+      } else {
+        bind $w $event [list + {*}$args]
+      }
+    }
   }
 }
 #_______________________
@@ -381,9 +390,18 @@ proc ::baltip::my::BindTextagToEvent {w tag event args} {
   #   tag - the tag
   #   event - the event
   #   args - the command
+  # The command can be ended with " ; break".
 
-  if {[string first $args [$w tag bind $tag]]<0} {
-    $w tag bind $tag $event [list + {*}$args]
+  if {[catch {set bound [$w tag bind $tag]}]} {set bound {}}
+  if {[string first $args $bound]<0} {
+    catch {
+      if {[lrange $args end-1 end] eq "{;} break"} {
+        set com [lrange $args 0 end-2]
+        $w tag bind $tag $event "$com ; break"
+      } else {
+        $w tag bind $tag $event [list + {*}$args]
+      }
+    }
   }
 }
 #_______________________
@@ -394,10 +412,18 @@ proc ::baltip::my::BindCantagToEvent {w tag event args} {
   #   tag - the tag
   #   event - the event
   #   args - the command
+  # The command can be ended with " ; break".
 
   if {[catch {set bound [$w bind $tag $event]}]} {set bound {}}
   if {[string first $args $bound]<0} {
-    $w bind $tag $event [list + {*}$args]
+    catch {
+      if {[lrange $args end-1 end] eq "{;} break"} {
+        set com [lrange $args 0 end-2]
+        $w bind $tag $event "$com ; break"
+      } else {
+        $w bind $tag $event [list + {*}$args]
+      }
+    }
   }
 }
 

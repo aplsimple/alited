@@ -56,7 +56,7 @@ namespace eval ::alited {
     {Remove Trailing Whitespaces} {Видалити хвостові пробіли}
     {Remove trailing whitespaces} {Видалити хвостові пробіли}
     {Remove trailing whitespaces:} {Видаляти хвостові пробіли:}
-    {Remove trailing whitespaces of all lines?} {Видалити хвостові пробіли у всіх рядках?}
+    "Remove trailing whitespaces of all lines\nof \"%f\"?" "Видалити хвостові пробіли у всіх рядках\nфайла \"%f\"?"
     {Indent} {Додати відступ}
     {Unindent} {Убрати відступ}
     {Comment} {Закоментувати}
@@ -130,6 +130,8 @@ namespace eval ::alited {
     {Drop Selected Files Here} {Кинути сюди вибрані файли}
     "All Tcl files of this directory:\n  \"%f\"  \nwill be open.\n\nThis may be expensive!" "Всі Tcl файли каталогу:\n  \"%f\"  \nбудуть відкриті.\n\nЦя операція може бути коштовною!"
     {Select All} {Виділити все}
+    {Do it in other Tcl files} {Також і в інших файлах Tcl}
+    {Do it in other files} {Також і в інших файлах}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -159,6 +161,7 @@ namespace eval ::alited {
   ::msgcat::mcmset uk {
     {Template} {Шаблон}
     {Templates} {Шаблони}
+    {Templates...} {Шаблони...}
     {List of Templates} {Список шаблонів}
     {Current template:} {Поточний шаблон:}
     {New template:} {Новий шаблон:}
@@ -191,6 +194,7 @@ namespace eval ::alited {
   ## ________________________ Projects ________________________ ##
   ::msgcat::mcmset uk {
     {Projects} {Проекти}
+    {Projects...} {Проекти...}
     {You are going to %n!} {Ви збираєтеся %n!}
     {Add a project} {Додати проект}
     {Change a project} {Змінити проект}
@@ -264,6 +268,7 @@ namespace eval ::alited {
     "Sets a list of Favorites\nthat was active initially." "Відновлює список Вибраного,\nщо діяв спочатку."
     {Delete a favorites' list #%n ?} {Видалити список Вибраного #%n ?}
     {Favorites} {Вибране}
+    {Favorites...} {Вибране...}
     "Add \"%n\" of %f\nto Favorites?" "Додати \"%n\" файлів %f\nу Вибране?"
     "Item \"%n\" of %f\nis already in Favorites." "Юніт \"%n\" з %f\nвже є у Вибраному."
     "Remove \"%n\" of %f\nfrom Favorites?" "Видалити \"%n\" файлів %f\nз Вибраного?"

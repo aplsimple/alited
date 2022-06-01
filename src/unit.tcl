@@ -84,8 +84,8 @@ proc unit::GetUnits {TID textcont} {
   #   - level
   #   - 0 (branch) or 1 (INI,LEAF)
   #   - title
-  #   - line1 - first text line for the item 
-  #   - line2 - last text line for the item 
+  #   - line1 - first text line for the item
+  #   - line2 - last text line for the item
 
   # The procedure searhes "branch" units in commented lines, e.g. for:
   #   # ___ level 1 _____ #

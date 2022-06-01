@@ -49,7 +49,7 @@ proc favor::LastVisited {item header {l1 -1}} {
   set name [string trim [lindex $item 1]]
   if {[string trim $name] eq {}} return
   # checks done, save this last visit
-  set fname [alited::bar::FileName] 
+  set fname [alited::bar::FileName]
   set lvisit [list $name $fname $header]
   if {$lvisit eq [lindex $al(FAV,visited) 0 4]} {
     return ;# already 1st: no need to put it

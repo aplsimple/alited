@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.39
+package provide hl_tcl 0.9.40
 
 # ______________________ Common data ____________________ #
 
@@ -1267,7 +1267,14 @@ proc ::hl_tcl::addingColors {{dark ""} {txt ""} {cs ""}} {
   }
   set my::data(COLORS,$txt) [list {*}[hl_colors $txt] $clrCURL $clrCMN2]
 }
+#_____
 
+proc ::hl_tcl::hl_commands {} {
+  # Lists all Tcl/Tk commands registered here.
+
+  variable my::data
+  return [list {*}$my::data(PROC_TCL) {*}$my::data(CMD_TCL) {*}$my::data(CMD_TK)]
+}
 # _________________________________ EOF _________________________________ #
 #RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 37 9 12

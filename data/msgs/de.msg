@@ -51,7 +51,7 @@ namespace eval ::alited {
     {Remove Trailing Whitespaces} {Rechte Leerzeichen löschen}
     {Remove trailing whitespaces} {Rechte Leerzeichen löschen}
     {Remove trailing whitespaces:} {Rechte Leerzeichen löschen:}
-    {Remove trailing whitespaces of all lines?} {Rechte Leerzeichen aller Zeilen löschen?}
+    "Remove trailing whitespaces of all lines\nof \"%f\"?" "Rechte Leerzeichen aller Zeilen\nvon \"%f\" löschen?"
     {Indent} {Einrücken}
     {Unindent} {Nicht einrücken}
     {Comment} {Kommentieren}
@@ -125,6 +125,8 @@ namespace eval ::alited {
     {Drop Selected Files Here} {Ausgewählte Dateien hier ablegen}
     "All Tcl files of this directory:\n  \"%f\"  \nwill be open.\n\nThis may be expensive!" "Alle Tcl-Dateien des Verzeichnisses:\n  \"%f\"  \nwerden geöffnet.\n\nDas kann aufwändig sein!"
     {Select All} {Alles auswählen}
+    {Do it in other Tcl files} {Auch in anderer Tcl-Dateien}
+    {Do it in other files} {Auch in anderer Dateien}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -154,6 +156,7 @@ namespace eval ::alited {
   ::msgcat::mcmset de {
     {Template} {Vorlage}
     {Templates} {Vorlagen}
+    {Templates...} {Vorlagen...}
     {List of Templates} {Liste der Vorlagen}
     {Current template:} {Aktuell Vorlage:}
     {New template:} {Neue Vorlage:}
@@ -186,6 +189,7 @@ namespace eval ::alited {
   ## ________________________ Projects ________________________ ##
   ::msgcat::mcmset de {
     {Projects} {Projekte}
+    {Projects...} {Projekte...}
     {You are going to %n!} {Du wirst %n!}
     {Add a project} {Ein Projekt hinzufügen}
     {Change a project} {Ein Projekt ändern}
@@ -259,6 +263,7 @@ namespace eval ::alited {
     "Sets a list of Favorites\nthat was active initially." "Eine Liste von Favoriten setzen,\ndie beim starten geladen wird."
     {Delete a favorites' list #%n ?} {Eine Favoritenliste löschen #%n ?}
     {Favorites} {Favoriten}
+    {Favorites...} {Favoriten...}
     "Add \"%n\" of %f\nto Favorites?" "Füge \"%n\" von %f\nzu Favoriten hinzu?"
     "Item \"%n\" of %f\nis already in Favorites." "Element \"%n\" von %f\nexistiert schon in Favoriten."
     "Remove \"%n\" of %f\nfrom Favorites?" "Lösche \"%n\" von  %f\naus Favoriten?"
@@ -327,7 +332,7 @@ namespace eval ::alited {
   ::msgcat::mcmset de {
     {Choosing Directory for Settings} {Verzeichnis für die Konfiguration auswählen}
     "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n"
-	"\n \"alited\" benötigt ein Konfigurationsverzeichnis um die Einstellungen zu speichern.\n Du kannst den Namen an alited als Argument übergeben.\n\n Das vorgegebene Konfigurationsverzeichnis ist \"%d\".\n Dies ist zu bevorzugen um  \"alited\" ohne Argumente zu benuzten.\n"
+    "\n \"alited\" benötigt ein Konfigurationsverzeichnis um die Einstellungen zu speichern.\n Du kannst den Namen an alited als Argument übergeben.\n\n Das vorgegebene Konfigurationsverzeichnis ist \"%d\".\n Dies ist zu bevorzugen um  \"alited\" ohne Argumente zu benuzten.\n"
     {Choose a directory} {Verzeichnis auswählen}
   }
 

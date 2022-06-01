@@ -316,7 +316,7 @@ proc tree::CreateUnitsTree {TID wtree} {
     set parent [lindex $parents [expr {$lev-1}]]
     if {$leaf} {
       set title " $title"
-      set pr [expr {max(0,min(7,($l2-$l1)/$al(prjredunit)))}]
+      set pr [expr {max(0,min(7,($l2-$l1-$alited::al(minredunit))/$al(prjredunit)))}]
       set imgopt "-image alimg_pro$pr"
     } else {
       set imgopt "-image alimg_gulls"
@@ -506,7 +506,7 @@ proc tree::ShowPopupMenu {ID X Y} {
     set m1 $al(MC,swunits)
     set m2 $al(MC,tpllist)
     set m3 $al(MC,unitsdel)
-    set moveup $al(MC,moveupU) 
+    set moveup $al(MC,moveupU)
     set movedown $al(MC,movedownU)
     set dropitem [msgcat::mc {Drop Selected Units Here}]
   } else {
@@ -514,7 +514,7 @@ proc tree::ShowPopupMenu {ID X Y} {
     set m1 $al(MC,swfiles)
     set m2 $al(MC,filesadd)
     set m3 $al(MC,filesdel)
-    set moveup $al(MC,moveupF) 
+    set moveup $al(MC,moveupF)
     set movedown $al(MC,movedownF)
     set dropitem [msgcat::mc {Drop Selected Files Here}]
   }
@@ -595,10 +595,10 @@ proc tree::ButtonPress {but x y X Y} {
   }
   switch $but {
     {3} {
-        if {[llength [$wtree selection]]<2} {
-          $wtree selection set $ID
-        }
-        ShowPopupMenu $ID $X $Y
+      if {[llength [$wtree selection]]<2} {
+        $wtree selection set $ID
+      }
+      ShowPopupMenu $ID $X $Y
     }
     {1} {
       set al(movID) $ID
@@ -978,7 +978,7 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
     }
   }
   catch {$wtree see [lindex $selection 0]}
-#  alited::main::SaveVisitInfo
+  #  alited::main::SaveVisitInfo
 }
 #_______________________
 

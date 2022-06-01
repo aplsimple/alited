@@ -452,12 +452,13 @@ proc unit_tpl::_create {{geom ""}} {
     {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big -relief flat -highlightthickness 0}}
     {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big -relief flat -highlightthickness 0}}
     {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big -relief flat -highlightthickness 0}}
-    {.fra.seh - - - - {pack -side top -expand 1 -fill x -pady 2} {}}
+    {.fra.v_ - - - - {pack -side top -expand 1 -fill x -pady 2} {}}
     {.fra.buTImp - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Import -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big -relief flat -highlightthickness 0}}
-    {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 7 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-stretch 0}"}}
+    {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 12 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-stretch 0}"}}
     {.sbvTpls fraTreeTpl.TreeTpl L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
-    {.labTpl - - 1 1 {-st we} {-anchor center -t "Current template:"}}
+    {.h_ - - 1 1 {-st we} {-h 20}}
+    {.labTpl .h_ T 1 1 {-st we} {-anchor center -t "Current template:"}}
     {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {-BALTIP {$alited::al(MC,tplent1)} -MAXEXP 1}}}
     {.CbxKey .EntTpl L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {-BALTIP {$alited::al(MC,tplent3)} -MAXEXP 1}}}
     {fra1.fratex fra1.labTpl T 10 10 {-st nsew} {}}

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.3b7  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.3b14  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -96,6 +96,7 @@ namespace eval alited {
   set al(prjmultiline) 0  ;# current project's multiline mode
   set al(prjEOL) {}       ;# current project's end of line
   set al(prjredunit) 20   ;# current project's unit lines per 1 red bar
+  set al(minredunit) 4    ;# minimum project's unit lines per 1 red bar
   set al(prjbeforerun) {} ;# a command to be run before "Tools/Run"
   set al(prjtrailwhite) 0 ;# "remove trailing whitespaces" flag
   set al(prjdirign) {.git .bak} ;# ignored subdirectories of project
@@ -158,8 +159,11 @@ namespace eval alited {
 
 # ________________________ ::argv, ::argc _________________________ #
 
-# this "if" satisfies the Ruff doc generator "package require":
-# (without 'package require alited', it's a regular run of alited)
+# The following "if" counts on the Ruff! doc generator:
+#   - Ruff! uses "package require" for a documented package ("alited", e.g.)
+#   - alited should not be run when Ruff! sources it
+#   - so, without 'package require alited', it's a regular run of alited
+
 if {[package versions alited] eq {}} {
   wm withdraw .
   if {$::tcl_platform(platform) eq {windows}} {
@@ -186,7 +190,7 @@ if {[package versions alited] eq {}} {
   set ALITED_ARGV [list]
   foreach _ $::argv {lappend ALITED_ARGV [file normalize $_]}
 
-# ____________________ Get a port to listen __________________ #
+  ## ____________________ Get a port to listen __________________ ##
 
   set _ [lindex $ALITED_ARGV 0]
   if {![llength $ALITED_ARGV] || ![file isdirectory $_]} {
@@ -209,7 +213,7 @@ if {[package versions alited] eq {}} {
   }
   unset _
 
-# ____________________ Open an existing app __________________ #
+  ## ____________________ Open an existing app __________________ ##
 
   if {[string is integer -strict $alited::al(comm_port)]} {
     # Code borrowed from TKE editor.
@@ -241,12 +245,12 @@ if {[package versions alited] eq {}} {
 
 # _____________________________ Packages used __________________________ #
 
-  lappend auto_path $alited::LIBDIR
+lappend auto_path $alited::LIBDIR
 
-  source [file join $::alited::BARSDIR bartabs.tcl]
-  source [file join $::alited::PAVEDIR apaveinput.tcl]
-  source [file join $::alited::HLDIR  hl_tcl.tcl]
-  source [file join $::alited::HLDIR  hl_c.tcl]
+source [file join $::alited::BARSDIR bartabs.tcl]
+source [file join $::alited::PAVEDIR apaveinput.tcl]
+source [file join $::alited::HLDIR  hl_tcl.tcl]
+source [file join $::alited::HLDIR  hl_c.tcl]
 
 # __________________________ Common procs ________________________ #
 
@@ -271,11 +275,13 @@ namespace eval alited {
   #_______________________
 
   proc FgFgBold {} {
-    # Gets foregrounds of normal and colored text of current color scheme.
+    # Gets foregrounds of normal and colored text of current color scheme
+    # and red color of TODOs.
 
     variable obPav
     lassign [$obPav csGet] - fg - - fgbold
-    return [list $fg $fgbold]
+    lassign [::hl_tcl::addingColors] -> fgred
+    return [list $fg $fgbold $fgred]
   }
   #_______________________
 
@@ -308,7 +314,7 @@ namespace eval alited {
         err {set title [msgcat::mc Error]}
         ques {set title [msgcat::mc Question]}
         default {set title $al(MC,info)}
-     }
+      }
     } else {
       set title [msgcat::mc $title]
     }
@@ -329,7 +335,9 @@ namespace eval alited {
 
     variable al
     variable obPav
-    lassign [FgFgBold] fg fgbold
+    if {[catch {lassign [FgFgBold] fg fgbold fgred}]} {
+      return  ;# at exiting app
+    }
     if {$lab eq {}} {set lab [$obPav Labstat3]}
     set font [[$obPav Labstat2] cget -font]
     set fontB [list {*}$font -weight bold]
@@ -339,9 +347,11 @@ namespace eval alited {
     $lab configure -font $font -foreground $fg
     if {$mode in {2 3 4 5}} {
       $lab configure -font $fontB
-      if {$mode in {3 4 5}} {
+      if {$mode eq {4}} {
+        $lab configure -foreground $fgred
+        if {$first} bell
+      } elseif {$mode in {3 5}} {
         $lab configure -foreground $fgbold
-        if {$mode eq {4} && $first} bell
       }
     }
     if {$mode eq {5}} {
@@ -565,7 +575,12 @@ if {$alited::LOG ne {}} {
   ::apave::logName $alited::LOG
   ::apave::logMessage "START ------------"
 }
-# this "if" satisfies the Ruff doc generator "package require":
+
+# The following "if" counts on the Ruff! doc generator:
+#   - Ruff! uses "package require" for a documented package ("alited", e.g.)
+#   - alited should not be run when Ruff! sources it
+#   - so, without 'package require alited', it's a regular run of alited
+
 if {[info exists ALITED_PORT]} {
   unset ALITED_PORT
 #  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
@@ -607,8 +622,7 @@ if {[info exists ALITED_PORT]} {
   }
   exit
 } else {
-  # these are sourced by demand when alited really running;
-  # here exclusively for Ruff doc generator
+  # these scripts are sourced to include them in Ruff!'s generated docs
   namespace eval alited {
     source [file join $alited::SRCDIR about.tcl]
     source [file join $alited::SRCDIR check.tcl]

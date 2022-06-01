@@ -95,9 +95,9 @@ proc indent::indent {tclcode pad padchar indcnt} {
 proc indent::normalize {} {
   # Normalizes all indents of the current Tcl text.
 
-  set txt [alited::main::CurrentWTXT]
+  namespace upvar ::alited al al
+  set txtcurr [alited::main::CurrentWTXT]
   lassign [alited::main::CalcIndentation] pad padchar
-  set indcnt 0
   if {$pad<1} {
     alited::msg ok err "No indentation set.\nSee 'Setup/Projects/Options'."
     return
@@ -107,13 +107,24 @@ proc indent::normalize {} {
   if {$padchar eq "\t"} {append ipad { Tab}}
   set msg [string map [list %i $ipad] $msg]
   set msg [string map [list %f [file tail [alited::bar::FileName]]] $msg]
-  if {[alited::msg yesno ques $msg YES]} {
+  set res [alited::msg yesno ques $msg YES -title $al(MC,corrindent) -ch $al(MC,othertcl)]
+  if {$res} {
     ::apave::setTextIndent $pad $padchar
-    set contents [$txt get 1.0 {end -1 chars}]
-    set contents [indent $contents $pad $padchar $indcnt]
-    if {$contents ne {}} {
-      $txt replace 1.0 end $contents
+    foreach tab [alited::bar::BAR listTab] {
+      set TID [lindex $tab 0]
+      lassign [alited::main::GetText $TID no no] fname txt
+      if {[alited::file::IsTcl $fname] && ($res==11 || $txt eq $txtcurr)} {
+        set contents [$txt get 1.0 {end -1 chars}]
+        set contents [indent $contents $pad $padchar 0]
+        if {$contents ne {}} {
+          $txt edit separator
+          $txt replace 1.0 end $contents
+          $txt edit separator
+          alited::bar::BAR markTab $TID
+        }
+      }
     }
+    alited::main::UpdateTextGutterTreeIcons
   }
 }
 

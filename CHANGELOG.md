@@ -1,14 +1,20 @@
 # LAST CHANGES:
 
 
-Version `1.2.3b7 (22 May'22)`
+Version `1.2.3b14 (1 Jun'22)`
 
+  - BUGFIX: at 1st start, issues with choosing non-default config directory
   - BUGFIX: switching projects with no file or with "No name" tab
   - BUGFIX: not save "No name" of project's file list
   - BUGFIX: clearing messages in status bar of Projects
   - BUGFIX: checking for duplicate icons of tools
   - BUGFIX: Projects dialogue after deploying alited 1st time (vars not existing)
   - BUGFIX: evaluation of Tcl commands of "Setup / After Start (Before Run)"
+  - BUGFIX: switching projects with files unsaved
+  - NEW   : "New" and "Open..." items in popup menu of tab bar
+  - NEW   : checkbox "Don't ask anymore" at closing unsaved files
+  - NEW   : checkbox "Do it in other Tcl files" at asking "Correct indentation"
+  - NEW   : checkbox "Do it in other files" at asking "Remove trailing whitespaces"
   - NEW   : in List of Templates: "Import templates" button; tiny-ups
   - NEW   : new templates in alited.ini (view variables; enter a command)
   - NEW   : look for a declaration (Ctrl+L) - at first in the current tab
@@ -17,13 +23,21 @@ Version `1.2.3b7 (22 May'22)`
   - NEW   : (customizable) F9 key to show a list of open files, at mouse pointer
   - NEW   : "Tools / File List" menu item
   - NEW   : hint on running in console/tkcon (in Preferences/Tools/tkcon)
+  - CHANGE: menu labels in Setup menu (Projects... etc.)
+  - CHANGE: status bar's messages with bell - in red color
+  - CHANGE: "Unit lines per 1 red bar": N lines of a unit considered normal
+  - CHANGE: 12 rows of list in "Templates"
+  - CHANGE: "unit lines per 1 red bar" - 4 minimum, starting reddish behind this
+  - CHANGE: checking start of main::UpdateTextGutterTreeIcons & alited::Message
+  - CHANGE: at 1st start, geometry of "Preferences", incl. minimal dimensions
+  - CHANGE: enable Edit menu items ("Correct indentation" & "Remove trailing spaces")
   - CHANGE: Help window is made non-modal, to see the help & work together
   - CHANGE: "Tools / tkcon" and "Tools / e_menu/bar" exchanged seats
   - CHANGE: at closing a file by Ctrl+W, go to a previously viewed file
   - CHANGE: simplify checking keys to save last visits
   - CHANGE: tooltips of file list with (optional) file info
   - CHANGE: save dir chooser's geometry of choosing ~/.config (the very 1st dialogue)
-  - CHANGE: apave, e_menu, bartabs, hl_tcl packages
+  - CHANGE: apave, e_menu, bartabs, hl_tcl, baltip packages
 
 
 Version `1.2.2 (4 May'22)`

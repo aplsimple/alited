@@ -211,7 +211,7 @@ proc favor_ls::Add {} {
     lappend favcont $cont
     lappend favpla $place
     set msg [string map [list %n [llength $favlist]] $al(MC,favnew)]
-    alited::Message2 $msg
+    alited::Message2 $msg 3
   }
   Focus $isel
 }
@@ -233,7 +233,7 @@ proc favor_ls::Change {} {
     set favlist [lreplace $favlist $isel $isel $fav]
     set favpla [lreplace $favpla $isel $isel $place]
     set msg [string map [list %n [incr isel]] $al(MC,favupd)]
-    alited::Message2 $msg
+    alited::Message2 $msg 3
   }
 }
 #_______________________
@@ -258,7 +258,7 @@ proc favor_ls::Delete {} {
   if {$isel>$llen} {set isel $llen}
   if {$llen>=0} {Select $isel}
   set msg [string map [list %n $nsel] $al(MC,favrem)]
-  alited::Message2 $msg
+  alited::Message2 $msg 3
 }
 
 # ________________________ Ini data _________________________ #
@@ -334,23 +334,23 @@ proc favor_ls::_create {} {
   variable win
   variable favlist
   variable fav
-  $obDl2 makeWindow $win $al(MC,favorites)
+  $obDl2 makeWindow $win $al(MC,FavLists)
   $obDl2 paveWindow $win {
     {fraLbxFav - - 1 2 {-st nswe -pady 4} {}}
-    {.labFavs - - - - {pack -side top -anchor nw -padx 4} {-t "Lists of favorites:"}}
     {.fra - - - - {pack -side right -fill both} {}}
     {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::favor_ls::Add -tip "Add a list of favorites" -image alimg_add-big -relief flat -highlightthickness 0}}
     {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Change -tip "Change a list of favorites" -image alimg_change-big -relief flat -highlightthickness 0}}
     {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Delete -tip "Delete a list of favorites" -image alimg_delete-big -relief flat -highlightthickness 0}}
-    {.LbxFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 40 -lvar ::alited::favor_ls::favlist}}
+    {.LbxFav - - - - {pack -side left -expand 1 -fill both} {-h 8 -w 40 -lvar ::alited::favor_ls::favlist}}
     {.sbvFavs fraLbxFav.LbxFav L - - {pack -side left -fill both} {}}
     {fra1 fraLbxFav T 1 2 {-st nswe}}
+    {.h_ - - 1 1 {pack -side top -expand 1 -fill both -pady 10}}
     {fra1.fraEnt - - 1 1 {pack -side top -expand 1 -fill both -pady 4}}
     {.labFav - - 1 1 {pack -side left -padx 4} {-t "Current list of favorites:"}}
-    {.EntFav fra1.labFav L 1 1 {pack -side left -expand 1 -fill both} {-tvar ::alited::favor_ls::fav -tip {$alited::al(MC,favent1)}}}
-    {fra1.fratex fra1.labFav T 1 2 {pack -side bottom}}
-    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 7 -w 60 -tip "Favorites of the current list" -ro 1}}
-    {.sbvFav .TexFav L - - {pack -side left}}
+    {.EntFav - - 1 1 {pack -side left -expand 1 -fill both} {-tvar ::alited::favor_ls::fav -tip {$alited::al(MC,favent1)}}}
+    {fra1.fratex - - 1 2 {pack -side bottom}}
+    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 60 -tip "Favorites of the current list" -ro 1}}
+    {.sbvFav - - - - {pack -side left}}
     {fra2 fra1 T 1 2 {-st nswe} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Non-favorite files to be:"}}
     {.radA - - - - {pack -side left -padx 8}  {-t kept -var ::alited::favor_ls::place -value 1 -tip "Doesn't close any tab without favorites\nat choosing Favorites' list"}}

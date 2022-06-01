@@ -48,6 +48,7 @@ namespace eval ::apave {
   set _AP_VARS(LINKFONT) [list -underline 1]
   set _AP_VARS(INDENT) "  "
   set _AP_VARS(KEY,F3) F3
+  set _AP_VARS(KEY,CtrlA) [list Control-A Control-a]
   set _AP_VARS(KEY,CtrlD) [list Control-D Control-d]
   set _AP_VARS(KEY,CtrlY) [list Control-Y Control-y]
   set _AP_VARS(KEY,AltQ) [list Alt-Q Alt-q]
@@ -197,11 +198,12 @@ namespace eval ::apave {
   }
   #_______________________
 
-  proc iconImage {{icon ""} {iconset "small"}} {
+  proc iconImage {{icon ""} {iconset "small"} {doit no}} {
     # Gets a defined icon's image or list of icons.
     # If *icon* equals to "-init", initializes apave's icon set.
     #   icon - icon's name
     #   iconset - one of small/middle/large
+    #   doit - force the initialization
     # Returns the icon's image or, if *icon* is blank, a list of icons
     # available in *apave*.
 
@@ -212,7 +214,7 @@ namespace eval ::apave {
       return _AP_IMG(img$icon)
     }
     variable apaveDir
-    if {[array size _AP_IMG] == 0} {
+    if {![array size _AP_IMG] || $doit} {
       # Make images of icons
       source [file join $apaveDir apaveimg.tcl]
       if {$iconset ne "small"} {
@@ -2789,15 +2791,17 @@ oo::class create ::apave::APave {
       catch {::apave::bindToEvent $wt <braceright> [self] onKeyTextM $wt %K}"
     }
     foreach k [::apave::getTextHotkeys CtrlD] {
-      append res " ; bind $wt <$k> {[self] doubleText $wt}"
+      append res " ; ::apave::bindToEvent $wt <$k> [self] doubleText $wt"
     }
     foreach k [::apave::getTextHotkeys CtrlY] {
-      append res " ; bind $wt <$k> {[self] deleteLine $wt}"
+      append res " ; ::apave::bindToEvent $wt <$k> [self] deleteLine $wt"
+    }
+    foreach k [::apave::getTextHotkeys CtrlA] {
+      append res " ; ::apave::bindToEvent $wt <$k> $wt tag add sel 1.0 end {;} break"
     }
     append res " ;\
-      bind $wt <Alt-Up> {[self] linesMove $wt -1} ;\
-      bind $wt <Alt-Down> {[self] linesMove $wt +1} ;\
-      bind $wt <Control-a> \"$wt tag add sel 1.0 end; break\""
+      ::apave::bindToEvent $wt <Alt-Up> [self] linesMove $wt -1 ;\
+      ::apave::bindToEvent $wt <Alt-Down> [self] linesMove $wt +1"
     return $res
   }
   #_______________________
@@ -3590,4 +3594,4 @@ oo::class create ::apave::APave {
 
 # _____________________________ EOF _____________________________________ #
 #RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 0 9 12 "middle icons"
+#RUNF1: ~/PG/github/pave/tests/test2_pave.tcl alt 2 11 12 "middle icons"

@@ -380,6 +380,11 @@ proc pref::Tab {tab {nt ""} {doit no}} {
     [$obDl2 TexCSample] configure -fg $fg -bg $bg
     set data(INI,CSsaved) $cs
   }
+  if {[string match root* $geo]} {
+    # the geometry of the dialogue - its first setting
+    # (makes sense at switching tabs, when open 1st time)
+    after 1000 "wm geometry $win \[wm geometry $win\]"
+  }
 }
 #_______________________
 
@@ -517,7 +522,7 @@ proc pref::General_Tab3 {} {
     {.SpxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjindent) -w 9 -from 0 -to 8 -justify center -com ::alited::pref::CheckIndent}}
     {.ChbIndAuto .SpxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjindentAuto) -t {$alited::al(MC,indentAuto)}}}
     {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,redunit)}}}
-    {.SpxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjredunit) -w 9 -from 10 -to 100 -justify center}}
+    {.SpxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjredunit) -w 9 -from $alited::al(minredunit) -to 100 -justify center}}
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.SwiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
@@ -1496,7 +1501,7 @@ proc pref::_create {tab} {
   }
   bind $win <Control-o> alited::ini::EditSettings
   bind $win <F1> "[$obDl2 ButHelp] invoke"
-  set res [$obDl2 showModal $win -geometry $geo -minsize {600 400} \
+  set res [$obDl2 showModal $win -geometry $geo -minsize {800 600} \
     -onclose ::alited::pref::Cancel]
   set fcont [$wtxt get 1.0 {end -1c}]
   ::apave::writeTextFile $fnotes fcont

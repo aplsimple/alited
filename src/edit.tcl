@@ -7,9 +7,7 @@
 ###########################################################
 
 
-namespace eval edit {
-  variable ansRemoveTrSp 0
-}
+namespace eval edit {}
 # ________________________ Indent _________________________ #
 
 proc edit::SelectedLines {{wtxt ""}} {
@@ -138,14 +136,14 @@ proc edit::UnComment {} {
 proc edit::ChangeEncoding {} {
   # Changes encoding of file(s).
 
-tk_messageBox -message "edit::ChangeEncoding - stub"
+  tk_messageBox -message "edit::ChangeEncoding - stub"
 }
 #_______________________
 
 proc edit::ChangeEOL {} {
   # Changes EOL of file(s).
 
-tk_messageBox -message "edit::ChangeEOL - stub"
+  tk_messageBox -message "edit::ChangeEOL - stub"
 }
 # ________________________ At modifications _________________________ #
 
@@ -315,39 +313,48 @@ proc edit::Modified {TID wtxt {l1 0} {l2 0} args} {
 }
 #_______________________
 
-proc edit::RemoveTrailWhites {{wtxt ""} {doit 0}} {
+proc edit::RemoveTrailWhites {{wtxtcurr ""} {doit no}} {
   # Removes trailing spaces of lines - all of lines or a selection of lines.
-  #   wtxt - text's path
-  #   doit - if 11, trimright all of text without questions
+  #   wtxtcurr - currently edited text's path
+  #   doit - if yes, trimright all of *wtxtcurr* without questions
 
   namespace upvar ::alited al al
-  variable ansRemoveTrSp
-  lassign [SelectedLines $wtxt] wtxt l1 l2
-  # ask about trailing all lines or a current line / selection
-  if {$doit<10} {
-    if {$ansRemoveTrSp<10} {
-      set ansRemoveTrSp [alited::msg yesnocancel ques \
-        {Remove trailing whitespaces of all lines?} \
-        YES -title {Remove trailing whitespaces} -ch $al(MC,noask)]
-    }
-    set doit $ansRemoveTrSp
-  }
+  set ans 1
   if {!$doit} {
-    return
-  } elseif {$doit in {1 11}} {
-    set l1 1
-    set l2 [expr {int([$wtxt index {end -1c}])}]
+    set wtxtcurr [alited::main::CurrentWTXT]
+    # ask about trailing all lines of a current file (with option: all of other files)
+    set msg [msgcat::mc "Remove trailing whitespaces of all lines\nof \"%f\"?"]
+    set msg [string map [list %f [file tail [alited::bar::FileName]]] $msg]
+    set ans [alited::msg yesno ques $msg \
+      YES -title {Remove trailing whitespaces} -ch $al(MC,otherfiles)]
+    if {![set doit $ans]} return
   }
-  set wasedit no
-  for {set l $l1} {$l<=$l2} {incr l} {
-    set line [$wtxt get $l.0 $l.end]
-    if {[set trimmed [string trimright $line]] ne $line} {
-      if {!$wasedit} {$wtxt edit separator}
-      set wasedit yes
-      $wtxt replace $l.0 $l.end $trimmed
+  set waseditcurr no
+  foreach tab [alited::bar::BAR listTab] {
+    set TID [lindex $tab 0]
+    lassign [alited::main::GetText $TID no no] -> wtxt
+    if {$ans==11 || $wtxt eq $wtxtcurr} {
+      set l1 1
+      set l2 [expr {int([$wtxt index {end -1c}])}]
+      set wasedit no
+      for {set l $l1} {$l<=$l2} {incr l} {
+        set line [$wtxt get $l.0 $l.end]
+        if {[set trimmed [string trimright $line]] ne $line} {
+          if {!$wasedit} {$wtxt edit separator}
+          set wasedit yes
+          $wtxt replace $l.0 $l.end $trimmed
+        }
+      }
+      if {$wasedit} {
+        $wtxt edit separator
+        alited::bar::BAR markTab $TID
+        if {$wtxt eq [alited::main::CurrentWTXT]} {
+          set waseditcurr yes  ;# update the current text's view only
+        }
+      }
     }
   }
-  if {$wasedit} {$wtxt edit separator}
+  if {$waseditcurr} alited::main::UpdateTextGutterTreeIcons
 }
 
 # _________________________________ EOF _________________________________ #

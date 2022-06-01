@@ -9,8 +9,9 @@
 # _________________________ Variables ________________________ #
 
 namespace eval complete {
-  variable comms [list]  ;# list of available commands
-  variable maxwidth 20   ;# maximum width of command
+  variable comms [list]   ;# list of available commands
+  variable maxwidth 20    ;# maximum width of command
+  variable tclcoms [list] ;# list of Tcl/Tk commands with arguments
 }
 
 # ________________________ Common _________________________ #
@@ -177,8 +178,18 @@ proc complete::PickCommand {wtxt} {
 
 proc complete::AutoCompleteCommand {} {
   # Runs auto completion of commands.
-  
+
   namespace upvar ::alited al al
+  variable tclcoms
+  if {![llength $tclcoms]} {
+    set tclcoms [::hl_tcl::hl_commands]
+    foreach cmd {exit break continue pwd pid} {
+      # these commands mostly without arguments: below, don't add { } after them
+      if {[set i [lsearch -exact $tclcoms $cmd]]>-1} {
+        set tclcoms [lreplace $tclcoms $i $i]
+      }
+    }
+  }
   lassign [MatchedCommands] curword idx1 idx2
   set wtxt [alited::main::CurrentWTXT]
   if {[set com [PickCommand $wtxt]] ne {}} {
@@ -198,7 +209,7 @@ proc complete::AutoCompleteCommand {} {
           }
         }
       }
-    } elseif {$com ni {exit return break continue pwd pid}} {
+    } elseif {$com in $tclcoms} {
       append com { }
     }
     $wtxt insert $pos $com

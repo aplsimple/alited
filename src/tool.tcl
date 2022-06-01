@@ -48,22 +48,22 @@ proc tool::InsertInText {str {pos1 {}} {pos2 {}} } {
   #   pos1 - starting position in a current line
   #   pos2 - ending position in a current line
 
-    set wtxt [alited::main::CurrentWTXT]
-    if {$pos1 eq {}} {
-      lassign [$wtxt tag ranges sel] pos1 pos2
-    } else {
-      set line [expr {int([$wtxt index insert])}]
-      set prevch [$wtxt get $line.[expr {$pos1-1}] $line.$pos1]
-      if {$prevch eq [string index $str 0]} {
-        incr pos1 -1
-      }
-      set pos1 $line.$pos1
-      set pos2 $line.[incr pos2]
+  set wtxt [alited::main::CurrentWTXT]
+  if {$pos1 eq {}} {
+    lassign [$wtxt tag ranges sel] pos1 pos2
+  } else {
+    set line [expr {int([$wtxt index insert])}]
+    set prevch [$wtxt get $line.[expr {$pos1-1}] $line.$pos1]
+    if {$prevch eq [string index $str 0]} {
+      incr pos1 -1
     }
-    if {$pos1 ne {}} {
-      $wtxt delete $pos1 $pos2
-    }
-    $wtxt insert [$wtxt index insert] $str
+    set pos1 $line.$pos1
+    set pos2 $line.[incr pos2]
+  }
+  if {$pos1 ne {}} {
+    $wtxt delete $pos1 $pos2
+  }
+  $wtxt insert [$wtxt index insert] $str
 }
 
 # ________________________ Various tools _________________________ #

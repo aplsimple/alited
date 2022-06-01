@@ -449,7 +449,7 @@ proc find::InitShowResults {} {
 # ________________________ Do search _________________________ #
 
 proc find::CheckWord {wtxt index1 index2 {wordonly {}}} {
-  # Check if the found string is a word, at searching by words, 
+  # Check if the found string is a word, at searching by words,
   #   wtxt - text widget's path
   #   index1 - first index of the found string
   #   index2 - last index of the found string
@@ -747,6 +747,7 @@ proc find::ReplaceInSession {} {
     return {}
   }
   set rn 0
+  set waseditcurr no
   set data(_ERR_) no
   foreach tab [SessionList] {
     set TID [lindex $tab 0]
@@ -755,12 +756,14 @@ proc find::ReplaceInSession {} {
       ShowResults2 $rdone $alited::al(MC,frres2) $TID
       incr rn $rdone
       alited::bar::BAR markTab $TID
+      if {$wtxt eq [alited::main::CurrentWTXT]} {
+        set waseditcurr yes  ;# update the current text's view only
+      }
     }
     if {$data(_ERR_)} break
   }
   ShowResults2 $rn $alited::al(MC,frres3)
-  alited::main::UpdateTextGutterTree
-  alited::bar::OnTabSelection [alited::bar::CurrentTabID] ;# updates icons
+  if {$waseditcurr} alited::main::UpdateTextGutterTreeIcons
 }
 
 # ________________________ Helpers _________________________ #

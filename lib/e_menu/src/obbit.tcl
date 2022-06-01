@@ -158,6 +158,7 @@ namespace eval ::apave {
   set ::apave::_CS_(old) -3
   set ::apave::_CS_(TONED) [list -2 no]
   set ::apave::_CS_(LABELBORDER) 0
+  set ::apave::_CS_(CURSORWIDTH) 2
   namespace eval ::tk { ; # just to get localized messages
     foreach m {&Abort &Cancel &Copy Cu&t &Delete E&xit &Filter &Ignore &No \
     OK Open P&aste &Quit &Retry &Save "Save As" &Yes Close "To clipboard" \

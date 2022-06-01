@@ -8,7 +8,9 @@
 
 #package require control
 
-namespace eval file {}
+namespace eval file {
+  variable res_dosave 0
+}
 
 # _________________________ Common ________________________ #
 
@@ -38,12 +40,22 @@ proc file::IsSaved {TID} {
   #   TID - ID of tab
   # Returns 1 for "yes, needs saving", 2 for "needs no saving", 0 for "cancel".
 
+  variable res_dosave
   namespace upvar ::alited al al
   if {[IsModified $TID]} {
     set fname [alited::bar::BAR $TID cget -text]
-    set ans [alited::msg yesnocancel warn [string map [list %f $fname] \
-      $al(MC,notsaved)] YES -title $al(MC,saving)]
-    return $ans
+    set nmark [llength [alited::bar::BAR listFlag "m"]]
+    if {$res_dosave<10 || $nmark<2} {
+      if {$nmark<2} {
+        set ch {}
+      } else {
+        # the option for "save/not save other changed files, without further questions"
+        set ch [list -ch $al(MC,noask)]
+      }
+      set res_dosave [alited::msg yesnocancel warn [string map [list %f $fname] \
+        $al(MC,notsaved)] YES -title $al(MC,saving) {*}$ch]
+    }
+    return $res_dosave
   }
   return 2  ;# as if "No" chosen
 }
@@ -280,13 +292,15 @@ proc file::WrapLines {} {
 proc file::AllSaved {} {
   # Checks whether all files are saved. Saves them if not.
 
+  variable res_dosave
+  set res_dosave 0
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
     switch [IsSaved $TID] {
       0 { ;# "Cancel" chosen for a modified
         return no
       }
-      1 { ;# "Save" chosen for a modified
+      1 - 11 { ;# "Save" chosen for a modified
         set res [SaveFile $TID yes]
       }
     }
@@ -503,7 +517,7 @@ proc file::SaveFileByName {TID fname} {
 
   namespace upvar ::alited al al
   set wtxt [alited::main::GetWTXT $TID]
-  if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $wtxt 11}
+  if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $wtxt yes}
   set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
   if {![::apave::writeTextFile $fname fcont]} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1
@@ -604,6 +618,8 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
   # Returns 0, if a user selects "Cancel".
 
   namespace upvar ::alited al al obPav obPav
+  variable res_dosave
+  set res_dosave 0
   set res 1
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
@@ -613,7 +629,7 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
       0 { ;# "Cancel" chosen for a modified
         return 0
       }
-      1 { ;# "Save" chosen for a modified
+      1 - 11 { ;# "Save" chosen for a modified
         set res [SaveFile $TID]
       }
     }

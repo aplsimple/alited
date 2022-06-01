@@ -796,6 +796,7 @@ proc ini::CheckIni {} {
   if {[file exists $::alited::INIDIR] && [file exists $::alited::PRJDIR]} {
     return
   }
+  InitGUI
   destroy .tex
   ::apave::APaveInput create pobj
   set head [string map [list %d $::alited::USERDIRSTD] $al(MC,chini2)]
@@ -845,7 +846,6 @@ proc ini::CreateUserDirs {} {
       [file join $PRJDIR default.ale]
     file copy [file join $DATADIR user notes.txt] [file join $USERDIR notes.txt]
     ReadIni
-    InitGUI
   }
   set emdir [file dirname $al(EM,menudir)]
   if {![file exists $emdir]} {
@@ -950,17 +950,17 @@ proc ini::_init {} {
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
+  ::apave::setProperty DirFilGeoVars [list ::alited::DirGeometry ::alited::FilGeometry]
   GetUserDirs
+  CheckIni
   ReadIni
   InitFonts
 
   lassign [::apave::InitTheme $al(THEME) $::alited::LIBDIR] theme lbd
   ::apave::initWM -cursorwidth $al(CURSORWIDTH) -theme $theme -labelborder $lbd
-  ::apave::iconImage -init $al(INI,ICONS)
-  ::apave::setProperty DirFilGeoVars [list ::alited::DirGeometry ::alited::FilGeometry]
+  ::apave::iconImage -init $al(INI,ICONS) yes
   set ::apave::MC_NS ::alited
   InitGUI
-  CheckIni
   GetUserDirs
 
   # get hotkeys
@@ -1084,3 +1084,4 @@ proc ini::ToolbarTip {w tip} {
 }
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+# ~/.config2

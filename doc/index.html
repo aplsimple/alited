@@ -742,16 +742,13 @@ So, when you switch to another project, <span class="curid"><a href="#" class="w
 <p>Few words about an interesting project option.
 </p>
 
-<p>The "Unit lines per 1 red bar" option means that each N lines of a unit would add a red bar to its icon at the unit tree, up to 7th bar.
+<p>The "Unit lines per 1 red bar" option means that N lines of a unit are considered normal, while each N additional lines of the unit would add a red bar to its icon at the unit tree, up to 7th bar.
 </p>
 
-<p>When the icon becomes fully red, this is like sending you "a bit too long unit" message, i.e. the unit probably needs a sort of reforming.
+<p>When the icon becomes fully (or mostly) red, this is like sending you "a bit too long unit" message, i.e. the unit probably needs a sort of reforming.
 </p>
 
-<p>There are 8 grades of redness: 0, 1*N, 2*N, 3*N ... 7*N. So, if N=20, then 141 lines would mean "a too long unit". Just look at the unit tree to detect those horrible reds, candidates for reforming.
-</p>
-
-<p>For example, look at <code>favor::LastVisited</code> of <a href=#png1>the above screenshot</a>: its row range is 20..63, total 44 which gives two red bars.
+<p>There are 8 grades of redness: 0, 1*N, 2*N, 3*N ... 7*N. So, if N=10, then 80 lines would mean "a too long unit". Just look at the unit tree to detect those horrible reds, candidates for reforming.
 </p>
 
 <p>
@@ -950,8 +947,6 @@ The "Run" tool tries to run an application chosen as default for the currently e
 
 <p>
 But <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> recognizes special comments like:
-<pre class="code">#ARGS1: args</pre>
-which means running "tclsh <em>currentfile</em> args".
 </p>
 
 <p><pre class="code">#RUNF1: file.tcl args</pre>
@@ -964,22 +959,86 @@ which means running "<em>command</em> args". Use <em>Alt+E</em> hot keys to inse
 </p>
 
 <p>
-There may be many those comments, from #ARGS1: (#RUNF1:, #EXEC1:) to #ARGS99: (#RUNF99:, #EXEC99:), but only first of them would be run.
+There may be many those comments, from #RUNF1: / #EXEC1: to #RUNF99: / #EXEC99:, but only first of them would be run. #RUNF1: or #RUNF2: or #EXEC9: - this isn't of
+big importance (a matter of taste, mainly).
 </p>
 
 <p>
 So, it's possible to run a main Tcl script at editing any Tcl script of an application. Or test a specific script in many applications, while editing it.
 </p>
 
-<p>The "Setup / Before Run" menu item allows setting command(s) to be executed before "Run" tool. This setting is per a project (some specific projects may need it).
+<p>
+"Run" tool executes Tcl script either of two ways:
+<ul>
+<li>running a file inside a console</li>
+<li>running a file inside Tkcon application</li>
+</ul>
+
+This is customized in "Preferences / Tools/ tkcon"
+with Tkcon's "Stay on top" mode: if it's ON, a file
+runs inside a console, otherwise it runs in Tkcon.
+</p>
+<p>
+Obviously, it's no good to run a file inside Tkcon,
+when Tkcon is a topmost app overlapping all others.
+</p>
+<p>
+You might prefer to have Tkcon non-topmost and run
+applications inside it.
+In this case you get a profit of introspecting your
+code in Tkcon.
+</p>
+<p>
+Also, Tkcon window would display puts' debug messages
+in Windows even when you use "vanilla wish" or "tclkit"
+instead of fully deployed Tcl/Tk. The Windows console
+doesn't display the puts messages with tclkits and
+vanilla wish, on my humble machine at least.
+</p>
+<p>
+"Run" icon uses the default mode customized in
+"Preferences / Tools/ tkcon". But when a file is run by "Tools / Run..." menu
+item or by F5 key, alited offers to run the file
+either in console or in Tkcon.
+</p>
+<p>
+It's good to have both of these modes with their
+pros and contras. For example mostly running Tcl
+scripts in console with Tcl full error messages,
+yet using Tkcon introspection from time to time.
 </p>
 
 <p>
-<b>Note:</b> The Tcl scripts are run by a console or <em>tkcon</em> tool depending on the <em>Preferences / Tools / tkcon / Stay on top</em> setting: if it's on, the Tcl scripts are started by a console. Otherwise, they are started by <em>tkcon</em> tool. This mode may be useful in MS Windows, because the Windows console doesn't display the debugging <em>puts</em> messages when <em>tclkit</em> or <em>vanilla wish</em> is used to run Tcl/Tk scripts.
+In <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, <em>Tkcon</em> tool is customizable in "Setup / Preferences / Tools / tkcon" tab. Use <em>Test</em> button to preview <em>Tkcon</em> and <em>Default</em> button to restore <em>Tkcon</em>'s defaults.
 </p>
 
 <p>
-In <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, <em>tkcon</em> tool is customizable in "Setup / Preferences / Tools / tkcon" tab. Use <em>Test</em> button to preview <em>tkcon</em>.
+The "Setup / Before Run" menu item allows setting command(s) to be executed before "Run" tool. This setting is per a project (some specific projects may need it).
+</p>
+
+<p>
+"Setup / Templates" dialogue allows to insert in a code
+debugging messages (with tk_messageBox or puts).
+</p>
+
+<p>
+There are templates to introspect variables:
+<ul>
+<li>local</li>
+<li>global</li>
+<li>current namespace's</li>
+</ul>
+</p>
+
+<p>
+There is a template to enter a command, in order
+to run it immediately in an appropriate place of
+your application! For example, you can change a local variable to
+see how your app will behave with the new value.
+</p>
+
+<p>
+Nothing can prevent you from adding your own templates to a list of existing ones.
 </p>
 
 <br>
@@ -1329,7 +1388,7 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 <A href="https://chiselapp.com/user/aplsimple/repository/alited/download">Download #1</A>
 </li>
 
-<li class="level1"><div class="li"> 
+<li class="level1"><div class="li">
 <a href="https://github.com/aplsimple/alited" rel="nofollow">Download #2</a>
 </li>
 

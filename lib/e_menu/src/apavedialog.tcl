@@ -622,6 +622,7 @@ oo::class create ::apave::APaveDialog {
     # Creates bindings to highlight matches in a text.
     #   w - path to the text
 
+    if {![winfo exists $w]} return
     $w tag configure hilited -foreground #1f0000 -background #ffa073
     $w tag configure hilited2 -foreground #1f0000 -background #ff6b85
     bind $w <Double-ButtonPress-1> [list [self] highlight_matches $w]

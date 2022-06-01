@@ -40,6 +40,7 @@ namespace eval ::alited {
     set al(MC,quit)        [msgcat::mc Quit]
     set al(MC,indent)      [msgcat::mc Indent]
     set al(MC,unindent)    [msgcat::mc Unindent]
+    set al(MC,corrindent)  [msgcat::mc {Correct Indentation}]
     set al(MC,comment)     [msgcat::mc Comment]
     set al(MC,uncomment)   [msgcat::mc Uncomment]
     set al(MC,findreplace) [msgcat::mc {Find / Replace}]
@@ -89,6 +90,8 @@ namespace eval ::alited {
     set al(MC,noask)       [msgcat::mc {Don't show anymore}]
     set al(MC,hue)         [msgcat::mc {Makes colors darker .. lighter}]
     set al(MC,maxbak)      [msgcat::mc {Maximum of backup copies per a file}]
+    set al(MC,othertcl)    [msgcat::mc {Do it in other Tcl files}]
+    set al(MC,otherfiles)  [msgcat::mc {Do it in other files}]
 
     ## _  menu items _ ##
     set al(MC,lookdecl)    [msgcat::mc {Look for Declaration}]

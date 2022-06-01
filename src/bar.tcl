@@ -68,6 +68,10 @@ proc bar::FillBar {wframe {newproject no}} {
     lappend tabs $tab
     lappend bar1Opts -tab $tab
   }
+  lappend bar1Opts -menu [list sep \
+    "com {$al(MC,new) } alited::file::NewFile" \
+    "com {$al(MC,open...) } alited::file::OpenFile" \
+    ]
   set curname [lindex $tabs $al(curtab)]
   catch {::bartabs::Bars create al(bts)}   ;# al(bts) is Bars object
   if {$newproject || [catch {set al(BID) [al(bts) create al(bt) $bar1Opts $curname]}]} {
@@ -309,8 +313,8 @@ proc bar::OnTabSelection {TID} {
   alited::ini::SaveCurrentIni $al(INI,save_onselect)
   alited::edit::CheckSaveIcons [alited::file::IsModified $TID]
   alited::edit::CheckUndoRedoIcons [alited::main::CurrentWTXT] $TID
-  if {[alited::file::IsTcl $fname]} {set indst normal} {set indst disabled}
-  $al(MENUEDIT) entryconfigure 5 -state $indst
+#  if {[alited::file::IsTcl $fname]} {set indst normal} {set indst disabled}
+#  $al(MENUEDIT) entryconfigure 5 -state $indst
   if {[alited::edit::CommentChar] ne {}} {set cmnst normal} {set cmnst disabled}
   if {[set wtxt [alited::main::GetWTXT $TID]] ne {}} {
     set al(wrapwords) [expr {[$wtxt cget -wrap] eq {word}}]
@@ -321,7 +325,7 @@ proc bar::OnTabSelection {TID} {
   lassign [alited::main::CalcIndentation] indent indentchar
   ::apave::setTextIndent $indent $indentchar
   if {$al(prjindentAuto)} {alited::main::UpdateProjectInfo $indent}
-  alited::menu::CheckPrjItems
+#  alited::menu::CheckPrjItems
   after 10 ::alited::tree::SeeSelection
 }
 

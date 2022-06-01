@@ -2,6 +2,9 @@
 
  Use <bold><red>"Add" and "Change" buttons</red></bold> after filling template's data.
 
+ Use <bold><red>"Import" button</red></bold> to fetch the new templates from an external
+ alited.ini (mostly of the alited installation).
+
  Choose or erase a template's hot keys from the dropdown combobox.
 
  In a template's text, set the cursor where it should be at inserting.
@@ -9,10 +12,10 @@
  In the text, use the following wildcards:
     %d - date
     %t - time
-    %u - user's login
-    %U - user's name
-    %m - user's mail
-    %w - user's web site
+    %u - user's login as set in "Preferences"
+    %U - user's name as set in "Preferences"
+    %m - user's mail as set in "Preferences"
+    %w - user's web site as set in "Preferences"
     %F - current file's name
     %f - current file's tail name
     %n - current file's root name (namespace)

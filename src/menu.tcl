@@ -31,16 +31,16 @@ proc menu::CheckMenuItems {} {
 }
 #_______________________
 
-proc menu::CheckPrjItems {} {
-  # Checks for states of menu items related to projects.
+#proc menu::CheckPrjItems {} {
+#  # Checks for states of menu items related to projects.
 
-  namespace upvar ::alited al al
-  if {![info exists al(_check_menu_state_)] || $al(_check_menu_state_)} {
-    if {$al(prjtrailwhite)} {set state disabled} {set state normal}
-    $al(MENUEDIT) entryconfigure 11 -state $state
-    set al(_check_menu_state_) 0
-  }
-}
+#  namespace upvar ::alited al al
+#  if {![info exists al(_check_menu_state_)] || $al(_check_menu_state_)} {
+#    if {$al(prjtrailwhite)} {set state disabled} {set state normal}
+#    $al(MENUEDIT) entryconfigure 11 -state $state
+#    set al(_check_menu_state_) 0
+#  }
+#}
 #_______________________
 
 proc menu::FillRecent {} {
@@ -116,7 +116,7 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,new) -command alited::file::NewFile -accelerator Ctrl+N
   $m add command -label $al(MC,open...) -command alited::file::OpenFile -accelerator Ctrl+O
   menu $m.recentfiles -tearoff 0
-  $m add cascade -label  [msgcat::mc "Recent Files"] -menu $m.recentfiles
+  $m add cascade -label [msgcat::mc "Recent Files"] -menu $m.recentfiles
   $m add separator
   $m add command -label $al(MC,save) -command alited::file::SaveFile -accelerator $al(acc_0)
   $m add command -label $al(MC,saveas...) -command alited::file::SaveFileAs -accelerator $al(acc_1)
@@ -138,7 +138,7 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label $al(MC,indent) -command alited::edit::Indent -accelerator $al(acc_6)
   $m add command -label $al(MC,unindent) -command alited::edit::UnIndent -accelerator $al(acc_7)
-  $m add command -label [msgcat::mc {Correct Indentation}] -command alited::edit::NormIndent
+  $m add command -label $al(MC,corrindent) -command alited::edit::NormIndent
   $m add separator
   $m add command -label $al(MC,comment) -command alited::edit::Comment -accelerator $al(acc_8)
   $m add command -label $al(MC,uncomment) -command alited::edit::UnComment -accelerator $al(acc_9)
@@ -201,9 +201,9 @@ proc menu::FillMenu {} {
 
   ## ________________________ Setup _________________________ ##
   set m [set al(SETUP) $al(WIN).menu.setup]
-  $m add command -label $al(MC,projects) -command alited::project::_run
-  $m add command -label $al(MC,tpllist) -command alited::unit::Add
-  $m add command -label $alited::al(MC,FavLists) -command alited::favor::Lists
+  $m add command -label [msgcat::mc Projects...] -command alited::project::_run
+  $m add command -label [msgcat::mc Favorites...] -command alited::favor::Lists
+  $m add command -label [msgcat::mc Templates...] -command alited::unit::Add
   $m add separator
   menu $m.tint -tearoff 0
   if {[::apave::obj apaveTheme]} {set state normal} {set state disabled}

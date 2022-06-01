@@ -1,5 +1,5 @@
 
-package ifneeded hl_tcl 0.9.39 [list source [file join $dir hl_tcl.tcl]]
+package ifneeded hl_tcl 0.9.40 [list source [file join $dir hl_tcl.tcl]]
 
 # short intro (for Ruff! docs generator)
 
@@ -29,7 +29,7 @@ Below is a line that brings most (not *hl_tcl*, as seen in [Reference](https://a
       regsub -all {(([^A-Z@]|\\@)[.?!]("|'|'')?([])])?) } $fieldText {\1  } fieldText
 
 Good luck for a highlighter when the second line (or similar) follows the first, giving it a matching quote and thus bringing it out of the stupor.
- 
+
 Those orphan quotes are often used in `regexp` and `regsub` Tcl commands, so that when a honest Tcl highlighter (like <a href="https://www.geany.org" title="Geany IDE">Geany</a>) stumbles upon an orphan quote, it tries its best to highlight the rest of code as a string, till the next unmatched quote.
 
 Thus, we have
@@ -91,7 +91,7 @@ It seems *hl_tcl* got close to this compromise. Specifically, it provides:
   * highlighting viewable/editable *Tk text* widget and static html pages
   * good performance at editing 1000-4000 LOC and rather acceptable for 4000-9000 LOC
   * even monstrous 10000 LOC and more are handled fast at the "tricky" mode a-la Gedit
-	
+
 The *hl_tcl* doesn't provide the following:
 
   * highlighting *numbers*
@@ -154,7 +154,7 @@ See details in [Reference](https://aplsimple.github.io/en/tcl/hl_tcl/hl_tcl.html
 
 ## Use for static html
 
-In the [hl_tcl.zip](https://chiselapp.com/user/aplsimple/repository/hl_tcl/download), there is a Tcl script named *tcl_html.tcl* that highlights Tcl snippets of static html page(s). 
+In the [hl_tcl.zip](https://chiselapp.com/user/aplsimple/repository/hl_tcl/download), there is a Tcl script named *tcl_html.tcl* that highlights Tcl snippets of static html page(s).
 
 It runs as follows:
 

@@ -35,7 +35,7 @@ proc info::Put {msg {inf ""} {bold no} {see no}} {
   #   msg - the message
   #   inf - additional data for the message (1st line of unit etc.)
   #   bold - if yes, displays the message bolded
-  #   see - if yes, makes the message seen
+  #   see - if yes, makes the message seen in red color
 
   namespace upvar ::alited obPav obPav
   variable list
@@ -43,12 +43,11 @@ proc info::Put {msg {inf ""} {bold no} {see no}} {
   lappend list $msg
   lappend info $inf
   set lbx [$obPav LbxInfo]
+  lassign [alited::FgFgBold] -> fgbold fgred
   if {$see} {
-    lassign [::hl_tcl::addingColors] -> fgbold
+    set fgbold $fgred
     $lbx see end
-  } elseif {$bold} {
-    lassign [alited::FgFgBold] -> fgbold
-  } else {
+  } elseif {!$bold} {
     return
   }
   $lbx itemconfigure end -foreground $fgbold

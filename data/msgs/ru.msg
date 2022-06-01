@@ -50,7 +50,7 @@ namespace eval ::alited {
     {Remove Trailing Whitespaces} {Удалить хвостовые пробелы}
     {Remove trailing whitespaces} {Удалить хвостовые пробелы}
     {Remove trailing whitespaces:} {Удалять хвостовые пробелы:}
-    {Remove trailing whitespaces of all lines?} {Удалить хвостовые пробелы во всех строках?}
+    "Remove trailing whitespaces of all lines\nof \"%f\"?" "Удалить хвостовые пробелы во всех строках\nфайла \"%f\"?"
     {Indent} {Добавить отступ}
     {Unindent} {Убрать отступ}
     {Comment} {Закомментить}
@@ -124,6 +124,8 @@ namespace eval ::alited {
     {Drop Selected Files Here} {Кинуть сюда выбранные файлы}
     "All Tcl files of this directory:\n  \"%f\"  \nwill be open.\n\nThis may be expensive!" "Все Tcl файлы каталога:\n  \"%f\"  \nбудут открыты.\n\nЭта операция может быть затратной!"
     {Select All} {Выделить все}
+    {Do it in other Tcl files} {И в других файлах Tcl тоже}
+    {Do it in other files} {И в других файлах тоже}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -153,6 +155,7 @@ namespace eval ::alited {
   ::msgcat::mcmset ru {
     {Template} {Шаблон}
     {Templates} {Шаблоны}
+    {Templates...} {Шаблоны...}
     {List of Templates} {Список шаблонов}
     {Current template:} {Текущий шаблон:}
     {New template:} {Новый шаблон:}
@@ -185,6 +188,7 @@ namespace eval ::alited {
   ## ________________________ Projects ________________________ ##
   ::msgcat::mcmset ru {
     {Projects} {Проекты}
+    {Projects...} {Проекты...}
     {You are going to %n!} {Вы собираетесь %n!}
     {Add a project} {Добавить проект}
     {Change a project} {Изменить проект}
@@ -257,7 +261,7 @@ namespace eval ::alited {
     "Closes all tabs without favorites\nat choosing Favorites' list" "Закрывать \"неизбранные\" закладки\nпри выборе списка Избранного"
     "Sets a list of Favorites\nthat was active initially." "Восстанавливает список Избранного,\nдействовавший вначале."
     {Delete a favorites' list #%n ?} {Удалить список Избранного #%n ?}
-    {Favorites} {Избранное}
+    {Favorites...} {Избранное...}
     "Add \"%n\" of %f\nto Favorites?" "Добавить \"%n\" файла %f\nв Избранное?"
     "Item \"%n\" of %f\nis already in Favorites." "Юнит \"%n\" из %f\nуже есть в Избранном."
     "Remove \"%n\" of %f\nfrom Favorites?" "Удалить \"%n\" файла %f\nиз Избранного?"

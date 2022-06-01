@@ -216,6 +216,21 @@ proc main::UpdateTextGutterTree {} {
   UpdateTextGutter
   UpdateUnitTree
 }
+#_______________________
+
+proc main::UpdateIcons {} {
+  # Updates after replacements: icons.
+
+  alited::bar::OnTabSelection [alited::bar::CurrentTabID]
+}
+#_______________________
+
+proc main::UpdateTextGutterTreeIcons {} {
+  # Updates after replacements: text, gutter, unit tree, icons.
+
+  UpdateTextGutterTree
+  UpdateIcons
+}
 
 # ________________________ Focus _________________________ #
 
