@@ -587,7 +587,7 @@ if {$alited::LOG ne {}} {
 
 if {[info exists ALITED_PORT]} {
   unset ALITED_PORT
-  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[llength $ALITED_ARGV]} {
     set ::argc 0
     set ::argv {}
@@ -608,7 +608,7 @@ if {[info exists ALITED_PORT]} {
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
   alited::tool::AfterStart
-  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
     update
