@@ -57,6 +57,7 @@ proc bar::FillBar {wframe {newproject no}} {
       "com {$lab4} {::alited::bar::SelTabAll} {} {}"] \
     -separator no -font apaveFontDefTypedsmall \
     -csel2 {alited::bar::OnTabSelection %t} \
+    -csel3 alited::bar::OnControlClick \
     -cdel {alited::file::CloseFile %t} \
     -cmov2 alited::bar::OnTabMove]
   set tabs [set files [set posis [list]]]
@@ -327,6 +328,15 @@ proc bar::OnTabSelection {TID} {
   if {$al(prjindentAuto)} {alited::main::UpdateProjectInfo $indent}
 #  alited::menu::CheckPrjItems
   after 10 ::alited::tree::SeeSelection
+}
+#_______________________
+
+proc bar::OnControlClick {} {
+  # Shows a number of tabs selected by Ctrl+Click.
+
+  set llen [llength [alited::bar::BAR cget -select]]
+  set msg [string map "%n $llen" [msgcat::mc {Selected files: %n}]]
+  alited::Message $msg 3
 }
 
 # ________________________ Handle Ctrl+Tab keys ______________________ #

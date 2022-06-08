@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.5.5
+package provide bartabs 1.5.6
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -119,7 +119,7 @@ yROnlsp+4xkRFgAuSmqo6nf+ATq/yK22zWynAAAAAElFTkSuQmCC}
     foreach bars $bartabs::BarsList {$bars drawAll}
   }
   #_______________________
-  
+
   proc messageBox {type ttl msg args} {
     # Runs Tk's or apave's ok/yes/no/cancel dialogue.
     #  type - ok, yesno or yesnocancel
@@ -127,7 +127,7 @@ yROnlsp+4xkRFgAuSmqo6nf+ATq/yK22zWynAAAAAElFTkSuQmCC}
     #  ttl - message
     # args - additional arguments of tk_messageBox
     # Returns 1 if 'yes' chosen, 2 if 'no', 0 otherwise.
-  
+
     # try the apave package's dialogue
     if {[catch {set res [::apave::obj $type ques $ttl $msg]}]} {
       # or run the standard tk_messageBox
@@ -896,6 +896,7 @@ method OnCtrlClick {} {
   }
   my $BID configure -select $fewsel
   my Tab_MarkBar $BID
+  my $BID Bar_Cmd2 -csel3 $TID ;# command after the action
 }
 #_______________________
 
@@ -1006,7 +1007,7 @@ method show {{anyway yes} {lifo yes}} {
       # if the tab is not visible, move it to 0th position and show from there
       set tabs [my $BID cget -TABS]
       lassign [my Tab_BID $TID] -> i tab
-      set tabs [linsert [lreplace $tabs $i $i] 0 $tab]          
+      set tabs [linsert [lreplace $tabs $i $i] 0 $tab]
       my $BID configure -TABS $tabs
       set itab 0
     }
@@ -2009,7 +2010,7 @@ method MarkTab {opt args} {
 #   args - list of TID
 
   foreach TID $args {
-    if {$TID ne {}} {
+    if {$TID ni {{} -1}} {
       set BID [lindex [my Tab_BID $TID] 0]
       set marktabs [my $BID cget $opt]
       if {[lsearch $marktabs $TID]<0} {
@@ -2029,10 +2030,12 @@ method UnmarkTab {opt args} {
 
   if {![llength $args]} {my Bars_Method configure $opt [list]}
   foreach TID $args {
-    set BID [lindex [my Tab_BID $TID] 0]
-    set marktabs [my $BID cget $opt]
-    if {[set i [lsearch $marktabs $TID]]>=0} {
-      my $BID configure $opt [lreplace $marktabs $i $i]
+    if {$TID ni {{} -1}} {
+      set BID [lindex [my Tab_BID $TID] 0]
+      set marktabs [my $BID cget $opt]
+      if {[set i [lsearch $marktabs $TID]]>=0} {
+        my $BID configure $opt [lreplace $marktabs $i $i]
+      }
     }
   }
   my Tab_MarkBars
@@ -2148,11 +2151,25 @@ method unmarkTab {args} {
 }
 #_______________________
 
+method onSelectCmd {args} {
+  # Runs a command on selecting tabs.
+  #   args - list of TID
+
+  foreach TID $args {
+    if {$TID ni {{} -1}} {
+      set BID [lindex [my Tab_BID $TID] 0]
+      my $BID Bar_Cmd2 -csel3 $TID ;# command after the action
+    }
+  }
+}
+#_______________________
+
 method selectTab {args} {
 # Selects tab(s).
 #   args - list of TID
 
   my MarkTab -select {*}$args
+  my onSelectCmd {*}$args
 }
 #_______________________
 
@@ -2161,6 +2178,7 @@ method unselectTab {args} {
 #   args - list of TID or {}
 
   my UnmarkTab -select {*}$args
+  my onSelectCmd {*}$args
 }
 #_______________________
 

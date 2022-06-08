@@ -437,12 +437,19 @@ proc file::DisplayFile {TID fname wtxt doreload} {
 }
 #_______________________
 
-proc file::NewFile {} {
+proc file::NewFile {{fname ""}} {
   # Handles "New file" menu item.
+  #   fname - a file name
 
   namespace upvar ::alited al al
   if {[set TID [alited::bar::FileTID $al(MC,nofile)]] eq {}} {
-    set TID [alited::bar::InsertTab $al(MC,nofile) $al(MC,nofile)]
+    if {$fname eq {}} {
+      set tab [set fname $al(MC,nofile)]
+    } else {
+      set tab [alited::bar::UniqueListTab $fname]
+      set fname [alited::file::FileStat $fname]
+    }
+    set TID [alited::bar::InsertTab $tab $fname]
   }
   alited::bar::BAR $TID show
 }
@@ -684,7 +691,6 @@ proc file::OpenFiles {} {
   }
   OpenFile [lsort -decreasing -dictionary $fnames] no yes
 }
-#_______________________
 
 # ________________________ File tree _________________________ #
 
@@ -692,7 +698,7 @@ proc file::RecreateFileTree {} {
   # Creates the file tree.
 
   namespace upvar ::alited al al obPav obPav
-  if {!$al(TREE,isunits)} {
+  if {!$al(TREE,isunits) && ![winfo exists $::alited::project::win]} {
     [$obPav Tree] selection set {}
     catch {after cancel $al(_AFT_RECR_)}
     set al(_AFT_RECR_) [after 100 ::alited::tree::RecreateTree]

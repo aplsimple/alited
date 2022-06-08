@@ -92,6 +92,8 @@ namespace eval ::alited {
     set al(MC,maxbak)      [msgcat::mc {Maximum of backup copies per a file}]
     set al(MC,othertcl)    [msgcat::mc {Do it in other Tcl files}]
     set al(MC,otherfiles)  [msgcat::mc {Do it in other files}]
+    set al(MC,inconsole)   [msgcat::mc {In console}]
+    set al(MC,intkcon)     [msgcat::mc {In Tkcon}]
 
     ## _  menu items _ ##
     set al(MC,lookdecl)    [msgcat::mc {Look for Declaration}]

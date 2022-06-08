@@ -3,7 +3,7 @@
 [OPTIONS]
 o=-1
 in=1.0
-pos=4.0
+pos=57.44
 w=35
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT ""}
@@ -54,7 +54,7 @@ RW:git diff RW: git log --format=oneline -10 > $::EMENUTMPFILE
 \n the filtered lines.\
 \n\n temp file:\n $::EMENUTMPFILE} \
    } -head {\n This will compare a selected version of \
-     \n     %PD\n to its HEAD.} -weight bold == ::EMENUCOMMIT ::EMENUGREP
+     \n     %PD\n to its HEAD.} -focus butOK -weight bold == ::EMENUCOMMIT ::EMENUGREP
  S:git diff S: %C set ::EMENUTMP {git diff $::EMENUCOMMIT HEAD}
  R:git diff R: %IF {$::EMENUGREP} eq "" %THEN %T $::EMENUTMP
 RW:git diff RW: $::EMENUTMP | grep -n "$::EMENUGREP" > "$::EMENUTMPFILE"

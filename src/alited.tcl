@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.3b14  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.3  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -31,13 +31,13 @@ namespace eval alited {
 
   variable al; array set al [list]
   set al(WIN) .alwin    ;# main form's path
-  set al(comm_port) {}  ;# port to listen
-  set al(comm_port_list) {{} 51807 51817 51827 51837}  ;# list of ports to listen
+  set al(comm_port) 51807  ;# port to listen
+  set al(comm_port_list) [list {} $al(comm_port) 51817 51827 51837] ;# ports to listen
   set al(ini_file) {}  ;# alited.ini contents
 
   # main data of alited (others are in ini.tcl)
 
-  variable SCRIPT $::argv0
+  variable SCRIPT [info script]
   variable SCRIPTNORMAL [file normalize $SCRIPT]
   variable FILEDIR [file dirname [file normalize [info script]]]
   variable DIR [file dirname $FILEDIR]
@@ -137,7 +137,11 @@ namespace eval alited {
       }
       foreach fname [lreverse $args] {
         if {[file isfile $fname]} {
-          alited::file::OpenFile $fname yes
+          file::OpenFile $fname yes
+        } else {
+          set msg [msgcat::mc "File \"%f\" doesn't exist."]
+          Message [string map [list %f $fname] $msg] 4
+          file::NewFile $fname
         }
       }
     }
@@ -583,7 +587,7 @@ if {$alited::LOG ne {}} {
 
 if {[info exists ALITED_PORT]} {
   unset ALITED_PORT
-#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[llength $ALITED_ARGV]} {
     set ::argc 0
     set ::argv {}
@@ -591,11 +595,20 @@ if {[info exists ALITED_PORT]} {
   }
   set alited::ARGV $::argv
   unset ALITED_ARGV
-  alited::ini::_init     ;# initialize GUI & data
+  if {[catch {alited::ini::_init} _]} {
+    # initialize GUI & data:
+    # let a possible error of ini-file be shown, with attempt to continue
+    alited::ini::GetUserDirs
+    tk_messageBox -icon error -message \
+      "Error of reading of alited's settings: \
+      \n$_\n\nProbable reason in the file:\n$::alited::al(INI) \
+      \n\nTry to rename / move it.\nThen restart alited."
+  }
+  unset -nocomplain _
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
   alited::tool::AfterStart
-#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[alited::main::_run]} {     ;# run the main form
     # restarting
     update

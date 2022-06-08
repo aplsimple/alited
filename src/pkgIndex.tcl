@@ -1,4 +1,4 @@
-package ifneeded alited 1.2.3b14 [list source [file join $dir alited.tcl]]
+package ifneeded alited 1.2.3 [list source [file join $dir alited.tcl]]
 
 namespace eval ::alited {
 
@@ -19,7 +19,7 @@ It satisfies most requirements of [Tcl Editors](https://wiki.tcl-lang.org/Tcl+Ed
 
 Edited by *alited* are [Tcl/Tk](https://wiki.tcl-lang.org/) files. The C/C++ code is another target of *alited*, still for *[Tcl/Tk](https://wiki.tcl-lang.org/) development only* all the same.
 
-The *alited* facilitates the development and the maintenance of [Tcl/Tk](https://wiki.tcl-lang.org/) code, particularly because of the [unit tree](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.0.5/2.Units_alited-1.0.5.mp4) being a sort of documentation.
+The *alited* facilitates the development and the maintenance of [Tcl/Tk](https://wiki.tcl-lang.org/) code, particularly because of the [unit tree](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.2.3/2.Units_alited-1.2.3.mp4) being a sort of documentation.
 
 The *alited* is suspected of being very good with large [Tcl/Tk](https://wiki.tcl-lang.org/) projects, i.e. when, in one session, you deal with 30-40-50... [Tcl/Tk](https://wiki.tcl-lang.org/) scripts, to say nothing of others.
 
@@ -52,12 +52,12 @@ Briefly, alited is totally quick, being at that *a pure [Tcl/Tk](https://wiki.tc
 
 For a quick acquaintance of *alited*, a few of demo videos are available:
 
-   * [1. First start](https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.1/1.Start_alited-1.1.mp4)
-   * [2. Units](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.1/2.Units_alited-1.1.mp4)
-   * [3. Projects](https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.1/3.Projects_alited-1.1.mp4)
-   * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.1/4.Find_alited-1.1.mp4)
-   * [5. Tools](https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.1/5.Tools_alited-1.1.mp4)
-   * [6. Themes](https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.1/6.Themes_alited-1.1.mp4)
+   * [1. First start](https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.2.3/1.Start_alited-1.2.3.mp4)
+   * [2. Units](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.2.3/2.Units_alited-1.2.3.mp4)
+   * [3. Projects](https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.2.3/3.Projects_alited-1.2.3.mp4)
+   * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.2.3/4.Find_alited-1.2.3.mp4)
+   * [5. Tools](https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.2.3/5.Tools_alited-1.2.3.mp4)
+   * [6. Themes](https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.2.3/6.Themes_alited-1.2.3.mp4)
 
 ## Inevitable blah-blah
 
@@ -76,5 +76,6 @@ Below is a screenshot of *alited*, just to glance at it:
 ... and its themed variant on Windows 10:
 
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited-win10.png" class="media" alt="">
+
   }
 }

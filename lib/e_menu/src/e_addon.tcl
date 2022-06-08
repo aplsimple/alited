@@ -295,7 +295,7 @@ proc ::em::highlightBrackets {w fg boldfont} {
 #___ edit file(s)
 proc ::em::edit {fname {prepost ""}} {
   set fname [string trim $fname]
-  if {$::em::editor eq {}} {
+  if {$::em::editor eq {} || $prepost ne {}} {
     set bfont [::apave::obj boldTextFont [::apave::obj basicFontSize]]
     set dialog [::apave::APaveInput new]
     set res [$dialog editfile $fname $::em::clrtitf $::em::clrtitb $::em::clrtitf \
@@ -306,7 +306,7 @@ proc ::em::edit {fname {prepost ""}} {
     $dialog destroy
     return $res
   } else {
-    if {[catch {exec -- $::em::editor {*}$fname &} e]} {
+    if {[catch {exec -- {*}$::em::editor {*}$fname &} e]} {
       em_message "ERROR: couldn't call $::em::editor'\n
 to edit $fname.\n\nCurrent directory is [pwd]\n\nMaybe $::em::editor\n is worth including in PATH?"
       return false

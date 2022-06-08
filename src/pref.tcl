@@ -497,7 +497,7 @@ proc pref::General_Tab2 {} {
     {.seh4 .labMaxFiles T 1 4 {-st ew -pady 5}}
     {.labBackup .seh4 T 1 1 {-st w -pady 1 -padx 3} {-t "Back up files to a project's subdirectory:"}}
     {.CbxBackup .labBackup L 1 1 {-st sw -pady 1} {-tvar alited::al(BACKUP) -values {{} .bak} -state readonly -w 6 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." -afteridle alited::pref::CbxBackup -selcombobox alited::pref::CbxBackup}}
-    {.labMaxBak .CbxBackup L 1 1 {-st w -pady 1 -padx 1} {-t "  Maximum:"}}
+    {.LabMaxBak .CbxBackup L 1 1 {-st w -pady 1 -padx 1} {-t "  Maximum:"}}
     {.SpxMaxBak .labMaxBak L 1 1 {-st sw -pady 1 -padx 1} {-tvar alited::al(MAXBACKUP) -from 1 -to 99 -justify center -w 9 -tip {$alited::al(MC,maxbak)}}}
     {.labBell .labBackup T 1 1 {-st w -pady 1 -padx 3} {-t "Bell at warnings:"}}
     {.swiBell .labBell L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,belltoll)}}
@@ -553,6 +553,7 @@ proc pref::CbxBackup {} {
   fetchVars
   if {$alited::al(BACKUP) eq {}} {set state disabled} {set state normal}
   [$obDl2 SpxMaxBak] configure -state $state
+  [$obDl2 LabMaxBak] configure -state $state
 }
 #_______________________
 
@@ -1206,11 +1207,6 @@ proc pref::Tkcon_Default {} {
   # Sets defaults for "Tools/Tkcon" tab.
 
   fetchVars
-  foreach {clr val} { \
-  bg #25292b blink #929281 cursor #FFFFFF disabled #999797 proc #FF6600 \
-  var #602B06 prompt #66FF10 stdin #FFFFFF stdout #CECECE stderr #FB44C0} {
-    set al(tkcon,clr$clr) $val
-  }
   set al(tkcon,rows) 20
   set al(tkcon,cols) 100
   set al(tkcon,fsize) 13
@@ -1219,10 +1215,33 @@ proc pref::Tkcon_Default {} {
 }
 #_______________________
 
+proc pref::Tkcon_Default1 {} {
+  # Sets light theme colors for Tkcon.
+
+  fetchVars
+  foreach {clr val} { \
+  bg #FFFFFF blink #FFFF00 cursor #000000 disabled #4D4D4D proc #008800 \
+  var #FFC0D0 prompt #8F4433 stdin #000000 stdout #0000FF stderr #FF0000} {
+    set al(tkcon,clr$clr) $val
+  }
+}
+#_______________________
+
+proc pref::Tkcon_Default2 {} {
+  # Sets dark theme colors for Tkcon.
+
+  fetchVars
+  foreach {clr val} { \
+  bg #25292b blink #929281 cursor #FFFFFF disabled #999797 proc #66FF10 \
+  var #565608 prompt #ffff00 stdin #FFFFFF stdout #aeaeae stderr #ff7272} {
+    set al(tkcon,clr$clr) $val
+  }
+}
+#_______________________
+
 proc pref::Tkcon_Tab {} {
   # Serves to layout "Tools/Tkcon" tab.
 
-  if {![info exists alited::al(tkcon,clrbg)]} Tkcon_Default
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
@@ -1248,6 +1267,9 @@ proc pref::Tkcon_Tab {} {
     {.clrstdout .labstdout L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,clrstdout) -w 20}}
     {.labstderr .labstdout T 1 1 {-st w -pady 1 -padx 3} {-t "stderr:"}}
     {.clrstderr .labstderr L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,clrstderr) -w 20}}
+    {.but1 .clrstderr L 1 1 {-padx 8} {-t Default -com {alited::pref::Tkcon_Default1; alited::pref::UpdateTkconTab}}}
+    {.but2 .but1 L 1 1 {-padx 0} {-t {Default 2} -com {alited::pref::Tkcon_Default2; alited::pref::UpdateTkconTab}}}
+    {.but3 .but2 L 1 1 {-padx 20} {-t Test -com alited::tool::tkcon}}
     {fra.scf.v_ fra.scf.lfr T 1 1  {pack} {-h 10}}
     {fra.scf.lfr2 fra.scf.v_ T 1 1  {pack -fill x} {-t Options}}
     {.labRows - - 1 1 {-st w -pady 1 -padx 3} {-t "Rows:"}}
@@ -1261,8 +1283,6 @@ proc pref::Tkcon_Tab {} {
     {.labTopmost .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Stay on top:"}}
     {.swiTopmost .labTopmost L 1 1 {-st sw -pady 1} {-var alited::al(tkcon,topmost)}}
     {.labtmhint .swiTopmost L 1 1 {-st w -pady 1 -padx 3} {-t "(if ON, Tcl scripts run in console, otherwise in tkcon)"  -foreground $alited::al(FG,Bold)}}
-    {fra.scf.but - - - - {pack -side left -pady 5} {-t Default -com {alited::pref::Tkcon_Default; alited::pref::UpdateTkconTab} -w 20}}
-    {fra.scf.but2 - - - - {pack -side left -padx 5 -pady 5} {-t Test -com alited::tool::tkcon -w 20}}
   }
 }
 #_______________________

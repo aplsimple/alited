@@ -1,7 +1,7 @@
 # options should go first because of "co=" (line continuator)
 
 [OPTIONS]
-pos=5.4
+pos=25.80
 o=-1
 co=;
 w=45
@@ -13,16 +13,16 @@ rt=2/5
 
 [MENU]
  R: Doctest Safe: $::FILETAIL R: cd %d
- S: Doctest Safe: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -v 0 %f
+ S: Doctest Safe: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTv 0 %f
 
  R: Doctest Safe verbose: $::FILETAIL R: cd %d
- S: Doctest Safe verbose: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -v 1 %f
+ S: Doctest Safe verbose: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTv 1 %f
 
  R: Doctest: $::FILETAIL R: cd %d
- S: Doctest: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 0 %f
+ S: Doctest: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 0 %f
 
  R: Doctest verbose: $::FILETAIL R: cd %d
- S: Doctest verbose: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 1 %f
+ S: Doctest verbose: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 1 %f
 
  M:  M: 3
  R: Trace $::FILETAIL with {%s} excluded R: %C if {![info exist ::EMENUEXCL]} {set ::EMENUEXCL "%s"}

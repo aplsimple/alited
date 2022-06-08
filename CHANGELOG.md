@@ -1,8 +1,9 @@
 # LAST CHANGES:
 
 
-Version `1.2.3b14 (1 Jun'22)`
+Version `1.2.3 (8 Jun'22)`
 
+  - BUGFIX: doctest of tests.mnu failed with vanillawish taking -v argument
   - BUGFIX: at 1st start, issues with choosing non-default config directory
   - BUGFIX: switching projects with no file or with "No name" tab
   - BUGFIX: not save "No name" of project's file list
@@ -11,6 +12,12 @@ Version `1.2.3b14 (1 Jun'22)`
   - BUGFIX: Projects dialogue after deploying alited 1st time (vars not existing)
   - BUGFIX: evaluation of Tcl commands of "Setup / After Start (Before Run)"
   - BUGFIX: switching projects with files unsaved
+  - NEW   : displaying numbers of selected tabs (at Ctrl+click etc.)
+  - NEW   : catching errors of alited's settings
+  - NEW   : e_menu's "3. Edit/create file" edits "file name" of text selection
+  - NEW   : error message at passing a non-existing file name to alited
+  - NEW   : status bar: info on Run; detailed tooltip
+  - NEW   : "Default" & "Default 2" buttons of Preferences/Tools/tkcon; new colors
   - NEW   : "New" and "Open..." items in popup menu of tab bar
   - NEW   : checkbox "Don't ask anymore" at closing unsaved files
   - NEW   : checkbox "Do it in other Tcl files" at asking "Correct indentation"
@@ -23,11 +30,13 @@ Version `1.2.3b14 (1 Jun'22)`
   - NEW   : (customizable) F9 key to show a list of open files, at mouse pointer
   - NEW   : "Tools / File List" menu item
   - NEW   : hint on running in console/tkcon (in Preferences/Tools/tkcon)
+  - CHANGE: Find/Replace: updated "In session" buttons at entering the dialogue
+  - CHANGE: git.mnu, fossil.mnu (OK button focused), tests.mnu (DT* args)
+  - CHANGE: Preferences/Saving: port to listen = 51807 by default
   - CHANGE: menu labels in Setup menu (Projects... etc.)
   - CHANGE: status bar's messages with bell - in red color
-  - CHANGE: "Unit lines per 1 red bar": N lines of a unit considered normal
+  - CHANGE: "Unit lines per 1 red bar": N lines of a unit considered normal; 4 minimum
   - CHANGE: 12 rows of list in "Templates"
-  - CHANGE: "unit lines per 1 red bar" - 4 minimum, starting reddish behind this
   - CHANGE: checking start of main::UpdateTextGutterTreeIcons & alited::Message
   - CHANGE: at 1st start, geometry of "Preferences", incl. minimal dimensions
   - CHANGE: enable Edit menu items ("Correct indentation" & "Remove trailing spaces")
@@ -37,7 +46,7 @@ Version `1.2.3b14 (1 Jun'22)`
   - CHANGE: simplify checking keys to save last visits
   - CHANGE: tooltips of file list with (optional) file info
   - CHANGE: save dir chooser's geometry of choosing ~/.config (the very 1st dialogue)
-  - CHANGE: apave, e_menu, bartabs, hl_tcl, baltip packages
+  - CHANGE: apave, e_menu, bartabs, hl_tcl, baltip, doctest packages
 
 
 Version `1.2.2 (4 May'22)`

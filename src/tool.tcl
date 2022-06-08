@@ -167,7 +167,7 @@ proc tool::Help {} {
 proc tool::EM_Options {opts} {
   # Returns e_menu's general options.
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al SCRIPTNORMAL SCRIPTNORMAL USERDIRROOT USERDIRROOT
   set sel [alited::find::GetWordOfText]
   set sel [string map [list "\"" {} "\{" {} "\}" {} "\\" {}] $sel]
   set f [alited::bar::FileName]
@@ -215,10 +215,11 @@ proc tool::EM_Options {opts} {
     }
     set tdir $::alited::LIBDIR
   }
+  set ed [info nameofexecutable]\ $SCRIPTNORMAL\ $USERDIRROOT
   set R [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
     o=-1 g=$al(EM,geometry) $z6 $z7 {*}$ls {*}$opts {*}$srcdir \
-    {*}$dirvar {*}$filvar th=$al(THEME) td=$tdir]
+    {*}$dirvar {*}$filvar th=$al(THEME) td=$tdir ed=$ed]
   set res {}
   foreach r $R {append res "\"$r\" "}
   return $res
@@ -522,7 +523,7 @@ proc tool::RunMode {} {
     }
     set al(RES,RunMode) [$obDl2 misc ques $al(MC,run) \
       "\n $al(MC,run) $fname \n" \
-      {"In console" Terminal "In Tkcon" Other Cancel 0} \
+      [list $al(MC,inconsole) Terminal $al(MC,intkcon) Other Cancel 0] \
       1 -focus $foc -ch $al(MC,noask)]
   }
   switch -glob $al(RES,RunMode) {

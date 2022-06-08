@@ -973,6 +973,7 @@ proc find::_create {} {
       {But6 but5 T 1 1 {-st wen -pady 2} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
     }
     SessionButtons
+    bind $win <Enter> alited::find::SessionButtons
     foreach k {f F} {bind $w.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}
     bind $w.cbx1 <Return> "$w.but1 invoke"  ;# hot in comboboxes
     bind $w.cbx2 <Return> "$w.but4 invoke"

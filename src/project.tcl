@@ -357,6 +357,7 @@ proc project::Klnd_save {} {
     if {$i>-1} {
       set prjinfo($prjname,prjrem) [lreplace $prjinfo($prjname,prjrem) $i $i]
     }
+    KlndBorderText
   } elseif {$i>-1} {
     set prjinfo($prjname,prjrem) [lreplace $prjinfo($prjname,prjrem) $i $i $info]
   } else {

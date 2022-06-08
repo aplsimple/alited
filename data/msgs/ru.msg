@@ -126,6 +126,8 @@ namespace eval ::alited {
     {Select All} {Выделить все}
     {Do it in other Tcl files} {И в других файлах Tcl тоже}
     {Do it in other files} {И в других файлах тоже}
+    "File \"%f\" doesn't exist." "Файл \"%f\" не существует."
+    {Selected files: %n} {Выделенных файлов: %n}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -545,9 +547,7 @@ namespace eval ::alited {
 
   ## ________________________ Abbreviations etc. ________________________ ##
   #   Line - 2nd column's title of unit tree
-  #   ind = indentation
   ::msgcat::mcmset ru {
-    {ind} {отс}
     {Row} {Стр.}
     {Row: } {Стр: }
     { Col: } { Поз: }

@@ -30,7 +30,7 @@ pos=100.0
  R:git gui R: cd %PD
  R:git gui R: git gui
 
- R:  R: 1
+ R: - R: 1
 
  R:git difftool $::FILETAIL ? R: cd %PD
 RW:git difftool $::FILETAIL ? RW: git log --format=oneline -10 > $::EMENUTMPFILE
@@ -68,7 +68,7 @@ SW:git diff ? SW: cat "$::EMENUTMPFILE"
  R:git diff ? R: %C file delete "$::EMENUTMPFILE"
  S:git diff ? S: $::EMENUTMP
 
- R:  R: 1
+ R: - R: 1
 
  S:git merge S: cd %PD
  R:git merge R: %q "Merging changes" "Merge changes in\n\n  %PD ?"
@@ -81,7 +81,7 @@ SW:git diff ? SW: cat "$::EMENUTMPFILE"
  R:git checkout "%s" R: %q "Checkout" "Checkout to\n\n'%s' ?"
  S:git checkout "%s" S: git checkout "%s"
 
- R:  R: 1
+ R: - R: 1
 
  S:git add * S: cd %PD
  R:git add * R: %q "Adding changes" "Add all changes in\n\n%PD\n\nto a local repository ?"

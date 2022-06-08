@@ -565,6 +565,7 @@ proc main::CalcIndentation {} {
   }
   return $res
 }
+#_______________________
 
 proc main::UpdateProjectInfo {{indent {}}} {
   # Displays a project settings in the status bar.
@@ -573,11 +574,28 @@ proc main::UpdateProjectInfo {{indent {}}} {
   namespace upvar ::alited al al obPav obPav
   if {$al(prjroot) ne {}} {set stsw normal} {set stsw disabled}
   [$obPav BuTswitch] configure -state $stsw
+  if {$al(tkcon,topmost)} {set run cons} {set run tkcon}
   if {[set eol $al(prjEOL)] eq {}} {set eol auto}
   if {$indent eq {}} {set indent [lindex [CalcIndentation] 0]}
-  set info "eol=$eol, [msgcat::mc ind]=$indent"
+  set info "$run, eol=$eol, ind=$indent"
   if {$al(prjindentAuto)} {append info /auto}
   [$obPav Labstat4] configure -text $info
+}
+#_______________________
+
+proc main::TipStatus {} {
+  # Gets a tip for a status bar's short info.
+
+  namespace upvar ::alited al al obPav obPav
+  set tip [[$obPav Labstat4] cget -text]
+  set tip [string map [list \
+    cons "$al(MC,run): $al(MC,inconsole)" \
+    tkcon "$al(MC,run): $al(MC,intkcon)" \
+    eol= "$al(MC,EOL:) " \
+    ind= "$al(MC,indent:) " \
+    {, } \n \
+    ] $tip]
+  return $tip
 }
 #_______________________
 
@@ -728,7 +746,7 @@ proc main::_create {} {
       {{$alited::al(MC,Row:)}} 13
       {{$alited::al(MC,Col:)}} 4
       {{} -anchor w -expand 1} 50
-      {{} -anchor e} 21
+      {{} -anchor e} 25
     }}}
   }
   UpdateProjectInfo
@@ -743,6 +761,8 @@ proc main::_create {} {
   bind $lbxi <<ListboxSelect>> {alited::info::ListboxSelect %W}
   bind $lbxi <ButtonPress-3> {alited::info::PopupMenu %X %Y}
   bind [$obPav ToolTop] <ButtonPress-3> {::alited::tool::PopupBar %X %Y}
+  ::baltip tip [$obPav Labstat4] = -command ::alited::main::TipStatus -per10 0
+
 }
 #_______________________
 

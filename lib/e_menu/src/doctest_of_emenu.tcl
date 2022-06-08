@@ -420,6 +420,8 @@ proc doctest::init {args} {
       append options(fn) " $opt $val"
       continue
     }
+    # use doctest's specific options (avoiding intersections with vanilla wish's)
+    set opt [string map {-DTs -s -DTv -v -DTb -b} $opt]
     switch -glob $opt {
       -s - -v { set options($opt) $val }
       -b      { set options($opt) "$options($opt) [strip_upcase_nn $val] " }

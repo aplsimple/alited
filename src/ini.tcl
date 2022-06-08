@@ -244,6 +244,10 @@ proc ini::ReadIni {{projectfile ""}} {
   if {!$al(INI,belltoll)} {
     proc ::bell args {}  ;# no bells
   }
+  if {![info exists al(tkcon,clrbg)]} {
+    alited::pref::Tkcon_Default
+    alited::pref::Tkcon_Default1
+  }
   set al(ini_file) {}  ;# to reread alited.ini contents, at need in next time
 }
 #_______________________

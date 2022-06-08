@@ -127,6 +127,8 @@ namespace eval ::alited {
     {Select All} {Alles auswählen}
     {Do it in other Tcl files} {Auch in anderer Tcl-Dateien}
     {Do it in other files} {Auch in anderer Dateien}
+    "File \"%f\" doesn't exist." "Eine Datei \"%f\" existiert nicht."
+    {Selected files: %n} {Ausgewählten Dateien: %n}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -549,9 +551,7 @@ namespace eval ::alited {
 
   ## ________________________ Abbreviations etc. ________________________ ##
   #   Line - 2nd column's title of unit tree
-  #   ind = indentation
   ::msgcat::mcmset de {
-    {ind} {einr}
     {Row} {Zeile}
     {Row: } {Zeil: }
     { Col: } { Spal: }
