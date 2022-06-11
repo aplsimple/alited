@@ -86,7 +86,7 @@ namespace eval ::alited {
     set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
     set al(MC,afterstart)  [msgcat::mc {Commands after start}]
     set al(MC,beforerun)   [msgcat::mc {Commands before "Run"}]
-    set al(MC,locale)      [msgcat::mc "This is a country code: ru, uk, de...\nIn alited, \"en\" means American English."]
+    set al(MC,locale)      [msgcat::mc "This is a language code: ru, uk, de...\nIn alited, \"en\" means American English."]
     set al(MC,noask)       [msgcat::mc {Don't show anymore}]
     set al(MC,hue)         [msgcat::mc {Makes colors darker .. lighter}]
     set al(MC,maxbak)      [msgcat::mc {Maximum of backup copies per a file}]

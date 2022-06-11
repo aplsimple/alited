@@ -372,7 +372,7 @@ namespace eval ::alited {
     {Tint:} {Farbton:}
     "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Damit die Konfigurationsänderunge aktiv werden\nmuss die Applikation neu gestartet werden.\n\nJetzt neu starten?"
     {Preferable locale:} {Bevorzugte Sprache:}
-    "This is a country code: ru, uk, de...\nIn alited, \"en\" means American English." "Das ist einer der folgenden Länderkodes: ru, uk, de...\nIn alited \"en\" bedeutet American English."
+    "This is a language code: ru, uk, de...\nIn alited, \"en\" means American English." "Das ist einer der folgenden Sprachenkodes: ru, uk, de...\nIn alited \"en\" bedeutet American English."
     {Small font size:} {Schmaler Zeichensatz:}
     {Middle font size:} {Mittlerer Zeichensatz:}
     {Cursor width:} {Kursorbreite:}

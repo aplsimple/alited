@@ -15,7 +15,7 @@
  values mean "lighter". These themes are most recommended for their stability.
  ______________________________________________________________________________
 
- The "Preferable locale" is mostly a country code, for example: ru, ua, cz, en.
+ The "Preferable locale" is mostly a language code: de, en, ru, uk etc.
 
  The "Font" field allows to override Tcl/Tk default font for labels, menus etc.
 
