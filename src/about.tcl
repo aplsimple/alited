@@ -39,6 +39,19 @@ proc about::About {} {
     [list "linkDF" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Donal+Fellows@@"] \
     [list "linkJO" "::apave::openDoc %t@@https://www.johann-oberdorfer.eu/@@"] \
     [list "linkTW" "::apave::openDoc %t@@https://github.com/phase1geo@@"] \
+    [list "linkCM" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Colin+Macleod@@"] \
+    [list "linkDB" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/dbohdan"] \
+    [list "linkDG" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Detlef+Groth"] \
+    [list "linkPY" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Poor+Yorick"] \
+    [list "linkMH" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Matthias+Hoffmann"] \
+    [list "linkNB" "::apave::openDoc %t@@https://github.com/sl1200mk2@@"] \
+    [list "linkCW" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/chw@@"] \
+    [list "linkAK" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Andreas+Kupries@@"] \
+    [list "linkAG" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Andy+Goth@@"] \
+    [list "linkDA" "::apave::openDoc %t@@https://github.com/ray2501@@"] \
+    [list "linkET" "::apave::openDoc %t@@https://github.com/eht16"] \
+    [list "link_" "::apave::openDoc %t@@https://aplsimple.github.io/en/misc/links/links.html@@"] \
+    [list "linkRH" "::apave::openDoc %t@@http://www.hwaci.com/drh/@@"] \
     ]
   set long1 [msgcat::mc {And well fit for programming with it.}]
   set long2 __________________________________________
@@ -69,17 +82,29 @@ proc about::About {} {
     \u2022 <linkHE>Holger Ewert</linkHE>\n \
     \u2022 <linkCN>Csaba Nemethi</linkCN>\n \
     \u2022 <linkPO>Paul Obermeier</linkPO>\n \
-    \n $spec\n\n \
-    \u2022 <linkRS>Richard Suchenwirth</linkRS>\n \
-    \u2022 <linkJO>Johann Oberdorfer</linkJO>\n \
+    \u2022 <linkAN>Ashok P. Nadkarni</linkAN>\n \
     \u2022 <linkRD>rdbende</linkRD>\n \
     \u2022 <linkPW>Paul Walton</linkPW>\n \
-    \u2022 <linkJS>Jeff Smith</linkJS>\n \
+    \u2022 <linkJO>Johann Oberdorfer</linkJO>\n \
+    \u2022 <linkRS>Richard Suchenwirth</linkRS>\n \
+    \u2022 <linkCW>Christian Werner</linkCW>\n \
+    \u2022 <linkNB>Nicolas Bats</linkNB>\n \
+    \n $spec\n\n \
     \u2022 <linkTW>Trevor Williams</linkTW>\n \
-    \u2022 <linkAN>Ashok P. Nadkarni</linkAN>\n \
     \u2022 <linkDF>Donal K. Fellows</linkDF>\n \
+    \u2022 <linkJS>Jeff Smith</linkJS>\n \
     \u2022 <linkRK>Roy Keene</linkRK>\n \
-    "
+    \u2022 <linkDB>D. Bohdan</linkDB>\n \
+    \u2022 <linkDG>Detlef Groth</linkDG>\n \
+    \u2022 <linkCM>Colin Macleod</linkCM>\n \
+    \u2022 <linkPY>Nathan Coulter</linkPY>\n \
+    \u2022 <linkAK>Andreas Kupries</linkAK>\n \
+    \u2022 <linkRH>D. Richard Hipp</linkRH>\n \
+    \u2022 <linkMH>Matthias Hoffmann</linkMH>\n \
+    \u2022 <linkAG>Andy Goth</linkAG>\n \
+    \u2022 <linkDA>Danilo Chang</linkDA>\n \
+    \u2022 <linkET>Enrico Tröger</linkET>\n \
+    \n <link_>Excuse my memory if I omitted someone's name.</link_>\n"
   set tab2 [list Information Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AcknText -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
   ::alited::msg ok {} $msg \
     -title [msgcat::mc About] -t 1 -w $wmax -h {30 30} -scroll 0 \

@@ -1722,10 +1722,10 @@ proc ::em::prepare_buttons {refcommands} {
       -bg $::em::clrinab] -row 0 -column 0 -sticky nsew
     grid .em.fr.cb -row 0 -column 1 -sticky ne
     if {[isheader]} {
-      grid [label .em.fr.h1 -text {Use arrow and space keys to take action} \
+      grid [label .em.fr.h1 -text {Use space & arrows to take action} \
         -font $::em::font1a -fg $::em::clrhelp -bg $::em::clrinab -anchor s] \
         -columnspan 2 -sticky nsew
-      grid [label .em.fr.h2 -text "(or press hotkeys)\n" -font $::em::font1a \
+      grid [label .em.fr.h2 -text "(or press hot keys)\n" -font $::em::font1a \
         -fg $::em::clrhotk -bg $::em::clrinab -anchor n] -columnspan 2 -sticky nsew
     }
   }
