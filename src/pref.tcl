@@ -1154,7 +1154,11 @@ proc pref::Common_Tab {} {
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode x}}
     {.labTcl - - 1 1 {-st w -pady 1 -padx 3} {-t "tclsh, wish or tclkit:"}}
     {.fiLTcl .labTcl L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,Tcl) -values {$alited::al(TCLLIST)} -w 48 -initialdir $alited::al(TCLINIDIR)}}
-    {.labDoc .labTcl T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl8.6:"}}
+    {.labRun .labTcl T 1 1 {-st w -pady 1 -padx 3} {-t "$al(MC,run):"}}
+    {.fraRun .labRun L 1 1 {-st sw -pady 5}}
+    {.fraRun.radRunCons - - 1 1 {} {-var alited::al(tkcon,topmost) -value 1 -t {$alited::al(MC,inconsole)} -tip {Also, this makes "tkcon" topmost.}}}
+    {.fraRun.radRunTkcon .fraRun.radRunCons L 1 1 {-padx 10} {-var alited::al(tkcon,topmost) -value 0 -t {$alited::al(MC,intkcon)}}}
+    {.labDoc .labRun T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl8.6:"}}
     {.dirDoc .labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 48}}
     {.labTT .labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
     {.cbxTT .labTT L 1 1 {-st swe -pady 5} {-tvar alited::al(EM,tt=) -w 48 -values {$alited::al(TTLIST)}}}
@@ -1280,9 +1284,6 @@ proc pref::Tkcon_Tab {} {
     {.spxFS .labFsize L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,fsize) -from 8 -to 20 -w 9}}
     {.labGeo .labFsize T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
     {.entGeo .labGeo L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,geo) -w 20}}
-    {.labTopmost .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Stay on top:"}}
-    {.swiTopmost .labTopmost L 1 1 {-st sw -pady 1} {-var alited::al(tkcon,topmost)}}
-    {.labtmhint .swiTopmost L 1 1 {-st w -pady 1 -padx 3} {-t "(if ON, Tcl scripts run in console, otherwise in tkcon)"  -foreground $alited::al(FG,Bold)}}
   }
 }
 #_______________________

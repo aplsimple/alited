@@ -498,7 +498,7 @@ proc tool::RunTcl {{runmode ""}} {
     if {$tclfile ne {} && [file exists $tclfile]} {
       # run tkcon with file.tcl & argv
       EM_SaveFiles
-      tkcon $tclfile -argv {*}$rf
+      tkcon $tclfile -apl-topmost 0 -argv {*}$rf
       return yes
     }
   }

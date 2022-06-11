@@ -66,8 +66,8 @@ namespace eval ::alited {
     {Look for Word} {Шукати слово}
     {Run} {Запуск}
     {Run...} {Запуск...}
-    {In console} {У консолі}
-    {In Tkcon} {У Tkcon}
+    {in console} {у консолі}
+    {in Tkcon} {у Tkcon}
     {Moving} {Переміщення}
     {Help of alited} {Допомога alited}
     {Color Picker} {Вибір коліру}
@@ -513,7 +513,7 @@ namespace eval ::alited {
     "\n Enter commands to be run after starting alited. They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific environment.\n" "\n Введіть команди, що мають виконатися після старту alited,\n тобто команди Tcl або зовнішні команди, наприклад:\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n Це може бути потрібно у деяких середовищах.\n"
     "\n Enter commands to be run before running a current file with \"Tools/Run\". They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific project. Something like an initialization before \"Run\".\n" "\n Введіть команди, виконувані перед \"Струменти/Запуск\",\n тобто команди Tcl або зовнішні команди, наприклад:\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n Це може бути корисно у деяких проектах. Щось типа ініціалізації перед запуском.  \n"
     {e_menu's own} {своя в e_menu}
-    {(if ON, Tcl scripts run in console, otherwise in tkcon)} {(якщо ON, скрипти Tcl запускаються в консолі, інакше - в tkcon)}
+    {Also, this makes "tkcon" topmost.} {Вікно "tkcon" буде над всіма іншими.}
   }
 
   ## ________________________ Checks ________________________ ##

@@ -1,6 +1,12 @@
 # LAST CHANGES:
 
 
+Version `1.2.4a1 (11 Jun'22)`
+
+  - CHANGE: Preferences/Tools: "Run" option replaces "Tkcon topmost"
+  - CHANGE: About / Acknowledgements
+  - CHANGE: e_menu package
+
 Version `1.2.3 (8 Jun'22)`
 
   - BUGFIX: doctest of tests.mnu failed with vanillawish taking -v argument
