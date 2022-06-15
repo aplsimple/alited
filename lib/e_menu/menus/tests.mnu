@@ -1,13 +1,15 @@
 # options should go first because of "co=" (line continuator)
 
 [OPTIONS]
-pos=25.80
+pos=9.0
 o=-1
 co=;
 w=45
 rt=2/5
-%C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f"}
-%C set ::EMENUFILE [string map {\\ /} "$::EMENUFILE"]
+%C if {![info exist ::EMENUFILE]} { \
+  set ::EMENUFILE "%f" ; if {[::iswindows]} {set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
+%C if {![info exist ::EMENUGREP]} {set ::EMENUGREP ""}
+%C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
 %C set ::FILETAIL {"$::EMENUFILETAIL"}
 

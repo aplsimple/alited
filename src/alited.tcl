@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.4a2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.4a3  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -17,6 +17,18 @@ if {![package vsatisfies $_ 8.6.10-]} {
   exit
 }
 catch {package require comm}  ;# Generic message transport
+
+# _____ Remove installed (perhaps) packages used in alited _____ #
+
+foreach _ {apave baltip bartabs hl_tcl} {
+  set __ [package version $_]
+  catch {
+    package forget $_
+    namespace delete ::$_
+    puts "alited: clearing $_ $__"
+  }
+  unset __
+}
 
 # __________________________ alited NS _________________________ #
 

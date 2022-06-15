@@ -41,7 +41,18 @@ namespace eval ::em {
   if {[info commands ::baltip::configure] eq {}} {
     source [file join $::em::srcdir baltip baltip.tcl]
   }
-  if {!$solo} {append em_version " / [file tail $::em::Argv0]"}
+  if {$solo} {
+    # remove all possible installed packages that are used by e_menu
+    foreach _ {apave baltip} {
+      catch {
+        package forget $_
+        namespace delete ::${_}
+      }
+    }
+  } else {
+    append em_version " / [file tail $::em::Argv0]"
+  }
+  unset -nocomplain _
 }
 
 if {[catch {source [file join $::em::srcdir e_help.tcl]} e]} {
@@ -1022,6 +1033,7 @@ proc ::em::callmenu {typ s1 {amp ""} {from ""}} {
   set sel "\"$::em::Argv0\""
   prepr_win sel M/  ;# force converting
   if {$::em::solo} {
+    ::em::repaintForWindows  ;# get rid of troubles in Windows XP
     catch {exec -- [::em::Tclexe] {*}$sel {*}$pars $amp}
     if {$amp eq {}} {
       ::em::reread_menu $::em::lasti  ;# changes possible
@@ -1750,6 +1762,7 @@ proc ::em::repaint_menu {} {
     for_buttons {
       $b configure -fg [color_button $i] -bg [color_button $i bg] \
         -borderwidth $::em::bd -relief flat
+      .em.fr.win.l$i configure -bg $::em::clrinab -fg $::em::clrhotk
       if {[winfo exists .em.fr.win.fr$i.arr]} {
         .em.fr.win.fr$i.arr configure -bg [color_button $i bg]
       }
@@ -1760,7 +1773,8 @@ proc ::em::repaint_menu {} {
 #___ repainting sp. for Windows
 proc ::em::repaintForWindows {} {
   update idle
-  after idle [list ::em::repaint_menu; ::em::mouse_button $::em::lasti]
+  after idle ::em::repaint_menu
+  after idle [list ::em::mouse_button $::em::lasti]
 }
 #___ re-read and update menu after Ctrl+R
 proc ::em::reread_menu {{ib ""}} {

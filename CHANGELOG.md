@@ -1,11 +1,13 @@
 # LAST CHANGES:
 
 
-Version `1.2.4a2 (15 Jun'22)`
+Version `1.2.4a3 (15 Jun'22)`
 
   - BUGFIX: choose e_menu items in Preferences, when set ornament (o=1) in menu.mnu
-  - BUGFIX: switching projects at running alited in tckon (skip ini::SaveCurrentIni)
+  - BUGFIX: switch projects at running alited in tckon (skip ini::SaveCurrentIni)
+  - BUGFIX: e_menu corrected (Windows usage), incl. test*.mnu
   - NEW   : About / Packages
+  - NEW   : forget installed in Tcl/Tk packages & namespaces used in alited
   - CHANGE: create Preferences/Tools/e_menu tab (if not current) with a delay
   - CHANGE: Preferences/Tools/Run replaces "Tkcon topmost" ("in console" by default)
   - CHANGE: tips and docs corrected (country/language in locale)
@@ -16,15 +18,15 @@ Version `1.2.3 (8 Jun'22)`
 
   - BUGFIX: doctest of tests.mnu failed with vanillawish taking -v argument
   - BUGFIX: at 1st start, issues with choosing non-default config directory
-  - BUGFIX: switching projects with no file or with "No name" tab
+  - BUGFIX: switch projects with no file or with "No name" tab
   - BUGFIX: not save "No name" of project's file list
-  - BUGFIX: clearing messages in status bar of Projects
-  - BUGFIX: checking for duplicate icons of tools
+  - BUGFIX: clear messages in status bar of Projects
+  - BUGFIX: check for duplicate icons of tools
   - BUGFIX: Projects dialogue after deploying alited 1st time (vars not existing)
   - BUGFIX: evaluation of Tcl commands of "Setup / After Start (Before Run)"
-  - BUGFIX: switching projects with files unsaved
-  - NEW   : displaying numbers of selected tabs (at Ctrl+click etc.)
-  - NEW   : catching errors of alited's settings
+  - BUGFIX: switch projects with files unsaved
+  - NEW   : display numbers of selected tabs (at Ctrl+click etc.)
+  - NEW   : catch errors of alited's settings
   - NEW   : e_menu's "3. Edit/create file" edits "file name" of text selection
   - NEW   : error message at passing a non-existing file name to alited
   - NEW   : status bar: info on Run; detailed tooltip
@@ -48,7 +50,7 @@ Version `1.2.3 (8 Jun'22)`
   - CHANGE: status bar's messages with bell - in red color
   - CHANGE: "Unit lines per 1 red bar": N lines of a unit considered normal; 4 minimum
   - CHANGE: 12 rows of list in "Templates"
-  - CHANGE: checking start of main::UpdateTextGutterTreeIcons & alited::Message
+  - CHANGE: check start of main::UpdateTextGutterTreeIcons & alited::Message
   - CHANGE: at 1st start, geometry of "Preferences", incl. minimal dimensions
   - CHANGE: enable Edit menu items ("Correct indentation" & "Remove trailing spaces")
   - CHANGE: Help window is made non-modal, to see the help & work together
@@ -84,9 +86,9 @@ Version `1.2.0 (8 Mar'22)`
   - BUGFIX: issue with debug & log 'puts' at using tclkits
   - BUGFIX: in "Projects", switching to other project after changing a reminder
   - BUGFIX: in alited.tcl: mistaken FILEDIR variable; mistaken exec {*}; clearances
-  - BUGFIX: closing "Check Tcl" and "Find by List" at closing app
+  - BUGFIX: close "Check Tcl" and "Find by List" at closing app
   - BUGFIX: at starting, message "The file %f seems to be not of types"
-  - BUGFIX: passing alited (if open) a file name containing spaces
+  - BUGFIX: pass alited (if open) a file name containing spaces
   - BUGFIX: "update" after selection from menu (some DEs need it)
   - BUGFIX: uk.msg instead of ua.msg
   - BUGFIX: "Run me" at setting e_menu as non-external app
@@ -95,17 +97,17 @@ Version `1.2.0 (8 Mar'22)`
   - BUGFIX: issue with ignored dirs at using tclkits
   - NEW   : "Run me" runs tcl source in tkcon (with benefits of introspection)
   - NEW   : "Run me" runs tcl source in console, if "Preferences/Tools/Tkcon/Stay on top"
-  - NEW   : restoring selected texts at switching tabs
-  - NEW   : passing dir&file choosers' geometry to "external" e_menu
-  - NEW   : passing theme name to "external" e_menu
+  - NEW   : restore selected texts at switching tabs
+  - NEW   : pass dir&file choosers' geometry to "external" e_menu
+  - NEW   : pass theme name to "external" e_menu
   - NEW   : "Setup/After Start" setting to run Tcl & external commands
   - NEW   : "Setup/Before Run" setting allows Tcl commands
   - CHANGE: required version of Tcl/Tk is 8.6.10+
   - CHANGE: tkcon.tcl modified for sourcing a Tcl/Tk script
   - CHANGE: tkcon's default settings modified
   - CHANGE: minsizes for Projects & Preferences set static
-  - CHANGE: saving "Setup/Before Run" setting in project.ale
-  - CHANGE: running e_menu faster
+  - CHANGE: save "Setup/Before Run" setting in project.ale
+  - CHANGE: run e_menu faster
   - CHANGE: statusbar font size = small font size of Preferences
   - CHANGE: "Comment/Uncomment" enabled for all
   - CHANGE: reminder's saves simplified
@@ -118,7 +120,7 @@ Version `1.2.0 (8 Mar'22)`
 Version `1.1.0 (26 Jan'22)`
 
   - BUGFIX: Tab key (command completion) in kubuntu, reported and fixed by Steve
-  - BUGFIX: saving modified files by "Preferences/Save", reported by Steve
+  - BUGFIX: save modified files by "Preferences/Save", reported by Steve
   - BUGFIX: catch for lreplace (this commy) at saving ini
   - BUGFIX: command completion at column=1
   - BUGFIX: false last visit from infobar/find-declaration
@@ -139,22 +141,22 @@ Version `1.1.0 (26 Jan'22)`
   - CHANGE: install defaults: emtt=x-terminal-emulator, emcs=-1
   - CHANGE: port to listen made customizable, as suggested by Holger
   - CHANGE: no scrollbar in "Complete Command" window
-  - CHANGE: sorting locale items in Preferences
+  - CHANGE: sort locale items in Preferences
   - CHANGE: "wait a little"'s red foreground
   - CHANGE: apave, hl_tcl, clrpick, e_menu packages
 
 
 Version `1.0.6 (29 Dec'21)`
 
-  - BUGFIX: updating file tree after closing files (colors remain as if "open")
+  - BUGFIX: update file tree after closing files (colors remain as if "open")
   - BUGFIX: issues with e_menu & tools in Windows (current file name for dialogues)
   - BUGFIX: "--" added for all exec
   - BUGFIX: Ctrl+Tab at start (no switching tab yet)
   - BUGFIX: demo 2.Units 03:15 .. 04:18 - cursor position is 309.1 instead of 309.10
   - BUGFIX: treeview in sun-valley dark theme
   - BUGFIX: diff name normalized for Windows
-  - BUGFIX: populating "Last visited" at changing unit name
-  - BUGFIX: running e_menu & tools at cursor on quotes & braces
+  - BUGFIX: populate "Last visited" at changing unit name
+  - BUGFIX: run e_menu & tools at cursor on quotes & braces
   - BUGFIX: rdbende themes: scrollbars as in forest theme (hide at need)
   - BUGFIX: tree selection seen after file saves
   - BUGFIX: more time for gaining bar's width before calling FillBar
@@ -182,7 +184,7 @@ Version `1.0.6 (29 Dec'21)`
   - CHANGE: "Differences" of menu.mnu includes choosing SCM
   - CHANGE: revised add/change/delete/select in "Projects"
   - CHANGE: toolbar rearranged (date removed, tkcon moved)
-  - CHANGE: sourcing baltip.tcl rearranged
+  - CHANGE: source baltip.tcl rearranged
   - CHANGE: Ctrl+L corrected & message if not found
   - CHANGE: tooltips of treeviews from baltip (behaving properly at that)
   - CHANGE: get rid of package duplicates (apave, baltip)
@@ -195,7 +197,7 @@ Version `1.0.6 (29 Dec'21)`
   - CHANGE: unit's cursor position saved at every Left-click (in current unit too)
   - CHANGE: use Pref's "ignore dirs" for projects (al(prjdirign))
   - CHANGE: "ignore dirs" option of projects moved to Project/Options
-  - CHANGE: warning of Pref/General/Projects when defining Project/Options
+  - CHANGE: warn of Pref/General/Projects when defining Project/Options
   - CHANGE: ru.msg, ua.msg
   - CHANGE: apave, klnd, baltip, bartabs, hl_tcl, e_menu package
 
@@ -205,10 +207,10 @@ Version `1.0.5 (27 Oct'21)`
   - BUGFIX: default/classic/alt theme & dark CS: selected check/radio buttons' bg
   - BUGFIX: demo 1.Start   ~01:10 : 'All #1 1-0' in tip of 'Row', if 'No name'
   - BUGFIX: demo 3.Project ~10:00 : not see for a current proc
-  - BUGFIX: switching (popup menu) from file to unit tree if the latter is one line
+  - BUGFIX: switch (popup menu) from file to unit tree if the latter is one line
   - BUGFIX: no updating icons at "Replace all in session"
   - BUGFIX: no updating file tree at opening files from 'File / Open'
-  - BUGFIX: pressing Enter if current & next lines begin with *, -, #
+  - BUGFIX: press Enter if current & next lines begin with *, -, #
   - BUGFIX: false movings in the tree (no Ctrl+click, just click & move)
   - BUGFIX: false saving modified files at "Tcl/Tk help"
   - BUGFIX: error at closing big files
@@ -239,10 +241,10 @@ Version `1.0.4 (29 Sep'21)`
   - BUGFIX: command autocompletion at 1st column failed
   - BUGFIX: e_menu could fail due to font2's multiple words
   - BUGFIX: Default buttons of Preferences didn't update colors properly
-  - BUGFIX: clicking "Row/Files" cell of tree to select an item
-  - BUGFIX: marking tabs as modified at "Replace in session"
-  - BUGFIX: creating files from the file tree
-  - BUGFIX: creating file tree at switching to other project
+  - BUGFIX: click "Row/Files" cell of tree to select an item
+  - BUGFIX: mark tabs as modified at "Replace in session"
+  - BUGFIX: create files from the file tree
+  - BUGFIX: create file tree at switching to other project
   - BUGFIX: undo cleared text of "notes" (projects, preferences)
   - BUGFIX: after restarting, open new instance at repeated start
   - BUGFIX: favors/last-visited at switching to other project
@@ -261,11 +263,11 @@ Version `1.0.4 (29 Sep'21)`
   - NEW   : "Find by List" in Find menu
   - NEW   : switches instead of some checkbuttons (for rdbende themes)
   - NEW   : %F wildcard (full file name) for templates
-  - NEW   : warning on "Open all Tcl files..."
+  - NEW   : warn on "Open all Tcl files..."
   - NEW   : "Drop selected units/files here" to move a group of units/files
-  - NEW   : selecting a directory after its creation in file tree
+  - NEW   : select a directory after its creation in file tree
   - CHANGE: current tab's position restored at switching projects
-  - CHANGE: rearranging toolbar
+  - CHANGE: rearrange toolbar
   - CHANGE: faster "find/replace in session"
   - CHANGE: indent normalizing applies "autodetected" indent
   - CHANGE: (un)indented blank lines become ""
@@ -291,18 +293,18 @@ Version `1.0.3 (25 Aug'21)`
   - BUGFIX: the tree updated at saving a file
   - BUGFIX: "modified" flag at changing big files
   - BUGFIX: needless reading of files at find/replace in session
-  - BUGFIX: updating unit trees at find/replace in session
+  - BUGFIX: update unit trees at find/replace in session
   - BUGFIX: eol & indent of projects
   - BUGFIX: MOST NASTY BUG: doinit to reread a modified file
   - NEW   : ttk themes in Preferences
   - NEW   : project defaults in Setup/Common
-  - NEW   : logging in DEVELOP mode
+  - NEW   : log in DEVELOP mode
   - NEW   : colorized color pickers in Preferences
   - NEW   : color/date picker replaces a current/selected word
   - NEW   : selection in unit tree at switching trees & tabs
   - NEW   : colors of tree from Tcl syntax (clrCOMTK, clrSTR) in Preferences
-  - NEW   : setting default font in Preferences
-  - NEW   : setting locale in Preferences
+  - NEW   : set default font in Preferences
+  - NEW   : set locale in Preferences
   - NEW   : demo 6.Themes-1.0.3.mp4 in github's releases
   - CHANGE: "Default" instead of "Color schemes" in CS list
   - CHANGE: color schemes revised
@@ -323,8 +325,8 @@ Version `1.0.2.1 (12 Aug'21)`
 Version `1.0.2 (11 Aug'21)`
 
   - BUGFIX: "Differences" for maximum of backups > 1
-  - BUGFIX: saving / restoring cursor position in units (for current file only)
-  - BUGFIX: reloading file at external changes
+  - BUGFIX: save / restore cursor position in units (for current file only)
+  - BUGFIX: reload file at external changes
   - BUGFIX: cursor width at switching tabs
   - NEW   : "Cursor width" option
   - NEW   : "Remove all of the last visited"
@@ -336,7 +338,7 @@ Version `1.0.2 (11 Aug'21)`
 Version `1.0.1 (4 Aug'21)`
 
   - BUGFIX: a list of last visited
-  - BUGFIX: killing 'Runme' by non-Runme item
+  - BUGFIX: kill 'Runme' by non-Runme item
   - BUGFIX: tips of treeviews
   - NEW   : "maximum of backups" in Preferences/General/Saving
   - NEW   : "before run" list cleared for a new project

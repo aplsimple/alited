@@ -63,11 +63,13 @@ proc about::About {} {
     [list "link_" "::apave::openDoc %t@@https://aplsimple.github.io/en/misc/links/links.html@@"] \
     [list "linkRH" "::apave::openDoc %t@@http://www.hwaci.com/drh/@@"] \
     ]
-  set vers v[package require alited]
+  foreach _ {alited apave bartabs baltip hl_tcl} {
+    set v$_ v[package require $_]
+  }
   set long1 [msgcat::mc {And well fit for programming with it.}]
   set long2 __________________________________________
   set long3 [info nameofexecutable]
-  set msg "  <red>alited $vers</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
+  set msg "  <red>alited $valited</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
     [msgcat::mc {Written in pure Tcl/Tk.}] \n \
     $long1\n\n \
     [msgcat::mc {Details:}] \n\n \
@@ -116,18 +118,18 @@ proc about::About {} {
     \u2022 <linkDA>Danilo Chang</linkDA>\n \
     \u2022 <linkET>Enrico Tröger</linkET>\n \
     \n <link_>Excuse my memory if I omitted someone's name.</link_>\n"
-  set emenuv [lindex $::em::em_version 1]
   set packages [msgcat::mc {Packages used by <red>alited %ver</red>:}]
-  set packages [string map [list %ver $vers] $packages]
+  set packages [string map [list %ver $valited] $packages]
+  set vemenu   v[lindex $::em::em_version 1]
   set ::alited::AboutPack "\n $packages\n\n \
-    \u2022 <link-apave>apave v[package version apave]</link-apave>\n\n \
-    \u2022 <link-e_menu>e_menu v$emenuv</link-e_menu>\n\n \
-    \u2022 <link-baltip>baltip v[package version baltip]</link-baltip>\n\n \
-    \u2022 <link-bartabs>bartabs v[package version bartabs]</link-bartabs>\n\n \
-    \u2022 <link-hl_tcl>hl_tcl v[package version hl_tcl]</link-hl_tcl>\n\n \
+    \u2022 <link-apave>apave $vapave</link-apave>\n\n \
+    \u2022 <link-e_menu>e_menu $vemenu</link-e_menu>\n\n \
+    \u2022 <link-baltip>baltip $vbaltip</link-baltip>\n\n \
+    \u2022 <link-bartabs>bartabs $vbartabs</link-bartabs>\n\n \
+    \u2022 <link-hl_tcl>hl_tcl $vhl_tcl</link-hl_tcl>\n\n \
     \u2022 <link-tkcon>tkcon</link-tkcon>\n\n \
     \u2022 <link-repl>tcl-repl</link-repl>\n"
-  set tab2 [list Information Packages "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexPack - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutPack -tags ::alited::about::textTags}} {.sbv .texPack L - - {pack -side right}}" Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutAckn -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
+  set tab2 [list General Packages "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexPack - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutPack -tags ::alited::about::textTags}}" Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutAckn -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
   ::alited::msg ok {} $msg \
     -title [msgcat::mc About] -t 1 -w $wmax -h {30 30} -scroll 0 \
     -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}" \
