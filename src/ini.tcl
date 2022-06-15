@@ -569,9 +569,13 @@ proc ini::SaveCurrentIni {{saveon yes} {doit no}} {
   # Saves a current configuration of alited on various events.
   #   saveon - flag "save on event"
   #   doit - serves to run this procedure after idle
+  # See also: project::Ok
 
+  namespace upvar ::alited al al
   # for sessions to come
   if {![expr $saveon]} return
+  # al(project::Ok) is set at switching projects and closing old project's files
+  if {[info exists al(project::Ok)]} return
   variable afterID
   # run this code after updating GUI
   catch {after cancel $afterID}

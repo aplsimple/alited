@@ -1,11 +1,16 @@
 # LAST CHANGES:
 
 
-Version `1.2.4a1 (11 Jun'22)`
+Version `1.2.4a2 (15 Jun'22)`
 
-  - CHANGE: Preferences/Tools: "Run" option replaces "Tkcon topmost"
+  - BUGFIX: choose e_menu items in Preferences, when set ornament (o=1) in menu.mnu
+  - BUGFIX: switching projects at running alited in tckon (skip ini::SaveCurrentIni)
+  - NEW   : About / Packages
+  - CHANGE: create Preferences/Tools/e_menu tab (if not current) with a delay
+  - CHANGE: Preferences/Tools/Run replaces "Tkcon topmost" ("in console" by default)
+  - CHANGE: tips and docs corrected (country/language in locale)
   - CHANGE: About / Acknowledgements
-  - CHANGE: e_menu package
+  - CHANGE: apave, e_menu packages
 
 Version `1.2.3 (8 Jun'22)`
 

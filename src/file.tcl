@@ -383,11 +383,11 @@ proc file::RenameFileInTree {{geo ""}} {
 proc file::CheckForNew {{docheck no}} {
   # Checks if there is a file in bar of tabs and creates "No name" tab, if no tab exists.
   #   docheck - if yes, does checking, if no - run itself with docheck=yes
+  # See also: project::Ok
 
   namespace upvar ::alited al al
   if {$docheck} {
-    if {![llength [alited::bar::BAR listTab]] && \
-    (![info exists al(skipnoN)] || !$al(skipnoN))} {
+    if {![llength [alited::bar::BAR listTab]] && ![info exists al(project::Ok)]} {
       alited::file::NewFile
     }
   } else {

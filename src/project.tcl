@@ -390,7 +390,6 @@ proc project::Select {{item ""}} {
   variable prjlist
   variable prjinfo
   variable klnddata
-  variable curinfo
   if {$item eq {}} {set item [Selected item no]}
   if {$item ne {}} {
     set tree [$obDl2 TreePrj]
@@ -844,33 +843,35 @@ proc project::Ok {args} {
   set fname [ProjectFileName $pname]
   RestoreSettings
   alited::ini::SaveIni
-  set al(skipnoN) 1 ;# to skip "No name" at closing all
-  alited::file::CloseAll 1 -skipsel  ;# the selected tabs aren't closed
-  set selfiles [list]                ;# -> get their file names to reopen afterwards
-  foreach tid [alited::bar::BAR listFlag s] {
-    lappend selfiles [alited::bar::FileName $tid]
-  }
-  alited::file::CloseAll 1           ;# close all tabs
-  set al(prjname) $pname
-  set al(prjfile) $fname
-  alited::ini::ReadIni $fname
-  alited::bar::FillBar [$obPav BtsBar]
-  for {set i [llength $selfiles]} {$i} {} { ;# reopen selected files of previous project
-    incr i -1
-    set fname [lindex $selfiles $i]
-    if {[alited::bar::FileTID $fname] eq {}} {
-      alited::file::OpenFile $fname yes
+  # setting al(project::Ok) to skip "No name" & SaveCurrentIni at closing all
+  if {[set al(project::Ok) 1]} {
+    alited::file::CloseAll 1 -skipsel  ;# the selected tabs aren't closed
+    set selfiles [list]                ;# -> get their file names to reopen afterwards
+    foreach tid [alited::bar::BAR listFlag s] {
+      lappend selfiles [alited::bar::FileName $tid]
     }
+    alited::file::CloseAll 1           ;# close all tabs
+    set al(prjname) $pname
+    set al(prjfile) $fname
+    alited::ini::ReadIni $fname
+    alited::bar::FillBar [$obPav BtsBar]
+    for {set i [llength $selfiles]} {$i} {} { ;# reopen selected files of previous project
+      incr i -1
+      set fname [lindex $selfiles $i]
+      if {[alited::bar::FileTID $fname] eq {}} {
+        alited::file::OpenFile $fname yes
+      }
+    }
+    set TID [lindex [alited::bar::BAR listTab] $al(curtab) 0]
+    catch {alited::bar::BAR $TID show yes no}
+    alited::main::UpdateProjectInfo
+    alited::ini::GetUserDirs
+    alited::file::MakeThemHighlighted
+    alited::favor::ShowFavVisit
+    [$obPav Tree] selection set {}  ;# new project - no group selected
+    update
   }
-  set TID [lindex [alited::bar::BAR listTab] $al(curtab) 0]
-  catch {alited::bar::BAR $TID show yes no}
-  alited::main::UpdateProjectInfo
-  alited::ini::GetUserDirs
-  alited::file::MakeThemHighlighted
-  alited::favor::ShowFavVisit
-  [$obPav Tree] selection set {}  ;# new project - no group selected
-  update
-  set al(skipnoN) 0
+  unset al(project::Ok)
   alited::file::CheckForNew yes
   alited::main::ShowText
   if {!$al(TREE,isunits)} {after idle alited::tree::RecreateTree}

@@ -346,6 +346,8 @@ namespace eval ::alited {
     {Acknowledgements} {Благодарности}
     "Many thanks to the following people\n who have contributed to this project" "Огромное спасибо всем этим людям,\n внесшим свой вклад в этот проект"
     {Special thanks also to} {Особая благодарность также}
+    {Packages} {Пакеты}
+    {Packages used by <red>alited %ver</red>:} {Пакеты, использованные в <red>alited %ver</red>:}
   }
 
   ## ________________________ Preferences ________________________ ##

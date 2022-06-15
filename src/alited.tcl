@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.4a1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.4a2  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -249,7 +249,7 @@ if {[package versions alited] eq {}} {
 
 # _____________________________ Packages used __________________________ #
 
-lappend auto_path $alited::LIBDIR
+lappend auto_path $alited::LIBDIR $::alited::PAVEDIR
 
 source [file join $::alited::BARSDIR bartabs.tcl]
 source [file join $::alited::PAVEDIR apaveinput.tcl]

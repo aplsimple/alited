@@ -364,7 +364,9 @@ namespace eval ::apave {
 # that apave's stuff available for them and vice versa.
 
 source [file join $::apave::apaveDir obbit.tcl]
-source [file join $::apave::apaveDir baltip baltip.tcl]
+if {[info commands ::baltip::configure] eq {}} {
+  source [file join $::apave::apaveDir baltip baltip.tcl]
+}
 
 # ________________________ Creating APave oo::class _________________________ #
 
@@ -3227,6 +3229,15 @@ oo::class create ::apave::APave {
     set res [list]
     set wmain [set wdia {}]
     foreach {w lwidgets} $args {
+      if {[lindex $lwidgets 0 0] eq {after}} {
+        # if 1st item is "after idle" or like "after 1000", layout the window after...
+        # (fit for "invisible independent" windows/frames/tabs)
+        set what [lindex $lwidgets 0 1]
+        if {$what eq {idle} || [string is integer -strict $what]} {
+          after $what [list [self] paveWindow $w [lrange $lwidgets 1 end]]
+        }
+        continue
+      }
       lappend res {*}[my Window $w $lwidgets]
       lappend _pav(lwidgets) $lwidgets ;# possibly useful
       if {[set ifnd [regexp -indices -inline {[.]dia\d+} $w]] ne {}} {

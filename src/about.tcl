@@ -17,6 +17,9 @@ namespace eval about {
 proc about::About {} {
   # Shows "About" dialogue.
 
+  if {![info exists ::em::em_version]} {
+    source [file join $::e_menu_dir e_menu.tcl]
+  }
   namespace upvar ::alited al al
   variable textTags
   lassign [::apave::obj csGet] fg - bg - - bS fS
@@ -50,13 +53,21 @@ proc about::About {} {
     [list "linkAG" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Andy+Goth@@"] \
     [list "linkDA" "::apave::openDoc %t@@https://github.com/ray2501@@"] \
     [list "linkET" "::apave::openDoc %t@@https://github.com/eht16"] \
+    [list "link-apave" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/pave"] \
+    [list "link-e_menu" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/e_menu"] \
+    [list "link-baltip" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/baltip/baltip.html"] \
+    [list "link-bartabs" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/bartabs"] \
+    [list "link-hl_tcl" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/hl_tcl/hl_tcl.html"] \
+    [list "link-repl" "::apave::openDoc %t@@https://github.com/apnadkarni/tcl-repl"] \
+    [list "link-tkcon" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Tkcon"] \
     [list "link_" "::apave::openDoc %t@@https://aplsimple.github.io/en/misc/links/links.html@@"] \
     [list "linkRH" "::apave::openDoc %t@@http://www.hwaci.com/drh/@@"] \
     ]
+  set vers v[package require alited]
   set long1 [msgcat::mc {And well fit for programming with it.}]
   set long2 __________________________________________
   set long3 [info nameofexecutable]
-  set msg "  <red>alited v[package require alited]</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
+  set msg "  <red>alited $vers</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
     [msgcat::mc {Written in pure Tcl/Tk.}] \n \
     $long1\n\n \
     [msgcat::mc {Details:}] \n\n \
@@ -77,7 +88,7 @@ proc about::About {} {
     [string length $long2],[string length $long3])}]
   set ackn [msgcat::mc "Many thanks to the following people\n who have contributed to this project"]
   set spec [msgcat::mc "Special thanks also to"]
-  set ::alited::AcknText "\n $ackn\n\n \
+  set ::alited::AboutAckn "\n $ackn\n\n \
     \u2022 <linkSH>Steve Huntley</linkSH>\n \
     \u2022 <linkHE>Holger Ewert</linkHE>\n \
     \u2022 <linkCN>Csaba Nemethi</linkCN>\n \
@@ -105,11 +116,24 @@ proc about::About {} {
     \u2022 <linkDA>Danilo Chang</linkDA>\n \
     \u2022 <linkET>Enrico Tröger</linkET>\n \
     \n <link_>Excuse my memory if I omitted someone's name.</link_>\n"
-  set tab2 [list Information Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AcknText -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
+  set emenuv [lindex $::em::em_version 1]
+  set packages [msgcat::mc {Packages used by <red>alited %ver</red>:}]
+  set packages [string map [list %ver $vers] $packages]
+  set ::alited::AboutPack "\n $packages\n\n \
+    \u2022 <link-apave>apave v[package version apave]</link-apave>\n\n \
+    \u2022 <link-e_menu>e_menu v$emenuv</link-e_menu>\n\n \
+    \u2022 <link-baltip>baltip v[package version baltip]</link-baltip>\n\n \
+    \u2022 <link-bartabs>bartabs v[package version bartabs]</link-bartabs>\n\n \
+    \u2022 <link-hl_tcl>hl_tcl v[package version hl_tcl]</link-hl_tcl>\n\n \
+    \u2022 <link-tkcon>tkcon</link-tkcon>\n\n \
+    \u2022 <link-repl>tcl-repl</link-repl>\n"
+  set tab2 [list Information Packages "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexPack - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutPack -tags ::alited::about::textTags}} {.sbv .texPack L - - {pack -side right}}" Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutAckn -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
   ::alited::msg ok {} $msg \
     -title [msgcat::mc About] -t 1 -w $wmax -h {30 30} -scroll 0 \
     -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}" \
     -tab2 $tab2
+  unset ::alited::AboutAckn  ;# was used in this dialogue only, for readonly text
+  unset ::alited::AboutPack  ;# -//-
 }
 #_______________________
 

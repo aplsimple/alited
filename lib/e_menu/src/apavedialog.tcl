@@ -266,14 +266,16 @@ oo::class create ::apave::APaveDialog {
     set val [expr {min(100,int(100*$value/$::apave::_AP_VARS(ProSplash,maxvalue)))}]
     if {$val!=$::apave::_AP_VARS(ProSplash,value)} {
       set ::apave::_AP_VARS(ProSplash,value) $val
-      $::apave::_AP_VARS(ProSplash,wid2) configure -value $val
-      if {$msg1 ne {}} {
-        $::apave::_AP_VARS(ProSplash,wid1) configure -text $msg1
+      catch {  ;# there might be no splash widgets, then let it run dry
+        $::apave::_AP_VARS(ProSplash,wid2) configure -value $val
+        if {$msg1 ne {}} {
+          $::apave::_AP_VARS(ProSplash,wid1) configure -text $msg1
+        }
+        if {$msg2 ne {}} {
+          $::apave::_AP_VARS(ProSplash,wid3) configure -text $msg2
+        }
+        update
       }
-      if {$msg2 ne {}} {
-        $::apave::_AP_VARS(ProSplash,wid3) configure -text $msg2
-      }
-      update
     }
     return $val
   }
@@ -1202,11 +1204,23 @@ oo::class create ::apave::APaveDialog {
       set widlist [my paveWindow $qdlg.fra $widlist]
     } else {
       # pave with the notebook tabs (titl1 title2 [title3...] widlist2 [widlist3...])
-      lassign $tab2 ttl1 ttl2 widlist2
-      set widlist0 [list {nbk - - - - {pack -side top -expand 1 -fill both} {
-        f1 "-t {$ttl1}"
-        f2 "-t {$ttl2}"
-      }}]
+      lassign $tab2 ttl1 ttl2 widlist2 ttl3 widlist3 ttl4 widlist4 ttl5 widlist5
+      foreach nt {3 4 5} {
+        set ttl ttl$nt
+        set wdl widlist$nt
+        if {[set _ [set $ttl]] ne {}} {
+          set $ttl [list f$nt "-t {$_}"]
+          set $wdl [list $qdlg.fra.nbk.f$nt "[set $wdl]"]
+        }
+      }
+      set widlist0 [list [list nbk - - - - {pack -side top -expand 1 -fill both} [list \
+        f1 "-t {$ttl1}" \
+        f2 "-t {$ttl2}" \
+        {*}$ttl3 \
+        {*}$ttl4 \
+        {*}$ttl5 \
+      ]]]
+
       set widlist1 [list]
       foreach it $widlist {
         lassign $it w nei pos r c opt atr
@@ -1216,6 +1230,9 @@ oo::class create ::apave::APaveDialog {
       set widlist [my paveWindow $qdlg.fra $widlist0 \
         $qdlg.fra.nbk.f1 $widlist1 \
         $qdlg.fra.nbk.f2 $widlist2 \
+        {*}$widlist3 \
+        {*}$widlist4 \
+        {*}$widlist5 \
       ]
       set tab2 nbk.f1.
     }

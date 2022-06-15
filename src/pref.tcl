@@ -437,9 +437,9 @@ proc pref::General_Tab1 {} {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labTheme - - 1 1 {-st w -pady 1 -padx 3} {-t "Ttk theme:"}}
-    {.opc1 .labTheme L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 16 -com alited::pref::CbxTheme} {}}}
+    {.opc1 .labTheme L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 21 -com alited::pref::CbxTheme} {}}}
     {.labCS .labTheme T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
-    {.opc2 .labCS L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 16 -com alited::pref::CbxTheme} {alited::pref::opcToolPre %a}}}
+    {.opc2 .labCS L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 21 -com alited::pref::CbxTheme} {alited::pref::opcToolPre %a}}}
     {.labHue .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Tint:"}}
     {.SpxHue .labHue L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 9 -afteridle alited::pref::CbxTheme -tip {$alited::al(MC,hue)}}}
     {seh_ .labHue T 1 2 {-pady 4}}
@@ -1181,7 +1181,7 @@ proc pref::Emenu_Tab {} {
     {.swiExe .labExe L 1 1 {-st sw -pady 5} {-var alited::al(EM,exec) -onvalue yes -offvalue no -com alited::pref::OwnCS}}
     {.labCS .labExe T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.SwiCS .labCS L 1 1 {-st sw -pady 5} {-t {e_menu's own} -var alited::al(EM,ownCS) -com alited::pref::OwnCS -afteridle alited::pref::OwnCS}}
-    {.OpcCS .swiCS L 1 1 {-st sw -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 16} {alited::pref::opcToolPre %a}}}
+    {.OpcCS .swiCS L 1 1 {-st sw -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 21} {alited::pref::opcToolPre %a}}}
     {.labGeo .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
     {.entGeo .labGeo L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,geometry) -w 22}}
     {.labDir .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Directory of menus:"}}
@@ -1215,7 +1215,7 @@ proc pref::Tkcon_Default {} {
   set al(tkcon,cols) 100
   set al(tkcon,fsize) 13
   set al(tkcon,geo) +1+1
-  set al(tkcon,topmost) 0
+  set al(tkcon,topmost) 1
 }
 #_______________________
 
@@ -1288,8 +1288,9 @@ proc pref::Tkcon_Tab {} {
 }
 #_______________________
 
-proc pref::Runs_Tab {} {
+proc pref::Runs_Tab {tab} {
   # Prepares and layouts "Tools/bar/menu" tab.
+  #   tab - a tab to open (saved at previous session) or {}
 
   fetchVars
   # get a list of all available icons for "bar/menu" actions
@@ -1315,7 +1316,7 @@ proc pref::Runs_Tab {} {
   }
   EmSeparators no
   # get a layout of "bar/menu" tab
-  return {
+  set res {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1} {-afteridle {::alited::pref::EmSeparators yes}}}
     {fra.ScfRuns - - 1 1  {pack -fill both -expand 1}}
@@ -1339,6 +1340,14 @@ proc pref::Runs_Tab {} {
       }}
     }
   }
+  if {$tab eq {Emenu_Tab} || \
+  ($oldTab ne {} && [string match *nbk6.f3 $arrayTab($oldTab)])} {
+    # "Run" items should be displayed immediately
+    return $res
+  }
+  # "Run" items can be created with a little delay
+  # imperceptible for a user, saving his/her time
+  return [linsert $res 0 {after 500}]
 }
 #_______________________
 
@@ -1497,7 +1506,7 @@ proc pref::_create {tab} {
     $win.fra.fraR.nbk5.f1 [Keys_Tab1] \
     $win.fra.fraR.nbk6.f1 [Common_Tab] \
     $win.fra.fraR.nbk6.f2 [Emenu_Tab] \
-    $win.fra.fraR.nbk6.f3 [Runs_Tab] \
+    $win.fra.fraR.nbk6.f3 [Runs_Tab $tab] \
     $win.fra.fraR.nbk6.f4 [Tkcon_Tab]
   set wtxt [$obDl2 TexNotes]
   set fnotes [file join $::alited::USERDIR notes.txt]

@@ -8,7 +8,7 @@
 
 package require Tk
 
-package provide apave 3.4.12
+package provide apave 3.4.13
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 

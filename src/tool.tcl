@@ -218,7 +218,7 @@ proc tool::EM_Options {opts} {
   set ed [info nameofexecutable]\ $SCRIPTNORMAL\ $USERDIRROOT
   set R [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
-    o=-1 g=$al(EM,geometry) $z6 $z7 {*}$ls {*}$opts {*}$srcdir \
+    o=-1 om=0 g=$al(EM,geometry) $z6 $z7 {*}$ls {*}$opts {*}$srcdir \
     {*}$dirvar {*}$filvar th=$al(THEME) td=$tdir ed=$ed]
   set res {}
   foreach r $R {append res "\"$r\" "}
