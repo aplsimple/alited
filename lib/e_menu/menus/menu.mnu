@@ -5,8 +5,7 @@ w=25
 pos=12.39
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENU_FOSGIT]} {set ::EMENU_FOSGIT Fossil}
-%C if {![info exist ::EMENUFILE]} { \
-  set ::EMENUFILE "%f" ; if {[::iswindows]} {set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
+%C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f" ; if {[::iswindows]} {set ::EMENUFILE [string map [list \\ \\\\] "%f"]}}
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
 %C set ::FILETAIL {"$::EMENUFILETAIL"}
 %C set ::DIRTAIL "\"[file tail {%d}]\""
@@ -28,8 +27,8 @@ pos=12.39
  RE: Run me (+ selection) RE: %IF "%x"==".tcl" %THEN %T tclsh "$::EMENUFILE" $::_EM_AR_
  RE: Run me (+ selection) RE: %IF "%x"==".py"  %THEN %t python3 "$::EMENUFILE" %AR
  SE: Run me (+ selection) SE: %IF {%RF}!="" %THEN %RF
- RE: Run me (+ selection) RE: %IF {%AR}=="" %THEN %O $::EMENUFILE
-  S: Run me (+ selection) S: $::EMENUFILE %AR
+ RE: Run me (+ selection) RE: %IF {%AR}=="" && ![::iswindows] %THEN %O "$::EMENUFILE"
+ RE: Run me (+ selection) RE: "$::EMENUFILE" %AR
 
  S: Run Tcl {all selection} S: cd %d
  S: Run Tcl {all selection} S: tclsh %m/src/ch_.tcl "%TF"

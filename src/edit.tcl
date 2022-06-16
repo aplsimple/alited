@@ -88,7 +88,6 @@ proc edit::NormIndent {} {
     }
   }
   alited::indent::normalize
-  alited::main::UpdateTextGutter
 }
 
 # ________________________ Comment in / out _________________________ #
@@ -354,7 +353,11 @@ proc edit::RemoveTrailWhites {{wtxtcurr ""} {doit no}} {
       }
     }
   }
-  if {$waseditcurr} alited::main::UpdateTextGutterTreeIcons
+  if {$waseditcurr} {
+    alited::main::UpdateTextGutterTreeIcons
+  } else {
+    alited::main::UpdateIcons
+  }
 }
 
 # _________________________________ EOF _________________________________ #

@@ -475,6 +475,14 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
     set fnames [list $fnames]
   }
   set TID {}
+  set askopen 0
+  if {[llength $fnames]>1} {
+    set chopt "-ch {$al(MC,noask)}"  ;# for many files -
+    set ync yesnocancel              ;# ask with "Cancel" & "Don't show anymore"
+  } else {
+    set chopt {}
+    set ync yesno
+  }
   foreach fname $fnames {
     if {[file exists $fname]} {
       set exts $al(TclExtensions)
@@ -485,9 +493,11 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
       set esp [split [string map [list { } {} \n ,] $exts] ,]
       if {!$reload && $ext ni $esp} {
         set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
-        if {![alited::msg yesno warn $msg NO]} {
-          break
+        if {$askopen<11} {
+          set askopen [alited::msg $ync warn $msg NO {*}$chopt]
         }
+        if {!$askopen || $askopen==12} break
+        if {$askopen==2} continue
       }
       if {[set TID [alited::bar::FileTID $fname]] eq {}} {
         # close  "no name" tab if it's the only one and not changed

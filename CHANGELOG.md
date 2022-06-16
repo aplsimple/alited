@@ -1,13 +1,17 @@
 # LAST CHANGES:
 
 
-Version `1.2.4a3 (15 Jun'22)`
+Version `1.2.4a4 (16 Jun'22)`
 
+  - BUGFIX: at start, forget alited's own packages & namespaces
+            (severe bug making alited unusable in some Magicsplat & Bawt distros)
+  - BUGFIX: update "Save all" icon at removing trail spaces
   - BUGFIX: choose e_menu items in Preferences, when set ornament (o=1) in menu.mnu
-  - BUGFIX: switch projects at running alited in tckon (skip ini::SaveCurrentIni)
-  - BUGFIX: e_menu corrected (Windows usage), incl. test*.mnu
+  - BUGFIX: switch projects at running alited in tkcon (skip ini::SaveCurrentIni)
+  - BUGFIX: e_menu corrected (for Windows, esp. XP), incl. test*.mnu
   - NEW   : About / Packages
-  - NEW   : forget installed in Tcl/Tk packages & namespaces used in alited
+  - NEW   : "Don't show anymore" checkbutton for Open... multiple files
+  - CHANGE: raise existing alited: Linux / Windows own way
   - CHANGE: create Preferences/Tools/e_menu tab (if not current) with a delay
   - CHANGE: Preferences/Tools/Run replaces "Tkcon topmost" ("in console" by default)
   - CHANGE: tips and docs corrected (country/language in locale)
@@ -32,9 +36,9 @@ Version `1.2.3 (8 Jun'22)`
   - NEW   : status bar: info on Run; detailed tooltip
   - NEW   : "Default" & "Default 2" buttons of Preferences/Tools/tkcon; new colors
   - NEW   : "New" and "Open..." items in popup menu of tab bar
-  - NEW   : checkbox "Don't ask anymore" at closing unsaved files
-  - NEW   : checkbox "Do it in other Tcl files" at asking "Correct indentation"
-  - NEW   : checkbox "Do it in other files" at asking "Remove trailing whitespaces"
+  - NEW   : checkbutton "Don't ask anymore" at closing unsaved files
+  - NEW   : checkbutton "Do it in other Tcl files" at asking "Correct indentation"
+  - NEW   : checkbutton "Do it in other files" at asking "Remove trailing whitespaces"
   - NEW   : in List of Templates: "Import templates" button; tiny-ups
   - NEW   : new templates in alited.ini (view variables; enter a command)
   - NEW   : look for a declaration (Ctrl+L) - at first in the current tab
@@ -221,7 +225,7 @@ Version `1.0.5 (27 Oct'21)`
   - NEW   : flags for "Preferable Locale"
   - NEW   : "Rename file" from the tree
   - NEW   : selected units to be added to Favorites (popup menu)
-  - NEW   : "Don't ask again" checkbox at adding to Favorites
+  - NEW   : "Don't ask again" checkbutton at adding to Favorites
   - NEW   : "Your commands" for Tcl syntax
   - NEW   : "Remove" of "Last Visited" removes a current unit from the list
   - CHANGE: revised help & doc

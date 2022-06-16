@@ -18,8 +18,7 @@
 co=;
 w=45
 rt=2/5
-%C if {![info exist ::EMENUFILE]} { \
-  set ::EMENUFILE "%f" ; if {[::iswindows]} {set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
+%C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f" ; if {[::iswindows]} {set ::EMENUFILE [string map [list \\ \\\\] "%f"]}}
 %C if {![info exist ::EMENUGREP]} {set ::EMENUGREP ""}
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
@@ -57,7 +56,7 @@ rt=2/5
    texc {{    Hint:} {} {-h 5 -w 55 -ro 1 -wrap word}} \
    {\n This utility removes tracing puts from a Tcl script.\n\n The puts are set below the script's proc/method declarations.} \
    } -head {\n This will remove tracing 'puts' from a file.} -weight bold == ::EMENUFILE
- S: Untrace $::FILETAIL S: tclsh %m/src/atrace.tcl untrace $::EMENUFILE 
+ S: Untrace $::FILETAIL S: tclsh %m/src/atrace.tcl untrace $::EMENUFILE
 
  M:  M: 3
 

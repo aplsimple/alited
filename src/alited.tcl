@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.4a3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.4a4  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -236,27 +236,37 @@ if {[package versions alited] eq {}} {
     # Set the comm port that we will use
     # Change our comm port to a known value
     # (if we fail, the app is already running at that port so connect to it)
-    if {![catch { ::comm::comm config -port $alited::al(comm_port) }]} {
+    if {$::tcl_platform(platform) eq {windows} && \
+    ![catch { ::comm::comm config -port $alited::al(comm_port) }]} {
       set ALITED_PORT no ;# no running app
     }
   } else {
     set ALITED_PORT no
   }
   if {!$alited::DEBUG && $ALITED_PORT} {
-    if {[llength $ALITED_ARGV]} {
-      # Attempt to add files & raise the existing application
-      if {![catch {::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::open_files_and_raise 0 $ALITED_ARGV}]} {
-        destroy .
-        exit
+    if {$::tcl_platform(platform) eq {windows}} {
+      if {[llength $ALITED_ARGV]} {
+        # Attempt to add files & raise the existing application
+        if {![catch {::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::open_files_and_raise 0 $ALITED_ARGV}]} {
+          destroy .
+          exit
+        }
+      } else {
+        # Attempt to raise the existing application
+        if {![catch { ::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::raise_window }]} {
+          destroy .
+          exit
+        }
       }
     } else {
-      # Attempt to raise the existing application
-      if {![catch { ::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::::raise_window }]} {
+      if {[tk appname alited] ne "alited"} {
+        send -async alited ::alited::open_files_and_raise 0 {*}$ALITED_ARGV
         destroy .
         exit
       }
     }
   }
+
 }
 
 # _____________________________ Packages used __________________________ #
