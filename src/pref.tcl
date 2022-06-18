@@ -1214,7 +1214,7 @@ proc pref::Tkcon_Default {} {
   set al(tkcon,rows) 20
   set al(tkcon,cols) 100
   set al(tkcon,fsize) 13
-  set al(tkcon,geo) +1+1
+  set al(tkcon,geo) +1+31
   set al(tkcon,topmost) 1
 }
 #_______________________

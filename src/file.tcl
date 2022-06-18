@@ -9,7 +9,8 @@
 #package require control
 
 namespace eval file {
-  variable res_dosave 0
+  variable ansDoSave 0
+  variable ansOpenOfDir 0
 }
 
 # _________________________ Common ________________________ #
@@ -40,22 +41,22 @@ proc file::IsSaved {TID} {
   #   TID - ID of tab
   # Returns 1 for "yes, needs saving", 2 for "needs no saving", 0 for "cancel".
 
-  variable res_dosave
+  variable ansDoSave
   namespace upvar ::alited al al
   if {[IsModified $TID]} {
     set fname [alited::bar::BAR $TID cget -text]
     set nmark [llength [alited::bar::BAR listFlag "m"]]
-    if {$res_dosave<10 || $nmark<2} {
+    if {$ansDoSave<10} {
       if {$nmark<2} {
         set ch {}
       } else {
         # the option for "save/not save other changed files, without further questions"
         set ch [list -ch $al(MC,noask)]
       }
-      set res_dosave [alited::msg yesnocancel warn [string map [list %f $fname] \
+      set ansDoSave [alited::msg yesnocancel warn [string map [list %f $fname] \
         $al(MC,notsaved)] YES -title $al(MC,saving) {*}$ch]
     }
-    return $res_dosave
+    return $ansDoSave
   }
   return 2  ;# as if "No" chosen
 }
@@ -292,12 +293,13 @@ proc file::WrapLines {} {
 proc file::AllSaved {} {
   # Checks whether all files are saved. Saves them if not.
 
-  variable res_dosave
-  set res_dosave 0
+  variable ansDoSave
+  set ansDoSave 0
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
     switch [IsSaved $TID] {
       0 { ;# "Cancel" chosen for a modified
+        set ansDoSave 0
         return no
       }
       1 - 11 { ;# "Save" chosen for a modified
@@ -305,6 +307,7 @@ proc file::AllSaved {} {
       }
     }
   }
+  set ansDoSave 0
   return yes
 }
 #_______________________
@@ -534,7 +537,7 @@ proc file::SaveFileByName {TID fname} {
 
   namespace upvar ::alited al al
   set wtxt [alited::main::GetWTXT $TID]
-  if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $wtxt yes}
+  if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $TID yes}
   set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
   if {![::apave::writeTextFile $fname fcont]} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1
@@ -635,8 +638,8 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
   # Returns 0, if a user selects "Cancel".
 
   namespace upvar ::alited al al obPav obPav
-  variable res_dosave
-  set res_dosave 0
+  variable ansDoSave
+#  set ansDoSave 0
   set res 1
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
@@ -720,9 +723,14 @@ proc file::OpenOfDir {dname} {
   # Opens all Tcl files of a directory.
   #   dname - directory's name
 
-  set msg [msgcat::mc "All Tcl files of this directory:\n  \"%f\"  \nwill be open.\n\nThis may be expensive!"]
+  namespace upvar ::alited al al
+  variable ansOpenOfDir
+  set msg [msgcat::mc "All Tcl files of this directory:\n  \"%f\"  \nwill be open. This may be expensive!"]
   set msg [string map [list %f [file tail $dname]] $msg]
-  if {[alited::msg okcancel warn $msg OK]} {
+  if {$ansOpenOfDir<11} {
+    set ansOpenOfDir [alited::msg okcancel warn $msg OK -ch $al(MC,noask)]
+  }
+  if {$ansOpenOfDir} {
     if {![catch {set flist [glob -directory $dname *]}]} {
       set fnames [list]
       foreach fname [lsort -decreasing -dictionary $flist] {

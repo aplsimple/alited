@@ -680,7 +680,7 @@ proc ::hl_c::hl_line {txt} {
     set ln2 [expr {int([$txt index end])}]
     set ln1 [expr {max (1,$ln0-1)}]
     set ln2 [expr {min ($ln2,$ln0+1)}]
-    # update lines: previous, current, next 
+    # update lines: previous, current, next
     after idle "::hl_c::my::CoroRun $txt $ln1 $ln2"
   }
   ::hl_c::my::MemPos $txt yes

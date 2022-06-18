@@ -312,15 +312,15 @@ proc edit::Modified {TID wtxt {l1 0} {l2 0} args} {
 }
 #_______________________
 
-proc edit::RemoveTrailWhites {{wtxtcurr ""} {doit no}} {
+proc edit::RemoveTrailWhites {{TID ""} {doit no}} {
   # Removes trailing spaces of lines - all of lines or a selection of lines.
-  #   wtxtcurr - currently edited text's path
-  #   doit - if yes, trimright all of *wtxtcurr* without questions
+  #   TID - tab ID
+  #   doit - if yes, trimright all of text without questions
 
   namespace upvar ::alited al al
   set ans 1
   if {!$doit} {
-    set wtxtcurr [alited::main::CurrentWTXT]
+    set TID [alited::bar::CurrentTabID]
     # ask about trailing all lines of a current file (with option: all of other files)
     set msg [msgcat::mc "Remove trailing whitespaces of all lines\nof \"%f\"?"]
     set msg [string map [list %f [file tail [alited::bar::FileName]]] $msg]
@@ -330,9 +330,9 @@ proc edit::RemoveTrailWhites {{wtxtcurr ""} {doit no}} {
   }
   set waseditcurr no
   foreach tab [alited::bar::BAR listTab] {
-    set TID [lindex $tab 0]
-    lassign [alited::main::GetText $TID no no] -> wtxt
-    if {$ans==11 || $wtxt eq $wtxtcurr} {
+    set tid [lindex $tab 0]
+    if {$ans==11 || $tid eq $TID} {
+      lassign [alited::main::GetText $tid no no] -> wtxt
       set l1 1
       set l2 [expr {int([$wtxt index {end -1c}])}]
       set wasedit no
@@ -346,7 +346,7 @@ proc edit::RemoveTrailWhites {{wtxtcurr ""} {doit no}} {
       }
       if {$wasedit} {
         $wtxt edit separator
-        alited::bar::BAR markTab $TID
+        alited::bar::BAR markTab $tid
         if {$wtxt eq [alited::main::CurrentWTXT]} {
           set waseditcurr yes  ;# update the current text's view only
         }

@@ -850,9 +850,10 @@ proc ::apave::logName {fname} {
 }
 #_______________________
 
-proc ::apave::logMessage {msg} {
+proc ::apave::logMessage {msg {lev 16}} {
   # Logs messages to a log file.
   #   msg - the message
+  #   lev - maximum level for [info level] to introspect calls
   # A log file's name is set by _PU_opts(_LOGFILE_). If it's blank,
   # no logging is made.
 
@@ -861,9 +862,9 @@ proc ::apave::logMessage {msg} {
   set chan [open $_PU_opts(_LOGFILE_) a]
   set dt [clock format [clock seconds] -format {%d%b'%y %T}]
   set msg "$dt $msg"
-  foreach i {-4 -3 -2 -1} {
+  for {set i $lev} {$i>0} {incr i -1} {
     catch {
-      lassign [info level $i] p1 p2
+      lassign [info level -$i] p1 p2
       if {$p1 eq {my}} {append p1 " $p2"}
       append msg " / $p1"
     }

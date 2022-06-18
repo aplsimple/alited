@@ -111,7 +111,7 @@ proc repl::complete_namespace {prefix {ip {}} {ns ::}} {
         set ns ::
     }
 
-    # Look for matches in the target context. 
+    # Look for matches in the target context.
     set matches [lmap fqn [evaluate $ip :: ::namespace children $ns ${esc_prefix}*] {
         namespace tail $fqn;    # We do not want fully qualified names
     }]
@@ -149,7 +149,7 @@ proc repl::complete_method {oo obj prefix {ip {}} {ns ::}} {
         # Resolve the variable reference
         set obj [evaluate $ip $ns set [string range $obj 1 end]]
     }
-    
+
     # Escape glob special characters in the prefix
     set esc_prefix [string map {* \\* ? \\? \\ \\\\} $prefix]
 
@@ -191,7 +191,7 @@ proc repl::complete_method {oo obj prefix {ip {}} {ns ::}} {
                 } else {
                     set matches [evaluate $obj ::nsf::methods::object::info::lookupmethods -callprotection public -path -- ${esc_prefix}*]
                 }
-            } 
+            }
         }
         xotcl {
             # XOTcl

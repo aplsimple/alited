@@ -123,7 +123,7 @@ namespace eval ::alited {
     {THE EXTERNAL FILE IS MOVED TO THE PROJECT!} {DIE EXTERNE DATEI IST IN DAS PROJEKT VERSCHOBEN WORDEN!}
     {Drop Selected Units Here} {Ausgewählte Einheiten hier ablegen}
     {Drop Selected Files Here} {Ausgewählte Dateien hier ablegen}
-    "All Tcl files of this directory:\n  \"%f\"  \nwill be open.\n\nThis may be expensive!" "Alle Tcl-Dateien des Verzeichnisses:\n  \"%f\"  \nwerden geöffnet.\n\nDas kann aufwändig sein!"
+    "All Tcl files of this directory:\n  \"%f\"  \nwill be open. This may be expensive!" "Alle Tcl-Dateien des Verzeichnisses:\n  \"%f\"  \nwerden geöffnet.\n\nDas kann aufwändig sein!"
     {Select All} {Alles auswählen}
     {Do it in other Tcl files} {Auch in anderer Tcl-Dateien}
     {Do it in other files} {Auch in anderer Dateien}

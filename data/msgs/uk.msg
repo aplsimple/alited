@@ -128,7 +128,7 @@ namespace eval ::alited {
     {THE EXTERNAL FILE IS MOVED TO THE PROJECT!} {ЗОВНІШНІЙ ФАЙЛ ПЕРЕМЕЩУЄТЬСЯ У ПРОЕКТ!}
     {Drop Selected Units Here} {Кинути сюди вибрані юніти}
     {Drop Selected Files Here} {Кинути сюди вибрані файли}
-    "All Tcl files of this directory:\n  \"%f\"  \nwill be open.\n\nThis may be expensive!" "Всі Tcl файли каталогу:\n  \"%f\"  \nбудуть відкриті.\n\nЦя операція може бути коштовною!"
+    "All Tcl files of this directory:\n  \"%f\"  \nwill be open. This may be expensive!" "Всі Tcl файли каталогу:\n  \"%f\"  \nбудуть відкриті.\n\nЦя операція може бути коштовною!"
     {Select All} {Виділити все}
     {Do it in other Tcl files} {Також і в інших файлах Tcl}
     {Do it in other files} {Також і в інших файлах}

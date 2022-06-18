@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.4a4 (16 Jun'22)`
+Version `1.2.4a5 (18 Jun'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
             (severe bug making alited unusable in some Magicsplat & Bawt distros)
@@ -10,8 +10,9 @@ Version `1.2.4a4 (16 Jun'22)`
   - BUGFIX: switch projects at running alited in tkcon (skip ini::SaveCurrentIni)
   - BUGFIX: e_menu corrected (for Windows, esp. XP), incl. test*.mnu
   - NEW   : About / Packages
-  - NEW   : "Don't show anymore" checkbutton for Open... multiple files
-  - CHANGE: raise existing alited: Linux / Windows own way
+  - NEW   : "Don't show anymore" checkbutton for Open... multiple files & Open all Tcl
+  - CHANGE: edit::RemoveTrailWhites: TID vs wtxtcurr (no need of reading all texts)
+  - CHANGE: raise existing alited app: Linux / Windows own way
   - CHANGE: create Preferences/Tools/e_menu tab (if not current) with a delay
   - CHANGE: Preferences/Tools/Run replaces "Tkcon topmost" ("in console" by default)
   - CHANGE: tips and docs corrected (country/language in locale)
