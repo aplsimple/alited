@@ -98,14 +98,14 @@ namespace eval ::alited {
   set al(KEYS,bind) [list]
 
   # e_menu settings and arguments
-  set al(EM,geometry) 240x1+10+10
+  set al(EM,geometry) +1+31
   set al(EM,save) {}
-  set al(EM,PD=) ~/PG/e_menu_PD.txt
+  set al(EM,PD=) ~/.config/alited/e_menu/em_projects
   set al(EM,Tcl) {}
   set al(EM,TclList) [list]
   set al(EM,h=) ~/DOC/www.tcl.tk/man/tcl8.6
   set al(EM,tt=) x-terminal-emulator
-  set al(EM,tt=List) "$al(EM,tt=)\tlxterminal --geometry=220x55\tx-terminal-emulator"
+  set al(EM,tt=List) "$al(EM,tt=)\tlxterminal --geometry=220x55\txterm"
   set al(EM,menu) menu.mnu
   set al(EM,menudir) {}
   set al(EM,CS) 33

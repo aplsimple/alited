@@ -434,6 +434,11 @@ proc ::em::change_PD_Spx {} {
     -padding {16 5 16 5} -text $txt
 }
 #___ change a project's directory and other parameters
+proc ::em::none {args} {
+  # Does nothing. Returns the same.
+  return {}
+}
+#___ change a project's directory and other parameters
 proc ::em::change_PD {} {
   if {![file isfile $::em::PD]} {
     set em_message "  WARNING:
@@ -448,7 +453,7 @@ proc ::em::change_PD {} {
       fco1 [list {Project:} {} \
       [list -h 10 -state readonly -inpval [get_PD]]] \
       "@@-RE {^(\\s*)(\[^#\]+)\$} {$::em::PD}@@" \
-      but1 [list {} {-padx 5} "-com {::em::edit {$::em::PD}; ::em::dialog \
+      but1 [list {} {-padx 5} "-com {::em::edit {$::em::PD} ::em::none; ::em::dialog \
         res .em -1} -takefocus 0 -tooltip {Click to edit\n$::em::PD} \
         -toprev 1 -image [::apave::iconImage change]"] {}]
   }

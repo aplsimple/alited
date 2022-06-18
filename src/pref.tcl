@@ -1166,6 +1166,33 @@ proc pref::Common_Tab {} {
     {.filDF .labDF L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 48}}
   }
 }
+
+
+## ________________________ e_menu _________________________ ##
+
+proc pref::Default_e_menu {} {
+  # Set default a_menu settings.
+
+  fetchVars
+  set al(EM,exec) yes
+  set al(EM,ownCS) no
+  set al(EM,geometry) +1+31
+  set emdir [file join $::alited::USERDIR e_menu]
+  set al(EM,menudir) [file join $emdir menus]
+  set al(EM,menu) [file join $al(EM,menudir) menu.mnu]
+  set al(EM,PD=) [file join $emdir em_projects]
+}
+#_______________________
+
+proc pref::Test_e_menu {} {
+  # Tests a_menu settings.
+
+  fetchVars
+  set cs $al(EM,CS)
+  set al(EM,CS) [GetCS 2]
+  alited::tool::e_menu o=0
+  set al(EM,CS) $cs
+}
 #_______________________
 
 proc pref::Emenu_Tab {} {
@@ -1190,9 +1217,14 @@ proc pref::Emenu_Tab {} {
     {.filMenu .labMenu L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,menu) -w 48 -filetypes {{{Menus} .mnu} {{All files} .* }}}}
     {.labPD .labMenu T 1 1 {-st w -pady 1 -padx 3} {-t "Projects (%PD wildcard):"}}
     {.filPD .labPD L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,PD=) -w 48}}
+    {.seh .labPD T 1 3 {-st ew -pady 5}}
+    {.h_ .seh T}
+    {.but1 .h_ L 1 1 {-st w} {-t Default -com alited::pref::Default_e_menu}}
+    {.but2 .but1 L 1 1 {-st w} {-t Test -com alited::pref::Test_e_menu}}
   }
 }
-#_______________________
+
+## ________________________ tkcon _________________________ ##
 
 proc pref::UpdateTkconTab {} {
   # Updates color labels for "Tools/Tkcon" tab.
@@ -1286,7 +1318,8 @@ proc pref::Tkcon_Tab {} {
     {.entGeo .labGeo L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,geo) -w 20}}
   }
 }
-#_______________________
+
+## ________________________ bar/menu _________________________ ##
 
 proc pref::Runs_Tab {tab} {
   # Prepares and layouts "Tools/bar/menu" tab.

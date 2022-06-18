@@ -638,8 +638,6 @@ proc file::CloseFile {{TID ""} {checknew yes}} {
   # Returns 0, if a user selects "Cancel".
 
   namespace upvar ::alited al al obPav obPav
-  variable ansDoSave
-#  set ansDoSave 0
   set res 1
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
