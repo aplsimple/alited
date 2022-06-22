@@ -24,7 +24,7 @@ proc about::About {} {
   variable textTags
   lassign [::apave::obj csGet] fg - bg - - bS fS
   set textTags [list \
-    [list "red" " -font {[::apave::obj csFontDef] -weight bold} -foreground $fS -background $bS"] \
+    [list "red" "-font {[::apave::obj csFontDef] -weight bold} -foreground $fS -background $bS"] \
     [list "link1" "::apave::openDoc %t@@https://%l@@"] \
     [list "link2" "::apave::openDoc %t@@https://wiki.tcl-lang.org@@"] \
     [list "linkapl" "::apave::openDoc %t@@https://github.com/aplsimple/@@"] \

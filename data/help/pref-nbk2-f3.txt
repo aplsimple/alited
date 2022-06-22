@@ -1,13 +1,13 @@
- In the "C/C++ files' extensions" field, you can set any
- additional extensions for the C/C++ files you use.
+ In the <b>C/C++ files' extensions</b> field, you can set additional extensions
+ for the C/C++ files you use (for example, .c++).
 
  Enter the extensions separated by spaces.
 
- Also, you can set your own colors to highlight the
- appropriate constructs of C/C++.
+ Also, you can set your own colors for the appropriate constructs of C/C++.
 
- Use "Default" button to restore the default colors
- for highlighting.
+ Use <b>Default</b> buttons to set one of the default color sets.
 
- At need, you can enter your own key words to highlight,
- in the text field. They are highlighted as C++ ones.
+ At need, you can enter <b>your own key words</b> to highlight, in the text field.
+ They are highlighted in the same color as C++ key words.
+
+ In the <b>Code snippet</b> field, you can check these settings "in vitro".

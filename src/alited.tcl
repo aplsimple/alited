@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.4a6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.4a8  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -345,9 +345,15 @@ namespace eval alited {
       set title [msgcat::mc $title]
     }
     set message [msgcat::mc $message]
-    #! if {!$noesc} {set message [string map [list \\ \\\\] $message]}
-    set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
-    #! after idle {catch alited::main::UpdateGutter}
+    if {[info exists al(obDlg-BUSY)]} {
+      # the obDlg is engaged: no actions, just a message
+      Message $message 4
+      set res 0
+    } else {
+      set al(obDlg-BUSY) yes
+      set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
+      unset -nocomplain al(obDlg-BUSY)
+    }
     return [lindex $res 0]
   }
   #_______________________
@@ -442,10 +448,10 @@ namespace eval alited {
     #   fname - the file's name
     #   args - option of msg
 
-    set fS [lindex [FgFgBold] 1]
+    set fS [lindex [::hl_tcl::hl_colors {} [::apave::obj csDark]] 1]
     set ::alited::textTags [list \
-      [list "red" " -font {-weight bold} -foreground $fS"] \
-      [list "bold" " -font {-weight bold}"] \
+      [list "r" "-font {-weight bold} -foreground $fS"] \
+      [list "b" "-foreground $fS"] \
       [list "link" "::apave::openDoc %t@@https://%l@@"] \
       ]
     if {[file exists $fname]} {

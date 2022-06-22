@@ -1,24 +1,27 @@
- This tool checks Tcl files (.tcl, .tm, .msg) for
- consistency of {}, [] and ().
+ This tool checks Tcl files (.tcl, .tm, .msg) for consistency of {}, [], ()
+ and "". Results are shown in the <b>info bar</b>.
 
- The results contain general info about a file and
- specific data on its units (procedures and methods).
+ Also, the files are checked for duplicate unit names.
 
- The file results cover the whole of the file. There
- might be inconsistencies in some specific units and
- seemingly "good" results for the file as whole.
+ The results contain general info about a file and specific data on its
+ <b>leaves</b> (procedures and methods). The <b>branches</b> are not checked.
 
- The file results include (x/y/z) info meaning
- inconsistencies for {}, [] and ().
+ The <b>file results</b> cover the whole file. There might be inconsistencies
+ in some specific leaves and seemingly good results for the file as whole.
 
- The inconsistencies for {} occur most often when
- some procedure declares a procedure inside itself.
- Or when a procedure is located at edges of a class
- or a namespace - in such cases the unit may include
- the finishing braces.
+ The file results include <b>(a/b/c/d)</b> data meaning inconsistencies found
+ for {}, [], () and "".
 
- To get rid of these "inconsistencies" you can insert
- branches named like "End of class/NS so and so". Or
- just take these artifacts "as is".
+ Click on a result <b>to enter</b> the appropriate file/unit.
 
- Click on a result to enter the appropriate file/unit.
+ An inconsistency for {} may occur when some procedure declares a procedure
+ inside itself. Or if a procedure is located at edges of a namespace or a
+ class - in such cases the unit may include its finishing braces.
+
+ To get rid of these "inconsistencies" you can insert branches named like
+ "End of class/NS so and so".
+
+ Also, there may be shown inconsistencies of "", when the double quotes
+ are used in regular expressions.
+
+ Take these artifacts "as is", being noticed, so that's okay.

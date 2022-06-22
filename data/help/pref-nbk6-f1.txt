@@ -1,19 +1,19 @@
-The common options of tools are following:
+ The common options of tools are following:
 
- - "tclsh, wish or tclkit" is a path to Tcl/Tk executable;
+ - <b>tclsh, wish or tclkit</b> is a path to Tcl/Tk executable;
    by default, it is an executable that had run alited.tcl
 
- - "Run" refers to Run tool: if it is set "in console", Tcl
+ - <b>Run</b> refers to Run tool: if it is set "in console", Tcl
    scripts will be run in console (terminal) otherwise in Tkcon;
    also, if this option is set "in console", the Tkcon tool will
    be topmost when running by itself
 
- - "Path to man/tcl8.6" is used at calling Tcl/Tk context help;
+ - <b>Path to man/tcl8.6</b> is used at calling Tcl/Tk context help;
    the help contents can be downloaded with the command:
     wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ \
       https://www.tcl.tk/man/tcl8.6/
 
- - "Linux terminal" is for Linux platforms only, fill this field
+ - <b>Linux terminal</b> is for Linux platforms only, fill this field
    with "xterm" (or "lxterminal") command and its options
 
- - "Diff tool" is a command to compare two text files
+ - <b>Diff tool</b> is a command to compare two text files

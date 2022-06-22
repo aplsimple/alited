@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.5.6
+package provide bartabs 1.5.7
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -922,8 +922,7 @@ method OnPopup {X Y {BID "-1"} {TID "-1"} {textcur ""}} {
   menu $pop -tearoff 0
   set ipops [set lpops [list]]
   if {$TID eq "-1"} {
-    set popup $popup0
-    lappend lpops $popup
+    set popup [list [lindex $popup 0] s {*}$popup0]  ;# let "List" be in
   }
   foreach p $popup {
     lassign $p typ label comm menu dsbl

@@ -1,31 +1,30 @@
- If it is empty, "Port to listen alited" option allows multiple aliteds
+ When empty, <b>Port to listen alited</b> option allows multiple aliteds
  working simultaneously. Otherwise, alited would listen the chosen port
  and arise (with passed file names) when you try to start it again.
 
- Switch "Confirm exit" on to secure alited against an unintended quit,
+ Switch <b>Confirm exit</b> ON to avoid an unintended exit of alited,
  i.e. at clicking [x] button or pressing Alt+F4.
 
- You can save a current alited configuration on:
+ You can <b>save a current alited configuration</b> on:
    - opening a file
    - closing a file
    - saving a file
 
- This option works together with the option (highly recommended "All"!):
-   "Save before bar/menu runs"
+ This option works together with the option (highly recommended "All"):
+   <b>Save before bar/menu runs</b>
  which means saving file(s) at running a bar/menu action.
-
  See also "Preferences / Tools / bar/menu" tab.
 
- Other options restrict a number of:
+ <b>Other options</b> restrict a number of:
    - files in 'Files/Recent Files' menu item
    - items in 'Last Visited' list of units
    - project files: this is important in order to
      secure against choosing a giant directory
      (like /home) for a project
 
- The "Back up files..." option allows to save a file's original version
+ The <b>Back up files</b> option allows to save a file's original version
  just before its change, in a project's subdirectory hidden for SCM. Set
  it blank to disable the backup. The "Maximum" field allows to backup a
  few of file copies, named like: file-1.bak, file-2.bak, file-3.bak...
 
- "Bell at warnings" may be set off to make 'alited' mute at warnings.
+ <b>Bell at warnings</b> may be set off to make 'alited' mute at warnings.

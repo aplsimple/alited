@@ -180,7 +180,7 @@ proc find::SearchUnit1 {wtxt isNS} {
   }
   foreach tab $tabs {
     set TID [lindex $tab 0]
-    alited::file::ReadFileByTID $TID
+    alited::main::GetText $TID no no
     foreach it $al(_unittree,$TID) {
       lassign $it lev leaf fl1 ttl l1 l2
       if {[string match $what $ttl] || [string match "*::$ttl" $com2] || $com2 eq $ttl} {
@@ -244,7 +244,7 @@ proc find::DoFindUnit {} {
   }
   foreach tab $tabs {
     set TID [lindex $tab 0]
-    alited::file::ReadFileByTID $TID
+    alited::main::GetText $TID no no
     foreach it $al(_unittree,$TID) {
       lassign $it lev leaf fl1 title l1 l2
       set ttl [string range $title [string last : $title]+1 end] ;# pure name, no NS

@@ -51,7 +51,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
   set wsbv [$obPav SbvText]
   # get data of the current tab
   lassign [alited::bar::GetBarState] TIDold fileold wold1 wold2
-  lassign [alited::bar::GetTabState $TID --pos --selection] pos selrange
+  lassign [alited::bar::GetTabState $TID --pos --selection --wrap] pos selrange wrap
   set doreload no  ;# obsolete
   set doinit yes
   if {$TIDold eq {-1} && $TID eq {tab0}} {
@@ -115,7 +115,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
     HighlightText $TID $curfile $wtxt
     if {$al(TREE,isunits)} alited::tree::RecreateTree
   }
-  return [list $curfile $wtxt $wsbv $pos $doinit $dopack $selrange]
+  return [list $curfile $wtxt $wsbv $pos $doinit $dopack $selrange $wrap]
 }
 #_______________________
 
@@ -124,7 +124,7 @@ proc main::ShowText {} {
 
   namespace upvar ::alited al al obPav obPav
   set TID [alited::bar::CurrentTabID]
-  lassign [GetText $TID yes] curfile wtxt wsbv pos doinit dopack selrange
+  lassign [GetText $TID yes] curfile wtxt wsbv pos doinit dopack selrange wrap
   if {$dopack} {
     PackTextWidgets $wtxt $wsbv
   }
@@ -141,6 +141,10 @@ proc main::ShowText {} {
   focus $wtxt
   if {$selrange ne {}} {
     catch {$wtxt tag add sel {*}$selrange}
+  }
+  if {$wrap eq {none}} {
+    alited::bar::SetTabState $TID --wrap {}  ;# because it's the very first enter
+    alited::file::WrapLines yes
   }
   # update "File" menu and app's header
   alited::menu::CheckMenuItems
@@ -359,6 +363,7 @@ proc main::CursorPos {wtxt args} {
   #   args - contains a cursor position,
 
   namespace upvar ::alited obPav obPav
+  if {![winfo exists $wtxt]} return
   if {$args eq {}} {set args [$wtxt index {end -1 char}]}
   lassign [split [$wtxt index insert] .] r c
   [$obPav Labstat1] configure -text "$r / [expr {int([lindex $args 0])}]"

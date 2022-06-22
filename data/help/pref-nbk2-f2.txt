@@ -1,13 +1,13 @@
- In the "Tcl files' extensions" field, you can set any
- additional extensions for the Tcl files you use.
+ In the <b>Tcl files</b> extensions" field, you can set additional extensions
+ for the Tcl files you use (for example, .bawt).
 
  Enter the extensions separated by spaces.
 
- Also, you can set your own colors to highlight the
- appropriate constructs of Tcl.
+ Also, you can redefine colors for the appropriate constructs of Tcl.
 
- Use "Default" button to restore the default colors
- for highlighting.
+ Use <b>Default</b> buttons to set one of the default color sets.
 
- At need, you can enter your own commands to highlight,
- in the text field. They are highlighted as Tk ones.
+ At need, you can enter <b>your own commands</b> to highlight, in the text field.
+ They are highlighted in the same color as Tk commands.
+
+ In the <b>Code snippet</b> field, you can check these settings "in vitro".

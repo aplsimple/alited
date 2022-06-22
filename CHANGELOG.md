@@ -1,24 +1,30 @@
 # LAST CHANGES:
 
 
-Version `1.2.4a6 (18 Jun'22)`
+Version `1.2.4a8 (22 Jun'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
-            (severe bug making alited unusable in some Magicsplat & Bawt distros)
+            (big-bug making alited unusable in some Magicsplat & Bawt distros)
   - BUGFIX: update "Save all" icon at removing trail spaces
   - BUGFIX: choose e_menu items in Preferences, when set ornament (o=1) in menu.mnu
   - BUGFIX: switch projects at running alited in tkcon (skip ini::SaveCurrentIni)
   - BUGFIX: e_menu corrected (for Windows, esp. XP), incl. test*.mnu
+  - NEW   : between sessions, save/restore "Wrap lines" mode for files of projects
   - NEW   : Default & Test buttons in Preferences/Tools/e_menu
   - NEW   : About / Packages
   - NEW   : "Don't show anymore" checkbutton for Open... multiple files & Open all Tcl
-  - CHANGE: edit::RemoveTrailWhites: TID vs wtxtcurr (no need of reading all texts)
+  - CHANGE: "Lists of Favorites" dialogue's appearance
+  - CHANGE: remove README of alited's own packages
+  - CHANGE: check info+statusbar height: must be >50 for the layout being viable
+  - CHANGE: "Find all in session": no excessive reading of all texts after "Find unit"
+  - CHANGE: edit::RemoveTrailWhites: TID vs wtxtcurr (no reading of all texts)
   - CHANGE: raise existing alited app: Linux / Windows own way
   - CHANGE: create Preferences/Tools/e_menu tab (if not current) with a delay
   - CHANGE: Preferences/Tools/Run replaces "Tkcon topmost" ("in console" by default)
   - CHANGE: tips and docs corrected (country/language in locale)
-  - CHANGE: About / Acknowledgements
-  - CHANGE: apave, e_menu packages
+  - CHANGE: About / Acknowledgements & docs
+  - CHANGE: apave, e_menu, bartabs packages
+
 
 Version `1.2.3 (8 Jun'22)`
 

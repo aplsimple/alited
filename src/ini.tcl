@@ -239,6 +239,14 @@ proc ini::ReadIni {{projectfile ""}} {
     }
     ReadIniOptions project $projectfile
   }
+  catch {
+    lassign [split $::alited::PanR_wh] - w1 - h1
+    lassign [split $::alited::PanTop_wh] - w2 - h2
+    if {($h1-$h2)<60} {
+      set h2 [expr {$h1-60}]
+      set ::alited::PanTop_wh "-w $w2 -h $h2" ;# the status bar is wanted
+    }
+  }
   ReadIniPrj
   set al(TEXT,opts) "-padx 3 -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3)"
   if {!$al(INI,belltoll)} {
@@ -508,7 +516,7 @@ proc ini::ReadPrjTabs {nam val} {
   #   val - value of option
 
   namespace upvar ::alited al al
-  if {[string trim $val] ne ""} {
+  if {[string trim $val] ne {}} {
     switch -exact -- $nam {
       tab {lappend al(tabs) $val}
       recent {alited::file::InsertRecent $val end}
@@ -745,7 +753,7 @@ proc ini::SaveIniPrj {{newproject no}} {
   if {!$newproject} {
     set tabs [alited::bar::BAR listTab]
   }
-  foreach tab $tabs {
+  foreach tab $tabs {  ;# save the current files' list & states
     if {!$newproject} {
       set TID [lindex $tab 0]
       set tab [alited::bar::FileName $TID]
@@ -755,7 +763,13 @@ proc ini::SaveIniPrj {{newproject no}} {
       } else {
         set pos [alited::bar::GetTabState $TID --pos]
       }
-      append tab \t $pos
+      append tab \t $pos  ;# save the current cursor position (fit to all files)
+      catch {
+        set wrap [[alited::main::GetWTXT $TID] cget -wrap]
+        if {$wrap ne {word}} {
+          append tab \t $wrap  ;# save the current wrap!=word (fit to strange files)
+        }
+      }
     }
     lappend al(tabs) $tab
     puts $chan "tab=$tab"

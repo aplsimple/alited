@@ -1,4 +1,4 @@
- Use drop-down lists to select a theme and a color scheme.
+ Use drop-down lists to select a <b>theme</b> and a <b>color scheme</b>.
 
  Note that "default", "clam", "alt", "classic" are standard Ttk themes.
  The standard themes may be used with all color schemes.
@@ -11,18 +11,18 @@
  "Dusk" or "MildDark" etc. The main point is "dark for dark, light for light".
 
  For "default", "clam", "alt", "classic" and "aw*" themes: you can tint their
- colors with "Tint" option. The negative values mean "darker", the positive
+ colors with <b>Tint</b> option. The negative values mean "darker", the positive
  values mean "lighter". These themes are most recommended for their stability.
  ______________________________________________________________________________
 
- The "Preferable locale" is mostly a language code: de, en, ru, uk etc.
+ The <b>Preferable locale</b> is mostly a language code: de, en, ru, uk etc.
 
- The "Font" field allows to override Tcl/Tk default font for labels, menus etc.
+ The <b>Font</b> field allows to override Tcl/Tk font for labels, menus etc.
 
  Additionally, you can set font sizes that will touch the following widgets:
- - small font : trees, tabs, tooltips, info & status bar, find/replace dialogue
- - middle font: labels, menus, buttons, entries
+ - <b>small font</b> : trees, tabs, tooltips, info/status bar, find/replace box
+ - <b>middle font</b>: labels, menus, buttons, entries
  ______________________________________________________________________________
 
- The Notes field includes arbitrary ideas, todos etc. for all projects. The
- projects are supplied with their own notes in "Setup/Projects".
+ The <b>Notes</b> field includes arbitrary ideas, todos etc. for all projects.
+ The projects are supplied with their own notes in "Setup/Projects".

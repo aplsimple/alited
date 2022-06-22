@@ -1,31 +1,32 @@
- Here, default values for new projects can be set. When you create
- a new project, its initial options are taken from these defaults:
+ If you don't want to use these <r>defaults for new projects</r>, switch
+ the top checkbox OFF. This way, at creating a new project in "Projects"
+ dialogue, you can input its options in the "Options" tab.
 
-   - "Skip subdirectories" - if the project directory contains some
+ Otherwise, default options for new projects are set here, so that when
+ you create a project, its options are taken from these defaults:
+
+   - <b>Skip subdirectories</b> - if the project directory contains some
      subdirectories which should be ignored (most often, SCM ones like
      ".git"), enter their tail names; separate them with spaces; use
-     double quotes if they include spaces;
+     double quotes if they include spaces.
 
-   - "End of line" - if this field is empty, the EOLs for saved files
+   - <b>End of line</b> - if this field is empty, the EOLs for saved files
      are defined by your platform; but if you have some projects with
-     other EOLs, set the field accordingly;
+     other EOLs, set the field accordingly.
 
-   - "Indentation" is a number of spaces to indent your texts' lines;
+   - <b>Indentation</b> is a number of spaces to indent your texts' lines;
      if "Auto detection" is on, a text indentation is defined by its
-     first indented line while for a new file it's set by "Indentation"
+     first indented line while for a new file it's set by this option.
 
-   - "Unit lines per 1 red bar" is a number of lines to mark a unit
-     (proc/method) with 1 red bar in its icon; a fully red icon is bad!
+   - <b>Unit lines per 1 red bar</b> is a number of lines to mark
+     proc/method with 1 red bar in the unit tree; the fully red is bad!
 
-   - "Multi-line strings" is recommended be OFF for projects with large
-     files; it's only for granular (with small source files) projects
-     that ON value could be a good choice because it can slow your work;
-     use it on your own risk.
+   - <b>Multi-line strings</b> is recommended to be OFF for projects with
+     large files; it's only for granular (with small scripts) projects
+     that ON value can be a good choice because it can slow your work;
+     use it on your own risk. Anyhow, \\n and \ characters create the
+     multiple lines of strings in nice way too.
 
-   - "Remove trailing whitespaces" - if this option is on, the trailing
+   - <b>Remove trailing whitespaces</b> - if set ON, the trailing
      whitespaces of all texts' lines are removed at saving. Otherwise,
      "Edit" menu item can be used to do this for a current text.
-
- If you don't want to use these defaults for new projects, switch the
- top checkbox off. While preparing a new project in "Projects" dialogue,
- you can input its options in the "Options" tab.

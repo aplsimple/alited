@@ -1,21 +1,21 @@
- Use <bold><red>buttons</red></bold> on the right to <bold>add/change/delete</bold> a list of favorites.
+ Use buttons on the right to <b>add/change/delete</b> a list of favorites.
 
- Use <bold><red>"Add" and "Change" buttons</red></bold> after filling list's name.
+ Use <r>Add</r> and <r>Change</r> buttons after filling list's name.
 
  The current list of favorites is displayed in the bottom listbox.
- Enter a name for the list and click "Add" button to use it aftewards.
+ Enter a name for the list and click <b>Add</b> button to use it aftewards.
 
  This way you can keep a kind of "projects inside a project", choosing
  a list of favorites for appropriate tasks inside a current project.
 
- For small tasks, click "kept" button to work with other open files.
+ For small tasks, click <b>kept</b> button to work with other open files.
 
- For big tasks, click "closed" button to work with the favorites only.
+ For big tasks, click <b>closed</b> button to work with the favorites only.
 
- Click "Back" button to return to an original list of favorites
+ Click <b>Back</b> button to return to an original list of favorites
  that were active initially, at starting the application.
 
- Click "Select" button or double-click a list to make it active.
+ Click <b>Select</b> button or double-click a list to make it active.
 
- NOTE: If you consider the current favorites somehow significant,
+ <r>Note</r>: If you consider the current favorites somehow significant,
  save them under some name, let it be even "tmp".

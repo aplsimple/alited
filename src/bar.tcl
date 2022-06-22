@@ -60,11 +60,12 @@ proc bar::FillBar {wframe {newproject no}} {
     -csel3 alited::bar::OnControlClick \
     -cdel {alited::file::CloseFile %t} \
     -cmov2 alited::bar::OnTabMove]
-  set tabs [set files [set posis [list]]]
+  set tabs [set files [set posis [set wraps [list]]]]
   foreach tab $al(tabs) {
-    lassign [split $tab \t] tab pos
+    lassign [split $tab \t] tab pos wrap
     lappend files $tab
     lappend posis $pos
+    lappend wraps $wrap
     set tab [UniqueTab $tabs [file tail $tab]]
     lappend tabs $tab
     lappend bar1Opts -tab $tab
@@ -79,9 +80,9 @@ proc bar::FillBar {wframe {newproject no}} {
     foreach tab $tabs {BAR insertTab $tab}
   }
   set tabs [BAR listTab]
-  foreach tab $tabs fname $files pos $posis {
+  foreach tab $tabs fname $files pos $posis wrap $wraps {
     set tid [lindex $tab 0]
-    SetTabState $tid --fname $fname --pos $pos
+    SetTabState $tid --fname $fname --pos $pos --wrap $wrap
     BAR $tid configure -tip [alited::file::FileStat $fname]
   }
   set curname [lindex $files $al(curtab)]

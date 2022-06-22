@@ -194,7 +194,6 @@ proc check::CheckAll {} {
   set allfnd [list]
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
-    alited::file::ReadFileByTID $TID
     lassign [alited::main::GetText $TID] curfile wtxt
     CheckFile $curfile $wtxt $TID
   }

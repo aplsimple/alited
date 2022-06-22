@@ -69,7 +69,6 @@ namespace eval ::alited {
     {in console} {у консолі}
     {in Tkcon} {у Tkcon}
     {Moving} {Переміщення}
-    {Help of alited} {Допомога alited}
     {Color Picker} {Вибір коліру}
     {Date Picker} {Вибір дати}
     {Screen Loupe} {Екранна лупа}

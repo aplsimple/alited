@@ -433,9 +433,8 @@ proc ::em::change_PD_Spx {} {
   $labmsg configure -foreground $fg -background $bg -font $font \
     -padding {16 5 16 5} -text $txt
 }
-#___ change a project's directory and other parameters
+#___ a stub doing nothing
 proc ::em::none {args} {
-  # Does nothing. Returns the same.
   return {}
 }
 #___ change a project's directory and other parameters

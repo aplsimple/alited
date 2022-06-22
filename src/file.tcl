@@ -274,12 +274,14 @@ proc file::SbhText {} {
 }
 #_______________________
 
-proc file::WrapLines {} {
+proc file::WrapLines {{wrapnone no}} {
   # Switches wrap word mode for a current text.
+  #  wrapnone - yes, if 'none' wrapping is needed
 
   namespace upvar ::alited al al
   set wtxt [alited::main::CurrentWTXT]
-  if {[set al(wrapwords) [expr {[$wtxt cget -wrap] ne {word}}]]} {
+  set al(wrapwords) [expr {!$wrapnone && [$wtxt cget -wrap] ne {word}}]
+  if {$al(wrapwords)} {
     $wtxt configure -wrap word
   } else {
     $wtxt configure -wrap none
@@ -497,7 +499,7 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
       if {!$reload && $ext ni $esp} {
         set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
         if {$askopen<11} {
-          set askopen [alited::msg $ync warn $msg NO {*}$chopt]
+          set askopen [alited::msg $ync warn $msg YES {*}$chopt]
         }
         if {!$askopen || $askopen==12} break
         if {$askopen==2} continue

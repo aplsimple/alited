@@ -1,6 +1,6 @@
- In the "Plain texts' extensions" field, you can set any
- additional extensions for the plain text files you use.
+ In the <b>Plain texts' extensions</b> field, you can set additional extensions
+ for the plain text files you use (for example, .rc).
 
  Enter the extensions separated by spaces.
 
- Use "Default" button to restore the default setting.
+ Use <b>Default</b> button to restore the default setting.

@@ -2,23 +2,23 @@
 
  The item lines contain the following:
 
-   [+] and [x] buttons to insert or delete a line
+   <b>[+]</b> and <b>[x]</b> buttons to insert or delete a line
 
-   "separator" checkbox for a separator of toolbar/menu
+   <b>separator</b> checkbox for a separator of toolbar/menu
 
-   "icons" list to set an icon of command
+   <b>icons</b> list to set an icon of command
 
-   "button" to choose e_menu's command
+   <b>button</b> to choose e_menu's command
 
  If you want an item be present in the toolbar, select an icon for it.
- If the item should be in the "Tools" menu only, leave the icon blank
- or select "none" icon.
+ If the item should be in "Tools" menu only, leave the icon blank or select
+ <b>none</b> icon.
 
- Hit a right button to choose a command of e_menu. Then, to select a
- whole menu, right click on it and choose "Select" from a popup menu.
+ Hit a <b>right button</b> to choose a command of e_menu. At that, to select
+ a whole menu, right click on its item and choose "Select" from a popup menu.
 
- While choosing a command from e_menu, use Escape key or popup menu's
- "Exit" to quit e_menu.
+ While choosing a command from e_menu, use Escape key or popup menu's "Exit"
+ to quit e_menu.
 
- Use a scrollbar at the right edge of the dialogue to scroll to the
- bottom of the list. Or resize the dialogue's window for this.
+ Use a scrollbar at the right edge of the dialogue to scroll to the bottom
+ of the list. Or resize the dialogue's window for this.

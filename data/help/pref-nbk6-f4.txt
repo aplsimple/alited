@@ -1,14 +1,13 @@
- The tkcon options define the appearance of
- tkcon's window.
+ The <b>tkcon</b> options define the appearance of Tkcon's window.
 
- You can set your own colors of tkcon.
+ You can set your own colors of Tkcon.
 
- Use "Default" button to set default light colors.
- Use "Default 2" button to set default black colors.
+ Use <b>Default</b> button to set default light colors.
+ Use <b>Default 2</b> button to set default black colors.
 
- Other options define the size of tkcon's window.
+ Other options define the size of Tkcon's window.
 
- The geometry is set as +X+Y meaning x- and
- y-coordinates of tkcon's window.
+ The geometry is set as <b>+X+Y</b> meaning x- and y-coordinates of
+ Tkcon's window.
 
- Use "Test" button to test your options of tkcon.
+ Use <b>Test</b> button to test your options of Tkcon.
