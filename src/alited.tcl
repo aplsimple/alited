@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.4a8  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.4b6  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -90,6 +90,7 @@ namespace eval alited {
   # misc. vars
   variable DirGeometry {}  ;# saved geometry of "Choose Directory" dialogue (for Linux)
   variable FilGeometry {}  ;# saved geometry of "Choose File" dialogue (for Linux)
+  variable pID 0
 
   # misc. consts
   variable PRJEXT .ale     ;# project file's extension
@@ -532,6 +533,15 @@ namespace eval alited {
   }
   #_______________________
 
+  proc source_e_menu {} {
+    # Sources e_menu.tcl at need.
+
+    if {![info exists ::em::geometry]} {
+      source [file join $::e_menu_dir e_menu.tcl]
+    }
+  }
+  #_______________________
+
   proc Tclexe {} {
     # Gets Tcl's executable file.
 
@@ -550,8 +560,7 @@ namespace eval alited {
     #   args - script's name and arguments
 
     set com [string trimright "$args" &]
-    set pid [pid [open "|[Tclexe] $com"]]
-    return $pid
+    return [pid [open "|[Tclexe] $com"]]
   }
   #_______________________
 

@@ -179,11 +179,7 @@ proc favor_ls::Add {} {
   variable currents
   variable fav
   variable place
-  if {[set isel [[$obDl2 LbxFav] curselection]] eq {}} {
-    set cont $currents
-  } else {
-    set cont [lindex $favcont $isel]
-  }
+  set cont $currents
   set found no
   set isel 0
   foreach f $favlist p $favpla c $favcont {
@@ -225,7 +221,7 @@ proc favor_ls::Change {} {
   variable favpla
   variable place
   variable fav
-  if {[set isel [Selected]] eq ""} return
+  if {[set isel [Selected]] eq {}} return
   if {[set isl1 [lsearch -exact $favlist $fav]]!=$isel} {
     alited::Message2 $al(MC,favexists) 4
     Select $isl1
@@ -341,12 +337,14 @@ proc favor_ls::_create {} {
     {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::favor_ls::Add -tip "Add a list of favorites" -image alimg_add-big -relief flat -highlightthickness 0}}
     {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Change -tip "Change a list of favorites" -image alimg_change-big -relief flat -highlightthickness 0}}
     {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Delete -tip "Delete a list of favorites" -image alimg_delete-big -relief flat -highlightthickness 0}}
+    {.fra.v_ - - - - {pack -side top -expand 1 -fill y}}
+    {.fra.buTCur - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::GetCurrentList -tip "$alited::al(MC,currfavs)" -image alimg_heart-big -relief flat -highlightthickness 0}}
     {.LbxFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 40 -lvar ::alited::favor_ls::favlist}}
     {.sbvFavs fraLbxFav.LbxFav L - - {pack -side left -fill y} {}}
     {fra1 fraLbxFav T 1 2 {-st nswe}}
     {.h_ - - 1 1 {pack -side top -expand 1 -fill both -pady 10}}
     {fra1.fraEnt - - 1 1 {pack -side top -expand 1 -fill both -pady 4}}
-    {.labFav - - 1 1 {pack -side left -padx 4} {-t "Current list of favorites:"}}
+    {.labFav - - 1 1 {pack -side left -padx 4} {-t "$alited::al(MC,currfavs):"}}
     {.EntFav - - 1 1 {pack -side left -expand 1 -fill both} {-tvar ::alited::favor_ls::fav -tip {$alited::al(MC,favent1)}}}
     {fra1.fratex - - 1 2 {pack -side bottom}}
     {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 72 -tip "Favorites of the current list" -ro 1}}

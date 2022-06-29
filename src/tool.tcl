@@ -137,9 +137,15 @@ proc tool::Loupe {} {
 }
 #_______________________
 
-proc tool::tkcon {args} {
-  # Calls Tkcon application.
-  #   args - additional arguments for tkcon
+proc tool::tkconPath {} {
+  # Gets the path to tkcon.tcl.
+
+  return [SrcPath [file join $::alited::LIBDIR util tkcon.tcl]]
+}
+#_______________________
+
+proc tool::tkconOptions {} {
+  # Gets options of tkcon.tcl.
 
   namespace upvar ::alited al al
   foreach opt [array names al tkcon,clr*] {
@@ -148,11 +154,16 @@ proc tool::tkcon {args} {
   foreach opt {rows cols fsize geo topmost} {
     lappend opts -apl-$opt $al(tkcon,$opt)
   }
-  set tkcon [SrcPath [file join $::alited::LIBDIR util tkcon.tcl]]
-  set pid [alited::Run $tkcon {*}$opts {*}$args]
-  if {[llength $args]} {
-    catch {::apave::writeTextFile [file join $al(EM,menudir) .pid~] pid}
-  }
+  return $opts
+}
+#_______________________
+
+proc tool::tkcon {args} {
+  # Calls Tkcon application.
+  #   args - additional arguments for tkcon
+
+  set pid [alited::Run [tkconPath] {*}[tkconOptions] {*}$args]
+  if {[llength $args]} {set ::alited::pID $pid}
 }
 #_______________________
 
@@ -160,6 +171,15 @@ proc tool::Help {} {
   # Calls a help on alited.
 
   _run Help
+}
+#_______________________
+
+proc tool::HelpTool {win hidx} {
+  # Handles hitting "Help" button in dialogues.
+  #   win - dialogue's window name
+  #   hidx - help's index
+
+  alited::Help $win $hidx
 }
 
 # ________________________ emenu support _________________________ #
@@ -405,10 +425,11 @@ proc tool::AfterStartDlg {} {
   # Dialogue to enter a command before running "Tools/Run"
 
   namespace upvar ::alited al al obDl2 obDl2
-  set head [msgcat::mc "\n Enter commands to be run after starting alited. They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific environment.\n"]
+  set head [msgcat::mc "\n Enter commands to be run after starting alited.\n They can be Tcl or executables.\n"]
   set run [string map [list $alited::EOL \n] $al(afterstart)]
   lassign [$obDl2 input {} $al(MC,afterstart) [list \
-    tex "{[msgcat::mc Commands:]} {} {-w 80 -h 8}" "$run" ] -head $head] res run
+    tex "{[msgcat::mc Commands:]    } {} {-w 80 -h 16 -tabnext butOK}" "$run" ] \
+      -head $head -titleHELP {Help {alited::tool::HelpTool %w 1}}] res run
   if {$res} {
     set al(afterstart) [string map [list \n $alited::EOL] [string trim $run]]
     alited::ini::SaveIni
@@ -425,17 +446,60 @@ proc tool::AfterStart {} {
 
 ## ________________________ before run _________________________ ##
 
+proc tool::TraceComForce {name1 name2 op} {
+  # Traces al(comForce) to enable/disable the text field in "Before Run" dialogue.
+
+  namespace upvar ::alited obDl2 obDl2
+  catch {
+    set txt [$obDl2 Tex]
+    if {[set $name1] eq {}} {set st normal} {set st disabled}
+    $txt configure -state $st
+    $obDl2 makePopup $txt no yes
+    set cbx [$obDl2 Cbx]
+    if {[focus] ne $cbx && $st eq {disabled}} {
+      after 300 "focus $cbx"
+    }
+  }
+  return {}
+}
+#_______________________
+
 proc tool::BeforeRunDlg {} {
   # Dialogue to enter a command before running "Tools/Run"
 
   namespace upvar ::alited al al obDl2 obDl2
-  set head [msgcat::mc "\n Enter commands to be run before running a current file with \"Tools/Run\". They can be Tcl or executables, e.g.\n   pwd\n   cd ~\n   after 1000 ::alited::raise_window\n\n It can be necessary for a specific project. Something like an initialization before \"Run\".\n"]
+  set head [msgcat::mc "\n Enter commands to be run before running a current file with \"Tools/Run\".\n They can be Tcl or executables."]
   set run [string map [list $alited::EOL \n] $al(prjbeforerun)]
+  set prompt1 [string range [msgcat::mc {Forcedly:}][string repeat { } 15] 0 15]
+  set prompt2 [string range [msgcat::mc Commands:][string repeat { } 15] 0 15]
+  if {$al(comForce) eq {}} {set al(comForce) -}
+  if {[lindex $al(comForceLs) 0] ne {-}} {
+    set al(comForceLs) [linsert $al(comForceLs) 0 -]  ;# to allow blank value
+  }
+  after idle [list after 0 " \
+    set tvar \[$obDl2 varName cbx\] ;\
+    trace add variable \$tvar write ::alited::tool::TraceComForce ;\
+    set \$tvar \[set \$tvar\]
+  "]
+  if {[ComForced]} {set foc {-focus cbx}} {set foc {}}
   lassign [$obDl2 input {} $al(MC,beforerun) [list \
-    tex "{[msgcat::mc Commands:]} {} {-w 80 -h 8}" "$run" ] -head $head] res run
+    seh1 {{} {-pady 15}} {} \
+    Tex "{$prompt2} {} {-w 80 -h 16 -tabnext cbx}" $run \
+    seh2 {{} {-pady 15}} {} \
+    lab {{} {} {-t { Or you can set "forced command" to be run by "Run" tool:}}} {} \
+    Cbx [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce)]] $al(comForceLs) \
+  ] -head $head {*}$foc -titleHELP {Help {alited::tool::HelpTool %w 2}}] res run com
   if {$res} {
+    set al(comForce) $com
+    if {[ComForced]} {
+      set i [lsearch -exact $al(comForceLs) $com]
+      set al(comForceLs) [lreplace $al(comForceLs) $i $i]
+      set al(comForceLs) [linsert $al(comForceLs) 1 $com]
+      set al(comForceLs) [lrange $al(comForceLs) 0 $al(INI,RECENTFILES)]
+    }
     set al(prjbeforerun) [string map [list \n $alited::EOL] [string trim $run]]
     alited::ini::SaveIniPrj
+    alited::main::UpdateProjectInfo
   }
 }
 #_______________________
@@ -445,6 +509,13 @@ proc tool::BeforeRun {} {
 
   namespace upvar ::alited al al
   Runs $al(MC,beforerun) $al(prjbeforerun)
+}
+#_______________________
+
+proc tool::ComForced {} {
+  # Checks whether a forced command is set.
+
+  return [expr {[string trim $::alited::al(comForce)] ni {- {}}}]
 }
 
 ## ________________________ run tcl source _________________________ ##
@@ -511,7 +582,7 @@ proc tool::RunMode {} {
 
   namespace upvar ::alited al al obDl2 obDl2
   set fname  [file tail [alited::bar::FileName]]
-  if {![alited::file::IsTcl $fname]} {
+  if {![alited::file::IsTcl $fname] || [ComForced]} {
     _run
     return
   }
@@ -534,11 +605,12 @@ proc tool::RunMode {} {
 
 ## ________________________ run/close _________________________ ##
 
-proc tool::is_submenu {opts} {
-  # Checks if e_menu's arguments are for submenu
-  #   opts - e_menu's arguments
+proc tool::is_mainmenu {menuargs} {
+  # Checks if e_menu's arguments are for the main menu (run by F4).
+  #   menuargs - e_menu's arguments
+  # The e_menu's arguments contain ex= or EX= for bar/menu tools only.
 
-  return [expr {[lsearch -glob -nocase $opts EX=*] == -1}]
+  return [expr {[lsearch -glob -nocase $menuargs EX=*] == -1}]
 }
 #_______________________
 
@@ -551,7 +623,7 @@ proc tool::e_menu {args} {
   namespace upvar ::alited al al
   if {{EX=Help} ni $args} {
     EM_SaveFiles
-    if {![is_submenu $args]} {
+    if {![is_mainmenu $args]} {
       if {[set p [string first + $al(EM,geometry)]]>-1} {
         set g [string range $al(EM,geometry) $p end]
       } else {
@@ -601,16 +673,33 @@ proc tool::e_menu2 {opts} {
   #   opts - options of e_menu
   # The e_menu is run as an internal procedure.
 
-  if {![info exists ::em::geometry]} {
-    source [file join $::e_menu_dir e_menu.tcl]
-  }
+  ::alited::source_e_menu
   ::apave::cs_Active no ;# no CS changes by e_menu
   set options [EM_Options $opts]
   ::em::main -prior 1 -modal 0 -remain 0 -noCS 1 {*}$options
-  if {[is_submenu $options]} {
+  if {[is_mainmenu $options]} {
     set alited::al(EM,geometry) $::em::geometry
   }
   ::apave::cs_Active yes
+}
+#_______________________
+
+proc tool::e_menu3 {} {
+  # Runs e_menu's main menu.
+  # Prepares TF= argument for e_menu.
+  # TF= is a temporary file that contains a text's selection.
+
+  namespace upvar ::alited al al
+  set tmpname [file join $al(EM,menudir) tmp.~~~]
+  catch {file delete $tmpname}
+  set wtxt [alited::main::CurrentWTXT]
+  if {[catch {set sel [$wtxt get sel.first sel.last]}]} {set sel {}}
+  if {[string length [string trim $sel]]<2} {
+    set tmpname [alited::bar::FileName]
+  } else {
+    ::apave::writeTextFile $tmpname sel
+  }
+  e_menu o=0 TF=$tmpname
 }
 #_______________________
 
@@ -626,14 +715,41 @@ proc tool::_run {{what ""} {runmode ""}} {
   set opts "EX=$what"
   if {$what eq {}} {
     #  it is 'Run me' e_menu item
-    set fpid [file join $al(EM,menudir) .pid~]
-    if {!$::alited::DEBUG && [file exists $fpid]} {
-      catch {
+    if {!$::alited::DEBUG} {
+      if {$al(EM,exec)} {
+        set fpid [file join $al(EM,menudir) .pid~]
         set pid [::apave::readTextFile $fpid]
-        exec kill -s SIGINT $pid
+      } else {
+        ::alited::source_e_menu ;# e_menu is "internal"
+        set pid [::em::pID]
+        ::em::pID 0
       }
+      catch {
+        if {$pid>0} {exec kill -s SIGINT $pid}
+      }
+      catch {
+        if {$::alited::pID>0} {exec kill -s SIGINT $::alited::pID}
+      }
+      set ::alited::pID 0
     }
     set opts {EX=1 PI=1}
+    if {[ComForced]} {
+      ::alited::Message "$al(MC,run): $al(comForce)" 3
+      set tc {}
+      catch {
+        if {[set fname [lindex $al(comForce) 0]] eq {%f}} {
+          set fname [alited::bar::FileName]
+        }
+        if {[alited::file::IsTcl $fname] && !$al(tkcon,topmost)} {
+          set tc \
+            "tc=[alited::Tclexe] [alited::tool::tkconPath] [alited::tool::tkconOptions]"
+        }
+      }
+      e_menu ee=[string map [list \" \\\" \\ \\\\] $al(comForce)] \
+        f=[string map [list \\ \\\\] [alited::bar::FileName]] \
+        pd=[string map [list \\ \\\\] $al(prjroot)] $tc
+      return
+    }
     BeforeRun
     if {[RunTcl $runmode]} return
   }

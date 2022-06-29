@@ -17,9 +17,7 @@ namespace eval about {
 proc about::About {} {
   # Shows "About" dialogue.
 
-  if {![info exists ::em::em_version]} {
-    source [file join $::e_menu_dir e_menu.tcl]
-  }
+  ::alited::source_e_menu
   namespace upvar ::alited al al
   variable textTags
   lassign [::apave::obj csGet] fg - bg - - bS fS
@@ -58,6 +56,8 @@ proc about::About {} {
     [list "link-baltip" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/baltip/baltip.html"] \
     [list "link-bartabs" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/bartabs"] \
     [list "link-hl_tcl" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/hl_tcl/hl_tcl.html"] \
+    [list "link-aloupe" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/aloupe/aloupe.html"] \
+    [list "link-tkcc" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/tkcc"] \
     [list "link-repl" "::apave::openDoc %t@@https://github.com/apnadkarni/tcl-repl"] \
     [list "link-tkcon" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Tkcon"] \
     [list "link_" "::apave::openDoc %t@@https://aplsimple.github.io/en/misc/links/links.html@@"] \
@@ -127,6 +127,8 @@ proc about::About {} {
     \u2022 <link-baltip>baltip $vbaltip</link-baltip>\n\n \
     \u2022 <link-bartabs>bartabs $vbartabs</link-bartabs>\n\n \
     \u2022 <link-hl_tcl>hl_tcl $vhl_tcl</link-hl_tcl>\n\n \
+    \u2022 <link-aloupe>aloupe</link-aloupe>\n\n \
+    \u2022 <link-tkcc>tkcc</link-tkcc>\n\n \
     \u2022 <link-tkcon>tkcon</link-tkcon>\n\n \
     \u2022 <link-repl>tcl-repl</link-repl>\n"
   set tab2 [list General Packages "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexPack - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutPack -tags ::alited::about::textTags}}" Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutAckn -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]

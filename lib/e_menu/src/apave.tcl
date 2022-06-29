@@ -2078,11 +2078,25 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
+  method DiaWidgetName {w} {
+    # Gets a widget name of apave dialogue.
+    #   w - name of widget
+    # The name of widget may be partial. In this case it's prepended
+    # the current dialogue's frame path.
+    # Useful in "input" dialogue when -method option is present
+    # or widget names are uppercased.
+    # See also: MakeWidgetName, input
+
+    if {[string index $w 0] eq {.}} {return $w}
+    return [set [namespace current]::_pdg(dlg)].fra.$w
+  }
+  #_______________________
+
   method MakeWidgetName {w name {an {}}} {
     # Makes an exported method named after root widget, if it's uppercased.
     #   w - name of root widget
     #   name - name of widget
-    #   an - additional prefix for name
+    #   an - additional prefix for name (if "-", $w is full/partial name)
     # The created method used for easy access to the widget's path.
     # Example:
     #   fra1.fra2.fra3.Entry1
@@ -2090,16 +2104,20 @@ oo::class create ::apave::APave {
     #   ...
     #   my Entry1  ;# instead of .win.fra1.fra2.fra3.Entry1
 
-    set wnamefull [my WidgetNameFull $w $name $an]
+    if {$an eq {-}} {
+      set wnamefull "\[my DiaWidgetName $w\]"
+    } else {
+      set wnamefull [my WidgetNameFull $w $name $an]
+      lassign [my LowercaseWidgetName $wnamefull] wnamefull
+    }
     set method [my ownWName $name]
     set root1 [string index $method 0]
     if {[string is upper $root1]} {
-      lassign [my LowercaseWidgetName $wnamefull] wnamefull
       oo::objdefine [self] " \
         method $method {} {return $wnamefull} ; \
         export $method"
     }
-    return [set ${_pav(ns)}PN::wn $wnamefull]
+    return $wnamefull  ;# first try: [set ${_pav(ns)}PN::wn $wnamefull]
   }
   #_______________________
 
@@ -2134,7 +2152,7 @@ oo::class create ::apave::APave {
     set pop $w.popupMenu
     catch {menu $pop -tearoff $tearoff}
     $pop delete 0 end
-    if {$isRO} {
+    if {$isRO || [$w cget -state] eq {disabled}} {
       $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label Copy \
             -command "event generate $w <<Copy>>"
       if {$istext} {

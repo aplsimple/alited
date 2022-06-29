@@ -740,17 +740,18 @@ oo::class create ::apave::APaveDialog {
 
 # ________________________ Query's auxiliaries _________________________ #
 
+  method varName {wname} {
+    # Gets a variable name associated with a widget's name of "input" dialogue.
+    #   wname - widget's name
+
+    return [namespace current]::var$wname
+  }
+  #_______________________
+
   method FieldName {name} {
     # Gets a field name.
 
     return fraM.fra$name.$name
-  }
-  #_______________________
-
-  method VarName {name} {
-    # Gets a variable name associated with a field name.
-
-    return [namespace current]::var$name
   }
   #_______________________
 
@@ -761,7 +762,7 @@ oo::class create ::apave::APaveDialog {
     set res [set vars [list]]
     foreach wl $lwidgets {
       set ownname [my ownWName [lindex $wl 0]]
-      set vv [my VarName $ownname]
+      set vv [my varName $ownname]
       set attrs [lindex $wl 6]
       if {[string match "ra*" $ownname]} {
         # only for widgets with a common variable (e.g. radiobuttons):
@@ -793,7 +794,7 @@ oo::class create ::apave::APaveDialog {
       set wname [lindex $widg 0]
       set name [my ownWName $wname]
       if {[string range $name 0 1] eq "te"} {
-        set vv [my VarName $name]
+        set vv [my varName $name]
         if {$oper eq "set"} {
           my displayText $w.$wname [set $vv]
         } else {
@@ -805,7 +806,7 @@ oo::class create ::apave::APaveDialog {
   }
   #_______________________
 
-  method AppendButtons {widlistName buttons neighbor pos defb timeout} {
+  method AppendButtons {widlistName buttons neighbor pos defb timeout win} {
     # Adds buttons to the widget list from a position of neighbor widget.
     #   widlistName - variable name for widget list
     #   buttons - buttons to add
@@ -813,11 +814,18 @@ oo::class create ::apave::APaveDialog {
     #   pos - position of neighbor widget
     #   defb - default button
     #   timeout  - timeout (to count down seconds and invoke a button)
+    #   win - dialogue's path
+    # Returns list of "Help" button's name and command.
 
     upvar $widlistName widlist
-    set defb1 [set defb2 {}]
+    set defb1 [set defb2 [set bhlist {}]]
     foreach {but txt res} $buttons {
-      if {$defb1 eq {}} {
+      set com "${_pdg(ns)}my res $_pdg(dlg) $res"
+      if {$but eq {butHELP}} {
+        # Help button contains the command in "res"
+        set com [string map "%w $win" $res]
+        set bhlist [list $but $com]
+      } elseif {$defb1 eq {}} {
         set defb1 $but
       } elseif {$defb2 eq {}} {
         set defb2 $but
@@ -833,14 +841,24 @@ oo::class create ::apave::APaveDialog {
       } else {
         set tmo {}
       }
-      lappend widlist [list $but $neighbor $pos 1 1 "-st we" \
-        "-t \"$txt\" -com \"${_pdg(ns)}my res $_pdg(dlg) $res\"$tt $tmo"]
-      set neighbor $but
+      if {$but eq {butHELP}} {
+        set neighbor [lindex $widlist end 1]
+        set widlist [lreplace $widlist end end]
+        lappend widlist [list $but $neighbor T 1 1 {-st w} \
+          "-t \"$txt\" -com \"$com\"$tt $tmo"]
+        set h h_Help
+        lappend widlist [list $h $but L 1 94 {-st we}]
+        set neighbor $h
+      } else {
+        lappend widlist [list $but $neighbor $pos 1 1 {-st we} \
+          "-t \"$txt\" -com \"$com\"$tt $tmo"]
+        set neighbor $but
+      }
       set pos L
     }
     lassign [my LowercaseWidgetName $_pdg(dlg).fra.$defb1] _pdg(defb1)
     lassign [my LowercaseWidgetName $_pdg(dlg).fra.$defb2] _pdg(defb2)
-    return
+    return $bhlist
   }
   #_______________________
 
@@ -1196,9 +1214,12 @@ oo::class create ::apave::APaveDialog {
       [[self] popupHighlightCommands \$pop $wt]"
     }
     # add the buttons
-    my AppendButtons widlist $buttons h__ L $defb $timeout
+    lassign [my AppendButtons widlist $buttons h__ L $defb $timeout $qdlg] bhelp bcomm
     # make the dialog's window
     set wtop [my makeWindow $qdlg.fra $ttl]
+    if {$bhelp ne {}} {
+      bind $qdlg <F1> $bcomm
+    }
     # pave the dialog's window
     if {$tab2 eq {}} {
       set widlist [my paveWindow $qdlg.fra $widlist]

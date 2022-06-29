@@ -35,6 +35,7 @@ namespace eval ::eh {
   variable reginit 1
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq \
     [file normalize [info script]]} ? 1 : 0]
+  variable pID 0
 }
 #=== own message/question box
 proc ::eh::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {

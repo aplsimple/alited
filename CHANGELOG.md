@@ -1,18 +1,30 @@
 # LAST CHANGES:
 
 
-Version `1.2.4a8 (22 Jun'22)`
+Version `1.2.4b6 (29 Jun'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
             (big-bug making alited unusable in some Magicsplat & Bawt distros)
+  - BUGFIX: Preferences/Editor: don't touch snippets' bg color at choosing colors
   - BUGFIX: update "Save all" icon at removing trail spaces
   - BUGFIX: choose e_menu items in Preferences, when set ornament (o=1) in menu.mnu
   - BUGFIX: switch projects at running alited in tkcon (skip ini::SaveCurrentIni)
-  - BUGFIX: e_menu corrected (for Windows, esp. XP), incl. test*.mnu
+  - BUGFIX: e_menu: corrected (for Windows, esp. XP), incl. test*.mnu
+  - BUGFIX: e_menu: selected text as a code snippet for "Run Tcl {all selection}" item
+  - NEW   : warning at EXEC/SHELL of e_menu
+  - NEW   : "Setup/Before Run": a command to run forcedly in console by "Run" tool
+            run by console mostly (by tkcon if the command begins with %f or file.tcl)
+  - NEW   : "Help" button / F1 in "Setup / After Start (Before Run)"
   - NEW   : between sessions, save/restore "Wrap lines" mode for files of projects
   - NEW   : Default & Test buttons in Preferences/Tools/e_menu
   - NEW   : About / Packages
   - NEW   : "Don't show anymore" checkbutton for Open... multiple files & Open all Tcl
+  - NEW   : "Setup/Favorites...": "Current favorites" button added
+  - CHANGE: "Setup/Favorites...": "Back" button: come-back to project's initial favs
+  - CHANGE: switch to Favorites at choosing "Setup/Favorites..."
+  - CHANGE: tooltip of status bar
+  - CHANGE: killing Tcl-runs corrected
+  - CHANGE: e_menu: a hot key (F4) for "Run me" item
   - CHANGE: "Lists of Favorites" dialogue's appearance
   - CHANGE: remove README of alited's own packages
   - CHANGE: check info+statusbar height: must be >50 for the layout being viable
@@ -23,7 +35,7 @@ Version `1.2.4a8 (22 Jun'22)`
   - CHANGE: Preferences/Tools/Run replaces "Tkcon topmost" ("in console" by default)
   - CHANGE: tips and docs corrected (country/language in locale)
   - CHANGE: About / Acknowledgements & docs
-  - CHANGE: apave, e_menu, bartabs packages
+  - CHANGE: apave, e_menu, bartabs, hl_tcl packages
 
 
 Version `1.2.3 (8 Jun'22)`

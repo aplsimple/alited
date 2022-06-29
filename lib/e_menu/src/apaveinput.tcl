@@ -8,7 +8,7 @@
 
 package require Tk
 
-package provide apave 3.4.15
+package provide apave 3.4.17
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -103,6 +103,11 @@ oo::class create ::apave::APaveInput {
     foreach {name prompt valopts} $iopts {
       if {$name eq ""} continue
       lassign $prompt prompt gopts attrs
+      lassign [::apave::extractOptions attrs -method {}] ismeth
+      if {[string toupper $name 0] eq $name} {
+        set ismeth yes  ;# overcomes the above setting
+        set name [string tolower $name 0]
+      }
       set gopts "$pady $gopts"
       set typ [string tolower [string range $name 0 1]]
       if {$typ eq "v_" || $typ eq "se"} {
@@ -122,8 +127,12 @@ oo::class create ::apave::APaveInput {
       } else {
         lappend inopts [list $framename - - - - "pack -fill x"]
       }
-      set vv [my VarName $name]
+      set vv [my varName $name]
       set ff [my FieldName $name]
+      if {[string is true -strict $ismeth]} {
+        # -method option forces making "WidgetName" method from "widgetName"
+        my MakeWidgetName $ff [string toupper $name 0] -
+      }
       if {$typ ne "la" && $toprev eq ""} {
         set takfoc [::apave::parseOptions $attrs -takefocus 1]
         if {$focusopt eq "" && $takfoc} {
@@ -239,31 +248,38 @@ oo::class create ::apave::APaveInput {
         }
       }
       if {$msgLab ne ""} {
-        lassign $msgLab lab msg
+        lassign $msgLab lab msg attlab
         set lab [my parentWName [lindex $inopts end 0]].$lab
-        if {$msg ne ""} {set msg "-t {$msg}"}
+        if {$msg ne {}} {set msg "-t {$msg}"}
+        append msg " $attlab"
         lappend inopts [list $lab - - - - "pack -side left -expand 1 -fill x" $msg]
       }
       if {![info exist $vv]} {set $vv ""}
       lappend _savedvv $vv [set $vv]
       set frameprev $framename
     }
-    lassign [::apave::parseOptions $args -titleOK OK -titleCANCEL Cancel \
-      -centerme ""] titleOK titleCANCEL centerme
-    if {$titleCANCEL eq ""} {
-      set butCancel ""
+    lassign [::apave::parseOptions $args -titleHELP {} -titleOK OK -titleCANCEL Cancel \
+      -centerme {}] titleHELP titleOK titleCANCEL centerme
+    if {$titleHELP eq {}} {
+      set butHelp {}
+    } else {
+      lassign $titleHELP title command
+      set butHelp [list butHELP $title $command]
+    }
+    if {$titleCANCEL eq {}} {
+      set butCancel {}
     } else {
       set butCancel "butCANCEL $titleCANCEL 0"
     }
-    if {$centerme eq ""} {
-      set centerme "-centerme 1"
+    if {$centerme eq {}} {
+      set centerme {-centerme 1}
     } else {
       set centerme "-centerme $centerme"
     }
-    set args [::apave::removeOptions $args -titleOK -titleCANCEL -centerme]
+    set args [::apave::removeOptions $args -titleHELP -titleOK -titleCANCEL -centerme]
     lappend args {*}$focusopt
     if {[catch { \
-    set res [my Query $icon $ttl {} "butOK $titleOK 1 $butCancel" butOK \
+    set res [my Query $icon $ttl {} "$butHelp butOK $titleOK 1 $butCancel" butOK \
     $inopts [my PrepArgs $args] "" {*}$centerme]} e]} {
       catch {destroy $_pdg(dlg)}  ;# Query's window
       ::apave::obj ok err "ERROR" "\n$e\n" \

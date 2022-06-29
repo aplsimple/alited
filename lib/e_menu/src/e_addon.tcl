@@ -373,13 +373,14 @@ proc ::em::about {} {
   set width [expr {max(33,[string length $::em::Argv0])}]
   set doc https://aplsimple.github.io/en/tcl/e_menu
   set dialog [::apave::APaveInput new]
-  set res [$dialog misc info {About e_menu} "
-  <red> $::em::em_version </red>
-  [file dirname $::em::Argv0] \n
-  by Alex Plotnikov
-  <linkM>aplsimple@gmail.com</linkM>
-  <link>aplsimple.github.io</link>
-  <link>chiselapp.com/user/aplsimple</link> \n" "{Help:: $doc } 1 Close 0" \
+  if {$::em::solo} {set mod solo} {set mod {}}
+  set res [$dialog misc info {About e_menu} "\n\
+    <red> $::em::em_version </red> $mod \n\n\
+    [file dirname $::em::Argv0] \n\n\
+    by Alex Plotnikov \n\n\
+    <linkM>aplsimple@gmail.com</linkM> \n\
+    <link>aplsimple.github.io</link> \n\
+    <link>chiselapp.com/user/aplsimple</link> \n\n" "{Help:: $doc } 1 Close 0" \
     0 -t 1 -w $width -scroll 0 -tags textTags -head \
     "\n Menu system for editors and file managers. \n" \
     -ontop $::em::ontop -centerme .em {*}[theming_pave]]
@@ -440,11 +441,11 @@ proc ::em::none {args} {
 #___ change a project's directory and other parameters
 proc ::em::change_PD {} {
   if {![file isfile $::em::PD]} {
-    set em_message "  WARNING:
-  \"$::em::PD\" isn't a file.
-
- \"PD=file of project directories\"
- should be an argument of e_menu to use %PD in menus.  \n"
+    set em_message " WARNING:\n\
+      \"$::em::PD\" isn't a file.\n\
+      \n\
+      \"PD=file of project directories\"\n\
+      should be an argument of e_menu to use %PD in menus. \n"
     set fco1 {}
   } else {
     set em_message "\n Select a project directory from the list of file:\n $::em::PD  \n"
@@ -466,6 +467,7 @@ proc ::em::change_PD {} {
     "\n 'Color scheme' is -1 .. [::apave::cs_Max] selected with Up/Down key.  \n"
   set sa [::apave::shadowAllowed 0]
   set ncolorsav $::em::ncolor
+  set fssav $::em::fs
   set geo [wm geometry .em]
   set ornams [list {-2 None} {-1 Top line only} { 0 Help/Exec/Shell} { 1 Help/Exec/Shell + Header} { 2 Help/Exec/Shell + Prompts} { 3 All}]
   switch -exact -- $::em::ornament {
@@ -482,7 +484,8 @@ proc ::em::change_PD {} {
       seh_1 {{} {-pady 10}} {} \
       Spx [list "    Color scheme:" {} \
         [list -tvar ::em::ncolor -from -2 -to [::apave::cs_Max] -w 5 \
-        -justify center -state $::em::noCS -msgLab {LabMsg {  Color Scheme 1}} \
+        -justify center -state $::em::noCS -msgLab {LabMsg {                     } \
+        {-padding {16 5 16 5} -font {-family {$::apave::_CS_(textFont)} -size $::em::fs}}} \
         -command ::em::change_PD_Spx -tooltip $tip1]] {} \
       chb1 {{} {-padx 5} {-toprev 1 -state $::em::noCS -t "Use it"}} {0} \
       spx2 [list "       Font size:" {} \
@@ -576,6 +579,7 @@ proc ::em::change_PD {} {
     }
   } else {
     set ::em::ncolor $ncolorsav
+    set ::em::fs $fssav
   }
   ::em::dialog destroy
   repaintForWindows
@@ -879,4 +883,4 @@ proc ::em::IF {sel {callcommName ""}} {
   return true
 }
 # *****************************   EOF   *****************************
-#RUNF1: ../../../src/alited.tcl DEBUG
+#RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

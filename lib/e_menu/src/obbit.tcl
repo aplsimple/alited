@@ -13,7 +13,8 @@ package require Tk
 
 namespace eval ::apave {
 
-  # variables global to apave objects:
+# ________________________ apave's global variables _________________________ #
+
   set ::apave::FGMAIN #000000
   set ::apave::BGMAIN #d9d9d9
   set ::apave::FONTMAIN [font actual TkDefaultFont]
@@ -27,14 +28,46 @@ namespace eval ::apave {
   set _PU_opts(_LOGFILE_) {}
   set _PU_opts(_MODALWIN_) [list]
   # - main color scheme data
-  variable _CS_
-  array set _CS_ [list]
-  # - current color scheme data
   variable _C_
   array set _C_ [list]
   # - localized messages
   variable _MC_
   array set _MC_ [list]
+  namespace eval ::tk { ; # just to get localized messages
+    foreach m {&Abort &Cancel &Copy Cu&t &Delete E&xit &Filter &Ignore &No \
+    OK Open P&aste &Quit &Retry &Save {Save As} &Yes Close {To clipboard} \
+    Zoom Size} {
+      set m2 [string map {& {}} $m]
+      set ::apave::_MC_($m2) [string map {& {}} [msgcat::mc $m]]
+    }
+  }
+
+# ________________________ CS - color schemes _________________________ #
+
+  ## ________________________ CS variables _________________________ ##
+
+  variable _CS_
+  array set _CS_ [list]
+  # - current color scheme data
+  set ::apave::_CS_(initall) 1
+  set ::apave::_CS_(initWM) 1
+  set ::apave::_CS_(isActive) 1
+  set ::apave::_CS_(!FG) #000000
+  set ::apave::_CS_(!BG) #b7b7b7 ;#a8bcd2 #c3c3c3 #9cb0c6 #4a6984
+  set ::apave::_CS_(expo,tfg1) "-"
+  set ::apave::_CS_(defFont) [font actual TkDefaultFont -family]
+  set ::apave::_CS_(textFont) [font actual TkFixedFont -family]
+  set ::apave::_CS_(smallFont) [font actual TkSmallCaptionFont]
+  set ::apave::_CS_(fs) [font actual TkDefaultFont -size]
+  set ::apave::_CS_(untouch) [list]
+  set ::apave::_CS_(NONCS) -2
+  set ::apave::_CS_(MINCS) -1
+  set ::apave::_CS_(old) -3
+  set ::apave::_CS_(TONED) [list -2 no]
+  set ::apave::_CS_(LABELBORDER) 0
+  set ::apave::_CS_(CURSORWIDTH) 2
+
+  ## ________________________ CS list _________________________ ##
 
 # Colors for <MildDark CS> : 1) meanings 2) code names
 
@@ -91,9 +124,9 @@ namespace eval ::apave {
 
 {{22: Notebook3}      "#000000" #000000 #c2baa1 #a6a08c #793333 #cb9365 #000 #682800 #505050 #973d20 #000 #d59d6f - #b3ad99 #000 #eded89 #b2aa91 #7b1010 #76b2f1 #005 #006 #007}
 
-{{23: Darcula}        "#ececec" #c7c7c7 #272727 #323232 #93baf6 #2F5692 #e1e1e1 #f4f49f grey #769dd9 #fff #2c538f - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
+{{23: Dusk}           "#ececec" #ececec #1a1f21 #262b2d #9fc99f #217346 #FFF #f4f49f #585d5f #99c399 #fff #225c3b - #363b3d #000 #9d9d60 #23282a #ffc341 #99dd99 #005 #006 #007}
 
-{{24: Dusk}           "#ececec" #ececec #1a1f21 #262b2d #9fc99f #217346 #FFF #f4f49f #585d5f #99c399 #fff #225c3b - #363b3d #000 #9d9d60 #23282a #ffc341 #99dd99 #005 #006 #007}
+{{24: SunValleyDeep} "#dfdfdf" #dddddd #131313 #252525 #83cee9 #2a627f #FFF #f4f49f #6f6f6f #63a1c3 #fff #18506d - #323232 #000 #9d9d60 #2a2a2a #efaf6f #4273eb #005 #006 #007}
 
 {{25: AwDark}         "#F0E8E8" #E7E7E7 #1f2223 #232829 #77b3f2 #215d9c #fff #f4f49f grey #5793d2 #fff #0d4988 - #313637 #000 #9d9d60 #292e2f #ffc341 #76b2f1 #005 #006 #007}
 
@@ -101,7 +134,7 @@ namespace eval ::apave {
 
 {{27: ForestDark}     "#ececec" #c7c7c7 #272727 #393939 #a3cda3 #217346 #FFF #42ff42 grey #84ae84 #fff #247649 - #4a4a4a #000 #aaaa6d #383838 #efaf6f #99dd99 #005 #006 #007}
 
-{{28: SunValleyDark}  "#dfdfdf" #dddddd #131313 #252525 #83cee9 #2a627f #FFF #f4f49f #6f6f6f #63a1c3 #fff #18506d - #323232 #000 #9d9d60 #2a2a2a #efaf6f #4273eb #005 #006 #007}
+{{28: SunValleyDark} "#ececec" #c7c7c7 #272727 #323232 #93baf6 #2F5692 #e1e1e1 #f4f49f grey #769dd9 #fff #2c538f - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
 
 {{29: Dark1}          "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #ba8d4d #000 #767676 - #363636 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
 
@@ -141,32 +174,9 @@ namespace eval ::apave {
 
 {{47: Desert}         "#ffffff" #ffffff #47382d #5a4b40 #ffbb6d #85766b #fff #f4f49f #a2a2a2 #d4975c #fff #7f7065 - #695a4f #000 #aaaa6d #503f34 #ffc341 #ead79b #005 #006 #007}
 }
-  set ::apave::_CS_(initall) 1
-  set ::apave::_CS_(initWM) 1
-  set ::apave::_CS_(isActive) 1
-  set ::apave::_CS_(!FG) #000000
-  set ::apave::_CS_(!BG) #b7b7b7 ;#a8bcd2 #c3c3c3 #9cb0c6 #4a6984
-  set ::apave::_CS_(expo,tfg1) "-"
-  set ::apave::_CS_(defFont) [font actual TkDefaultFont -family]
-  set ::apave::_CS_(textFont) [font actual TkFixedFont -family]
-  set ::apave::_CS_(smallFont) [font actual TkSmallCaptionFont]
-  set ::apave::_CS_(fs) [font actual TkDefaultFont -size]
-  set ::apave::_CS_(untouch) [list]
+
   set ::apave::_CS_(STDCS) [expr {[llength $::apave::_CS_(ALL)] - 1}]
-  set ::apave::_CS_(NONCS) -2
-  set ::apave::_CS_(MINCS) -1
-  set ::apave::_CS_(old) -3
-  set ::apave::_CS_(TONED) [list -2 no]
-  set ::apave::_CS_(LABELBORDER) 0
-  set ::apave::_CS_(CURSORWIDTH) 2
-  namespace eval ::tk { ; # just to get localized messages
-    foreach m {&Abort &Cancel &Copy Cu&t &Delete E&xit &Filter &Ignore &No \
-    OK Open P&aste &Quit &Retry &Save "Save As" &Yes Close "To clipboard" \
-    Zoom Size} {
-      set m2 [string map {"&" ""} $m]
-      set ::apave::_MC_($m2) [string map {"&" ""} [msgcat::mc $m]]
-    }
-  }
+
 }
 
 # _____________________________ Common procs ________________________________ #

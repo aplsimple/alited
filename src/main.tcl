@@ -579,7 +579,13 @@ proc main::UpdateProjectInfo {{indent {}}} {
   namespace upvar ::alited al al obPav obPav
   if {$al(prjroot) ne {}} {set stsw normal} {set stsw disabled}
   [$obPav BuTswitch] configure -state $stsw
-  if {$al(tkcon,topmost)} {set run cons} {set run tkcon}
+  if {[alited::tool::ComForced]} {
+    set run force
+  } elseif {$al(tkcon,topmost)} {
+    set run cons
+  } else {
+    set run tkcon
+  }
   if {[set eol $al(prjEOL)] eq {}} {set eol auto}
   if {$indent eq {}} {set indent [lindex [CalcIndentation] 0]}
   set info "$run, eol=$eol, ind=$indent"
@@ -594,7 +600,8 @@ proc main::TipStatus {} {
   namespace upvar ::alited al al obPav obPav
   set tip [[$obPav Labstat4] cget -text]
   set tip [string map [list \
-    cons "$al(MC,run): $al(MC,inconsole)" \
+    force "$al(MC,run): [msgcat::mc Setup] / $al(MC,beforerun)" \
+    cons  "$al(MC,run): $al(MC,inconsole)" \
     tkcon "$al(MC,run): $al(MC,intkcon)" \
     eol= "$al(MC,EOL:) " \
     ind= "$al(MC,indent:) " \

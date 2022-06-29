@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.40
+package provide hl_tcl 0.9.41
 
 # ______________________ Common data ____________________ #
 
@@ -88,8 +88,8 @@ namespace eval ::hl_tcl {
       {orange #ff7e00 lightgreen #f1b479 #76a396 #fe6efe #b9b96e #ff33ff}
     }
     set data(SYNTAXCOLORS,1) {
-      {#3a6797 #134070 #7d1a1a #1b1baa #4b5d50 #ca14ca #6c3e67 #FF0000}
-      {#95c2f2 #73a0d0 #caca3f #a9a9f7 #76a396 #fe6efe #e2b4dd #ff33ff}
+      {#3a6797 #134070 #923B23 #1b1baa #4b5d50 #ca14ca #6c3e67 #FF0000}
+      {#95c2f2 #73a0d0 #d6b683 #a9a9f7 #76a396 #fe6efe #e2b4dd #ff33ff}
     }
     set data(SYNTAXCOLORS,2) {
       {#2b6b2b #0b4b0b #bd00bd #004080 #606060 #8a3407 #463e11 #FF0000}

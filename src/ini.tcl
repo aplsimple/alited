@@ -169,6 +169,10 @@ namespace eval ::alited {
 
   # index of syntax colors
   set al(syntaxidx) 0
+
+  # preferrable command to run
+  set al(comForce) {}
+  set al(comForceLs) {}
 }
 
 # ________________________ Variables _________________________ #
@@ -466,6 +470,7 @@ proc ini::ReadIniPrj {} {
   set al(tabs) [list]
   set al(curtab) 0
   set al(_check_menu_state_) 1
+  set al(comForce) [set al(comForceLs) {}]
   alited::favor_ls::GetIni {}  ;# initializes favorites' lists
   if {![file exists $al(prjfile)]} {
     set al(prjfile) [file join $alited::PRJDIR default.ale]
@@ -568,6 +573,8 @@ proc ini::ReadPrjMisc {nam val} {
         set ::alited::find::data(vals2) $data(vals2)
       }
     }
+    comforce {set al(comForce) $val}
+    comforcels {set al(comForceLs) $val}
   }
 }
 
@@ -805,6 +812,8 @@ proc ini::SaveIniPrj {{newproject no}} {
     puts $chan {}
     puts $chan {[Misc]}
     puts $chan "datafind=[array get ::alited::find::data]"
+    puts $chan "comforce=$al(comForce)"
+    puts $chan "comforcels=$al(comForceLs)"
   }
   close $chan
 }

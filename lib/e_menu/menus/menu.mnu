@@ -2,7 +2,7 @@
 in=1.0
 bd=1
 w=25
-pos=8.183
+pos=57.47
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENU_FOSGIT]} {set ::EMENU_FOSGIT Fossil}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE [set ::EMENURUNFILE "%f"] ; if {[::iswindows]} {set ::EMENURUNFILE [string map [list \\ \\\\] "%f"]; set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
@@ -18,17 +18,17 @@ pos=8.183
  # menu for e_menu.tcl
 
  M:  M: 3
- RE: Run me (+ selection) RE: cd %d
-  R: Run me (+ selection) R: %C set ::_EM_AR_ [string map {\\$ \$} {%AR}]
-  R: Run me (+ selection) R: %C set ::_EM_RF_ [string map {\\$ \$} {%RF}]
-  R: Run me (+ selection) R: %C set ::_EM_EE_ [string map {\\$ \$} {%EE}]
- SE: Run me (+ selection) SE: %IF {%EE}!="" %THEN $::_EM_EE_
- RE: Run me (+ selection) RE: %IF "%x"==".tcl" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
- RE: Run me (+ selection) RE: %IF "%x"==".tcl" %THEN %T tclsh "$::EMENURUNFILE" $::_EM_AR_
- RE: Run me (+ selection) RE: %IF "%x"==".py"  %THEN %t python3 "$::EMENURUNFILE" %AR
- SE: Run me (+ selection) SE: %IF {%RF}!="" %THEN %RF
- RE: Run me (+ selection) RE: %IF {%AR}=="" && ![::iswindows] %THEN %O "$::EMENURUNFILE"
- RE: Run me (+ selection) RE: "$::EMENURUNFILE" %AR
+ RE: F4 Run me {+selection} RE: cd %d
+  R: F4 Run me {+selection} R: %C set ::_EM_AR_ [string map {\\$ \$} {%AR}]
+  R: F4 Run me {+selection} R: %C set ::_EM_RF_ [string map {\\$ \$} {%RF}]
+  R: F4 Run me {+selection} R: %C set ::_EM_EE_ [string map {\\$ \$} {%EE}]
+ SE: F4 Run me {+selection} SE: %IF {%EE}!="" %THEN $::_EM_EE_
+ RE: F4 Run me {+selection} RE: %IF "%x"==".tcl" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
+ RE: F4 Run me {+selection} RE: %IF "%x"==".tcl" %THEN %T tclsh "$::EMENURUNFILE" $::_EM_AR_
+ RE: F4 Run me {+selection} RE: %IF "%x"==".py"  %THEN %t python3 "$::EMENURUNFILE" %AR
+ SE: F4 Run me {+selection} SE: %IF {%RF}!="" %THEN %RF
+ RE: F4 Run me {+selection} RE: %IF {%AR}=="" && ![::iswindows] %THEN %O "$::EMENURUNFILE"
+ RE: F4 Run me {+selection} RE: "$::EMENURUNFILE" %AR
 
  S: Run Tcl {all selection} S: cd %d
  S: Run Tcl {all selection} S: tclsh %m/src/ch_.tcl "%TF"
@@ -53,7 +53,7 @@ pos=8.183
  RE: GoldenDict for "%s" RE: goldendict "%s"
 
  M:  M: 3
- ME: Search All "%s" in %D  ME: m=grep.mnu
+ ME: Search All "%s" in %D  ME: m=grep.mnu o=-1
 
 
  R: Backup of $::FILETAIL R: %C set ::EMENUBAKCNT [expr {($::EMENUBAKCNT+1)%4}]

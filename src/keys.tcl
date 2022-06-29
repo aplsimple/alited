@@ -178,7 +178,7 @@ proc keys::ReservedAdd {wtxt} {
   # other keys are customized in Preferences
   Add action save-file    [alited::pref::BindKey 0 - F2] {::alited::file::SaveFile}
   Add action save-as      [alited::pref::BindKey 1 - Control-S] {::alited::file::SaveFileAs; break}
-  Add action e_menu       [alited::pref::BindKey 2 - F4] {alited::tool::e_menu o=0}
+  Add action e_menu       [alited::pref::BindKey 2 - F4] {alited::tool::e_menu3}
   Add action run          [alited::pref::BindKey 3 - F5] {alited::tool::RunMode}
   Add action indent       [alited::pref::BindKey 6 - Control-I] {::alited::edit::Indent; break}
   Add action unindent     [alited::pref::BindKey 7 - Control-U] {::alited::edit::UnIndent; break}

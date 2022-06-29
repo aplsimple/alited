@@ -1457,9 +1457,7 @@ proc pref::PickMenuItem {it} {
   #   it - index of "bar/menu" item
 
   fetchVars
-  if {![info exists ::em::geometry]} {
-    source [file join $::e_menu_dir e_menu.tcl]
-  }
+  ::alited::source_e_menu
   set w [$obDl2 ButMnu$it]
   set X [winfo rootx $w]
   set Y [winfo rooty $w]
@@ -1564,6 +1562,7 @@ proc pref::_create {tab} {
   }
   bind $win <Control-o> alited::ini::EditSettings
   bind $win <F1> "[$obDl2 ButHelp] invoke"
+  $obDl2 untouchWidgets *.texSample *.texCSample
   set res [$obDl2 showModal $win -geometry $geo -minsize {800 600} \
     -onclose ::alited::pref::Cancel]
   set fcont [$wtxt get 1.0 {end -1c}]

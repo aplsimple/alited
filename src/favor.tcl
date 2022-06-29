@@ -239,10 +239,21 @@ proc favor::SetFavorites {cont} {
 }
 #_______________________
 
+proc favor::InitFavs {} {
+  # Initializes favorites list for possible "Back" of "Favorites' Lists".
+  # See also: favor_ls::_create, project::Ok
+
+  variable initialFavs
+  set initialFavs [list]
+}
+#_______________________
+
 proc favor::Lists {} {
   # Runs "Lists of Favorites" dialogue, sets a list of favorites at a choice.
 
+  namespace upvar ::alited al al
   variable initialFavs
+  if {!$al(FAV,IsFavor)} SwitchFavVisit
   if {![llength $initialFavs]} {
     set initialFavs [alited::tree::GetTree {} TreeFavor]
   }
