@@ -160,7 +160,7 @@ namespace eval ::apave {
 
 {{40: Inkpot}         "#d3d3ff" #AFC2FF #16161f #1E1E27 #e39f51 #525293 #fff #f4f49f #6e6e6e #b57535 #fff #4d4d8e - #292936 #000 #9d9d60 #202029 #e7b070 #7a7abb #005 #006 #007}
 
-{{41: Quiverly}       "#cdd8d8" #cdd8d8 #2b303b #333946 #eda95b #6f7582 #fff #f4f49f #757575 #cd8d4d #000 #9197a4 - #414650 #000 #aaaa6d #323742 #ffc341 #76b2f1 #005 #006 #007}
+{{41: Quiverly}       "#cdd8d8" #cdd8d8 #2b303b #333946 #69daff #2a627f #fff #f4f49f #757575 #46b7ee #fff #306885 - #414650 #000 #aaaa6d #323742 #ffc341 #76b2f1 #005 #006 #007}
 
 {{42: Monokai}        "#f8f8f2" #f8f8f2 #353630 #4e5044 #ffbb6d #707070 #fff #f4f49f #9a9a9a #db9e63 #000 #777777 - #46473d #000 #b7b77a #3c3d37 #ffc888 #cd994b #005 #006 #007}
 
@@ -1913,7 +1913,7 @@ oo::class create ::apave::ObjectTheming {
       set ::apave::_C_($ts,2) "-background $tbg2"
       set ::apave::_C_($ts,3) "-highlightbackground $tfgD"
       switch -exact -- $ts {
-        tcombobox - tmatchbox {
+        tcombobox - listbox - tmatchbox {
           set ::apave::_C_($ts,0) 8
           set ::apave::_C_($ts,4) "-disabledforeground $tfgD"
           set ::apave::_C_($ts,5) "-disabledbackground $tbgD"
@@ -1936,7 +1936,7 @@ oo::class create ::apave::ObjectTheming {
           set ::apave::_C_($ts,10) "-insertwidth $::apave::_CS_(CURSORWIDTH)"
           set ::apave::_C_($ts,11) "-insertbackground $tcur"
         }
-        spinbox - tspinbox - listbox - tablelist {
+        spinbox - tspinbox - tablelist {
           set ::apave::_C_($ts,0) 12
           set ::apave::_C_($ts,4) "-insertbackground $tcur"
           set ::apave::_C_($ts,5) "-buttonbackground $tbg2"
@@ -2034,8 +2034,10 @@ oo::class create ::apave::ObjectTheming {
     set lwid [winfo children $win]
     lappend lwid {*}$addwid
     foreach w1 $lwid {
-      my themeNonThemed $w1
       set ts [string tolower [winfo class $w1]]
+      if {$ts ni {tcombobox tlabel tscrollbar tcheckbutton tradiobutton}} {
+        my themeNonThemed $w1
+      }
       set tch 1
       foreach u $::apave::_CS_(untouch) {
         if {[string match $u $w1]} {set tch 0; break}
@@ -2303,4 +2305,4 @@ oo::class create ::apave::ObjectTheming {
 #%   DOCTEST   SOURCE  ~/PG/github/pave/tests/obbit_1.test
 #RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #-RUNF1: ./tests/test2_pave.tcl
-#RUNF1: ./tests/test2_pave.tcl 10 10 12 "small icons"
+#RUNF1: ./tests/test2_pave.tcl alt 41 9 12 "small icons"

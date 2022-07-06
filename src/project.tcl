@@ -868,7 +868,6 @@ proc project::Ok {args} {
     alited::ini::GetUserDirs
     alited::file::MakeThemHighlighted
     alited::favor::ShowFavVisit
-    alited::favor::InitFavs
     [$obPav Tree] selection set {}  ;# new project - no group selected
     update
   }

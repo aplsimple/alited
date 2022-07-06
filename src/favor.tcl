@@ -239,12 +239,13 @@ proc favor::SetFavorites {cont} {
 }
 #_______________________
 
-proc favor::InitFavs {} {
+proc favor::InitFavorites {favs} {
   # Initializes favorites list for possible "Back" of "Favorites' Lists".
-  # See also: favor_ls::_create, project::Ok
+  #   favs - initial list of project's favorites
+  # See also: ini::ReadIniPrj
 
   variable initialFavs
-  set initialFavs [list]
+  set initialFavs $favs
 }
 #_______________________
 
@@ -315,6 +316,15 @@ proc favor::SwitchFavVisit {} {
 
 # ________________________ Changing lists ________________________ #
 
+proc favor::GeoForQuery {undermouse} {
+  # Gets geometry for a query.
+  #   undermouse - if yes, run by mouse click
+
+  if {$undermouse} {set y -100} {set y -150}  ;# y is a shift for Y axis
+  return "-geometry pointer+10+$y"
+}
+#_______________________
+
 proc favor::Add {{undermouse yes} {idnames {}}} {
   # Adds a unit to favorites.
   #   undermouse - if yes, run by mouse click
@@ -323,7 +333,7 @@ proc favor::Add {{undermouse yes} {idnames {}}} {
   namespace upvar ::alited al al obPav obPav
   set fname [alited::bar::FileName]
   set sname [file tail $fname]
-  if {$undermouse} {set geo {-geometry pointer+10+-100}} {set geo {}}
+  set geo [GeoForQuery $undermouse]
   set idnlen [llength $idnames]
   if {$idnlen==0} {
     lassign [CurrentName] itemID name l1 l2
@@ -412,7 +422,7 @@ proc favor::Delete {{undermouse yes}} {
     return
   }
   set msg [string map [list %n $name %f $sname] $al(MC,delfavor)]
-  if {$undermouse} {set geo {-geometry pointer+10+-100}} {set geo {}}
+  set geo [GeoForQuery $undermouse]
   if {!$al(FAV,IsFavor) || [alited::msg yesno warn $msg NO {*}$geo]} {
     [$obPav TreeFavor] delete $favID
     if {!$al(FAV,IsFavor)} {
@@ -428,7 +438,7 @@ proc favor::DeleteAll {{undermouse yes}} {
   #   undermouse - if yes, run by mouse click
 
   namespace upvar ::alited al al obPav obPav
-  if {$undermouse} {set geo {-geometry pointer+10+-100}} {set geo {}}
+  set geo [GeoForQuery $undermouse]
   if {$al(FAV,IsFavor)} {
     set msg {Remove all of Favorites?}
     set listvar al(FAV,current)

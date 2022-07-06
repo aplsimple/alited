@@ -1,19 +1,31 @@
-# sframe.tcl
-# Paul Walton
-# Create a ttk-compatible, scrollable frame widget.
-#   Usage:
-#       sframe new <path> ?-toplevel true?  ?-anchor nsew? ?-mode x|y|xy|both?
+#############################################################################
+# Name:    sframe.tcl
+# Authors: main code by Paul Walton, portions by Alex Plotnikov
+# Date:    07/04/2022
+# Brief:   Handles a ttk-compatible, scrollable frame widget.
+# License: Tcl/Tk.
+# 
+# Usage:
+#     sframe new <path> ?-toplevel true?  ?-anchor nsew? ?-mode x|y|xy|both?
 #       -> <path>
 #
-#       sframe content <path>
+#     sframe content <path>
 #       -> <path of child frame where the content should go>
+#############################################################################
+
+# ________________________ sframe NS _________________________ #
 
 namespace eval sframe {
   namespace ensemble create
   namespace export *
 
-  # Create a scrollable frame or window.
+  ## ________________________ sframe::procedures _________________________ ##
+
   proc new {path args} {
+    # Creates a scrollable frame or window.
+    #   path - path to the frame/window
+    #   args - options
+
     # Use the ttk theme's background for the canvas and toplevel
     set bg [ttk::style lookup TFrame -background]
     if { [ttk::style theme use] eq "aqua" } {
@@ -82,29 +94,35 @@ namespace eval sframe {
     catch {
       if {$::tcl_platform(platform) eq {unix}} {
         ::apave::bindToEvent $w <Button-4> \
-          event generate $w <MouseWheel> -delta 1
+          [namespace current]::wheelDelta $w <MouseWheel> 1
         ::apave::bindToEvent $w <Button-5> \
-          event generate $w <MouseWheel> -delta -1
+          [namespace current]::wheelDelta $w <MouseWheel> -1
         ::apave::bindToEvent $w <Shift-Button-4> \
-          event generate $w <Shift-MouseWheel> -delta 1
+          [namespace current]::wheelDelta $w <Shift-MouseWheel> 1
         ::apave::bindToEvent $w <Shift-Button-5> \
-          event generate $w <Shift-MouseWheel> -delta -1
+          [namespace current]::wheelDelta $w <Shift-MouseWheel> -1
       }
     }
-    ::apave::bindToEvent $w <MouseWheel> [namespace current] scroll $path yview %D
-    ::apave::bindToEvent $w <Shift-MouseWheel> [namespace current] scroll $path xview %D
+    ::apave::bindToEvent $w <MouseWheel> \
+      [namespace current]::wheelScroll $w [namespace current] scroll $path yview %D
+    ::apave::bindToEvent $w <Shift-MouseWheel> \
+      [namespace current]::wheelScroll $w [namespace current] scroll $path xview %D
     return $path
   }
+  #_______________________
 
-
-  # Given the toplevel path of an sframe widget, return the path of the child frame suitable for content.
   proc content {path} {
+    # Gets the path of the child frame suitable for content.
+    #   path - path to the scrollable window/frame
+
     return $path.canvas.container.content
   }
+  #_______________________
 
-
-  # Make adjustments when the the sframe is resized or the contents change size.
   proc resize {path} {
+    # Makes adjustments when the the sframe is resized or the contents change size.
+    #   path - path to the scrollable window/frame
+
     set canvas    $path.canvas
     set container $canvas.container
     set content   $container.content
@@ -145,15 +163,73 @@ namespace eval sframe {
     }
     return
   }
+  #_______________________
 
-  # Handle mousewheel scrolling.
   proc scroll {path view D} {
+    # Handles mousewheel scrolling.
+    #   path - path to the scrollable window/frame
+    #   view - xview or yview
+    #   D - scrolling units
+
     if { [winfo exists $path.canvas] } {
       $path.canvas $view scroll [expr {-$D}] units
     }
     return
   }
+  #_______________________
+
+  proc checkScroll {w} {
+    # Checks whether the scrolling is possible.
+    #   w - window
+
+    set res yes
+    catch {
+      lassign [winfo pointerxy $w] rootX rootY
+      if {[set win [winfo containing $rootX $rootY]] eq {}} {
+        set win [focus]
+      }
+      if {[winfo exists $win]} {
+        set ts [string tolower [winfo class $win]]
+      } else {
+        set ts -
+      }
+      if {$ts in {tablelist text listbox treeview}} {
+        set res no
+      }
+    }
+    return $res
+  }
+  #_______________________
+
+  proc wheelScroll {w args} {
+    # Scrolls a window.
+    #   w - window
+
+    catch {
+      if {[checkScroll $w]} {
+        {*}$args
+      }
+    }
+  }
+  #_______________________
+
+  proc wheelDelta {w ev delval} {
+    # Generate mouse wheel events with deltas (for Linux).
+    #   w - window
+    #   ev - event
+    #   delval - delta
+
+    catch {
+      if {[checkScroll $w]} {
+        event generate $w $ev -delta $delval
+      }
+    }
+  }
+
+  ## ________________________ EONS sframe _________________________ ##
+
 }
+
 # _____________________________ EOF _____________________________________ #
+#RUNF1: C:/PG/github/pave/tests/test2_pave.tcl alt 0 9 12 "small icons"
 #RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 0 9 12 "middle icons"

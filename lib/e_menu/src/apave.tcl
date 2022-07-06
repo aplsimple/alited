@@ -1252,6 +1252,40 @@ oo::class create ::apave::APave {
     }
     return $opts
   }
+  #_______________________
+
+  method menuTips {win tip {wpar {}}} {
+    # Makes tip(s) for menu and its items.
+    #   win - menu's path
+    #   tip - tip's text
+    #   wpar - path to menu's parent (for opc widget)
+    # The tips for menu items are set by "-indexedtips ?idx tip...?"
+    # e.g., a tip can be "parent tip -indexedtips 0 1stItem 9 {10th Item}"
+
+    if {$tip ne {}} {
+      set tip [my MC $tip]
+      if {[set i [string first {-indexedtips } $tip]]>-1} {
+        set indexedtips [string range $tip [string first { } $tip $i]+1 end]
+        set tip [string range $tip 0 $i-1]
+      } else {
+        set indexedtips {}
+      }
+      # \indexedtips to present -indexedtips in parent tip
+      set tip [string map "\\indexedtips -indexedtips" $tip]
+      catch {
+        # tips for indexed items of menu
+        while {$indexedtips ne {}} {
+          lassign $indexedtips idx itip
+          if {$idx eq {}} break
+          after idle [list ::baltip tip $win $itip -index $idx]
+          set indexedtips [lrange $indexedtips 2 end]
+        }
+      }
+      if {$tip ne {} && $wpar ne {}} {
+        after idle [list ::baltip tip $wpar $tip]  ;# tip for the parent widget
+      }
+    }
+  }
 
   ## ________________________ Option cascade _________________________ ##
 
@@ -1288,6 +1322,7 @@ oo::class create ::apave::APave {
     #   optionCascadeText
     #   [wiki.tcl-lang.org](https://wiki.tcl-lang.org/page/tk_optionCascade)
 
+    set win $w.m
     if {![info exists $vname]} {
       set it [lindex $items 0]
       while {[llength $it]>1} {set it [lindex $it 0]}
@@ -1299,18 +1334,15 @@ oo::class create ::apave::APave {
     if {$tip eq {}} {set tip $tip2}
     if {$com eq {}} {set com $com2}
     if {$com ne {}} {lappend args -command $com}
-    ttk::menubutton $w -menu $w.m -text [set $vname] -style TMenuButtonWest {*}$mbopts
-    if {$tip ne {}} {
-      set tip [my MC $tip]
-      ::baltip tip $w $tip
-    }
-    menu $w.m -tearoff 0
-    my OptionCascade_add $w.m $vname $items $precom {*}$args
+    ttk::menubutton $w -menu $win -text [set $vname] -style TMenuButtonWest {*}$mbopts
+    menu $win -tearoff 0
+    my menuTips $win $tip $w
+    my OptionCascade_add $win $vname $items $precom {*}$args
     trace var $vname w \
       "$w config -text \"\[[self] optionCascadeText \${$vname}\]\" ;\#"
     lappend ::apave::_AP_VARS(_TRACED_$w) $vname
     ::apave::bindToEvent $w <ButtonPress> focus $w
-    return $w.m
+    return $win
   }
   #_______________________
 
@@ -1494,7 +1526,7 @@ oo::class create ::apave::APave {
     }
     set widname {}
     set choosname $nchooser
-    if {$choosname in {"fontChooser" "colorChooser" "dateChooser"}} {
+    if {$choosname in {fontChooser colorChooser dateChooser}} {
       set nchooser "my $choosname $tvar"
     } elseif {$choosname in {tk_getOpenFile tk_getSaveFile}} {
       set vargeo $filvar
@@ -2075,6 +2107,13 @@ oo::class create ::apave::APave {
       append wnamefull canvas.container.content $wend
     }
     return $wnamefull
+  }
+  #_______________________
+
+  method dlgPath {} {
+    # Gets a window name of apavedialogue dialogue.
+
+    return [set [namespace current]::_pdg(dlg)]
   }
   #_______________________
 
@@ -3139,8 +3178,7 @@ oo::class create ::apave::APave {
           set $ao [set ${ao}1]
         }
       }
-      lassign [my widgetType $wname $options $attrs] \
-        widget options attrs nam3 dsbl
+      lassign [my widgetType $wname $options $attrs] widget options attrs nam3 dsbl
       # The type of widget (if defined) means its creation
       # (if not defined, it was created after "makewindow" call
       # and before "window" call)
@@ -3424,7 +3462,7 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
-  method res {win {result get}} {
+  method res {{win {}} {result get}} {
     # Gets/sets a variable for *vwait* command.
     #   win - window's path
     #   result - value of variable
@@ -3440,6 +3478,7 @@ oo::class create ::apave::APave {
     #
     # Returns a value of variable that controls an event cycle.
 
+    if {$win eq {}} {set win [my dlgPath]}
     if {$result eq {get}} {
       return [set ${_pav(ns)}PN::AR($win)]
     }

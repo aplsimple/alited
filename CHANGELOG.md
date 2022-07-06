@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.4b6 (29 Jun'22)`
+Version `1.2.4b11 (5 Jul'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
             (big-bug making alited unusable in some Magicsplat & Bawt distros)
@@ -11,16 +11,24 @@ Version `1.2.4b6 (29 Jun'22)`
   - BUGFIX: switch projects at running alited in tkcon (skip ini::SaveCurrentIni)
   - BUGFIX: e_menu: corrected (for Windows, esp. XP), incl. test*.mnu
   - BUGFIX: e_menu: selected text as a code snippet for "Run Tcl {all selection}" item
+  - BUGFIX: check for file modifications when "internal" e_menu opens a submenu
+  - BUGFIX: check for existing menu of "internal" e_menu at running tools
+  - NEW   : "Setup/Before Run": a "forced command" to run by "Run" tool
+            in console (or in Tkcon if the command begins with %f or file.tcl)
+  - NEW   : tag the unit tree items with red color for TODO comments (#!...todo...),
+            these TODOs being in tooltips of the tree
+  - NEW   : tooltips for statusbar message; Preferences themes/CS; rename-file button
   - NEW   : warning at EXEC/SHELL of e_menu
-  - NEW   : "Setup/Before Run": a command to run forcedly in console by "Run" tool
-            run by console mostly (by tkcon if the command begins with %f or file.tcl)
   - NEW   : "Help" button / F1 in "Setup / After Start (Before Run)"
   - NEW   : between sessions, save/restore "Wrap lines" mode for files of projects
   - NEW   : Default & Test buttons in Preferences/Tools/e_menu
   - NEW   : About / Packages
   - NEW   : "Don't show anymore" checkbutton for Open... multiple files & Open all Tcl
   - NEW   : "Setup/Favorites...": "Current favorites" button added
+  - CHANGE: font size in "external" e_menu is "middle" of Preferences/General
+  - CHANGE: save geometry of main menu of "internal" e_menu, ignoring other menus
   - CHANGE: "Setup/Favorites...": "Back" button: come-back to project's initial favs
+  - CHANGE: queries for Favorites/LastVisits popup menu items be close to mouse pointer
   - CHANGE: switch to Favorites at choosing "Setup/Favorites..."
   - CHANGE: tooltip of status bar
   - CHANGE: killing Tcl-runs corrected
@@ -35,7 +43,7 @@ Version `1.2.4b6 (29 Jun'22)`
   - CHANGE: Preferences/Tools/Run replaces "Tkcon topmost" ("in console" by default)
   - CHANGE: tips and docs corrected (country/language in locale)
   - CHANGE: About / Acknowledgements & docs
-  - CHANGE: apave, e_menu, bartabs, hl_tcl packages
+  - CHANGE: packages: apave/e_menu 3.5, bartabs 1.5.7, hl_tcl 0.9.41
 
 
 Version `1.2.3 (8 Jun'22)`

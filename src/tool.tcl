@@ -446,50 +446,98 @@ proc tool::AfterStart {} {
 
 ## ________________________ before run _________________________ ##
 
-proc tool::TraceComForce {name1 name2 op} {
-  # Traces al(comForce) to enable/disable the text field in "Before Run" dialogue.
+#! let this commented stuff be a code snippet for tracing apave variables, huh:
+#proc tool::TraceComForce {name1 name2 op} {
+#  # Traces al(comForce) to enable/disable the text field in "Before Run" dialogue.
+#
+#  namespace upvar ::alited obDl2 obDl2
+#  catch {
+#    set txt [$obDl2 Tex]
+#    if {[set $name1] eq {}} {set st normal} {set st disabled}
+#    $txt configure -state $st
+#    $obDl2 makePopup $txt no yes
+#    set cbx [$obDl2 Cbx]
+#    if {[focus] ne $cbx && $st eq {disabled}} {
+#      after 300 "focus $cbx"
+#    }
+#  }
+#  return {}
+#}
+##_______________________
+
+proc tool::TestForcedRun {} {
+  # Handler of "Run forced command" button.
 
   namespace upvar ::alited obDl2 obDl2
-  catch {
-    set txt [$obDl2 Tex]
-    if {[set $name1] eq {}} {set st normal} {set st disabled}
-    $txt configure -state $st
-    $obDl2 makePopup $txt no yes
-    set cbx [$obDl2 Cbx]
-    if {[focus] ne $cbx && $st eq {disabled}} {
-      after 300 "focus $cbx"
-    }
-  }
-  return {}
+  $obDl2 res {} 11
 }
 #_______________________
 
-proc tool::BeforeRunDlg {} {
+proc tool::DeleteForcedRun {} {
+  # Handler of "Delete forced command" button.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  set cbx [$obDl2 Cbx]
+  set val [set [$cbx cget -textvariable]]
+  set values [$cbx cget -values]
+  if {[set i [lsearch -exact $values $val]]>-1} {
+    set al(comForceLs) [lreplace $values $i $i]
+    $cbx configure -values $al(comForceLs)
+  }
+  $cbx set {}
+}
+#_______________________
+
+proc tool::BeforeRunDialogue {focrun} {
   # Dialogue to enter a command before running "Tools/Run"
+  #   focrun - yes, if "Forced command" should be focused.
 
   namespace upvar ::alited al al obDl2 obDl2
   set head [msgcat::mc "\n Enter commands to be run before running a current file with \"Tools/Run\".\n They can be Tcl or executables."]
   set run [string map [list $alited::EOL \n] $al(prjbeforerun)]
   set prompt1 [string range [msgcat::mc {Forcedly:}][string repeat { } 15] 0 15]
   set prompt2 [string range [msgcat::mc Commands:][string repeat { } 15] 0 15]
+  set prompt3 [string range [msgcat::mc Test]:[string repeat { } 15] 0 15]
   if {$al(comForce) eq {}} {set al(comForce) -}
   if {[lindex $al(comForceLs) 0] ne {-}} {
     set al(comForceLs) [linsert $al(comForceLs) 0 -]  ;# to allow blank value
   }
-  after idle [list after 0 " \
-    set tvar \[$obDl2 varName cbx\] ;\
-    trace add variable \$tvar write ::alited::tool::TraceComForce ;\
-    set \$tvar \[set \$tvar\]
-  "]
-  if {[ComForced]} {set foc {-focus cbx}} {set foc {}}
+#! let this commented stuff be a code snippet for tracing apave variables, huh:
+#  after idle [list after 0 " \
+#    set tvar \[$obDl2 varName cbx\] ;\
+#    trace add variable \$tvar write ::alited::tool::TraceComForce ;\
+#    set \$tvar \[set \$tvar\]
+#  "]
+  if {$focrun || [ComForced]} {set foc {-focus cbx}} {set foc {}}
   lassign [$obDl2 input {} $al(MC,beforerun) [list \
     seh1 {{} {-pady 15}} {} \
     Tex "{$prompt2} {} {-w 80 -h 16 -tabnext cbx}" $run \
     seh2 {{} {-pady 15}} {} \
-    lab {{} {} {-t { Or you can set "forced command" to be run by "Run" tool:}}} {} \
+    lab {{} {} {-t { Also, you can set "forced command" to be run by "Run" tool:}}} {} \
     Cbx [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce)]] $al(comForceLs) \
+    but1 [list {} {-padx 5} "-com {alited::tool::DeleteForcedRun} -takefocus 0 -tip Delete -toprev 1 -image [::apave::iconImage delete]"] {} \
+    butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test}" [msgcat::mc Run] \
   ] -head $head {*}$foc -titleHELP {Help {alited::tool::HelpTool %w 2}}] res run com
-  if {$res} {
+  return [list $res $run $com]
+}
+
+#_______________________
+
+proc tool::BeforeRunDlg {} {
+  # Runs "Before Run" dialogue and does its chosen action.
+
+  namespace upvar ::alited al al
+  set savForce $al(comForce)
+  set savForceLs $al(comForceLs)
+  set focrun 0
+  set res 11
+  while {$res==11} {
+    lassign [BeforeRunDialogue $focrun] res run com
+    if {!$res} {
+      set al(comForce) $savForce
+      set al(comForceLs) $savForceLs
+      break
+    }
     set al(comForce) $com
     if {[ComForced]} {
       set i [lsearch -exact $al(comForceLs) $com]
@@ -497,9 +545,14 @@ proc tool::BeforeRunDlg {} {
       set al(comForceLs) [linsert $al(comForceLs) 1 $com]
       set al(comForceLs) [lrange $al(comForceLs) 0 $al(INI,RECENTFILES)]
     }
-    set al(prjbeforerun) [string map [list \n $alited::EOL] [string trim $run]]
-    alited::ini::SaveIniPrj
-    alited::main::UpdateProjectInfo
+    if {$res==11} {
+      if {[ComForced]} _run bell
+      set focrun yes
+    } else {
+      set al(prjbeforerun) [string map [list \n $alited::EOL] [string trim $run]]
+      alited::ini::SaveIniPrj
+      alited::main::UpdateProjectInfo
+    }
   }
 }
 #_______________________
@@ -614,6 +667,19 @@ proc tool::is_mainmenu {menuargs} {
 }
 #_______________________
 
+proc tool::is_emenu {} {
+  # Check for e_menu's existence.
+
+  if {[winfo exists .em] && [winfo ismapped .em]} {
+    wm withdraw .em
+    wm deiconify .em
+    bell
+    return yes
+  }
+  return no
+}
+#_______________________
+
 proc tool::e_menu {args} {
   # Runs e_menu.
   #   args - arguments of e_menu
@@ -664,7 +730,8 @@ proc tool::e_menu1 {opts} {
   } else {
     set cs [$obPav csCurrent]
   }
-  alited::Run [file join $::e_menu_dir e_menu.tcl] {*}[EM_Options $opts] c=$cs
+  alited::Run [file join $::e_menu_dir e_menu.tcl] \
+    {*}[EM_Options $opts] c=$cs fs=$al(FONTSIZE,std)
 }
 #_______________________
 
@@ -675,10 +742,12 @@ proc tool::e_menu2 {opts} {
 
   ::alited::source_e_menu
   ::apave::cs_Active no ;# no CS changes by e_menu
+  if {[is_emenu]} return
   set options [EM_Options $opts]
   ::em::main -prior 1 -modal 0 -remain 0 -noCS 1 {*}$options
-  if {[is_mainmenu $options]} {
-    set alited::al(EM,geometry) $::em::geometry
+  set maingeo [::em::menuOption $::alited::al(EM,menu) geometry]
+  if {[is_mainmenu $options] && $maingeo ne {}} {
+    set alited::al(EM,geometry) $maingeo
   }
   ::apave::cs_Active yes
 }
@@ -709,9 +778,7 @@ proc tool::_run {{what ""} {runmode ""}} {
   #   runmode - mode of running (in console or in tkcon)
 
   namespace upvar ::alited al al
-  if {[winfo exists .em] && [winfo ismapped .em]} {
-    bell
-  }
+  if {[is_emenu]} return
   set opts "EX=$what"
   if {$what eq {}} {
     #  it is 'Run me' e_menu item
@@ -732,7 +799,7 @@ proc tool::_run {{what ""} {runmode ""}} {
       }
       set ::alited::pID 0
     }
-    set opts {EX=1 PI=1}
+    BeforeRun
     if {[ComForced]} {
       ::alited::Message "$al(MC,run): $al(comForce)" 3
       set tc {}
@@ -750,8 +817,8 @@ proc tool::_run {{what ""} {runmode ""}} {
         pd=[string map [list \\ \\\\] $al(prjroot)] $tc
       return
     }
-    BeforeRun
     if {[RunTcl $runmode]} return
+    set opts {EX=1 PI=1}
   }
   e_menu {*}$opts
 }

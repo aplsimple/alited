@@ -219,15 +219,18 @@ proc favor_ls::Change {} {
   namespace upvar ::alited al al obDl2 obDl2
   variable favlist
   variable favpla
+  variable favcont
   variable place
   variable fav
+  variable currents
   if {[set isel [Selected]] eq {}} return
-  if {[set isl1 [lsearch -exact $favlist $fav]]!=$isel} {
+  if {[set isl1 [lsearch -exact $favlist $fav]]!=$isel && $isl1!=-1} {
     alited::Message2 $al(MC,favexists) 4
     Select $isl1
   } else {
     set favlist [lreplace $favlist $isel $isel $fav]
     set favpla [lreplace $favpla $isel $isel $place]
+    set favcont [lreplace $favcont $isel $isel $currents]
     set msg [string map [list %n [incr isel]] $al(MC,favupd)]
     alited::Message2 $msg 3
   }

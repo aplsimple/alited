@@ -504,7 +504,7 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
   if {[llength $selID]<2 && $selID ne $itemID} {
     $wtree selection set $itemID
     $wtree see $itemID
-    $wtree tag add tagSel $itemID
+    alited::tree::AddTagSel $wtree $itemID
   }
   set TID [alited::bar::CurrentTabID]
   foreach it $al(_unittree,$TID) {
@@ -522,9 +522,8 @@ proc main::AfterUndoRedo {} {
   # Actions after undo/redo.
 
   HighlightLine
-  after idle {alited::main::SaveVisitInfo ; alited::main::UpdateUnitTree}
+  after 0 {after idle {alited::main::SaveVisitInfo ; alited::main::UpdateUnitTree}}
 }
-#_______________________
 
 # ________________________ GUI _________________________ #
 
@@ -599,10 +598,11 @@ proc main::TipStatus {} {
 
   namespace upvar ::alited al al obPav obPav
   set tip [[$obPav Labstat4] cget -text]
+  set run "$al(MC,run): "
   set tip [string map [list \
-    force "$al(MC,run): [msgcat::mc Setup] / $al(MC,beforerun)" \
-    cons  "$al(MC,run): $al(MC,inconsole)" \
-    tkcon "$al(MC,run): $al(MC,intkcon)" \
+    force "$run[msgcat::mc Setup] / $al(MC,beforerun)\n$run$al(comForce)\n" \
+    cons  "$run$al(MC,inconsole)" \
+    tkcon "$run$al(MC,intkcon)" \
     eol= "$al(MC,EOL:) " \
     ind= "$al(MC,indent:) " \
     {, } \n \
@@ -704,7 +704,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.BuTDown - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_down -command {alited::tree::MoveItem down}}}
     {.fraBot.panBM.fraTree.fra1.sev2 - - - - {pack -side left -fill y -padx 5}}
     {.fraBot.panBM.fraTree.fra1.BuTAddT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -command alited::tree::AddItem}}
-    {.fraBot.panBM.fraTree.fra1.BuTRenT - - - - {pack forget -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_change -command {::alited::file::RenameFileInTree {-geometry pointer+-100+10}}}}
+    {.fraBot.panBM.fraTree.fra1.BuTRenT - - - - {pack forget -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_change -tip {$alited::al(MC,renamefile)} -command {::alited::file::RenameFileInTree {-geometry pointer+-100+10}}}}
     {.fraBot.panBM.fraTree.fra1.BuTDelT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -command alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraBot.panBM.fraTree.fra1.buTCtr - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -command {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}

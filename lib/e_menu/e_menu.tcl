@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.4.17}
+  variable em_version {e_menu 3.5.0a1}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -176,7 +176,7 @@ namespace eval ::em {
   variable extraspaces {      } extras true
   variable ncmd 0  ;# number of the current menu's commands
   variable lasti 1 savelasti -1
-  variable minwidth 0
+  variable minwidth 0 minheight 0
   #---------------
   init_arrays
   #---------------
@@ -2471,20 +2471,28 @@ proc ::em::initmenu {} {
   }
   if {$::em::minwidth == 0} {
     set ::em::minwidth [expr [winfo width .em] * $::em::ratiomin]
-    set minheight [winfo height .em]
+    set ::em::minheight [winfo height .em]
   } else {
-    set minheight [expr {[winfo height .em.fr.win] + 1}]
+    set ::em::minheight [expr {[winfo height .em.fr.win] + 1}]
     if {[winfo exists .em.fr.cb]} {
-      incr minheight [winfo height .em.fr.cb]
+      incr ::em::minheight [winfo height .em.fr.cb]
     }
   }
-  wm minsize .em $::em::minwidth $minheight
   if {$::em::start0} {
-#    wm geometry .em [winfo width .em]x${minheight}
     if {$::em::wc || [::iswindows] && $::em::start0==1} {
       ::eh::center_window .em 0   ;# omitted in Linux as 'wish' is centered in it
     }
   }
+}
+#___ set/get option for menu
+proc ::em::menuOption {mnu opt {val {}}} {
+  set opt em::[file normalize $mnu]/$opt
+  if {$val eq {}} {
+    set val [::apave::getProperty $opt]
+  } else {
+    ::apave::setProperty $opt $val
+  }
+  return $val
 }
 #___ exit (end of e_menu)
 proc ::em::on_exit {{really 1} args} {
@@ -2496,6 +2504,7 @@ proc ::em::on_exit {{really 1} args} {
     catch {file delete {*}[glob "$menudir/*~.tmp"]}
   }
   if {$::em::solo} exit
+  menuOption $::em::menufilename geometry [::em::geometry]
   ::em::pool_pull
   set ::em::geometry [::em::geometry]
   set ::em::reallyexit $really
@@ -2689,7 +2698,8 @@ proc ::em::main {args} {
       return 1
     }
     if {!$::em::reallyexit} {  ;# may be set in autoruns
-      ::apave::obj showWindow .em $modal $::em::ontop ::em::em_win_var
+      ::apave::obj showWindow .em $modal $::em::ontop ::em::em_win_var \
+        "$::em::minwidth $::em::minheight"
       destroy .em
       if {![pool_pull]} break
     } elseif {$::em::reallyexit eq {2}} {

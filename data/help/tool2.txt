@@ -1,5 +1,5 @@
  You can enter commands to be run before running a current file with
- <b>Run</b> tool.
+ <r>Run</r> tool.
 
  These commands can be Tcl commands or executables, e.g.
     cd ~/TMP
@@ -7,14 +7,14 @@
 
  It can be necessary <b>for a specific project</b>.
  Something like an initialization before <b>Run</b>.
- _________________________________________________________________________
+ ___________________________________________________________________________
 
- Or, you can set a command that will be run "forcedly", <b>independently
+ Also, you can set a command that will be run "forcedly", <b>independently
  on the type</b> of currently edited file. Very good for those use cases
- when you have to edit a lot of <b>plain texts</b> and view them in work.
+ when you have to edit a lot of <b>non-Tcl texts</b> and see them in work.
 
  The command can be any executable file available at your machine.
- It will be run in console.
+ It's run in console. Hit <r>Run</r> to test it, <r>Delete</r> to remove it.
 
  If it's a Tcl file that has to be run, you can set the command with or
  without <b>tclsh</b>, <b>wish</b>, <b>tclkit</b> etc., for example:
@@ -27,8 +27,7 @@
    <b>%d</b>  - current file's directory
    <b>%pd</b> - project's directory
 
- You can clear this command to return to "normal" mode of <b>Run</b> tool.
- Or you can select a command from the combobox.
+ <r>Note:</r> clear this command to return to "normal" mode of <b>Run</b>.
 
  Anyhow, "Run me" of <b>e_menu</b> tool allows you to run a current file
  in its "normal" mode by its associated application.

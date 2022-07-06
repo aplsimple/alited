@@ -255,7 +255,7 @@ proc pref::MainFrame {} {
         f1 {-t Common}
         f2 {-t e_menu}
         f3 {-t bar/menu}
-        f4 {-t tkcon}
+        f4 {-t Tkcon}
     }}
     {#LabMess fraL T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraL T 1 2 {-st nsew -pady 2}}
@@ -437,9 +437,22 @@ proc pref::General_Tab1 {} {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labTheme - - 1 1 {-st w -pady 1 -padx 3} {-t "Ttk theme:"}}
-    {.opc1 .labTheme L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 21 -com alited::pref::CbxTheme} {}}}
+    {.opc1 .labTheme L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 21 -com alited::pref::CbxTheme -tip {-indexedtips \
+      5 {$alited::al(MC,needcs)} \
+      }} {}}}
     {.labCS .labTheme T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
-    {.opc2 .labCS L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 21 -com alited::pref::CbxTheme} {alited::pref::opcToolPre %a}}}
+    {.opc2 .labCS L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 21 -com alited::pref::CbxTheme -tip {-indexedtips \
+      0 {$alited::al(MC,nocs)} \
+      2 {$alited::al(MC,fitcs): awlight} \
+      3 {$alited::al(MC,fitcs): azure-light} \
+      4 {$alited::al(MC,fitcs): forest-light} \
+      5 {$alited::al(MC,fitcs): sun-valley-light} \
+      26 {$alited::al(MC,fitcs): sun-valley-dark} \
+      27 {$alited::al(MC,fitcs): awdark} \
+      28 {$alited::al(MC,fitcs): azure-dark} \
+      29 {$alited::al(MC,fitcs): forest-dark} \
+      30 {$alited::al(MC,fitcs): sun-valley-dark} \
+      }} {alited::pref::opcToolPre %a}}}
     {.labHue .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Tint:"}}
     {.SpxHue .labHue L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 9 -afteridle alited::pref::CbxTheme -tip {$alited::al(MC,hue)}}}
     {seh_ .labHue T 1 2 {-pady 4}}

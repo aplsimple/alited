@@ -114,6 +114,9 @@ proc file::OutwardChange {TID {docheck yes}} {
   #   docheck - yes for "do check", no for "just save the file's mtime"
 
   namespace upvar ::alited al al
+  if {[winfo exists .em]} {
+    return  ;# no actions if "internal" e_menu is open
+  }
   lassign [FileAttrs $TID] fname isfile mtime mtimefile curtime
   if {$docheck && $mtime ne {} && $curtime ne $mtime && $fname eq $mtimefile} {
     if {$isfile} {

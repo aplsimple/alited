@@ -426,7 +426,7 @@ proc ::em::destroy_emenus {} {
 #___ get color scheme's attributes for 'Project...' dialog
 proc ::em::change_PD_Spx {} {
   lassign [::apave::obj csGet $::em::ncolor] - fg - bg
-  set labmsg [dialog LabMsg]
+  set labmsg [::em::dialog LabMsg]
   set font [font configure TkFixedFont]
   set font [dict set font -size $::em::fs]
   set txt [::apave::obj csGetName $::em::ncolor]
@@ -477,7 +477,7 @@ proc ::em::change_PD {} {
   ::apave::APaveInput create ::em::dialog .em
   set r -1
   while {$r == -1} {
-    after idle ::em::change_PD_Spx
+    after 0 {after idle ::em::change_PD_Spx}
     set tip1 "Applied anyhow\nexcept for Default CS"
     set res [::em::dialog input {} Project... [list \
       {*}$fco1 \

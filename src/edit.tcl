@@ -271,7 +271,7 @@ proc edit::Modified {TID wtxt {l1 0} {l2 0} args} {
   #   l1 - 1st line of unit
   #   l2 - last line of unit
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al obPav obPav
   if {[alited::bar::BAR isTab $TID]} {
     set old [alited::file::IsModified $TID]
     set new [$wtxt edit modified]
@@ -285,13 +285,27 @@ proc edit::Modified {TID wtxt {l1 0} {l2 0} args} {
     }
     CheckUndoRedoIcons $wtxt $TID
     if {$al(TREE,isunits)} {
-      if {![info exists al(RECREATE)] || $al(RECREATE)} {
+      set pos [$wtxt index insert]
+      set wtree [$obPav Tree]
+      set todoTree no
+      catch {set todoTree [$wtree tag has tagTODO [alited::tree::CurrentItem]]}
+      # when text's TODO tag isn't equal to tree's, recreate the tree
+      lassign [$wtxt tag nextrange tagCMN2 \
+        [$wtxt index "$pos linestart"] [$wtxt index "$pos lineend"]] p1 p2
+      if {$p2 ne {} && [$wtxt compare $pos >= $p1] && [$wtxt compare $pos <= $p2]} {
+        set todo [expr {!$todoTree}]
+      } else {
+        set todo $todoTree
+      }
+      if {$todo} {
+        alited::tree::RecreateTree
+      } elseif {![info exists al(RECREATE)] || $al(RECREATE)} {
         set doit no
         if {[set llen [llength $al(_unittree,$TID)]]} {
           set lastrow [lindex $al(_unittree,$TID) $llen-1 5]
           set doit [expr {$lastrow != int([$wtxt index {end -1c}])}]
         }
-        set l1 [expr {int([$wtxt index insert])}]
+        set l1 [expr {int($pos)}]
         set notfound [catch {set ifound [lsearch -index 4 $al(_unittree,$TID) $l1]}]
         if {$doit || (!$notfound && $ifound>-1) || \
         $al(INI,LEAF) && [regexp $al(RE,leaf2) $args] || \

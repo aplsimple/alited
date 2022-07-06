@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.4b6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.4b12  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -306,9 +306,9 @@ namespace eval alited {
     # and red color of TODOs.
 
     variable obPav
-    lassign [$obPav csGet] - fg - - fgbold
+    lassign [$obPav csGet] - fg - bg fgbold
     lassign [::hl_tcl::addingColors] -> fgred
-    return [list $fg $fgbold $fgred]
+    return [list $fg $fgbold $fgred $bg]
   }
   #_______________________
 
@@ -368,7 +368,7 @@ namespace eval alited {
 
     variable al
     variable obPav
-    if {[catch {lassign [FgFgBold] fg fgbold fgred}]} {
+    if {[catch {lassign [FgFgBold] fg fgbold fgred bg}]} {
       return  ;# at exiting app
     }
     if {$lab eq {}} {set lab [$obPav Labstat3]}
@@ -393,6 +393,18 @@ namespace eval alited {
     }
     if {$first} {
       set msec [expr {200*$slen}]
+      if {$mode eq {4}} {
+        set opts "-fg $fgred -bg $bg -font {-weight bold}"
+      } elseif {$mode in {3 5}} {
+        set opts "-fg $fgbold -bg $bg -font {-weight bold}"
+      } else {
+        set opts {}
+      }
+      set tip [string trim [string range $msg 0 99]]
+      if {[string trim [string range $msg [string length $tip] end]] ne {}} {
+        append tip ...
+      }
+      baltip::tip $lab " $tip " {*}$opts
     } else {
       set msg [string range $msg 0 end-1]
       set msec 10

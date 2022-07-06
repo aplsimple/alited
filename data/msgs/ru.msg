@@ -378,6 +378,9 @@ namespace eval ::alited {
     "Sort of diary.\nList of TODOs etc." "Типа дневника.\nСписок TODO и пр."
     {Light / Dark} {Светлая / Темная}
     {Makes colors darker .. lighter} {Делает цвета темнее .. светлее}
+    "These themes need\nlight / dark color schemes\naccordingly" "Этим темам нужны\nсветлые / темные цветовые схемы\nсоответственно"
+    {Fit for theme} {Годится для темы}
+    {No color scheme at all} {Никакой цветовой схемы вовсе}
   }
 
   ### ________________________ Editor _________________________ ###
@@ -506,7 +509,7 @@ namespace eval ::alited {
     {Commands after start} {Команды после старта}
     "\n Enter commands to be run after starting alited.\n They can be Tcl or executables.\n" "\n Введите команды, выполняемые после старта alited,\n т.е. команды Tcl или внешние команды.\n"
     "\n Enter commands to be run before running a current file with \"Tools/Run\".\n They can be Tcl or executables." "\n Введите команды, выполняемые перед \"Снасти/Запуск\",\n т.е. команды Tcl или внешние команды."
-    { Or you can set "forced command" to be run by "Run" tool:} { Либо вы можете ввести "принудительную команду" для Запуска:}
+    { Also, you can set "forced command" to be run by "Run" tool:} { Также вы можете ввести "принудительную команду" для Запуска:}
     {Forcedly:} {Принудительно:}
     {e_menu's own} {своя в e_menu}
     {Also, this makes "tkcon" topmost.} {Окно "tkcon" будет поверх всех других.}

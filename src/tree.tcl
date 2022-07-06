@@ -126,6 +126,17 @@ proc tree::CurrentItem {{Tree Tree}} {
 }
 #_______________________
 
+proc tree::AddTagSel {wtree ID} {
+  # Adds tagSel tag to the unit tree's item.
+  #   wtree - the tree's path
+  #   ID - the item's ID
+
+  if {![$wtree tag has tagTODO $ID]} {
+    $wtree tag add tagSel $ID
+  }
+}
+#_______________________
+
 proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   # Selects a new item of the unit tree.
   #   itnew - ID of the new selected item
@@ -150,7 +161,7 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   set header [alited::unit::GetHeader $wtree $itnew]
   lassign [$wtree item $itnew -values] l1 l2 - - - leaf
   if {[string is true -strict $leaf]} {
-    $wtree tag add tagSel $itnew
+    AddTagSel $wtree $itnew
   }
   # get saved pos
   if {[info exists al(CPOS,$ctab,$header)]} {
@@ -307,6 +318,14 @@ proc tree::CreateUnitsTree {TID wtree} {
   set parents [list {}]
   set parent {}
   set levprev -1
+  set wtxt [alited::main::GetWTXT $TID]
+  set todolist [list]
+  foreach {tr1 tr2} [$wtxt tag ranges tagCMN2] {
+    lappend todolist [expr {int($tr1)}]
+  }
+  $wtree tag remove tagTODO
+  $wtree tag remove tagBranch
+  $wtree tag remove tagSel
   foreach item $al(_unittree,$TID) {
     if {[llength $item]<3} continue
     set itemID  [alited::tree::NewItemID [incr iit]]
@@ -321,19 +340,29 @@ proc tree::CreateUnitsTree {TID wtree} {
     } else {
       set imgopt "-image alimg_gulls"
     }
+    set tag tagNorm
+    foreach tr $todolist {
+      if {$tr>=$l1 && $tr<=$l2} {
+        set tag tagTODO
+        break
+      }
+    }
     $wtree insert $parent end -id $itemID -text "$title" \
       -values [list $l1 $l2 {} $itemID $lev $leaf $fl1] -open yes {*}$imgopt
     $wtree tag add tagNorm $itemID
     catch {
       if {$leaf && \
       [info exists al(CPOS,$ctab,[alited::unit::GetHeader $wtree $itemID])]} {
-        $wtree tag add tagSel $itemID
+        if {$tag ne {tagTODO}} {set tag tagSel}
       }
     }
     if {!$leaf} {
-      $wtree tag add tagBranch $itemID
+      if {$tag ne {tagTODO}} {set tag tagBranch}
       set parent $itemID
       catch {set parents [lreplace $parents $lev end $parent]}
+    }
+    if {$tag ne {tagNorm}} {
+      $wtree tag add $tag $itemID
     }
     set levprev $lev
   }
@@ -392,7 +421,7 @@ proc tree::CreateFilesTree {wtree} {
     $wtree tag add tagNorm $itemID
     if {!$isfile} {
       $wtree tag add tagBranch $itemID
-    } elseif {[alited::bar::FileTID $fname] ne ""} {
+    } elseif {[alited::bar::FileTID $fname] ne {}} {
       $wtree tag add tagSel $itemID
     }
   }
@@ -416,12 +445,13 @@ proc tree::AddTags {wtree} {
   #   wtree - the tree's path
 
   namespace upvar ::alited al al
-  lassign [::hl_tcl::hl_colors {-AddTags} [::apave::obj csDark]] - - fgbr - - fgred
+  lassign [::hl_tcl::addingColors {} -AddTags] - - fgbr - - fgred - - - fgtodo
   append fontN "-font $alited::al(FONT,defsmall)"
   append fontS $fontN " -foreground $fgred"
   $wtree tag configure tagNorm {*}$fontN
   $wtree tag configure tagSel  {*}$fontS
   $wtree tag configure tagBold -foreground magenta
+  $wtree tag configure tagTODO -foreground $fgtodo
   $wtree tag configure tagBranch -foreground $fgbr
 }
 #_______________________
@@ -743,6 +773,21 @@ proc tree::GetTooltip {ID NC} {
   if {$al(TREE,isunits)} {
     # for units
     set tip [alited::unit::GetHeader $wtree $ID $NC]
+    # try to read and add TODOs for this unit
+    catch {
+      lassign [$wtree item $ID -values] l1 l2
+      set wtxt [alited::main::CurrentWTXT]
+      foreach {p1 p2} [$wtxt tag ranges tagCMN2] {
+        if {[$wtxt compare $l1.0 <= $p1] && [$wtxt compare $p2 <= $l2.end]} {
+          set todo [string trimleft [$wtxt get $p1 $p2] {#!}]
+          switch [incr tiplines] {
+            1  {append tip \n [string repeat _ [string length $todo]] \n}
+            13 {break}
+          }
+          append tip \n $todo
+        }
+      }
+    }
   } else {
     # for files
     lassign [$wtree item $ID -values] -> tip isfile

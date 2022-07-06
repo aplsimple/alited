@@ -1,4 +1,4 @@
- The <b>tkcon</b> options define the appearance of Tkcon's window.
+ The <b>Tkcon</b> options define the appearance of Tkcon's window.
 
  You can set your own colors of Tkcon.
 

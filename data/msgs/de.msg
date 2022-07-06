@@ -381,6 +381,9 @@ namespace eval ::alited {
     "Sort of diary.\nList of TODOs etc." "Eine Art Tagebuch.\nListe offener Punkte usw."
     {Light / Dark} {Hell / Dunkel}
     {Makes colors darker .. lighter} {Macht Farben dunkler .. heller}
+    "These themes need\nlight / dark color schemes\naccordingly" "Diese Themen benötigen\nhelle / dunkle Farbschemas\nentsprechend"
+    {Fit for theme} {Gut geeignet zu Theme}
+    {No color scheme at all} {Keine Farbschema überhaupt}
   }
 
   ### ________________________ Editor _________________________ ###
@@ -510,7 +513,7 @@ namespace eval ::alited {
     {Commands after start} {Befehle nach dem Starten}
     "\n Enter commands to be run after starting alited.\n They can be Tcl or executables.\n" "\n Geben Sie Befehle ein, die nach dem Starten von alited ausgeführt werden sollen,\n das heißt Tcl Befehle oder ausführbare Dateien.\n"
     "\n Enter commands to be run before running a current file with \"Tools/Run\".\n They can be Tcl or executables." "\n Eingabe von Befehlen, die ausgeführt werde bevor die aktuelle Datei ausgeführt wird mit \"Werkzeuge/ausführen\",\n das heißt Tcl Befehle oder ausführbare Dateien."
-    { Or you can set "forced command" to be run by "Run" tool:} { Oder können Sie festlegen "erzwungener Befehl" für Ausführen:}
+    { Also, you can set "forced command" to be run by "Run" tool:} { Ebenfalls, können Sie festlegen "erzwungener Befehl" für Ausführen:}
     {Forcedly:} {Zwangsweise:}
     {e_menu's own} {e_menu eigen}
     {Also, this makes "tkcon" topmost.} {Also, das macht "tkcon" oben alles.}

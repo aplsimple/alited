@@ -16,7 +16,7 @@
  For big tasks, click <b>closed</b> button to work with the favorites only.
 
  Click <b>Back</b> button to return to an original list of favorites
- that were active at first opening this dialogue in the current project.
+ that were active at opening the current project.
 
  Click <b>Select</b> button or double-click a list to make it active.
 

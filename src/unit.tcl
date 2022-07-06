@@ -48,14 +48,17 @@ proc unit::GetHeader {wtree ID {NC ""} {wtxt ""} {tip ""} {l1 0} {l2 0}} {
       for {} {$l1<$l2} {} {
         incr l1
         set line [string trim [$wtxt get $l1.0 $l1.end]]
+        set line1 [string trimleft $line {#! }]
+        set line2 [string trimleft $line {/ }]
         if {[string index $line end] ni [list \\ \{] && \
         $line ni {{} # //} && ![regexp $al(RE,proc) $line]} {
-          if {[string match #* $line]} {
-            append tip \n [string trim [string range $line 1 end]]
-          } elseif {[string match //* $line]} {
-            append tip \n [string trim [string range $line 2 end]]
+          if {[string match #* $line] && $line1 ne {}} {
+            append tip \n $line1
+            break
+          } elseif {[string match //* $line] && $line2 ne {}} {
+            append tip \n $line2
+            break
           }
-          break
         }
       }
     }

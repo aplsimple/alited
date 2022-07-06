@@ -193,8 +193,6 @@ proc ini::ReadIni {{projectfile ""}} {
   set prjlist [list]
   set al(TPL,list) [list]
   set al(KEYS,bind) [list]
-  set al(FAV,current) [list]
-  set al(FAV,visited) [list]
   set em_i 0
   set fontsize [expr {$al(FONTSIZE,std)+1}]
   set al(FONT,txt) "-family {[::apave::obj basicTextFont]} -size $fontsize"
@@ -471,7 +469,10 @@ proc ini::ReadIniPrj {} {
   set al(curtab) 0
   set al(_check_menu_state_) 1
   set al(comForce) [set al(comForceLs) {}]
-  alited::favor_ls::GetIni {}  ;# initializes favorites' lists
+  set al(FAV,current) [list]
+  set al(FAV,visited) [list]
+  alited::favor::InitFavorites [list]
+  alited::favor_ls::GetIni {}
   if {![file exists $al(prjfile)]} {
     set al(prjfile) [file join $alited::PRJDIR default.ale]
   }
@@ -505,6 +506,7 @@ proc ini::ReadIniPrj {} {
     set al(prjfile) {}
     set al(prjroot) {}
   }
+  alited::favor::InitFavorites $al(FAV,current)
   catch {close $chan}
   catch {cd $al(prjroot)}
   if {![string is digit -strict $al(curtab)] || \
