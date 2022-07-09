@@ -1152,7 +1152,7 @@ proc pref::Common_Tab {} {
   # Serves to layout "Tools/Common" tab.
 
   fetchVars
-  set al(EM,menu) [file join $al(EM,menudir) [file tail $al(EM,menu)]]
+  set al(EM,mnu) [file join $al(EM,mnudir) [file tail $al(EM,mnu)]]
   if {$al(EM,Tcl) eq {}} {
     set al(TCLINIDIR) [info nameofexecutable]
   } else {
@@ -1191,8 +1191,8 @@ proc pref::Default_e_menu {} {
   set al(EM,ownCS) no
   set al(EM,geometry) +1+31
   set emdir [file join $::alited::USERDIR e_menu]
-  set al(EM,menudir) [file join $emdir menus]
-  set al(EM,menu) [file join $al(EM,menudir) menu.mnu]
+  set al(EM,mnudir) [file join $emdir menus]
+  set al(EM,mnu) [file join $al(EM,mnudir) menu.mnu]
   set al(EM,PD=) [file join $emdir em_projects]
 }
 #_______________________
@@ -1211,8 +1211,8 @@ proc pref::Test_e_menu {} {
 proc pref::Emenu_Tab {} {
   # Serves to layout "Tools/e_menu" tab.
 
-  set alited::al(EM,menu) [file join $alited::al(EM,menudir) \
-    [file tail $alited::al(EM,menu)]]
+  set alited::al(EM,mnu) [file join $alited::al(EM,mnudir) \
+    [file tail $alited::al(EM,mnu)]]
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
@@ -1225,9 +1225,9 @@ proc pref::Emenu_Tab {} {
     {.labGeo .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
     {.entGeo .labGeo L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,geometry) -w 22}}
     {.labDir .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Directory of menus:"}}
-    {.dirEM .labDir L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,menudir) -w 48}}
+    {.dirEM .labDir L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,mnudir) -w 48}}
     {.labMenu .labDir T 1 1 {-st w -pady 1 -padx 3} {-t "Main menu:"}}
-    {.filMenu .labMenu L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,menu) -w 48 -filetypes {{{Menus} .mnu} {{All files} .* }}}}
+    {.filMenu .labMenu L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,mnu) -w 48 -filetypes {{{Menus} .mnu} {{All files} .* }}}}
     {.labPD .labMenu T 1 1 {-st w -pady 1 -padx 3} {-t "Projects (%PD wildcard):"}}
     {.filPD .labPD L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,PD=) -w 48}}
     {.seh .labPD T 1 3 {-st ew -pady 5}}

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.4b12  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.4b13  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -20,7 +20,7 @@ catch {package require comm}  ;# Generic message transport
 
 # _____ Remove installed (perhaps) packages used in alited _____ #
 
-foreach _ {apave baltip bartabs hl_tcl} {
+foreach _ {apave baltip bartabs hl_tcl ttk::theme::awlight ttk::theme::awdark awthemes} {
   set __ [package version $_]
   catch {
     package forget $_
@@ -75,8 +75,9 @@ namespace eval alited {
   variable MSGSDIR [file join $DATADIR msgs]
 
   # directories of user's data
-  variable USERDIRSTD [file normalize {~/.config}]
-  variable USERDIRROOT $USERDIRSTD
+  variable CONFIGDIRSTD [file normalize {~/.config}]
+  variable USERLASTINI [file join $CONFIGDIRSTD alited last.ini]
+  variable CONFIGDIR $CONFIGDIRSTD
 
   # two main objects to build forms (just some unique names)
   variable obPav ::alited::alitedpav
@@ -170,9 +171,25 @@ namespace eval alited {
     }
   }
 
-  ## _ EONS _ ##
+  proc main_user_dirs {} {
+  # Gets names of main user directories for settings.
 
+    set ::alited::USERDIR [file join $::alited::CONFIGDIR alited]
+    set ::alited::INIDIR [file join $::alited::USERDIR ini]
+    set ::alited::PRJDIR [file join $::alited::USERDIR prj]
+  }
+
+  ## _ EONS _ ##
 }
+
+# _____________________________ Packages used __________________________ #
+
+lappend auto_path $alited::LIBDIR $::alited::PAVEDIR
+
+source [file join $::alited::BARSDIR bartabs.tcl]
+source [file join $::alited::PAVEDIR apaveinput.tcl]
+source [file join $::alited::HLDIR  hl_tcl.tcl]
+source [file join $::alited::HLDIR  hl_c.tcl]
 
 # ________________________ ::argv, ::argc _________________________ #
 
@@ -211,9 +228,17 @@ if {[package versions alited] eq {}} {
 
   set _ [lindex $ALITED_ARGV 0]
   if {![llength $ALITED_ARGV] || ![file isdirectory $_]} {
-    set _ $alited::USERDIRROOT
+    alited::main_user_dirs
+    if {(![file exists $alited::INIDIR] || ![file exists $alited::PRJDIR]) && \
+    [file exists $alited::USERLASTINI]} {
+      # read INIDIR & PRJDIR that were last entered
+      lassign [split [::apave::readTextFile $alited::USERLASTINI] \n] \
+        alited::INIDIR alited::PRJDIR
+      set alited::CONFIGDIR [file dirname [file dirname $alited::INIDIR]]
+    }
+    set _ $alited::CONFIGDIR
   } else {
-    set alited::USERDIRROOT $_
+    set alited::CONFIGDIR $_
     set ALITED_ARGV [lrange $ALITED_ARGV 1 end]
   }
   # try to read alited.ini
@@ -269,15 +294,6 @@ if {[package versions alited] eq {}} {
   }
 
 }
-
-# _____________________________ Packages used __________________________ #
-
-lappend auto_path $alited::LIBDIR $::alited::PAVEDIR
-
-source [file join $::alited::BARSDIR bartabs.tcl]
-source [file join $::alited::PAVEDIR apaveinput.tcl]
-source [file join $::alited::HLDIR  hl_tcl.tcl]
-source [file join $::alited::HLDIR  hl_c.tcl]
 
 # __________________________ Common procs ________________________ #
 
@@ -374,7 +390,7 @@ namespace eval alited {
     if {$lab eq {}} {set lab [$obPav Labstat3]}
     set font [[$obPav Labstat2] cget -font]
     set fontB [list {*}$font -weight bold]
-    set msg [string range [string map [list \n { } \r {}] $msg] 0 100]
+    set msg [string range [string map [list \n { } \r {}] $msg] 0 500]
     set slen [string length $msg]
     if {[catch {$lab configure -text $msg}] || !$slen} return
     $lab configure -font $font -foreground $fg
@@ -400,7 +416,7 @@ namespace eval alited {
       } else {
         set opts {}
       }
-      set tip [string trim [string range $msg 0 99]]
+      set tip [string trim [string range $msg 0 130]]
       if {[string trim [string range $msg [string length $tip] end]] ne {}} {
         append tip ...
       }

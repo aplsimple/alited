@@ -187,7 +187,7 @@ proc tool::HelpTool {win hidx} {
 proc tool::EM_Options {opts} {
   # Returns e_menu's general options.
 
-  namespace upvar ::alited al al SCRIPTNORMAL SCRIPTNORMAL USERDIRROOT USERDIRROOT
+  namespace upvar ::alited al al SCRIPTNORMAL SCRIPTNORMAL CONFIGDIR CONFIGDIR
   set sel [alited::find::GetWordOfText]
   set sel [string map [list "\"" {} "\{" {} "\}" {} "\\" {}] $sel]
   set f [alited::bar::FileName]
@@ -235,8 +235,8 @@ proc tool::EM_Options {opts} {
     }
     set tdir $::alited::LIBDIR
   }
-  set ed [info nameofexecutable]\ $SCRIPTNORMAL\ $USERDIRROOT
-  set R [list "md=$al(EM,menudir)" "m=$al(EM,menu)" "f=$f" "d=$d" "l=$l" \
+  set ed [info nameofexecutable]\ $SCRIPTNORMAL\ $CONFIGDIR
+  set R [list "md=$al(EM,mnudir)" "m=$al(EM,mnu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
     o=-1 om=0 g=$al(EM,geometry) $z6 $z7 {*}$ls {*}$opts {*}$srcdir \
     {*}$dirvar {*}$filvar th=$al(THEME) td=$tdir ed=$ed]
@@ -250,10 +250,10 @@ proc tool::EM_dir {} {
   # Returns a directory of e_menu's menus.
 
   namespace upvar ::alited al al
-  if {$al(EM,menudir) eq {}} {
+  if {$al(EM,mnudir) eq {}} {
     return $::e_menu_dir
   }
-  return [file dirname $al(EM,menudir)]
+  return [file dirname $al(EM,mnudir)]
 }
 #_______________________
 
@@ -745,7 +745,7 @@ proc tool::e_menu2 {opts} {
   if {[is_emenu]} return
   set options [EM_Options $opts]
   ::em::main -prior 1 -modal 0 -remain 0 -noCS 1 {*}$options
-  set maingeo [::em::menuOption $::alited::al(EM,menu) geometry]
+  set maingeo [::em::menuOption $::alited::al(EM,mnu) geometry]
   if {[is_mainmenu $options] && $maingeo ne {}} {
     set alited::al(EM,geometry) $maingeo
   }
@@ -759,7 +759,7 @@ proc tool::e_menu3 {} {
   # TF= is a temporary file that contains a text's selection.
 
   namespace upvar ::alited al al
-  set tmpname [file join $al(EM,menudir) tmp.~~~]
+  set tmpname [file join $al(EM,mnudir) tmp.~~~]
   catch {file delete $tmpname}
   set wtxt [alited::main::CurrentWTXT]
   if {[catch {set sel [$wtxt get sel.first sel.last]}]} {set sel {}}
@@ -784,7 +784,7 @@ proc tool::_run {{what ""} {runmode ""}} {
     #  it is 'Run me' e_menu item
     if {!$::alited::DEBUG} {
       if {$al(EM,exec)} {
-        set fpid [file join $al(EM,menudir) .pid~]
+        set fpid [file join $al(EM,mnudir) .pid~]
         set pid [::apave::readTextFile $fpid]
       } else {
         ::alited::source_e_menu ;# e_menu is "internal"

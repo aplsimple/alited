@@ -405,6 +405,18 @@ proc ::apave::initStylesFS {args} {
 }
 #_______________________
 
+proc ::apave::InitAwThemesPath {libdir} {
+  # Initializes the path to awthemes package.
+  #   libdir - root directory of themes (where 'theme' subdirectory is)
+
+  global auto_path
+  set awpath [file join $libdir theme awthemes-10.4.0]
+  if {[lindex $auto_path 0] ne $awpath} {
+    set auto_path [linsert $auto_path 0 $awpath]
+  }
+}
+#_______________________
+
 proc ::apave::InitTheme {intheme libdir} {
   # Initializes app's theme.
   #   intheme - name of the theme
@@ -433,8 +445,7 @@ proc ::apave::InitTheme {intheme libdir} {
       set lbd 0
     }
     awdark - awlight {
-      global auto_path
-      lappend auto_path [file join $libdir theme awthemes-10.4.0]
+      InitAwThemesPath $libdir
       package require awthemes
       package require ttk::theme::$intheme
       set theme $intheme

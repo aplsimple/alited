@@ -1,7 +1,9 @@
 # LAST CHANGES:
 
 
-Version `1.2.4b11 (5 Jul'22)`
+Version `1.2.4b14 (9 Jul'22)`
+
+  - TODO  : let ~/.config be default, but last config directory be saved in ini
 
   - BUGFIX: at start, forget alited's own packages & namespaces
             (big-bug making alited unusable in some Magicsplat & Bawt distros)

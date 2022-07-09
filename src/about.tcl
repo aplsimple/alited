@@ -59,12 +59,17 @@ proc about::About {} {
     [list "link-aloupe" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/aloupe/aloupe.html"] \
     [list "link-tkcc" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/tkcc"] \
     [list "link-repl" "::apave::openDoc %t@@https://github.com/apnadkarni/tcl-repl"] \
+    [list "link-awthemes" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/awthemes"] \
+    [list "link-ale_themes" "::apave::openDoc %t@@https://github.com/aplsimple/ale_themes"] \
     [list "link-tkcon" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Tkcon"] \
     [list "link_" "::apave::openDoc %t@@https://aplsimple.github.io/en/misc/links/links.html@@"] \
     [list "linkRH" "::apave::openDoc %t@@http://www.hwaci.com/drh/@@"] \
     ]
-  foreach _ {alited apave bartabs baltip hl_tcl} {
-    set v$_ v[package require $_]
+  ::apave::InitAwThemesPath $::alited::LIBDIR
+  foreach _ {alited apave bartabs baltip hl_tcl awthemes} {
+    if {[catch {set v$_ v[package require $_]}]} {
+      set v$_ {}
+    }
   }
   set long1 [msgcat::mc {And well fit for programming with it.}]
   set long2 __________________________________________
@@ -127,11 +132,13 @@ proc about::About {} {
     \u2022 <link-baltip>baltip $vbaltip</link-baltip>\n\n \
     \u2022 <link-bartabs>bartabs $vbartabs</link-bartabs>\n\n \
     \u2022 <link-hl_tcl>hl_tcl $vhl_tcl</link-hl_tcl>\n\n \
-    \u2022 <link-aloupe>aloupe</link-aloupe>\n\n \
+    \u2022 <link-aloupe>aloupe v0.9.5</link-aloupe>\n\n \
+    \u2022 <link-tkcon>tkcon v2.7</link-tkcon>\n\n \
+    \u2022 <link-awthemes>awthemes $vawthemes</link-awthemes>\n\n \
+    \u2022 <link-ale_themes>ale_themes</link-ale_themes>\n\n \
     \u2022 <link-tkcc>tkcc</link-tkcc>\n\n \
-    \u2022 <link-tkcon>tkcon</link-tkcon>\n\n \
     \u2022 <link-repl>tcl-repl</link-repl>\n"
-  set tab2 [list General Packages "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexPack - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutPack -tags ::alited::about::textTags}}" Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutAckn -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
+  set tab2 [list General Packages "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexPack - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutPack -tags ::alited::about::textTags}}" Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 34 -rotext ::alited::AboutAckn -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
   ::alited::msg ok {} $msg \
     -title [msgcat::mc About] -t 1 -w $wmax -h {30 30} -scroll 0 \
     -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}" \

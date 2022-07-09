@@ -106,8 +106,8 @@ namespace eval ::alited {
   set al(EM,h=) ~/DOC/www.tcl.tk/man/tcl8.6
   set al(EM,tt=) x-terminal-emulator
   set al(EM,tt=List) "$al(EM,tt=)\tlxterminal --geometry=220x55\txterm"
-  set al(EM,menu) menu.mnu
-  set al(EM,menudir) {}
+  set al(EM,mnu) menu.mnu
+  set al(EM,mnudir) {}
   set al(EM,CS) 33
   set al(EM,ownCS) no
   set al(EM,exec) no
@@ -414,8 +414,8 @@ proc ini::ReadIniEM {nam val emiName} {
     emh        {set al(EM,h=) $val}
     emtt       {set al(EM,tt=) $val}
     emttList   {set al(EM,tt=List) $val}
-    emmenu     {set al(EM,menu) $val}
-    emmenudir  {set al(EM,menudir) $val}
+    emmenu     {if {[file exists $val]} {set al(EM,mnu) $val}}
+    emmenudir  {if {[file exists $val]} {set al(EM,mnudir) $val}}
     emcs       {set al(EM,CS) $val}
     emowncs    {set al(EM,ownCS) $val}
     emexec     {set al(EM,exec) $val}
@@ -692,8 +692,8 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "emh=$al(EM,h=)"
   puts $chan "emtt=$al(EM,tt=)"
   puts $chan "emttList=$al(EM,tt=List)"
-  puts $chan "emmenu=$al(EM,menu)"
-  puts $chan "emmenudir=$al(EM,menudir)"
+  puts $chan "emmenu=$al(EM,mnu)"
+  puts $chan "emmenudir=$al(EM,mnudir)"
   puts $chan "emcs=$al(EM,CS)"
   puts $chan "emowncs=$al(EM,ownCS)"
   puts $chan "emgeometry=$al(EM,geometry)"
@@ -744,6 +744,9 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "HelpedMe=$al(HelpedMe)"
   close $chan
   SaveIniPrj $newproject
+  # save last directories entered
+  set lastini [file dirname $::alited::al(INI)]\n[file dirname $al(prjfile)]
+  ::apave::writeTextFile $::alited::USERLASTINI lastini
 }
 #_______________________
 
@@ -832,25 +835,23 @@ proc ini::CheckIni {} {
   InitGUI
   destroy .tex
   ::apave::APaveInput create pobj
-  set head [string map [list %d $::alited::USERDIRSTD] $al(MC,chini2)]
+  set head [string map [list %d $::alited::CONFIGDIRSTD] $al(MC,chini2)]
   set res [pobj input info $al(MC,chini1) [list \
-      dir1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50]] "{$::alited::USERDIRSTD}" \
+      dir1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50]] "{$::alited::CONFIGDIRSTD}" \
     ] -size 14 -weight bold -head $head]
   pobj destroy
-  lassign $res ok ::alited::USERDIRROOT
+  lassign $res ok ::alited::CONFIGDIR
   if {!$ok} exit
   CreateUserDirs
 }
 #_______________________
 
 proc ini::GetUserDirs {} {
-  # Gets names of main directories for settings.
+  # Gets names of user directories for settings.
 
   namespace upvar ::alited al al
-  set ::alited::USERDIR [file join $::alited::USERDIRROOT alited]
-  set ::alited::INIDIR [file join $::alited::USERDIR ini]
-  set ::alited::PRJDIR [file join $::alited::USERDIR prj]
-  if {$al(prjroot) eq ""} {
+  ::alited::main_user_dirs
+  if {$al(prjroot) eq {}} {
     set ::alited::BAKDIR [file join $::alited::USERDIR .bak]
   } else {
     set ::alited::BAKDIR [file join $al(prjroot) .bak]
@@ -858,8 +859,9 @@ proc ini::GetUserDirs {} {
   if {![file exists $::alited::BAKDIR]} {
     catch {file mkdir $::alited::BAKDIR}
   }
-  if {$al(EM,menudir) eq ""} {
-    set al(EM,menudir) [file join $::alited::USERDIR e_menu menus]
+  set mnudir [file join $::alited::USERDIR e_menu menus]
+  if {![file exists $mnudir]} {
+    set al(EM,mnudir) $mnudir
   }
   set al(INI) [file join $::alited::INIDIR alited.ini]
 }
@@ -880,7 +882,7 @@ proc ini::CreateUserDirs {} {
     file copy [file join $DATADIR user notes.txt] [file join $USERDIR notes.txt]
     ReadIni
   }
-  set emdir [file dirname $al(EM,menudir)]
+  set emdir [file dirname $al(EM,mnudir)]
   if {![file exists $emdir]} {
     file mkdir $emdir
     file copy $MNUDIR $emdir
