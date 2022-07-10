@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.4b13  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.4b14  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {

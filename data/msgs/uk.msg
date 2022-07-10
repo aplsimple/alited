@@ -133,6 +133,7 @@ namespace eval ::alited {
     {Do it in other files} {Також і в інших файлах}
     "File \"%f\" doesn't exist." "Файл \"%f\" не існує."
     {Selected files: %n} {Виділених файлів: %n}
+    {Configurations...} {Конфігурації...}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##

@@ -104,7 +104,16 @@ proc menu::FillRunItems {fname} {
 }
 #_______________________
 
-proc menu::FillMenu {} {
+proc menu::Configurations {} {
+  #
+
+  if {![alited::ini::GetConfiguration]} return
+  set alited::ARGV $::alited::CONFIGDIR
+  alited::Exit - 1 no
+}
+#_______________________
+
+  proc menu::FillMenu {} {
   # Populates alited's main menu.
 
   namespace upvar ::alited al al
@@ -228,6 +237,8 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label [msgcat::mc {After Start...}] -command alited::tool::AfterStartDlg
   $m add command -label [msgcat::mc {Before Run...}] -command alited::tool::BeforeRunDlg
+  $m add separator
+  $m add command -label [msgcat::mc Configurations...] -command alited::menu::Configurations
   $m add separator
   $m add command -label $al(MC,pref...) -command alited::pref::_run
 

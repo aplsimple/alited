@@ -763,7 +763,12 @@ proc find::ReplaceInSession {} {
     if {$data(_ERR_)} break
   }
   ShowResults2 $rn $alited::al(MC,frres3)
-  if {$waseditcurr} alited::main::UpdateTextGutterTreeIcons
+  if {$waseditcurr} {
+    alited::main::UpdateTextGutterTreeIcons
+  } elseif {$rn} {
+    alited::main::UpdateIcons
+
+  }
 }
 
 # ________________________ Helpers _________________________ #

@@ -825,29 +825,41 @@ proc ini::SaveIniPrj {{newproject no}} {
 
 # ______________________ Initializing alited app ______________________ #
 
+proc ini::GetConfiguration {} {
+  # Gets the configuration directory's name.
+
+  namespace upvar ::alited al al
+  ::apave::APaveInput create pobj
+  set head [string map [list %d $::alited::CONFIGDIRSTD] $al(MC,chini2)]
+  set res [pobj input info $al(MC,chini1) [list \
+      dir1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50]] "{$::alited::CONFIGDIR}" \
+    ] -size 14 -weight bold -head $head]
+  pobj destroy
+  lassign $res ok confdir
+  if {$ok} {set ::alited::CONFIGDIR $confdir}
+  return $ok
+}
+
+# ______________________ Initializing alited app ______________________ #
+
 proc ini::CheckIni {} {
   # Checks if the configuration directory exists and if not asks for it.
 
-  namespace upvar ::alited al al
   if {[file exists $::alited::INIDIR] && [file exists $::alited::PRJDIR]} {
     return
   }
   InitGUI
-  destroy .tex
-  ::apave::APaveInput create pobj
-  set head [string map [list %d $::alited::CONFIGDIRSTD] $al(MC,chini2)]
-  set res [pobj input info $al(MC,chini1) [list \
-      dir1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50]] "{$::alited::CONFIGDIRSTD}" \
-    ] -size 14 -weight bold -head $head]
-  pobj destroy
-  lassign $res ok ::alited::CONFIGDIR
-  if {!$ok} exit
+  catch {destroy .tex}
+  if {![GetConfiguration]} exit
+  ::alited::main_user_dirs
+  GetUserDirs yes
   CreateUserDirs
 }
 #_______________________
 
-proc ini::GetUserDirs {} {
+proc ini::GetUserDirs {{initmnu no}} {
   # Gets names of user directories for settings.
+  #  initmnu - yes, if called to initialize mnu dir
 
   namespace upvar ::alited al al
   ::alited::main_user_dirs
@@ -860,8 +872,8 @@ proc ini::GetUserDirs {} {
     catch {file mkdir $::alited::BAKDIR}
   }
   set mnudir [file join $::alited::USERDIR e_menu menus]
-  if {![file exists $mnudir]} {
-    set al(EM,mnudir) $mnudir
+  if {$initmnu && ![file exists $mnudir]} {
+    set al(EM,mnudir) $mnudir  ;# to have e_menu in each config dir
   }
   set al(INI) [file join $::alited::INIDIR alited.ini]
 }
@@ -871,7 +883,6 @@ proc ini::CreateUserDirs {} {
   # Creates main directories for settings.
 
   namespace upvar ::alited al al DATADIR DATADIR USERDIR USERDIR INIDIR INIDIR PRJDIR PRJDIR MNUDIR MNUDIR BAKDIR BAKDIR
-  GetUserDirs
   foreach dir {USERDIR INIDIR PRJDIR} {
     catch {file mkdir [set $dir]}
   }

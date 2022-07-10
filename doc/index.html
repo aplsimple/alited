@@ -34,28 +34,31 @@
 <ul class="toc">
 <li class="level2"><div class="li"><a href="#intro">What is this</a></div></li>
 <li class="level2"><div class="li"><a href="#installation">Installation</a></div></li>
-<li class="level2"><div class="li"><a href="#tclkit">Usage with tclkits</a></div></li>
-<li class="level2"><div class="li"><a href="#start">First start</a></div></li>
-<li class="level3"><div class="li"><a href="#units">Units</a></div></li>
-<li class="level3"><div class="li"><a href="#projects">Projects</a></div></li>
-<li class="level3"><div class="li"><a href="#search">Search</a></div></li>
-<li class="level3"><div class="li"><a href="#tools">Tools</a></div>
-<ol>
-<li class="level4"><div class="li"><a href="#runtool"><i>Run</i> tool</a></div></li>
-<li class="level4"><div class="li"><a href="#helptool"><i>Tcl/Tk help</i> tool</a></div></li>
-<li class="level4"><div class="li"><a href="#custtool">Customizing tools</a></div></li>
-</ol></li>
-<li class="level3"><div class="li"><a href="#edit">Editing</a></div>
-<ol>
-<li class="level4"><div class="li"><a href="#contextmenu">Context menu</a></div></li>
-<li class="level4"><div class="li"><a href="#editmenu">Edit menu</a></div></li>
-<li class="level4"><div class="li"><a href="#searchmenu">Search menu</a></div></li>
-<li class="level4"><div class="li"><a href="#templates">Templates</a></div></li>
-<li class="level4"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
-<li class="level4"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
-</ol></li>
-<li class="level3"><div class="li"><a href="#options">Options</a></div></li>
-<li class="level3"><div class="li"><a href="#links">Links</a></div></li>
+<ul>
+<li class="level3"><div class="li"><a href="#tclkit">Using tclkits</a></div></li>
+<li class="level3"><div class="li"><a href="#start">First start</a></div></li>
+<li class="level3"><div class="li"><a href="#nextstart">Using configurations</a></div></li>
+</ul>
+<li class="level2"><div class="li"><a href="#units">Units</a></div></li>
+<li class="level2"><div class="li"><a href="#projects">Projects</a></div></li>
+<li class="level2"><div class="li"><a href="#search">Search</a></div></li>
+<li class="level2"><div class="li"><a href="#tools">Tools</a></div>
+<ul>
+<li class="level3"><div class="li"><a href="#runtool"><i>Run</i> tool</a></div></li>
+<li class="level3"><div class="li"><a href="#helptool"><i>Tcl/Tk help</i> tool</a></div></li>
+<li class="level3"><div class="li"><a href="#custtool">Customizing tools</a></div></li>
+</ul></li>
+<li class="level2"><div class="li"><a href="#edit">Editing</a></div>
+<ul>
+<li class="level3"><div class="li"><a href="#contextmenu">Context menu</a></div></li>
+<li class="level3"><div class="li"><a href="#editmenu">Edit menu</a></div></li>
+<li class="level3"><div class="li"><a href="#searchmenu">Search menu</a></div></li>
+<li class="level3"><div class="li"><a href="#templates">Templates</a></div></li>
+<li class="level3"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
+<li class="level3"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
+</ul></li>
+<li class="level2"><div class="li"><a href="#options">Options</a></div></li>
+<li class="level2"><div class="li"><a href="#links">Links</a></div></li>
 </div>
 </div>
 <!-- TOC END -->
@@ -220,7 +223,7 @@ In Linux, possibly you need to install the packages:
 
 </div>
 
-<h2 id="tclkit">Usage with tclkits</h2>
+<h2 id="tclkit">Using tclkits</h2>
 <div class="level2">
 
 <p>
@@ -351,6 +354,65 @@ For example, I have two configuration directories of <span class="curid"><a href
 </p>
 
 <p>
+<br>
+
+</p>
+
+</div>
+
+<h2 id="nextstart">Using configurations</h2>
+<div class="level2">
+
+<p>
+At the next starts of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, you can use the following syntax (where <code>tclsh</code> is any of Tcl/Tk executables: <em>tclsh, wish, tclkit, vanillawish</em>):
+</p>
+
+<p>
+<b>1.</b> For using a previous configuration directory (if ~/.config was <b>not</b> used at all):
+<pre class="code">
+  tclsh alited.tcl
+</pre>
+</p>
+
+<p>
+<b>2.</b> The same, with opening file(s):
+<pre class="code">
+  tclsh alited.tcl file1.tcl ?file2.tcl ...?
+</pre>
+</p>
+
+<p>
+<b>3.</b> For using a new configuration directory (it should exist!):
+<pre class="code">
+  tclsh alited.tcl new-config-dir
+</pre>
+</p>
+
+<p>
+<b>4.</b> For using the default configuration directory by force:
+<pre class="code">
+  tclsh alited.tcl ~/.config
+</pre>
+</p>
+
+<p>
+<b>5.</b> The same, with <em>~/.config</em> used at least once:
+<pre class="code">
+  tclsh alited.tcl
+</pre>
+</p>
+
+<p>
+If you have been working with a configuration directory during some sessions of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, and now you want to switch to another configuration, just pass the new configuration directory name to <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> as the first argument.
+</p>
+
+<p>If <em>~/.config</em> was used at least once, then <code>tclsh alited.tcl</code> means using it independently on what directory was used before this call.
+
+<p>If <em>~/.config</em> was <b>not</b> used at all, then <code>tclsh alited.tcl</code> means using a previously used configuration directory while <em>~/.config</em> serves only to register the previous usages.
+</p>
+
+<p>
+By default, <a href="#tools">Tools</a> of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> are created per a configuration, in its separate <em>e_menu</em> subdirectory handled by <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a>. With <em>Preferences / Tools / e_menu</em> setting you can redefine <em>e_menu</em> directory in any configuration, e.g. to have it one and only.
 </p>
 
 <p>

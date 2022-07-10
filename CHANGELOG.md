@@ -1,20 +1,20 @@
 # LAST CHANGES:
 
 
-Version `1.2.4b14 (9 Jul'22)`
-
-  - TODO  : let ~/.config be default, but last config directory be saved in ini
+Version `1.2.4b14 (10 Jul'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
             (big-bug making alited unusable in some Magicsplat & Bawt distros)
   - BUGFIX: Preferences/Editor: don't touch snippets' bg color at choosing colors
-  - BUGFIX: update "Save all" icon at removing trail spaces
+  - BUGFIX: update "Save all" icon at removing trail spaces & "Replace in Session"
   - BUGFIX: choose e_menu items in Preferences, when set ornament (o=1) in menu.mnu
   - BUGFIX: switch projects at running alited in tkcon (skip ini::SaveCurrentIni)
   - BUGFIX: e_menu: corrected (for Windows, esp. XP), incl. test*.mnu
   - BUGFIX: e_menu: selected text as a code snippet for "Run Tcl {all selection}" item
   - BUGFIX: check for file modifications when "internal" e_menu opens a submenu
   - BUGFIX: check for existing menu of "internal" e_menu at running tools
+  - NEW   : let ~/.config be default, last config directory be saved in last.ini
+  - NEW   : "Setup/Configurations..." to switch configs
   - NEW   : "Setup/Before Run": a "forced command" to run by "Run" tool
             in console (or in Tkcon if the command begins with %f or file.tcl)
   - NEW   : tag the unit tree items with red color for TODO comments (#!...todo...),

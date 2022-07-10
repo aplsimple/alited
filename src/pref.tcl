@@ -1152,7 +1152,6 @@ proc pref::Common_Tab {} {
   # Serves to layout "Tools/Common" tab.
 
   fetchVars
-  set al(EM,mnu) [file join $al(EM,mnudir) [file tail $al(EM,mnu)]]
   if {$al(EM,Tcl) eq {}} {
     set al(TCLINIDIR) [info nameofexecutable]
   } else {
@@ -1211,8 +1210,6 @@ proc pref::Test_e_menu {} {
 proc pref::Emenu_Tab {} {
   # Serves to layout "Tools/e_menu" tab.
 
-  set alited::al(EM,mnu) [file join $alited::al(EM,mnudir) \
-    [file tail $alited::al(EM,mnu)]]
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
