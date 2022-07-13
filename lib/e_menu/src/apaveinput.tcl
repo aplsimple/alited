@@ -8,7 +8,7 @@
 
 package require Tk
 
-package provide apave 3.5.0a1
+package provide apave 3.5.0a2
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -103,7 +103,7 @@ oo::class create ::apave::APaveInput {
     foreach {name prompt valopts} $iopts {
       if {$name eq ""} continue
       lassign $prompt prompt gopts attrs
-      lassign [::apave::extractOptions attrs -method {}] ismeth
+      lassign [::apave::extractOptions attrs -method {} -toprev {}] ismeth toprev
       if {[string toupper $name 0] eq $name} {
         set ismeth yes  ;# overcomes the above setting
         set name [string tolower $name 0]
@@ -114,8 +114,6 @@ oo::class create ::apave::APaveInput {
         lappend inopts [list fraM.$name - - - - "pack -fill x $gopts"]
         continue
       }
-      set toprev [::apave::getOption -toprev {*}$attrs]
-      set attrs [::apave::removeOptions $attrs -toprev]
       set tvar "-tvar"
       switch -exact -- $typ {
         ch { set tvar "-var" }
@@ -133,7 +131,7 @@ oo::class create ::apave::APaveInput {
         # -method option forces making "WidgetName" method from "widgetName"
         my MakeWidgetName $ff [string toupper $name 0] -
       }
-      if {$typ ne "la" && $toprev eq ""} {
+      if {$typ ne {la} && $toprev eq {}} {
         set takfoc [::apave::parseOptions $attrs -takefocus 1]
         if {$focusopt eq "" && $takfoc} {
           if {$typ in {fi di cl fo da}} {
@@ -176,10 +174,10 @@ oo::class create ::apave::APaveInput {
           lappend inopts [list fraM.fra$name.sbv$name $ff L - - "pack -fill y"]
         }
         cb {
-          if {![info exist $vv]} {catch {set $vv ""}}
+          if {![info exist $vv]} {catch {set $vv $vsel}}
           lappend attrs -tvar $vv -values $vlist
-          if {$vsel ni {"" "-"}} {
-            lappend attrs -cbxsel "$::apave::UFF$vsel$::apave::UFF"
+          if {$vsel ni {{} -}} {
+            lappend attrs -cbxsel $::apave::UFF$vsel$::apave::UFF
           }
           lappend inopts [list $ff - - - - "pack -side left -expand 1 -fill x $gopts" $attrs]
         }

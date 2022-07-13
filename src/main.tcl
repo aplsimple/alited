@@ -136,7 +136,10 @@ proc main::ShowText {} {
   FocusText $TID $pos
   if {[set itemID [alited::tree::NewSelection]] ne {}} {
     # if a new unit is selected, show it in the unit tree
-    [$obPav Tree] see $itemID
+    set wtree [$obPav Tree]
+    $wtree see $itemID
+    # this code below redraws the tree's scrollbar
+    $wtree configure -yscrollcommand [$wtree cget -yscrollcommand]
   }
   focus $wtxt
   if {$selrange ne {}} {

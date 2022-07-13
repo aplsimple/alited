@@ -478,7 +478,7 @@ proc tool::DeleteForcedRun {} {
 
   namespace upvar ::alited al al obDl2 obDl2
   set cbx [$obDl2 Cbx]
-  set val [set [$cbx cget -textvariable]]
+  if {[set val [string trim [$cbx get]]] eq {}} return
   set values [$cbx cget -values]
   if {[set i [lsearch -exact $values $val]]>-1} {
     set al(comForceLs) [lreplace $values $i $i]
@@ -498,9 +498,13 @@ proc tool::BeforeRunDialogue {focrun} {
   set prompt1 [string range [msgcat::mc {Forcedly:}][string repeat { } 15] 0 15]
   set prompt2 [string range [msgcat::mc Commands:][string repeat { } 15] 0 15]
   set prompt3 [string range [msgcat::mc Test]:[string repeat { } 15] 0 15]
-  if {$al(comForce) eq {}} {set al(comForce) -}
-  if {[lindex $al(comForceLs) 0] ne {-}} {
-    set al(comForceLs) [linsert $al(comForceLs) 0 -]  ;# to allow blank value
+  if {[lindex $al(comForceLs) 0] eq {-}} {
+    set al(comForceLs) [lreplace $al(comForceLs) 0 0]  ;# legacy
+  }
+  if {[lindex $al(comForceLs) 0] ne {}} {
+    set i [lsearch $al(comForceLs) {}]
+    set al(comForceLs) [lreplace $al(comForceLs) $i $i]
+    set al(comForceLs) [linsert $al(comForceLs) 0 {}]  ;# to allow blank value
   }
 #! let this commented stuff be a code snippet for tracing apave variables, huh:
 #  after idle [list after 0 " \
@@ -514,8 +518,8 @@ proc tool::BeforeRunDialogue {focrun} {
     Tex "{$prompt2} {} {-w 80 -h 16 -tabnext cbx}" $run \
     seh2 {{} {-pady 15}} {} \
     lab {{} {} {-t { Also, you can set "forced command" to be run by "Run" tool:}}} {} \
-    Cbx [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce)]] $al(comForceLs) \
-    but1 [list {} {-padx 5} "-com {alited::tool::DeleteForcedRun} -takefocus 0 -tip Delete -toprev 1 -image [::apave::iconImage delete]"] {} \
+    Cbx [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
+    buT1 [list {} {-padx 5} "-com alited::tool::DeleteForcedRun -takefocus 0 -tip Delete -toprev 1 -image [::apave::iconImage no] -relief flat -highlightthickness 0"] {} \
     butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test}" [msgcat::mc Run] \
   ] -head $head {*}$foc -titleHELP {Help {alited::tool::HelpTool %w 2}}] res run com
   return [list $res $run $com]
@@ -538,7 +542,7 @@ proc tool::BeforeRunDlg {} {
       set al(comForceLs) $savForceLs
       break
     }
-    set al(comForce) $com
+    set al(comForce) [string trim $com]
     if {[ComForced]} {
       set i [lsearch -exact $al(comForceLs) $com]
       set al(comForceLs) [lreplace $al(comForceLs) $i $i]
@@ -803,6 +807,7 @@ proc tool::_run {{what ""} {runmode ""}} {
     if {[ComForced]} {
       ::alited::Message "$al(MC,run): $al(comForce)" 3
       set tc {}
+      set tw %t
       catch {
         if {[set fname [lindex $al(comForce) 0]] eq {%f}} {
           set fname [alited::bar::FileName]
@@ -810,9 +815,10 @@ proc tool::_run {{what ""} {runmode ""}} {
         if {[alited::file::IsTcl $fname] && !$al(tkcon,topmost)} {
           set tc \
             "tc=[alited::Tclexe] [alited::tool::tkconPath] [alited::tool::tkconOptions]"
+          set tw {}
         }
       }
-      e_menu ee=[string map [list \" \\\" \\ \\\\] $al(comForce)] \
+      e_menu ee=$tw[string map [list \" \\\" \\ \\\\] $al(comForce)] \
         f=[string map [list \\ \\\\] [alited::bar::FileName]] \
         pd=[string map [list \\ \\\\] $al(prjroot)] $tc
       return

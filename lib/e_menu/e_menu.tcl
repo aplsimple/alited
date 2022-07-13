@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.5.0a1}
+  variable em_version {e_menu 3.5.0a2}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -670,7 +670,7 @@ proc ::em::xterm {sel amp {term ""}} {
     -e {*}$composite
 }
 #___ call command in terminal
-proc ::em::term {sel amp {term ""}} {
+proc ::em::term {sel amp {inconsole no}} {
   if {[string match {xterm *} "$::em::linuxconsole "]} {
     ::em::xterm $sel $amp
   } else {
@@ -698,7 +698,11 @@ proc ::em::term {sel amp {term ""}} {
       }
     }
     set composite "$::em::lin_console $sel $amp"
-    ::em::execcom {*}$::em::linuxconsole -e {*}$composite
+    if {$inconsole} {
+      execWithPID $::em::linuxconsole\ -e\ $composite
+    } else {
+      execcom {*}$::em::linuxconsole -e {*}$composite
+    }
   }
 }
 #___ set/get pID of last exec
@@ -2253,8 +2257,13 @@ proc ::em::initcomm {} {
       %d [file dirname $::em::ar_geany(f)] \
       %pd $::em::pd \
       ] $::em::ee]
-    if {$::em::tc eq {} || [::iswindows]} {
+    if {[set inconsole [string match "%t*" $com]]} {
+      set com [string range $com 2 end]
+    }
+    if {[::iswindows]} {
       shell0 $com &
+    } elseif {$inconsole} {
+      term "$::em::tc $com" {} yes
     } else {
       execWithPID "$::em::tc $com"
     }

@@ -1112,8 +1112,11 @@ oo::class create ::apave::APave {
     }
     set attrs [my GetMC $attrs]
     if {$nam3 in {cbx ent enT fco spx spX}} {
-      ;# entry-like widgets need their popup menu
-      my AddPopupAttr $wnamefull attrs -entrypop 0 readonly disabled
+      # entry-like widgets need their popup menu
+      set clearcom [lindex [::apave::parseOptions $attrs -clearcom -] 0]
+      if {$clearcom eq {-}} {
+        my AddPopupAttr $wnamefull attrs -entrypop 0 readonly disabled
+      }
     }
     if {[string first pack [string trimleft $pack]]==0} {
       catch {
@@ -2180,20 +2183,38 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
-  method makePopup {w {isRO no} {istext no} {tearoff no} {addpop ""}} {
+  method clearEntry {w clearcom} {
+    # Clears entry-like widget's value, after calling a command.
+    #   w - widget's path
+    #   clearcom - a command to call, can have %w for *w* (widget's path)
+
+    if {$clearcom ne {}} {
+      {*}[string map "%w $w" $clearcom]
+    }
+    #! perhaps, needs refactoring:
+    if {[catch {$w delete 0 end}]} { ;# entry
+      if {[catch {$w set {}}]} {     ;# combobox
+        # others
+      }
+    }
+  }
+  #_______________________
+
+  method makePopup {w {isRO no} {istext no} {tearoff no} {addpop ""} {clearcom ""}} {
     # Makes a popup menu for an editable widget.
     #   w - widget's name
     #   isRO - flag for "is it readonly"
     #   istext - flag for "is it a text"
     #   tearoff - flag for "-tearoff" option
     #   addpop - additional commands for popup menu
+    #   clearcom - command for "Clear" item
 
     set pop $w.popupMenu
     catch {menu $pop -tearoff $tearoff}
     $pop delete 0 end
     if {$isRO || [$w cget -state] eq {disabled}} {
       $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label Copy \
-            -command "event generate $w <<Copy>>"
+        -command "event generate $w <<Copy>>"
       if {$istext} {
         eval [my popupHighlightCommands $pop $w]
         after idle [list [self] set_highlight_matches $w]
@@ -2201,16 +2222,16 @@ oo::class create ::apave::APave {
     } else {
       if {$istext} {
         $pop add command {*}[my iconA cut] -accelerator Ctrl+X -label Cut \
-              -command "::apave::eventOnText $w <<Cut>>"
+          -command "::apave::eventOnText $w <<Cut>>"
         $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label Copy \
-              -command "::apave::eventOnText $w <<Copy>>"
+          -command "::apave::eventOnText $w <<Copy>>"
         $pop add command {*}[my iconA paste] -accelerator Ctrl+V -label Paste \
-              -command "::apave::eventOnText $w <<Paste>>"
+          -command "::apave::eventOnText $w <<Paste>>"
         $pop add separator
         $pop add command {*}[my iconA undo] -accelerator Ctrl+Z -label Undo \
-              -command "::apave::eventOnText $w <<Undo>>"
+          -command "::apave::eventOnText $w <<Undo>>"
         $pop add command {*}[my iconA redo] -accelerator Ctrl+Shift+Z -label Redo \
-              -command "::apave::eventOnText $w <<Redo>>"
+          -command "::apave::eventOnText $w <<Redo>>"
         eval [my popupBlockCommands $pop $w]
         eval [my popupHighlightCommands $pop $w]
         if {$addpop ne {}} {
@@ -2220,12 +2241,17 @@ oo::class create ::apave::APave {
         after idle [list [self] set_highlight_matches $w]
         after idle [my setTextBinds $w]
       } else {
+        if {$clearcom ne {}} {
+          $pop add command {*}[my iconA no] -label Clear \
+            -command [list [self] clearEntry $w $clearcom]
+          $pop add separator
+        }
         $pop add command {*}[my iconA cut] -accelerator Ctrl+X -label Cut \
-              -command "event generate $w <<Cut>>"
+          -command "event generate $w <<Cut>>"
         $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label Copy \
-              -command "event generate $w <<Copy>>"
+          -command "event generate $w <<Copy>>"
         $pop add command {*}[my iconA paste] -accelerator Ctrl+V -label Paste \
-              -command "event generate $w <<Paste>>"
+          -command "event generate $w <<Paste>>"
       }
     }
     if {$istext} {
@@ -2258,7 +2284,7 @@ oo::class create ::apave::APave {
         -entrypop - -entrypopRO - -textpop - -textpopRO - -ListboxSel - \
         -callF2 - -timeout - -bartabs - -onReturn - -linkcom - -selcombobox - \
         -afteridle - -gutter - -propagate - -columnoptions - -selborderwidth -
-        -selected - -popup - -bindEC - -tags - -debug {
+        -selected - -popup - -bindEC - -tags - -debug - -clearcom {
           # attributes specific to apave, processed below in "Post"
           set v2 [string trimleft $v "\{"]
           set v2 [string range $v2 0 end-[expr {[string length $v]-[string length $v2]}]]
@@ -2331,6 +2357,9 @@ oo::class create ::apave::APave {
           if {[winfo exists $v]} {
             my makePopup $v [expr {$a eq {-entrypopRO}}]
           }
+        }
+        -clearcom {
+          my makePopup $w no no no {} $v   ;# popup menu with "Clear" command
         }
         -textpop - -textpopRO {
           if {[winfo exists $v]} {

@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.4b14 (10 Jul'22)`
+Version `1.2.4b15 (13 Jul'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
             (big-bug making alited unusable in some Magicsplat & Bawt distros)
@@ -13,13 +13,14 @@ Version `1.2.4b14 (10 Jul'22)`
   - BUGFIX: e_menu: selected text as a code snippet for "Run Tcl {all selection}" item
   - BUGFIX: check for file modifications when "internal" e_menu opens a submenu
   - BUGFIX: check for existing menu of "internal" e_menu at running tools
-  - NEW   : let ~/.config be default, last config directory be saved in last.ini
-  - NEW   : "Setup/Configurations..." to switch configs
   - NEW   : "Setup/Before Run": a "forced command" to run by "Run" tool
             in console (or in Tkcon if the command begins with %f or file.tcl)
   - NEW   : tag the unit tree items with red color for TODO comments (#!...todo...),
             these TODOs being in tooltips of the tree
-  - NEW   : tooltips for statusbar message; Preferences themes/CS; rename-file button
+  - NEW   : let ~/.config be default, last config directory be saved in last.ini
+  - NEW   : "Setup/Configurations..." to switch configs
+  - NEW   : "Configurations..." has combobox of used configs, "Clear" of popup menu
+  - NEW   : tooltips: statusbar message; Preferences themes/CS; rename-file button
   - NEW   : warning at EXEC/SHELL of e_menu
   - NEW   : "Help" button / F1 in "Setup / After Start (Before Run)"
   - NEW   : between sessions, save/restore "Wrap lines" mode for files of projects

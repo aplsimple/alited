@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.4b14  ;# for documentation (esp. for Ruff!)
+package provide alited 1.2.4b15  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -77,7 +77,10 @@ namespace eval alited {
   # directories of user's data
   variable CONFIGDIRSTD [file normalize {~/.config}]
   variable USERLASTINI [file join $CONFIGDIRSTD alited last.ini]
+
+  # configurations
   variable CONFIGDIR $CONFIGDIRSTD
+  variable CONFIGS [list]
 
   # two main objects to build forms (just some unique names)
   variable obPav ::alited::alitedpav
@@ -224,23 +227,35 @@ if {[package versions alited] eq {}} {
   set ALITED_ARGV [list]
   foreach _ $::argv {lappend ALITED_ARGV [file normalize $_]}
 
-  ## ____________________ Get a port to listen __________________ ##
+  ## ____________________ Last configuration __________________ ##
 
+  set readalitedCONFIGS no
+  set isalitedCONFIGS [file exists $alited::USERLASTINI]
   set _ [lindex $ALITED_ARGV 0]
   if {![llength $ALITED_ARGV] || ![file isdirectory $_]} {
     alited::main_user_dirs
     if {(![file exists $alited::INIDIR] || ![file exists $alited::PRJDIR]) && \
-    [file exists $alited::USERLASTINI]} {
+    $isalitedCONFIGS} {
       # read INIDIR & PRJDIR that were last entered
       lassign [split [::apave::readTextFile $alited::USERLASTINI] \n] \
-        alited::INIDIR alited::PRJDIR
+        alited::INIDIR alited::PRJDIR alited::CONFIGS
       set alited::CONFIGDIR [file dirname [file dirname $alited::INIDIR]]
+      set readalitedCONFIGS yes
     }
     set _ $alited::CONFIGDIR
   } else {
     set alited::CONFIGDIR $_
     set ALITED_ARGV [lrange $ALITED_ARGV 1 end]
   }
+  if {!$readalitedCONFIGS && $isalitedCONFIGS} {
+    # read configurations used
+    set alited::CONFIGS [lindex [split [::apave::readTextFile $alited::USERLASTINI] \n] 2]
+  }
+  unset readalitedCONFIGS
+  unset isalitedCONFIGS
+
+  ## ____________________ Port to listen __________________ ##
+
   # try to read alited.ini
   set _ [file join $_ alited ini alited.ini]
   if {![catch {set _ [open $_]}]} {
@@ -409,10 +424,8 @@ namespace eval alited {
     }
     if {$first} {
       set msec [expr {200*$slen}]
-      if {$mode eq {4}} {
-        set opts "-fg $fgred -bg $bg -font {-weight bold}"
-      } elseif {$mode in {3 5}} {
-        set opts "-fg $fgbold -bg $bg -font {-weight bold}"
+      if {$mode in {2 3 4 5}} {
+        set opts "-font {$fontB}"
       } else {
         set opts {}
       }

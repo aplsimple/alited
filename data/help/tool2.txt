@@ -29,5 +29,5 @@
 
  <r>Note:</r> clear this command to return to "normal" mode of <b>Run</b>.
 
- Anyhow, "Run me" of <b>e_menu</b> tool allows you to run a current file
- in its "normal" mode by its associated application.
+ Anyhow, "Run me" of <b>e_menu</b> tool allows you to run a current file in
+ its "normal" mode by its associated application. Press F4 twice for this.

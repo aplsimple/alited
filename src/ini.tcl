@@ -179,6 +179,7 @@ namespace eval ::alited {
 
 namespace eval ini {
   variable afterID {}  ;# after ID used by SaveCurrentIni proc
+  variable configs {}  ;# list of configurations
 }
 
 # ________________________ Reading common settings _________________________ #
@@ -745,7 +746,8 @@ proc ini::SaveIni {{newproject no}} {
   close $chan
   SaveIniPrj $newproject
   # save last directories entered
-  set lastini [file dirname $::alited::al(INI)]\n[file dirname $al(prjfile)]
+  set lastini \
+    [file dirname $::alited::al(INI)]\n[file dirname $al(prjfile)]\n$::alited::CONFIGS
   ::apave::writeTextFile $::alited::USERLASTINI lastini
 }
 #_______________________
@@ -825,18 +827,51 @@ proc ini::SaveIniPrj {{newproject no}} {
 
 # ______________________ Initializing alited app ______________________ #
 
+proc ini::ClearConfigs {cbx} {
+  # Clears the combobox's value of configuration.
+  #   cbx - the combobox's path
+
+  variable configs
+  set val [string trim [$cbx get]]
+  set values [$cbx cget -values]
+  if {[set i [lsearch -exact $values $val]]>-1} {
+    set al(comForceLs) [lreplace $values $i $i]
+    $cbx configure -values $al(comForceLs)
+  }
+  set configs [$cbx cget -values]
+}
+#_______________________
+
 proc ini::GetConfiguration {} {
   # Gets the configuration directory's name.
 
   namespace upvar ::alited al al
+  variable configs
+  set configs $::alited::CONFIGS
+  if {![llength $configs]} {lappend configs $::alited::CONFIGDIR}
+  if {[lindex $configs 0] eq {-}} {
+    set configs [lreplace $configs 0 0]  ;# legacy
+  }
   ::apave::APaveInput create pobj
   set head [string map [list %d $::alited::CONFIGDIRSTD] $al(MC,chini2)]
   set res [pobj input info $al(MC,chini1) [list \
-      dir1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50]] "{$::alited::CONFIGDIR}" \
-    ] -size 14 -weight bold -head $head]
+      diR1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50 \
+        -values $configs -clearcom {alited::ini::ClearConfigs %w}]] \
+        "{$::alited::CONFIGDIR}" \
+    ] -weight bold -head $head]
   pobj destroy
   lassign $res ok confdir
-  if {$ok} {set ::alited::CONFIGDIR $confdir}
+  if {$ok} {
+    if {[set confdir [string trim $confdir]] eq {}} {
+      set ok no
+    } else {
+      set ::alited::CONFIGDIR $confdir
+      if {[set i [lsearch -exact $configs $confdir]]>-1} {
+        set configs [lreplace $configs $i $i]
+      }
+      set ::alited::CONFIGS [linsert $configs 0 $confdir]
+    }
+  }
   return $ok
 }
 
