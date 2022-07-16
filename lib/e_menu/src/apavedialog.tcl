@@ -10,7 +10,21 @@ package require Tk
 
 source [file join [file dirname [info script]] apave.tcl]
 
+
+# ________________________ apave NS _________________________ #
+
 namespace eval ::apave {
+
+  variable querydlg {}
+
+  proc dlgPath {}  {
+    # Gets a current dialogue's path.
+    # In fact, it does the same as [my dlgPath], but it can be
+    # called outside of apave dialogue object (useful sometimes).
+
+    return $::apave::querydlg
+  }
+
 }
 
 # ________________________ APaveDialog class _________________________ #
@@ -845,7 +859,7 @@ oo::class create ::apave::APaveDialog {
         set neighbor [lindex $widlist end 1]
         set widlist [lreplace $widlist end end]
         lappend widlist [list $but $neighbor T 1 1 {-st w} \
-          "-t \"$txt\" -com \"$com\"$tt $tmo"]
+          "-t \"$txt\" -com \"$com\"$tt $tmo -tip F1"]
         set h h_Help
         lappend widlist [list $h $but L 1 94 {-st we}]
         set neighbor $h
@@ -932,6 +946,9 @@ oo::class create ::apave::APaveDialog {
       switch -- $opt {
         -H - -head {
           set head [string map {$ \$ \" \'\' \{ ( \} )} $val]
+        }
+        -help {
+          set buttons "butHELP Help {$val} $buttons"
         }
         -ch - -checkbox {set chmsg "$val"}
         -g - -geometry {
@@ -1306,6 +1323,7 @@ oo::class create ::apave::APaveDialog {
     }
     catch "$binds"
     set args [::apave::removeOptions $args -focus]
+    set ::apave::querydlg $qdlg
     my showModal $qdlg -themed $themed \
       -focus $focusnow -geometry $geometry {*}$root {*}$modal {*}$ontop {*}$args
     oo::objdefine [self] unexport InitFindInText Pdg

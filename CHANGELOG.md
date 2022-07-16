@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.2.4b15 (13 Jul'22)`
+Version `1.3.0a1 (15 Jul'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
             (big-bug making alited unusable in some Magicsplat & Bawt distros)
@@ -17,9 +17,10 @@ Version `1.2.4b15 (13 Jul'22)`
             in console (or in Tkcon if the command begins with %f or file.tcl)
   - NEW   : tag the unit tree items with red color for TODO comments (#!...todo...),
             these TODOs being in tooltips of the tree
+  - NEW   : MS cmd.exe & powershell.exe as choices for MS shell
   - NEW   : let ~/.config be default, last config directory be saved in last.ini
   - NEW   : "Setup/Configurations..." to switch configs
-  - NEW   : "Configurations..." has combobox of used configs, "Clear" of popup menu
+  - NEW   : "Configurations..." has combobox of configs, "Clear" of popup menu, "Help"
   - NEW   : tooltips: statusbar message; Preferences themes/CS; rename-file button
   - NEW   : warning at EXEC/SHELL of e_menu
   - NEW   : "Help" button / F1 in "Setup / After Start (Before Run)"
@@ -28,6 +29,7 @@ Version `1.2.4b15 (13 Jul'22)`
   - NEW   : About / Packages
   - NEW   : "Don't show anymore" checkbutton for Open... multiple files & Open all Tcl
   - NEW   : "Setup/Favorites...": "Current favorites" button added
+  - CHANGE: "Preferences/Tools/Diff tool" to compare left & right tabs (in utils.mnu)
   - CHANGE: font size in "external" e_menu is "middle" of Preferences/General
   - CHANGE: save geometry of main menu of "internal" e_menu, ignoring other menus
   - CHANGE: "Setup/Favorites...": "Back" button: come-back to project's initial favs

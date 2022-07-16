@@ -867,7 +867,7 @@ proc ::em::IF {sel {callcommName ""}} {
               ::apave::openDoc $argm
             } else {
               if {[::iswindows]} {
-                set comm "cmd.exe /c $comm"
+                set comm $::em::windowsconsole\ $comm
               }
               if {[catch {exec -- {*}$comm &} e]} {
                 em_message "ERROR: incorrect command of IF:\n$comm\n\n($e)"

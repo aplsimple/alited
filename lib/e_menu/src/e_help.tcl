@@ -55,9 +55,11 @@ proc ::eh::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {
   return $ans
 }
 #=== get terminal's name
-proc ::eh::get_tty {inconsole} {
-  if {[::iswindows]} {set tty "cmd.exe /K"} \
-  elseif {$inconsole ne {}} {set tty $inconsole} \
+proc ::eh::get_tty {interminal inconsole} {
+  if {[::iswindows]} {
+    set tty [string map [list /c /K] $inconsole]
+  } \
+  elseif {$interminal ne {}} {set tty $interminal} \
   elseif {[auto_execok lxterminal] ne {}} {set tty lxterminal} \
   else {set tty xterm}
   return $tty

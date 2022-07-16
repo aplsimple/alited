@@ -244,9 +244,9 @@ proc menu::Configurations {} {
 
   ## ________________________ Help _________________________ ##
   set m [set al(MENUHELP) $al(WIN).menu.help]
-  $m add command -label "$al(MC,help): Tcl/Tk" -command alited::tool::Help -accelerator F1
+  $m add command -label Tcl/Tk -command alited::tool::Help -accelerator F1
+  $m add command -label alited -command alited::HelpAlited
   $m add separator
-  $m add command -label "$al(MC,help): alited" -command alited::HelpAlited
   $m add command -label [msgcat::mc "About..."] -command alited::HelpAbout
   FillRecent
 }

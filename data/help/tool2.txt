@@ -27,7 +27,8 @@
    <b>%d</b>  - current file's directory
    <b>%pd</b> - project's directory
 
- <r>Note:</r> clear this command to return to "normal" mode of <b>Run</b>.
+ <r>Note:</r> clear the command to return to "normal" mode of <b>Run</b>. Use
+ the context menu to remove the command from the combobox' list as well.
 
  Anyhow, "Run me" of <b>e_menu</b> tool allows you to run a current file in
  its "normal" mode by its associated application. Press F4 twice for this.

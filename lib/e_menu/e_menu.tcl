@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.5.0a2}
+  variable em_version {e_menu 3.5.0a3}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -201,7 +201,7 @@ namespace eval ::em {
   variable truesel 0
   variable ln 0 cn 0 yn 0 dk {}
   variable ismenuvars 0 optsFromMenu 1
-  variable linuxconsole {}
+  variable linuxconsole {} windowsconsole {cmd.exe /c}
   variable insteadCSlist [list]
   variable source_addons true
   variable empool [list]
@@ -761,7 +761,7 @@ proc ::em::shell0 {sel amp {silent -1}} {
       set composite "$::em::win_console.bat $amp"
     }
     if {[catch {exec -- {*}[auto_execok start] \
-      cmd.exe /c {*}"$composite"} e]} {
+      {*}$::em::windowsconsole {*}$composite} e]} {
       if {$silent < 0} {
         set ret false
       }
@@ -843,7 +843,7 @@ proc ::em::run0 {sel amp silent} {
     } else {
       set comm "$sel $amp"
       if {[::iswindows]} {
-        set comm "cmd.exe /c $comm"
+        set comm $::em::windowsconsole\ $comm
       }
       catch {set comm [subst -nobackslashes -nocommands $comm]}
       if {[set e [execom $comm]] ne {}} {
@@ -1398,7 +1398,8 @@ proc ::em::prepr_pn {refpn {dt 0}} {
   prepr_1 pn RF $RF                 ;# %RF is contents of #RUNF..: line
   prepr_1 pn EE $EE                 ;# %EE is contents of #EXEC..: line
   prepr_1 pn L  [get_L]             ;# %L is contents of %l-th line
-  prepr_1 pn TT [::eh::get_tty $::em::linuxconsole] ;# %TT is a terminal
+  prepr_1 pn TT \
+    [::eh::get_tty $::em::linuxconsole $::em::windowsconsole] ;# %TT is terminal
   set pndt [prepr_dt pn]
   if {$dt} {return $pndt} {return $pn}
 }
@@ -1971,7 +1972,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
   set resetpercent2 0
   foreach s1 {tc= a0= P= N= PD= PN= F= o= ln= cn= s= u= w= sh= \
   qq= dd= ss= pa= ah= += bd= b0= b1= b2= b3= b4= dk= \
-  f1= f2= f3= fs= a1= a2= ed= tf= tg= md= wc= tt= pk= \
+  f1= f2= f3= fs= a1= a2= ed= tf= tg= md= wc= tt= wt= pk= \
   t0= t1= t2= t3= t4= t5= t6= t7= t8= t9= \
   s0= s1= s2= s3= s4= s5= s6= s7= s8= s9= \
   u0= u1= u2= u3= u4= u5= u6= u7= u8= u9= \
@@ -2146,8 +2147,16 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           set ::em::$s01 $seltd
           ::apave::setProperty DirFilGeoVars [list ::em::g1 ::em::g2]
         }
-        tt= { ;# terminal (e.g. "tt=xterm -fs 12 -geometry 90x30+400+100")
+        tt= { ;# linux terminal (e.g. "tt=xterm -fs 12 -geometry 90x30+400+100")
           set ::em::linuxconsole $seltd
+        }
+        wt= { ;# windows terminal (e.g. wt=powershell, wt=cmd.exe)
+          if {$seltd eq {cmd.exe}} {
+            append seltd { /c}
+          } else {
+            append seltd { -nologo}
+          }
+          set ::em::windowsconsole $seltd
         }
         default {
           if {$s1 in {TF=} || [string range $s1 0 0] in {x y z}} {

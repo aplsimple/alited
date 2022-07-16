@@ -106,6 +106,8 @@ namespace eval ::alited {
   set al(EM,h=) ~/DOC/www.tcl.tk/man/tcl8.6
   set al(EM,tt=) x-terminal-emulator
   set al(EM,tt=List) "$al(EM,tt=)\tlxterminal --geometry=220x55\txterm"
+  set al(EM,wt=) cmd.exe
+  set al(EM,wt=List) "$al(EM,wt=)\tpowershell.exe"
   set al(EM,mnu) menu.mnu
   set al(EM,mnudir) {}
   set al(EM,CS) 33
@@ -407,20 +409,9 @@ proc ini::ReadIniEM {nam val emiName} {
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
   upvar $emiName em_i
   switch -exact $nam {
-    emgeometry {set al(EM,geometry) $val}
-    emsave     {set al(EM,save) $val}
     emPD       {set al(EM,PD=) $val}
     emTcl      {set al(EM,Tcl) $val}
     emTclList  {set al(EM,TclList) $val}
-    emh        {set al(EM,h=) $val}
-    emtt       {set al(EM,tt=) $val}
-    emttList   {set al(EM,tt=List) $val}
-    emmenu     {if {[file exists $val]} {set al(EM,mnu) $val}}
-    emmenudir  {if {[file exists $val]} {set al(EM,mnudir) $val}}
-    emcs       {set al(EM,CS) $val}
-    emowncs    {set al(EM,ownCS) $val}
-    emexec     {set al(EM,exec) $val}
-    emdiff     {set al(EM,DiffTool) $val}
     em_run {
       if {$em_i < $em_Num} {
         lassign [split $val \t] em_sep($em_i) em_ico($em_i) em_inf($em_i)
@@ -428,6 +419,21 @@ proc ini::ReadIniEM {nam val emiName} {
       }
       incr em_i
     }
+  }
+  if {[string trim $val] eq {}} return  ;# options below should be non-empty
+  switch -exact $nam {
+    emgeometry {set al(EM,geometry) $val}
+    emsave     {set al(EM,save) $val}
+    emtt       {set al(EM,tt=) $val}
+    emttList   {set al(EM,tt=List) $val}
+    emwt       {set al(EM,wt=) $val}
+    emmenu     {if {[file exists $val]} {set al(EM,mnu) $val}}
+    emmenudir  {if {[file exists $val]} {set al(EM,mnudir) $val}}
+    emcs       {set al(EM,CS) $val}
+    emowncs    {set al(EM,ownCS) $val}
+    emdiff     {set al(EM,DiffTool) $val}
+    emh        {set al(EM,h=) $val}
+    emexec     {set al(EM,exec) $val}
   }
 }
 #_______________________
@@ -693,6 +699,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "emh=$al(EM,h=)"
   puts $chan "emtt=$al(EM,tt=)"
   puts $chan "emttList=$al(EM,tt=List)"
+  puts $chan "emwt=$al(EM,wt=)"
   puts $chan "emmenu=$al(EM,mnu)"
   puts $chan "emmenudir=$al(EM,mnudir)"
   puts $chan "emcs=$al(EM,CS)"
@@ -827,39 +834,31 @@ proc ini::SaveIniPrj {{newproject no}} {
 
 # ______________________ Initializing alited app ______________________ #
 
-proc ini::ClearConfigs {cbx} {
-  # Clears the combobox's value of configuration.
-  #   cbx - the combobox's path
-
-  variable configs
-  set val [string trim [$cbx get]]
-  set values [$cbx cget -values]
-  if {[set i [lsearch -exact $values $val]]>-1} {
-    set al(comForceLs) [lreplace $values $i $i]
-    $cbx configure -values $al(comForceLs)
-  }
-  set configs [$cbx cget -values]
-}
-#_______________________
-
 proc ini::GetConfiguration {} {
   # Gets the configuration directory's name.
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al obDl2 obDl2
   variable configs
   set configs $::alited::CONFIGS
   if {![llength $configs]} {lappend configs $::alited::CONFIGDIR}
   if {[lindex $configs 0] eq {-}} {
     set configs [lreplace $configs 0 0]  ;# legacy
   }
-  ::apave::APaveInput create pobj
   set head [string map [list %d $::alited::CONFIGDIRSTD] $al(MC,chini2)]
-  set res [pobj input info $al(MC,chini1) [list \
+  set pobj $obDl2
+  if {[info commands $pobj] eq {}} {
+    # at first start, there are no apave objects bound to the main window of alited
+    # -> create an independent one to be deleted afterwards
+    set pobj alitedObjToDel
+    ::apave::APaveInput create $pobj
+  }
+  set res [$pobj input {} $al(MC,chini1) \
+    [list \
       diR1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50 \
-        -values $configs -clearcom {alited::ini::ClearConfigs %w}]] \
+        -values $configs -clearcom {alited::main::ClearCbx %w ::alited::ini::configs}]] \
         "{$::alited::CONFIGDIR}" \
-    ] -weight bold -head $head]
-  pobj destroy
+    ] -head $head -help alited::ini::HelpConfiguration]
+  catch {alitedObjToDel destroy}
   lassign $res ok confdir
   if {$ok} {
     if {[set confdir [string trim $confdir]] eq {}} {
@@ -874,7 +873,13 @@ proc ini::GetConfiguration {} {
   }
   return $ok
 }
+#_______________________
 
+proc ini::HelpConfiguration {} {
+  # Shows a help on Configurations dialogue.
+
+  alited::Help [apave::dlgPath]
+}
 # ______________________ Initializing alited app ______________________ #
 
 proc ini::CheckIni {} {

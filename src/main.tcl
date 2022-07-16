@@ -30,6 +30,21 @@ proc main::GetWTXT {TID} {
 
   return [alited::bar::GetTabState $TID --wtxt]
 }
+#_______________________
+
+proc main::ClearCbx {cbx varname} {
+  # Clears a combobox's value and removes it from the combobox' list.
+  #   cbx - the combobox's path
+  #   varname - name of variable used in the current namespace
+
+  set val [string trim [$cbx get]]
+  set values [$cbx cget -values]
+  if {[set i [lsearch -exact $values $val]]>-1} {
+    set values [lreplace $values $i $i]
+    $cbx configure -values $values
+  }
+  set $varname $values
+}
 
 # ________________________ Get and show text widget _________________________ #
 

@@ -40,6 +40,7 @@ pos=57.47
  RE: Open directory "%D" RE: %IF [::iswindows] %THEN explorer.exe "%d" %ELSE %O "%d"
 
  RE: Open terminal in "%D" RE: cd %d
+ SE: Open terminal in "%D" SE: %IF [::iswindows] %THEN %TT
  RE: Open terminal in "%D" RE: %TT
 
  M: - M: 3

@@ -221,7 +221,7 @@ proc tool::EM_Options {opts} {
   } else {
     set srcdir {}
   }
-  if {$al(EM,DiffTool) ne {}} {append ls " DF=$al(EM,DiffTool)"}
+  if {$al(EM,DiffTool) ne {}} {set df DF=$al(EM,DiffTool)} {set df {}}
   set l [[alited::main::CurrentWTXT] index insert]
   set l [expr {int($l)}]
   set dirvar [set filvar [set tdir {}]]
@@ -238,8 +238,8 @@ proc tool::EM_Options {opts} {
   set ed [info nameofexecutable]\ $SCRIPTNORMAL\ $CONFIGDIR
   set R [list "md=$al(EM,mnudir)" "m=$al(EM,mnu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
-    o=-1 om=0 g=$al(EM,geometry) $z6 $z7 {*}$ls {*}$opts {*}$srcdir \
-    {*}$dirvar {*}$filvar th=$al(THEME) td=$tdir ed=$ed]
+    o=-1 om=0 g=$al(EM,geometry) $z6 $z7 {*}$ls $df {*}$opts {*}$srcdir \
+    {*}$dirvar {*}$filvar th=$al(THEME) td=$tdir ed=$ed wt=$al(EM,wt=)]
   set res {}
   foreach r $R {append res "\"$r\" "}
   return $res
@@ -429,7 +429,7 @@ proc tool::AfterStartDlg {} {
   set run [string map [list $alited::EOL \n] $al(afterstart)]
   lassign [$obDl2 input {} $al(MC,afterstart) [list \
     tex "{[msgcat::mc Commands:]    } {} {-w 80 -h 16 -tabnext butOK}" "$run" ] \
-      -head $head -titleHELP {Help {alited::tool::HelpTool %w 1}}] res run
+      -head $head -help {alited::tool::HelpTool %w 1}] res run
   if {$res} {
     set al(afterstart) [string map [list \n $alited::EOL] [string trim $run]]
     alited::ini::SaveIni
@@ -521,7 +521,7 @@ proc tool::BeforeRunDialogue {focrun} {
     Cbx [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
     buT1 [list {} {-padx 5} "-com alited::tool::DeleteForcedRun -takefocus 0 -tip Delete -toprev 1 -image [::apave::iconImage no] -relief flat -highlightthickness 0"] {} \
     butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test}" [msgcat::mc Run] \
-  ] -head $head {*}$foc -titleHELP {Help {alited::tool::HelpTool %w 2}}] res run com
+  ] -head $head {*}$foc -help {alited::tool::HelpTool %w 2}] res run com
   return [list $res $run $com]
 }
 

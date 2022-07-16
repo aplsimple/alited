@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.2.4b15  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.0a1  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -490,6 +490,7 @@ namespace eval alited {
     #   fname - the file's name
     #   args - option of msg
 
+    variable obDlg
     set fS [lindex [::hl_tcl::hl_colors {} [::apave::obj csDark]] 1]
     set ::alited::textTags [list \
       [list "r" "-font {-weight bold} -foreground $fS"] \
@@ -515,8 +516,17 @@ namespace eval alited {
       }
       set wmax [expr {max($wmax,[string length $ln]+$occ)}]
     }
-    return [msg ok {} $msg -title Help -text 1 -geometry root=$win -scroll no \
+    set pobj $obDlg
+    if {[info commands $pobj] eq {}} {
+      # at first start, there are no apave objects bound to the main window of alited
+      # -> create an independent one to be deleted afterwards
+      set pobj alitedHelpObjToDel
+      ::apave::APaveInput create $pobj
+    }
+    set res [$pobj ok {} Help "\n$msg\n" -text 1 -geometry root=$win -scroll no \
       -tags ::alited::textTags -w [incr wmax] -modal no -ontop yes {*}$args]
+    catch {alitedHelpObjToDel destroy}
+    return $res
   }
   #_______________________
 

@@ -308,6 +308,12 @@ proc pref::Ok {args} {
       if {$tt ni [split $al(EM,tt=List) \t]} {append al(EM,tt=List) \t $tt}
     }
     set al(EM,tt=List) [string trim $al(EM,tt=List)]
+    catch {set al(WTLIST) [lreplace $al(WTLIST) 32 end]}
+    set al(EM,wt=List) $al(EM,wt=)
+    foreach wt $al(WTLIST) {
+      if {$wt ni [split $al(EM,wt=List) \t]} {append al(EM,wt=List) \t $wt}
+    }
+    set al(EM,wt=List) [string trim $al(EM,wt=List)]
     set plst [lsort [list {} $al(comm_port) {*}$al(comm_port_list)]]
     set al(comm_port_list) [list]
     foreach pt $plst {
@@ -1160,12 +1166,13 @@ proc pref::Common_Tab {} {
   set al(TCLINIDIR) [file dirname $al(TCLINIDIR)]
   set al(TCLLIST) [split $al(EM,TclList) \t]
   set al(TTLIST) [split $al(EM,tt=List) \t]
+  set al(WTLIST) [split $al(EM,wt=List) \t]
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode x}}
     {.labTcl - - 1 1 {-st w -pady 1 -padx 3} {-t "tclsh, wish or tclkit:"}}
-    {.fiLTcl .labTcl L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,Tcl) -values {$alited::al(TCLLIST)} -w 48 -initialdir $alited::al(TCLINIDIR)}}
+    {.fiLTcl .labTcl L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,Tcl) -values {$alited::al(TCLLIST)} -w 48 -initialdir $alited::al(TCLINIDIR) -clearcom {alited::main::ClearCbx %w ::alited::al(TCLLIST)}}}
     {.labRun .labTcl T 1 1 {-st w -pady 1 -padx 3} {-t "$al(MC,run):"}}
     {.fraRun .labRun L 1 1 {-st sw -pady 5}}
     {.fraRun.radRunCons - - 1 1 {} {-var alited::al(tkcon,topmost) -value 1 -t {$alited::al(MC,inconsole)} -tip {Also, this makes "tkcon" topmost.}}}
@@ -1173,12 +1180,13 @@ proc pref::Common_Tab {} {
     {.labDoc .labRun T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl8.6:"}}
     {.dirDoc .labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 48}}
     {.labTT .labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
-    {.cbxTT .labTT L 1 1 {-st swe -pady 5} {-tvar alited::al(EM,tt=) -w 48 -values {$alited::al(TTLIST)}}}
-    {.labDF .labTT T 1 1 {-st w -pady 1 -padx 3} {-t "Diff tool:"}}
+    {.cbxTT .labTT L 1 1 {-st swe -pady 5} {-tvar alited::al(EM,tt=) -w 48 -values {$alited::al(TTLIST)} -clearcom {alited::main::ClearCbx %w ::alited::al(TTLIST)}}}
+    {.labWT .labTT T 1 1 {-st w -pady 1 -padx 3} {-t "MS Windows shell:"}}
+    {.cbxWT .labWT L 1 1 {-st swe -pady 5} {-tvar alited::al(EM,wt=) -w 48 -values {$alited::al(WTLIST)}}}
+    {.labDF .labWT T 1 1 {-st w -pady 1 -padx 3} {-t "Diff tool:"}}
     {.filDF .labDF L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 48}}
   }
 }
-
 
 ## ________________________ e_menu _________________________ ##
 
@@ -1573,8 +1581,11 @@ proc pref::_create {tab} {
   bind $win <Control-o> alited::ini::EditSettings
   bind $win <F1> "[$obDl2 ButHelp] invoke"
   $obDl2 untouchWidgets *.texSample *.texCSample
+
+  # open Preferences dialogue
   set res [$obDl2 showModal $win -geometry $geo -minsize {800 600} \
     -onclose ::alited::pref::Cancel]
+
   set fcont [$wtxt get 1.0 {end -1c}]
   ::apave::writeTextFile $fnotes fcont
   if {[llength $res] < 2} {set res ""}
