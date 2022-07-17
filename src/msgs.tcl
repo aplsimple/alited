@@ -157,6 +157,8 @@ namespace eval ::alited {
     set al(MC,prjTundo)    [msgcat::mc {Undo changes}]
     set al(MC,prjTredo)    [msgcat::mc {Redo changes}]
     set al(MC,prjTtext)    [msgcat::mc {Text of a reminder}]
+    set al(MC,prjTnext)    [msgcat::mc {Move TODO to next day}]
+    set al(MC,prjTnext2)   [msgcat::mc {Move TODO to next week}]
     set al(MC,TipLbx)      [msgcat::mc "You may select file(s)\nand open them with a context menu.\n\nOr just double-click."]
 
     ## _ favorites _ ##

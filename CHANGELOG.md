@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.0a1 (15 Jul'22)`
+Version `1.3.0a2 (17 Jul'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
             (big-bug making alited unusable in some Magicsplat & Bawt distros)
@@ -17,6 +17,7 @@ Version `1.3.0a1 (15 Jul'22)`
             in console (or in Tkcon if the command begins with %f or file.tcl)
   - NEW   : tag the unit tree items with red color for TODO comments (#!...todo...),
             these TODOs being in tooltips of the tree
+  - NEW   : "Move TODO to day/week" buttons in "Projects..."
   - NEW   : MS cmd.exe & powershell.exe as choices for MS shell
   - NEW   : let ~/.config be default, last config directory be saved in last.ini
   - NEW   : "Setup/Configurations..." to switch configs

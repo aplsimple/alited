@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.0a1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.0a2  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -550,7 +550,7 @@ namespace eval alited {
     variable al
     if {[lsearch -exact $al(HelpedMe) $win]>-1} return
     set ans [HelpFile $win [HelpFname $win $suff] -ch $al(MC,noask)]
-    if {$ans==11} {
+    if {[lindex $ans 0]==11} {
       lappend al(HelpedMe) $win
     }
   }

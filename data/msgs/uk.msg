@@ -243,6 +243,8 @@ namespace eval ::alited {
     {No selected files} {Немає виділених файлів}
     {Open file:} {Відкрито файл:}
     {Open files: %n} {Файлів на відкриття: %n}
+    {Move TODO to next day} {Перенести TODO на день}
+    {Move TODO to next week} {Перенести TODO на тиждень}
   }
 
   ## ________________________ Favorites ________________________ ##

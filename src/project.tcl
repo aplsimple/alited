@@ -100,6 +100,24 @@ proc project::GetProjects {} {
     }
   }
 }
+#_______________________
+
+proc project::ClockFormat {secs} {
+  # Formats date in seconds.
+  #   secs - date in seconds
+
+  variable klnddata
+  return [clock format $secs -format $klnddata(dateformat)]
+}
+#_______________________
+
+proc project::ClockScan {d} {
+  # Scans date to get date in seconds.
+  #   d - date
+
+  variable klnddata
+  return [clock scan $d -format $klnddata(dateformat)]
+}
 
 # ________________________ Ini _________________________ #
 
@@ -308,7 +326,6 @@ proc project::SortRems {rems} {
   #   rems - list of reminders
   # Returns a list of a reminder date before a current date and a sorted list.
 
-  variable klnddata
   set tmp [list]
   set dmin 0
   set dcur [KlndInDate]
@@ -326,18 +343,10 @@ proc project::SortRems {rems} {
   set rems [list]
   foreach it [lsort -index 0 $tmp] {
     lassign $it d text
-    set d [clock format $d -format $klnddata(dateformat)]
+    set d [ClockFormat $d]
     lappend rems [list $d $text]
   }
   return [list $dmin $rems]
-}
-#_______________________
-
-proc project::Klnd_delete {} {
-  # Clears a reminder.
-
-  namespace upvar ::alited obDl2 obDl2
-  [$obDl2 TexKlnd] replace 1.0 end {}
 }
 #_______________________
 
@@ -556,8 +565,7 @@ proc project::KlndDay {dsec {doblink yes}} {
   #   dsec - date in seconds to select
   #   doblink - if yes, make the month blink
 
-  variable klnddata
-  set d [clock format $dsec -format $klnddata(dateformat)]
+  set d [ClockFormat $dsec]
   lassign [split $d /] y m d
   set m [string trimleft $m { 0}]
   set d [string trimleft $d { 0}]
@@ -917,7 +925,6 @@ proc project::ProjectEnter {} {
   namespace upvar ::alited al al
   variable win
   variable prjinfo
-  variable klnddata
   lassign [SortRems $prjinfo($al(prjname),prjrem)] dmin
   if {$dmin && $dmin<[clock seconds]} {
     set tab1 $win.fra.fraR.nbk.f1
@@ -926,7 +933,7 @@ proc project::ProjectEnter {} {
     }
     KlndDayRem $dmin
     set msg [msgcat::mc {TODO reminders for the past: %d. Delete them or try "Select".}]
-    set dmin [clock format $dmin -format $klnddata(dateformat)]
+    set dmin [ClockFormat $dmin]
     set msg [string map [list %d $dmin] $msg]
     alited::Message2 $msg 4
     return
@@ -963,7 +970,63 @@ proc project::Klnd_redo {} {
 
   Klnd_button <<Redo>>
 }
+#_______________________
 
+proc project::Klnd_delete {} {
+  # Clears a reminder.
+
+  namespace upvar ::alited obDl2 obDl2
+  [$obDl2 TexKlnd] replace 1.0 end {}
+}
+#_______________________
+
+proc project::Klnd_moveTODO {wrem todo date} {
+  # Moves current TODO to a new date.
+  #   wrem - text widget of TODO
+  #   todo - text of TODO
+  #   date - new date (in seconds)
+
+  variable klnddata
+  # get TODO of new date
+  lassign [split [ClockFormat $date] /] y m d
+  KlndClick $y $m $d
+  set todonew [string trimright [$wrem get 1.0 end]]
+  if {$todonew ne {}} {append todonew \n}
+  # add the moved TODO to the new TODO
+  append todonew $todo
+  # select the new date
+  set klnddata(SAVEDATE) [ClockFormat $date]
+  KlndDay $date no
+  # update the new TODO
+  $wrem replace 1.0 end $todonew
+}
+#_______________________
+
+proc project::Klnd_next {{days 1}} {
+  # Moves a reminder to *days*.
+  #   days - days to move to
+
+  namespace upvar ::alited obDl2 obDl2
+  variable klnddata
+  set wrem [$obDl2 TexKlnd]
+  set todo [string trimright [$wrem get 1.0 end]]
+  if {$todo eq {}} {
+    bell
+    focus $wrem
+    return
+  }
+  Klnd_delete
+  set date [ClockScan $klnddata(SAVEDATE)]
+  set date [clock add $date $days days]
+  after 100 [list alited::project::Klnd_moveTODO $wrem $todo $date]
+}
+#_______________________
+
+proc project::Klnd_next2 {} {
+  # Moves a reminder to 7 days.
+
+  Klnd_next 7
+}
 # ________________________ Calendar _________________________ #
 
 proc project::KlndUpdate {} {
@@ -987,9 +1050,8 @@ proc project::KlndInDate {{y {}} {m {}} {d {}}} {
   #   d - day
   # If *y* is omitted or y/m/d not valid, gets a current date in seconds.
 
-  variable klnddata
   if {$y ne {}} {
-    if {[catch {set date [clock scan $y/$m/$d -format $klnddata(dateformat)]}]} {
+    if {[catch {set date [ClockScan $y/$m/$d]}]} {
       set y {}
     }
   }
@@ -1005,9 +1067,8 @@ proc project::KlndOutDate {{y {}} {m {}} {d {}}} {
   #   d - day
   # If *y* is omitted or y/m/d not valid, gets a current date formatted.
 
-  variable klnddata
   set date [KlndInDate $y $m $d]
-  return [clock format $date -format $klnddata(dateformat)]
+  return [ClockFormat $date]
 }
 #_______________________
 
@@ -1015,9 +1076,7 @@ proc project::KlndDate {date} {
   # Formats a calendar date by alited's format (Preferences/Templates).
   #   date - the date to be formatted
 
-  namespace upvar ::alited al al
-  variable klnddata
-  set seconds [clock scan $date -format $klnddata(dateformat)]
+  set seconds [ClockScan $date]
   return [alited::tool::FormatDate $seconds]
 }
 #_______________________
@@ -1114,8 +1173,12 @@ proc project::Tab1 {} {
   variable klnddata
   set klnddata(SAVEDATE) [set klnddata(SAVEPRJ) {}]
   set klnddata(toobar) "labKlndProm {TODO } LabKlndDate {} sev 6"
-  foreach img {delete paste undo redo} {
+  foreach img {delete paste undo redo - next next2} {
     # -method option for possible disable/enable BuT_alimg_delete etc.
+    if {$img eq {-}} {
+      append klnddata(toobar) " sev 6"
+      continue
+    }
     append klnddata(toobar) " alimg_$img \{{} \
       -tip {-BALTIP {$alited::al(MC,prjT$img)} -MAXEXP 1@@ -under 4} \
       -com alited::project::Klnd_$img -method yes \}"

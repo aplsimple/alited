@@ -1064,7 +1064,7 @@ proc ini::_init {} {
   set listIcons [::apave::iconImage]
   # the below icons' order defines their order in the toolbar
   foreach {icon} {none gulls heart add change delete up down paste plus minus \
-  retry misc previous next folder file OpenFile SaveFile saveall categories \
+  retry misc previous next next2 folder file OpenFile SaveFile saveall categories \
   undo redo replace ok color date help run e_menu other trash actions paste} {
     set img [CreateIcon $icon]
     if {$icon in {"file" OpenFile categories SaveFile saveall help ok color other \
