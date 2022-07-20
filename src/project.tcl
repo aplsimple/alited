@@ -118,6 +118,14 @@ proc project::ClockScan {d} {
   variable klnddata
   return [clock scan $d -format $klnddata(dateformat)]
 }
+#_______________________
+
+proc project::ClockYMD {d} {
+  # Extracts year, month, day from date.
+  #   d - date
+
+  return [split [ClockFormat $d] /]
+}
 
 # ________________________ Ini _________________________ #
 
@@ -343,8 +351,7 @@ proc project::SortRems {rems} {
   set rems [list]
   foreach it [lsort -index 0 $tmp] {
     lassign $it d text
-    set d [ClockFormat $d]
-    lappend rems [list $d $text]
+    lappend rems [list [ClockFormat $d] $text]
   }
   return [list $dmin $rems]
 }
@@ -565,8 +572,7 @@ proc project::KlndDay {dsec {doblink yes}} {
   #   dsec - date in seconds to select
   #   doblink - if yes, make the month blink
 
-  set d [ClockFormat $dsec]
-  lassign [split $d /] y m d
+  lassign [ClockYMD $dsec] y m d
   set m [string trimleft $m { 0}]
   set d [string trimleft $d { 0}]
   ::klnd::selectedDay {} $y $m $d $doblink
@@ -988,7 +994,7 @@ proc project::Klnd_moveTODO {wrem todo date} {
 
   variable klnddata
   # get TODO of new date
-  lassign [split [ClockFormat $date] /] y m d
+  lassign [ClockYMD $date] y m d
   KlndClick $y $m $d
   set todonew [string trimright [$wrem get 1.0 end]]
   if {$todonew ne {}} {append todonew \n}
@@ -1067,8 +1073,7 @@ proc project::KlndOutDate {{y {}} {m {}} {d {}}} {
   #   d - day
   # If *y* is omitted or y/m/d not valid, gets a current date formatted.
 
-  set date [KlndInDate $y $m $d]
-  return [ClockFormat $date]
+  return [ClockFormat [KlndInDate $y $m $d]]
 }
 #_______________________
 
@@ -1180,7 +1185,7 @@ proc project::Tab1 {} {
       continue
     }
     append klnddata(toobar) " alimg_$img \{{} \
-      -tip {-BALTIP {$alited::al(MC,prjT$img)} -MAXEXP 1@@ -under 4} \
+      -tip {-BALTIP {$alited::al(MC,prjT$img)} -MAXEXP 2@@ -under 4} \
       -com alited::project::Klnd_$img -method yes \}"
   }
   set klnddata(vsbltext) yes

@@ -113,6 +113,18 @@ proc menu::Configurations {} {
 }
 #_______________________
 
+proc menu::RunTip {tip} {
+  # Gets tooltip on "Run".
+  #   tip - default tooltip on "Run"
+
+  if {[alited::tool::ComForced]} {
+    set tip [alited::main::TipStatus]   ;# full tip of alited status
+    set i [string first \n\n $tip]
+    set tip [string range $tip 0 $i-1]  ;# extract "forced command" from the tip
+  }
+  return $tip
+}
+#_______________________
   proc menu::FillMenu {} {
   # Populates alited's main menu.
 
@@ -180,6 +192,7 @@ proc menu::Configurations {} {
   ## ________________________ Tools _________________________ ##
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label [msgcat::mc Run...] -command alited::tool::RunMode -accelerator $al(acc_3)
+  ::baltip::tip $m $al(MC,icorun) -index 0 -command {::alited::menu::RunTip {%t}}
   $m add command -label e_menu -command {alited::tool::e_menu o=0} -accelerator $al(acc_2)
   $m add command -label tkcon -command alited::tool::tkcon
 

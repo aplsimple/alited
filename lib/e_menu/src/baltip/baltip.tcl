@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.3.7
+package provide baltip 1.3.8
 
 package require Tk
 
@@ -443,6 +443,7 @@ proc ::baltip::my::Command {w text} {
   if {![info exists ttdata(command,$w)] || $ttdata(command,$w) eq {}} {return no}
   set com [string map [list %w $w %t $text] $ttdata(command,$w)]
   if {[catch {set res [eval $com]} e]} {return no}
+  set ttdata(text,$w) $res
   return [list yes $res]
 }
 #_______________________

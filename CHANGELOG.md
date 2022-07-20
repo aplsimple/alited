@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.0a2 (17 Jul'22)`
+Version `1.3.0a4 (20 Jul'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
             (big-bug making alited unusable in some Magicsplat & Bawt distros)
@@ -22,7 +22,8 @@ Version `1.3.0a2 (17 Jul'22)`
   - NEW   : let ~/.config be default, last config directory be saved in last.ini
   - NEW   : "Setup/Configurations..." to switch configs
   - NEW   : "Configurations..." has combobox of configs, "Clear" of popup menu, "Help"
-  - NEW   : tooltips: statusbar message; Preferences themes/CS; rename-file button
+  - NEW   : tooltips: statusbar message; Preferences themes/CS; rename-file button;
+            "Tools/Run" menu item (on forced run)
   - NEW   : warning at EXEC/SHELL of e_menu
   - NEW   : "Help" button / F1 in "Setup / After Start (Before Run)"
   - NEW   : between sessions, save/restore "Wrap lines" mode for files of projects
@@ -49,7 +50,7 @@ Version `1.3.0a2 (17 Jul'22)`
   - CHANGE: Preferences/Tools/Run replaces "Tkcon topmost" ("in console" by default)
   - CHANGE: tips and docs corrected (country/language in locale)
   - CHANGE: About / Acknowledgements & docs
-  - CHANGE: packages: apave/e_menu 3.5, bartabs 1.5.7, hl_tcl 0.9.41
+  - CHANGE: packages: apave/e_menu 3.5, bartabs 1.5.7, hl_tcl 0.9.41, baltip 1.3.8
 
 
 Version `1.2.3 (8 Jun'22)`
