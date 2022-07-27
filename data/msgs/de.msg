@@ -94,7 +94,7 @@ namespace eval ::alited {
     {Move File Up} {Verschiebe Datei aufwärts}
     {Move File Down} {Verschiebe Datei abwärts}
     {Only files are moved by alited.} {Nur Dateien verschoben durch alited.}
-    {Lists of Favorites} {Liste der Favoriten}
+    {Saved Lists of Favorites} {Gespeicherte Liste der Favoriten}
     {Last Visited} {Zuletzt Besuchte}
     {Switch to Unit Tree} {Wechsel zu Einheitenbaum}
     {Switch to File Tree} {Wechsel zu Dateibaum}
@@ -237,14 +237,13 @@ namespace eval ::alited {
     "You may select file(s)\nand open them with a context menu.\n\nOr just double-click." "Datei(en) auswählen\nund über das Kontextmenü öffnen.\n\nOder öffne sie mit Double-click."
     {No selected files} {Keine ausgewählte(n) Datei(en)}
     {Open file:} {Ausgewählt Datei:}
-    {Open files: %n} {Dateien zu öffnen: %n}
+    {Open files: %n} {Ausgewählten Dateien: %n}
     {Move TODO to next day} {Vertagen TODO auf Tage}
     {Move TODO to next week} {Vertagen TODO auf Woche}
   }
 
   ## ________________________ Favorites ________________________ ##
   ::msgcat::mcmset de {
-    {Lists of favorites:} {Favoritenliste:}
     {Current list of favorites} {Aktuelle Favoritenliste}
     {New list of favorites:} {Neue Favoritenliste:}
     {Add a list of favorites} {Eine Favoritenliste hinzufügen}
@@ -267,7 +266,7 @@ namespace eval ::alited {
     "Sets a list of Favorites\nthat was active initially." "Eine Liste von Favoriten setzen,\ndie beim starten geladen wird."
     {Delete a favorites' list #%n ?} {Eine Favoritenliste löschen #%n ?}
     {Favorites} {Favoriten}
-    {Favorites...} {Favoriten...}
+    {Favorites Lists...} {Favoritenliste...}
     "Add \"%n\" of %f\nto Favorites?" "Füge \"%n\" von %f\nzu Favoriten hinzu?"
     "Item \"%n\" of %f\nis already in Favorites." "Element \"%n\" von %f\nexistiert schon in Favoriten."
     "Remove \"%n\" of %f\nfrom Favorites?" "Lösche \"%n\" von  %f\naus Favoriten?"
@@ -283,13 +282,13 @@ namespace eval ::alited {
   ::msgcat::mcmset de {
     "Create a file\nCtrl+N" "Datei erzeugen\nCtrl+N"
     "Open a file\nCtrl+O" "Datei öffnen\nCtrl+O"
-    "Save the file\nF2" "Datei speichern\nF2"
+    {Save the file} {Datei speichern}
     "Save all files\nCtrl+Shift+S" "Alle Dateien speichern\nCtrl+Shift+S"
     "Tcl/Tk help on the selection\nF1" "Tcl/Tk-Hilfe auf die Auswahl anwenden\nF1"
     {Find / Replace} {Suchen / Ersetzen}
     "Find / Replace\nCtrl+F" "Suchen / Ersetzen\nCtrl+F"
-    "Run the file\nF5" "Datei ausführen\nF5"
-    "Run e_menu\nF4" "Führe e_menu aus\nF4"
+    {Run the file} {Datei ausführen}
+    {Run e_menu} {Führe e_menu aus}
     "Undo changes\nCtrl+Z" "Änderungen zurücknehmen\nCtrl+Z"
     "Redo changes\nCtrl+Shift+Z" "Wiederherstellen\nCtrl+Shift+Z"
   }
@@ -509,11 +508,10 @@ namespace eval ::alited {
     {separator} {Trennezichen}
     {Item} {Element}
     {If 'yes', means a separator of the toolbar/menu.} {'ja' bedeutet Trennzeichen in der Werkzeugliste/Menü.}
-    {After Start...} {Nach dem Starten...}
-    {Before Run...} {Bevor Ausführen...}
-    {Before Run} {Bevor Ausführen}
+    {For Start...} {Für dem Starten...}
+    {For Run...} {Für Ausführen...}
+    {For Run} {Für Ausführen}
     {Commands:} {Befehle:}
-    {Commands after start} {Befehle nach dem Starten}
     "\n Enter commands to be run after starting alited.\n They can be Tcl or executables.\n" "\n Geben Sie Befehle ein, die nach dem Starten von alited ausgeführt werden sollen,\n das heißt Tcl Befehle oder ausführbare Dateien.\n"
     "\n Enter commands to be run before running a current file with \"Tools/Run\".\n They can be Tcl or executables." "\n Eingabe von Befehlen, die ausgeführt werde bevor die aktuelle Datei ausgeführt wird mit \"Werkzeuge/ausführen\",\n das heißt Tcl Befehle oder ausführbare Dateien."
     { Also, you can set "forced command" to be run by "Run" tool:} { Ebenfalls, können Sie festlegen "erzwungener Befehl" für Ausführen:}

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.0a4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.0  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -350,6 +350,16 @@ namespace eval alited {
   }
   #_______________________
 
+  proc TipMessage {lab tip} {
+    # Shows a tip on status message and clears the status message.
+    #   lab - message label's path
+    #   tip - text of tip
+
+    if {$tip ne {}} {$lab configure -text {}}
+    return $tip
+  }
+  #_______________________
+
   proc msg {type icon message {defb ""} args} {
     # Shows a message and asks for an answer.
     #   type - ok/yesno/okcancel/yesnocancel
@@ -403,6 +413,11 @@ namespace eval alited {
       return  ;# at exiting app
     }
     if {$lab eq {}} {set lab [$obPav Labstat3]}
+    if {!$first && $msg ne {} && [winfo exists $lab]} {
+      set curmsg [$lab cget -text]
+      # if a message changed or expired, don't touch it (don't cover it with old 'msg')
+      if {[string first $msg $curmsg]<0} return
+    }
     set font [[$obPav Labstat2] cget -font]
     set fontB [list {*}$font -weight bold]
     set msg [string range [string map [list \n { } \r {}] $msg] 0 500]
@@ -433,7 +448,7 @@ namespace eval alited {
       if {[string trim [string range $msg [string length $tip] end]] ne {}} {
         append tip ...
       }
-      baltip::tip $lab " $tip " {*}$opts
+      baltip::tip $lab $tip -command [list alited::TipMessage %w %t] -per10 0 {*}$opts
     } else {
       set msg [string range $msg 0 end-1]
       set msec 10

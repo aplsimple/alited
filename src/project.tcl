@@ -602,8 +602,24 @@ proc project::SelFiles {} {
 }
 #_______________________
 
-proc project::OpenSelFiles {} {
+proc project::OpenFile {y} {
+  # Opens a file of listbox after double clicking.
+  #   y - y-coordinate of clicking
+
+  namespace upvar ::alited obDl2 obDl2
+  set lbx [$obDl2 LbxFlist]
+  set selid [$lbx nearest $y]
+  if {$selid != -1} {
+    $lbx selection clear 0 end
+    $lbx selection set $selid
+    OpenSelFiles no
+  }
+}
+#_______________________
+
+proc project::OpenSelFiles {{showmsg yes}} {
   # Opens selected files of listbox.
+  #   showmsg - if yes, shows a message
   # Files are open in a currently open project.
 
   namespace upvar ::alited al al
@@ -614,9 +630,10 @@ proc project::OpenSelFiles {} {
   set al(prjname) $curinfo(prjname)
   lassign [SelFiles] lbx selidx
   if {$lbx ne {}} {
-    set llen [llength $selidx]
-    set msg [string map [list %n $llen] [msgcat::mc {Open files: %n}]]
-    alited::Message2 $msg 3
+    if {$showmsg} {
+      set msg [string map [list %n [llength $selidx]] [msgcat::mc {Open files: %n}]]
+      alited::Message2 $msg 3
+    }
     update
     foreach idx [lreverse $selidx] {
       set fn [$lbx get $idx]
@@ -701,9 +718,9 @@ proc project::ValidateDir {} {
   # Tries to get a project name at choosing root dir.
 
   namespace upvar ::alited al al
+  update
   if {$al(prjname) eq {}} {
     set al(prjname) [file tail $al(prjroot)]
-    update
   }
   return yes
 }
@@ -1274,9 +1291,11 @@ proc project::_create {} {
   bind $tree <Double-Button-1> ::alited::project::ProjectEnter
   bind $tree <Return> ::alited::project::ProjectEnter
   bind $win <F1> "[$obDl2 ButHelp] invoke"
+  set lbx [$obDl2 LbxFlist]
   foreach a {a A} {
-    bind [$obDl2 LbxFlist] <Control-$a> alited::project::SelectAllFiles
+    bind $lbx <Control-$a> alited::project::SelectAllFiles
   }
+  bind $lbx <Double-Button-1> {::alited::project::OpenFile %y}
   if {$ilast>-1} {Select $ilast}
   after 500 ::alited::project::HelpMe ;# show an introduction after a short pause
   set prjtex [$obDl2 TexPrj]

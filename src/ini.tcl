@@ -1028,6 +1028,16 @@ proc ini::InitFonts {} {
 }
 #_______________________
 
+proc ini::TipToolHotkeys {} {
+  # Adds hotkeys to toolbar tips.
+
+  namespace upvar ::alited al al
+  append al(MC,icoSaveFile) \n $al(acc_0)
+  append al(MC,icorun)      \n $al(acc_3)
+  append al(MC,icoe_menu)   \n $al(acc_2)
+}
+#_______________________
+
 proc ini::_init {} {
   # Initializes alited app.
 
@@ -1063,6 +1073,7 @@ proc ini::_init {} {
   # here, the order of icons defines their order in the toolbar
   set listIcons [::apave::iconImage]
   # the below icons' order defines their order in the toolbar
+  TipToolHotkeys
   foreach {icon} {none gulls heart add change delete up down paste plus minus \
   retry misc previous next next2 folder file OpenFile SaveFile saveall categories \
   undo redo replace ok color date help run e_menu other trash actions paste} {
@@ -1099,7 +1110,7 @@ proc ini::_init {} {
           append al(atools) "-com alited::CheckRun\}"
         }
         color {
-          append al(atools) "-command alited::tool::ColorPicker\}"
+          append al(atools) "-com alited::tool::ColorPicker\}"
         }
         help {
           append al(atools) "-com alited::tool::Help\} sev 6"
@@ -1141,7 +1152,7 @@ proc ini::_init {} {
         }
         lappend limgs $img
         set tip [string map {% %%} $em_mnu($i)]
-        append al(atools) " $img \{{} -tip {$tip@@ -under 4 -command {alited::ini::ToolbarTip %w {%t}}} $txt "
+        append al(atools) " $img \{{} -tip {$tip@@ -under 4 -command {alited::ini::ToolbarTip %w %t}} $txt "
         append al(atools) "-com {[alited::tool::EM_command $i]}\}"
       }
     }

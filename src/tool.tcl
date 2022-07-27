@@ -582,8 +582,8 @@ proc tool::RunArgs {} {
   # Returns a list of ARGS and RUNF arguments found in the current file.
 
   set res {}
-  set ar {^[[:space:]#/*]*#[ ]?ARGS[0-9]+:[ ]*(.*)}
-  set rf {^[[:space:]#/*]*#[ ]?RUNF[0-9]+:[ ]*(.*)}
+  set ar {^[[:space:]#/*]*#[ ]?ARGS[0-9]?:[ ]*(.*)}
+  set rf {^[[:space:]#/*]*#[ ]?RUNF[0-9]?:[ ]*(.*)}
   set AR [set RF {}]
   set filecontent [split [[alited::main::CurrentWTXT] get 1.0 end] \n]
   foreach st $filecontent {

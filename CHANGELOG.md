@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.0a4 (20 Jul'22)`
+Version `1.3.0 (27 Jul'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
             (big-bug making alited unusable in some Magicsplat & Bawt distros)
@@ -13,6 +13,7 @@ Version `1.3.0a4 (20 Jul'22)`
   - BUGFIX: e_menu: selected text as a code snippet for "Run Tcl {all selection}" item
   - BUGFIX: check for file modifications when "internal" e_menu opens a submenu
   - BUGFIX: check for existing menu of "internal" e_menu at running tools
+  - BUGFIX: customized hotkeys in tooltips of tool icons
   - NEW   : "Setup/Before Run": a "forced command" to run by "Run" tool
             in console (or in Tkcon if the command begins with %f or file.tcl)
   - NEW   : tag the unit tree items with red color for TODO comments (#!...todo...),
@@ -23,7 +24,7 @@ Version `1.3.0a4 (20 Jul'22)`
   - NEW   : "Setup/Configurations..." to switch configs
   - NEW   : "Configurations..." has combobox of configs, "Clear" of popup menu, "Help"
   - NEW   : tooltips: statusbar message; Preferences themes/CS; rename-file button;
-            "Tools/Run" menu item (on forced run)
+            "Tools/Run" menu item & "Run" icon (on forced run)
   - NEW   : warning at EXEC/SHELL of e_menu
   - NEW   : "Help" button / F1 in "Setup / After Start (Before Run)"
   - NEW   : between sessions, save/restore "Wrap lines" mode for files of projects
@@ -31,13 +32,16 @@ Version `1.3.0a4 (20 Jul'22)`
   - NEW   : About / Packages
   - NEW   : "Don't show anymore" checkbutton for Open... multiple files & Open all Tcl
   - NEW   : "Setup/Favorites...": "Current favorites" button added
+  - NEW   : doubleclick on Projects' file list to open a file (was declared, not done)
+  - CHANGE: "save" icon instead of "heart" for saved lists of favorites
+  - CHANGE: tips of the tree are X-shifted relative to the mouse pointer (better view)
+  - CHANGE: #RUNF: and #EXEC: comments may be used along with old #RUNF1:, #EXEC2:
   - CHANGE: "Preferences/Tools/Diff tool" to compare left & right tabs (in utils.mnu)
   - CHANGE: font size in "external" e_menu is "middle" of Preferences/General
   - CHANGE: save geometry of main menu of "internal" e_menu, ignoring other menus
   - CHANGE: "Setup/Favorites...": "Back" button: come-back to project's initial favs
   - CHANGE: queries for Favorites/LastVisits popup menu items be close to mouse pointer
   - CHANGE: switch to Favorites at choosing "Setup/Favorites..."
-  - CHANGE: tooltip of status bar
   - CHANGE: killing Tcl-runs corrected
   - CHANGE: e_menu: a hot key (F4) for "Run me" item
   - CHANGE: "Lists of Favorites" dialogue's appearance
@@ -50,7 +54,7 @@ Version `1.3.0a4 (20 Jul'22)`
   - CHANGE: Preferences/Tools/Run replaces "Tkcon topmost" ("in console" by default)
   - CHANGE: tips and docs corrected (country/language in locale)
   - CHANGE: About / Acknowledgements & docs
-  - CHANGE: packages: apave/e_menu 3.5, bartabs 1.5.7, hl_tcl 0.9.41, baltip 1.3.8
+  - CHANGE: packages: apave/e_menu 3.5, bartabs 1.5.7, hl_tcl 0.9.41, baltip 1.4.0
 
 
 Version `1.2.3 (8 Jun'22)`

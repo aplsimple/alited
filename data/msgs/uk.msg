@@ -99,7 +99,7 @@ namespace eval ::alited {
     {Move File Up} {Перемістити файл вгору}
     {Move File Down} {Перемістити файл вниз}
     {Only files are moved by alited.} {Тільки файли переміщує alited.}
-    {Lists of Favorites} {Списки Вибраного}
+    {Saved Lists of Favorites} {Збережені списки Вибраного}
     {Last Visited} {Останні вхіди}
     {Switch to Unit Tree} {Перейти на список юнітів}
     {Switch to File Tree} {Перейти на список файлів}
@@ -242,14 +242,13 @@ namespace eval ::alited {
     "You may select file(s)\nand open them with a context menu.\n\nOr just double-click." "Ви можете виділити файл(и)\nта через контекстне меню відкрити їх.\n\nАбо ж відкрийте подвійним кліком."
     {No selected files} {Немає виділених файлів}
     {Open file:} {Відкрито файл:}
-    {Open files: %n} {Файлів на відкриття: %n}
+    {Open files: %n} {Відкрито файлів: %n}
     {Move TODO to next day} {Перенести TODO на день}
     {Move TODO to next week} {Перенести TODO на тиждень}
   }
 
   ## ________________________ Favorites ________________________ ##
   ::msgcat::mcmset uk {
-    {Lists of favorites:} {Списки Вибраного:}
     {Current list of favorites} {Поточний список Вибраного}
     {New list of favorites:} {Новий список Вибраного:}
     {Add a list of favorites} {Додати список Вибраного}
@@ -272,7 +271,7 @@ namespace eval ::alited {
     "Sets a list of Favorites\nthat was active initially." "Відновлює список Вибраного,\nщо діяв спочатку."
     {Delete a favorites' list #%n ?} {Видалити список Вибраного #%n ?}
     {Favorites} {Вибране}
-    {Favorites...} {Вибране...}
+    {Favorites Lists...} {Списки Вибраного...}
     "Add \"%n\" of %f\nto Favorites?" "Додати \"%n\" файлів %f\nу Вибране?"
     "Item \"%n\" of %f\nis already in Favorites." "Юніт \"%n\" з %f\nвже є у Вибраному."
     "Remove \"%n\" of %f\nfrom Favorites?" "Видалити \"%n\" файлів %f\nз Вибраного?"
@@ -288,13 +287,13 @@ namespace eval ::alited {
   ::msgcat::mcmset uk {
     "Create a file\nCtrl+N" "Утворити файл\nCtrl+N"
     "Open a file\nCtrl+O" "Відкрити файл\nCtrl+O"
-    "Save the file\nF2" "Зберегти файл\nF2"
+    {Save the file} {Зберегти файл}
     "Save all files\nCtrl+Shift+S" "Зберегти всі файли\nCtrl+Shift+S"
     "Tcl/Tk help on the selection\nF1" "Контекстна допомога по Tcl/Tk\nF1"
     {Find / Replace} {Пошук / Заміна}
     "Find / Replace\nCtrl+F" "Пошук / Заміна\nCtrl+F"
-    "Run the file\nF5" "Виконати файл\nF5"
-    "Run e_menu\nF4" "Виклик e_menu\nF4"
+    {Run the file} {Виконати файл}
+    {Run e_menu} {Виклик e_menu}
     "Undo changes\nCtrl+Z" "Відміна змін\nCtrl+Z"
     "Redo changes\nCtrl+Shift+Z" "Перевідміна змін\nCtrl+Shift+Z"
   }
@@ -512,11 +511,10 @@ namespace eval ::alited {
     {separator} {роздільник}
     {Item} {Пункт}
     {If 'yes', means a separator of the toolbar/menu.} {Якщо включено, значить роздільник у тулбарі/меню.}
-    {After Start...} {Після старту...}
-    {Before Run...} {Перед Запуском...}
-    {Before Run} {Перед Запуском}
+    {For Start...} {Для старту...}
+    {For Run...} {Для Запуску...}
+    {For Run} {Для Запуску}
     {Commands:} {Команди:}
-    {Commands after start} {Команди після старту}
     "\n Enter commands to be run after starting alited.\n They can be Tcl or executables.\n" "\n Введіть команди, що мають виконатися після старту alited,\n тобто команди Tcl або зовнішні команди.\n"
     "\n Enter commands to be run before running a current file with \"Tools/Run\".\n They can be Tcl or executables." "\n Введіть команди, що мають виконатися перед \"Струменти/Запуск\",\n тобто команди Tcl або зовнішні команди."
     { Also, you can set "forced command" to be run by "Run" tool:} { Також ви можете ввести "примусову команду" для Запуску:}

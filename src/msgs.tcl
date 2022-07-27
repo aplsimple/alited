@@ -51,7 +51,7 @@ namespace eval ::alited {
     set al(MC,movedownU)   [msgcat::mc {Move Unit Down}]
     set al(MC,moveupF)     [msgcat::mc {Move File Up}]
     set al(MC,movedownF)   [msgcat::mc {Move File Down}]
-    set al(MC,FavLists)    [msgcat::mc {Lists of Favorites}]
+    set al(MC,FavLists)    [msgcat::mc {Saved Lists of Favorites}]
     set al(MC,swfiles)     [msgcat::mc {Switch to Unit Tree}]
     set al(MC,swunits)     [msgcat::mc {Switch to File Tree}]
     set al(MC,filesadd)    [msgcat::mc {Create File}]
@@ -85,8 +85,8 @@ namespace eval ::alited {
     set al(MC,Col:)        [msgcat::mc { Col: }]
     set al(MC,Item)        [msgcat::mc Item]
     set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
-    set al(MC,afterstart)  [msgcat::mc {Commands after start}]
-    set al(MC,beforerun)   [msgcat::mc {Before Run}]
+    set al(MC,afterstart)  [msgcat::mc {For Start}]
+    set al(MC,beforerun)   [msgcat::mc {For Run}]
     set al(MC,locale)      [msgcat::mc "This is a language code: ru, uk, de...\nIn alited, \"en\" means American English."]
     set al(MC,noask)       [msgcat::mc {Don't show anymore}]
     set al(MC,needcs)      [msgcat::mc "These themes need\nlight / dark color schemes\naccordingly"]
@@ -207,16 +207,16 @@ namespace eval ::alited {
     ## _ icons of toolbar _ ##
     set al(MC,icofile)     [msgcat::mc "Create a file\nCtrl+N"]
     set al(MC,icoOpenFile) [msgcat::mc "Open a file\nCtrl+O"]
-    set al(MC,icoSaveFile) [msgcat::mc "Save the file\nF2"]
+    set al(MC,icoSaveFile) [msgcat::mc {Save the file}]
     set al(MC,icosaveall)  [msgcat::mc "Save all files\nCtrl+Shift+S"]
     set al(MC,icohelp)     [msgcat::mc "Tcl/Tk help on the selection\nF1"]
     set al(MC,icoreplace)  [msgcat::mc "Find / Replace\nCtrl+F"]
     set al(MC,icook)       $al(MC,checktcl)
     set al(MC,icocolor)    $al(MC,colorpicker)
     set al(MC,icodate)     $al(MC,datepicker)
-    set al(MC,icoother)    tkcon
-    set al(MC,icorun)      [msgcat::mc "Run the file\nF5"]
-    set al(MC,icoe_menu)   [msgcat::mc "Run e_menu\nF4"]
+    set al(MC,icoother)    Tkcon
+    set al(MC,icorun)      [msgcat::mc {Run the file}]
+    set al(MC,icoe_menu)   [msgcat::mc {Run e_menu}]
     set al(MC,icoundo)     [msgcat::mc "Undo changes\nCtrl+Z"]
     set al(MC,icoredo)     [msgcat::mc "Redo changes\nCtrl+Shift+Z"]
     set al(MC,icocategories) [msgcat::mc Projects]

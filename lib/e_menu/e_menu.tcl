@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.5.0a4}
+  variable em_version {e_menu 3.5.0}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -109,7 +109,7 @@ proc ::S {incomm} {
       set com0 [lindex $clst 0]
       if {$com0 eq "cd"} {
         ::em::vip comm
-      } elseif {[set com1 [auto_execok $com0]] ne {}} {
+      } elseif {[set com1 [::apave::autoexec $com0]] ne {}} {
         exec -ignorestderr -- $com1 {*}[lrange $clst 1 end] &
       } else {
         M Can't find the command: \n$com0
@@ -814,8 +814,8 @@ proc ::em::execom {comm} {
   set comm1 [lindex $comm 0]
   if {$comm1 eq {%O}} {
     ::apave::openDoc $argm
-  } else {
-    set comm2 [auto_execok $comm1]
+  } elseif {![string match #* $comm1]} {
+    set comm2 [::apave::autoexec $comm1]
     if {[catch {exec -- $comm2 {*}$argm} e]} {
       if {$comm2 eq {}} {
         return "couldn't execute \"$comm1\": no such file or directory"
@@ -1208,9 +1208,9 @@ proc ::em::get_AR {} {
     if {[info exists ::em::ar_geany(AR,$::em::ar_geany(f))]} {
       return $::em::ar_geany(AR,$::em::ar_geany(f)) ;# already got
     }
-    set ar {^[[:space:]#/*]*#[ ]?ARGS[0-9]+:[ ]*(.*)}
-    set rf {^[[:space:]#/*]*#[ ]?RUNF[0-9]+:[ ]*(.*)}
-    set ee {^[[:space:]#/*]*#[ ]?EXEC[0-9]+:[ ]*(.*)}
+    set ar {^[[:space:]#/*]*#[ ]?ARGS[0-9]?:[ ]*(.*)}
+    set rf {^[[:space:]#/*]*#[ ]?RUNF[0-9]?:[ ]*(.*)}
+    set ee {^[[:space:]#/*]*#[ ]?EXEC[0-9]?:[ ]*(.*)}
     set AR [set RF [set EE {}]]
     foreach st $::em::filecontent {
       if {[regexp $ar $st] && $AR eq {}} {

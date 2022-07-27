@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.3.8
+package provide baltip 1.4.0
 
 package require Tk
 
@@ -37,6 +37,8 @@ namespace eval ::baltip {
     set ttdata(image) {}
     set ttdata(compound) {}
     set ttdata(relief) {}
+    set ttdata(shiftX) {}
+    set ttdata(shiftY) {}
     variable GEOACTIVE {-}
   }
 }
@@ -58,7 +60,8 @@ proc ::baltip::configure {args} {
     switch -glob -- $n {
       -SPECTIP* -
       -per10 - -fade - -pause - -fg - -bg - -bd - -alpha - -text - -relief - \
-      -on - -padx - -pady - -padding - -bell - -under - -font - -image - -compound {
+      -on - -padx - -pady - -padding - -bell - -under - -font - -image - -compound - \
+      -shiftX - -shiftY {
         set my::ttdata($n1) $v
       }
       -force - -geometry - -index - -tag - -global - -ctag - -nbktab - -reset - \
@@ -103,7 +106,7 @@ proc ::baltip::optionlist {} {
 
   return [list -on -per10 -fade -pause -fg -bg -bd -padx -pady -padding \
       -font -alpha -text -index -tag -bell -under -image -compound -relief \
-      -ctag -nbktab -reset -command -maxexp]
+      -ctag -nbktab -reset -command -maxexp -shiftX -shiftY]
 }
 #_______________________
 
@@ -137,6 +140,7 @@ proc ::baltip::tip {w text args} {
     } else {
       set my::ttdata(command,$w) $command
     }
+    if {$command ne {}} {::baltip::update $w $text}
     if {![info exists my::ttdata(maxexp,$w)]} {
       set my::ttdata(maxexp,$w) $maxexp
     }
@@ -441,9 +445,11 @@ proc ::baltip::my::Command {w text} {
 
   variable ttdata
   if {![info exists ttdata(command,$w)] || $ttdata(command,$w) eq {}} {return no}
-  set com [string map [list %w $w %t $text] $ttdata(command,$w)]
+  set com [string map [list %w $w %t "{$text}"] $ttdata(command,$w)]
   if {[catch {set res [eval $com]} e]} {return no}
-  set ttdata(text,$w) $res
+  if {$text ne {}} {
+    set ttdata(text,$w) $res
+  }
   return [list yes $res]
 }
 #_______________________
@@ -456,6 +462,8 @@ proc ::baltip::my::ShowWindow {win} {
   if {![winfo exists $win] || ![info exists ttdata(winGEO,$win)]} return
   set geo $ttdata(winGEO,$win)
   set under $ttdata(winUNDER,$win)
+  set shiftX $ttdata(winSHIFTX,$win)
+  set shiftY $ttdata(winSHIFTY,$win)
   set w [winfo parent $win]
   set px [winfo pointerx .]
   set py [winfo pointery .]
@@ -472,8 +480,13 @@ proc ::baltip::my::ShowWindow {win} {
     }
   }
   if {$geo eq {}} {
-    set x [expr {max(1,$px - round($width / 2.0))}]
+    if {$shiftX ne {}} {
+      set x [expr {$px + $shiftX}]
+    } else {
+      set x [expr {max(1,$px - round($width / 2.0))}]
+    }
     set y [expr {$under>=0 ? ($py + $under) : ($py - $under - $ady)}]
+    if {$shiftY ne {}} {incr y $shiftY}
   } else {
     lassign [split $geo +] -> x y
     set x [expr [string map "W $width" $x]]  ;# W to shift horizontally
@@ -517,7 +530,9 @@ proc ::baltip::my::Show {w text force geo optvals} {
     foreach k [array names ttdata -glob *,$w] {
       set n1 [lindex [split $k ,] 0]   ;# settings set by 'update'
       if {$n1 eq {text}} {
-        set text $ttdata($k)           ;# tip's text
+        if {$ttdata($k) ne {}} {
+          set text $ttdata($k)         ;# tip's text
+        }
       } else {
         set data(-$n1) $ttdata($k)     ;# tip's options
       }
@@ -585,6 +600,8 @@ proc ::baltip::my::Show {w text force geo optvals} {
   set icount [expr {$data(-per10) ? max(1000/$aint+1,$icount) : 0}] ;# 1 sec. be minimal
   set ttdata(winGEO,$win) $geo
   set ttdata(winUNDER,$win) $data(-under)
+  set ttdata(winSHIFTX,$win) $data(-shiftX)
+  set ttdata(winSHIFTY,$win) $data(-shiftY)
   if {$icount} {
     if {$geo eq {}} {
       catch {wm attributes $win -alpha $data(-alpha)}

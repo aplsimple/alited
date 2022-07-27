@@ -1,4 +1,4 @@
-package ifneeded baltip 1.3.8 [list source [file join $dir baltip.tcl]]
+package ifneeded baltip 1.4.0 [list source [file join $dir baltip.tcl]]
 
 namespace eval ::baltip {
   variable _ruff_preamble {
@@ -16,6 +16,7 @@ The original code has been modified to make the tip:
   * be usable with labels, menus, text/canvas tags, notebook tabs, listbox/treeview items etc.
   * be displayed at the screen's edges
   * be displayed under the host widget
+  * be displayed with a shift (on X and Y) relative to the mouse pointer
   * be displayed as a stand-alone balloon message at given coordinates
   * be displayed with given font, colors, paddings, border, relief, opacity, bell
   * have -image and -compound options to display images
@@ -217,8 +218,8 @@ For example:
         .labelstatus configure -text $tip
         return {}  ;# no redefining the tip
       }
-      ::baltip::tip .menu "File actions" -index 0 -command {::Status {%t}}
-      ::baltip::tip .menu "Help, hints, Q&A, about etc." -index 1 -command {::Status {%t}}
+      ::baltip::tip .menu "File actions" -index 0 -command {::Status %t}
+      ::baltip::tip .menu "Help, hints, Q&A, about etc." -index 1 -command {::Status %t}
 
 Also, this option can be used if you need to fire some code when the mouse pointer enters or leaves a GUI object.
 
@@ -265,6 +266,8 @@ Below are listed the *baltip* options that are set with `tip` and `configure` an
  * `-pady` - Y padding for text;
  * `-padding` - padding for pack;
  * `-under` - if >= 0, sets the tip under the widget, else under the pointer;
+ * `-shiftX` - a horizontal shift relative to the mouse pointer
+ * `-shiftY` - a vertical shift relative to the mouse pointer
  * `-image` - image option;
  * `-compound` - compound option;
  * `-relief` - relief option;

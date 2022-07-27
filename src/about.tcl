@@ -139,10 +139,13 @@ proc about::About {} {
     \u2022 <link-tkcc>tkcc</link-tkcc>\n\n \
     \u2022 <link-repl>tcl-repl</link-repl>\n"
   set tab2 [list General Packages "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexPack - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutPack -tags ::alited::about::textTags}}" Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 34 -rotext ::alited::AboutAckn -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
+  lassign [::baltip cget -shiftX] -> shiftX
+  ::baltip configure -shiftX 10
   ::alited::msg ok {} $msg \
     -title [msgcat::mc About] -t 1 -w $wmax -h {30 30} -scroll 0 \
     -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}" \
     -tab2 $tab2
+  ::baltip configure -shiftX $shiftX
   unset ::alited::AboutAckn  ;# was used in this dialogue only, for readonly text
   unset ::alited::AboutPack  ;# -//-
 }

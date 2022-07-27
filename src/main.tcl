@@ -608,6 +608,11 @@ proc main::UpdateProjectInfo {{indent {}}} {
   set info "$run, eol=$eol, ind=$indent"
   if {$al(prjindentAuto)} {append info /auto}
   [$obPav Labstat4] configure -text $info
+  set runtip $al(MC,icorun)
+  if {[alited::tool::ComForced]} {
+    set runtip [alited::menu::RunTip]
+  }
+  ::baltip::tip [alited::tool::ToolButName run] $runtip
 }
 #_______________________
 
@@ -730,7 +735,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.sev3 - - - - {pack -side right -fill y -padx 0}}
     {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1}
-      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0 -selectmode extended -tip {alited::tree::GetTooltip %i %c}}}
+      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0 -selectmode extended -tip {-BALTIP {alited::tree::GetTooltip %i %c} -SHIFTX 10}}}
     {.fraBot.panBM.fraTree.fra.SbvTree .fraBot.panBM.fraTree.fra.Tree L - - {pack -side right -fill both}}
     {.FraFV - - - - {add}}
     {.fraFV.v_ - - - - {pack -side top -fill x} {-h 5}}
@@ -738,7 +743,7 @@ proc main::_create {} {
     {.fraFV.fra1.seh - - - - {pack -side top -fill x -expand 1 -pady 0}}
     {.fraFV.fra1.BuTVisitF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_misc -tip {$alited::al(MC,lastvisit)} -com alited::favor::SwitchFavVisit}}
     {.fraFV.fra1.sev0 - - - - {pack -side left -fill y -padx 5}}
-    {.fraFV.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_heart -tip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
+    {.fraFV.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_SaveFile -tip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
     {.fraFV.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
     {.fraFV.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -tip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
     {.fraFV.fra1.BuTDelF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -tip {$alited::al(MC,favordel)} -com alited::favor::Delete}}

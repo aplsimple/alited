@@ -80,11 +80,11 @@ namespace eval ::apave {
   set ::apave::_CS_(ALL) {
 {{ 0: AwLight}        "#141414" #151616 #dfdfde #d1d1d0 #28578a #85b4e7 #000 #444 grey #4776a9 #000 #97c6f9 - #bebebd #000 #FBFB96 #cacaca #a20000 #76b2f1 #005 #006 #007}
 
-{{ 1: AzureLight}     "#050b0d" #050b0d #ffffff #e1e1e1 #0b8aa4 #7feaff #000 #444 grey #22a1bb #000 #93e8ff - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
+{{ 1: AzureLight}     "#050b0d" #050b0d #ffffff #e1e1e1 #0b8aa4 #95ffff #000 #444 grey #22a1bb #000 #a6fbff - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
 
 {{ 2: ForestLight}    "#050b0d" #050b0d #ffffff #e1e1e1 #1d5d1d #A8CCA8 #000 #185818 grey #328457 #000 #b6cbb6 - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
 
-{{ 3: SunValleyLight} "#050b0d" #050b0d #ffffff #e1e1e1 #1056af #86d2ff #000 #444 grey #1574cd #000 #7fcbff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #76b2f1 #005 #006 #007}
+{{ 3: SunValleyLight} "#050b0d" #050b0d #ffffff #e1e1e1 #1056af #a5d1ff #000 #444 grey #1574cd #000 #afdbff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #76b2f1 #005 #006 #007}
 
 {{ 4: Grey1}          "#050b0d" #050b0d #F8F8F8 #dadad8 #933232 #b8b8b8 #000 #444 grey #843e3e #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #76b2f1 #005 #006 #007}
 
@@ -130,7 +130,7 @@ namespace eval ::apave {
 
 {{25: AwDark}         "#F0E8E8" #E7E7E7 #1f2223 #232829 #77b3f2 #215d9c #fff #f4f49f grey #5793d2 #fff #0d4988 - #313637 #000 #9d9d60 #292e2f #ffc341 #76b2f1 #005 #006 #007}
 
-{{26: AzureDark}      "#ececec" #c7c7c7 #272727 #393939 #7fd5ff #0a89c1 #FFF #f4f49f grey #33b2ff #ffffff #0281b9 - #4a4a4a #000 #aaaa6d #383838 #ffc341 #76b2f1 #005 #006 #007}
+{{26: AzureDark}      "#ececec" #c7c7c7 #272727 #393939 #7fd5ff #0072aa #FFF #f4f49f grey #33b2ff #ffffff #0069a1 - #4a4a4a #000 #aaaa6d #383838 #ffc341 #76b2f1 #005 #006 #007}
 
 {{27: ForestDark}     "#ececec" #c7c7c7 #272727 #393939 #a3cda3 #217346 #FFF #42ff42 grey #84ae84 #fff #247649 - #4a4a4a #000 #aaaa6d #383838 #efaf6f #99dd99 #005 #006 #007}
 
@@ -306,6 +306,20 @@ proc ::apave::blinkWidget {w {fg #000} {bg #fff} {fg2 {}} {bg2 red} \
     set ::apave::BLINKWIDGET2 [after \
       $pause ::apave::blinkWidget $w $fg $bg $fg2 $bg2 $pause $count 1]
   }
+}
+#_______________________
+
+proc ::apave::autoexec {comm} {
+  # Imitates Tcl's auto_execok.
+  #   comm - a command to find
+  # If it doesn't get the command from Tcl's auto_execok,
+  # it tries to knock at its file by itself.
+
+  set res [auto_execok $comm]
+  if {$res eq {} && [file exists $comm]} {
+    set res $comm
+  }
+  return $res
 }
 
 ## ________________________ Inits _________________________ ##

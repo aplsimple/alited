@@ -333,8 +333,11 @@ proc favor::Add {{undermouse yes} {idnames {}}} {
   namespace upvar ::alited al al obPav obPav
   set fname [alited::bar::FileName]
   set sname [file tail $fname]
-  set geo [GeoForQuery $undermouse]
-  set idnlen [llength $idnames]
+  if {[set idnlen [llength $idnames]]>2} {
+    set geo {} ;# for a list (of popup menu: id1 name1 id2 name2...) - no 'under mouse'
+  } else {
+    set geo [GeoForQuery $undermouse]
+  }
   if {$idnlen==0} {
     lassign [CurrentName] itemID name l1 l2
     if {$name eq {}} return

@@ -139,7 +139,7 @@ SW: Save your stuff SW: cd %PD
    v_ {{} {-pady 4}} {} \
    ent1 {{Archive command:}} {"$::EMENU7ZCOM"} \
    chb1 {{   Include .git:}} {"$::EMENU7ZGIT"} \
-   fil1 {{ Archive file-$::EMENU7ZCNT:}} {"$::EMENU7ZARC"} \
+   fis1 {{ Archive file-$::EMENU7ZCNT:}} {"$::EMENU7ZARC"} \
    ent2 {{ ... its suffix:} {} {-tooltip {Add anything you think\nbe specific for this stuff\ne.g. "spec-edition"\n\navoid special characters:\nspaces, quotes, ?, *, \{, \}}}} {} \
    seh1 {{} {-pady 7} {}} {} \
    tex1 {{    Directories \n      to backup:} {} {-h 8 -w 60 -tabnext tex2}} {$::EMENU7ZDIR} \

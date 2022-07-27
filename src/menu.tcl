@@ -113,14 +113,15 @@ proc menu::Configurations {} {
 }
 #_______________________
 
-proc menu::RunTip {tip} {
-  # Gets tooltip on "Run".
-  #   tip - default tooltip on "Run"
+proc menu::RunTip {} {
+  # Gets tooltip on "Tools/Run".
 
   if {[alited::tool::ComForced]} {
-    set tip [alited::main::TipStatus]   ;# full tip of alited status
-    set i [string first \n\n $tip]
-    set tip [string range $tip 0 $i-1]  ;# extract "forced command" from the tip
+    set tip [alited::main::TipStatus]  ;# full tip of alited status
+    lassign [split $tip \n] tip1 tip2  ;# extract "forced command" from the tip
+    set tip $tip1\n$tip2
+  } else {
+    set tip {} ;# no special tip of Run menu item for this case
   }
   return $tip
 }
@@ -192,9 +193,9 @@ proc menu::RunTip {tip} {
   ## ________________________ Tools _________________________ ##
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label [msgcat::mc Run...] -command alited::tool::RunMode -accelerator $al(acc_3)
-  ::baltip::tip $m $al(MC,icorun) -index 0 -command {::alited::menu::RunTip {%t}}
+  ::baltip::tip $m $al(MC,icorun) -index 0 -command {::alited::menu::RunTip}
   $m add command -label e_menu -command {alited::tool::e_menu o=0} -accelerator $al(acc_2)
-  $m add command -label tkcon -command alited::tool::tkcon
+  $m add command -label Tkcon -command alited::tool::tkcon
 
     ### ________________________ Runs _________________________ ###
   for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
@@ -224,8 +225,8 @@ proc menu::RunTip {tip} {
   ## ________________________ Setup _________________________ ##
   set m [set al(SETUP) $al(WIN).menu.setup]
   $m add command -label [msgcat::mc Projects...] -command alited::project::_run
-  $m add command -label [msgcat::mc Favorites...] -command alited::favor::Lists
   $m add command -label [msgcat::mc Templates...] -command alited::unit::Add
+  $m add command -label [msgcat::mc {Favorites Lists...}] -command alited::favor::Lists
   $m add separator
   menu $m.tint -tearoff 0
   if {[::apave::obj apaveTheme]} {set state normal} {set state disabled}
@@ -248,8 +249,8 @@ proc menu::RunTip {tip} {
   $m add checkbutton -label [msgcat::mc {Tip File Info}] \
     -variable alited::al(TREE,showinfo) -command alited::file::UpdateFileStat
   $m add separator
-  $m add command -label [msgcat::mc {After Start...}] -command alited::tool::AfterStartDlg
-  $m add command -label [msgcat::mc {Before Run...}] -command alited::tool::BeforeRunDlg
+  $m add command -label [msgcat::mc {For Start...}] -command alited::tool::AfterStartDlg
+  $m add command -label [msgcat::mc {For Run...}] -command alited::tool::BeforeRunDlg
   $m add separator
   $m add command -label [msgcat::mc Configurations...] -command alited::menu::Configurations
   $m add separator
