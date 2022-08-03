@@ -3480,6 +3480,10 @@ oo::class create ::apave::APave {
     }
     if {[set var $opt(-variable)] eq {}} {set var ${_pav(ns)}PN::AR($win)}
     after 50 [list if "\[winfo exist $opt(-focus)\]" "focus -force $opt(-focus)"]
+    if {[info exists ::transpops::my::cntwait]} {
+      # this specific bind - for transpops package (to hide a demo message by keys)
+      bind $win <Control-Alt-0> {set ::transpops::my::cntwait 0}
+    }
     my showWindow $win $modal $ontop $var $minsize
     set res 0
     catch {

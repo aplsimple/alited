@@ -1327,6 +1327,7 @@ proc project::_run {} {
   SaveSettings
   GetProjects
   set res [_create]
+  alited::main::UpdateTextGutterTree ;# settings may be changed as for GUI
   return $res
 }
 

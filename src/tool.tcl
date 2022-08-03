@@ -812,10 +812,14 @@ proc tool::_run {{what ""} {runmode ""}} {
         if {[set fname [lindex $al(comForce) 0]] eq {%f}} {
           set fname [alited::bar::FileName]
         }
-        if {[alited::file::IsTcl $fname] && !$al(tkcon,topmost)} {
-          set tc \
-            "tc=[alited::Tclexe] [alited::tool::tkconPath] [alited::tool::tkconOptions]"
-          set tw {}
+        if {[alited::file::IsTcl $fname]} {
+          if {!$al(tkcon,topmost)} {
+            set tc \
+              "tc=[alited::Tclexe] [alited::tool::tkconPath] [alited::tool::tkconOptions]"
+            set tw {}
+          } else {
+            set tw "%t [alited::Tclexe] "
+          }
         }
       }
       e_menu ee=$tw[string map [list \" \\\" \\ \\\\] $al(comForce)] \

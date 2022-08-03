@@ -684,6 +684,20 @@ proc main::InitActions {} {
     alited::project::_run
   }
 }
+#_______________________
+
+proc main::CheckCW01 {} {
+  # Checks and fixes widths of tree's columns (they can overlap the scrollbar).
+
+  namespace upvar ::alited al al obPav obPav
+  set wtree [$obPav Tree]
+  set cw0 [$wtree column #0 -width]
+  set cw1 [$wtree column 0 -width]
+  set cwfv [[$obPav TreeFavor] column 0 -width]
+  if {($cwfv-$cw0-$cw1)<1} {
+    $wtree column 0 -width [expr {$cwfv-$cw0-1}]
+  }
+}
 
 # ________________________ Main _________________________ #
 
@@ -752,7 +766,7 @@ proc main::_create {} {
     {.fraFV.fra1.sev2 - - - - {pack -side right -fill y -padx 0}}
     {.fraFV.fra - - - - {pack -fill both -expand 1} {}}
     {.fraFV.fra.TreeFavor - - - - {pack -side left -fill both -expand 1} {-h 5 -style TreeNoHL -columns {C1 C2 C3 C4} -displaycolumns C1 -show headings -takefocus 0 -tip {alited::favor::GetTooltip %i}}}
-    {.fraFV.fra.SbvFavor .fraFV.fra.TreeFavor L - - {pack -side left}}
+    {.fraFV.fra.SbvFavor .fraFV.fra.TreeFavor L - - {pack -side left -fill both}}
     {fra.pan.PanR - - - - {add} {-orient vertical $alited::PanR_wh}}
     {.fraTop - - - - {add}}
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
@@ -786,7 +800,7 @@ proc main::_create {} {
   }
   UpdateProjectInfo
   # there should be a pause enough for FillBar got -wbar option normally sized
-  after 500 {after idle alited::main::InitActions}
+  after 500 {after idle {alited::main::InitActions ; alited::main::CheckCW01}}
   bind [$obPav Pan] <ButtonRelease> ::alited::tree::AdjustWidth
   set sbhi [$obPav SbhInfo]
   set lbxi [$obPav LbxInfo]

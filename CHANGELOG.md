@@ -1,6 +1,13 @@
 # LAST CHANGES:
 
 
+Version `1.3.1 (3 Aug'22)`
+
+  - CHANGE: check and fix widths of tree's columns (they can overlap the scrollbar)
+  - CHANGE: allow to run "forced command" for "%f ..." pattern of it (in console)
+  - CHANGE: update GUI after "Projects" anyway
+
+
 Version `1.3.0 (27 Jul'22)`
 
   - BUGFIX: at start, forget alited's own packages & namespaces
