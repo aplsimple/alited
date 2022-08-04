@@ -52,7 +52,8 @@ proc unit::GetHeader {wtree ID {NC ""} {wtxt ""} {tip ""} {l1 0} {l2 0}} {
         set line2 [string trimleft $line {/ }]
         if {[string index $line end] ni [list \\ \{] && \
         $line ni {{} # //} && ![regexp $al(RE,proc) $line]} {
-          if {[string match #* $line] && $line1 ne {}} {
+          if {[string match #* $line] && $line1 ne {} && \
+          ![regexp $::hl_tcl::my::data(RETODO) $line]} {
             append tip \n $line1
             break
           } elseif {[string match //* $line] && $line2 ne {}} {

@@ -1,8 +1,10 @@
 # LAST CHANGES:
 
 
-Version `1.3.1 (3 Aug'22)`
+Version `1.3.2 (4 Aug'22)`
 
+  - CHANGE: theming "Projects" file list's popup menu
+  - CHANGE: tips of unit tree with TODOs
   - CHANGE: check and fix widths of tree's columns (they can overlap the scrollbar)
   - CHANGE: allow to run "forced command" for "%f ..." pattern of it (in console)
   - CHANGE: update GUI after "Projects" anyway

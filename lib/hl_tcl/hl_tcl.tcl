@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.41
+package provide hl_tcl 0.9.42
 
 # ______________________ Common data ____________________ #
 
@@ -77,6 +77,7 @@ namespace eval ::hl_tcl {
     set data(RE0) {(^|[\{\}\[;]+)\s*([:\w*]+)(\s|\]|\}|\\|$|;){0}} ;# test: pwd;pwd;pwd
     set data(RE1) {([\{\}\[;])+\s*([:\w*]+)(\s|\]|\}|\\|$)}
     set data(RE5) {(^|[^\\])(\[|\]|\$|\{|\})}
+    set data(RETODO) {^\s*#\s*(!|TODO)}
 
     set data(LBR) {\{(\[\"}
     set data(RBR) {\})\]\"}
@@ -332,8 +333,9 @@ proc ::hl_tcl::my::HighlightComment {txt line ln k} {
   #   ln - line's number
   #   k - comment's starting position in line
 
+  variable data
   set stcom [string range $line $k end]
-  if {[regexp {^\s*#\s*(!|TODO)} $stcom]} {
+  if {[regexp $data(RETODO) $stcom]} {
     $txt tag add tagCMN2 $ln.$k $ln.end  ;# "!" and TODO comments
   } else {
     $txt tag add tagCMN $ln.$k $ln.end

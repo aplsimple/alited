@@ -781,7 +781,7 @@ proc tree::GetTooltip {ID NC} {
         if {[$wtxt compare $l1.0 <= $p1] && [$wtxt compare $p2 <= $l2.end]} {
           set todo [string trimleft [$wtxt get $p1 $p2] {#!}]
           switch [incr tiplines] {
-            1  {append tip \n [string repeat _ [string length $todo]] \n}
+            1  {append tip \n_______________________\n}
             13 {break}
           }
           append tip \n $todo

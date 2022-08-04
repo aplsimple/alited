@@ -710,6 +710,7 @@ proc project::LbxPopup {X Y} {
   $popm add separator
   $popm add command -label [msgcat::mc {Select All}] -command alited::project::SelectAllFiles -accelerator Ctrl+A
   baltip::sleep 1000
+  $obDl2 themePopup $popm
   tk_popup $popm $X $Y
 }
 #_______________________
