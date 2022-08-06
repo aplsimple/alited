@@ -677,11 +677,19 @@ proc main::InitActions {} {
 
   namespace upvar ::alited al al obPav obPav
   alited::bar::FillBar [$obPav BtsBar]
-  # check for reminders of the past
-  set rems [alited::project::ReadRems $al(prjname)]
-  lassign [alited::project::SortRems $rems] dmin
-  if {$dmin && $dmin<[clock seconds]} {
-    alited::project::_run
+  # check for outdated TODOs
+  if {[alited::project::IsOutdated $al(prjname)]} {
+    # current project has outdated TODOs
+    alited::project::_run no
+  } else {
+    # check other projects (after showing a text)
+    after 200 [list after idle {
+      alited::project::SaveSettings
+      alited::project::GetProjects
+      if {[alited::project::CheckOutdated] ne {}} {
+        alited::project::_run
+      }
+    }]
   }
 }
 #_______________________

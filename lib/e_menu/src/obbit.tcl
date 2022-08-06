@@ -321,6 +321,24 @@ proc ::apave::autoexec {comm} {
   }
   return $res
 }
+#_______________________
+
+proc ::apave::lsearchFile {flist fname} {
+  # Searches a file name in a list, using normalized file names.
+  #   flist - list of file names
+  #   fname - file name to find
+  # Returns an index of found file name or -1 if it's not found.
+
+  set i 0
+  set fname [file normalize $fname]
+  foreach fn $flist {
+    if {[file normalize $fn] eq $fname} {
+      return $i
+    }
+    incr i
+  }
+  return -1
+}
 
 ## ________________________ Inits _________________________ ##
 

@@ -510,6 +510,7 @@ proc unit_tpl::_run {{doselect yes} {geom ""}} {
 
   variable win
   variable dosel
+  if {[winfo exists $win]} {return {}}
   set dosel $doselect
   set wtxt [alited::main::CurrentWTXT]
   alited::keys::UnBindKeys $wtxt template

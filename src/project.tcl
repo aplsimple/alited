@@ -126,6 +126,30 @@ proc project::ClockYMD {d} {
 
   return [split [ClockFormat $d] /]
 }
+#_______________________
+
+proc project::IsOutdated {prj} {
+  # Checks for outdated TODOs of a project.
+  #   prj - project's name
+
+  set rems [ReadRems $prj]
+  return [lindex [SortRems $rems] 2]
+}
+#_______________________
+
+proc project::CheckOutdated {} {
+  # Checks for outdated TODOs of all projects except for the current.
+  # Return {} or a name of project with outdated TODOs.
+
+  namespace upvar ::alited al al
+  variable prjlist
+  foreach prj $prjlist {
+    if {$prj ne $al(prjname)} {
+      if {[IsOutdated $prj]} {return $prj}
+    }
+  }
+  return {}
+}
 
 # ________________________ Ini _________________________ #
 
@@ -332,7 +356,7 @@ proc project::ReadRems {prj} {
 proc project::SortRems {rems} {
   # Sorts reminders by date.
   #   rems - list of reminders
-  # Returns a list of a reminder date before a current date and a sorted list.
+  # Returns a list of reminder date before current date, sorted list, flag of outdated reminder.
 
   set tmp [list]
   set dmin 0
@@ -353,7 +377,8 @@ proc project::SortRems {rems} {
     lassign $it d text
     lappend rems [list [ClockFormat $d] $text]
   }
-  return [list $dmin $rems]
+  set outdated [expr {$dmin && $dmin<[clock seconds]}]
+  return [list $dmin $rems $outdated]
 }
 #_______________________
 
@@ -949,8 +974,8 @@ proc project::ProjectEnter {} {
   namespace upvar ::alited al al
   variable win
   variable prjinfo
-  lassign [SortRems $prjinfo($al(prjname),prjrem)] dmin
-  if {$dmin && $dmin<[clock seconds]} {
+  lassign [SortRems $prjinfo($al(prjname),prjrem)] dmin - outdated
+  if {$outdated} {
     set tab1 $win.fra.fraR.nbk.f1
     if {[$win.fra.fraR.nbk select] ne $tab1} {
       $win.fra.fraR.nbk select $tab1
@@ -1321,12 +1346,23 @@ proc project::_create {} {
 }
 #_______________________
 
-proc project::_run {} {
+proc project::_run {{checktodo yes}} {
   # Runs "Projects" dialogue.
+  #   checktodo - if yes, checks for outdated TODOs
 
+  namespace upvar ::alited al al
+  variable win
+  if {[winfo exists $win]} {return {}}
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   SaveSettings
   GetProjects
+  if {$checktodo && ![IsOutdated $al(prjname)]} {
+    after 200 {
+      if {[set prj [alited::project::CheckOutdated]] ne {}} {
+        alited::project::Select $alited::project::prjinfo($prj,ID)
+      }
+    }
+  }
   set res [_create]
   alited::main::UpdateTextGutterTree ;# settings may be changed as for GUI
   return $res

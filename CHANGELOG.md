@@ -1,13 +1,17 @@
 # LAST CHANGES:
 
 
-Version `1.3.2 (4 Aug'22)`
+Version `1.3.3a1 (6 Aug'22)`
 
-  - CHANGE: theming "Projects" file list's popup menu
+  - NEW   : check for outdated TODOs of *all projects* at starting / opening "Projects"
+  - CHANGE: insure against double-clicks of some icons
+  - CHANGE: use normalized file names at filling file lists of alited.ini
+  - CHANGE: theme "Projects" file list's popup menu
   - CHANGE: tips of unit tree with TODOs
   - CHANGE: check and fix widths of tree's columns (they can overlap the scrollbar)
-  - CHANGE: allow to run "forced command" for "%f ..." pattern of it (in console)
+  - CHANGE: allow to run (in console) "forced command" for "%f ..." pattern
   - CHANGE: update GUI after "Projects" anyway
+  - CHANGE: packages: apave/e_menu 3.5.1
 
 
 Version `1.3.0 (27 Jul'22)`

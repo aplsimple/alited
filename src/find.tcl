@@ -1000,13 +1000,12 @@ proc find::_run {} {
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   GetFindEntry
   if {[winfo exists $win]} {
-    SessionButtons
     wm withdraw $win
-    wm deiconify $win
+    SessionButtons
     set cbx [$obFND Cbx1]
     focus $cbx
     $cbx selection clear
-    after idle "$cbx selection range 0 end"
+    after idle "$cbx selection range 0 end ; wm deiconify $win"
   } else {
     _create
   }

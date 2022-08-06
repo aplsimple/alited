@@ -3320,6 +3320,7 @@ oo::class create ::apave::APave {
         set what [lindex $lwidgets 0 1]
         if {$what eq {idle} || [string is integer -strict $what]} {
           after $what [list [self] paveWindow $w [lrange $lwidgets 1 end]]
+          after $what [list [self] colorWindow $w]
         }
         continue
       }

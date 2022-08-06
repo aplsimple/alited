@@ -299,13 +299,17 @@ proc pref::Ok {args} {
     catch {set al(TCLLIST) [lreplace $al(TCLLIST) 32 end]}
     set al(EM,TclList) $al(EM,Tcl)
     foreach tcl $al(TCLLIST) {
-      if {$tcl ni [split $al(EM,TclList) \t]} {append al(EM,TclList) \t $tcl}
+      if {[::apave::lsearchFile [split $al(EM,TclList) \t] $tcl]<0} {
+        append al(EM,TclList) \t $tcl
+      }
     }
     set al(EM,TclList) [string trim $al(EM,TclList)]
     catch {set al(TTLIST) [lreplace $al(TTLIST) 32 end]}
     set al(EM,tt=List) $al(EM,tt=)
     foreach tt $al(TTLIST) {
-      if {$tt ni [split $al(EM,tt=List) \t]} {append al(EM,tt=List) \t $tt}
+      if {[::apave::lsearchFile [split $al(EM,tt=List) \t] $tt]<0} {
+        append al(EM,tt=List) \t $tt
+      }
     }
     set al(EM,tt=List) [string trim $al(EM,tt=List)]
     catch {set al(WTLIST) [lreplace $al(WTLIST) 32 end]}

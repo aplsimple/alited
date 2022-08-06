@@ -387,6 +387,7 @@ proc favor_ls::_run {} {
   # Runs "Favorites lists" dialogue.
 
   variable win
+  if {[winfo exists $win]} {return 0}
   set res [_create]
   destroy $win
   return $res

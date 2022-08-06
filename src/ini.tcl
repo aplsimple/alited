@@ -861,11 +861,12 @@ proc ini::GetConfiguration {} {
   catch {alitedObjToDel destroy}
   lassign $res ok confdir
   if {$ok} {
-    if {[set confdir [string trim $confdir]] eq {}} {
+    set confdir [file normalize [string trim $confdir]]
+    if {$confdir eq {}} {
       set ok no
     } else {
       set ::alited::CONFIGDIR $confdir
-      if {[set i [lsearch -exact $configs $confdir]]>-1} {
+      if {[set i [::apave::lsearchFile $configs $confdir]]>-1} {
         set configs [lreplace $configs $i $i]
       }
       set ::alited::CONFIGS [linsert $configs 0 $confdir]
