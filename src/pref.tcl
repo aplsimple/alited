@@ -447,11 +447,11 @@ proc pref::General_Tab1 {} {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labTheme - - 1 1 {-st w -pady 1 -padx 3} {-t "Ttk theme:"}}
-    {.opc1 .labTheme L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 21 -com alited::pref::CbxTheme -tip {-indexedtips \
+    {.opc1 .labTheme L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 21 -tip {-indexedtips \
       5 {$alited::al(MC,needcs)} \
       }} {}}}
     {.labCS .labTheme T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
-    {.opc2 .labCS L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 21 -com alited::pref::CbxTheme -tip {-indexedtips \
+    {.opc2 .labCS L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 21 -tip {-indexedtips \
       0 {$alited::al(MC,nocs)} \
       2 {$alited::al(MC,fitcs): awlight} \
       3 {$alited::al(MC,fitcs): azure-light} \
@@ -464,7 +464,7 @@ proc pref::General_Tab1 {} {
       30 {$alited::al(MC,fitcs): sun-valley-dark} \
       }} {alited::pref::opcToolPre %a}}}
     {.labHue .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Tint:"}}
-    {.SpxHue .labHue L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 9 -afteridle alited::pref::CbxTheme -tip {$alited::al(MC,hue)}}}
+    {.SpxHue .labHue L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 9 -tip {$alited::al(MC,hue)}}}
     {seh_ .labHue T 1 2 {-pady 4}}
     {fra2 seh_ T 1 2 {-st nsew -cw 1}}
     {.labLocal - - 1 1 {-st w -pady 1 -padx 3} {-t "Preferable locale:" -tip {$alited::al(MC,locale)}}}
@@ -598,21 +598,6 @@ proc pref::GetEmSave {to} {
   } elseif {$al(EM,save) eq $savall} {
     set al(EM,save) All
   }
-}
-#_______________________
-
-proc pref::CbxTheme {} {
-  # Check for access to "Tint" field.
-  # If CbxTheme is not "clam", "Tint" should be disabled.
-
-  fetchVars
-  if {[GetCS]>-2 && [::apave::obj apaveTheme $opc1]} {
-    set state normal
-  } else {
-    set state disabled
-    set alited::al(INI,HUE) 0
-  }
-  [$obDl2 SpxHue] configure -state $state
 }
 #_______________________
 

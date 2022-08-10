@@ -524,7 +524,7 @@ namespace eval ttk::theme::forest-light {
             -border 10 -padding 4 -sticky nsew
 
         # Labelframe
-        ttk::style element create Labelframe.border image $I(card) \
+        ttk::style element create Labelframe.border image $I(frame) \
             -border 5 -padding 4 -sticky nsew
 
         # _ Notebook _ #
@@ -532,7 +532,7 @@ namespace eval ttk::theme::forest-light {
 
         ttk::style element create Notebook.border image $I(card) -border 5
 
-        ttk::style element create Notebook.client image $I(notebook) -border 5
+        ttk::style element create Notebook.client image $I(notebook) -border 2
 
         ttk::style element create Notebook.tab image \
             [list $I(tab-basic) \

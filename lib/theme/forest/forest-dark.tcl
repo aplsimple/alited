@@ -527,7 +527,7 @@ namespace eval ttk::theme::forest-dark {
 
         ttk::style element create Notebook.border image $I(notebook-border) -border 5
 
-        ttk::style element create Notebook.client image $I(notebook) -border 5
+        ttk::style element create Notebook.client image $I(notebook) -border 2
 
         ttk::style element create Notebook.tab image \
             [list $I(tab-basic) \

@@ -452,16 +452,15 @@ namespace eval ttk::theme::sun-valley-dark {
             -border 10 -padding 4 -sticky nsew
 
         # Labelframe
-        ttk::style element create Labelframe.border image $images(card) \
+        ttk::style element create Labelframe.border image $images(frame) \
             -border 5 -padding 4 -sticky nsew
 
         # _ Notebook _ #
-        ttk::style configure TNotebook -padding 1
+        ttk::style configure TNotebook -padding 2
 
-        ttk::style element create Notebook.border \
-            image $images(notebook-border) -border 5 -padding 5
+        ttk::style element create Notebook.border image $images(notebook-border) -border 5
 
-        ttk::style element create Notebook.client image $images(notebook)
+        ttk::style element create Notebook.client image $images(notebook) -border 2
 
         ttk::style element create Notebook.tab \
             image [list $images(tab-rest) \

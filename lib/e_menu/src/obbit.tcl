@@ -80,11 +80,11 @@ namespace eval ::apave {
   set ::apave::_CS_(ALL) {
 {{ 0: AwLight}        "#141414" #151616 #dfdfde #d1d1d0 #28578a #85b4e7 #000 #444 grey #4776a9 #000 #97c6f9 - #bebebd #000 #FBFB96 #cacaca #a20000 #76b2f1 #005 #006 #007}
 
-{{ 1: AzureLight}     "#050b0d" #050b0d #ffffff #e1e1e1 #0b8aa4 #95ffff #000 #444 grey #22a1bb #000 #a6fbff - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
+{{ 1: AzureLight}     "#050b0d" #050b0d #ffffff #e1e1e1 #00516b #66e5ff #000 #444 grey #007f99 #000 #77f6ff - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
 
 {{ 2: ForestLight}    "#050b0d" #050b0d #ffffff #e1e1e1 #1d5d1d #A8CCA8 #000 #185818 grey #328457 #000 #b6cbb6 - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
 
-{{ 3: SunValleyLight} "#050b0d" #050b0d #ffffff #e1e1e1 #1056af #a5d1ff #000 #444 grey #1574cd #000 #afdbff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #76b2f1 #005 #006 #007}
+{{ 3: SunValleyLight} "#050b0d" #050b0d #ffffff #e1e1e1 #1056af #74c9ff #000 #444 grey #1574cd #000 #84d9ff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #76b2f1 #005 #006 #007}
 
 {{ 4: Grey1}          "#050b0d" #050b0d #F8F8F8 #dadad8 #933232 #b8b8b8 #000 #444 grey #843e3e #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #76b2f1 #005 #006 #007}
 
@@ -126,15 +126,15 @@ namespace eval ::apave {
 
 {{23: Dusk}           "#ececec" #ececec #1a1f21 #262b2d #9fc99f #217346 #FFF #f4f49f #585d5f #99c399 #fff #225c3b - #363b3d #000 #9d9d60 #23282a #ffc341 #99dd99 #005 #006 #007}
 
-{{24: SunValleyDeep} "#dfdfdf" #dddddd #131313 #252525 #83cee9 #2a627f #FFF #f4f49f #6f6f6f #63a1c3 #fff #18506d - #323232 #000 #9d9d60 #2a2a2a #efaf6f #4273eb #005 #006 #007}
+{{24: SunValleyDeep} "#dfdfdf" #dddddd #131313 #323232 #aae2ff #2a627f #FFF #f4f49f #6f6f6f #7db5d2 #fff #245c79 - #3e3e3e #000 #9d9d60 #2a2a2a #efaf6f #4273eb #005 #006 #007}
 
 {{25: AwDark}         "#F0E8E8" #E7E7E7 #1f2223 #232829 #77b3f2 #215d9c #fff #f4f49f grey #5793d2 #fff #0d4988 - #313637 #000 #9d9d60 #292e2f #ffc341 #76b2f1 #005 #006 #007}
 
-{{26: AzureDark}      "#ececec" #c7c7c7 #272727 #393939 #7fd5ff #0072aa #FFF #f4f49f grey #33b2ff #ffffff #0069a1 - #4a4a4a #000 #aaaa6d #383838 #ffc341 #76b2f1 #005 #006 #007}
+{{26: AzureDark}      "#ececec" #c7c7c7 #272727 #393939 #56d5ff #0a89c1 #FFF #f4f49f grey #36b5ed #ffffff #0069a1 - #4a4a4a #000 #aaaa6d #383838 #ffc341 #76b2f1 #005 #006 #007}
 
 {{27: ForestDark}     "#ececec" #c7c7c7 #272727 #393939 #a3cda3 #217346 #FFF #42ff42 grey #84ae84 #fff #247649 - #4a4a4a #000 #aaaa6d #383838 #efaf6f #99dd99 #005 #006 #007}
 
-{{28: SunValleyDark} "#ececec" #c7c7c7 #272727 #323232 #93baf6 #2F5692 #e1e1e1 #f4f49f grey #769dd9 #fff #2c538f - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
+{{28: SunValleyDark} "#ececec" #c7c7c7 #272727 #323232 #aae2ff #2a627f #e1e1e1 #f4f49f grey #7cb4d1 #fff #245c79 - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
 
 {{29: Dark1}          "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #ba8d4d #000 #767676 - #363636 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
 

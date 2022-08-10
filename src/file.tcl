@@ -535,25 +535,28 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
 }
 #_______________________
 
-proc file::SaveFileByName {TID fname} {
+proc file::SaveFileByName {TID fname {doit no}} {
   # Saves a file.
   #   TID - ID of tab
   #   fname - file name
+  #   doit - flag "do save now, without any GUI"
 
   namespace upvar ::alited al al
   set wtxt [alited::main::GetWTXT $TID]
-  if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $TID yes}
+  if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $TID yes $doit}
   set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
   if {![::apave::writeTextFile $fname fcont]} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1
     return 0
   }
   alited::edit::BackupFile $TID
-  $wtxt edit modified no
-  alited::edit::Modified $TID $wtxt
-  alited::main::HighlightText $TID $fname $wtxt
-  OutwardChange $TID no
-  RecreateFileTree
+  if {!$doit} {
+    $wtxt edit modified no
+    alited::edit::Modified $TID $wtxt
+    alited::main::HighlightText $TID $fname $wtxt
+    OutwardChange $TID no
+    RecreateFileTree
+  }
   return 1
 }
 #_______________________
@@ -570,7 +573,7 @@ proc file::SaveFile {{TID ""} {doit no}} {
   if {[IsNoName $fname]} {
     return [SaveFileAs $TID]
   }
-  set res [SaveFileByName $TID $fname]
+  set res [SaveFileByName $TID $fname $doit]
   alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)" $doit
   if {!$doit} {
     alited::main::ShowHeader yes

@@ -517,12 +517,12 @@ namespace eval ttk::theme::azure-light {
             -border 10 -padding 4 -sticky news
 
         # Labelframe
-        ttk::style element create Labelframe.border image $I(card) \
+        ttk::style element create Labelframe.border image $I(frame) \
             -border 5 -padding 4 -sticky news
 
         # _ Notebook _ #
         ttk::style element create Notebook.client \
-            image $I(notebook) -border 5
+            image $I(notebook) -border 2
 
         ttk::style element create Notebook.tab \
             image [list $I(tab-hover) \

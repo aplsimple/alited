@@ -1,17 +1,20 @@
 # LAST CHANGES:
 
 
-Version `1.3.3a1 (6 Aug'22)`
+Version `1.3.3b1 (10 Aug'22)`
 
-  - NEW   : check for outdated TODOs of *all projects* at starting / opening "Projects"
+  - BUGFIX: saving files after "Save" in Preferences -> Tcl error, not critical though
+  - NEW   : check for outdated TODOs of *all projects* at starting / opening Projects
+  - NEW   : allow tinting CS for rdbende's themes
+  - CHANGE: themes: azure, forest, sunvalley
   - CHANGE: insure against double-clicks of some icons
-  - CHANGE: use normalized file names at filling file lists of alited.ini
-  - CHANGE: theme "Projects" file list's popup menu
+  - CHANGE: use normalized file names at filling the file lists of alited.ini
+  - CHANGE: theming Projects file list's popup menu
   - CHANGE: tips of unit tree with TODOs
   - CHANGE: check and fix widths of tree's columns (they can overlap the scrollbar)
-  - CHANGE: allow to run (in console) "forced command" for "%f ..." pattern
-  - CHANGE: update GUI after "Projects" anyway
-  - CHANGE: packages: apave/e_menu 3.5.1
+  - CHANGE: allow to run *in console* "forced command" for "%f ..." pattern
+  - CHANGE: update GUI after "Projects" dialogue's closing, anyway
+  - CHANGE: packages: apave/e_menu 3.5.1, hl_tcl 0.9.42
 
 
 Version `1.3.0 (27 Jul'22)`

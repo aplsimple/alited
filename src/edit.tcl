@@ -326,10 +326,11 @@ proc edit::Modified {TID wtxt {l1 0} {l2 0} args} {
 }
 #_______________________
 
-proc edit::RemoveTrailWhites {{TID ""} {doit no}} {
+proc edit::RemoveTrailWhites {{TID ""} {doit no} {skipGUI no}} {
   # Removes trailing spaces of lines - all of lines or a selection of lines.
   #   TID - tab ID
   #   doit - if yes, trimright all of text without questions
+  #   skipGUI - if yes, no updating GUI
 
   namespace upvar ::alited al al
   set ans 1
@@ -367,10 +368,12 @@ proc edit::RemoveTrailWhites {{TID ""} {doit no}} {
       }
     }
   }
-  if {$waseditcurr} {
-    alited::main::UpdateTextGutterTreeIcons
-  } else {
-    alited::main::UpdateIcons
+  if {!$skipGUI} {
+    if {$waseditcurr} {
+      alited::main::UpdateTextGutterTreeIcons
+    } else {
+      alited::main::UpdateIcons
+    }
   }
 }
 

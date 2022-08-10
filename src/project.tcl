@@ -967,9 +967,9 @@ proc project::HelpMe {} {
 }
 #_______________________
 
-proc project::ProjectEnter {} {
-  # Processes double-clicking and pressing Enter on the project list.
-  # Cancels selecting projects if there are old reminders.
+proc project::CanProjectEnter {} {
+  # Checks whether a project can be entered.
+  # Returns no if there are old reminders.
 
   namespace upvar ::alited al al
   variable win
@@ -985,9 +985,17 @@ proc project::ProjectEnter {} {
     set dmin [ClockFormat $dmin]
     set msg [string map [list %d $dmin] $msg]
     alited::Message2 $msg 4
-    return
+    return no
   }
-  Ok
+  return yes
+}
+#_______________________
+
+proc project::ProjectEnter {} {
+  # Processes double-clicking and pressing Enter on the project list.
+  # Cancels selecting projects if there are old reminders.
+
+  if {[CanProjectEnter]} Ok
 }
 #_______________________
 
@@ -1363,6 +1371,7 @@ proc project::_run {{checktodo yes}} {
       }
     }
   }
+  after 200 alited::project::CanProjectEnter  ;# checking the project's TODOs
   set res [_create]
   alited::main::UpdateTextGutterTree ;# settings may be changed as for GUI
   return $res

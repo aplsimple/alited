@@ -520,7 +520,7 @@ namespace eval ttk::theme::azure-dark {
 
         # _ Notebook _ #
         ttk::style element create Notebook.client \
-            image $I(notebook) -border 5
+            image $I(notebook) -border 2
 
         ttk::style element create Notebook.tab \
             image [list $I(tab-unsel) \
