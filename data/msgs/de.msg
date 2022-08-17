@@ -45,7 +45,6 @@ namespace eval ::alited {
     {... All at Right} {... alles rechts}
     {Preferences} {Einstellungen}
     {Preferences...} {Einstellungen ...}
-    {Restart} {Neustart}
     {Quit} {Beenden}
     {Put New Line} {Neue Zeile einfügen}
     {Remove Trailing Whitespaces} {Rechte Leerzeichen löschen}
@@ -373,7 +372,7 @@ namespace eval ::alited {
     {Lighter:} {Heller:}
     {Tint} {Farbton}
     {Tint:} {Farbton:}
-    "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Damit die Konfigurationsänderunge aktiv werden\nmuss die Applikation neu gestartet werden.\n\nJetzt neu starten?"
+    "For the settings to be active,\nalited application should be restarted." "Damit die Konfigurationsänderunge aktiv werden\nmuss die Applikation alited neu gestartet werden."
     {Preferable locale:} {Bevorzugte Sprache:}
     "This is a language code: ru, uk, de...\nIn alited, \"en\" means American English." "Das ist einer der folgenden Sprachenkodes: ru, uk, de...\nIn alited \"en\" bedeutet American English."
     {Small font size:} {Schmaler Zeichensatz:}
@@ -497,7 +496,7 @@ namespace eval ::alited {
     {Projects (%PD wildcard):} {Projekte (%PD Platzhalter):}
     {Linux terminal:} {Linux Terminal:}
     {Diff tool:} {Diff-Werkzeug:}
-    {Path to man/tcl8.6:} {Pfad von man/tcl8.6:}
+    {Path to man/tcl:} {Pfad von man/tcl:}
     {tclsh, wish or tclkit:} {tclsh, wish oder tclkit:}
     {Rows:} {Zeilen:}
     {Columns:} {Spalten:}

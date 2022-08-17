@@ -64,6 +64,7 @@ namespace eval ::apave {
   set ::apave::_CS_(MINCS) -1
   set ::apave::_CS_(old) -3
   set ::apave::_CS_(TONED) [list -2 no]
+  set ::apave::_CS_(HUE) 0
   set ::apave::_CS_(LABELBORDER) 0
   set ::apave::_CS_(CURSORWIDTH) 2
 
@@ -1549,6 +1550,7 @@ oo::class create ::apave::ObjectTheming {
     my csDeleteExternal
     set CS [my csGet $cs]
     set mainc [my csMainColors]
+    set ::apave::_CS_(HUE) $hue
     set hue [expr {(100.0+$hue)/100.0}]
     foreach i [my csMapTheme] {
       set color [lindex $CS $i]

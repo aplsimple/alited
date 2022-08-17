@@ -4,7 +4,7 @@ w=25
 t4==%b-%Y/%U-week
 u=%s
 in=1.0
-pos=22.123
+pos=77.56
 ::FSLUSER=aplsimple
 ::FSLBRANCH=TclOO forced
 ::FSLBRANCHCOLOR=#fe95ca
@@ -74,7 +74,7 @@ RW:fossil diff ? RW: fossil tim -t ci -n 9999 > $::EMENUTMPFILE
   \n\n When 'regexp filter' set, an additional console shows \
   \n the filtered lines. \
   \n\n temp file:\n $::EMENUTMPFILE} \
-   } -head {\n This will compare selected versions of file:} -focus butOK \
+   } -head {\n This will compare selected versions of\n %PD} -focus butOK \
    -weight bold == ::EMENUCOMMIT1 ::EMENUCOMMIT2 ::EMENUGREP ::EMENUBRIEF
  R:fossil diff ? R: %C \
    if {"$::EMENUCOMMIT1" eq ""} {set ::EMENUTMP1 ""} {set ::EMENUTMP1 "--from $::EMENUCOMMIT1"}; \

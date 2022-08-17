@@ -1,11 +1,16 @@
 # LAST CHANGES:
 
 
-Version `1.3.3b1 (10 Aug'22)`
+Version `1.3.3b5 (17 Aug'22)`
 
   - BUGFIX: saving files after "Save" in Preferences -> Tcl error, not critical though
+  - BUGFIX: calling e_menu as external with alited's CS tinted (CS=47 at that)
   - NEW   : check for outdated TODOs of *all projects* at starting / opening Projects
   - NEW   : allow tinting CS for rdbende's themes
+  - NEW   : highlight current & original tints in "Setup/Tint" menu
+  - CHANGE: remove "File/Restart" menu item (made for testing only)
+  - CHANGE: in Preferences - okcancel for Save button
+  - CHANGE: docs: on Tcl/Tk 8.7 help
   - CHANGE: themes: azure, forest, sunvalley
   - CHANGE: insure against double-clicks of some icons
   - CHANGE: use normalized file names at filling the file lists of alited.ini

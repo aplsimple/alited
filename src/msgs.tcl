@@ -36,7 +36,6 @@ namespace eval ::alited {
     set al(MC,pref)        [msgcat::mc Preferences]
     set al(MC,pref...)     [msgcat::mc Preferences...]
     set al(MC,notrecomm)   [msgcat::mc "Not recommended for projects\nwith large files (>2000 LOC)!"]
-    set al(MC,restart)     [msgcat::mc Restart]
     set al(MC,quit)        [msgcat::mc Quit]
     set al(MC,indent)      [msgcat::mc Indent]
     set al(MC,unindent)    [msgcat::mc Unindent]

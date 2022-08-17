@@ -44,7 +44,6 @@ namespace eval ::alited {
     {... All at Right} {... все справа}
     {Preferences} {Настройки}
     {Preferences...} {Настройки...}
-    {Restart} {Перезапуск}
     {Quit} {Выход}
     {Put New Line} {Добавить строку}
     {Remove Trailing Whitespaces} {Удалить хвостовые пробелы}
@@ -370,7 +369,7 @@ namespace eval ::alited {
     {Lighter:} {Светлее:}
     {Tint} {Оттенок}
     {Tint:} {Оттенок:}
-    "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?" "Чтобы изменения вступили в силу,\nприложение надо перезапустить.\n\nСделать это прямо сейчас?"
+    "For the settings to be active,\nalited application should be restarted." "Чтобы изменения вступили в силу,\nпрограмму alited надо перезапустить."
     {Preferable locale:} {Предпочтительная локаль:}
     "This is a language code: ru, uk, de...\nIn alited, \"en\" means American English." "Это код языка: ru, uk, de...\nВ alited \"en\" значит American English."
     {Small font size:} {Размер малого шрифта:}
@@ -493,7 +492,7 @@ namespace eval ::alited {
     {Projects (%PD wildcard):} {Проекты (%PD токен):}
     {Linux terminal:} {Терминал Linux:}
     {Diff tool:} {Команда diff:}
-    {Path to man/tcl8.6:} {Путь к man/tcl8.6:}
+    {Path to man/tcl:} {Путь к man/tcl:}
     {tclsh, wish or tclkit:} {tclsh, wish или tclkit:}
     {Rows:} {Строк:}
     {Columns:} {Колонок:}

@@ -732,7 +732,7 @@ proc tool::e_menu1 {opts} {
   if {$al(EM,ownCS)} {
     set cs $al(EM,CS)
   } else {
-    set cs [$obPav csCurrent]
+    set cs $al(INI,CS)  ;# without tinting: e_menu hasn't the tint option
   }
   alited::Run [file join $::e_menu_dir e_menu.tcl] \
     {*}[EM_Options $opts] c=$cs fs=$al(FONTSIZE,std)

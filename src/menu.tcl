@@ -6,7 +6,9 @@
 # License: MIT.
 ###########################################################
 
-namespace eval menu {}
+namespace eval menu {
+  variable tint; array set tint [list]
+}
 
 # ________________________ procs _________________________ #
 
@@ -62,6 +64,33 @@ proc menu::FillRecent {} {
 }
 #_______________________
 
+proc menu::CheckTint {{doit no}} {
+  # Sets a check in menu "Tint" according to the current tint.
+  #   doit - "yes" at restarting this procedure after a pause
+
+  namespace upvar ::alited al al obPav obPav
+  variable tint
+  if {!$doit} {
+    # we can postpone updating the Tint menu
+    after idle {after 500 {alited::menu::CheckTint yes}}
+    return
+  }
+  set fg1 [lindex [alited::FgFgBold] 1]
+  set fg2 [$al(SETUP) entrycget 0 -foreground]
+  set ti 0
+  for {set i 50} {$i>=-50} {incr i -5} {
+    set tint($i) [alited::IsRoundInt $::apave::_CS_(HUE) $i]
+    if {[alited::IsRoundInt $al(INI,HUE) $i]} {
+      set fg $fg1
+    } else {
+      set fg $fg2
+    }
+    $al(SETUP).tint entryconfigure $ti -variable alited::menu::tint($i) -foreground $fg
+    incr ti
+  }
+}
+#_______________________
+
 proc menu::SetTint {tint} {
   # Sets a tint of a current color scheme.
   #   tint - value of the tint
@@ -71,6 +100,7 @@ proc menu::SetTint {tint} {
   alited::file::MakeThemHighlighted
   alited::main::ShowText
   alited::bar::BAR update
+  CheckTint
 }
 #_______________________
 
@@ -148,8 +178,6 @@ proc menu::RunTip {} {
   $m add command -label $al(MC,clall) -command {alited::file::CloseAll 1}
   $m add command -label $al(MC,clallleft) -command {alited::file::CloseAll 2}
   $m add command -label $al(MC,clallright) -command {alited::file::CloseAll 3}
-  $m add separator
-  $m add command -label $al(MC,restart) -command {alited::Exit - 1 no}
   $m add separator
   $m add command -label $al(MC,quit) -command {alited::Exit - 0 no}
 
@@ -238,11 +266,11 @@ proc menu::RunTip {} {
       set ti2 "[msgcat::mc Lighter:]$ti1"
     } else {
       set ti3 [::apave::obj csGetName $al(INI,CS)]
-      set ti2 [msgcat::mc {Color scheme:}]
-      append ti2 { } [string range $ti3 [string first { } $ti3] end]
+      set ti2 CS\ #[string trim $ti3]
     }
-    $m.tint add command -label $ti2 -command "alited::menu::SetTint $ti"
+    $m.tint add checkbutton -label $ti2 -command "alited::menu::SetTint $ti"
   }
+  CheckTint
   $m add checkbutton -label [msgcat::mc {Wrap Lines}] \
     -variable alited::al(wrapwords) -command alited::file::WrapLines
   $m add checkbutton -label [msgcat::mc {Tip File Info}] \

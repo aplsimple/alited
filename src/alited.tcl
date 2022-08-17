@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.3b1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.3b5  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -329,6 +329,15 @@ namespace eval alited {
       if {![string is digit -strict [string trimleft [set $n] -]]} {set $n 0}
     }
     return [incr l11 $l21].[incr c11 $c21]
+  }
+  #_______________________
+
+  proc IsRoundInt {i1 i2} {
+    # Checks whether an integer equals roundly to other integer.
+    #   i1 - integer to compare
+    #   i2 - integer to be compared (rounded) to i1
+
+    return [expr {$i1>($i2-3) && $i1<($i2+3)}]
   }
   #_______________________
 
@@ -712,7 +721,7 @@ if {[info exists ALITED_PORT]} {
   alited::favor::_init   ;# initialize favorites
   alited::tool::AfterStart
 #  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
-  if {[alited::main::_run]} {     ;# run the main form
+  if {[set res [alited::main::_run]]} {     ;# run the main form
     # restarting
     update
     if {$alited::LOG ne {}} {
@@ -732,11 +741,11 @@ if {[info exists ALITED_PORT]} {
     catch {wm attributes . -alpha 0.0}
     catch {wm withdraw $alited::al(WIN)}
     cd $alited::DIR
-    exec -- [info nameofexecutable] $alited::SCRIPT -NOPORT {*}$alited::ARGV &
+    exec -- [info nameofexecutable] $alited::SCRIPT {*}$alited::ARGV &
   } elseif {$alited::LOG ne {}} {
     ::apave::logMessage {QUIT ------------}
   }
-  exit
+  exit $res
 } else {
   # these scripts are sourced to include them in Ruff!'s generated docs
   namespace eval alited {

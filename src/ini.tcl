@@ -1152,7 +1152,8 @@ proc ini::_init {} {
           continue
         }
         lappend limgs $img
-        set tip [string map {% %%} $em_mnu($i)]
+#        set tip [string map {% %%} $em_mnu($i)]
+        set tip $em_mnu($i)
         append al(atools) " $img \{{} -tip {$tip@@ -under 4 -command {alited::ini::ToolbarTip %w %t}} $txt "
         append al(atools) "-com {[alited::tool::EM_command $i]}\}"
       }

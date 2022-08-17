@@ -1149,18 +1149,26 @@ The <i>Tcl/Tk help</i> tool shows <a href="https://www.tcl.tk/man/tcl8.6/">Tcl/T
 </p>
 
 <p>
-Still, this context help is available only if <a href="https://www.tcl.tk/man/tcl8.6/">Tcl/Tk</a> help pages are downloaded and copied to <i>~/DOC/www.tcl.tk/man/tcl8.6</i> directory
+Still, this context help is available only if <a href="https://www.tcl.tk/man/tcl8.6/">Tcl/Tk</a> help pages are downloaded and copied to <i>~/DOC/www.tcl.tk/man/tcl8.6</i> (or similar) directory
 <br>
 ... or when Internet is accessible. In such case, <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tries to get a help page from <a href="https://www.tcl.tk/man/tcl8.6/">https://www.tcl.tk/man/tcl8.6/</a> which might be not what you want.
 </p>
 
 <p>
-You may find the following link useful:
+You can download Tcl/Tk 8.6.11 help by using the direct link:
 <ul><li> <a href=https://github.com/aplsimple/tclbag/releases/download/TclTk-docs-8.6.11/TclTk-docs-8.6.11.zip>TclTk-docs-8.6.11.zip</a></li></ul>
 </p>
 
 <p>
-You can unpack this zip file to some directory and set a path to it in "Preferences / Tools / Path to man/tcl8.6" field. After that, the Tcl/Tk context help will be called at pressing <i>F1</i> key.
+Also, to download the last version of Tcl/Tk 8.6 help, you can use:
+<pre class="code">
+  wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6
+</pre>
+For Tcl/Tk 8.7 help, you can use:
+<pre class="code">
+  wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.7.+ https://www.tcl.tk/man/tcl8.7
+</pre>
+Tcl/Tk context help in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> will be enabled by setting a path to the downloaded man pages in "Preferences / Tools / Path to man/tcl" field.
 </p>
 
 <br>

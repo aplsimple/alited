@@ -273,8 +273,8 @@ proc pref::Ok {args} {
 
   fetchVars
   alited::CloseDlg
-  set ans [alited::msg yesnocancel info [msgcat::mc "For the settings to be active\nthe application should be restarted.\n\nRestart it just now?"] YES -geometry root=$win]
-  if {$ans in {1 2}} {
+  set ans [alited::msg okcancel info [msgcat::mc "For the settings to be active,\nalited application should be restarted."] YES -geometry root=$win]
+  if {$ans} {
     GetEmSave out
     # check options that can make alited unusable
     if {$al(INI,HUE)<-50 || $al(INI,HUE)>50} {set al(INI,HUE) 0}
@@ -326,7 +326,7 @@ proc pref::Ok {args} {
     }
     set al(EM,DiffTool) [file join {*}[file split $al(EM,DiffTool)]]
     $obDl2 res $win 1
-    if {$ans == 1} {alited::Exit - 1 no}
+    alited::Exit - 1 no
   }
 }
 #_______________________
@@ -1166,7 +1166,7 @@ proc pref::Common_Tab {} {
     {.fraRun .labRun L 1 1 {-st sw -pady 5}}
     {.fraRun.radRunCons - - 1 1 {} {-var alited::al(tkcon,topmost) -value 1 -t {$alited::al(MC,inconsole)} -tip {Also, this makes "tkcon" topmost.}}}
     {.fraRun.radRunTkcon .fraRun.radRunCons L 1 1 {-padx 10} {-var alited::al(tkcon,topmost) -value 0 -t {$alited::al(MC,intkcon)}}}
-    {.labDoc .labRun T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl8.6:"}}
+    {.labDoc .labRun T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl:"}}
     {.dirDoc .labDoc L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 48}}
     {.labTT .labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
     {.cbxTT .labTT L 1 1 {-st swe -pady 5} {-tvar alited::al(EM,tt=) -w 48 -values {$alited::al(TTLIST)} -clearcom {alited::main::ClearCbx %w ::alited::al(TTLIST)}}}
