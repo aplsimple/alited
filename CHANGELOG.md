@@ -1,13 +1,19 @@
 # LAST CHANGES:
 
 
-Version `1.3.3b5 (17 Aug'22)`
+Version `1.3.3b7 (24 Aug'22)`
 
-  - BUGFIX: saving files after "Save" in Preferences -> Tcl error, not critical though
-  - BUGFIX: calling e_menu as external with alited's CS tinted (CS=47 at that)
+  - BUGFIX: (not critical) saving files after "Save" in Preferences -> Tcl error
+  - BUGFIX: (not critical) calling e_menu as external with alited's CS tinted (CS=47)
+  - BUGFIX: (not critical) in Projects: default project's dir is empty at first start
+  - NEW   : Projects: "Create project by template" and "Project directory" buttons
+  - NEW   : Projects: "Templates" tab to set a template of project file tree
   - NEW   : check for outdated TODOs of *all projects* at starting / opening Projects
   - NEW   : allow tinting CS for rdbende's themes
   - NEW   : highlight current & original tints in "Setup/Tint" menu
+  - CHANGE: focusing a current text after "Open all Tcl files" of file tree
+  - CHANGE: in Projects: focusing appropriate fields at user's errors
+  - CHANGE: scrollbars for Preferences/Editor syntax fields
   - CHANGE: remove "File/Restart" menu item (made for testing only)
   - CHANGE: in Preferences - okcancel for Save button
   - CHANGE: docs: on Tcl/Tk 8.7 help
@@ -19,7 +25,8 @@ Version `1.3.3b5 (17 Aug'22)`
   - CHANGE: check and fix widths of tree's columns (they can overlap the scrollbar)
   - CHANGE: allow to run *in console* "forced command" for "%f ..." pattern
   - CHANGE: update GUI after "Projects" dialogue's closing, anyway
-  - CHANGE: packages: apave/e_menu 3.5.1, hl_tcl 0.9.42
+  - CHANGE: About / Acknowledgements
+  - CHANGE: packages: apave/e_menu 3.5.3, hl_tcl 0.9.42
 
 
 Version `1.3.0 (27 Jul'22)`

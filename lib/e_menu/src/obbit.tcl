@@ -1974,7 +1974,9 @@ oo::class create ::apave::ObjectTheming {
           set ::apave::_C_($ts,7) "-disabledbackground $tbgD"
           set ::apave::_C_($ts,8) "-highlightcolor $bclr"
           if {$ts eq {text}} {
+            set ::apave::_C_($ts,0) 12
             set ::apave::_C_($ts,9) "-font {[font actual apaveFontMono]}"
+            set ::apave::_C_($ts,12) "-inactiveselectbackground $tbgS"
           } else {
             set ::apave::_C_($ts,9) "-font {$fontdef}"
           }

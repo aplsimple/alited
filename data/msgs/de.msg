@@ -156,6 +156,7 @@ namespace eval ::alited {
   ## ________________________ Templates ________________________ ##
   ::msgcat::mcmset de {
     {Template} {Vorlage}
+    {Template:} {Vorlage:}
     {Templates} {Vorlagen}
     {Templates...} {Vorlagen...}
     {List of Templates} {Liste der Vorlagen}
@@ -239,6 +240,14 @@ namespace eval ::alited {
     {Open files: %n} {Ausgewählten Dateien: %n}
     {Move TODO to next day} {Vertagen TODO auf Tage}
     {Move TODO to next week} {Vertagen TODO auf Woche}
+    on zum
+    {Incorrect name: %n} {Inkorrekter Name: %n}
+    {The project template is empty!} {Die Projektvorlage ist leer!}
+    {Incorrect indentation in Project template: %n} {Inkorrekt Einrücken in der Projektvorlage: %n}
+    "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project." "Geben Sie einen Verzeichnisbaum für die Projektvorlage ein.\nVersehen Sie ihn mit gleichem Einrücken, um Unterverzeichnisse zu bedeuten.\n\nDateien wie README*, CHANGELOG* werden leer erstellt.\nDateien wie LICENSE* werden aus dem aktuellen Projekt übernommen."
+    "Create a project by template\nas set in Template tab" "Ein Projekt nach Vorlage erstellen\nwie auf dem Tab \"Vorlage\" festgelegt"
+    {Project directory} {Projektverzeichnis}
+
   }
 
   ## ________________________ Favorites ________________________ ##

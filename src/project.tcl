@@ -72,12 +72,11 @@ proc project::ProjectFileName {name} {
 
 proc project::CheckProjectName {} {
   # Removes spec.characters from a project name (sort of normalizing it).
+  # Returns yes, if the name is "correct" (no char replacements made).
 
   namespace upvar ::alited al al
   set oldname $al(prjname)
-  set al(prjname) [string map [list \
-    * _ ? _ ~ _ . _ / _ \\ _ \{ _ \} _ \[ _ \] _ \t _ \n _ \r _ \
-    | _ < _ > _ & _ , _ : _ \; _ \" _ ' _ ` _] $al(prjname)]
+  set al(prjname) [alited::NormalizeFileName $al(prjname)]
   return [expr {$oldname eq $al(prjname)}]
 }
 #_______________________
@@ -214,7 +213,7 @@ proc project::GetProjectOpts {fname} {
   # Reads a project's settings from a project settings file.
   #   fname - the project settings file's name
 
-  namespace upvar ::alited al al OPTS OPTS
+  namespace upvar ::alited al al OPTS OPTS DIR DIR
   variable prjlist
   variable prjinfo
   variable curinfo
@@ -235,6 +234,7 @@ proc project::GetProjectOpts {fname} {
       }
     }
   }
+  set prjinfo($pname,prjroot) $DIR
   foreach line [::apave::textsplit $filecont] {
     lassign [GetOptVal $line] opt val
     if {[lsearch $OPTS $opt]>-1} {
@@ -512,6 +512,17 @@ proc project::UpdateTree {} {
 }
 #_______________________
 
+proc project::FocusInTab {tab wid} {
+  # Focuses on a widget in a tab.
+  #   tab - the tab's path
+  #   wid - the widget's path
+
+  variable win
+  $win.fra.fraR.nbk select $win.fra.fraR.nbk.$tab
+  focus $wid
+}
+#_______________________
+
 proc project::CheckNewDir {} {
   # Checks if the root directory exists. If no, tries to create it.
   # Returns yes, if all is OK.
@@ -519,8 +530,7 @@ proc project::CheckNewDir {} {
   namespace upvar ::alited al al obDl2 obDl2
   variable win
   if {![file exists $al(prjroot)]} {
-    $win.fra.fraR.nbk select $win.fra.fraR.nbk.f1
-    focus [::apave::precedeWidgetName [$obDl2 Dir] ent]
+    FocusInTab f1 [::apave::precedeWidgetName [$obDl2 Dir] ent]
     set msg [string map [list %d $al(prjroot)] $al(makeroot)]
     if {![alited::msg yesno ques $msg NO -geometry root=$win]} {
       return no
@@ -546,13 +556,13 @@ proc project::ExistingProject {msgOnExist} {
   set pname $al(prjname)
   if {[lsearch -exact $prjlist $pname]>-1} {
     if {$msgOnExist} {
-      focus [$obDl2 EntName]
+      FocusInTab f1 [$obDl2 EntName]
       set msg [string map [list %n $pname] $al(MC,prjexists)]
       alited::Message2 $msg 4
     }
   } else {
     if {!$msgOnExist} {
-      focus [$obDl2 EntName]
+      FocusInTab f1 [$obDl2 EntName]
       set msg [msgcat::mc \
         "A project \"%n\" doesn't exists. Hit \[+\] button to create it."]
       set msg [string map [list %n $pname] $msg]
@@ -571,7 +581,12 @@ proc project::ValidProject {} {
   set al(prjname) [string trim $al(prjname)]
   if {$al(prjname) eq {} || ![CheckProjectName]} {
     bell
-    focus [$obDl2 EntName]
+    FocusInTab f1 [$obDl2 EntName]
+    return no
+  }
+  if {$al(prjroot) eq {}} {
+    bell
+    FocusInTab f1 [::apave::precedeWidgetName [$obDl2 Dir] ent]
     return no
   }
   set al(prjroot) [file nativename $al(prjroot)]
@@ -755,12 +770,13 @@ proc project::ValidateDir {} {
 
 proc project::Add {} {
   # "Add project" button's handler.
+  # Returns yes, if the project is successfully added.
 
   namespace upvar ::alited al al obDl2 obDl2 OPTS OPTS
   variable prjlist
   variable prjinfo
   SaveNotes
-  if {![ValidProject] || [ExistingProject yes] ne {}} return
+  if {![ValidProject] || [ExistingProject yes] ne {}} {return no}
   set al(tablist) [list]
   TabFileInfo
   set pname $al(prjname)
@@ -785,6 +801,7 @@ proc project::Add {} {
   UpdateTree
   Select $prjinfo($pname,ID)
   alited::Message2 [string map [list %n $pname] $al(MC,prjnew)] 3
+  return yes
 }
 #_______________________
 
@@ -858,6 +875,87 @@ proc project::Delete {} {
   UpdateTree
   Select $isel
   alited::Message2 [string map [list %n $nametodel] $al(MC,prjdel2)] 3
+}
+#_______________________
+
+proc project::Template {} {
+  # Creates a project by template as set in Template tab.
+  # The template can contain directories or files (indented for subdirectories).
+  # The files satisfy glob-patterns: changelog*, license*, licence*, readme*.
+  # See also: TplDefault
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable curinfo
+  # first, check the template for correctness
+  set wtpl [$obDl2 TexTemplate]
+  set namelist [set errmess {}]
+  set margin [set indent [set spprev -1]]
+  foreach name [split [$wtpl get 1.0 end] \n] {
+    if {[set name [string trimright $name]] eq {}} continue
+    if {$name ne [alited::NormalizeFileName $name]} {
+      set errmess [string map [list %n $name] [msgcat::mc {Incorrect name: %n}]]
+      break
+    }
+    set sporig [$obDl2 leadingSpaces $name]
+    if {$margin<0} {set margin $sporig}
+    set sp [$obDl2 leadingSpaces [string range $name $margin end]]
+    set name [string trimleft $name]
+    set lastname {}  ;# root of project dir
+    if {$sp || $margin>$sporig} {
+      if {$indent<0} {set indent $sp}
+      if {$margin>$sporig || $sp % $indent || $sp>($spprev+$indent)} {
+        set errmess [string map [list %n $name] \
+          [msgcat::mc {Incorrect indentation in Project template: %n}]]
+        break
+      }
+      for {set i [llength $namelist]} {$i} {} {
+        incr i -1
+        lassign [lindex $namelist $i] n1 s1
+        if {$s1<$sp} {
+          set lastname $n1/
+          break
+        }
+      }
+    }
+    lappend namelist [list [file nativename $lastname$name] $sp]
+    set spprev $sp
+  }
+  if {"$errmess$namelist" eq {}} {
+    set errmess [msgcat::mc {The project template is empty!}]
+  }
+  if {$errmess ne {}} {
+    set namelist {}  ;# skip the following foreach
+  } elseif {![Add]} {
+    return
+  }
+  # the template is OK -> create its dir/file tree
+  foreach fn $namelist {
+    set fn [lindex $fn 0]
+    set fname [file join $al(prjroot) $fn]
+    switch -glob -nocase -- [file tail $fn] {
+      README* - CHANGELOG* {
+        set err [catch {::apave::writeTextFile $fname {} 1} errmess]
+      }
+      LICENCE* - LICENSE* {
+        set fname0 [file join $curinfo(prjroot) $fn]
+        if {[file exists $fname0]} {
+          set err [catch {file copy $fname0 $fname} errmess]
+        } else {
+          set err [catch {::apave::writeTextFile $fname {} 1} errmess]
+        }
+      }
+      default {
+        set err [catch {file mkdir $fname} errmess]
+      }
+    }
+    if {$err} break
+    set errmess {}
+  }
+  if {$errmess ne {}} {
+    FocusInTab f3 $wtpl
+    alited::Message2 $errmess 4
+  }
+  UpdateTplLists
 }
 
 # ________________________ Buttons _________________________ #
@@ -954,7 +1052,11 @@ proc project::Help {} {
   # 'Help' button handler.
 
   variable win
-  if {[string match *f1 [$win.fra.fraR.nbk select]]} {set curTab {}} {set curTab 2}
+  switch -glob [$win.fra.fraR.nbk select] {
+    *f2 {set curTab 2}
+    *f3 {set curTab 3}
+    default {set curTab {}}
+  }
   alited::Help $win $curTab
 }
 #_______________________
@@ -1069,7 +1171,7 @@ proc project::Klnd_next {{days 1}} {
   set todo [string trimright [$wrem get 1.0 end]]
   if {$todo eq {}} {
     bell
-    focus $wrem
+    FocusInTab f1 $wrem
     return
   }
   Klnd_delete
@@ -1084,6 +1186,116 @@ proc project::Klnd_next2 {} {
 
   Klnd_next 7
 }
+#_______________________
+
+proc project::ViewDir {} {
+  # Shows file chooser just to view the project's dir
+  namespace upvar ::alited al al obDl2 obDl2
+  set ::alited::TMP {}
+  set res [$obDl2 chooser tk_getOpenFile ::alited::TMP -initialdir $al(prjroot) -title $al(MC,ViewDir)]
+  if {$res ne {}} {::apave::openDoc $res}
+  unset ::alited::TMP
+}
+
+# ________________________ Template procs _________________________ #
+
+proc project::TplDefaultText {} {
+  # Gets default contents of project template.
+
+  return \
+{doc
+data
+  hlp
+  img
+  msg
+lib
+  theme
+  utils
+    tkcon
+src
+CHANGELOG.md
+LICENSE
+README.md}
+}
+#_______________________
+
+proc project::TplDefault {} {
+  # Sets default contents of project template.
+
+  namespace upvar ::alited obDl2 obDl2
+  set cbx [$obDl2 CbxTpl]
+  $cbx set Default
+  $cbx selection clear
+  $obDl2 displayText [$obDl2 TexTemplate] [TplDefaultText]
+}
+#_______________________
+
+proc project::UpdateTplLists {} {
+  # Updates lists of template data, setting the current template on the top.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  set wtpl [$obDl2 TexTemplate]
+  set cbx [$obDl2 CbxTpl]
+  set al(PTP,name) [string trim [$cbx get]]
+  RemoveFromTplList $al(PTP,name)
+  if {$al(PTP,name) eq {}} {
+    set al(PTP,name) Template\ #[llength $al(PTP,names)]
+  }
+  set tpltext [string trimright [$wtpl get 1.0 end]]
+  set al(PTP,names) [linsert $al(PTP,names) 0 $al(PTP,name)]
+  set al(PTP,list) [linsert $al(PTP,list) 0 $al(PTP,name) $tpltext]
+  set maxlen 16
+  catch {set al(PTP,names) [lreplace $al(PTP,names) $maxlen end]}
+  catch {set al(PTP,list) [lreplace $al(PTP,list) $maxlen+$maxlen end]}
+  set ltmp [list]
+  foreach {n c} $al(PTP,list) {
+    set t {}
+    foreach l [lrange [split $c \n] 0 200] {append t [string trimright $l] \n}
+    lappend ltmp $n [string trimright $t]
+  }
+  set al(PTP,list) $ltmp
+  $cbx set $al(PTP,name)
+  $cbx configure -values $al(PTP,names)
+}
+#_______________________
+
+proc project::UpdateTplText {} {
+  # Updates the template text.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  set i [lsearch -exact $al(PTP,list) $al(PTP,name)]
+  $obDl2 displayText [$obDl2 TexTemplate] [lindex $al(PTP,list) $i+1]
+  UpdateTplLists
+}
+#_______________________
+
+proc project::RemoveFromTplList {val} {
+  # Removes a template name from the lists of template data.
+  #   val - name of template to be removed
+
+  namespace upvar ::alited al al
+  if {$val eq {}} return
+  # remove from list of template names
+  if {[set i [lsearch -exact $al(PTP,names) $val]]>-1} {
+    set al(PTP,names) [lreplace $al(PTP,names) $i $i]
+  }
+  # remove from list of template pairs "name contents"
+  if {[set i [lsearch -exact $al(PTP,list) $val]]>-1} {
+    set al(PTP,list) [lreplace $al(PTP,list) $i $i+1]
+  }
+}
+#_______________________
+
+proc project::DeleteFromTplList {} {
+  # Deletes a template name from the list of project templates.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  set cbx [$obDl2 CbxTpl]
+  RemoveFromTplList [string trim [$cbx get]]
+  $cbx configure -values $al(PTP,names)
+  $cbx set {}
+}
+
 # ________________________ Calendar _________________________ #
 
 proc project::KlndUpdate {} {
@@ -1206,12 +1418,16 @@ proc project::MainFrame {} {
     {fraR.nbk - - - - {pack -side top -expand 1 -fill both} {
       f1 {-text {$al(MC,info)}}
       f2 {-text {$al(MC,prjOptions)}}
+      f3 {-text Templates}
       -traverse yes -select f1
     }}
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
     {.buTad - - - - {pack -side left -anchor n} {-takefocus 0 -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big -relief flat -highlightthickness 0}}
     {.buTch - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big -relief flat -highlightthickness 0}}
     {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big -relief flat -highlightthickness 0}}
+    {.h_ - - - - {pack -side left -expand 1}}
+    {.buTtpl - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Template -tip {$alited::al(MC,CrTemplPrj)} -image alimg_plus-big -relief flat -highlightthickness 0}}
+    {.buTtview - - - - {pack -side left -padx 4} {-takefocus 0 -image alimg_OpenFile-big -relief flat -highlightthickness 0 -com alited::project::ViewDir -tip {$alited::al(MC,ViewDir)}}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 seh T 1 2 {-st nsew} {-padding {2 2}}}
@@ -1228,7 +1444,7 @@ proc project::Tab1 {} {
 
   variable klnddata
   set klnddata(SAVEDATE) [set klnddata(SAVEPRJ) {}]
-  set klnddata(toobar) "labKlndProm {TODO } LabKlndDate {} sev 6"
+  set klnddata(toobar) "labKlndProm {on } LabKlndDate {} sev 6"
   foreach img {delete paste undo redo - next next2} {
     # -method option for possible disable/enable BuT_alimg_delete etc.
     if {$img eq {-}} {
@@ -1251,7 +1467,7 @@ proc project::Tab1 {} {
     {.Dir .labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 60 -validate all -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 lab T 2 1 {-st nsew -rw 1 -cw 99}}
-    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext $alited::project::win.fra.fraB2.butHelp -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext *.texKlnd -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
     {.sbv .TexPrj L - - {pack -side left}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
@@ -1295,6 +1511,23 @@ proc project::Tab2 {} {
     {.sbvFlist .lbxFlist L - - {pack -side left}}
   }
 }
+#_______________________
+
+proc project::Tab3 {} {
+  # Creates Template tab of "Project".
+
+  namespace upvar ::alited al al
+  return {
+    {v_ - - 1 9}
+    {lab1 v_ T 1 9 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,TemplPrj)}}}
+    {lab2 lab1 T 1 1 {-st ew -pady 5 -padx 3} {-t Template:}}
+    {CbxTpl lab2 L 1 3 {-st ew -pady 5} {-w 40 -h 12 -cbxsel {$::alited::al(PTP,name)} -tvar alited::al(PTP,name) -values {$alited::al(PTP,names)} -clearcom alited::project::DeleteFromTplList -selcombobox alited::project::UpdateTplText}}
+    {fraTlist CbxTpl T 1 8 {-st nswe -padx 3 -cw 1 -rw 1}}
+    {.TexTemplate - - - - {pack -side left -fill both -expand 1} {-h 20 -w 40 -tabnext *.butTplDef -wrap none}}
+    {.sbv .TexTemplate L - - {pack -side left}}
+    {butTplDef fraTlist T 1 1 {-st w -padx 4 -pady 4} {-t Default -com alited::project::TplDefault}}
+  }
+}
 
 # ________________________ Main _________________________ #
 
@@ -1313,7 +1546,8 @@ proc project::_create {} {
   $obDl2 paveWindow \
     $win.fra [MainFrame] \
     $win.fra.fraR.nbk.f1 [Tab1] \
-    $win.fra.fraR.nbk.f2 [Tab2]
+    $win.fra.fraR.nbk.f2 [Tab2] \
+    $win.fra.fraR.nbk.f3 [Tab3]
   set tree [$obDl2 TreePrj]
   $tree heading C1 -text $al(MC,projects)
   if {$oldTab ne {}} {
@@ -1342,9 +1576,11 @@ proc project::_create {} {
     -font $al(FONT) -insertwidth $al(CURSORWIDTH)
   ::hl_tcl::hl_text $prjtex
   ::hl_tcl::hl_text $klndtex
+  $obDl2 displayText [$obDl2 TexTemplate] $al(PTP,text)
   set res [$obDl2 showModal $win  -geometry $geo -minsize {600 400} \
     -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
   set oldTab [$win.fra.fraR.nbk select]
+  set al(PTP,text) [string trimright [[$obDl2 TexTemplate] get 1.0 end]]
   if {[llength $res] < 2} {set res ""}
   # save the new geometry of the dialogue
   set geo [wm geometry $win]

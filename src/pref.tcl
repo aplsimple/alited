@@ -731,13 +731,16 @@ proc pref::Edit_Tab2 {} {
     {.but1 .but L 1 1 {-st w -padx 8} {-t {Default 2} -com {alited::pref::Tcl_Default 1}}}
     {.but2 .but1 L 1 1 {-st w -padx 0} {-t {Default 3} -com {alited::pref::Tcl_Default 2}}}
     {.but3 .but2 L 1 1 {-st w -padx 8} {-t {Default 4} -com {alited::pref::Tcl_Default 3}}}
-    {fraTab2.scf.fra2 fraTab2.scf.fraDefClr1 T 1 2 {-st nsew}}
-    {.lab - - 1 1 {-st nw -pady 3} {-t "Code snippet:" -w 25}}
-    {.TexSample .lab L 1 1 {-st new} {-h 5 -w 48 -afteridle alited::pref::UpdateSyntaxTab}}
-    {fraTab2.scf.seh3 fraTab2.scf.fra2 T 1 2 {-pady 10}}
+    {fraTab2.scf.sehclr fraTab2.scf.FraDefClr1 T 1 2 {-pady 5}}
+    {fraTab2.scf.fra2 fraTab2.scf.sehclr T 1 2 {-st nsew}}
+    {.lab - - - - {pack -side left -anchor ne -pady 3 -padx 3} {-t "Code snippet:"}}
+    {.TexSample - - - - {pack -side left -fill both -expand 1} {-h 7 -w 48 -afteridle alited::pref::UpdateSyntaxTab}}
+    {.sbv .TexSample L - - {pack -side right}}
+    {fraTab2.scf.seh3 fraTab2.scf.fra2 T 1 2 {-pady 5}}
     {fraTab2.scf.fra3 fraTab2.scf.seh3 T 1 2 {-st nsew}}
-    {.labAddKeys - - 1 2 {-st nw -pady 3} {-t "Your commands:" -w 25}}
-    {.TexTclKeys .labAddKeys L 1 2 {-st new} {-h 5 -w 48 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
+    {.labAddKeys - - - - {pack -side left -anchor ne -pady 3 -padx 3} {-t "Your commands:"}}
+    {.TexTclKeys - - - - {pack -side left -fill both -expand 1} {-h 3 -w 48 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
+    {.sbv .TexTclKeys L - - {pack -side right}}
   }
 }
 #_______________________
@@ -773,13 +776,16 @@ proc pref::Edit_Tab3 {} {
     {.but1 .but L 1 1 {-st w -padx 8} {-t {Default 2} -com {alited::pref::C_Default 1}}}
     {.but2 .but1 L 1 1 {-st w -padx 0} {-t {Default 3} -com {alited::pref::C_Default 2}}}
     {.but3 .but2 L 1 1 {-st w -padx 8} {-t {Default 4} -com {alited::pref::C_Default 3}}}
-    {fraTab3.scf.fra2 fraTab3.scf.fraDefClr2 T 1 2 {-st nsew}}
-    {.lab - - 1 1 {-st nw -pady 3} {-t "Code snippet:" -w 25}}
-    {.TexCSample .lab L 1 1 {-st new} {-h 5 -w 48 -wrap word}}
-    {fraTab3.scf.seh3 fraTab3.scf.fra2 T 1 2 {-pady 10}}
+    {fraTab3.scf.sehclr fraTab3.scf.fraDefClr2 T 1 2 {-pady 5}}
+    {fraTab3.scf.fra2 fraTab3.scf.sehclr T 1 2 {-st nsew}}
+    {.lab - - - - {pack -side left -anchor ne -pady 3 -padx 3} {-t "Code snippet:"}}
+    {.TexCSample - - - - {pack -side left -fill both -expand 1} {-h 7 -w 48 -wrap word}}
+    {.sbv .TexCSample L - - {pack -side right}}
+    {fraTab3.scf.seh3 fraTab3.scf.fra2 T 1 2 {-pady 5}}
     {fraTab3.scf.fra3 fraTab3.scf.seh3 T 1 2 {-st nsew}}
-    {.lab - - 1 1 {-st nw -pady 3} {-t "Your key words:" -w 25}}
-    {.TexCKeys .lab L 1 1 {-st new} {-h 5 -w 48 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
+    {.lab - - - - {pack -side left -anchor ne -pady 3 -padx 3} {-t "Your key words:"}}
+    {.TexCKeys - - - - {pack -side left -fill both -expand 1} {-h 3 -w 48 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
+    {.sbv .TexCKeys L - - {pack -side right}}
   }
 }
 #_______________________

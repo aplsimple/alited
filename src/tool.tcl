@@ -497,7 +497,7 @@ proc tool::BeforeRunDialogue {focrun} {
   set run [string map [list $alited::EOL \n] $al(prjbeforerun)]
   set prompt1 [string range [msgcat::mc {Forcedly:}][string repeat { } 15] 0 15]
   set prompt2 [string range [msgcat::mc Commands:][string repeat { } 15] 0 15]
-  set prompt3 [string range [msgcat::mc Test]:[string repeat { } 15] 0 15]
+  set prompt3 [string range [msgcat::mc Run]:[string repeat { } 15] 0 15]
   if {[lindex $al(comForceLs) 0] eq {-}} {
     set al(comForceLs) [lreplace $al(comForceLs) 0 0]  ;# legacy
   }
@@ -520,7 +520,7 @@ proc tool::BeforeRunDialogue {focrun} {
     lab {{} {} {-t { Also, you can set "forced command" to be run by "Run" tool:}}} {} \
     Cbx [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
     buT1 [list {} {-padx 5} "-com alited::tool::DeleteForcedRun -takefocus 0 -tip Delete -toprev 1 -image [::apave::iconImage no] -relief flat -highlightthickness 0"] {} \
-    butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test}" [msgcat::mc Run] \
+    butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test}" [msgcat::mc Test] \
   ] -head $head {*}$foc -help {alited::tool::HelpTool %w 2}] res run com
   return [list $res $run $com]
 }

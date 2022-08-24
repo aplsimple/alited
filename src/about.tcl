@@ -24,7 +24,7 @@ proc about::About {} {
   set textTags [list \
     [list "red" "-font {[::apave::obj csFontDef] -weight bold} -foreground $fS -background $bS"] \
     [list "link1" "::apave::openDoc %t@@https://%l@@"] \
-    [list "link2" "::apave::openDoc %t@@https://wiki.tcl-lang.org@@"] \
+    [list "link2" "::apave::openDoc %t@@https://wiki.tcl-lang.org/recent@@"] \
     [list "linkapl" "::apave::openDoc %t@@https://github.com/aplsimple/@@"] \
     [list "linkCN" "::apave::openDoc %t@@https://www.nemethi.de/@@"] \
     [list "linkSH" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Steve+Huntley@@"] \
@@ -46,6 +46,7 @@ proc about::About {} {
     [list "linkPY" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Poor+Yorick"] \
     [list "linkMH" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Matthias+Hoffmann"] \
     [list "linkNB" "::apave::openDoc %t@@https://github.com/sl1200mk2@@"] \
+    [list "linkTZ" "::apave::openDoc %t@@https://github.com/thanoulis@@"] \
     [list "linkCW" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/chw@@"] \
     [list "linkAK" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Andreas+Kupries@@"] \
     [list "linkAG" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Andy+Goth@@"] \
@@ -107,6 +108,7 @@ proc about::About {} {
     \u2022 <linkRS>Richard Suchenwirth</linkRS>\n \
     \u2022 <linkCW>Christian Werner</linkCW>\n \
     \u2022 <linkNB>Nicolas Bats</linkNB>\n \
+    \u2022 <linkTZ>Thanos Zygouris</linkTZ>\n \
     \n $spec\n\n \
     \u2022 <linkTW>Trevor Williams</linkTW>\n \
     \u2022 <linkDF>Donal K. Fellows</linkDF>\n \

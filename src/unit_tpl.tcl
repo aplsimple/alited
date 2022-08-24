@@ -397,14 +397,14 @@ proc unit_tpl::Delete {} {
 proc unit_tpl::Import {} {
   # Handles "Import templates" button.
 
-  namespace upvar ::alited al al obDl3 obDl3 DATADIR DATADIR
+  namespace upvar ::alited al al obDl3 obDl3 DATAUSERINI DATAUSERINI
   variable tpl
   variable tplkey
   variable place
   variable win
   set al(filename) alited.ini
   set fname [$obDl3 chooser tk_getOpenFile alited::al(filename) \
-    -initialdir [file join $DATADIR user ini] -parent $win]
+    -initialdir $DATAUSERINI -parent $win]
   if {$fname eq {}} return
   set imported 0
   set wtxt [$obDl3 TexTpl]

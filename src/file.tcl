@@ -745,6 +745,7 @@ proc file::OpenOfDir {dname} {
         }
       }
       OpenFile $fnames no yes
+      after idle {focus -force [alited::main::CurrentWTXT]}
     }
   }
 }

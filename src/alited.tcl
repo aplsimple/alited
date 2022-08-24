@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.3b5  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.3b7  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -73,6 +73,9 @@ namespace eval alited {
   variable DATADIR [file join $DIR data]
   variable IMGDIR  [file join $DATADIR img]
   variable MSGSDIR [file join $DATADIR msgs]
+  variable DATAUSER [file join $DATADIR user]
+  variable DATAUSERINI [file join $DATAUSER ini]
+  variable DATAUSERINIFILE [file join $DATAUSERINI alited.ini]
 
   # directories of user's data
   variable CONFIGDIRSTD [file normalize {~/.config}]
@@ -338,6 +341,16 @@ namespace eval alited {
     #   i2 - integer to be compared (rounded) to i1
 
     return [expr {$i1>($i2-3) && $i1<($i2+3)}]
+  }
+  #_______________________
+
+  proc NormalizeFileName {name} {
+    # Removes spec.characters from a file/dir name (sort of normalizing it).
+    #   name - the name of file/dir
+
+    return [string map [list \
+      * _ ? _ ~ _ / _ \\ _ \{ _ \} _ \[ _ \] _ \t _ \n _ \r _ \
+      | _ < _ > _ & _ , _ : _ \; _ \" _ ' _ ` _] $name]
   }
   #_______________________
 
@@ -699,7 +712,7 @@ if {$alited::LOG ne {}} {
 
 if {[info exists ALITED_PORT]} {
   unset ALITED_PORT
-#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[llength $ALITED_ARGV]} {
     set ::argc 0
     set ::argv {}
@@ -720,7 +733,7 @@ if {[info exists ALITED_PORT]} {
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
   alited::tool::AfterStart
-#  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
+  catch {source ~/PG/github/DEMO/alited/demo.tcl} ;#------------- TO COMMENT OUT
   if {[set res [alited::main::_run]]} {     ;# run the main form
     # restarting
     update

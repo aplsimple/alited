@@ -5,6 +5,10 @@
  The buttons under the list are used to <b>add/change/delete</b> a project.
 
  Use <r>Add</r> and <r>Change</r> buttons after filling project's data.
+
+ Use <r>Create a project by template</r> button for templating projects.
+
+ Use <r>Project directory</r> button to view the project directory.
  __________________________________________________________________________
 
  The <b>Notes</b> field may be used as a sort of diary for the project.
@@ -19,6 +23,7 @@
    - select a day in the calendar
    - enter a text (reminder) of TODO
    - use buttons to <b>erase/paste/undo/redo</b> the text
+   - use <b>move</b> buttons to postpone a TODO till next day or week
 
  When the present day reaches a deadline, its TODO is highlighted and the
  bell rings, to remind of the TODO.

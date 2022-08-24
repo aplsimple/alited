@@ -161,6 +161,7 @@ namespace eval ::alited {
   ## ________________________ Templates ________________________ ##
   ::msgcat::mcmset uk {
     {Template} {Шаблон}
+    {Template:} {Шаблон:}
     {Templates} {Шаблони}
     {Templates...} {Шаблони...}
     {List of Templates} {Список шаблонів}
@@ -244,6 +245,13 @@ namespace eval ::alited {
     {Open files: %n} {Відкрито файлів: %n}
     {Move TODO to next day} {Перенести TODO на день}
     {Move TODO to next week} {Перенести TODO на тиждень}
+    on на
+    {Incorrect name: %n} {Некоректна назва: %n}
+    {The project template is empty!} {Шаблон проекту пустий!}
+    {Incorrect indentation in Project template: %n} {Некоректний відступ у шаблоні проекту: %n}
+    "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project." "Вкажіть дерево директорій для шаблона проекту.\nРобіть однакові відступи для вказівки піддиректорій.\n\nФайли типа README*, CHANGELOG* будуть створюватися пустими.\nФайли типа LICENSE* будуть братися з поточного проекту."
+    "Create a project by template\nas set in Template tab" "Створити проект по шаблону,\nяк то вказано на заставці \"Шаблон\""
+    {Project directory} {Директорія проекту}
   }
 
   ## ________________________ Favorites ________________________ ##

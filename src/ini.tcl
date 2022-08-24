@@ -42,6 +42,10 @@ namespace eval ::alited {
   set al(INI,confirmexit) 1     ;# flag "confirm exiting alited"
   set al(INI,belltoll) 1        ;# flag "bell at warnings"
   set al(INI,LINES1) 10         ;# number of initial "untouched" lines (to ban moves in it)
+  set al(PTP,text) {}           ;# project template's text
+  set al(PTP,name) {}           ;# current template name
+  set al(PTP,names) [list]      ;# all template names
+  set al(PTP,list) [list]       ;# list of pairs "name contents"
   set al(moveall) 1             ;# "move all" of color chooser
   set al(tonemoves) 1           ;# "tone moves" of color chooser
   set al(checkgeo) {}           ;# geometry of "Check Tcl" window
@@ -231,6 +235,13 @@ proc ini::ReadIni {{projectfile ""}} {
       }
     }
   }
+  if {[set al(PTP,text) [lindex $al(PTP,list) 1]] eq {}} {
+    set al(PTP,text) [alited::project::TplDefaultText]
+    set al(PTP,list) [list Default $al(PTP,text)]
+  }
+  set al(PTP,name) [lindex $al(PTP,list) 0]
+  set al(PTP,names) [list]
+  foreach {n c} $al(PTP,list) {lappend al(PTP,names) $n}
   if {$projectfile eq {} && $al(prjfile) eq {}} {
     # some options may be active outside of any project; fill them with defaults
     foreach opt {multiline indent indentAuto EOL trailwhite} {
@@ -344,6 +355,7 @@ proc ini::ReadIniOptions {nam val} {
     MaxFiles      {set al(MAXFILES) $val}
     barlablen     {set al(INI,barlablen) $val}
     bartiplen     {set al(INI,bartiplen) $val}
+    prjtpls       {set al(PTP,list) [string map [list $alited::EOL \n] $val]}
     backup        {
       if {$val ne {.bak}} {set val {}}
       set al(BACKUP) $val
@@ -506,13 +518,13 @@ proc ini::ReadIniPrj {} {
         {[Misc]} {ReadPrjMisc $nam $val}
       }
     }
-    if {$al(prjroot) eq ""} {set al(prjroot) $alited::DIR}
   }]} then {
     puts "Not open: $al(prjfile)"
     set al(prjname) {}
     set al(prjfile) {}
     set al(prjroot) {}
   }
+  if {$al(prjroot) eq {} && $al(prjname) eq {default}} {set al(prjroot) $alited::DIR}
   alited::favor::InitFavorites $al(FAV,current)
   catch {close $chan}
   catch {cd $al(prjroot)}
@@ -664,6 +676,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "MaxFiles=$al(MAXFILES)"
   puts $chan "barlablen=$al(INI,barlablen)"
   puts $chan "bartiplen=$al(INI,bartiplen)"
+  puts $chan prjtpls=[string map [list \n $alited::EOL] $al(PTP,list)]
   puts $chan "backup=$al(BACKUP)"
   puts $chan "maxbackup=$al(MAXBACKUP)"
   puts $chan "gutterwidth=$al(ED,gutterwidth)"
@@ -923,15 +936,15 @@ proc ini::GetUserDirs {{initmnu no}} {
 proc ini::CreateUserDirs {} {
   # Creates main directories for settings.
 
-  namespace upvar ::alited al al DATADIR DATADIR USERDIR USERDIR INIDIR INIDIR PRJDIR PRJDIR MNUDIR MNUDIR BAKDIR BAKDIR
+  namespace upvar ::alited al al USERDIR USERDIR INIDIR INIDIR PRJDIR PRJDIR MNUDIR MNUDIR DATAUSER DATAUSER DATAUSERINIFILE DATAUSERINIFILE
   foreach dir {USERDIR INIDIR PRJDIR} {
     catch {file mkdir [set $dir]}
   }
   if {![file exists $al(INI)]} {
-    file copy [file join $DATADIR user ini alited.ini] $al(INI)
-    file copy [file join $DATADIR user prj default.ale] \
+    file copy $DATAUSERINIFILE $al(INI)
+    file copy [file join $DATAUSER prj default.ale] \
       [file join $PRJDIR default.ale]
-    file copy [file join $DATADIR user notes.txt] [file join $USERDIR notes.txt]
+    file copy [file join $DATAUSER notes.txt] [file join $USERDIR notes.txt]
     ReadIni
   }
   set emdir [file dirname $al(EM,mnudir)]

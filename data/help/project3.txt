@@ -1,0 +1,32 @@
+ <b>Template</b> tab allows to set a directory/file tree that will be used
+ at creating a project with <r>Create a project by template</r> button.
+
+ The template is set in the text field, by these simple rules:
+
+   - the lines contain directory / file names; blank lines are ignored;
+     special characters in the names (",/,\,~,*,? etc.) aren't allowed
+
+   - <b>file names</b> are the names that satisfy one of -nocase patterns:
+      - license*, licence* (e.g. License.md, LICENSE, licence.txt etc.)
+      - readme* (e.g. Readme.md, README, readme.txt etc.)
+      - changelog* (e.g. Changelog.md, CHANGELOG, changelog.txt etc.)
+
+   - if a <b>license</b> file is found in a current project, it will be
+     copied to a templated project; other files will be created blank
+
+   - all of <b>other names</b> are directory names
+
+   - <b>first non-empty</b> line of the template sets an initial indent,
+     the following lines must be indented at least by this indent
+
+   - <b>first additional indent</b> means an indent to set subdirectories;
+     the following subdirectories must be equally indented by this indent
+
+   - the directories and files will be created under the project's root
+
+ Use <r>Default</r> button to set the default template of dir/file tree.
+ This button shows also an example of project template.
+
+ Use <r>Create a project by template</r> button for templating projects.
+
+ Use <r>Project directory</r> button to view the result of templating.

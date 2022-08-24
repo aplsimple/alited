@@ -159,6 +159,9 @@ namespace eval ::alited {
     set al(MC,prjTnext)    [msgcat::mc {Move TODO to next day}]
     set al(MC,prjTnext2)   [msgcat::mc {Move TODO to next week}]
     set al(MC,TipLbx)      [msgcat::mc "You may select file(s)\nand open them with a context menu.\n\nOr just double-click."]
+    set al(MC,TemplPrj)    [msgcat::mc "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project."]
+    set al(MC,CrTemplPrj)  [msgcat::mc "Create a project by template\nas set in Template tab"]
+    set al(MC,ViewDir)     [msgcat::mc {Project directory}]
 
     ## _ favorites _ ##
     set al(MC,favsel)      [msgcat::mc {Click a list of favorites}]

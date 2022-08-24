@@ -120,7 +120,7 @@ namespace eval ::apave {
     tbl {{} {-selectborderwidth 1 -highlightthickness 2 \
           -labelcommand tablelist::sortByColumn -stretch all \
           -showseparators 1}} \
-    tex {{} {-undo 1 -maxundo 0 -highlightthickness 2 -insertofftime 250 -insertontime 750 -insertwidth $::apave::cursorwidth -wrap word -selborderwidth 1}} \
+    tex {{} {-undo 1 -maxundo 0 -highlightthickness 2 -insertofftime 250 -insertontime 750 -insertwidth $::apave::cursorwidth -wrap word -selborderwidth 1 -exportselection 0}} \
     tre {{} {-selectmode browse}} \
     h_ {{-sticky ew -csz 3 -padx 3} {}} \
     v_ {{-sticky ns -rsz 3 -pady 3} {}}]
