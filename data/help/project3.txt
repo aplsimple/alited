@@ -1,4 +1,4 @@
- <b>Template</b> tab allows to set a directory/file tree that will be used
+ <b>Templates</b> tab allows to set a directory/file tree that will be used
  at creating a project with <r>Create a project by template</r> button.
 
  The template is set in the text field, by these simple rules:
