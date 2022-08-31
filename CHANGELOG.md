@@ -1,16 +1,20 @@
 # LAST CHANGES:
 
 
-Version `1.3.3b7 (24 Aug'22)`
+Version `1.3.3 (31 Aug'22)`
 
   - BUGFIX: (not critical) saving files after "Save" in Preferences -> Tcl error
   - BUGFIX: (not critical) calling e_menu as external with alited's CS tinted (CS=47)
   - BUGFIX: (not critical) in Projects: default project's dir is empty at first start
+  - NEW   : Comment/Uncomment: escaping/unescaping braces with #\{ #\} patterns
+  - NEW   : Comment/Uncomment: selecting the changed lines
   - NEW   : Projects: "Create project by template" and "Project directory" buttons
   - NEW   : Projects: "Templates" tab to set a template of project file tree
-  - NEW   : check for outdated TODOs of *all projects* at starting / opening Projects
+  - NEW   : Projects: check for outdated TODOs of *all projects* at starting / opening
+  - NEW   : bindings F2, Ctrl+S etc. for "info" listbox, "find units" combobox and tree
   - NEW   : allow tinting CS for rdbende's themes
   - NEW   : highlight current & original tints in "Setup/Tint" menu
+  - NEW   : restoring full geometry of dir/file choosers in Linux
   - CHANGE: focusing a current text after "Open all Tcl files" of file tree
   - CHANGE: in Projects: focusing appropriate fields at user's errors
   - CHANGE: scrollbars for Preferences/Editor syntax fields
@@ -26,7 +30,7 @@ Version `1.3.3b7 (24 Aug'22)`
   - CHANGE: allow to run *in console* "forced command" for "%f ..." pattern
   - CHANGE: update GUI after "Projects" dialogue's closing, anyway
   - CHANGE: About / Acknowledgements
-  - CHANGE: packages: apave/e_menu 3.5.3, hl_tcl 0.9.42
+  - CHANGE: packages: apave/e_menu 3.5.4, hl_tcl 0.9.42
 
 
 Version `1.3.0 (27 Jul'22)`

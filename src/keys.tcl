@@ -8,6 +8,7 @@
 
 
 namespace eval ::alited::keys {
+  variable firstbind yes
 }
 
 # ________________________ Common _________________________ #
@@ -17,6 +18,15 @@ proc keys::BindKeys {wtxt type} {
   #   wtxt - text's path
   #   type - type of keys (template etc.)
 
+  namespace upvar ::alited obPav obPav
+  variable firstbind
+  if {$firstbind} {
+    # some bindings must be active in "info" listbox, "find units" combobox and tree
+    set activeForOthers [list ::tool: ::find:: ::file:: ::main::GotoLine ::bar::BAR]
+    set w1 [$obPav LbxInfo]
+    set w2 [$obPav CbxFindSTD]
+    set w3 [$obPav Tree]
+  }
   foreach kb [alited::keys::EngagedList $type all] {
     lassign $kb -> tpl keys tpldata
     if {[catch {
@@ -35,6 +45,16 @@ proc keys::BindKeys {wtxt type} {
           set tpldata [string map [list %k $keys] $tpldata]
           {*}$tpldata
         } else {
+          if {$firstbind} {
+            foreach afo $activeForOthers {
+              if {[string first $afo $tpldata]>-1} {
+                bind $w1 "<$k>" $tpldata
+                bind $w2 "<$k>" $tpldata
+                bind $w3 "<$k>" $tpldata
+                break
+              }
+            }
+          }
           bind $wtxt "<$k>" $tpldata
         }
       }
@@ -42,6 +62,7 @@ proc keys::BindKeys {wtxt type} {
       puts "Error of binding: $tpl <$keys> - $err"
     }
   }
+  set firstbind no
 }
 #_______________________
 

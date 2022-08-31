@@ -1315,6 +1315,33 @@ applied to a current unit, moves it down
 <li><i>Put New Line</i> command (Ctrl+P keys customized in "Setup / Preferences / Keys")
 </ul>
 </p>
+<p>
+<b>Note:
+</b> <i>Comment</i> and <i>Uncomment</i> commands use escaping/unescaping braces with #\{ #\} patterns. Thus, you can safely comment/uncomment any code blocks, this way:
+<pre class="code">
+  set num 2
+  if { $num == 1 } {
+    puts 1
+#  #\} elseif #\{ $num == 2 #\} #\{
+#    puts 2
+  } else {
+    puts 99
+  }
+</pre>
+instead of this mistaken out-commenting as noted in
+<a href="https://groups.google.com/g/comp.lang.tcl/c/F0K3HdZ2stw">comp.lang.tcl</a>:
+<pre class="code">
+  set num 2
+  if { $num == 1 } {
+    puts 1
+#  } elseif { $num == 2 } {
+#    puts 2
+  } else {
+    puts 99
+  }
+</pre>
+where <code>elseif { $num == 2 }</code> is still active.
+</p>
 
 <br>
 <p>

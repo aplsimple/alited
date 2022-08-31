@@ -358,7 +358,7 @@ proc favor_ls::_create {} {
     {.radB - - - - {pack -side left -padx 8}  {-t closed -var ::alited::favor_ls::place -value 2 -tip "Closes all tabs without favorites\nat choosing Favorites' list"}}
     {LabMess fra2 T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 labMess T 1 2 {-st nswe}}
-    {.ButHelp - - - - {pack -side left} {-t "$alited::al(MC,help)" -command ::alited::favor_ls::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$alited::al(MC,help)} -tip F1 -command ::alited::favor_ls::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
     {.butUndo - - - - {pack -side left} {-t Back -command {::alited::favor_ls::Ok 3} -tip "Sets a list of Favorites\nthat was active initially."}}
     {.butOK - - - - {pack -side left -padx 2} {-t "$alited::al(MC,select)" -command ::alited::favor_ls::Ok}}

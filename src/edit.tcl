@@ -92,6 +92,17 @@ proc edit::NormIndent {} {
 
 # ________________________ Comment in / out _________________________ #
 
+proc edit::SelectLines {wtxt l1 l2} {
+  # Selects lines (all their contents) of text.
+  #   wtxt - text's path
+  #   l1 - starting line
+  #   l2 - ending line
+
+  $wtxt tag remove sel 1.0 end
+  $wtxt tag add sel $l1.0 [incr l2].0 ;# $l1.0 $l2.end
+}
+#_______________________
+
 proc edit::CommentChar {} {
   # Returns the commenting chars for a current file.
 
@@ -101,20 +112,29 @@ proc edit::CommentChar {} {
   }
   return #
 }
+#_______________________
 
 proc edit::Comment {} {
   # Comments selected lines of text.
+  # See also: UnComment
 
   if {[set ch [CommentChar]] eq {}} {bell; return}
   lassign [SelectedLines] wtxt l1 l2
   for {set l $l1} {$l<=$l2} {incr l} {
     $wtxt insert $l.0 $ch
+    if {$ch eq "#"} {
+      # for Tcl code: it needs to disable also all braces with #\{ #\} patterns
+      set line [$wtxt get $l.0 $l.end]
+      $wtxt replace $l.0 $l.end [string map [list \} #\\\} \{ #\\\{] $line]
+    }
   }
+  SelectLines $wtxt $l1 $l2
 }
 #_______________________
 
 proc edit::UnComment {} {
   # Uncomments selected lines of text.
+  # See also: Comment
 
   namespace upvar ::alited obPav obPav
   if {[set ch [CommentChar]] eq {}} {bell; return}
@@ -126,8 +146,14 @@ proc edit::UnComment {} {
     set isp [$obPav leadingSpaces $line]
     if {[string range $line $isp $isp+$lch0] eq $ch} {
       $wtxt delete $l.$isp "$l.$isp + ${lch}c"
+      if {$ch eq "#"} {
+        # for Tcl code: it needs to enable also all braces with #\{ #\} patterns
+        set line [$wtxt get $l.0 $l.end]
+        $wtxt replace $l.0 $l.end [string map [list #\\\} \} #\\\{ \{] $line]
+      }
     }
   }
+  SelectLines $wtxt $l1 $l2
 }
 
 # ________________________ Conversions _________________________ #

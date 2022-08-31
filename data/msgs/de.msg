@@ -149,8 +149,8 @@ namespace eval ::alited {
     {Tip File Info} {Tip-Datei Info}
     {Rename File} {Datei umbenennen}
     {Select one file in the tree.} {Wähle eine Datei im Baum.}
-    {Open Selected File(s)} {Öffne ausgewählte Datei(en)}
-    {Close Selected File(s)} {Schliesse ausgewählte Datei(en)}
+    {Open Selected Files} {Öffne ausgewählte Dateien}
+    {Close Selected Files} {Schliesse ausgewählte Dateien}
   }
 
   ## ________________________ Templates ________________________ ##
@@ -245,7 +245,7 @@ namespace eval ::alited {
     {The project template is empty!} {Die Projektvorlage ist leer!}
     {Incorrect indentation in Project template: %n} {Inkorrekt Einrücken in der Projektvorlage: %n}
     "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project." "Geben Sie einen Verzeichnisbaum für die Projektvorlage ein.\nVersehen Sie ihn mit gleichem Einrücken, um Unterverzeichnisse zu bedeuten.\n\nDateien wie README*, CHANGELOG* werden leer erstellt.\nDateien wie LICENSE* werden aus dem aktuellen Projekt übernommen."
-    "Create a project by template\nas set in Templates tab" "Ein Projekt nach Vorlage erstellen\nwie auf dem Tab \"Vorlagen\" festgelegt"
+    "Create a project by template\nas set in Templates tab" "Ein Projekt nach Vorlage erstellen\nwie auf dem Tab Vorlagen festgelegt"
     {Project directory} {Projektverzeichnis}
 
   }

@@ -154,8 +154,8 @@ namespace eval ::alited {
     {Tip File Info} {Дані про файли}
     {Rename File} {Перейменувати файл}
     {Select one file in the tree.} {Виберіть один файл у списку.}
-    {Open Selected File(s)} {Відкрити виділені файл(и)}
-    {Close Selected File(s)} {Закрити виділені файл(и)}
+    {Open Selected Files} {Відкрити виділені файли}
+    {Close Selected Files} {Закрити виділені файли}
   }
 
   ## ________________________ Templates ________________________ ##
@@ -250,7 +250,7 @@ namespace eval ::alited {
     {The project template is empty!} {Шаблон проекту пустий!}
     {Incorrect indentation in Project template: %n} {Некоректний відступ у шаблоні проекту: %n}
     "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project." "Вкажіть дерево директорій для шаблона проекту.\nРобіть однакові відступи для вказівки піддиректорій.\n\nФайли типа README*, CHANGELOG* будуть створюватися пустими.\nФайли типа LICENSE* будуть братися з поточного проекту."
-    "Create a project by template\nas set in Templates tab" "Створити проект по шаблону,\nяк то вказано на заставці \"Шаблони\""
+    "Create a project by template\nas set in Templates tab" "Створити проект по шаблону,\nяк то вказано на заставці Шаблони"
     {Project directory} {Директорія проекту}
   }
 

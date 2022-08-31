@@ -1468,7 +1468,8 @@ oo::class create ::apave::APave {
     }
     catch {
       if {[string match *x*+*+* $geom] && [::islinux]} {
-        after idle "catch {wm geometry $wchooser $geom}"
+        after idle "catch {wm withdraw $wchooser; wm geometry $wchooser 1x1}"
+        after 0 [list after idle "catch {wm geometry $wchooser $geom; wm deiconify $wchooser}"]
       }
     }
     return $wchooser
@@ -1497,6 +1498,16 @@ oo::class create ::apave::APave {
     # Retrieve the path where the scrollable contents go.
     set path [::apave::sframe content $w]
     return $path
+  }
+  #_______________________
+
+  method chooserGeomVars {dirvar filevar} {
+    # Sets variables to save/restore geometry of Tcl/Tk dir/file choosers (in Linux).
+    #   dirvar - variable's name for geometry of directory chooser
+    #   filevar - variable's name for geometry of file chooser
+    # See also: chooser
+
+    ::apave::setProperty DirFilGeoVars [list $dirvar $filevar]
   }
   #_______________________
 

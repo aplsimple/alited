@@ -2107,7 +2107,7 @@ oo::class create ::apave::ObjectTheming {
               }
             }
             set nam3 [string range [my ownWName $w1] 0 2]
-            if {$nam3 in {lbx tbl flb enT spX tex}} {
+            if {$nam3 in {lbx tbl flb enT spX}} {
               my UpdateSelectAttrs $w1
             }
           }

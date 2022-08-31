@@ -247,8 +247,9 @@ proc menu::RunTip {} {
   $m add command -label $al(MC,filelist) -command {alited::bar::BAR popList} -accelerator $al(acc_21)
   $m add separator
   $m add command -label $al(MC,colorpicker) -command alited::tool::ColorPicker
-  $m add command -label [msgcat::mc {Screen Loupe}] -command alited::tool::Loupe
   $m add command -label $al(MC,datepicker) -command alited::tool::DatePicker
+  $m add separator
+  $m add command -label [msgcat::mc {Screen Loupe}] -command alited::tool::Loupe
 
   ## ________________________ Setup _________________________ ##
   set m [set al(SETUP) $al(WIN).menu.setup]

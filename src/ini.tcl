@@ -1060,7 +1060,7 @@ proc ini::_init {} {
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
-  ::apave::setProperty DirFilGeoVars [list ::alited::DirGeometry ::alited::FilGeometry]
+  ::apave::obj chooserGeomVars ::alited::DirGeometry ::alited::FilGeometry
   GetUserDirs
   CheckIni
   ReadIni

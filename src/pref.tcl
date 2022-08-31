@@ -260,7 +260,7 @@ proc pref::MainFrame {} {
     {#LabMess fraL T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraL T 1 2 {-st nsew -pady 2}}
     {fraB seh T 1 2 {-st nsew} {-padding {2 2}}}
-    {.ButHelp - - - - {pack -side left} {-t "Help" -com ::alited::pref::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$alited::al(MC,help)} -tip F1 -com ::alited::pref::Help}}
     {.LabMess - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
     {.butOK - - - - {pack -side left -anchor s -padx 2} {-t Save -command ::alited::pref::Ok}}
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::pref::Cancel}}
@@ -273,7 +273,7 @@ proc pref::Ok {args} {
 
   fetchVars
   alited::CloseDlg
-  set ans [alited::msg okcancel info [msgcat::mc "For the settings to be active,\nalited application should be restarted."] YES -geometry root=$win]
+  set ans [alited::msg okcancel info [msgcat::mc "For the settings to be active,\nalited application should be restarted."] OK -geometry root=$win]
   if {$ans} {
     GetEmSave out
     # check options that can make alited unusable

@@ -746,7 +746,7 @@ proc project::LbxPopup {X Y} {
   catch {destroy $popm}
   menu $popm -tearoff 0
   $popm add command -label $al(MC,openselfile) -command alited::project::OpenSelFiles
-  $popm add command -label [msgcat::mc {Close Selected File(s)}] -command alited::project::CloseSelFiles
+  $popm add command -label [msgcat::mc {Close Selected Files}] -command alited::project::CloseSelFiles
   $popm add separator
   $popm add command -label [msgcat::mc {Select All}] -command alited::project::SelectAllFiles -accelerator Ctrl+A
   baltip::sleep 1000
@@ -1431,7 +1431,7 @@ proc project::MainFrame {} {
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 seh T 1 2 {-st nsew} {-padding {2 2}}}
-    {.ButHelp - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,help)} -command ::alited::project::Help}}
+    {.ButHelp - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,help)} -tip F1 -command ::alited::project::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
     {.butOK - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,select)} -command ::alited::project::Ok}}
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::project::Cancel}}

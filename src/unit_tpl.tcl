@@ -472,7 +472,7 @@ proc unit_tpl::_create {{geom ""}} {
     {.radD - - - - {pack -side left -padx 8}  {-t "file's beginning" -var ::alited::unit_tpl::place -value 4 -tip {-BALTIP {$al(MC,tplaft4)} -UNDER 4}}}
     {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 labMess T 1 10 {-st nsew}}
-    {.ButHelp - - - - {pack -side left} {-t "$alited::al(MC,help)" -command ::alited::unit_tpl::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$alited::al(MC,help)} -tip F1 -command ::alited::unit_tpl::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
     {.butOK - - - - {pack $::alited::unit_tpl::PACKOK -side left -padx 2} {-t "$alited::al(MC,select)" -command ::alited::unit_tpl::Ok}}
     {.butCancel - - - - {pack -side left} {-t $::alited::unit_tpl::BUTEXIT -command ::alited::unit_tpl::Cancel}}

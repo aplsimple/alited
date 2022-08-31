@@ -30,3 +30,7 @@
  Use <r>Create a project by template</r> button for templating projects.
 
  Use <r>Project directory</r> button to view the result of templating.
+ ________________________________________________________________________
+
+ A current template is saved in the <b>Template</b> combobox after running
+ <r>Create a project by template</r> (up to 16 templates may be saved).
