@@ -6,6 +6,8 @@ Version `1.3.3 (3 Sep'22)`
   - BUGFIX: (not critical) saving files after "Save" in Preferences -> Tcl error
   - BUGFIX: (not critical) calling e_menu as external with alited's CS tinted (CS=47)
   - BUGFIX: (not critical) in Projects: default project's dir is empty at first start
+  - BUGFIX: (not critical) focus a text at add/rename/delete files from the file tree
+  - NEW   : delete selected files in file tree
   - NEW   : Comment/Uncomment: escaping/unescaping braces with #\{ #\} patterns
   - NEW   : Comment/Uncomment: selecting the changed lines
   - NEW   : Projects: "Create project by template" and "Project directory" buttons

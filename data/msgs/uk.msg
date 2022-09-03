@@ -148,7 +148,7 @@ namespace eval ::alited {
     "Open All Tcl Files of \"%n\"" "Відкрити всі файли Tcl з \"%n\""
     "Remove \"%n\"\nfrom \"%f\"?" "Видалити \"%n\"\nз \"%f\"?"
     "Delete \"%f\"?" "Видалити \"%f\"?"
-    {An open file can not be deleted.} {Неможливо видалити відкритий файл.}
+    {An open file can not be deleted:} {Неможливо видалити відкритий файл:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" був змінений іншою програмою.\n\nВідмінити вашу редакцію та завантажити файл знову?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" був видалений іншою програмою.\n\nЗберігти файл?"
     {Tip File Info} {Дані про файли}

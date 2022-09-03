@@ -143,7 +143,7 @@ namespace eval ::alited {
     "Open All Tcl Files of \"%n\"" "Öffne alle Tcl-Dateien in \"%n\""
     "Remove \"%n\"\nfrom \"%f\"?" "Entferne \"%n\"\nvon \"%f\"?"
     "Delete \"%f\"?" "Lösche \"%f\"?"
-    {An open file can not be deleted.} {Eine offene Datei kann nicht gelöscht werden.}
+    {An open file can not be deleted:} {Eine offene Datei kann nicht gelöscht werden:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Datei \"%f\" wurde durch eine Applikation geändert.\n\nBearbeitung beenden und Datei neu laden?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Datei \"%f\" wurde durch eine Applikation gelöscht.\n\nDatei speichern?"
     {Tip File Info} {Tip-Datei Info}

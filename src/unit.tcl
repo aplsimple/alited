@@ -318,13 +318,18 @@ proc unit::Delete {wtree fname} {
   set wtxt [alited::main::CurrentWTXT]
   set selection [$wtree selection]
   set wasdel no
-  for {set i [llength $selection]} {$i} {} {
+  if {[set llen [llength $selection]]>1} {
+    set dlg yesnocancel
+  } else {
+    set dlg yesno
+  }
+  for {set i $llen} {$i} {} {
     # delete units from the text's bottom (text selection is sorted by items)
     incr i -1
     set ID [lindex $selection $i]
     set name [$wtree item $ID -text]
     set msg [string map [list %n $name %f [file tail $fname]] $al(MC,delitem)]
-    set ans [alited::msg yesnocancel ques $msg NO]
+    set ans [alited::msg $dlg ques $msg NO]
     switch $ans {
       0 break
       2 {}

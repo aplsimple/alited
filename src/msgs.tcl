@@ -77,7 +77,7 @@ namespace eval ::alited {
     set al(MC,openofdir)   [msgcat::mc "Open All Tcl Files of \"%n\""]
     set al(MC,delitem)     [msgcat::mc "Remove \"%n\"\nfrom \"%f\"?"]
     set al(MC,delfile)     [msgcat::mc "Delete \"%f\"?"]
-    set al(MC,nodelopen)   [msgcat::mc {An open file can not be deleted.}]
+    set al(MC,nodelopen)   [msgcat::mc {An open file can not be deleted:}]
     set al(MC,modiffile)   [msgcat::mc "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?"]
     set al(MC,wasdelfile)  [msgcat::mc "File \"%f\" was deleted by some application.\n\nSave the file?"]
     set al(MC,Row:)        [msgcat::mc {Row: }]

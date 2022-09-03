@@ -384,6 +384,7 @@ proc file::RenameFileInTree {{geo ""}} {
   set name2 [string trim $name2]
   if {$res && $name2 ne {} && $name2 ne $name} {
     DoRenameFileInTree $wtree $ID $fname $name2
+    after 200 alited::main::FocusText
   }
 }
 #_______________________
@@ -919,7 +920,7 @@ proc file::RemoveFile {fname dname mode} {
   #   fname - file name
   #   dname - name of directory
   #   mode - if "move", then moves a file to a directory, otherwise backups it
-  # Returns a destination file's name.
+  # Returns a destination file's name or {} if error.
 
   namespace upvar ::alited al al
   set ftail [file tail $fname]
@@ -1002,14 +1003,17 @@ proc file::Add {ID} {
     } err]} then {
       alited::msg ok err $err
     }
+    after 200 alited::main::FocusText
   }
 }
 #_______________________
 
-proc file::Delete {ID wtree} {
+proc file::DeleteOne {ID wtree dlg} {
   # Deletes a file at the file tree.
   #   ID - tree item's ID
   #   wtree file tree widget
+  #   dlg - dialogue's type (yesno / yesnocancel)
+  # Returns 1 for deleted, -1 for not deleted, 0 for error/cancel
 
   namespace upvar ::alited al al BAKDIR BAKDIR
   set name [$wtree item $ID -text]
@@ -1017,15 +1021,49 @@ proc file::Delete {ID wtree} {
   set TID [alited::bar::FileTID $fname]
   if {$TID ne ""} {
     bell
-    alited::msg ok warn $al(MC,nodelopen)
+    alited::msg ok warn "$al(MC,nodelopen)\n$fname"
     alited::bar::BAR $TID show
-    return
+    return 0
   }
   set msg [string map [list %f $name] $al(MC,delfile)]
-  if {[alited::msg yesno ques $msg NO]} {
-    RemoveFile $fname $BAKDIR backup
+  set res [alited::msg $dlg ques $msg NO]
+  switch $res {
+    1 {
+      if {[RemoveFile $fname $BAKDIR backup] eq {}} {
+        set res 0
+      }
+    }
+    2 {
+      set res -1
+    }
+  }
+  return $res
+}
+#_______________________
+
+proc file::Delete {ID wtree} {
+  # Deletes file(s) at the file tree.
+  #   ID - tree item's ID
+  #   wtree file tree widget
+
+  set wasdel no
+  set selection [$wtree selection]
+  if {[llength $selection]>1} {
+    set dlg yesnocancel
+  } else {
+    set dlg yesno
+    set selection $ID
+  }
+  foreach id $selection {
+    switch [DeleteOne $id $wtree $dlg] {
+      1 {set wasdel yes}
+      0 break
+    }
+  }
+  if {$wasdel} {
     $wtree selection set {}
     alited::tree::RecreateTree
+    after 200 alited::main::FocusText
   }
 }
 

@@ -278,6 +278,8 @@ proc tree::Create {} {
   bind $wtree <ButtonRelease> {alited::tree::DestroyMoveWindow no}
   bind $wtree <Leave> {alited::tree::DestroyMoveWindow yes}
   bind $wtree <F2> {alited::file::RenameFileInTree}
+  bind $wtree <Insert> {alited::tree::AddItem}
+  bind $wtree <Delete> {alited::tree::DelItem}
   if {$al(TREE,isunits)} {
     CreateUnitsTree $TID $wtree
   } else {
