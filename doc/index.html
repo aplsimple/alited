@@ -39,9 +39,30 @@
 <li class="level3"><div class="li"><a href="#start">First start</a></div></li>
 <li class="level3"><div class="li"><a href="#nextstart">Using configurations</a></div></li>
 </ul>
-<li class="level2"><div class="li"><a href="#units">Units</a></div></li>
-<li class="level2"><div class="li"><a href="#projects">Projects</a></div></li>
-<li class="level2"><div class="li"><a href="#search">Search</a></div></li>
+<li class="level2"><div class="li"><a href="#units">Units</a></div>
+<ul>
+<li class="level3"><div class="li"><a href="#units1">Unit tree</a></div></li>
+<li class="level3"><div class="li"><a href="#units2">Branches and leaves</a></div></li>
+<li class="level3"><div class="li"><a href="#units3">Creation of the tree</a></div></li>
+<li class="level3"><div class="li"><a href="#units4">Favorites and Last visited</a></div></li>
+<li class="level3"><div class="li"><a href="#units5">Searching units etc.</a></div></li>
+</ul>
+</li>
+<li class="level2"><div class="li"><a href="#projects">Projects</a></div>
+<ul>
+<li class="level3"><div class="li"><a href="#projects1">"Projects" dialogue</a></div></li>
+<li class="level3"><div class="li"><a href="#projects2">Project options</a></div></li>
+<li class="level3"><div class="li"><a href="#projects3">Project templates</a></div></li>
+<li class="level3"><div class="li"><a href="#projects4">File tree</a></div></li>
+<li class="level3"><div class="li"><a href="#projects5">Switching projects</a></div></li>
+</ul>
+</li>
+<li class="level2"><div class="li"><a href="#search">Search</a></div>
+<ul>
+<li class="level3"><div class="li"><a href="#search1">Find / Replace</a></div></li>
+<li class="level3"><div class="li"><a href="#search2">Other search tools</a></div></li>
+</ul>
+</li>
 <li class="level2"><div class="li"><a href="#tools">Tools</a></div>
 <ul>
 <li class="level3"><div class="li"><a href="#runtool"><i>Run</i> tool</a></div></li>
@@ -227,7 +248,7 @@ If you are a novice to <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> 8.6.10+, 
 </p>
 
 <p>
-Still in MS Windows, it's enough to install <a href="https://www.activestate.com/products/tcl"> ActiveTcl</a> or <a href="https://www.magicsplat.com/tcl-installer">Magicsplat</a> distribution.
+Still in MS Windows, it's enough to install <a href="http://www.bawt.tcl3d.org/download.html#tclbi">Bawt</a> or <a href="https://www.magicsplat.com/tcl-installer">Magicsplat</a> distribution.
 </p>
 
 <p>
@@ -252,7 +273,7 @@ In Linux, possibly you need to install the packages:
 
 </div>
 
-<h2 id="tclkit">Using tclkits</h2>
+<h3 id="tclkit"><i>Using tclkits</i></h3>
 <div class="level2">
 
 <p>
@@ -355,7 +376,7 @@ In <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">a
 
 </div>
 
-<h2 id="start">First start</h2>
+<h3 id="start"><i>First start</i></h3>
 <div class="level2">
 
 <p>
@@ -371,17 +392,13 @@ The default <i>~/.config</i> is probably the best choice if you don't plan to ha
 </p>
 
 <p>
-When you use default <i>~/.config</i>, it needs not to be passed to <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>.
-</p>
-
-<p>
 On the other hand, if you choose some other configuration directory,
  this directory's name may be passed to <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a> as its first argument</i>.
 </p>
 
 <p>
 You can have several copies of your configuration directories, e.g.
- <i>~/.config1, ~/.config2</i> etc. each of them customized for its own
+ <i>~/.config/alited1, ~/.config/alited2</i> etc. each of them customized for its own
  <i>type of projects</i>: public/private, for work/fun and so on.
 </p>
 
@@ -401,15 +418,15 @@ For example, I have two configuration directories of <span class="curid"><a href
 
 </div>
 
-<h2 id="nextstart">Using configurations</h2>
+<h3 id="nextstart"><i>Using configurations</i></h3>
 <div class="level2">
 
 <p>
-At the next starts of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, you can use the following syntax (where <code>tclsh</code> is any of Tcl/Tk executables: <em>tclsh, wish, tclkit, vanillawish</em>):
+At the next starts of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, you can use the following syntax (where, instead of <code>tclsh</code>, there may be any of Tcl/Tk executables: <em>wish, tclkit, vanillawish</em>):
 </p>
 
 <p>
-<b>1.</b> For using a previous configuration directory (if ~/.config was <b>not</b> used at all):
+<b>1.</b> For using a previous configuration directory:
 <pre class="code">
   tclsh alited.tcl
 </pre>
@@ -430,34 +447,18 @@ At the next starts of <span class="curid"><a href="#" class="wikilink1" title="T
 </p>
 
 <p>
-<b>4.</b> For using the default configuration directory by force:
+<b>4.</b> The same, with opening file(s):
 <pre class="code">
-  tclsh alited.tcl ~/.config
+  tclsh alited.tcl new-config-dir file1.tcl ?file2.tcl ...?
 </pre>
 </p>
 
 <p>
-<b>5.</b> The same, with <em>~/.config</em> used at least once:
-<pre class="code">
-  tclsh alited.tcl
-</pre>
+Also, you can switch configurations "on fly", choosing <em>Setup / Configurations...</em> menu item.
 </p>
 
 <p>
-If you have been working with a configuration directory during some sessions of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, and now you want to switch to another configuration, just pass the new configuration directory name to <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> as the first argument.
-</p>
-
-<p>If <em>~/.config</em> was used at least once, then <code>tclsh alited.tcl</code> means using it independently on what directory was used before this call.
-
-<p>If <em>~/.config</em> was <b>not</b> used at all, then <code>tclsh alited.tcl</code> means using a previously used configuration directory while <em>~/.config</em> serves only to register the previous usages.
-</p>
-
-<p>
-To switch configurations "on fly", you can choose <em>Setup / Configurations...</em> menu item.
-</p>
-
-<p>
-By default, <a href="#tools">Tools</a> of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> are created per a configuration, in its separate <em>e_menu</em> subdirectory handled by <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a>. With <em>Preferences / Tools / e_menu</em> setting you can redefine <em>e_menu</em> directory in any configuration, e.g. to have it one and only.
+By default, <a href="#tools">Tools</a> of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> are created per a configuration, in a separate subdirectory handled by <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a>. With <em>Preferences / Tools / e_menu</em> setting you can redefine <em>e_menu</em> directory in any configuration, e.g. to have it common for all.
 </p>
 
 <p>
@@ -478,8 +479,12 @@ The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">
 This means making a unit tree of Tcl code, with branches and leaves.
 </p>
 
+<br><p>
+<h3 id="units1"><i>Unit tree</i></h3>
+</p>
+
 <p>
-The branches are created with special comments. The leaves are Tcl procedures and methods.
+The branches of the unit tree are created with special comments. The leaves are Tcl procedures and methods.
 </p>
 
 <p id="unitexample">
@@ -579,6 +584,10 @@ In a <i>real life</i>, a code isn't easily observed even with <i>bird's eye view
 And here <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> comes to help.
 </p>
 
+<br><p>
+<h3 id="units2"><i>Branches and leaves</i></h3>
+</p>
+
 <p>
 The <i>unit tree</i> doesn't means anything like <i>code folding</i> or <i>structured editing</i> which refer to the Tcl structural commands like <code>if, switch, foreach, proc</code> and so on. The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> unit tree results from the hierarchical comments only.
 </p>
@@ -616,6 +625,10 @@ thus allowing the tree comments as follows:
 The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> recognizes the units by these comments and presents them as a tree.
 </p>
 
+<br><p>
+<h3 id="units3"><i>Creation of the tree</i></h3>
+</p>
+
 <p>
 To insert a tree branch into your code, use the key combinations:
 <ul>
@@ -626,7 +639,7 @@ To insert a tree branch into your code, use the key combinations:
 </p>
 
 <p>
-You can add 4th, 5th... branches' levels, as well as change the default keys to use.
+It seems the default three levels are quite enough. Still, you can add 4th, 5th... branches' levels, as well as change the default keys to use, in "Setup / Templates" menu item.
 </p>
 
 <p>
@@ -654,11 +667,15 @@ To move a group of units, select them with Ctrl+click. Then you can use "Move Up
 </p>
 
 <p>
-If the selected group should be moved to some far position, you can use "Drop Selected Unit Here" of the tree's context menu. Just right-click a tree item before you want to place the group and choose this action from the context menu.
+If the selected group should be moved to a far position, you can use "Drop Selected Unit Here" of the tree's context menu. Just right-click a tree item before you want to place the group and choose this action from the context menu.
 </p>
 
 <p>
-Also, you can drag-and-drop a unit before a target location of the unit tree. There is no posibility to drag-and-drop a group of units.
+Also, you can drag and drop a unit <i>before</i> a target position of the unit tree. There is no posibility to drag and drop a group of units.
+</p>
+
+<br><p>
+<h3 id="units4"><i>Favorites and Last visited</i></h3>
 </p>
 
 <p id="lastvisitscursor">
@@ -676,7 +693,7 @@ Each project has its own list of favorites.
 </p>
 
 <p>
-If some favorites' list is valuable, you can save it by its own name to return to these favorites afterwards. For this, use "Favorites' Lists" button of the toolbar or the appropriate item of menu.
+If some favorites' list is valuable, you can save it by its own name to return to these favorites afterwards. For this, use "Saved Lists of Favorites" button of the toolbar or the appropriate item of menu.
 </p>
 
 <p>
@@ -684,7 +701,7 @@ This way you can keep a kind of "projects inside a project", choosing a list of 
 </p>
 
 <p>
-The <i>Last Visited</i> list is a comrade of the favorites. It allows fast access to the last visited units. The <i>last visits</i> are registered at clicking units in the unit tree or at clicking found lines in the info listbox.
+The "Last Visited" list is a comrade of the favorites. It allows fast accessing the last visited units.
 </p>
 
 <p>
@@ -692,7 +709,7 @@ The "Search / To Last Visited" menu item (Alt+Backspace) switches between last t
 </p>
 
 <p>
-The <i>Last Visited</i> list is populated and changed when you:
+The "Last Visited" list is populated and changed when you:
 <ul>
 <li>click a unit's content</li>
 <li>change a unit's content</li>
@@ -707,6 +724,10 @@ The <i>Last Visited</i> list is populated and changed when you:
 <li>press keys of a text's context menu (not hitting a menu item!)</li>
 <li>undo / redo changes</li>
 </ul>
+</p>
+
+<p>
+It seems only a simple navigation with Up / Down / PageUp / PageDown keys doesn't populate "Last Visited" list.
 </p>
 
 <p>
@@ -727,8 +748,12 @@ It would be convenient to have "Last Visited" open in most sessions of <span><a 
 In a session, the visited units are highlighted in the unit tree, so that you can see which of them were visited. The more observed, the more navigated.
 </p>
 
+<br><p>
+<h3 id="units5"><i>Searching units etc.</i></h3>
+</p>
+
 <p>
-Two search modes might be very useful while you are dealing with the units:
+Two search tools might be very useful while you are dealing with the units:
 <ul>
   <li> Search Units
   <li> Go to Line
@@ -742,7 +767,6 @@ After pressing Ctrl+Shift+F you get "Search Units" bar where you can search unit
 <p>
 After searching just click the info listbox's item to enter a found unit. With the listbox's context menu, you can also set "Don't focus a text" mode to scan the found units with keys.
 </p>
-
 
 <p>
 Pressing Ctrl+G brings up "Go to Line" dialogue allowing you to go to a unit by a relative line number. It's useful when you get an error message with a proc / method name and a line number.
@@ -786,6 +810,10 @@ The projects seen by <span class="curid"><a href="#" class="wikilink1" title="Ta
 You can pass a config directory's name as an argument to <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>. This allows you to have various types of projects at one machine: public/private, for work/fun... configuring them properly.
 </p>
 
+<br><p>
+<h3 id="projects1"><i>"Projects" dialogue</i></h3>
+</p>
+
 <p>
 The projects are listed in "Setup / Projects" menu item. Also, you can click "Projects" icon of the tool bar.
 </p>
@@ -807,11 +835,154 @@ To open a project, just select it in the project list, then hit "Select" button.
 </p>
 
 <p>
-To open existing file(s) of your project you can switch to the project file tree. Then, with double-clicking a file, you open it.
+ Use <i>Create a project by template</i> button for templating projects.
 </p>
 
 <p>
-To open all Tcl files of a directory, use the tree's context menu.
+ Use <i>Project directory</i> button to view the project directory.
+</p>
+
+<p>
+ The <i>Notes</i> field may be used as a sort of diary for the project.
+ Also, you can keep a list of TODOs in <i>Notes</i>.
+</p>
+
+<p>
+ The calendar and the text below are used to set deadlines of the TODOs.
+ It's very useful, especially for projects developed unsteadily!
+</p>
+
+<p> <i>Notes</i> and <i>calendar</i> fields are very good at maintaining projects. Actually, any idea that occurs to you, is welcome to this calendar helper.
+</p>
+
+<p>
+ To set a deadline:
+<ul>
+   <li> select a day in the calendar</li>
+   <li> enter a text (reminder) of TODO</li>
+   <li> use buttons to <i>erase/paste/undo/redo</i> the text</li>
+   <li> use <i>move</i> buttons to postpone a TODO till next day or week</li>
+</ul>
+ When the present day reaches a deadline, its TODO is highlighted and the
+ bell rings, to remind of the TODO.
+</p>
+
+<p>
+When the TODO is done, just erase it with <i>Erase</i> button.
+</p>
+
+<br><p>
+<h3 id="projects2"><i>Project options</i></h3>
+</p>
+
+<p>There are few options for projects, seen in "Options" tab of "Projects" dialogue. Some of them are obvious, while others need commenting.
+</p>
+
+<p>"Skip subdirectories" option mean that some subdirectories of the project root directory would be ignored. This matters especially for <em>.git</em> subdirectory, as it can contain a lot of files not needed by <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> at all.
+</p>
+
+<p>The "Unit lines per 1 red bar" option means that N lines of a unit are considered normal, while each N additional lines of the unit would add a red bar to its icon at the unit tree, up to 7th bar.
+</p>
+
+<p>When the icon becomes fully (or mostly) red, this is like sending you "a bit too long unit" message, i.e. the unit probably needs a sort of reforming.
+</p>
+
+<p>There are 8 grades of redness: 0, 1*N, 2*N, 3*N ... 7*N. So, if N=10, then 80 lines would mean "a too long unit". Just look at the unit tree to detect those horrible reds, candidates for reforming.
+</p>
+
+<p>"Multiline strings" option means that Tcl strings can be continued in several lines without "\" and "\n", for example:
+<pre class="code">
+set multistr "It's
+  a multiline
+  string
+  "
+</pre>
+However convenient, this practice is not recommended for projects with "large" files, i.e. containing more than 2000 LOC. On these files, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> works rather slow with multiline strings.
+</p>
+
+<p>Instead, you might switch this option off and use the following layout of strings:
+<pre class="code">
+set multistr "It's \
+\n  a multiline \
+\n  string \
+\n  "
+</pre>
+(or just avoid the multilines at all).
+</p>
+
+<p><b>Note</b>: the default options for the new projects are set in "General / Project" tab of "Preferences" dialogue.
+</p>
+
+<br><p>
+<h3 id="projects3"><i>Project templates</i></h3>
+</p>
+
+<p>
+ "Templates" tab of "Projects" dialogue allows to set a directory/file tree that will be used
+ at creating a project with <i>Create a project by template</i> button.
+</p>
+<p>
+ The template is set in the text field, by these simple rules:
+<ul>
+   <li> the lines contain directory / file names; blank lines are ignored;
+     special characters in the names (", /, \, ~, *, ? etc.) aren't allowed</li>
+</ul>
+<ul>
+   <li> <i>file names</i> are the names that satisfy one of -nocase patterns:</li>
+  <ul>
+  <li> <i>license*, licence*</i> (e.g. License.md, LICENSE, licence.txt etc.)</li>
+  <li> <i>readme*</i> (e.g. Readme.md, README, readme.txt etc.)</li>
+  <li> <i>changelog*</i> (e.g. Changelog.md, CHANGELOG, changelog.txt etc.)</li>
+</ul>
+</ul>
+<ul>
+   <li> if a <i>license</i> file is found in a current project, it will be
+     copied to a templated project; other files will be created blank</li>
+</ul>
+<ul>
+   <li> all of other names are directory names</li>
+</ul>
+<ul>
+   <li> first non-empty line of the template sets an initial indent,
+     the following lines must be indented at least by this indent</li>
+</ul>
+<ul>
+   <li> first additional indent means an indent to set subdirectories;
+     the following subdirectories must be equally indented by this indent</li>
+</ul>
+<ul>
+   <li> the directories and files will be created under the project's root</li>
+</ul>
+</p>
+<p>
+
+ Use <i>Default</i> button to set the default template of dir/file tree.
+ This button shows also an example of project template.
+</p>
+<p>
+
+ Use <i>Create a project by template</i> button for templating projects.
+</p>
+<p>
+
+ Use <i>Project directory</i> button to view the result of templating.
+</p>
+<p>
+ A current template is saved in the <i>Template</i> combobox after running
+ <i>Create a project by template</i> (up to 16 templates may be saved).
+</p>
+
+
+<br><p>
+<h3 id="projects4"><i>File tree</i></h3>
+</p>
+
+<p>
+To open existing files of your project you can switch to the project file tree. For this, use "Switch to File Tree" button of tree toolbar.
+</p>
+
+<p>
+With double-clicking a file, you open it. To open all Tcl files of a directory, use the tree's context menu.
 </p>
 
 <p>
@@ -834,6 +1005,10 @@ If your currently edited file doesn't belong to the current project directory, y
 There are also "Create File/Directory" options of the file tree available through the tree's context menu.
 </p>
 
+<br><p>
+<h3 id="projects5"><i>Switching projects</i></h3>
+</p>
+
 <p>
 When projects are switched, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> saves and restores:
 <ul>
@@ -850,18 +1025,6 @@ So, when you switch to another project, <span class="curid"><a href="#" class="w
 <p>If you want some files of the old project to remain open in the new project, select them in the tab bar by Ctrl+click, then switch to the new project.
 </p>
 
-<p>Few words about an interesting project option.
-</p>
-
-<p>The "Unit lines per 1 red bar" option means that N lines of a unit are considered normal, while each N additional lines of the unit would add a red bar to its icon at the unit tree, up to 7th bar.
-</p>
-
-<p>When the icon becomes fully (or mostly) red, this is like sending you "a bit too long unit" message, i.e. the unit probably needs a sort of reforming.
-</p>
-
-<p>There are 8 grades of redness: 0, 1*N, 2*N, 3*N ... 7*N. So, if N=10, then 80 lines would mean "a too long unit". Just look at the unit tree to detect those horrible reds, candidates for reforming.
-</p>
-
 <p>
 <br>
 
@@ -873,10 +1036,15 @@ So, when you switch to another project, <span class="curid"><a href="#" class="w
 <div class="level2">
 
 <p>
-Along with the unit facilities, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> provides a lot of other tools to navigate throughout a project.
+Along with the unit facilities, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> provides a lot of search tools to navigate throughout a project.
 </p>
+
+<br><p>
+<h3 id="search1"><i>Find / Replace</i></h3>
+</p>
+
 <p>
-One of them is "Find / Replace" tool, called with:
+One of search tools is "Find / Replace" dialogue, called with:
 <ul>
 <li> Ctrl+F keys</li>
 <li> "Edit / Find/Replace" in menu</li>
@@ -937,8 +1105,12 @@ The info listbox has a context menu allowing you to navigate through its items j
 The "Find / Replace" dialogue allows you to replace the found strings with a new one. At single replacements, first hit "Find", then "Replace" - next found strings will be presented one by one.
 </p>
 
+<br><p>
+<h3 id="search2"><i>Other search tools</i></h3>
+</p>
+
 <p>
-Other search facilities of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> are:
+Search facilities of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> include also:
 <ul>
 <li> Find a unit</li>
 <li> Find a declaration</li>
@@ -966,6 +1138,26 @@ To look for a proc/method declaration, you can try:
 </p>
 
 <p>
+For a quick search of a word (or a selected text), there is a nice Ctrl+Shift+click applied to the word. It means a search throughout <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session and is <i>very helpful</i> in some cases.
+</p>
+
+<p>
+Sometimes, a whole list of words should be sought in a file. There is an appropriate item in "Search" menu. The search result is displayed in a text widget, so that you can copy-paste it to a code. After closing the window of search results, you can switch to another file without closing the window of search options.
+</p>
+
+<p>
+To find a word or a selection in a directory, hit the appropriate button of the toolbar. The search will be performed by "grep" command with options:
+<ul>
+<li> recursively in a chosen directory</li>
+<li> case insensible</li>
+</ul>
+</p>
+
+<p>
+Other "grep" facilities are available in "e_menu". Run it with F4 key and hit "Search all" item.
+</p>
+
+<p>
 To complete a command, press Tab key while the cursor is on initial characters of a command - this will offer you to select from a list of commands available in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session's files.
 </p>
 
@@ -982,31 +1174,7 @@ At the completion, the commands offered to choose are:
 </p>
 
 <p>
-For a quick search of a word (or a selected text), there is a nice Ctrl+Shift+click applied to the word. It means a search throughout <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session and is <i>very helpful</i> in some cases.
-</p>
-
-<p>
 Double clicking a word highlights all of its occurences (if red) or only one. This allows, e.g., quick overview of a variable's usage. If you want to highlight a selection, run a context menu.
-</p>
-
-<p>
-Sometimes, a whole list of words should be sought in a file. There is an appropriate item in "Search" menu. The search result is displayed in a text widget, so that you can copy-paste it to a code.
-</p>
-
-<p>
-To find a word or a selection in a directory, hit the appropriate button of the toolbar. The search will be performed by "grep" command with options:
-<ul>
-<li> recursively in a chosen directory</li>
-<li> case insensible</li>
-</ul>
-</p>
-
-<p>
-Other "grep" facilities are available in "e_menu". Run it with F4 key and hit "Search all" item.
-
-</p>
-
-<p>
 </p>
 
 <p>
@@ -1030,6 +1198,7 @@ Some of tools are provided by <span class="curid"><a href="#" class="wikilink1" 
 <li> <i>e_menu</i></li>
 <li> <i>tkcon</i></li>
 <li> <i>Check Tcl</i></li>
+<li> <i>File List</i></li>
 <li> <i>Color Picker</i></li>
 <li> <i>Screen Loupe</i></li>
 <li> <i>Tcl/Tk help</i> (in "Help" menu)</li>
@@ -1042,7 +1211,7 @@ Other tools are collected in "Tools / bar/menu" submenu. These are provided by <
 
 <br>
 <p>
-<h3 id=runtool><i>Run</i> tool</h3>
+<h3 id=runtool><i>Run tool</i></h3>
 </p>
 
 <p>
@@ -1053,12 +1222,22 @@ The <i>Run</i> tool tries to run an application chosen as default for the curren
 But <a href="../e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> recognizes special comments like:
 </p>
 
-<p><pre class="code">#RUNF1: file.tcl args</pre>
+<p><pre class="code">
+#RUNF: file.tcl args
+#RUNF1: file.tcl args
+#RUNF2: file.tcl args
+...
+</pre>
 which means running "tclsh <i>file.tcl</i> args". Use <i>Alt+R</i> hot keys to insert its template into a text.
 </p>
 
 <p>
-<pre class="code">#EXEC1: command args</pre>
+<pre class="code">
+#EXEC: command args
+#EXEC1: command args
+#EXEC2: command args
+...
+</pre>
 which means running "<i>command</i> args". Use <i>Alt+E</i> hot keys to insert its template into a text.
 </p>
 
@@ -1134,7 +1313,7 @@ At last, in the "Before Run" dialogue, you can set a command to be run "forcedly
 
 <br>
 <p>
-<h3 id=helptool><i>Tcl/Tk help</i> tool</h3>
+<h3 id=helptool><i>Tcl/Tk help tool</i></h3>
 </p>
 
 <p>
@@ -1173,7 +1352,7 @@ Tcl/Tk context help in <span class="curid"><a href="#" class="wikilink1" title="
 
 <br>
 <p>
-<h3 id=custtool>Customizing tools</h3>
+<h3 id=custtool><i>Customizing tools</i></h3>
 </p>
 <p>
 Some tools, though default, can be replaced or removed. These tools are listed in "Tools / bar/menu" submenu and are customized in "Setup / Preferences / Tools".
@@ -1236,7 +1415,7 @@ There are several sources of editing features provided by <span class="curid"><a
 
 <br>
 <p>
-<h3 id="contextmenu">1. Context menu</h3>
+<h3 id="contextmenu"><i>Context menu</i></h3>
 </p>
 
 <p>
@@ -1266,7 +1445,7 @@ With right-clicking a text, you get a context menu containing:
 </li>
 
 
-<li id="highlightcom"><i>Highlight processing</i> commands:
+<li><i>Highlight processing</i> commands:
 <br><br>
 <ul>
 <li><i>Highlight First</i> (Alt+Q keys customized in "Setup / Preferences / Keys")
@@ -1289,7 +1468,7 @@ With right-clicking a text, you get a context menu containing:
 
 <br>
 <p>
-<h3 id="editmenu">2. Edit menu</h3>
+<h3 id="editmenu"><i>Edit menu</i></h3>
 </p>
 
 <p>
@@ -1345,7 +1524,7 @@ where <code>elseif { $num == 2 }</code> is still active.
 
 <br>
 <p>
-<h3 id="searchmenu">3. Search menu</h3>
+<h3 id="searchmenu"><i>Search menu</i></h3>
 </p>
 
 <p>
@@ -1380,12 +1559,12 @@ The search facilities of <span class="curid"><a href="#" class="wikilink1" title
 <p>
 <b>Note</b>: if Ctrl+F (or Ctrl+Shift+F) keys are pressed twice, a last performed search starts immediately. When you need to repeat a search in text/session with many words of a text, this feature will help a lot: just repeatedly set the cursor on the words and do it.
 </p>
-<p>Also, for  highlighting words / selected strings, use <a href="#highlightcom">alited's context menu</a> on a text or double-click on a word. If there are multiple highlighted instances, they are highlighted with reddish color, otherwise the only instance is highlighted as a usual selection. This feature is very useful for example when you need to see all uses of a variable in a procedure: double click the variable and you'll see all of its occurences. At that, mouse moves and clicks on the text don't remove the highlighting, only a keypressing does.
+<p>Also, for  highlighting words / selected strings, use <a href="#contextmenu">alited's context menu</a> on a text or double-click on a word. If there are multiple highlighted instances, they are highlighted with reddish color, otherwise the only instance is highlighted as a usual selection. This feature is very useful for example when you need to see all uses of a variable in a procedure: double click the variable and you'll see all of its occurences. At that, mouse moves and clicks on the text don't remove the highlighting, only a keypressing does.
 </p>
 
 <br>
 <p>
-<h3 id="templates">4. Templates</h3>
+<h3 id="templates"><i>Templates</i></h3>
 </p>
 
 <p>
@@ -1397,7 +1576,7 @@ The templates are available through "Setup / Templates" menu item and "Add Unit"
 
 <br>
 <p>
-<h3 id="keyssetup">5. Keys setup</h3>
+<h3 id="keyssetup"><i>Keys setup</i></h3>
 </p>
 
 <p>
@@ -1406,7 +1585,7 @@ A few of keys are customized with "Setup / Preferences / Keys" menu item.
 
 <br>
 <p>
-<h3 id="misckeys">6. Miscellaneous keys</h3>
+<h3 id="misckeys"><i>Miscellaneous keys</i></h3>
 </p>
 
 <p>
@@ -1424,6 +1603,9 @@ The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">
 <li><i>Ctrl+Up</i> moves the cursor to a previous paragraph
 <br><br></li>
 <li><i>Ctrl+Down</i> moves the cursor to a next paragraph
+<br><br></li>
+<li><i>Ctrl+Shift+U</i> allows to enter Unicode character, by its number
+</li>
 </ul>
 </p>
 <p>By default, <i>Tab</i> key is used in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> for "Command complete" tool. Refer to "Preferences/Keys" to redefine it.
@@ -1440,37 +1622,37 @@ The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">
 <div class="level2">
 
 <p>
-The  <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s "Setup" menu provides "Project", "Templates", "Favorites' Lists" and "Preferences" dialogues.
+The  <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s "Setup" menu provides "Projects", "Templates", "Favorites Lists" and "Preferences" dialogues.
 </p>
 
 <p>
-All of the dialogues contain "Help" button, at their bottom left corners. The button displays a context help describing a current dialogue (or its current tab if any).
+All of the dialogues contain "Help" button, at their bottom left corners. The button displays a context help describing a current dialogue or its current tab.
 </p>
 
 <p>
-The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s "Setup" menu provides some options outside of the dialogues:
+The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s "Setup" menu provides some options outside of the dialogues, as described below.
 </p>
 
-<i>Tint</i>
+<i><b>Tint</b></i>
 <p>
 This option allows to change a tint of a current color scheme. It's per a session only.
 <br>
 When all of sudden you get a feeling that too much of light / darkness is around, this option might help.
 </p>
 
-<i>Wrap Lines</i>
+<i><b>Wrap Lines</b></i>
 <p>
 This option allows to turn off the line wrapping.
 <br>
 It's rarely needed, so the wrapping is normally on. This option acts per a file.
 </p>
 
-<i>Tip File Info</i>
+<i><b>Tip File Info</b></i>
 <p>
 This option allows to view an information of file attributes displayed in tips of the tab bar and the file tree.
 </p>
 
-<i>After Start</i>
+<i><b>For Start</b></i>
 <p>
 This option allows to set command(s) that would be executed just after starting <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>.
 <br>
@@ -1480,17 +1662,13 @@ These commands are sort of initialization depending on a type of projects, i.e. 
 <br>
 </p>
 
-<i>Before Run</i>
+<i><b>For Run</b></i>
 <p>
 This option allows to set command(s) that would be executed before "Tools / Run". It's per a project.
 <br>
-You can set as many commands as you like, one command per a line. The commands may be Tcl/Tk commands or external executables.
-<br>
-These commands are sort of initialization depending on a project.
-<br>
-</p>
-
-<p>
+ Also, you can set a command that will be run "forcedly", <i>independently
+ on the type</i> of currently edited file.
+<br>Hit "Help" button for details.
 </p>
 
 <p>

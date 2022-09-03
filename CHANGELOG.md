@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.3 (31 Aug'22)`
+Version `1.3.3 (3 Sep'22)`
 
   - BUGFIX: (not critical) saving files after "Save" in Preferences -> Tcl error
   - BUGFIX: (not critical) calling e_menu as external with alited's CS tinted (CS=47)
@@ -15,6 +15,7 @@ Version `1.3.3 (31 Aug'22)`
   - NEW   : allow tinting CS for rdbende's themes
   - NEW   : highlight current & original tints in "Setup/Tint" menu
   - NEW   : restoring full geometry of dir/file choosers in Linux
+  - CHANGE: index.html (alited docs) revised
   - CHANGE: focusing a current text after "Open all Tcl files" of file tree
   - CHANGE: in Projects: focusing appropriate fields at user's errors
   - CHANGE: scrollbars for Preferences/Editor syntax fields

@@ -499,7 +499,7 @@ proc favor::ShowPopupMenu {ID X Y} {
   $popm add separator
   if {$al(FAV,IsFavor)} {
     $popm add command -label $al(MC,FavLists) {*}[$obPav iconA none] \
-      -command ::alited::favor::Lists -image alimg_heart
+      -command ::alited::favor::Lists -image alimg_SaveFile
     $popm add separator
     $popm add command -label $al(MC,favoradd) {*}[$obPav iconA none] \
       -command {::alited::favor::Add no} -image alimg_add

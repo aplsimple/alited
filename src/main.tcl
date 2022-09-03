@@ -480,7 +480,7 @@ proc main::GotoLine {} {
         set ln $l
       }
     }
-    after idle " \
+    after 200 " \
       alited::main::FocusText $TID $ln.0 ; \
       alited::tree::NewSelection {} $ln.0 yes"
   }
