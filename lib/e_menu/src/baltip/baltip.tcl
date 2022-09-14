@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.4.0
+package provide baltip 1.4.1
 
 package require Tk
 
@@ -23,7 +23,7 @@ namespace eval ::baltip {
     set ttdata(on) yes
     set ttdata(per10) 1600
     set ttdata(fade) 300
-    set ttdata(pause) 600
+    set ttdata(pause) 1000
     set ttdata(fg) black
     set ttdata(bg) #FBFB95
     set ttdata(bd) 1
@@ -46,11 +46,18 @@ namespace eval ::baltip {
 # _________________________ UI ______________________ #
 
 proc ::baltip::configure {args} {
-  # Configurates the tip for all widgets.
+  # Configurates the tip for all widgets or for a widget.
   #   args - options ("name value" pairs)
-  # Returns the list of special options' values.
+  # If *args* begins with a widget path, then
+  # args is "w -opt val ?-opt val?", so the widget tip options are set.
+  # Returns the list of special options' values or a widget's tip options.
 
   variable my::ttdata
+  set w [lindex $args 0]
+  if {[winfo exists $w]} {
+    # configure a widget's tip
+    return [tip $w -BALTIPSET {*}[lrange $args 1 end]]
+  }
   set force no
   set index -1
   lassign {} geometry tag ctag nbktab reset command maxexp
@@ -82,13 +89,26 @@ proc ::baltip::configure {args} {
 #_______________________
 
 proc ::baltip::cget {args} {
-  # Gets the tip's option values.
+  # Gets global option values or a widget's option value.
   #   args - option names (if empty, returns all options)
-  # Returns a list of "name value" pairs.
+  # If *args* begins with a widget path, then args is "w -option",
+  # so the widget tip option's value is returned (e.g. for -text option).
+  # Returns a list of "name value" pairs or an option value of a widget's tip.
 
   variable my::ttdata
   if {![llength $args]} {
     lappend args {*}[optionlist]
+  }
+  set w [lindex $args 0]
+  if {[winfo exists $w]} {
+    set dic [tip $w -BALTIPGET]
+    if {[set opt [lindex $args 1]] ne {}} {
+      if {[dict exists $dic $opt]} {
+        return [dict get $dic $opt]
+      }
+      return {}
+    }
+    return $dic
   }
   set res [list]
   foreach n $args {
@@ -118,20 +138,38 @@ proc ::baltip::tippath {w} {
 }
 #_______________________
 
-proc ::baltip::tip {w text args} {
+proc ::baltip::tip {w {text "-BALTIPGET"} args} {
   # Creates a tip for a widget.
   #   w - the parent widget's path
   #   text - the tip text
   #   args - options ("name value" pairs)
+  # If *text* is equal to "-BALTIPGET", returns options of widget's tip
+  # If *text* is equal to "-BALTIPSET", sets options of widget's tip
 
   variable my::ttdata
   array unset my::ttdata winGEO*
   if {[winfo exists $w] || $w eq {}} {
+    if {$text in {-BALTIPGET -BALTIPSET}} {
+      # "-BALTIPGET" is the same as "-BALTIPSET", just supposed not to include args
+      if {![info exists my::ttdata(optvals,$w)]} {
+        set my::ttdata(optvals,$w) [dict create]
+      }
+      set my::ttdata(optvals,$w) [dict replace $my::ttdata(optvals,$w) {*}$args]
+      if {$text eq {-BALTIPGET}} {
+        return $my::ttdata(optvals,$w)
+      }
+      if {[catch {set text [dict get $my::ttdata(optvals,$w) -text]}]} {
+        return {}
+      }
+    }
     set arrsaved [array get my::ttdata]
     set optvals [::baltip::my::CGet {*}$args]
     # block of related lines for special options
     lassign $optvals forced geo index ttag ctag nbktab reset command maxexp
-    set optvals [lrange $optvals 9 end]  ;# get rid of special options
+    set optArgs [lrange $optvals 9 end]  ;# get rid of special options
+    if {[catch {set optvals $my::ttdata(optvals,$w)}]} {
+      set optvals $optArgs
+    }
     # end of block
     set my::ttdata(global,$w) no
     # no redefining a command once set
@@ -146,7 +184,9 @@ proc ::baltip::tip {w text args} {
     }
     set text [my::OptionsFromText $w $text]  ;# may reset -command and -maxexp
     set onopt [expr {[string length $text] && $my::ttdata(on)}]
-    set my::ttdata(optvals,$w) [dict set optvals -text $text]
+    set optArgs [dict replace $optArgs -text $text]
+    set optvals [dict replace $optvals -text $text]
+    set my::ttdata(optvals,$w) $optvals
     set my::ttdata(on,$w) $onopt
     if {$text ne {}} {
       if {$forced || $geo ne {}} {::baltip::my::Show $w $text yes $geo $optvals}
@@ -169,22 +209,22 @@ proc ::baltip::tip {w text args} {
           set wt [my::Clonename $w]
           foreach w2 [list $w $wt] {
             set my::ttdata(on,$w2) $onopt
-            set my::ttdata($w2,$index) $optvals
+            set my::ttdata($w2,$index) $optArgs
             set my::ttdata(command,$w2) $command
             set my::ttdata(global,$w2) no
           }
-          my::BindToEvent Menu <<MenuSelect>>	::baltip::my::MenuTip %W
+          my::BindToEvent Menu <<MenuSelect>> ::baltip::my::MenuTip %W
         } elseif {$ttag ne {}} {
           # tip for text tags
           set my::ttdata($w,$ttag) $text
-          my::BindTextagToEvent $w $ttag <Enter> ::baltip::my::TagTip $w $ttag $optvals
+          my::BindTextagToEvent $w $ttag <Enter> ::baltip::my::TagTip $w $ttag $optArgs
           foreach event {Leave KeyPress Button} {
             my::BindTextagToEvent $w $ttag <$event> ::baltip::my::TagTip $w
           }
         } elseif {$ctag ne {}} {
           # tip for canvas tags
           set my::ttdata($w,$ctag) $text
-          my::BindCantagToEvent $w $ctag <Enter> ::baltip::my::TagTip $w $ctag $optvals
+          my::BindCantagToEvent $w $ctag <Enter> ::baltip::my::TagTip $w $ctag $optArgs
           my::BindCantagToEvent $w $ctag <Leave> ::baltip::my::TagTip $w
         } elseif {$nbktab ne {}} {
           # tip for notebook tabs
@@ -213,6 +253,7 @@ proc ::baltip::tip {w text args} {
       }
     }
   }
+  return {}
 }
 #_______________________
 
@@ -359,6 +400,12 @@ proc ::baltip::my::OptionsFromText {w txt} {
         set n1 [string range [lindex $ol $i] 1 end]
         set ttdata($n1,$w) $v
         if {$o eq {-BALTIP}} {set txt $v}
+      }
+    }
+  } else {
+    if {[winfo exists ttdata(optvals,$w)]} {
+      catch {
+        set txt [dict get $ttdata(optvals,$w) -text]
       }
     }
   }
@@ -520,13 +567,15 @@ proc ::baltip::my::Show {w text force geo optvals} {
   catch {::apave::obj untouchWidgets $win.label}
   set px [winfo pointerx .]
   set py [winfo pointery .]
+  array set data $optvals
+  if {[info exists ttdata(optvals,$w)]} {
+    catch {array set data [list {*}$ttdata(optvals,$w) {*}$optvals]}
+  }
   if {$geo ne {}} {           ;# balloons not related to widgets
-    array set data $optvals
     set GEOACTIVE $w  ;# lock other tips
   } elseif {$ttdata(global,$w)} {      ;# flag 'use global settings'
     array set data [::baltip::cget]
   } else {
-    array set data $optvals
     foreach k [array names ttdata -glob *,$w] {
       set n1 [lindex [split $k ,] 0]   ;# settings set by 'update'
       if {$n1 eq {text}} {

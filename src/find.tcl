@@ -694,8 +694,7 @@ proc find::ReplaceAll {TID wtxt allfnd} {
   #   allfnd - list of found strings data (index1, index2)
 
   variable data
-  $wtxt configure -autoseparators no
-  $wtxt edit separator
+  ::apave::undoIn $wtxt
   set rn 0
   for {set i [llength $allfnd]} {$i} {} {
     if {!$rn} {
@@ -709,8 +708,7 @@ proc find::ReplaceAll {TID wtxt allfnd} {
     incr rn
   }
   if {$rn} {SetCursor $wtxt [lindex $allfnd end 0]}
-  $wtxt edit separator
-  $wtxt configure -autoseparators yes
+  ::apave::undoOut $wtxt
   return $rn
 }
 #_______________________
@@ -979,9 +977,10 @@ proc find::_create {} {
     }
     SessionButtons
     bind $win <Enter> alited::find::SessionButtons
-    foreach k {f F} {bind $w.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}
-    bind $w.cbx1 <Return> "$w.but1 invoke"  ;# hot in comboboxes
+    bind $win <F3> "$w.but1 invoke"
+    bind $w.cbx1 <Return> "$w.but1 invoke"  ;# hotkeys in comboboxes
     bind $w.cbx2 <Return> "$w.but4 invoke"
+    foreach k {f F} {bind $w.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}
     after idle "$w.cbx1 selection range 0 end"
     set res [$obFND showModal $win -geometry $geo {*}$minsize -focus $w.cbx1 -modal no]
     set geo [wm geometry $win] ;# save the new geometry of the dialogue

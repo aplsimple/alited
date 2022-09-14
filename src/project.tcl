@@ -37,6 +37,10 @@ namespace eval project {
   # calendar's data
   variable klnddata; array set klnddata [list]
   set klnddata(dateformat) {%Y/%m/%d}
+
+  # todo message and its project
+  variable msgtodo {}
+  variable itemtodo {}
 }
 
 # ________________________ Common _________________________ #
@@ -1076,6 +1080,8 @@ proc project::CanProjectEnter {} {
   namespace upvar ::alited al al
   variable win
   variable prjinfo
+  variable msgtodo
+  variable itemtodo
   lassign [SortRems $prjinfo($al(prjname),prjrem)] dmin - outdated
   if {$outdated} {
     set tab1 $win.fra.fraR.nbk.f1
@@ -1083,13 +1089,32 @@ proc project::CanProjectEnter {} {
       $win.fra.fraR.nbk select $tab1
     }
     KlndDayRem $dmin
-    set msg [msgcat::mc {TODO reminders for the past: %d. Delete them or try "Select".}]
+    set msgtodo [msgcat::mc {TODO reminders for the past: %d. Delete them or try "Select".}]
     set dmin [ClockFormat $dmin]
-    set msg [string map [list %d $dmin] $msg]
-    alited::Message2 $msg 4
+    set msgtodo [string map [list %d $dmin] $msgtodo]
+    alited::Message2 $msgtodo 4
+    set itemtodo [Selected item no]
     return no
   }
   return yes
+}
+#_______________________
+
+proc project::ProcMessage2 {} {
+  # Handles clicking on message label.
+  # Shows the message and if it is about TODO, selects the corresponding project.
+
+  namespace upvar ::alited obDl2 obDl2
+  variable msgtodo
+  variable itemtodo
+  set lab [$obDl2 LabMess]
+  set msg [baltip cget $lab -text]
+  if {$msgtodo eq $msg} {
+    alited::Message2 $msg 4
+    Select $itemtodo
+  } else {
+    alited::Message2 $msg 3
+  }
 }
 #_______________________
 
@@ -1542,6 +1567,8 @@ proc project::_create {} {
   variable ilast
   variable curinfo
   set curinfo(_NO2ENT) 0
+  set tipson [baltip::cget -on]
+  baltip::configure -on $al(TIPS,Projects)
   $obDl2 makeWindow $win.fra "$al(MC,projects) :: $::alited::PRJDIR"
   $obDl2 paveWindow \
     $win.fra [MainFrame] \
@@ -1559,6 +1586,7 @@ proc project::_create {} {
   bind $tree <Double-Button-1> ::alited::project::ProjectEnter
   bind $tree <Return> ::alited::project::ProjectEnter
   bind $win <F1> "[$obDl2 ButHelp] invoke"
+  bind [$obDl2 LabMess] <Button-1> ::alited::project::ProcMessage2
   set lbx [$obDl2 LbxFlist]
   foreach a {a A} {
     bind $lbx <Control-$a> alited::project::SelectAllFiles
@@ -1586,6 +1614,7 @@ proc project::_create {} {
   set geo [wm geometry $win]
   destroy $win
   alited::main::ShowHeader yes
+  baltip::configure {*}$tipson
   return $res
 }
 #_______________________
@@ -1596,7 +1625,9 @@ proc project::_run {{checktodo yes}} {
 
   namespace upvar ::alited al al
   variable win
+  variable msgtodo
   if {[winfo exists $win]} {return {}}
+  set msgtodo {}
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   SaveSettings
   GetProjects

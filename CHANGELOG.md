@@ -1,6 +1,19 @@
 # LAST CHANGES:
 
 
+Version `1.3.4a2 (14 Sep'22)`
+
+  - NEW   : "Setup / Tips on/off" to disable some tips
+  - NEW   : "-tearoff 1" for all submenus, to use them repeatedly
+  - NEW   : delete non-existing file from "Recent Files" if chosen
+  - NEW   : clicking message label in Projects (restoring the message and TODO)
+  - NEW   : date picker in toolbar
+  - NEW   : Find/Replace dialogue: F3 key = Find button
+  - CHANGE: undo/redo of (un)commenting in one step
+  - CHANGE: delete Item# labels in Preferences/Tools/bar/menu tab
+  - CHANGE: packages: apave/e_menu 3.5.5, baltip 1.4.1
+
+
 Version `1.3.3 (3 Sep'22)`
 
   - BUGFIX: (not critical) saving files after "Save" in Preferences -> Tcl error

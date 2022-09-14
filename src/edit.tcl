@@ -118,8 +118,9 @@ proc edit::Comment {} {
   # Comments selected lines of text.
   # See also: UnComment
 
-  if {[set ch [CommentChar]] eq {}} {bell; return}
+  set ch [CommentChar]
   lassign [SelectedLines] wtxt l1 l2
+  ::apave::undoIn $wtxt
   for {set l $l1} {$l<=$l2} {incr l} {
     $wtxt insert $l.0 $ch
     if {$ch eq "#"} {
@@ -128,6 +129,7 @@ proc edit::Comment {} {
       $wtxt replace $l.0 $l.end [string map [list \} #\\\} \{ #\\\{] $line]
     }
   }
+  ::apave::undoOut $wtxt
   SelectLines $wtxt $l1 $l2
 }
 #_______________________
@@ -137,10 +139,11 @@ proc edit::UnComment {} {
   # See also: Comment
 
   namespace upvar ::alited obPav obPav
-  if {[set ch [CommentChar]] eq {}} {bell; return}
+  set ch [CommentChar]
   set lch [string length $ch]
   set lch0 [expr {$lch-1}]
   lassign [SelectedLines] wtxt l1 l2
+  ::apave::undoIn $wtxt
   for {set l $l1} {$l<=$l2} {incr l} {
     set line [$wtxt get $l.0 $l.end]
     set isp [$obPav leadingSpaces $line]
@@ -153,6 +156,7 @@ proc edit::UnComment {} {
       }
     }
   }
+  ::apave::undoOut $wtxt
   SelectLines $wtxt $l1 $l2
 }
 
@@ -380,13 +384,13 @@ proc edit::RemoveTrailWhites {{TID ""} {doit no} {skipGUI no}} {
       for {set l $l1} {$l<=$l2} {incr l} {
         set line [$wtxt get $l.0 $l.end]
         if {[set trimmed [string trimright $line]] ne $line} {
-          if {!$wasedit} {$wtxt edit separator}
+          if {!$wasedit} {::apave::undoIn $wtxt}
           set wasedit yes
           $wtxt replace $l.0 $l.end $trimmed
         }
       }
       if {$wasedit} {
-        $wtxt edit separator
+        ::apave::undoOut $wtxt
         alited::bar::BAR markTab $tid
         if {$wtxt eq [alited::main::CurrentWTXT]} {
           set waseditcurr yes  ;# update the current text's view only

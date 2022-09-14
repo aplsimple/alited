@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.5.4}
+  variable em_version {e_menu 3.5.5}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -134,7 +134,7 @@ namespace eval ::em {
     }
   }
 
-## ________________________ Variables _________________________ ##
+## ________________________ variables _________________________ ##
 
   variable menuttl "$::em::em_version"
   variable thisapp emenuapp
@@ -213,6 +213,26 @@ namespace eval ::em {
   variable th {alt} td {} g1 {} g2 {}
   variable ee {}
 }
+
+
+## ________________________ messages _________________________ ##
+
+proc ::em::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {
+  return [::eh::dialog_box $ttl $mes $typ $icon $defb \
+    -centerme .em {*}$args] ;# {*}[::em::theming_pave]
+}
+#___ own message box
+proc ::em::em_message {mes {typ ok} {ttl "Info"} args} {
+  if {[string match ERROR* [string trimleft $mes]]} {set ico err} {set ico info}
+  ::em::dialog_box $ttl $mes $typ $ico OK {*}$args
+}
+#___ own question box
+proc ::em::em_question {ttl mes {typ okcancel} {icon warn} {defb OK} args} {
+  return [::em::dialog_box $ttl $mes $typ $icon $defb {*}$args]
+}
+
+## ________________________ pool _________________________ ##
+
 #___ creates an item for the menu pool
 proc ::em::pool_item_create {} {
   set poolitem [list]
@@ -265,9 +285,20 @@ proc ::em::pool_pull {} {
   }
   return $ok
 }
+
+## ________________________ "is" procs _________________________ ##
+
 #___ checks if the menu is a child
 proc ::em::is_child {} {
   return [expr {$::em::ischild || [::em::pool_level 2]}]
+}
+#___ own message/question box
+proc ::em::isheader {} {
+  return [expr {$::em::ornament in {1 2 3}} ? 1 : 0]
+}
+#___ check is there a header of menu
+proc ::em::isheader_nohint {} {
+  return [expr {[isheader] || $::em::ornament==0} ? 1 : 0]
 }
 #___ source addons and call a function of these
 proc ::em::addon {func args} {
@@ -301,27 +332,6 @@ proc ::em::theming_pave {} {
   ::apave::obj themeWindow . $themecolors [expr {![::em::insteadCS]}]
   foreach clr $themecolors {append thclr "-theme $clr "}
   return $thclr
-}
-#___ own message/question box
-proc ::em::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {
-  return [::eh::dialog_box $ttl $mes $typ $icon $defb \
-    -centerme .em {*}$args] ;# {*}[::em::theming_pave]
-}
-#___ own message box
-proc ::em::em_message {mes {typ ok} {ttl "Info"} args} {
-  if {[string match ERROR* [string trimleft $mes]]} {set ico err} {set ico info}
-  ::em::dialog_box $ttl $mes $typ $ico OK {*}$args
-}
-#___ own question box
-proc ::em::em_question {ttl mes {typ okcancel} {icon warn} {defb OK} args} {
-  return [::em::dialog_box $ttl $mes $typ $icon $defb {*}$args]
-}
-#___ check is there a header of menu
-proc ::em::isheader {} {
-  return [expr {$::em::ornament in {1 2 3}} ? 1 : 0]
-}
-proc ::em::isheader_nohint {} {
-  return [expr {[isheader] || $::em::ornament==0} ? 1 : 0]
 }
 #___ get an item's color
 proc ::em::color_button {i {fgbg "fg"}} {

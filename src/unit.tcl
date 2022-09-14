@@ -355,8 +355,7 @@ proc unit::DropUnits {wtree fromIDs toID} {
   set tree [alited::tree::GetTree]
   set wtxt [alited::main::CurrentWTXT]
   set wtree [$obPav Tree]
-  $wtxt configure -autoseparators no
-  $wtxt edit separator
+  ::apave::undoIn $wtxt
   # firstly, cut all moved lines
   set ijust 0
   set movedlines [list]
@@ -398,8 +397,7 @@ proc unit::DropUnits {wtree fromIDs toID} {
     alited::main::UpdateAll $headers
     alited::main::FocusText
   }
-  $wtxt edit separator
-  $wtxt configure -autoseparators yes
+  ::apave::undoOut $wtxt
 }
 #_______________________
 
@@ -417,10 +415,7 @@ proc unit::MoveL1L2 {wtxt i1 i2 io {dosep yes}} {
   [set linesmoved [$wtxt get $i1.0 $ind2]] eq ""} {
     return "" ;# nothing to do
   }
-  if {$dosep} {
-    $wtxt configure -autoseparators no
-    $wtxt edit separator
-  }
+  if {$dosep} {::apave::undoIn $wtxt}
   $wtxt delete $i1.0 $ind2
   if {$io>$i2} {
     # 3. i1    if moved below, the moved (deleted) lines change 'io', so
@@ -436,10 +431,7 @@ proc unit::MoveL1L2 {wtxt i1 i2 io {dosep yes}} {
   } else {
     $wtxt insert $io.0 $linesmoved
   }
-  if {$dosep} {
-    $wtxt edit separator
-    $wtxt configure -autoseparators yes
-  }
+  if {$dosep} {::apave::undoOut $wtxt}
   return $io
 }
 #_______________________
@@ -531,15 +523,13 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
     }
   }
   # move items one by one, by their headers
-  $wtxt configure -autoseparators no
-  $wtxt edit separator
+  ::apave::undoIn $wtxt
   foreach hd $headers {
     if {![MoveUnit $wtree $to $hd $headers $f1112 no]} {
       break
     }
   }
-  $wtxt edit separator
-  $wtxt configure -autoseparators yes
+  ::apave::undoOut $wtxt
   after idle "set alited::al(RECREATE) 1 ; alited::tree::RecreateTree"
   if {[set sel [$wtree selection]] ne ""} {
     after idle [list after 10 "$wtree selection set {$sel}"]

@@ -179,6 +179,14 @@ namespace eval ::alited {
   # preferrable command to run
   set al(comForce) {}
   set al(comForceLs) {}
+
+  # flags of tip show
+  set al(TIPS,Tree) 1
+  set al(TIPS,TreeFavor) 1
+  set al(TIPS,Projects) 1
+  set al(TIPS,Preferences) 1
+  set al(TIPS,Templates) 1
+  set al(TIPS,SavedFavorites) 1
 }
 
 # ________________________ Variables _________________________ #
@@ -466,7 +474,7 @@ proc ini::ReadIniMisc {nam val} {
   #   val - value of option
 
   namespace upvar ::alited al al
-  switch -exact -- $nam {
+  switch -glob -- $nam {
     isfavor {set al(FAV,IsFavor) $val}
     chosencolor {set alited::al(chosencolor) $val}
     showinfo {set alited::al(TREE,showinfo) $val}
@@ -475,6 +483,7 @@ proc ini::ReadIniMisc {nam val} {
     tonemoves {set al(tonemoves) $val}
     checkgeo {set al(checkgeo) $val}
     HelpedMe {set al(HelpedMe) $val}
+    TIPS,* {set al($nam) $val}
   }
 }
 
@@ -763,6 +772,9 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "tonemoves=$al(tonemoves)"
   puts $chan "checkgeo=$al(checkgeo)"
   puts $chan "HelpedMe=$al(HelpedMe)"
+  foreach k [array names al TIPS,*] {
+    puts $chan "$k=$al($k)"
+  }
   close $chan
   SaveIniPrj $newproject
   # save last directories entered
@@ -1092,11 +1104,11 @@ proc ini::_init {} {
   retry misc previous next next2 folder file OpenFile SaveFile saveall categories \
   undo redo replace ok color date help run e_menu other trash actions paste} {
     set img [CreateIcon $icon]
-    if {$icon in {"file" OpenFile categories SaveFile saveall help ok color other \
-    replace e_menu run undo redo}} {
+    if {$icon in {file OpenFile SaveFile saveall categories undo redo replace \
+    ok color date help run e_menu other}} {
       append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4} "
       switch $icon {
-        "file" {
+        file {
           append al(atools) "-com alited::file::NewFile\}"
         }
         OpenFile {
@@ -1125,6 +1137,9 @@ proc ini::_init {} {
         }
         color {
           append al(atools) "-com alited::tool::ColorPicker\}"
+        }
+        date {
+          append al(atools) "-com alited::tool::DatePicker\}"
         }
         help {
           append al(atools) "-com alited::tool::Help\} sev 6"

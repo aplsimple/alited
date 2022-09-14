@@ -29,7 +29,7 @@ proc bar::PopupTip {wmenu idx TID} {
   # idx - index of item
   # TID - ID of item's tab
 
-  ::baltip::tip $wmenu [alited::file::FileStat [FileName $TID]] -index $idx -pause 800
+  ::baltip::tip $wmenu [alited::file::FileStat [FileName $TID]] -index $idx
 }
 #_______________________
 

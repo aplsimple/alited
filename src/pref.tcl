@@ -1374,9 +1374,7 @@ proc pref::Runs_Tab {tab} {
           %C $lwid
           set lwid ".buTDel$i .buTAdd$i L 1 1 {-padx 1} {-tip {Deletes a line.} -com {::alited::pref::EmDelLine $i} -takefocus 0 -relief flat -highlightthickness 0 -image alimg_delete}"
           %C $lwid
-          set lwid ".lab$i .buTDel$i L 1 1 {-st w -padx 3} {-t {$alited::al(MC,Item)$nit}}"
-          %C $lwid
-          set lwid ".ChbMT$i .lab$i L 1 1 {-padx 10} {-t separator -var ::alited::pref::em_sep($i) -tip {If 'yes', means a separator of the toolbar/menu.} -com {::alited::pref::EmSeparators yes}}"
+          set lwid ".ChbMT$i .buTDel$i L 1 1 {-padx 10} {-t separator -var ::alited::pref::em_sep($i) -tip {If 'yes', means a separator of the toolbar/menu.} -com {::alited::pref::EmSeparators yes}}"
           %C $lwid
           set lwid ".OpcIco$i .ChbMT$i L 1 1 {-st nsw} {::alited::pref::em_ico($i) alited::pref::em_Icons {-width 10 -tooltip {{An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar.}}} {alited::pref::opcIcoPre %a}}"
           %C $lwid
@@ -1535,6 +1533,8 @@ proc pref::_create {tab} {
 
   fetchVars
   InitLocales
+  set tipson [baltip::cget -on]
+  baltip::configure -on $al(TIPS,Preferences)
   $obDl2 makeWindow $win.fra "$al(MC,pref) :: $::alited::USERDIR"
   $obDl2 paveWindow \
     $win.fra [MainFrame] \
@@ -1588,6 +1588,7 @@ proc pref::_create {tab} {
   set oldTab $curTab
   set arrayTab($curTab) [$win.fra.fraR.$curTab select]
   destroy $win
+  baltip::configure {*}$tipson
   return $res
 }
 #_______________________

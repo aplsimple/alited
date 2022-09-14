@@ -117,9 +117,9 @@ proc indent::normalize {} {
         set contents [$txt get 1.0 {end -1 chars}]
         set contents [indent $contents $pad $padchar 0]
         if {$contents ne {}} {
-          $txt edit separator
+          ::apave::undoIn $txt
           $txt replace 1.0 end $contents
-          $txt edit separator
+          ::apave::undoOut $txt
           alited::bar::BAR markTab $TID
         }
       }

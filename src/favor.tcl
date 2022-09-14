@@ -550,7 +550,11 @@ proc favor::GetTooltip {ID} {
   # Gets a tip of favorite / last visited unit's declaration.
   #   ID - ID of treeview item
 
-  namespace upvar ::alited obPav obPav
+  namespace upvar ::alited al al obPav obPav
+  if {!$al(TIPS,TreeFavor)} {
+    # no tips while switched off
+    return {}
+  }
   set wtree [$obPav TreeFavor]
   set decl [lindex [$wtree item $ID -values] 2]
   set fname [lindex [$wtree item $ID -values] 1]

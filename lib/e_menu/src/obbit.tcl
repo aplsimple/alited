@@ -987,6 +987,28 @@ proc ::apave::writeTextFile {fileName {varName ""} {doErr 0} {doSave 1}} {
   if {!$res && $doErr} {error [::apave::error $fileName]}
   return $res
 }
+#_______________________
+
+proc ::apave::undoIn {wtxt} {
+  # Enters a block of undo/redo for a text widget.
+  #   wtxt - text widget's path
+  # Run before massive changes of the text, to have Undo/Redo done at one blow.
+  # See also: undoOut
+
+  $wtxt configure -autoseparators no
+  $wtxt edit separator
+}
+#_______________________
+
+proc ::apave::undoOut {wtxt} {
+  # Exits a block of undo/redo for a text widget.
+  #   wtxt - text widget's path
+  # Run after massive changes of the text, to have Undo/Redo done at one blow.
+  # See also: undoIn
+
+  $wtxt edit separator
+  $wtxt configure -autoseparators yes
+}
 
 ## ________________________ Binds _________________________ ##
 

@@ -8,7 +8,7 @@
 
 package require Tk
 
-package provide apave 3.5.4
+package provide apave 3.5.5
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -341,7 +341,7 @@ oo::class create ::apave::APaveInput {
       set tclr "-fg $fg -bg $bg -cc $cc"
     }
     if {$prepost eq ""} {set aa ""} {set aa [$prepost filetxt]}
-    set res [my misc "" "$oper FILE: $fname" "$filetxt" $btns \
+    set res [my misc "" "$oper: $fname" "$filetxt" $btns \
       TEXT -text 1 -w {100 80} -h 32 {*}$tclr \
       -post $prepost {*}$aa {*}$args]
     set data [string range $res 2 end]

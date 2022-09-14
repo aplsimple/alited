@@ -93,7 +93,7 @@ namespace eval ::alited {
     {Move File Up} {Verschiebe Datei aufwärts}
     {Move File Down} {Verschiebe Datei abwärts}
     {Only files are moved by alited.} {Nur Dateien verschoben durch alited.}
-    {Saved Lists of Favorites} {Gespeicherte Liste der Favoriten}
+    {Saved Lists of Favorites} {Gespeicherte Favoritenlisten}
     {Last Visited} {Zuletzt Besuchte}
     {Switch to Unit Tree} {Wechsel zu Einheitenbaum}
     {Switch to File Tree} {Wechsel zu Dateibaum}
@@ -128,6 +128,7 @@ namespace eval ::alited {
     "File \"%f\" doesn't exist." "Eine Datei \"%f\" existiert nicht."
     {Selected files: %n} {Ausgewählten Dateien: %n}
     {Configurations...} {Konfigurationen...}
+    {Tips on / off} {Tipps ein / aus}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -151,6 +152,7 @@ namespace eval ::alited {
     {Select one file in the tree.} {Wähle eine Datei im Baum.}
     {Open Selected Files} {Öffne ausgewählte Dateien}
     {Close Selected Files} {Schliesse ausgewählte Dateien}
+    {Unit / File Tree} {Baum der Einheiten / Dateien}
   }
 
   ## ________________________ Templates ________________________ ##
@@ -284,6 +286,7 @@ namespace eval ::alited {
     {Remove All} {Alles löschen}
     {Remove all of Favorites?} {Alle Favoriten löschen?}
     {Remove all of the last visited?} {Alle zuletzt Besuchten löschen?}
+    {Favorites / Last Visited} {Favoriten / Zuletzt Besuchten}
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##
@@ -514,7 +517,6 @@ namespace eval ::alited {
     {Inserts a new line.} {Eine neue Zeile einfügen.}
     {Deletes a line.} {Löscht eine Zeile.}
     {separator} {Trennezichen}
-    {Item} {Element}
     {If 'yes', means a separator of the toolbar/menu.} {'ja' bedeutet Trennzeichen in der Werkzeugliste/Menü.}
     {For Start...} {Für dem Starten...}
     {For Run...} {Für Ausführen...}

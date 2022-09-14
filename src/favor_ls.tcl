@@ -333,6 +333,8 @@ proc favor_ls::_create {} {
   variable win
   variable favlist
   variable fav
+  set tipson [baltip::cget -on]
+  baltip::configure -on $al(TIPS,SavedFavorites)
   $obDl2 makeWindow $win $al(MC,FavLists)
   $obDl2 paveWindow $win {
     {fraLbxFav - - 1 2 {-st nswe -pady 4} {}}
@@ -379,6 +381,7 @@ proc favor_ls::_create {} {
   after 500 ::alited::favor_ls::HelpMe ;# show an introduction after a short pause
   set res [$obDl2 showModal $win -resizable {0 0} \
     -onclose ::alited::favor_ls::Cancel -focus [$obDl2 EntFav]]
+  baltip::configure {*}$tipson
   return $res
 }
 #_______________________

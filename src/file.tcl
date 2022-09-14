@@ -1093,7 +1093,9 @@ proc file::ChooseRecent {idx} {
   namespace upvar ::alited al al
   set fname [lindex $al(RECENTFILES) $idx]
   AddRecent $fname
-  OpenFile $fname
+  if {[OpenFile $fname] eq {}} {
+    alited::menu::FillRecent 0
+  }
 }
 
 # _________________________________ EOF _________________________________ #

@@ -438,6 +438,8 @@ proc unit_tpl::_create {{geom ""}} {
   variable ilast
   variable tplkey
   variable dosel
+  set tipson [baltip::cget -on]
+  baltip::configure -on $al(TIPS,Templates)
   if {$dosel} {
     set ::alited::unit_tpl::PACKOK {}
     set ::alited::unit_tpl::BUTEXIT Cancel
@@ -498,6 +500,7 @@ proc unit_tpl::_create {{geom ""}} {
   after 500 ::alited::unit_tpl::HelpMe ;# show an introduction after a short pause
   set res [$obDl3 showModal $win -resizable {0 0} \
     -onclose ::alited::unit_tpl::Cancel -focus $foc {*}$geom]
+  baltip::configure {*}$tipson
   if {[llength $res] < 2} {set res {}}
   return $res
 }

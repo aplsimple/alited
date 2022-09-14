@@ -45,11 +45,16 @@ proc menu::CheckMenuItems {} {
 #}
 #_______________________
 
-proc menu::FillRecent {} {
+proc menu::FillRecent {{delit ""}} {
   # Creates "Recent Files" menu items.
+  #   delit - index of Recent Files item to be deleted
 
   namespace upvar ::alited al al
+  catch {
+    set al(RECENTFILES) [lreplace $al(RECENTFILES) $delit $delit]
+  }
   set m $al(MENUFILE).recentfiles
+  $m configure -tearoff 0
   $m delete 0 end
   if {[llength $al(RECENTFILES)]} {
     $al(MENUFILE) entryconfigure 2 -state normal
@@ -61,6 +66,7 @@ proc menu::FillRecent {} {
   } else {
     $al(MENUFILE) entryconfigure 2 -state disabled
   }
+  $m configure -tearoff 1
 }
 #_______________________
 
@@ -85,8 +91,8 @@ proc menu::CheckTint {{doit no}} {
     } else {
       set fg $fg2
     }
-    $al(SETUP).tint entryconfigure $ti -variable alited::menu::tint($i) -foreground $fg
     incr ti
+    $al(SETUP).tint entryconfigure $ti -variable alited::menu::tint($i) -foreground $fg
   }
 }
 #_______________________
@@ -127,7 +133,7 @@ proc menu::FillRunItems {fname} {
     if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
       if {!$em_sep($i)} {
         set txt [string map $maplist $em_mnu($i)]
-        $m.runs entryconfigure $i -label $txt
+        $m.runs entryconfigure [expr {$i+1}] -label $txt
       }
     }
   }
@@ -167,7 +173,7 @@ proc menu::RunTip {} {
   set m [set al(MENUFILE) $al(WIN).menu.file]
   $m add command -label $al(MC,new) -command alited::file::NewFile -accelerator Ctrl+N
   $m add command -label $al(MC,open...) -command alited::file::OpenFile -accelerator Ctrl+O
-  menu $m.recentfiles -tearoff 0
+  menu $m.recentfiles -tearoff 1
   $m add cascade -label [msgcat::mc "Recent Files"] -menu $m.recentfiles
   $m add separator
   $m add command -label $al(MC,save) -command alited::file::SaveFile -accelerator $al(acc_0)
@@ -229,7 +235,7 @@ proc menu::RunTip {} {
   for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
     if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
       if {[incr emwas]==1} {
-        menu $m.runs -tearoff 0
+        menu $m.runs -tearoff 1
         $m add cascade -label bar/menu -menu $m.runs
       }
       if {$em_sep($i)} {
@@ -257,7 +263,23 @@ proc menu::RunTip {} {
   $m add command -label [msgcat::mc Templates...] -command alited::unit::Add
   $m add command -label [msgcat::mc {Favorites Lists...}] -command alited::favor::Lists
   $m add separator
-  menu $m.tint -tearoff 0
+
+  $m add checkbutton -label [msgcat::mc {Wrap Lines}] \
+    -variable alited::al(wrapwords) -command alited::file::WrapLines
+  $m add checkbutton -label [msgcat::mc {Tip File Info}] \
+    -variable alited::al(TREE,showinfo) -command alited::file::UpdateFileStat
+
+  menu $m.tipson -tearoff 1
+  $m add cascade -label [msgcat::mc {Tips on / off}] -menu $m.tipson
+  $m.tipson add checkbutton -label $al(MC,projects) -variable alited::al(TIPS,Projects) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,tpl) -variable alited::al(TIPS,Templates) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,FavLists) -variable alited::al(TIPS,SavedFavorites) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,pref) -variable alited::al(TIPS,Preferences) -command alited::ini::SaveIni
+  $m.tipson add separator
+  $m.tipson add checkbutton -label [msgcat::mc {Unit / File Tree}] -variable alited::al(TIPS,Tree) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label [msgcat::mc {Favorites / Last Visited}] -variable alited::al(TIPS,TreeFavor) -command alited::ini::SaveIni
+
+  menu $m.tint -tearoff 1
   $m add cascade -label [msgcat::mc Tint] -menu $m.tint
   foreach ti {50 45 40 35 30 25 20 15 10 5 0 -5 -10 -15 -20 -25 -30 -35 -40 -45 -50} {
     set ti1 [string range "   $ti" end-2 end]
@@ -272,11 +294,8 @@ proc menu::RunTip {} {
     $m.tint add checkbutton -label $ti2 -command "alited::menu::SetTint $ti"
   }
   CheckTint
-  $m add checkbutton -label [msgcat::mc {Wrap Lines}] \
-    -variable alited::al(wrapwords) -command alited::file::WrapLines
-  $m add checkbutton -label [msgcat::mc {Tip File Info}] \
-    -variable alited::al(TREE,showinfo) -command alited::file::UpdateFileStat
   $m add separator
+
   $m add command -label [msgcat::mc {For Start...}] -command alited::tool::AfterStartDlg
   $m add command -label [msgcat::mc {For Run...}] -command alited::tool::BeforeRunDlg
   $m add separator

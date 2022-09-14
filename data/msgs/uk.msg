@@ -133,6 +133,7 @@ namespace eval ::alited {
     "File \"%f\" doesn't exist." "Файл \"%f\" не існує."
     {Selected files: %n} {Виділених файлів: %n}
     {Configurations...} {Конфігурації...}
+    {Tips on / off} {Підказки вкл / викл}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -156,6 +157,7 @@ namespace eval ::alited {
     {Select one file in the tree.} {Виберіть один файл у списку.}
     {Open Selected Files} {Відкрити виділені файли}
     {Close Selected Files} {Закрити виділені файли}
+    {Unit / File Tree} {Дерево юнітів / файлів}
   }
 
   ## ________________________ Templates ________________________ ##
@@ -288,6 +290,7 @@ namespace eval ::alited {
     {Remove All} {Видалити все}
     {Remove all of Favorites?} {Видалити все з Вибраного?}
     {Remove all of the last visited?} {Видалити все з Останніх входів?}
+    {Favorites / Last Visited} {Вибране / Останні входи}
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##
@@ -516,7 +519,6 @@ namespace eval ::alited {
     {Inserts a new line.} {Додає рядок.}
     {Deletes a line.} {Видаляє рядок.}
     {separator} {роздільник}
-    {Item} {Пункт}
     {If 'yes', means a separator of the toolbar/menu.} {Якщо включено, значить роздільник у тулбарі/меню.}
     {For Start...} {Для старту...}
     {For Run...} {Для Запуску...}

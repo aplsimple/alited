@@ -771,6 +771,10 @@ proc tree::GetTooltip {ID NC} {
     # no tips while drag-n-dropping
     return {}
   }
+  if {!$al(TIPS,Tree)} {
+    # no tips while switched off
+    return {}
+  }
   set wtree [$obPav Tree]
   if {$al(TREE,isunits)} {
     # for units
