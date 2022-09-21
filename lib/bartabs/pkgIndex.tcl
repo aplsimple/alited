@@ -1,5 +1,5 @@
 
-package ifneeded bartabs 1.5.7 [list source [file join $dir bartabs.tcl]]
+package ifneeded bartabs 1.5.8 [list source [file join $dir bartabs.tcl]]
 
 # short intro (for Ruff! docs generator)
 
@@ -109,7 +109,7 @@ There are three "virtual" methods:
 
 * `NS::tab cget $option` gets an option of tab, e.g. `NS::tab cget -text`
 
-* `NS::tab configure $option $value` sets an option of tab, e.g. `NS::tab configure -text "new label"`  
+* `NS::tab configure $option $value` sets an option of tab, e.g. `NS::tab configure -text "new label"`
 
 <hr>
 

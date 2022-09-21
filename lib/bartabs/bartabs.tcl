@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.5.7
+package provide bartabs 1.5.8
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -1803,6 +1803,32 @@ method listTab {} {
   set res [list]
   foreach tab [my [my ID] cget -TABS] {lappend res [my Tab_DictItem $tab]}
   return $res
+}
+#_______________________
+
+method comparetext {it1 it2} {
+# Compares items (by -text attribute) for sort method.
+#   it1 - 1st item to compare
+#   it2 - 2nd item to compare
+# See also: sort
+
+  catch {set it1 [dict get $it1 -text]}
+  catch {set it2 [dict get $it2 -text]}
+  return [string compare $it1 $it2]
+}
+#_______________________
+
+method sort {{mode -increasing}} {
+# Sorts a list of tabs by the tab names.
+#   mode - option of sort
+
+  set BID [my ID]
+  lassign [my $BID cget -tabcurrent -lifo] TID lifo
+  set tabs [my $BID cget -TABS]
+  set tabs [lsort $mode -index 1 -command "[self] comparetext" $tabs]
+  my $BID configure -TABS $tabs -lifo no
+  my $TID show
+  my $BID configure -lifo $lifo
 }
 #_______________________
 

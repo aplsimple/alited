@@ -551,7 +551,7 @@ proc favor::GetTooltip {ID} {
   #   ID - ID of treeview item
 
   namespace upvar ::alited al al obPav obPav
-  if {!$al(TIPS,TreeFavor)} {
+  if {!$al(TIPS,TreeFavor) && $al(FAV,IsFavor)} {
     # no tips while switched off
     return {}
   }
@@ -561,7 +561,6 @@ proc favor::GetTooltip {ID} {
   append tip $decl \n $fname
   return $tip
 }
-#_______________________
 
 # ________________________ Initialization _________________________ #
 

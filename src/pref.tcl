@@ -170,6 +170,7 @@ proc pref::SaveSettings {} {
     }
   }
   set data(INI,CSsaved) $data(INI,CS)
+  if {[info exists ::em::geometry]} {set ::em::geometry $al(EM,geometry)}
 }
 #_______________________
 
@@ -192,6 +193,7 @@ proc pref::RestoreSettings {} {
       set em_inf($i) $data(em_inf,$i)
     }
   }
+  if {[info exists ::em::geometry]} {set ::em::geometry $al(EM,geometry)}
 }
 #_______________________
 

@@ -157,7 +157,6 @@ namespace eval ::alited {
     {Select one file in the tree.} {Виберіть один файл у списку.}
     {Open Selected Files} {Відкрити виділені файли}
     {Close Selected Files} {Закрити виділені файли}
-    {Unit / File Tree} {Дерево юнітів / файлів}
   }
 
   ## ________________________ Templates ________________________ ##
@@ -585,6 +584,8 @@ namespace eval ::alited {
     {... All at Right} {... всі зправа}
     {... All} {... всі}
     {File List} {Список файлів}
+    {Sort} {Сортувати}
+    {Sort the tabs?} {Сортувати заставки?}
   }
 
   ## ________________________ --EONS-- _________________________ ##

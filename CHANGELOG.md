@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.4a2 (14 Sep'22)`
+Version `1.3.4 (21 Sep'22)`
 
   - NEW   : "Setup / Tips on/off" to disable some tips
   - NEW   : "-tearoff 1" for all submenus, to use them repeatedly
@@ -9,9 +9,13 @@ Version `1.3.4a2 (14 Sep'22)`
   - NEW   : clicking message label in Projects (restoring the message and TODO)
   - NEW   : date picker in toolbar
   - NEW   : Find/Replace dialogue: F3 key = Find button
+  - NEW   : "Sort" item in tab bar's menu
+  - CHANGE: save/restore e_menu's ("internal") geometry for Preferences' cancel
+  - CHANGE: OutwardChange called just after saving files to avoid probable issue
   - CHANGE: undo/redo of (un)commenting in one step
   - CHANGE: delete Item# labels in Preferences/Tools/bar/menu tab
-  - CHANGE: packages: apave/e_menu 3.5.5, baltip 1.4.1
+  - CHANGE: demos: "6.Themes" for dark & light bg
+  - CHANGE: packages: apave/e_menu 3.5.5, baltip 1.4.1, bartabs 1.5.8
 
 
 Version `1.3.3 (3 Sep'22)`

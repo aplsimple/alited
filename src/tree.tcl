@@ -771,10 +771,6 @@ proc tree::GetTooltip {ID NC} {
     # no tips while drag-n-dropping
     return {}
   }
-  if {!$al(TIPS,Tree)} {
-    # no tips while switched off
-    return {}
-  }
   set wtree [$obPav Tree]
   if {$al(TREE,isunits)} {
     # for units
@@ -793,6 +789,10 @@ proc tree::GetTooltip {ID NC} {
           append tip \n $todo
         }
       }
+    }
+    if {!$al(TIPS,Tree) && ![info exists todo]} {
+      # no tips while switched off (excepting for TODOs)
+      return {}
     }
   } else {
     # for files

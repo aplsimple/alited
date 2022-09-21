@@ -550,12 +550,12 @@ proc file::SaveFileByName {TID fname {doit no}} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1
     return 0
   }
+  OutwardChange $TID no
   alited::edit::BackupFile $TID
   if {!$doit} {
     $wtxt edit modified no
     alited::edit::Modified $TID $wtxt
     alited::main::HighlightText $TID $fname $wtxt
-    OutwardChange $TID no
     RecreateFileTree
   }
   return 1

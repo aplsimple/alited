@@ -10,6 +10,7 @@
 
 namespace eval bar {
   variable ctrltablist [list]  ;# selected tabs (with Ctrl+click)
+  variable whilesorting no
 }
 
 # _________________________ Main procs ________________________ #
@@ -70,9 +71,12 @@ proc bar::FillBar {wframe {newproject no}} {
     lappend tabs $tab
     lappend bar1Opts -tab $tab
   }
-  lappend bar1Opts -menu [list sep \
-    "com {$al(MC,new) } alited::file::NewFile" \
-    "com {$al(MC,open...) } alited::file::OpenFile" \
+  lappend bar1Opts -menu [list \
+    sep \
+    "com {[msgcat::mc Sort]} alited::bar::Sort" \
+    sep \
+    "com {$al(MC,new)} alited::file::NewFile" \
+    "com {$al(MC,open...)} alited::file::OpenFile" \
     ]
   set curname [lindex $tabs $al(curtab)]
   catch {::bartabs::Bars create al(bts)}   ;# al(bts) is Bars object
@@ -115,9 +119,7 @@ proc bar::UniqueListTab {fname} {
   # Returns a unique tab name for a file.
   #   fname - file name
 
-  set tabs [alited::bar::BAR listTab]
-  set tab [file tail $fname]
-  return [UniqueTab $tabs $tab -index 1]
+  return [UniqueTab [BAR listTab] [file tail $fname] -index 1]
 }
 
 # ________________________ Menu additions _________________________ #
@@ -202,6 +204,18 @@ proc bar::DisableTabRight {tab} {
   set i [CurrentTab 3 $tab]
   if {$i < ([llength [BAR listTab]]-1)} {return 0}
   return 1
+}
+#_______________________
+
+proc bar::Sort {} {
+  # Sorts tabs by names.
+
+  variable whilesorting
+  if {[alited::msg yesno ques [msgcat::mc {Sort the tabs?}]]} {
+    set whilesorting yes
+    BAR sort
+    set whilesorting no
+  }
 }
 
 # ________________________ Identification  _________________________ #
@@ -308,6 +322,8 @@ proc bar::OnTabSelection {TID} {
   #   TID - tab's ID
 
   namespace upvar ::alited al al
+  variable whilesorting
+  if {$whilesorting} return
   set fname [FileName $TID]
   alited::main::ShowText
   alited::file::SbhText
@@ -315,8 +331,6 @@ proc bar::OnTabSelection {TID} {
   alited::ini::SaveCurrentIni $al(INI,save_onselect)
   alited::edit::CheckSaveIcons [alited::file::IsModified $TID]
   alited::edit::CheckUndoRedoIcons [alited::main::CurrentWTXT] $TID
-#  if {[alited::file::IsTcl $fname]} {set indst normal} {set indst disabled}
-#  $al(MENUEDIT) entryconfigure 5 -state $indst
   if {[alited::edit::CommentChar] ne {}} {set cmnst normal} {set cmnst disabled}
   if {[set wtxt [alited::main::GetWTXT $TID]] ne {}} {
     set al(wrapwords) [expr {[$wtxt cget -wrap] eq {word}}]
@@ -327,7 +341,6 @@ proc bar::OnTabSelection {TID} {
   lassign [alited::main::CalcIndentation] indent indentchar
   ::apave::setTextIndent $indent $indentchar
   if {$al(prjindentAuto)} {alited::main::UpdateProjectInfo $indent}
-#  alited::menu::CheckPrjItems
   after 10 ::alited::tree::SeeSelection
 }
 #_______________________

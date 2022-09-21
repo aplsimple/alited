@@ -152,7 +152,6 @@ namespace eval ::alited {
     {Select one file in the tree.} {Wähle eine Datei im Baum.}
     {Open Selected Files} {Öffne ausgewählte Dateien}
     {Close Selected Files} {Schliesse ausgewählte Dateien}
-    {Unit / File Tree} {Baum der Einheiten / Dateien}
   }
 
   ## ________________________ Templates ________________________ ##
@@ -583,6 +582,8 @@ namespace eval ::alited {
     {... All at Left} {... alles links}
     {... All at Right} {... alles rechts}
     {File List} {Liste von Dateien}
+    {Sort} {Sortieren}
+    {Sort the tabs?} {Sortieren Tabs?}
   }
 
   ## ________________________ --EONS-- _________________________ ##

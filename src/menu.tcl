@@ -273,11 +273,11 @@ proc menu::RunTip {} {
   $m add cascade -label [msgcat::mc {Tips on / off}] -menu $m.tipson
   $m.tipson add checkbutton -label $al(MC,projects) -variable alited::al(TIPS,Projects) -command alited::ini::SaveIni
   $m.tipson add checkbutton -label $al(MC,tpl) -variable alited::al(TIPS,Templates) -command alited::ini::SaveIni
-  $m.tipson add checkbutton -label $al(MC,FavLists) -variable alited::al(TIPS,SavedFavorites) -command alited::ini::SaveIni
   $m.tipson add checkbutton -label $al(MC,pref) -variable alited::al(TIPS,Preferences) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,FavLists) -variable alited::al(TIPS,SavedFavorites) -command alited::ini::SaveIni
   $m.tipson add separator
-  $m.tipson add checkbutton -label [msgcat::mc {Unit / File Tree}] -variable alited::al(TIPS,Tree) -command alited::ini::SaveIni
-  $m.tipson add checkbutton -label [msgcat::mc {Favorites / Last Visited}] -variable alited::al(TIPS,TreeFavor) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label [msgcat::mc Units] -variable alited::al(TIPS,Tree) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,favorites) -variable alited::al(TIPS,TreeFavor) -command alited::ini::SaveIni
 
   menu $m.tint -tearoff 1
   $m add cascade -label [msgcat::mc Tint] -menu $m.tint
