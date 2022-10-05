@@ -202,7 +202,7 @@ namespace eval ::alited {
     "The project \"%n\" updated" "Projekt \"%n\" aktualisiert"
     "The project \"%n\" removed" "Projekt \"%n\" entfernt"
     {Options} {Optionen}
-    {Project name:} {Projektname}
+    {Project:} {Projekt:}
     {Root directory:} {Basisverzeichnis:}
     {Skip subdirectories:} {Überspringe Unterverzeichnisse:}
     {Description:} {Beschreibung:}

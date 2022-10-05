@@ -620,11 +620,12 @@ proc main::TipStatus {} {
   # Gets a tip for a status bar's short info.
 
   namespace upvar ::alited al al obPav obPav
+  if {$al(IsWindows)} {set term $al(EM,wt=)} {set term $al(EM,tt=)}
   set tip [[$obPav Labstat4] cget -text]
   set run "$al(MC,run): "
   set tip [string map [list \
     force "$run[msgcat::mc Setup] / $al(MC,beforerun)\n$run$al(comForce)\n" \
-    cons  "$run$al(MC,inconsole)" \
+    cons  "$run$al(MC,inconsole) $term" \
     tkcon "$run$al(MC,intkcon)" \
     eol= "$al(MC,EOL:) " \
     ind= "$al(MC,indent:) " \
@@ -672,24 +673,43 @@ proc main::PackTextWidgets {wtxt wsbv} {
 }
 #_______________________
 
+proc main::ShowOutdatedTODO {prj date todo} {
+  # Shows a balloon with outdated TODO.
+  #   prj - project's name
+  #   date - date of TODO
+  #   todo - text of TODO
+
+  namespace upvar ::alited al al
+  lassign [split [winfo geometry $al(WIN)] x+] w h x y
+  set geo "+([expr {$w+$x}]-W-8)+$y-20"
+  set todo "\n$al(MC,prjName) $prj\n\n$al(MC,on) $date\n\n$todo\n"
+  set todo [string map [list \n "  \n  "] $todo]
+  after 2500 [list after idle [list ::baltip tip $al(WIN) $todo \
+    -alpha 0.8 -fg white -bg red \
+    -font {-weight bold -size 11} -per10 2500 -pause 2500 -fade 2500 \
+    -geometry $geo -bell yes -on yes -padding 2 -relief sunken]]
+}
+#_______________________
+
 proc main::InitActions {} {
   # Initializes working with a main form of alited.
 
   namespace upvar ::alited al al obPav obPav
+  # fill the main menu of alited
   alited::bar::FillBar [$obPav BtsBar]
-  # check for outdated TODOs
-  if {[alited::project::IsOutdated $al(prjname)]} {
-    # current project has outdated TODOs
-    alited::project::_run no
+  # check for outdated TODOs for current project
+  lassign [alited::project::IsOutdated $al(prjname) yes] is date todo
+  if {$is} {
+    ShowOutdatedTODO $al(prjname) $date $todo
   } else {
-    # check other projects (after showing a text)
-    after 200 [list after idle {
-      alited::project::SaveSettings
-      alited::project::GetProjects
-      if {[alited::project::CheckOutdated] ne {}} {
-        alited::project::_run
-      }
-    }]
+    # check other projects
+    alited::project::SaveSettings
+    alited::project::GetProjects
+    set prjname [alited::project::CheckOutdated]
+    if {$prjname ne {}} {
+      lassign [alited::project::IsOutdated $prjname yes] is date todo
+      ShowOutdatedTODO $prjname $date $todo
+    }
   }
 }
 #_______________________

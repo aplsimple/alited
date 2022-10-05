@@ -721,7 +721,7 @@ proc tree::ButtonMotion {but s x y X Y} {
   if {![winfo exists $al(movWin)]} {
     # make the tab's replica to be dragged
     toplevel $al(movWin)
-    if {$::tcl_platform(platform) eq {windows}} {
+    if {$al(IsWindows)} {
       wm attributes $al(movWin) -alpha 0.0
     } else {
       wm withdraw $al(movWin)
@@ -743,7 +743,7 @@ proc tree::ButtonMotion {but s x y X Y} {
   }
   set ID [$wtree identify item $x $y]
   wm geometry $al(movWin) +[expr {$X+10}]+[expr {$Y+10}]
-  if {$::tcl_platform(platform) eq {windows}} {
+  if {$al(IsWindows)} {
     if {[wm attributes $al(movWin) -alpha] < 0.1} {wm attributes $al(movWin) -alpha 1.0}
   } else {
     catch {wm deiconify $al(movWin) ; raise $al(movWin)}

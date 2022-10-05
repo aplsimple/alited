@@ -109,7 +109,7 @@ namespace eval ::alited {
   set al(EM,TclList) [list]
   set al(EM,h=) ~/DOC/www.tcl.tk/man/tcl8.6
   set al(EM,tt=) x-terminal-emulator
-  set al(EM,tt=List) "$al(EM,tt=)\tlxterminal --geometry=220x55\txterm"
+  set al(EM,tt=List) "$al(EM,tt=)\tlxterminal --geometry=220x55\txterm\tmlterm\tqterminal\tEterm\tkonsole\txgterm"
   set al(EM,wt=) cmd.exe
   set al(EM,wt=List) "$al(EM,wt=)\tpowershell.exe"
   set al(EM,mnu) menu.mnu

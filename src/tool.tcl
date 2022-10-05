@@ -830,7 +830,7 @@ proc tool::_run {{what ""} {runmode ""}} {
     if {[RunTcl $runmode]} return
     set opts {EX=1 PI=1}
   }
-  e_menu {*}$opts
+  e_menu {*}$opts tc=[alited::Tclexe]
 }
 #_______________________
 

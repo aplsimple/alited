@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5a2  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -204,9 +204,10 @@ source [file join $::alited::HLDIR  hl_c.tcl]
 #   - alited should not be run when Ruff! sources it
 #   - so, without 'package require alited', it's a regular run of alited
 
+set ::alited::al(IsWindows) [expr {$::tcl_platform(platform) eq {windows}}]
 if {[package versions alited] eq {}} {
   wm withdraw .
-  if {$::tcl_platform(platform) eq {windows}} {
+  if {$::alited::al(IsWindows)} {
     wm attributes . -alpha 0.0
   }
   set ALITED_PORT yes
@@ -228,6 +229,13 @@ if {[package versions alited] eq {}} {
     }
   }
   set ALITED_ARGV [list]
+  if {[file isdirectory $::argv]} {
+    # if alited run with "config dir containing spaces"
+    set ::argv [list $::argv]
+  } elseif {[file isdirectory [set _ [lrange $::argv 0 end-1]]]} {
+    # if alited run with "config dir containing spaces" + "filename"
+    set ::argv [list $_ [lindex $::argv end]]
+  }
   foreach _ $::argv {lappend ALITED_ARGV [file normalize $_]}
 
   ## ____________________ Last configuration __________________ ##
@@ -280,7 +288,7 @@ if {[package versions alited] eq {}} {
     # Set the comm port that we will use
     # Change our comm port to a known value
     # (if we fail, the app is already running at that port so connect to it)
-    if {$::tcl_platform(platform) eq {windows} && \
+    if {$::alited::al(IsWindows) && \
     ![catch { ::comm::comm config -port $alited::al(comm_port) }]} {
       set ALITED_PORT no ;# no running app
     }
@@ -288,7 +296,7 @@ if {[package versions alited] eq {}} {
     set ALITED_PORT no
   }
   if {!$alited::DEBUG && $ALITED_PORT} {
-    if {$::tcl_platform(platform) eq {windows}} {
+    if {$::alited::al(IsWindows)} {
       if {[llength $ALITED_ARGV]} {
         # Attempt to add files & raise the existing application
         if {![catch {::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::open_files_and_raise 0 $ALITED_ARGV}]} {
@@ -648,7 +656,7 @@ namespace eval alited {
     #   args - script's name and arguments
 
     set com [string trimright "$args" &]
-    return [pid [open "|[Tclexe] $com"]]
+    return [pid [open "|\"[Tclexe]\" $com"]]
   }
   #_______________________
 

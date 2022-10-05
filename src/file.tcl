@@ -114,7 +114,7 @@ proc file::OutwardChange {TID {docheck yes}} {
   #   docheck - yes for "do check", no for "just save the file's mtime"
 
   namespace upvar ::alited al al
-  if {[winfo exists .em]} {
+  if {[winfo exists .em] || [info exists al(_NO_OUTWARD_)]} {
     return  ;# no actions if "internal" e_menu is open
   }
   lassign [FileAttrs $TID] fname isfile mtime mtimefile curtime
@@ -144,8 +144,8 @@ proc file::OutwardChange {TID {docheck yes}} {
       }
     }
     set do_update_tree yes
+    lassign [FileAttrs $TID] fname isfile mtime mtimefile curtime
   }
-  lassign [FileAttrs $TID] fname isfile mtime mtimefile curtime
   alited::bar::BAR $TID configure --mtime $curtime --mtimefile $fname \
     -tip [FileStat $fname]
   if {[info exists do_update_tree]} {
@@ -543,13 +543,16 @@ proc file::SaveFileByName {TID fname {doit no}} {
   #   doit - flag "do save now, without any GUI"
 
   namespace upvar ::alited al al
+  set al(_NO_OUTWARD_) {}
   set wtxt [alited::main::GetWTXT $TID]
   if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $TID yes $doit}
   set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
   if {![::apave::writeTextFile $fname fcont]} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1
+    unset al(_NO_OUTWARD_)
     return 0
   }
+  unset al(_NO_OUTWARD_)
   OutwardChange $TID no
   alited::edit::BackupFile $TID
   if {!$doit} {

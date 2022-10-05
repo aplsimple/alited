@@ -97,6 +97,7 @@ namespace eval ::alited {
     set al(MC,otherfiles)  [msgcat::mc {Do it in other files}]
     set al(MC,inconsole)   [msgcat::mc {in console}]
     set al(MC,intkcon)     [msgcat::mc {in Tkcon}]
+    set al(MC,on)          [msgcat::mc on]
 
     ## _  menu items _ ##
     set al(MC,lookdecl)    [msgcat::mc {Look for Declaration}]
@@ -141,7 +142,7 @@ namespace eval ::alited {
     set al(MC,prjupd)      [msgcat::mc "The project \"%n\" updated"]
     set al(MC,prjdel2)     [msgcat::mc "The project \"%n\" removed"]
     set al(MC,prjOptions)  [msgcat::mc Options]
-    set al(MC,prjName)     [msgcat::mc {Project name:}]
+    set al(MC,prjName)     [msgcat::mc {Project:}]
     set al(MC,prjsavfl)    [msgcat::mc "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n"]
     set al(MC,prjaddfl)    [msgcat::mc Add]
     set al(MC,prjsubstfl)  [msgcat::mc Substitute]

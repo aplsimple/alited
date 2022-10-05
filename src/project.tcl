@@ -131,12 +131,18 @@ proc project::ClockYMD {d} {
 }
 #_______________________
 
-proc project::IsOutdated {prj} {
+proc project::IsOutdated {prj {todo no}} {
   # Checks for outdated TODOs of a project.
   #   prj - project's name
+  #   todo - if yes, gets also date and todo
+  # Returns 0, if no todo for the project, 1 otherwise; if todo=yes, adds also date and todo outdated (if there is).
 
-  set rems [ReadRems $prj]
-  return [lindex [SortRems $rems] 2]
+  set rems [SortRems [ReadRems $prj]]
+  set res [lindex $rems 2]
+  if {$todo} {
+    lappend res {*}[lindex $rems 1 0]
+  }
+  return $res
 }
 #_______________________
 
@@ -1631,6 +1637,7 @@ proc project::_run {{checktodo yes}} {
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   SaveSettings
   GetProjects
+  ::baltip hide $alited::al(WIN)  ;# hide a TODO balloon if shown
   if {$checktodo && ![IsOutdated $al(prjname)]} {
     after 200 {
       if {[set prj [alited::project::CheckOutdated]] ne {}} {

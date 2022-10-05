@@ -133,7 +133,7 @@ proc complete::PickCommand {wtxt} {
   if {![llength $alited::complete::comms]} {return {}}
   set win .pickcommand
   catch {destroy $win}
-  if {$::tcl_platform(platform) eq {windows}} {
+  if {$::alited::al(IsWindows)} {
     toplevel $win
   } else {
     frame $win
@@ -161,7 +161,7 @@ proc complete::PickCommand {wtxt} {
     bell
     set res {}
   } else {
-    if {$::tcl_platform(platform) eq {windows}} {
+    if {$::alited::al(IsWindows)} {
       incr X 10
       incr Y 40
       after 100 "wm deiconify $win"

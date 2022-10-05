@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.5.5}
+  variable em_version {e_menu 3.5.6}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -637,13 +637,21 @@ proc ::em::checkForWilds {rsel} {
   return false
 }
 #___ tclsh/tclkit executable
-proc ::em::Tclexe {} {
-  if {[set tclexe $::em::tc] eq {} && [set tclexe [info nameofexecutable]] eq {}} {
-    set tclexe [auto_execok tclsh]
+proc ::em::Tclexe {{tclok "tclsh"}} {
+  # for better performance, e_menu can be called with
+  # "tc=full path to tclsh" option, e.g. tc=/usr/local/bin/tclsh
+  # : in this case it will not search tclsh throughout the system
+  if {[set tclexe $::em::tc] eq {}} {
+    set tclexe [auto_execok $tclok]
+  } elseif {$::em::tc in {tclsh wish}} {
+    set tclexe [auto_execok $::em::tc]
   }
   if {$tclexe eq {}} {
-    ::em::em_message "ERROR:\n\nNo Tcl/Tk executable found."
-    exit
+    set tclexe [info nameofexecutable]
+    if {$tclexe eq {}} {
+      ::em::em_message "ERROR:\n\nNo Tcl/Tk executable found."
+      exit
+    }
   }
   return $tclexe
 }
@@ -656,9 +664,11 @@ proc ::em::checkForShell {rsel} {
     set sel "[string range $sel 3 end]"
     set res yes
   }
-  if {[string first {tclsh } $sel]==0 || [string first {wish } $sel]==0} {
-    set tclexe [string map {wish.exe tclsh.exe} [Tclexe]]
-    set sel [append _ $tclexe [string range $sel [string first { } $sel] end]]
+  set sel [string trimleft $sel]
+  set i [string first { } $sel]
+  set tclok [string range $sel 0 $i-1]
+  if {$tclok in {tclsh wish}} {
+    set sel [Tclexe $tclok][string range $sel $i end]
   }
   return $res
 }
@@ -976,7 +986,7 @@ proc ::em::Shell_Run {from typ c1 s1 amp inpsel} {
     }
     prepr_09 seltd ::em::ar_i09 i   ;# set N of runs in command
     set ::em::IF_exit 1
-    if {![$c1 $typ "$seltd" $amp $silent] || $doexit > 0} {
+    if {![$c1 $typ "$seltd" $amp $silent] || $doexit} {
       if {$::em::IF_exit} {
         set inc 0  ;# unsuccessful run
         break
@@ -2161,9 +2171,9 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           set ::em::linuxconsole $seltd
         }
         wt= { ;# windows terminal (e.g. wt=powershell, wt=cmd.exe)
-          if {$seltd eq {cmd.exe}} {
+          if {$seltd in {cmd.exe {start cmd.exe}}} {
             append seltd { /c}
-          } else {
+          } elseif {$seltd eq {powershell.exe}} {
             append seltd { -nologo}
           }
           set ::em::windowsconsole $seltd

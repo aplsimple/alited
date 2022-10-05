@@ -1,6 +1,17 @@
 # LAST CHANGES:
 
 
+Version `1.3.5a2 (5 Oct'22)`
+
+  - BUGFIX: (esp. for Windows) checks for possible spaces in "config dir"
+  - NEW   : alited's installers for Linux/Windows 32/64 bit
+  - NEW   : at start, show balloon of outdated TODO (instead of Projects)
+  - NEW   : use tc= option of e_menu to run Tcl code
+  - NEW   : enhanced list of Linux terminals
+  - CHANGE: checks for outward changes disabled at saving files
+  - CHANGE: packages: apave/e_menu 3.5.6
+
+
 Version `1.3.4 (21 Sep'22)`
 
   - NEW   : "Setup / Tips on/off" to disable some tips

@@ -1552,7 +1552,7 @@ oo::class create ::apave::APave {
         set fn [file tail $fn]
       }
       set dn [::apave::extractOptions args -initialdir $dn]
-      set args "-initialfile \"$fn\" -initialdir \"$dn\" $parent $args"
+      set args "-initialfile \"$fn\" -initialdir $dn $parent $args"
       incr isfilename
     } elseif {$nchooser eq {tk_chooseDirectory}} {
       set vargeo $dirvar

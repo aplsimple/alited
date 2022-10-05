@@ -207,7 +207,7 @@ namespace eval ::alited {
     "The project \"%n\" updated" "Проект \"%n\" змінений"
     "The project \"%n\" removed" "Проект \"%n\" видалений"
     {Options} {Опції}
-    {Project name:} {Назва проекту:}
+    {Project:} {Проект:}
     {Root directory:} {Коріневий каталог:}
     {Skip subdirectories:} {Пропускати підкаталоги:}
     {Description:} {Опис:}
