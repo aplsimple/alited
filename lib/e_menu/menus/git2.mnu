@@ -26,6 +26,10 @@
  R:git merge R: %q "Merging changes" "Merge changes in\n\n  %PD ?"
  S:git merge S: git merge
 
+ S:git commit "Empty commit" S: cd %PD
+ R:git commit "Empty commit" R: %q "Empty commit" "This will make an empty commit\n(sometimes fixing the last push)."
+ S:git commit "Empty commit" S: git commit --allow-empty -m Empty
+
  S:git commit --amend S: cd %PD
  R:git commit --amend R: %q "Amending commit" "Amend the last commit\nwith message to be edited ?"
  S:git commit --amend S: git commit --amend
@@ -89,4 +93,4 @@ in=1.0
  R:git reset --hard HEAD R: %q "RESET" "IT'S CANNOT BE UNDONE !!!"
  R:git reset --hard HEAD R: cd %PD
  S:git reset --hard HEAD S: git reset --hard HEAD
-pos=60.0
+pos=31.65

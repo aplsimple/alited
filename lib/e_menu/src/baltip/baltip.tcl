@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.4.1
+package provide baltip 1.5
 
 package require Tk
 
@@ -15,7 +15,7 @@ package require Tk
 namespace eval ::baltip {
 
   namespace export configure cget tip update hide repaint \
-    optionlist tippath clear sleep
+    optionlist tippath clear sleep showBalloon showTip
   namespace ensemble create
 
   namespace eval my {
@@ -152,6 +152,7 @@ proc ::baltip::tip {w {text "-BALTIPGET"} args} {
     if {$text in {-BALTIPGET -BALTIPSET}} {
       # "-BALTIPGET" is the same as "-BALTIPSET", just supposed not to include args
       if {![info exists my::ttdata(optvals,$w)]} {
+        if {$text eq {-BALTIPGET}} {return {}}
         set my::ttdata(optvals,$w) [dict create]
       }
       set my::ttdata(optvals,$w) [dict replace $my::ttdata(optvals,$w) {*}$args]
@@ -323,6 +324,32 @@ proc ::baltip::sleep {msec} {
 
   configure -on no
   after $msec "::baltip::configure -on yes"
+}
+#_______________________
+
+proc ::baltip::showBalloon {tip args} {
+  # Shows a balloon under the pointer.
+  #   tip - text of tip
+  #   args - miscellaneous options of baltip
+  # Can be used to show tips on clicking, timeout, processing etc.
+
+  variable my::ttdata
+  set w .
+  lassign [winfo pointerxy $w] x y
+  set geo +[expr {$x-int($my::ttdata(under)/2)}]+[expr {$y-$my::ttdata(under)}]
+  tip $w $tip -geometry $geo -pause 100 -fade 100 {*}$args
+}
+#_______________________
+
+proc ::baltip::showTip {w tip args} {
+  # Shows a tip under the pointer, for a specific widget.
+  #   tip - text of tip
+  #   args - miscellaneous options of baltip
+  # Can be used to show tips on clicking the widget
+  # that has no "normal" tips on hovering it.
+
+  my::BindToEvent $w <Leave> ::baltip hide .
+  showBalloon $tip {*}$args
 }
 
 # _____________________ Internals ____________________ #

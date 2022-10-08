@@ -743,6 +743,9 @@ proc main::_create {} {
   $obPav untouchWidgets *.frAText *.lbxInfo
   # make the main apave object and populate it
   $obPav makeWindow $al(WIN).fra alited
+
+## ________________________ Main window _________________________ ##
+
   $obPav paveWindow $al(WIN).fra {
     {Menu - - - - - {-array {
       file File
@@ -752,15 +755,24 @@ proc main::_create {} {
       setup Setup
       help Help
     }} alited::menu::FillMenu}
+{#
+### ________________________ Main pan _________________________ ###
+}
     {frat - - - - {pack -fill both}}
     {frat.ToolTop - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::al(atools)}}}
     {fra - - - - {pack -side top -fill both -expand 1 -pady 0}}
     {fra.Pan - - - - {pack -side top -fill both -expand 1} {-orient horizontal $alited::Pan_wh}}
     {fra.pan.PanL - - - - {add} {-orient vertical $alited::PanL_wh}}
     {.fraBot - - - - {add}}
+{#
+### ________________________ Tree pan _________________________ ###
+}
     {.fraBot.PanBM - - - - {pack -fill both -expand 1} {$alited::PanBM_wh}}
     {.fraBot.panBM.FraTree - - - - {pack -side top -fill both -expand 1}}
     {.fraBot.panBM.fraTree.fra1 - - - - {pack -side top -fill x}}
+{#
+#### ________________________ Tree's toolbar _________________________ ####
+}
     {.fraBot.panBM.fraTree.fra1.BuTswitch - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_gulls -command alited::tree::SwitchTree}}
     {.fraBot.panBM.fraTree.fra1.BuTUpdT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_retry -tip {$alited::al(MC,updtree)}
     -command alited::main::UpdateAll}}
@@ -774,15 +786,24 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraBot.panBM.fraTree.fra1.buTCtr - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -command {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}
     {.fraBot.panBM.fraTree.fra1.buTExp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus -command {alited::tree::ExpandContractTree Tree} -tip "Expand All"}}
+{#
+#### ________________________ Tree _________________________ ####
+}
     {.fraBot.panBM.fraTree.fra1.sev3 - - - - {pack -side right -fill y -padx 0}}
     {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1}
       {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0 -selectmode extended -tip {-BALTIP {alited::tree::GetTooltip %i %c} -SHIFTX 10}}}
+{#
+### ________________________ Favorites _________________________ ###
+}
     {.fraBot.panBM.fraTree.fra.SbvTree .fraBot.panBM.fraTree.fra.Tree L - - {pack -side right -fill both}}
     {.FraFV - - - - {add}}
     {.fraFV.v_ - - - - {pack -side top -fill x} {-h 5}}
     {.fraFV.fra1 - - - - {pack -side top -fill x}}
     {.fraFV.fra1.seh - - - - {pack -side top -fill x -expand 1 -pady 0}}
+{#
+#### ________________________ Favorites' toolbar _________________________ ####
+}
     {.fraFV.fra1.BuTVisitF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_misc -tip {$alited::al(MC,lastvisit)} -com alited::favor::SwitchFavVisit}}
     {.fraFV.fra1.sev0 - - - - {pack -side left -fill y -padx 5}}
     {.fraFV.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_SaveFile -tip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
@@ -793,9 +814,15 @@ proc main::_create {} {
     {.fraFV.fra1.h_2 - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraFV.fra1.sev2 - - - - {pack -side right -fill y -padx 0}}
     {.fraFV.fra - - - - {pack -fill both -expand 1} {}}
-    {.fraFV.fra.TreeFavor - - - - {pack -side left -fill both -expand 1} {-h 5 -style TreeNoHL -columns {C1 C2 C3 C4} -displaycolumns C1 -show headings -takefocus 0 -tip {alited::favor::GetTooltip %i}}}
+{#
+#### ________________________ Favorites' list _________________________ ####
+}
+    {.fraFV.fra.TreeFavor - - - - {pack -side left -fill both -expand 1} {-h 5 -style TreeNoHL -columns {C1 C2 C3 C4} -displaycolumns C1 -show headings -takefocus 0 -tip {-BALTIP {alited::favor::GetTooltip %i} -SHIFTX 10}}}
     {.fraFV.fra.SbvFavor .fraFV.fra.TreeFavor L - - {pack -side left -fill both}}
     {fra.pan.PanR - - - - {add} {-orient vertical $alited::PanR_wh}}
+{#
+### ________________________ Tab bar & Text _________________________ ###
+}
     {.fraTop - - - - {add}}
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
     {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3}}
@@ -803,6 +830,9 @@ proc main::_create {} {
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both} {-background $::alited::FRABG}}
     {.fraTop.panTop.frAText.Text - - - - {pack -expand 1 -fill both} {-borderwidth 1 -w 2 -h 20 -gutter GutText -gutterwidth $::alited::al(ED,gutterwidth) -guttershift $::alited::al(ED,guttershift) $alited::al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
+{#
+### ________________________ Find units _________________________ ###
+}
     {.fraTop.panTop.fraSbv.SbvText .fraTop.panTop.frAText.text L - - {pack -fill y}}
     {.fraTop.FraSbh  - - - - {pack forget -fill x}}
     {.fraTop.fraSbh.SbhText .fraTop.panTop.frAText.text T - - {pack -fill x}}
@@ -814,6 +844,9 @@ proc main::_create {} {
     {.fraTop.fraHead.rad2 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in current} -value 2}}
     {.fraTop.fraHead.h_ - - - - {pack -side left -fill x -expand 1}}
     {.fraTop.fraHead.buTno - - - - {pack -side left} {-relief flat -highlightthickness 0 -takefocus 0 -command {alited::find::HideFindUnit}}}
+{#
+### ________________________ Status bar _________________________ ###
+}
     {.fraBot - - - - {add}}
     {.fraBot.fra - - - - {pack -fill both -expand 1}}
     {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1} {-h 1 -w 40 -lvar ::alited::info::list -font $alited::al(FONT,defsmall) -highlightthickness 0}}
