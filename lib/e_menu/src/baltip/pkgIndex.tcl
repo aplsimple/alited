@@ -149,15 +149,15 @@ To update a tip's text and options:
 
       ::baltip::update widgetpath text ?options?
 
-To show a tip for a widget that has no "normal" (on hovering) tip, still needs a tip (e.g. on clicking):
+To show a tip for a widget that has no "normal" tip, still needs a tip (e.g. on clicking):
 
       ::baltip::showTip path text ?options?
+
+By default, `::baltip::showTip` displays the tip under the mouse pointer. At that it regards `-geometry` option and ignores `-under, -shiftX, -shiftY` options.
 
 When you click on a widget with its tip being displayed, the tip is hidden. It is the default behavior of *baltip*, but sometimes you need to re-display the hidden tip. If the widget is a button, you can include the following command in `-command` of the button:
 
       ::baltip::repaint widgetpath
-
-Thi
 
 ## Some special tips
 
@@ -226,6 +226,8 @@ For example:
 To show a balloon under the mouse pointer, e.g. on clicking, timeout, processing etc., the following call is used:
 
       ::baltip::showBalloon text ?options?
+
+By default, `::baltip::showBalloon` displays the balloon under the mouse pointer. At that it regards `-geometry` option and ignores `-under, -shiftX, -shiftY` options.
 
 
 ## Command
