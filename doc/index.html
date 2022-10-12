@@ -326,10 +326,10 @@ Also, here are some direct links to download the stand-alone tclkits:
 <li><p><a href="https://github.com/aplsimple/tclbag/releases/download/tclkit-lin64-8.6.11/tclkit-lin64-8.6.11.zip">tclkit 8.6.11 for Linux 64 bit</a></p>
 </li>
 
-<li><p><a href="https://github.com/aplsimple/tclbag/releases/download/tclkit-win32-8.6.12/tclkit-win32-8.6.12.zip">tclkit 8.6.12 for Windows 32 bit</a></p>
+<li><p><a href="https://github.com/aplsimple/tclbag/releases/download/tclkit-win32-8.6.12/tclkit-win32-8.6.12.zip">tclkit 8.6.12 for MS Windows 32 bit</a></p>
 </li>
 
-<li><p><a href="https://github.com/aplsimple/tclbag/releases/download/tclkit-win64-8.6.12/tclkit-win64-8.6.12.zip">tclkit 8.6.12 for Windows 64 bit</a></p>
+<li><p><a href="https://github.com/aplsimple/tclbag/releases/download/tclkit-win64-8.6.12/tclkit-win64-8.6.12.zip">tclkit 8.6.12 for MS Windows 64 bit</a></p>
 </li>
 </ul>
 
@@ -352,10 +352,10 @@ Also, here are some direct links to download the vanillawishs:
 <li><p><a href="https://github.com/aplsimple/tclbag/releases/download/vanillawish-lin64-8.6.10/vanillawish-lin64-8.6.10.zip">Androwish vanilla wish 8.6.10 for Linux 64 bit</a></p>
 </li>
 
-<li><p><a href="https://github.com/aplsimple/tclbag/releases/download/vanillawish-win32-8.6.10/vanillawish-win32-8.6.10.zip">Androwish vanilla wish 8.6.10 for Windows 32 bit</a></p>
+<li><p><a href="https://github.com/aplsimple/tclbag/releases/download/vanillawish-win32-8.6.10/vanillawish-win32-8.6.10.zip">Androwish vanilla wish 8.6.10 for MS Windows 32 bit</a></p>
 </li>
 
-<li><p><a href="https://github.com/aplsimple/tclbag/releases/download/vanillawish-win64-8.6.10/vanillawish-win64-8.6.10.zip">Androwish vanilla wish 8.6.10 for Windows 64 bit</a></p>
+<li><p><a href="https://github.com/aplsimple/tclbag/releases/download/vanillawish-win64-8.6.10/vanillawish-win64-8.6.10.zip">Androwish vanilla wish 8.6.10 for MS Windows 64 bit</a></p>
 </li>
 </ul>
 
@@ -1264,10 +1264,15 @@ If you want to run a script "as is" disregarding those #RUNF1: / #EXEC1:, just c
 This is customized in "Preferences / Tools". Note, that "in console" mode means also  <i>Tkcon</i> tool running as a topmost application.
 </p>
 <p>
-You might prefer to have Tkcon non-topmost and run applications inside it. In this case you get a profit of introspecting your code in Tkcon.
+You might prefer to run applications inside Tkcon. In this case you get a profit of introspecting your code in Tkcon.
 </p>
 <p>
-Also, Tkcon window would display puts' debug messages in Windows even when you use "vanilla wish" or "tclkit" instead of fully deployed Tcl/Tk. The Windows console doesn't display the puts messages with tclkits and vanilla wish, on my humble machine at least.
+Also, Tkcon window would display puts' debug messages in MS Windows even when you use "vanilla wish" or "tclkit" instead of fully deployed Tcl/Tk. The MS Windows console doesn't display the <i>puts</i> messages with tclkits and vanilla wish, on my humble machine at least.
+</p>
+<p>
+On MS Windows, if you have a fully deployed Tcl/Tk 8.6.10+, the default path to its <i>tclsh.exe</i> is highly recommended. And, on the contrary, <i>wish.exe</i> and
+<i>tclkit.exe</i> aren't recommended, for the reason mentioned above. To install Tcl/Tk 8.6.10+ on MS Windows, use <a href="http://www.bawt.tcl3d.org/download.html#tclbi">Bawt</a> or <a href="https://www.magicsplat.com/tcl-installer">Magicsplat</a> distribution.
+
 </p>
 <p>
 "Run" icon uses the default mode customized in "Preferences / Tools". But when a file is run by "Tools / Run..." menu item or by F5 key, alited offers to run the file either in console or in Tkcon.
@@ -1773,6 +1778,14 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 </li>
 
 <li>
+<a href="https://wiki.tcl-lang.org/">Tcl/Tk distributions:</a>
+<ul>
+<li><a href="http://www.bawt.tcl3d.org/download.html#tclbi">Bawt distributions for Linux and MS Windows</a></li>
+<li><a href="https://www.magicsplat.com/tcl-installer">Magicsplat distribution for MS Windows</a></li>
+</ul>
+</li>
+
+<li>
 <a href="https://github.com/aplsimple/tclbag/releases">Tclkits</a>
 <ul>
 <li><a href="https://github.com/aplsimple/tclbag/releases/download/tclkit-lin32-8.6.12/tclkit-lin32-8.6.12.zip">tclkit 8.6.12 for Linux 32 bit</a>
@@ -1784,15 +1797,15 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 <li><a href="https://github.com/aplsimple/tclbag/releases/download/kbsvq-lin64-8.6.11/kbsvq-lin64-8.6.11.zip">kbskit 8.6.11 for Linux 64 bit</a>
 </li>
 
-<li><a href="https://github.com/aplsimple/tclbag/releases/download/tclkit-win32-8.6.12/tclkit-win32-8.6.12.zip">tclkit 8.6.12 for Windows 32 bit</a>
+<li><a href="https://github.com/aplsimple/tclbag/releases/download/tclkit-win32-8.6.12/tclkit-win32-8.6.12.zip">tclkit 8.6.12 for MS Windows 32 bit</a>
 </li>
 
-<li><a href="https://github.com/aplsimple/tclbag/releases/download/tclkit-win64-8.6.12/tclkit-win64-8.6.12.zip">tclkit 8.6.12 for Windows 64 bit</a>
+<li><a href="https://github.com/aplsimple/tclbag/releases/download/tclkit-win64-8.6.12/tclkit-win64-8.6.12.zip">tclkit 8.6.12 for MS Windows 64 bit</a>
 </li>
 </ul>
 </li>
 
-<li> <a href=https://github.com/auriocus/kbskit/releases>Linux, Windows and MacOS kbskits</a></li>
+<li> <a href=https://github.com/auriocus/kbskit/releases>Linux, MS Windows and MacOS kbskits</a></li>
 
 <li>
 <a href="https://github.com/aplsimple/tclbag/releases">Vanilla Tcl/Tk</a>
@@ -1803,10 +1816,10 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 <li><a href="https://github.com/aplsimple/tclbag/releases/download/vanillawish-lin64-8.6.10/vanillawish-lin64-8.6.10.zip">Androwish vanilla wish 8.6.10 for Linux 64 bit</a>
 </li>
 
-<li><a href="https://github.com/aplsimple/tclbag/releases/download/vanillawish-win32-8.6.10/vanillawish-win32-8.6.10.zip">Androwish vanilla wish 8.6.10 for Windows 32 bit</a>
+<li><a href="https://github.com/aplsimple/tclbag/releases/download/vanillawish-win32-8.6.10/vanillawish-win32-8.6.10.zip">Androwish vanilla wish 8.6.10 for MS Windows 32 bit</a>
 </li>
 
-<li><a href="https://github.com/aplsimple/tclbag/releases/download/vanillawish-win64-8.6.10/vanillawish-win64-8.6.10.zip">Androwish vanilla wish 8.6.10 for Windows 64 bit</a>
+<li><a href="https://github.com/aplsimple/tclbag/releases/download/vanillawish-win64-8.6.10/vanillawish-win64-8.6.10.zip">Androwish vanilla wish 8.6.10 for MS Windows 64 bit</a>
 </li>
 </ul>
 </li>

@@ -1,31 +1,40 @@
 # options should go first because of "co=" (line continuator)
 
 [OPTIONS]
-pos=9.123
+in=5.0
+pos=4.6
 o=-1
 co=;
 w=45
 rt=2/5
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f" ; if {[::iswindows]} {set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
+%C if {![info exist ::EMENUFILETMP]} {set ::EMENUFILETMP "%TF" ; if {[::iswindows]} {set ::EMENUFILETMP [string map [list \\ \\\\\\\\] "%TF"]}}
 %C if {![info exist ::EMENUGREP]} {set ::EMENUGREP ""}
 %C if {{%F}=={*} && ![info exist ::EMENUFILE]} {set ::EMENUFILE "*"}
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
 %C set ::FILETAIL {"$::EMENUFILETAIL"}
+%C set ::EMENUFILETMPTAIL [file tail {$::EMENUFILETMP}]
+%C set ::FILETMPTAIL {"$::EMENUFILETMPTAIL"}
 
 [MENU]
- R: Doctest Safe: $::FILETAIL R: cd %d
- S: Doctest Safe: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTv 0 %f
+ R: Doctest Safe: $::FILETMPTAIL R: cd %d
+ S: Doctest Safe: $::FILETMPTAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTv 0 %TF
 
- R: Doctest Safe verbose: $::FILETAIL R: cd %d
- S: Doctest Safe verbose: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTv 1 %f
+ R: Doctest Safe verbose: $::FILETMPTAIL R: cd %d
+ S: Doctest Safe verbose: $::FILETMPTAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTv 1 %TF
 
- R: Doctest: $::FILETAIL R: cd %d
- S: Doctest: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 0 %f
+ R: Doctest: $::FILETMPTAIL R: cd %d
+ S: Doctest: $::FILETMPTAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 0 %TF
 
- R: Doctest verbose: $::FILETAIL R: cd %d
- S: Doctest verbose: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 1 %f
+ R: Doctest verbose: $::FILETMPTAIL R: cd %d
+ S: Doctest verbose: $::FILETMPTAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 1 %TF
 
  M:  M: 3
+
+ R: Help on doctest R: %b http://aplsimple.github.io/en/tcl/doctest/index.html
+
+ M:  M: 3
+ 
  R: Trace $::FILETAIL with {%s} excluded R: %C if {![info exist ::EMENUEXCL]} {set ::EMENUEXCL "%s"}
  R: Trace $::FILETAIL with {%s} excluded R: %I {} "TRACE" { \
    v_ {{} {-pady 4} {}} {} \
@@ -45,4 +54,3 @@ rt=2/5
    {\n This utility removes tracing puts from a Tcl script.\n\n The puts are set below the script's proc/method declarations.} \
    } -head {\n This will remove tracing 'puts' from a file.} -weight bold == ::EMENUFILE
  S: Untrace $::FILETAIL S: tclsh %m/src/atrace.tcl untrace $::EMENUFILE
-

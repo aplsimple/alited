@@ -8,7 +8,7 @@
 
 package require Tk
 
-package provide apave 3.5.6
+package provide apave 3.5.7
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -238,6 +238,7 @@ oo::class create ::apave::APaveInput {
           }
         }
         default {
+          if {$vlist ne {}} {lappend attrs -values $vlist}
           lappend inopts [list $ff - - - - \
             "pack -side left -expand 1 -fill x $gopts" "$tvar $vv $attrs"]
           if {$vv ne ""} {

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.5a3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5b1  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -155,6 +155,7 @@ namespace eval alited {
         after idle [list after 1000 [list ::alited::open_files_and_raise [incr iin] {*}$args]]
         return
       }
+      if {[file isfile $args]} {set args [list $args]}
       foreach fname [lreverse $args] {
         if {[file isfile $fname]} {
           file::OpenFile $fname yes

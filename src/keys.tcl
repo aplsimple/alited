@@ -189,6 +189,7 @@ proc keys::ReservedAdd {wtxt} {
   # Saves reserved ("action") keys to a list of keys data.
 
   namespace upvar ::alited obPav obPav
+  Add action exit-app     Alt-F4 {alited::Exit; break}
   Add action find-replace Control-F {alited::find::_run; break}
   Add action find-unit    Shift-Control-F {::alited::find::FindUnit; break}
   Add action new-file     Control-N {::alited::file::NewFile; break}

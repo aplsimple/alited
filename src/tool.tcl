@@ -188,8 +188,9 @@ proc tool::EM_Options {opts} {
   # Returns e_menu's general options.
 
   namespace upvar ::alited al al SCRIPTNORMAL SCRIPTNORMAL CONFIGDIR CONFIGDIR
-  set sel [alited::find::GetWordOfText]
-  set sel [string map [list "\"" {} "\{" {} "\}" {} "\\" {}] $sel]
+  set sel [string trim [alited::find::GetWordOfText]]
+  set sel [lindex [split $sel \n] 0] ;# only 1st line for "selection"
+  set sel [string map [list \" "" \{ "" \} "" \[ "" \] "" \\ "" \$ ""] $sel]
   set f [alited::bar::FileName]
   set d [file dirname $f]
   # get a list of selected tabs (i.e. their file names):
@@ -398,7 +399,26 @@ proc tool::EM_command {im} {
   }
   return "alited::tool::e_menu \"m=$mnu\" $ex"
 }
+#_______________________
 
+proc tool::EM_optionTF {args} {
+  # Prepares TF= option for e_menu.
+  #   args - options of e_menu
+  # TF= is a name of file that contains a current text's selection.
+  # If there is no selection, TF= option is a current file's name.
+
+  namespace upvar ::alited al al
+  set wtxt [alited::main::CurrentWTXT]
+  if {[catch {set sel [$wtxt get sel.first sel.last]}]} {set sel {}}
+  if {[string length [string trim $sel]]<2 || \
+  ($args ne {} && {m=tests.mnu} ni $args)} {
+    set tmpname [alited::bar::FileName]
+  } else {
+    set tmpname [file join $al(EM,mnudir) SELECTION~]
+    ::apave::writeTextFile $tmpname sel
+  }
+  return TF=$tmpname
+}
 
 ## _____________________ run Tcl/ext commands ___________________ ##
 
@@ -456,7 +476,7 @@ proc tool::AfterStart {} {
 #    if {[set $name1] eq {}} {set st normal} {set st disabled}
 #    $txt configure -state $st
 #    $obDl2 makePopup $txt no yes
-#    set cbx [$obDl2 Cbx]
+#    set cbx [$obDl2 CbxfiL]
 #    if {[focus] ne $cbx && $st eq {disabled}} {
 #      after 300 "focus $cbx"
 #    }
@@ -477,7 +497,7 @@ proc tool::DeleteForcedRun {} {
   # Handler of "Delete forced command" button.
 
   namespace upvar ::alited al al obDl2 obDl2
-  set cbx [$obDl2 Cbx]
+  set cbx [$obDl2 CbxfiL]
   if {[set val [string trim [$cbx get]]] eq {}} return
   set values [$cbx cget -values]
   if {[set i [lsearch -exact $values $val]]>-1} {
@@ -518,7 +538,7 @@ proc tool::BeforeRunDialogue {focrun} {
     Tex "{$prompt2} {} {-w 80 -h 16 -tabnext cbx}" $run \
     seh2 {{} {-pady 15}} {} \
     lab {{} {} {-t { Also, you can set "forced command" to be run by "Run" tool:}}} {} \
-    Cbx [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
+    fiL [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
     buT1 [list {} {-padx 5} "-com alited::tool::DeleteForcedRun -takefocus 0 -tip Delete -toprev 1 -image [::apave::iconImage no] -relief flat -highlightthickness 0"] {} \
     butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test}" [msgcat::mc Test] \
   ] -head $head {*}$foc -help {alited::tool::HelpTool %w 2}] res run com
@@ -691,6 +711,7 @@ proc tool::e_menu {args} {
   # depending on e_menu's preferences.
 
   namespace upvar ::alited al al
+  lappend args [EM_optionTF {*}$args]
   if {{EX=Help} ni $args} {
     EM_SaveFiles
     if {![is_mainmenu $args]} {
@@ -758,21 +779,9 @@ proc tool::e_menu2 {opts} {
 #_______________________
 
 proc tool::e_menu3 {} {
-  # Runs e_menu's main menu.
-  # Prepares TF= argument for e_menu.
-  # TF= is a temporary file that contains a text's selection.
+  # Prepares TF= argument for e_menu and runs e_menu's main menu.
 
-  namespace upvar ::alited al al
-  set tmpname [file join $al(EM,mnudir) tmp.~~~]
-  catch {file delete $tmpname}
-  set wtxt [alited::main::CurrentWTXT]
-  if {[catch {set sel [$wtxt get sel.first sel.last]}]} {set sel {}}
-  if {[string length [string trim $sel]]<2} {
-    set tmpname [alited::bar::FileName]
-  } else {
-    ::apave::writeTextFile $tmpname sel
-  }
-  e_menu o=0 TF=$tmpname
+  e_menu o=0 [EM_optionTF]
 }
 #_______________________
 

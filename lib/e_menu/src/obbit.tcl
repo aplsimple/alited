@@ -310,12 +310,14 @@ proc ::apave::blinkWidget {w {fg #000} {bg #fff} {fg2 {}} {bg2 red} \
 }
 #_______________________
 
-proc ::apave::autoexec {comm} {
+proc ::apave::autoexec {comm {ext ""}} {
   # Imitates Tcl's auto_execok.
   #   comm - a command to find
+  #   ext - file's extension (for Windows)
   # If it doesn't get the command from Tcl's auto_execok,
   # it tries to knock at its file by itself.
 
+  if {$ext ne {} && [::iswindows]} {append comm $ext}
   set res [auto_execok $comm]
   if {$res eq {} && [file exists $comm]} {
     set res $comm

@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.5.6}
+  variable em_version {e_menu 3.5.7}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -644,7 +644,7 @@ proc ::em::Tclexe {{tclok "tclsh"}} {
   if {[set tclexe $::em::tc] eq {}} {
     set tclexe [auto_execok $tclok]
   } elseif {$::em::tc in {tclsh wish}} {
-    set tclexe [auto_execok $::em::tc]
+    set tclexe [::apave::autoexec $::em::tc .exe]
   }
   if {$tclexe eq {}} {
     set tclexe [info nameofexecutable]
@@ -813,7 +813,7 @@ proc ::em::run_Tcl_code {sel {dosubst false}} {
       set sel [string range $sel 3 end]
       if {$dosubst} {
         prepr_pn sel
-        set sel [subst -nobackslashes -nocommands $sel]
+        catch {set sel [subst -nobackslashes -nocommands $sel]}
       }
       if {[string match "eval *" $sel]} {
         {*}$sel
@@ -1992,7 +1992,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
   set resetpercent2 0
   foreach s1 {tc= a0= P= N= PD= PN= F= o= ln= cn= s= u= w= sh= \
   qq= dd= ss= pa= ah= += bd= b0= b1= b2= b3= b4= dk= \
-  f1= f2= f3= fs= a1= a2= ed= tf= tg= md= wc= tt= wt= pk= \
+  f1= f2= f3= fs= a1= a2= ed= tf= tg= md= wc= tt= wt= pk= TF= \
   t0= t1= t2= t3= t4= t5= t6= t7= t8= t9= \
   s0= s1= s2= s3= s4= s5= s6= s7= s8= s9= \
   u0= u1= u2= u3= u4= u5= u6= u7= u8= u9= \
@@ -2003,7 +2003,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
   a= d= e= f= p= l= h= b= cs= c= t= g= n= \
   fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= \
   cc= gr= ht= hh= rt= DF= BF= pd= m= om= ts= \
-  TF= yn= in= ex= EX= ee= PI= NE= ls= SD= g1= g2= th= td= } { ;# the processing order matters
+  yn= in= ex= EX= ee= PI= NE= ls= SD= g1= g2= th= td= } { ;# the processing order matters
     if {$s1 in {o= s= m=} && $s1 ni $osm} {
       continue
     }
@@ -2228,7 +2228,7 @@ proc ::em::initcolorscheme {{nothemed false}} {
   if {[info exist ::em::clrbI]} {set ::em::bI $::em::clrbI}
   if {[info exist ::em::clrfM]} {set ::em::fM $::em::clrfM}
   if {[info exist ::em::clrbM]} {set ::em::bM $::em::clrbM}
-  catch {::baltip config -fg $::em::fW -bg $::em::bW}
+  catch {::baltip config -shiftX 8 -fg $::em::fW -bg $::em::bW}
   if {[winfo exist .em.fr.win]} {
     .em configure -bg [.em.fr.win cget -bg]
   } else {

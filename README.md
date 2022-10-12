@@ -40,8 +40,9 @@ Briefly, alited is totally quick, being at that *a pure [Tcl/Tk](https://wiki.tc
 
    * [Description](https://aplsimple.github.io/en/tcl/alited)
    * [Reference](https://aplsimple.github.io/en/tcl/alited/alited.html)
-   * [Download #1](https://chiselapp.com/user/aplsimple/repository/alited/download)
-   * [Download #2](https://github.com/aplsimple/alited)
+   * [Source #1](https://chiselapp.com/user/aplsimple/repository/alited/download)
+   * [Source #2](https://github.com/aplsimple/alited)
+   * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.3)
 
 For a quick acquaintance of *alited*, a few of demo videos are available:
 

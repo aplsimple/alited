@@ -711,6 +711,11 @@ proc main::InitActions {} {
       ShowOutdatedTODO $prjname $date $todo
     }
   }
+  # forcedly: fill Preferences/Tools/tclsh if it's empty
+  if {$al(EM,Tcl) eq {}} {
+    # important: refer to tclsh (not wish), to run it in Windows console
+    set al(EM,Tcl) [::apave::autoexec tclsh .exe]
+  }
 }
 #_______________________
 
@@ -727,7 +732,7 @@ proc main::CheckCW01 {} {
   }
 }
 
-# ________________________ Main _________________________ #
+# ________________________ Main _create _________________________ #
 
 proc main::_create {} {
   # Creates a main form of the alited.
@@ -874,7 +879,7 @@ proc main::_create {} {
   ::baltip tip [$obPav Labstat4] = -command ::alited::main::TipStatus -per10 0
 
 }
-#_______________________
+# ________________________ Main _run _________________________ #
 
 proc main::_run {} {
   # Runs the alited, displaying its main form with attributes

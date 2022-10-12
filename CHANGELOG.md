@@ -1,16 +1,23 @@
 # LAST CHANGES:
 
 
-Version `1.3.5a3 (8 Oct'22)`
+Version `1.3.5b1 (12 Oct'22)`
 
-  - BUGFIX: (esp. for Windows) checks for possible spaces in "config dir"
+  - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
+  - BUGFIX: (esp. for Windows) Alt+F4 for exit only
+  - NEW   : "Tests" menu: allow doctesting a selected text, help on doctest
   - NEW   : alited's installers for Linux/Windows 32/64 bit
   - NEW   : at start, show balloon of outdated TODO (instead of Projects)
   - NEW   : use tc= option of e_menu to run Tcl code
   - NEW   : enhanced list of Linux terminals
+  - NEW   : for Windows: default Tkcon as Preferences/Tools/Run
+  - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
+  - NEW   : choose files for forced command of "Setup/For Run" dialogue
+  - CHANGE: only 1st line of text selection as s= option of e_menu
   - CHANGE: display tips for favorites and menu file lists at right side of pointer
   - CHANGE: checks for outward changes disabled at saving files
-  - CHANGE: packages: apave/e_menu 3.5.6, baltip 1.5
+  - CHANGE: alited docs
+  - CHANGE: packages: apave/e_menu 3.5.7, baltip 1.5
 
 
 Version `1.3.4 (21 Sep'22)`
