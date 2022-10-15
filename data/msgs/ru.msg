@@ -100,6 +100,7 @@ namespace eval ::alited {
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Введите имя файла, создаваемого в:\n%d\n\nЕсли это каталог, включите опцию 'Каталог'.\nКаталог может включать подкаталоги (a/b/c)."
     {Delete File} {Удалить файл}
     "File %f already exists in\n%d" "Файл %f уже существует в\n%d"
+    "\nFile\n  \"%f\"\ndoesn't exist.\n" "\nФайл\n  \"%f\"\nне существует.\n"
     {Remove Unit(s)} {Удалить юнит(ы)}
     {No item selected.} {Запись не выбрана.}
     {Update Tree} {Обновить список}
@@ -124,7 +125,6 @@ namespace eval ::alited {
     {Select All} {Выделить все}
     {Do it in other Tcl files} {И в других файлах Tcl тоже}
     {Do it in other files} {И в других файлах тоже}
-    "File \"%f\" doesn't exist." "Файл \"%f\" не существует."
     {Selected files: %n} {Выделенных файлов: %n}
     {Configurations...} {Конфигурации...}
     {Tips on / off} {Подсказки вкл / выкл}

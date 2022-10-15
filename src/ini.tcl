@@ -116,7 +116,7 @@ namespace eval ::alited {
   set al(EM,mnudir) {}
   set al(EM,CS) 33
   set al(EM,ownCS) no
-  set al(EM,exec) no
+  set al(EM,exec) yes
   set al(EM,DiffTool) kdiff3
 
   # data of tabs
@@ -453,8 +453,8 @@ proc ini::ReadIniEM {nam val emiName} {
     emowncs    {set al(EM,ownCS) $val}
     emdiff     {set al(EM,DiffTool) $val}
     emh        {set al(EM,h=) $val}
-    emexec     {set al(EM,exec) $val}
   }
+#    emexec     #\{set al(EM,exec) $val#\}
 }
 #_______________________
 
@@ -727,7 +727,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "emcs=$al(EM,CS)"
   puts $chan "emowncs=$al(EM,ownCS)"
   puts $chan "emgeometry=$al(EM,geometry)"
-  puts $chan "emexec=$al(EM,exec)"
+#  puts $chan "emexec=$al(EM,exec)"
   puts $chan "emdiff=$al(EM,DiffTool)"
   for {set i 0} {$i<$em_Num} {incr i} {
     if {[info exists em_sep($i)]} {

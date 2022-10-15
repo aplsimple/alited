@@ -1,18 +1,21 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b1 (12 Oct'22)`
+Version `1.3.5b2 (15 Oct'22)`
 
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
   - BUGFIX: (esp. for Windows) Alt+F4 for exit only
-  - NEW   : "Tests" menu: allow doctesting a selected text, help on doctest
+  - BUGFIX: dismissing "internal" e_menu, at least temporarily
+  - NEW   : balloons at opening non-existing files (Recent files, e_menu/Edit)
+  - NEW   : at deleting units/files: close to mouse pointer, don't ask anymore
+  - NEW   : "Tests" menu: doctest text's selection, doctest's help, save item's index
   - NEW   : alited's installers for Linux/Windows 32/64 bit
   - NEW   : at start, show balloon of outdated TODO (instead of Projects)
-  - NEW   : use tc= option of e_menu to run Tcl code
   - NEW   : enhanced list of Linux terminals
-  - NEW   : for Windows: default Tkcon as Preferences/Tools/Run
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
-  - NEW   : choose files for forced command of "Setup/For Run" dialogue
+  - NEW   : choose file button for forced command of "Setup/For Run" dialogue
+  - NEW   : use tc= option of e_menu to run Tcl code
+  - CHANGE: (esp. for Windows) default Tkcon as Preferences/Tools/Run
   - CHANGE: only 1st line of text selection as s= option of e_menu
   - CHANGE: display tips for favorites and menu file lists at right side of pointer
   - CHANGE: checks for outward changes disabled at saving files

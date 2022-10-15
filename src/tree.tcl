@@ -243,6 +243,20 @@ proc tree::SeeSelection {} {
   set selection [$wtree selection]
   if {[llength $selection]==1} {$wtree see $selection}
 }
+#_______________________
+
+proc tree::syOption {sy} {
+  # Gets -geometry option of dialogues.
+  #   sy - relative Y-coordinate of dialogue
+  # See also: unit::Delete, file::Delete
+
+  if {$sy eq {}} {
+    set opt {}
+  } else {
+    set opt [list -geometry pointer+10+$sy]
+  }
+  return $opt
+}
 
 # ________________________ Create and handle a tree _________________________ #
 
@@ -279,7 +293,7 @@ proc tree::Create {} {
   bind $wtree <Leave> {alited::tree::DestroyMoveWindow yes}
   bind $wtree <F2> {alited::file::RenameFileInTree}
   bind $wtree <Insert> {alited::tree::AddItem}
-  bind $wtree <Delete> {alited::tree::DelItem}
+  bind $wtree <Delete> {alited::tree::DelItem {} {}}
   if {$al(TREE,isunits)} {
     CreateUnitsTree $TID $wtree
   } else {
@@ -471,9 +485,10 @@ proc tree::AddItem {{ID ""}} {
 }
 #_______________________
 
-proc tree::DelItem {{ID ""}} {
+proc tree::DelItem {{ID ""} {sy 10}} {
   # Removes an item from the tree.
   #   ID - an item's ID to be deleted.
+  #   sy - relative Y-coordinate for a query
 
   namespace upvar ::alited al al obPav obPav
   if {$ID eq {} && [set ID [alited::tree::CurrentItem]] eq {}} {
@@ -483,9 +498,9 @@ proc tree::DelItem {{ID ""}} {
   set wtree [$obPav Tree]
   set fname [alited::bar::FileName]
   if {$al(TREE,isunits)} {
-    alited::unit::Delete $wtree $fname
+    alited::unit::Delete $wtree $fname $sy
   } else {
-    alited::file::Delete $ID $wtree
+    alited::file::Delete $ID $wtree $sy
   }
 }
 #_______________________
@@ -569,7 +584,7 @@ proc tree::ShowPopupMenu {ID X Y} {
       -command {::alited::file::RenameFileInTree {-geometry pointer+-100+-100}}
   }
   $popm add command {*}[$obPav iconA none] -label $m3 \
-    -command "::alited::tree::DelItem $ID" -image alimg_delete
+    -command "::alited::tree::DelItem $ID -100" -image alimg_delete
   if {$al(TREE,isunits)} {
     if {$al(FAV,IsFavor)} {
       $popm add separator

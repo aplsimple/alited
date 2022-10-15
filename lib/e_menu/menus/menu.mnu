@@ -34,7 +34,7 @@ pos=57.47
  S: Run Tcl {all selection} S: tclsh %m/src/ch_.tcl "%TF"
 
  RE: Edit/create file "%s" RE: cd %d
- RE: Edit/create file "%s" RE: %E %s
+ RE: Edit/create file "%s" RE: %E '%s'
 
 # RE: Open directory "%D" RE: %IF ![::iswindows] %THEN %q "CHANGE ME" "The directory:\n%d\n\nwould be open by \"caja\" file manager.\n\nYou can change it by editing:\n%mn" okcancel warn OK -ontop 1
  RE: Open directory "%D" RE: %IF [::iswindows] %THEN explorer.exe "%d" %ELSE %O "%d"

@@ -1011,11 +1011,13 @@ proc file::Add {ID} {
 }
 #_______________________
 
-proc file::DeleteOne {ID wtree dlg} {
+proc file::DeleteOne {ID wtree dlg dlgopts res} {
   # Deletes a file at the file tree.
   #   ID - tree item's ID
   #   wtree file tree widget
   #   dlg - dialogue's type (yesno / yesnocancel)
+  #   dlgopts - dialogue's options
+  #   res - previous answer
   # Returns 1 for deleted, -1 for not deleted, 0 for error/cancel
 
   namespace upvar ::alited al al BAKDIR BAKDIR
@@ -1029,38 +1031,43 @@ proc file::DeleteOne {ID wtree dlg} {
     return 0
   }
   set msg [string map [list %f $name] $al(MC,delfile)]
-  set res [alited::msg $dlg ques $msg NO]
+  if {$res<11} {
+    set res [alited::msg $dlg ques $msg NO {*}$dlgopts]
+  }
   switch $res {
-    1 {
+    1 - 11 {
       if {[RemoveFile $fname $BAKDIR backup] eq {}} {
         set res 0
       }
-    }
-    2 {
-      set res -1
     }
   }
   return $res
 }
 #_______________________
 
-proc file::Delete {ID wtree} {
+proc file::Delete {ID wtree sy} {
   # Deletes file(s) at the file tree.
   #   ID - tree item's ID
   #   wtree file tree widget
+  #   sy - relative Y-coordinate for a query
 
+  namespace upvar ::alited al al
   set wasdel no
   set selection [$wtree selection]
   if {[llength $selection]>1} {
     set dlg yesnocancel
+    set dlgopts [list -ch $al(MC,noask)]
   } else {
     set dlg yesno
+    set dlgopts [alited::tree::syOption $sy]
     set selection $ID
   }
+  set ans 1
   foreach id $selection {
-    switch [DeleteOne $id $wtree $dlg] {
-      1 {set wasdel yes}
-      0 break
+    set ans [DeleteOne $id $wtree $dlg $dlgopts $ans]
+    switch $ans {
+      1 - 11 {set wasdel yes}
+      0 - 12 break
     }
   }
   if {$wasdel} {
@@ -1098,6 +1105,7 @@ proc file::ChooseRecent {idx} {
   AddRecent $fname
   if {[OpenFile $fname] eq {}} {
     alited::menu::FillRecent 0
+    alited::Balloon1 $fname
   }
 }
 

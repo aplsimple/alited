@@ -101,6 +101,7 @@ namespace eval ::alited {
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Einen Namen eingeben für eine Datei, die erzeugt wird in:\n%d\n\nWenn es ein Verzeichnis ist, wähle 'Verzeichnis'-Box aus. Das Verzeichnis kann Unterverzeichnisse enthalten (a/b/c)."
     {Delete File} {Datei löschen}
     "File %f already exists in\n%d" "Datei %f existinert schon in\n%d"
+    "\nFile\n  \"%f\"\ndoesn't exist.\n" "\nDatei\n  \"%f\"\nexistiert nicht.\n"
     {Remove Unit(s)} {Einheit(en) löschen}
     {No item selected.} {Kein Element ausgewählt}
     {Update Tree} {Baum aktualisieren}
@@ -125,7 +126,6 @@ namespace eval ::alited {
     {Select All} {Alles auswählen}
     {Do it in other Tcl files} {Auch in anderer Tcl-Dateien}
     {Do it in other files} {Auch in anderer Dateien}
-    "File \"%f\" doesn't exist." "Eine Datei \"%f\" existiert nicht."
     {Selected files: %n} {Ausgewählten Dateien: %n}
     {Configurations...} {Konfigurationen...}
     {Tips on / off} {Tipps ein / aus}
@@ -223,7 +223,7 @@ namespace eval ::alited {
     "A project \"%n\" doesn't exists. Hit \[+\] button to create it." "Ein Projekt \"%n\" existiert nicht. Drücke \[+\]-Taste um es zu erzeugen."
     "All modified files (%n) will be saved.\n\nDo you agree?" "Alle ausgewählten Dateien (%n) werden gespeichert.\n\nBist Du einverstanden?"
     "All selected files (%n) will remain open\nin the project you are switching to.\n\nDo you agree?" "Alle ausgewählten Dateien (%n) bleiben im Projekt, wohin Du wechselst, offen.\n\nBist Du einverstanden?"
-    "Directory \"%d\"\ndoesn't exist.\n\nCreate it?" "Verzeichnis \"%d\"\nexistinert nicht.\n\nErzeugen?"
+    "Directory \"%d\"\ndoesn't exist.\n\nCreate it?" "Verzeichnis \"%d\"\nexistiert nicht.\n\nErzeugen?"
     {Checking %d. Wait a little...} {%d. prüfen. Bitte warten ...}
     {Too big directory for a project: %n files or more.} {Verzeichnis zu groß für ein Projekt: %n Dateien oder mehr.}
     {Options for new projects are set in "Preferences/General/Projects"} {Optionen für neue Projekte in "Preferences/General/Projects" gesetzt}

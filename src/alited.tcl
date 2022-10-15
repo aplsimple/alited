@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.5b1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5b2  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -155,13 +155,11 @@ namespace eval alited {
         after idle [list after 1000 [list ::alited::open_files_and_raise [incr iin] {*}$args]]
         return
       }
-      if {[file isfile $args]} {set args [list $args]}
       foreach fname [lreverse $args] {
         if {[file isfile $fname]} {
           file::OpenFile $fname yes
         } else {
-          set msg [msgcat::mc "File \"%f\" doesn't exist."]
-          Message [string map [list %f $fname] $msg] 4
+          Balloon1 $fname
           file::NewFile $fname
         }
       }
@@ -229,7 +227,6 @@ if {[package versions alited] eq {}} {
       incr ::argc -1
     }
   }
-  set ALITED_ARGV [list]
   if {[file isdirectory $::argv]} {
     # if alited run with "config dir containing spaces"
     set ::argv [list $::argv]
@@ -237,14 +234,13 @@ if {[package versions alited] eq {}} {
     # if alited run with "config dir containing spaces" + "filename"
     set ::argv [list $_ [lindex $::argv end]]
   }
-  foreach _ $::argv {lappend ALITED_ARGV [file normalize $_]}
 
   ## ____________________ Last configuration __________________ ##
 
   set readalitedCONFIGS no
   set isalitedCONFIGS [file exists $alited::USERLASTINI]
-  set _ [lindex $ALITED_ARGV 0]
-  if {![llength $ALITED_ARGV] || ![file isdirectory $_]} {
+  set _ [lindex $::argv 0]
+  if {![llength $::argv] || ![file isdirectory $_]} {
     alited::main_user_dirs
     if {(![file exists $alited::INIDIR] || ![file exists $alited::PRJDIR]) && \
     $isalitedCONFIGS} {
@@ -254,10 +250,20 @@ if {[package versions alited] eq {}} {
       set alited::CONFIGDIR [file dirname [file dirname $alited::INIDIR]]
       set readalitedCONFIGS yes
     }
-    set _ $alited::CONFIGDIR
   } else {
     set alited::CONFIGDIR $_
-    set ALITED_ARGV [lrange $ALITED_ARGV 1 end]
+    set ::argv [lrange $::argv 1 end]
+  }
+  if {[string index $::argv 0] eq {'} && [string index $::argv end] eq {'}} {
+    # when run from menu.mnu "Edit/create file"
+    set ::argv [list [string range $::argv 1 end-1]]
+  } elseif {[file isfile $::argv]} {
+    set ::argv [list $::argv]
+  }
+  set ALITED_ARGV [list]
+  foreach _ $::argv {lappend ALITED_ARGV [file normalize $_]}
+  if {[llength $ALITED_ARGV]==1 && [llength [split $ALITED_ARGV]]>1} {
+    set ALITED_ARGV [list $ALITED_ARGV]  ;# file name contains spaces
   }
   if {!$readalitedCONFIGS && $isalitedCONFIGS} {
     # read configurations used
@@ -379,7 +385,8 @@ namespace eval alited {
 
     return [list obDlg obDl2 obDl3 obFND obFN2 obCHK]
   }
-  #_______________________
+
+  ## ________________________ Messages _________________________ ##
 
   proc TipMessage {lab tip} {
     # Shows a tip on status message and clears the status message.
@@ -513,6 +520,42 @@ namespace eval alited {
   }
   #_______________________
 
+  proc Balloon {msg {red no} {timo 100}} {
+    # Displays a message in a balloon window.
+    #   msg - message
+    #   red - yes for red background
+    #   timo - millisec. before showing the message
+
+  variable al
+  variable obPav
+  if {$red} {
+    set fg white
+    set bg #bf0909
+  } else {
+    set cs [$obPav csGet]
+    set fg [lindex $cs 14]  ;# colors of baltip's tips
+    set bg [lindex $cs 15]
+  }
+  lassign [split [winfo geometry $al(WIN)] x+] w h x y
+  set geo "+([expr {$w+$x}]-W-8)+$y-20"
+  set msg [string map [list \n "  \n  "] $msg]
+  ::baltip clear $al(WIN)
+  after $timo [list ::baltip tip $al(WIN) $msg -fg $fg -bg $bg -alpha 0.9 \
+      -font {-weight bold -size 11} -pause 1000 -fade 1000 \
+      -geometry $geo -bell $red -on yes -relief groove]
+  }
+  #_______________________
+
+  proc Balloon1 {fname} {
+    # Shows a balloon about non-existing file.
+    #   fname - file's name
+
+    variable al
+    Balloon [string map [list %f $fname] $al(MC,filenoexist)]
+  }
+
+  ## ________________________ Helps _________________________ ##
+
   proc HelpAbout {} {
     # Shows "About..." dialogue.
 
@@ -609,26 +652,8 @@ namespace eval alited {
 
     HelpFile $win [HelpFname $win $suff]
   }
-  #_______________________
 
-  proc CloseDlg {} {
-    # Tries to close a Help dialogue, open non-modal aside by the current dialogue.
-
-    variable obDlg
-    catch {[$obDlg ButOK] invoke}
-  }
-  #_______________________
-
-  proc CheckRun {} {
-    # Runs "Check Tcl".
-
-    variable SRCDIR
-    if {[info commands check::_run] eq {}} {
-      source [file join $SRCDIR check.tcl]
-    }
-    check::_run
-  }
-  #_______________________
+  ## ________________________ Runs & exits _________________________ ##
 
   proc source_e_menu {} {
     # Sources e_menu.tcl at need.
@@ -658,6 +683,25 @@ namespace eval alited {
 
     set com [string trimright "$args" &]
     return [pid [open "|\"[Tclexe]\" $com"]]
+  }
+  #_______________________
+
+  proc CloseDlg {} {
+    # Tries to close a Help dialogue, open non-modal aside by the current dialogue.
+
+    variable obDlg
+    catch {[$obDlg ButOK] invoke}
+  }
+  #_______________________
+
+  proc CheckRun {} {
+    # Runs "Check Tcl".
+
+    variable SRCDIR
+    if {[info commands check::_run] eq {}} {
+      source [file join $SRCDIR check.tcl]
+    }
+    check::_run
   }
   #_______________________
 

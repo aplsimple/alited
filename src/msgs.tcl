@@ -57,6 +57,7 @@ namespace eval ::alited {
     set al(MC,filesadd2)   [msgcat::mc "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)."]
     set al(MC,filesdel)    [msgcat::mc {Delete File}]
     set al(MC,fileexist)   [msgcat::mc "File %f already exists in\n%d"]
+    set al(MC,filenoexist) [msgcat::mc "\nFile\n  \"%f\"\ndoesn't exist.\n"]
     set al(MC,unitsdel)    [msgcat::mc {Remove Unit(s)}]
     set al(MC,favoradd)    [msgcat::mc {Add to Favorites}]
     set al(MC,favordel)    [msgcat::mc {Remove}]

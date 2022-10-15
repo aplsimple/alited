@@ -309,10 +309,11 @@ proc unit::Add {} {
 }
 #_______________________
 
-proc unit::Delete {wtree fname} {
+proc unit::Delete {wtree fname sy} {
   # Deletes a unit from a text.
   #   wtree - unit tree's path
   #   fname - file name
+  #   sy - relative Y-coordinate for a query
 
   namespace upvar ::alited al al
   set wtxt [alited::main::CurrentWTXT]
@@ -320,20 +321,24 @@ proc unit::Delete {wtree fname} {
   set wasdel no
   if {[set llen [llength $selection]]>1} {
     set dlg yesnocancel
+    set dlgopts [list -ch $al(MC,noask)]
   } else {
     set dlg yesno
+    set dlgopts [alited::tree::syOption $sy]
   }
+  set ans 1
   for {set i $llen} {$i} {} {
     # delete units from the text's bottom (text selection is sorted by items)
     incr i -1
     set ID [lindex $selection $i]
     set name [$wtree item $ID -text]
     set msg [string map [list %n $name %f [file tail $fname]] $al(MC,delitem)]
-    set ans [alited::msg $dlg ques $msg NO]
+    if {$ans<11} {
+      set ans [alited::msg $dlg ques $msg NO {*}$dlgopts]
+    }
     switch $ans {
-      0 break
-      2 {}
-      1 {
+      0 - 12 break
+      1 - 11 {
         lassign [$wtree item $ID -values] l1 l2
         set ind2 [$wtxt index "$l2.end +1 char"]
         $wtxt delete $l1.0 $ind2

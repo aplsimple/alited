@@ -680,14 +680,8 @@ proc main::ShowOutdatedTODO {prj date todo} {
   #   todo - text of TODO
 
   namespace upvar ::alited al al
-  lassign [split [winfo geometry $al(WIN)] x+] w h x y
-  set geo "+([expr {$w+$x}]-W-8)+$y-20"
   set todo "\n$al(MC,prjName) $prj\n\n$al(MC,on) $date\n\n$todo\n"
-  set todo [string map [list \n "  \n  "] $todo]
-  after 2500 [list after idle [list ::baltip tip $al(WIN) $todo \
-    -alpha 0.8 -fg white -bg red \
-    -font {-weight bold -size 11} -per10 2500 -pause 2500 -fade 2500 \
-    -geometry $geo -bell yes -on yes -padding 2 -relief sunken]]
+  ::alited::Balloon $todo yes 2500
 }
 #_______________________
 

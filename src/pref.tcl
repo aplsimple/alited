@@ -1215,13 +1215,16 @@ proc pref::Test_e_menu {} {
 proc pref::Emenu_Tab {} {
   # Serves to layout "Tools/e_menu" tab.
 
+  set al(EM,exec) yes
+# just now, "internal" e_menu isn't working with alited's "Run"
+#    #\{.labExe - - 1 1 #\{-st w -pady 1 -padx 3#\} #\{-t "Run as external app:"#\}#\}
+#    #\{.swiExe .labExe L 1 1 #\{-st sw -pady 5#\} #\{-var alited::al(EM,exec) -onvalue yes -offvalue no -com alited::pref::OwnCS#\}#\}
+#    #\{.labCS .labExe T 1 1 #\{-st w -pady 1 -padx 3#\} #\{-t "Color scheme:"#\}#\}
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode x}}
-    {.labExe - - 1 1 {-st w -pady 1 -padx 3} {-t "Run as external app:"}}
-    {.swiExe .labExe L 1 1 {-st sw -pady 5} {-var alited::al(EM,exec) -onvalue yes -offvalue no -com alited::pref::OwnCS}}
-    {.labCS .labExe T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
+    {.labCS - - 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.SwiCS .labCS L 1 1 {-st sw -pady 5} {-t {e_menu's own} -var alited::al(EM,ownCS) -com alited::pref::OwnCS -afteridle alited::pref::OwnCS}}
     {.OpcCS .swiCS L 1 1 {-st sw -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 21} {alited::pref::opcToolPre %a}}}
     {.labGeo .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
@@ -1262,7 +1265,7 @@ proc pref::Tkcon_Default {} {
   set al(tkcon,cols) 100
   set al(tkcon,fsize) 13
   set al(tkcon,geo) +1+31
-  set al(tkcon,topmost) [expr {!$al(IsWindows)}]
+  set al(tkcon,topmost) 0
 }
 #_______________________
 
