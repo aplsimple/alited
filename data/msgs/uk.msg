@@ -107,7 +107,7 @@ namespace eval ::alited {
     {Delete File} {Видалити файл}
     "File %f already exists in\n%d" "Файл %f вже існує в\n%d"
     "\nFile\n  \"%f\"\ndoesn't exist.\n" "\nФайл\n  \"%f\"\nне існує.\n"
-    {Remove Unit(s)} {Видалити юніт(и)}
+    {Delete Unit(s)} {Видалити юніт(и)}
     {No item selected.} {Запис не выбраний.}
     {Update Tree} {Оновити список}
     {Contract All} {Згорнути все}
@@ -280,15 +280,17 @@ namespace eval ::alited {
     {Delete a favorites' list #%n ?} {Видалити список Вибраного #%n ?}
     {Favorites} {Вибране}
     {Favorites Lists...} {Списки Вибраного...}
-    "Add \"%n\" of %f\nto Favorites?" "Додати \"%n\" файлів %f\nу Вибране?"
+    "Add \"%n\" of %f\nto Favorites?" "Додати \"%n\" файлу %f\nу Вибране?"
     "Item \"%n\" of %f\nis already in Favorites." "Юніт \"%n\" з %f\nвже є у Вибраному."
-    "Remove \"%n\" of %f\nfrom Favorites?" "Видалити \"%n\" файлів %f\nз Вибраного?"
+    "Remove \"%n\" of %f\nfrom Favorites?" "Видалити \"%n\" файлу %f\nз Вибраного?"
     "\"%n\" unit of %f is not in the list." "Юніта \"%n\" файлу %f немає у списку."
     {Add to Favorites} {Додати до Вибраного}
-    {Remove} {Видалити}
-    {Remove All} {Видалити все}
-    {Remove all of Favorites?} {Видалити все з Вибраного?}
-    {Remove all of the last visited?} {Видалити все з Останніх входів?}
+    {Rename} {Перейменувати}
+    {Favorite name:} {Назва вибраного:}
+    {Delete} {Видалити}
+    {Delete All} {Видалити все}
+    {Delete all of Favorites?} {Видалити все з Вибраного?}
+    {Delete all of the last visited?} {Видалити все з Останніх входів?}
     {Favorites / Last Visited} {Вибране / Останні входи}
   }
 
@@ -497,6 +499,7 @@ namespace eval ::alited {
     {Use leaf's regexp:} {Використовувати RE листа:}
     {Leaf's regexp:} {RE листа:}
     {Untouched top lines:} {Статичних початкових рядків:}
+    {For leaf units only!} {Тільки для юнітів листів!}
   }
 
   ### ________________________ Tools _________________________ ###

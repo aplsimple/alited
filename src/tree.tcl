@@ -291,7 +291,7 @@ proc tree::Create {} {
   $wtree tag bind tagNorm <Motion> {after idle {alited::tree::ButtonMotion %b %s %x %y %X %Y}}
   bind $wtree <ButtonRelease> {alited::tree::DestroyMoveWindow no}
   bind $wtree <Leave> {alited::tree::DestroyMoveWindow yes}
-  bind $wtree <F2> {alited::file::RenameFileInTree}
+  bind $wtree <F2> {alited::file::RenameFileInTree 0 -}
   bind $wtree <Insert> {alited::tree::AddItem}
   bind $wtree <Delete> {alited::tree::DelItem {} {}}
   if {$al(TREE,isunits)} {
@@ -581,7 +581,7 @@ proc tree::ShowPopupMenu {ID X Y} {
   if {!$al(TREE,isunits)} {
     $popm add command {*}[$obPav iconA change] \
       -label $al(MC,renamefile) -accelerator F2 \
-      -command {::alited::file::RenameFileInTree {-geometry pointer+-100+-100}}
+      -command {::alited::file::RenameFileInTree no}
   }
   $popm add command {*}[$obPav iconA none] -label $m3 \
     -command "::alited::tree::DelItem $ID -100" -image alimg_delete

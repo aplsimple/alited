@@ -7,6 +7,7 @@
 ###########################################################
 
 namespace eval tool {
+  variable focusedBut {}  ;# focused button of Run query
 }
 
 #_______________________
@@ -658,25 +659,34 @@ proc tool::RunMode {} {
   # Runs Tcl source file with choosing the mode - in console or in tkcon.
 
   namespace upvar ::alited al al obDl2 obDl2
+  variable focusedBut
   set fname  [file tail [alited::bar::FileName]]
   if {![alited::file::IsTcl $fname] || [ComForced]} {
     _run
     return
   }
   if {![info exists al(RES,RunMode)] || ![string match *10 $al(RES,RunMode)]} {
-    if {$al(tkcon,topmost)} {
-      set foc *Terminal
-    } else {
-      set foc *Other
+    if {$focusedBut eq {}} {
+      if {$al(tkcon,topmost)} {
+        set focusedBut *Other
+      } else {
+        set focusedBut *Terminal
+      }
     }
     set al(RES,RunMode) [$obDl2 misc ques $al(MC,run) \
       "\n $al(MC,run) $fname \n" \
       [list $al(MC,inconsole) Terminal $al(MC,intkcon) Other Cancel 0] \
-      1 -focus $foc -ch $al(MC,noask)]
+      1 -focus $focusedBut -ch $al(MC,noask)]
   }
   switch -glob $al(RES,RunMode) {
-    Terminal* {_run {} terminal}
-    Other*    {_run {} tkcon}
+    Terminal* {
+      _run {} terminal
+      set focusedBut *Terminal
+      }
+    Other* {
+      _run {} tkcon
+      set focusedBut *Other
+      }
   }
 }
 

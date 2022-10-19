@@ -780,7 +780,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.BuTDown - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_down -command {alited::tree::MoveItem down}}}
     {.fraBot.panBM.fraTree.fra1.sev2 - - - - {pack -side left -fill y -padx 5}}
     {.fraBot.panBM.fraTree.fra1.BuTAddT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -command alited::tree::AddItem}}
-    {.fraBot.panBM.fraTree.fra1.BuTRenT - - - - {pack forget -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_change -tip {$alited::al(MC,renamefile)} -command {::alited::file::RenameFileInTree {-geometry pointer+-100+10}}}}
+    {.fraBot.panBM.fraTree.fra1.BuTRenT - - - - {pack forget -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_change -tip {$alited::al(MC,renamefile)} -command {::alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
     {.fraBot.panBM.fraTree.fra1.BuTDelT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -command alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraBot.panBM.fraTree.fra1.buTCtr - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -command {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}
@@ -808,6 +808,7 @@ proc main::_create {} {
     {.fraFV.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_SaveFile -tip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
     {.fraFV.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
     {.fraFV.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -tip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
+    {.fraFV.fra1.BuTRenF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_change -tip {$alited::al(MC,favorren)} -command ::alited::favor::Rename}}
     {.fraFV.fra1.BuTDelF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -tip {$alited::al(MC,favordel)} -com alited::favor::Delete}}
     {.fraFV.fra1.BuTDelAllF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_trash -tip {$alited::al(MC,favordelall)} -com alited::favor::DeleteAll}}
     {.fraFV.fra1.h_2 - - - - {pack -anchor center -side left -fill both -expand 1}}

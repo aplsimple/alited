@@ -28,18 +28,20 @@ package require Img
 
 ::msgcat::mcload [file join [file dirname [info script]] msgs]
 
-package provide aloupe 0.9.5
+package provide aloupe 0.9.6
 
-# _______________________________________________________________________ #
+# ________________________ Variables _________________________ #
 
 namespace eval ::aloupe {
   namespace eval my {
     variable size 26
     variable zoom 8
+    variable pause 0
     variable data
     array set data [list \
       -size $size \
       -zoom $zoom \
+      -pause $pause \
       -alpha 0.3 \
       -background #ff40ff \
       -exit yes \
@@ -54,7 +56,8 @@ namespace eval ::aloupe {
     ]
   }
 }
-# ___________________________ Internal procs ____________________________ #
+
+# ___________________________ Common procs ____________________________ #
 
 proc ::aloupe::my::Synopsis {} {
   # Short info about usage.
@@ -67,7 +70,7 @@ where 'option' may be [array names $data(DEFAULTS)].
 "
   exit
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::Message {args} {
   # Displays a message, with the loupe hidden.
@@ -77,7 +80,22 @@ proc ::aloupe::my::Message {args} {
   tk_messageBox -parent $data(WDISP) -type ok {*}$args
   wm deiconify $data(WLOUP)
 }
-# ______
+#_______________________
+
+proc ::aloupe::my::InvertBg {r g b} {
+  # Inverts colors from light to dark and vice versa to get "fg" from "bg".
+  # It's simplified way, just to not include the bulky HSV code.
+  #  r - red component
+  #  g - green component
+  #  b - blue component
+  # Returns {R G B} list of inverted colors.
+
+  set c [expr {$r<100 && $g<100 || $r<100 && $b<100 || $b<100 && $g<100 ||
+    ($r+$g+$b)<300 ? 255 : 0}]
+  return [list $c $c $c]
+}
+
+# ________________________ Main and loop windows _________________________ #
 
 proc ::aloupe::my::CreateDisplay {start} {
   # Creates the displaying window.
@@ -96,17 +114,20 @@ proc ::aloupe::my::CreateDisplay {start} {
   grid [ttk::label $data(WDISP).lab2 -text " [::msgcat::mc Zoom]"] -row 0 -column 2 -sticky e
   grid [ttk::spinbox $data(WDISP).sp2 -from 1 -to 50 -justify center \
     -width 2 -textvariable ::aloupe::my::zoom] -row 0 -column 3 -sticky w
-  grid [ttk::separator $data(WDISP).sep1 -orient horizontal] -row 1 -columnspan 4 -sticky we -pady 2
+  grid [ttk::label $data(WDISP).lab3 -text " [::msgcat::mc Pause]"] -row 0 -column 4 -sticky e
+  grid [ttk::spinbox $data(WDISP).sp3 -from 0 -to 60 -justify center \
+    -width 2 -textvariable ::aloupe::my::pause] -row 0 -column 5 -sticky w
+  grid [ttk::separator $data(WDISP).sep1 -orient horizontal] -row 1 -columnspan 6 -sticky we -pady 2
   grid [ttk::label $data(LABEL) -image $data(IMAGE) -relief flat \
-    -style [lindex [SetStyle TLabel no -bd 0] 1]] -row 2 -columnspan 4 -padx 2
+    -style [lindex [SetStyle TLabel no -bd 0] 1]] -row 2 -columnspan 6 -padx 2
   set data(BUT2) $data(WDISP).but2
   if {[set but2text $data(-commandname)] eq ""} {
     set but2text [::msgcat::mc "To clipboard"]
   }
   grid [ttk::button $data(BUT2) -text $but2text \
-    -command ::aloupe::my::Button2Click] -row 3 -column 0 -columnspan 2 -sticky ew
+    -command ::aloupe::my::Button2Click] -row 3 -column 0 -columnspan 3 -sticky ew
   grid [ttk::button $data(WDISP).but1 -text [::msgcat::mc Save] \
-    -command ::aloupe::my::Save] -row 3 -column 2 -columnspan 2 -sticky ew
+    -command ::aloupe::my::Save] -row 3 -column 3 -columnspan 3 -sticky ew
   set data(-geometry) [regexp -inline \\+.* $data(-geometry)]
   if {$data(-geometry) ne ""} {
     wm geometry $data(WDISP) $data(-geometry)
@@ -128,7 +149,7 @@ proc ::aloupe::my::CreateDisplay {start} {
   wm protocol $data(WDISP) WM_DELETE_WINDOW ::aloupe::my::Exit
   if {$data(-ontop)} {wm attributes $data(WDISP) -topmost 1}
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::CreateLoupe {{geom ""}} {
   # Creates the loupe window.
@@ -153,7 +174,7 @@ proc ::aloupe::my::CreateLoupe {{geom ""}} {
     wm attributes $data(WLOUP) -topmost 1 -alpha $data(-alpha)
     "
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::Create {start} {
   # Initializes and creates the utility's windows.
@@ -174,7 +195,8 @@ proc ::aloupe::my::Create {start} {
   set data(PREVSIZE) $data(-size)
   focus $data(WDISP)
 }
-# ______
+
+# ________________________ Drag-n-drop _________________________ #
 
 proc ::aloupe::my::DragStart {w X Y} {
   # Initializes the frag-and-drop of the loupe.
@@ -185,10 +207,12 @@ proc ::aloupe::my::DragStart {w X Y} {
   variable data
   variable size
   variable zoom
+  variable pause
   set data(FOCUS) [focus]
   focus -force $data(WDISP)
   set data(-size) $size
   set data(-zoom) $zoom
+  set data(-pause) $pause
   if {$data(PREVZOOM) != $data(-zoom) || $data(PREVSIZE) != $data(-size)} {
     SaveGeometry
     Create no
@@ -205,7 +229,7 @@ proc ::aloupe::my::DragStart {w X Y} {
   set data(dragw) [winfo width $w]
   set data(dragh) [winfo height $w]
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::Drag {w X Y} {
   # Performs the frag-and-drop of the loupe.
@@ -219,9 +243,38 @@ proc ::aloupe::my::Drag {w X Y} {
   set dy [expr {$Y - $data(dragY)}]
   wm geometry $data(WLOUP) +$dx+$dy
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::DragEnd {w} {
+  # Ends the frag-and-drop of the loupe and displays its magnified image.
+  #   w - the loupe window's path
+
+  variable data
+  if {$data(-pause)} {
+    after 1000 [list ::aloupe::my::CountDownPause $data(-pause)]
+    after [expr {$data(-pause)*1000}] [list ::aloupe::my::DisplayImage $w]
+  } else {
+    ::aloupe::my::DisplayImage $w
+  }
+}
+#_______________________
+
+proc ::aloupe::my::CountDownPause {p} {
+  # Counts down a pause.
+  #   p - remaining seconds to count down
+
+  variable data
+  if {$p} {
+    set ::aloupe::my::pause [incr p -1]
+    set msec [expr {$p ? 1000 : 200}]
+    after $msec [list ::aloupe::my::CountDownPause $p]
+  } else {
+    set ::aloupe::my::pause $data(-pause)
+  }
+}
+#_______________________
+
+proc ::aloupe::my::DisplayImage {w} {
   # Ends the frag-and-drop of the loupe and displays its magnified image.
   #   w - the loupe window's path
 
@@ -255,7 +308,8 @@ proc ::aloupe::my::DragEnd {w} {
   wm deiconify $data(WLOUP)
   focus -force $data(WDISP).but2
 }
-# ______
+
+# ________________________ Geometry _________________________ #
 
 proc ::aloupe::my::SizeLoupe {} {
   # Re-displays the loupe at changing its size.
@@ -268,7 +322,7 @@ proc ::aloupe::my::SizeLoupe {} {
   destroy $data(WLOUP)
   CreateLoupe ${sz}x${sz}+$x+$y
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::InitGeometry {{geom ""}} {
   # Gets and sets the geometry of the loupe window,
@@ -285,7 +339,7 @@ proc ::aloupe::my::InitGeometry {{geom ""}} {
   }
   wm geometry $data(WLOUP) $geom
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::SaveGeometry {} {
   # Saves the displaying window's geometry.
@@ -294,7 +348,8 @@ proc ::aloupe::my::SaveGeometry {} {
   set data(-geometry) ""
   catch {set data(-geometry) [wm geometry $data(WDISP)]}
 }
-# ______
+
+# ________________________ Widgets' styles _________________________ #
 
 proc ::aloupe::my::SetStyle {type domap args} {
   # Sets a style for of widgets with a type.
@@ -321,7 +376,7 @@ proc ::aloupe::my::SetStyle {type domap args} {
   ttk::style layout $new [ttk::style layout $type]
   return [list $config $new]
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::StyleButton2 {domap args} {
   # Makes a style for Tbutton.
@@ -338,7 +393,8 @@ proc ::aloupe::my::StyleButton2 {domap args} {
   $data(BUT2) configure -style $style
   return $config
 }
-# ______
+
+# ________________________ Capturing image _________________________ #
 
 proc ::aloupe::my::Button2Click {} {
   # Processes the click on 'Clipboard' button.
@@ -354,7 +410,7 @@ proc ::aloupe::my::Button2Click {} {
     {*}[string map [list %c $data(COLOR)] $data(-command)]
   }
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::IsCapture {} {
   # Checks if the image was captured.
@@ -367,21 +423,7 @@ proc ::aloupe::my::IsCapture {} {
   }
   return yes
 }
-# ______
-
-proc ::aloupe::my::InvertBg {r g b} {
-  # Inverts colors from light to dark and vice versa to get "fg" from "bg".
-  # It's simplified way, just to not include the bulky HSV code.
-  #  r - red component
-  #  g - green component
-  #  b - blue component
-  # Returns {R G B} list of inverted colors.
-
-  set c [expr {$r<100 && $g<100 || $r<100 && $b<100 || $b<100 && $g<100 ||
-    ($r+$g+$b)<300 ? 255 : 0}]
-  return [list $c $c $c]
-}
-# ______
+#_______________________
 
 proc ::aloupe::my::HandleColor {{doclb yes}} {
   # Processes the image color under the mouse pointer,
@@ -407,7 +449,7 @@ proc ::aloupe::my::HandleColor {{doclb yes}} {
   }
   return $res
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::PickColor {w X Y} {
   # Gets the image color under the mouse pointer.
@@ -431,7 +473,7 @@ proc ::aloupe::my::PickColor {w X Y} {
     set data(MSEC) $msec
   }
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::SaveOptions {} {
   # Saves options of appearance to a file.
@@ -444,7 +486,7 @@ proc ::aloupe::my::SaveOptions {} {
     if {[info exists data(CONFIG)]} {set old $data(CONFIG)} {set old ""}
     append new {[options]} \n
     foreach opt [array names data] {
-      if {$opt in {-size -geometry -background -zoom -alpha -ontop}} {
+      if {$opt in {-size -geometry -background -zoom -pause -alpha -ontop}} {
         if {$opt eq "-geometry"} {
           set val [wm geometry $w]
         } else {
@@ -460,7 +502,8 @@ proc ::aloupe::my::SaveOptions {} {
     }
   }
 }
-# ______
+
+# ________________________ Save / restore options _________________________ #
 
 proc ::aloupe::my::RestoreOptions {} {
   # Restores options of appearance from a file.
@@ -480,7 +523,7 @@ proc ::aloupe::my::RestoreOptions {} {
     }
   }
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::Save {} {
   # Saves the magnified image to a file.
@@ -504,7 +547,7 @@ proc ::aloupe::my::Save {} {
   }
   wm deiconify $data(WLOUP)
 }
-# ______
+#_______________________
 
 proc ::aloupe::my::Exit {} {
   # Clears all and exits.
@@ -530,7 +573,7 @@ proc ::aloupe::option {opt} {
   variable data
   return $data($opt)
 }
-# ______
+#_______________________
 
 proc ::aloupe::run {args} {
   # Runs the loupe.
@@ -576,8 +619,10 @@ proc ::aloupe::run {args} {
   catch {::apave::obj untouchWidgets "*_a_loupe_loup*"}  ;# don't theme the loupe
   set my::size [set my::data(PREVSIZE) $my::data(-size)]
   set my::zoom [set my::data(PREVZOOM) $my::data(-zoom)]
+  set my::pause $my::data(-pause)
   my::Create yes
 }
+
 # ___________________________ Stand-alone run ___________________________ #
 
 if {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]} {

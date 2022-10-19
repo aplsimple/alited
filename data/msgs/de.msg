@@ -102,7 +102,7 @@ namespace eval ::alited {
     {Delete File} {Datei löschen}
     "File %f already exists in\n%d" "Datei %f existinert schon in\n%d"
     "\nFile\n  \"%f\"\ndoesn't exist.\n" "\nDatei\n  \"%f\"\nexistiert nicht.\n"
-    {Remove Unit(s)} {Einheit(en) löschen}
+    {Delete Unit(s)} {Einheit(en) löschen}
     {No item selected.} {Kein Element ausgewählt}
     {Update Tree} {Baum aktualisieren}
     {Contract All} {Alle kolabieren}
@@ -281,10 +281,12 @@ namespace eval ::alited {
     "Remove \"%n\" of %f\nfrom Favorites?" "Lösche \"%n\" von  %f\naus Favoriten?"
     "\"%n\" unit of %f is not in the list." "Einheit \"%n\" von %f ist nicht in der Liste"
     {Add to Favorites} {Zu Favoriten hinzufügen}
-    {Remove} {Löschen}
-    {Remove All} {Alles löschen}
-    {Remove all of Favorites?} {Alle Favoriten löschen?}
-    {Remove all of the last visited?} {Alle zuletzt Besuchten löschen?}
+    {Favorite name:} {Favoritename:}
+    {Rename} {Umbenennen}
+    {Delete} {Löschen}
+    {Delete All} {Alles löschen}
+    {Delete all of Favorites?} {Alle Favoriten löschen?}
+    {Delete all of the last visited?} {Alle zuletzt Besuchten löschen?}
     {Favorites / Last Visited} {Favoriten / Zuletzt Besuchten}
   }
 
@@ -495,6 +497,7 @@ namespace eval ::alited {
     {Use leaf's regexp:} {Benutze regulären Ausdruck für Endpunkte:}
     {Leaf's regexp:} {Regulärere Ausdruck für Endpunkte:}
     {Untouched top lines:} {Unveränderte obere Zeilen:}
+    {For leaf units only!} {Nur für Endpunkten!}
   }
 
   ### ________________________ Tools _________________________ ###

@@ -1,11 +1,14 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b2 (15 Oct'22)`
+Version `1.3.5b5 (19 Oct'22)`
 
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
   - BUGFIX: (esp. for Windows) Alt+F4 for exit only
   - BUGFIX: dismissing "internal" e_menu, at least temporarily
+  - BUGFIX: correct colors of cursor & selection for code snippets in Preferences
+  - NEW   : "Pause" option for Screen Loop tool
+  - NEW   : "Rename" action for favorites' list
   - NEW   : balloons at opening non-existing files (Recent files, e_menu/Edit)
   - NEW   : at deleting units/files: close to mouse pointer, don't ask anymore
   - NEW   : "Tests" menu: doctest text's selection, doctest's help, save item's index
@@ -15,7 +18,8 @@ Version `1.3.5b2 (15 Oct'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
-  - CHANGE: (esp. for Windows) default Tkcon as Preferences/Tools/Run
+  - CHANGE: for Windows: default Tkcon as Preferences/Tools/Run
+  - CHANGE: save choice of Run query called with F5 key
   - CHANGE: only 1st line of text selection as s= option of e_menu
   - CHANGE: display tips for favorites and menu file lists at right side of pointer
   - CHANGE: checks for outward changes disabled at saving files

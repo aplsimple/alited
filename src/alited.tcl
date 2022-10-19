@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.5b2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5b5  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -198,12 +198,14 @@ source [file join $::alited::HLDIR  hl_c.tcl]
 
 # ________________________ ::argv, ::argc _________________________ #
 
+set ::alited::ARGV $::argv
+set ::alited::al(IsWindows) [expr {$::tcl_platform(platform) eq {windows}}]
+
 # The following "if" counts on the Ruff! doc generator:
 #   - Ruff! uses "package require" for a documented package ("alited", e.g.)
 #   - alited should not be run when Ruff! sources it
 #   - so, without 'package require alited', it's a regular run of alited
 
-set ::alited::al(IsWindows) [expr {$::tcl_platform(platform) eq {windows}}]
 if {[package versions alited] eq {}} {
   wm withdraw .
   if {$::alited::al(IsWindows)} {
@@ -771,7 +773,6 @@ if {[info exists ALITED_PORT]} {
     set ::argv {}
     after 10 [list ::alited::open_files_and_raise 0 {*}$ALITED_ARGV]
   }
-  set alited::ARGV $::argv
   unset ALITED_ARGV
   if {[catch {alited::ini::_init} _]} {
     # initialize GUI & data:
@@ -790,12 +791,6 @@ if {[info exists ALITED_PORT]} {
   if {[set res [alited::main::_run]]} {     ;# run the main form
     # restarting
     update
-    if {$alited::LOG ne {}} {
-      set alited::ARGV [linsert $alited::ARGV 0 LOG=$alited::LOG]
-    }
-    if {$alited::DEBUG} {
-      set alited::ARGV [linsert $alited::ARGV 0 DEBUG]
-    }
     if {[file tail [file dirname $alited::DIR]] eq {alited.kit}} {
       set alited::DIR [file dirname [file dirname $alited::DIR]]
     } else {

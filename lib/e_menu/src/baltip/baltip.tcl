@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.5
+package provide baltip 1.5.1
 
 package require Tk
 

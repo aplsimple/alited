@@ -101,7 +101,7 @@ namespace eval ::alited {
     {Delete File} {Удалить файл}
     "File %f already exists in\n%d" "Файл %f уже существует в\n%d"
     "\nFile\n  \"%f\"\ndoesn't exist.\n" "\nФайл\n  \"%f\"\nне существует.\n"
-    {Remove Unit(s)} {Удалить юнит(ы)}
+    {Delete Unit(s)} {Удалить юнит(ы)}
     {No item selected.} {Запись не выбрана.}
     {Update Tree} {Обновить список}
     {Contract All} {Свернуть всё}
@@ -278,10 +278,12 @@ namespace eval ::alited {
     "Remove \"%n\" of %f\nfrom Favorites?" "Удалить \"%n\" файла %f\nиз Избранного?"
     "\"%n\" unit of %f is not in the list." "Юнита \"%n\" файла %f нет в списке."
     {Add to Favorites} {Добавить в Избранное}
-    {Remove} {Удалить}
-    {Remove All} {Удалить всё}
-    {Remove all of Favorites?} {Удалить всё из Избранного?}
-    {Remove all of the last visited?} {Удалить всё из Последних входов?}
+    {Rename} {Переименовать}
+    {Favorite name:} {Название избранного:}
+    {Delete} {Удалить}
+    {Delete All} {Удалить всё}
+    {Delete all of Favorites?} {Удалить всё из Избранного?}
+    {Delete all of the last visited?} {Удалить всё из Последних входов?}
     {Favorites / Last Visited} {Избранное / Последние входы}
   }
 
@@ -490,6 +492,7 @@ namespace eval ::alited {
     {Use leaf's regexp:} {Использовать RE листа:}
     {Leaf's regexp:} {RE листа:}
     {Untouched top lines:} {Статичных начальных строк:}
+    {For leaf units only!} {Только для юнитов листьев!}
   }
 
   ### ________________________ Tools _________________________ ###

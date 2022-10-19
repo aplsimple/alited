@@ -1,5 +1,5 @@
 
-package ifneeded aloupe 0.9.5 [list source [file join $dir aloupe.tcl]]
+package ifneeded aloupe 0.9.6 [list source [file join $dir aloupe.tcl]]
 
 
 # A short intro (for Ruff! docs generator:)

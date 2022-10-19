@@ -365,9 +365,10 @@ proc file::DoRenameFileInTree {wtree ID fname name2} {
 }
 #_______________________
 
-proc file::RenameFileInTree {{geo ""}} {
+proc file::RenameFileInTree {{undermouse yes} args} {
   # Renames a current file in a file tree.
-  #   geo - geometry for dialogue
+  #   undermouse - if yes, run by mouse click
+  #   args - options for query
 
   namespace upvar ::alited al al obPav obPav obDl2 obDl2
   set wtree [$obPav Tree]
@@ -378,9 +379,17 @@ proc file::RenameFileInTree {{geo ""}} {
   }
   set name [$wtree item $ID -text]
   set fname [lindex [$wtree item $ID -values] 1]
+  switch -exact -- $args {
+    {} {
+      set args [alited::favor::GeoForQuery $undermouse]
+    }
+    - {
+      set args {}
+    }
+  }
   lassign [$obDl2 input {} $al(MC,renamefile) [list \
-    ent "{} {} {-w 32}" "$name"] \
-    -head [msgcat::mc {File name:}] {*}$geo] res name2
+    ent "{} {} {-w 32}" "{$name}"] \
+    -head [msgcat::mc {File name:}] {*}$args] res name2
   set name2 [string trim $name2]
   if {$res && $name2 ne {} && $name2 ne $name} {
     DoRenameFileInTree $wtree $ID $fname $name2
