@@ -292,12 +292,12 @@ proc ini::ReadIniGeometry {nam val} {
   namespace upvar ::alited al al
   switch -glob -- $nam {
     Pan* {
-      lassign [split $val x+] w h
+      lassign [::apave::splitGeometry $val] w h
       set ::alited::${nam}_wh "-w $w -h $h"
     }
     GEOM {
-      lassign [split $val x+] - - x y
-      set ::alited::al(GEOM) "-geometry +$x+$y"
+      lassign [::apave::splitGeometry $val] w h x y
+      set ::alited::al(GEOM) "-geometry $x$y"
     }
     geomfind       {set ::alited::find::geo $val}
     geomfind2      {set ::alited::find::geo2 $val}
@@ -884,7 +884,7 @@ proc ini::GetConfiguration {} {
       diR1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50 \
         -values $configs -clearcom {alited::main::ClearCbx %w ::alited::ini::configs}]] \
         "{$::alited::CONFIGDIR}" \
-    ] -head $head -help alited::ini::HelpConfiguration]
+    ] -head $head -help alited::ini::HelpConfiguration -resizable no]
   catch {alitedObjToDel destroy}
   lassign $res ok confdir
   if {$ok} {

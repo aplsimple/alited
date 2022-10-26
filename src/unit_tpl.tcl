@@ -498,7 +498,7 @@ proc unit_tpl::_create {{geom ""}} {
     after idle "alited::unit_tpl::Select $ilast"  ;# just to highlight
   }
   after 500 ::alited::unit_tpl::HelpMe ;# show an introduction after a short pause
-  set res [$obDl3 showModal $win -resizable {0 0} \
+  set res [$obDl3 showModal $win -resizable no \
     -onclose ::alited::unit_tpl::Cancel -focus $foc {*}$geom]
   baltip::configure {*}$tipson
   if {[llength $res] < 2} {set res {}}

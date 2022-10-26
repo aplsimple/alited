@@ -931,13 +931,13 @@ oo::class create ::apave::APaveDialog {
     set focusmatch {}
     # options of dialog
     lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM root ontop \
-               rotext head optsHead hsz binds postcom onclose timeout tab2
+      rotext head optsHead hsz binds postcom onclose timeout tab2 resizable
     set modal yes
     set tags {}
     set themed 0
     set wasgeo [set textmode [set stay 0]]
     set cc [set themecolors [set optsGrid [set addpopup {}]]]
-    set readonly [set hidefind [set scroll 1]]
+    set readonly [set hidefind [set scroll [set checkgeometry 1]]]
     set curpos {1.0}
     set ${_pdg(ns)}PD::ch 0
     foreach {opt val} {*}$argdia {
@@ -956,7 +956,7 @@ oo::class create ::apave::APaveDialog {
         -g - -geometry {
           set geometry $val
           if {[set wasgeo [expr {[string first "pointer" $val]<0}]]} {
-            lassign [split $geometry +] - gx gy
+            lassign [::apave::splitGeometry $geometry] - - gx gy
           }
         }
         -c - -color {append optsLabel " -foreground {$val}"}
@@ -988,7 +988,7 @@ oo::class create ::apave::APaveDialog {
         -ontop {set ontop "-ontop $val"}
         -post {set postcom $val}
         -popup {set addpopup [string map [list %w $qdlg.fra.texM] "$val"]}
-        -timeout - -focusback - -modal - -scroll - -themed - -tab2 - -stay {
+        -timeout - -focusback - -modal - -scroll - -themed - -tab2 - -stay - -resizable - -checkgeometry {
           set [string range $opt 1 end] $val
         }
         default {
@@ -1323,7 +1323,7 @@ oo::class create ::apave::APaveDialog {
     catch "$binds"
     set args [::apave::removeOptions $args -focus]
     set ::apave::querydlg $qdlg
-    my showModal $qdlg -themed $themed \
+    my showModal $qdlg -themed $themed -resizable $resizable -checkgeometry $checkgeometry \
       -focus $focusnow -geometry $geometry {*}$root {*}$modal {*}$ontop {*}$args
     oo::objdefine [self] unexport InitFindInText Pdg
     set pdgeometry [wm geometry $qdlg]
@@ -1367,13 +1367,13 @@ oo::class create ::apave::APaveDialog {
       }
     }
     if {$wasgeo} {
-      lassign [split $pdgeometry x+] w h x y
+      lassign [::apave::splitGeometry $pdgeometry] w h x y
       catch {
         # geometry option can contain pointer/root etc.
         if {abs($x-$gx)<30} {set x $gx}
         if {abs($y-$gy)<30} {set y $gy}
       }
-      return [list $result ${w}x${h}+${x}+${y} $textcont [string trim $inopts]]
+      return [list $result ${w}x$h$x$y $textcont [string trim $inopts]]
     }
     return "$result$textcont$inopts"
   }

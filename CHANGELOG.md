@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b9 (25 Oct'22)`
+Version `1.3.5b10 (25 Oct'22)`
 
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
   - BUGFIX: (esp. for Windows) Alt+F4 for exit only
@@ -28,6 +28,7 @@ Version `1.3.5b9 (25 Oct'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
+  - CHANGE: "-resizable no" and other geometry things
   - CHANGE: for Windows: default Tkcon as Preferences/Tools/Run
   - CHANGE: save choice of Run query called with F5 key
   - CHANGE: only 1st line of text selection as s= option of e_menu

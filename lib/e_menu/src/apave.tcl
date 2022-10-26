@@ -468,15 +468,15 @@ oo::class create ::apave::APave {
       # Restricts the window's sizes (thus fixing Tk's issue with a menubar)
       #   win - path to a window to be of restricted sizes
 
-      if {[lindex [$win configure -menu] 4] ne {}} {
-        lassign [split [wm geometry $win] x+] w y
-        lassign [wm minsize $win] wmin ymin
-        if {$w<$wmin && $y<$ymin} {
-          set corrgeom ${wmin}x${ymin}
+      if {[$win cget -menu] ne {}} {
+        lassign [::apave::splitGeometry [wm geometry $win]] w h
+        lassign [wm minsize $win] wmin hmin
+        if {$w<$wmin && $h<$hmin} {
+          set corrgeom ${wmin}x$hmin
         } elseif {$w<$wmin} {
-          set corrgeom ${wmin}x${y}
-        } elseif {$y<$ymin} {
-          set corrgeom ${w}x${ymin}
+          set corrgeom ${wmin}x$h
+        } elseif {$h<$hmin} {
+          set corrgeom ${w}x$hmin
         } else {
           return
         }
@@ -555,7 +555,9 @@ oo::class create ::apave::APave {
     if {($y + $h) > $scrh } {
       set y [expr {$scrh - $h}]
     }
-    return +$x+$y
+    if {![string match -* $x]} {set x +[string trimleft $x +]}
+    if {![string match -* $y]} {set y +[string trimleft $y +]}
+    return $x$y
   }
   #_______________________
 
@@ -3457,8 +3459,8 @@ oo::class create ::apave::APave {
     set minsize [::apave::getOption -minsize {*}$args]
     set args [::apave::removeOptions $args -centerme -ontop -modal -minsize -themed]
     array set opt [list -focus {} -onclose {} -geometry {} -decor 1 \
-      -root $root -resizable {} -variable {} -escape 1 {*}$args]
-    lassign [split [wm geometry $root] x+] rw rh rx ry
+      -root $root -resizable {} -variable {} -escape 1 -checkgeometry 1 {*}$args]
+    lassign [::apave::splitGeometry [wm geometry $root]] rw rh rx ry
     if {[winfo parent $win] ni {{} .}} {
       set opt(-decor) 0
     }
@@ -3471,7 +3473,10 @@ oo::class create ::apave::APave {
       set opt(-onclose) [list $opt(-onclose) ${_pav(ns)}PN::AR($win)]
     }
     if {$opt(-resizable) ne {}} {
-       wm resizable $win {*}$opt(-resizable)
+      if {[string is boolean $opt(-resizable)]} {
+        set opt(-resizable) "$opt(-resizable) $opt(-resizable)"
+      }
+      wm resizable $win {*}$opt(-resizable)
     }
     set opt(-onclose) "::apave::obj EXPORT CleanUps $win; $opt(-onclose)"
     wm protocol $win WM_DELETE_WINDOW $opt(-onclose)
@@ -3489,8 +3494,9 @@ oo::class create ::apave::APave {
       set root .[string trimleft [string range $inpgeom 5 end] .]
       set opt(-geometry) [set inpgeom {}]
     }
-    if {[set pp [string first + $opt(-geometry)]]>=0} {
-      wm geometry $win [string range $opt(-geometry) $pp end]
+    if {$opt(-geometry) ne {}} {
+      lassign [::apave::splitGeometry $opt(-geometry)] - - x y
+      wm geometry $win $x$y
     }
     if {$opt(-focus) eq {}} {
       set opt(-focus) $win
@@ -3509,8 +3515,8 @@ oo::class create ::apave::APave {
         ::tk::PlaceWindow $win widget $root
       }
     } else {
-      lassign [lrange [split $inpgeom +] end-1 end] x y
-      if {$x ne {} && $y ne {} && [string first x $inpgeom]<0} {
+      lassign [::apave::splitGeometry $inpgeom] - - x y
+      if {$x ne {} && $y ne {} && [string first x $inpgeom]<0 && $opt(-checkgeometry)} {
         set inpgeom [my checkXY $w $h $x $y]
       }
       wm geometry $win $inpgeom

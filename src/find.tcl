@@ -867,8 +867,9 @@ proc find::SearchByList_Options {findstr} {
 }
 #_______________________
 
-proc find::SearchByList_Do {} {
+proc find::SearchByList_Do {{show yes}} {
   # Does searching words by list.
+  #   show - if yes, shows results
 
   namespace upvar ::alited al al
   variable counts
@@ -900,8 +901,10 @@ proc find::SearchByList_Do {} {
       lappend notfound $findword
     }
   }
-  alited::msg ok info "[msgcat::mc FOUND:]\n$found\n[string repeat _ 50]\
-    \n\n[msgcat::mc {NOT FOUND:}]\n$notfound\n" -text 1 -w {40 70} -h {10 20}
+  if {$show} {
+    alited::msg ok info "[msgcat::mc FOUND:]\n$found\n[string repeat _ 50]\
+      \n\n[msgcat::mc {NOT FOUND:}]\n$notfound\n" -text 1 -w {40 70} -h {10 20}
+  }
 }
 #_______________________
 
@@ -923,11 +926,15 @@ proc find::SearchByList {} {
       seh2  {{} {} {}} {} \
       chb1  {$::alited::al(MC,frWord)} {$::alited::al(wordonlySBL)} \
       chb2  {$::alited::al(MC,frCase)} {$::alited::al(caseSBL)} \
-      ] -head $head -buttons {ButNxt {Find Next} ::alited::find::NextFoundByList} -weight bold -modal no -geometry $geo2 -help {alited::find::HelpFind 2}] res geo - values
+      ] -head $head -buttons {ButNxt {Find Next} ::alited::find::NextFoundByList} -weight bold -modal no -geometry $geo2 -help {alited::find::HelpFind 2} -resizable no] \
+      res geo - values
     lassign $values list match wordonly case
     if {$res} {
-      set geo2 [string range $geo [string first + $geo] end]
-      set al(listSBL) $list
+      lassign [::apave::splitGeometry $geo] - - x y
+      if {$x<0} {set x {+0}}
+      if {$y<0} {set y {+0}}
+      set geo2 $x$y
+      set al(listSBL) [string trim $list]
       set al(matchSBL) $match
       set al(wordonlySBL) $wordonly
       set al(caseSBL) $case
@@ -953,11 +960,14 @@ proc find::NextFoundByList {} {
 
   namespace upvar ::alited obFN2 obFN2
   set wtxt [alited::main::CurrentWTXT]
+  set pos0 [$wtxt tag nextrange fndTag 1.0]
+  if {$pos0 eq {}} {
+    SearchByList_Do no
+    set pos0 [$wtxt tag nextrange fndTag 1.0]
+  }
   set pos [$wtxt index insert]
   set nextpos [$wtxt tag nextrange fndTag "$pos + 1c"]
-  if {$nextpos eq {}} {
-    set nextpos [$wtxt tag nextrange fndTag 1.0]
-  }
+  if {$nextpos eq {}} {set nextpos $pos0}
   if {$nextpos eq {}} {
     bell
     focus [$obFN2 Text]

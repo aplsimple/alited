@@ -440,7 +440,7 @@ proc ::klnd::calendar {args} {
   } elseif {$parent ne {}} {
     set geo "-centerme $parent"    ;# to center in a toplevel window
   } elseif {$centerme ne {}} {
-    set geo "-centerme $centerme"  ;# it's an option of apave's 
+    set geo "-centerme $centerme"  ;# it's an option of apave's
   } else {
     set geo "-geometry +[expr {[winfo pointerx .]+10}]+[expr {[winfo pointery .]+10}]"
   }
@@ -473,7 +473,7 @@ proc ::klnd::calendar {args} {
   bind $win <KeyPress> "::klnd::my::Leave"
   # show and work with the calendar
   after idle "::klnd::my::ShowMonth $my::p(m) $my::p(y)"
-  set res [$my::p(obj) showModal $win -resizable {0 0} {*}$args {*}$geo]
+  set res [$my::p(obj) showModal $win -resizable no {*}$args {*}$geo]
   # get the result of the selection if any
   if {$res && $my::p(dvis)} {
     set res [clock format [clock scan $my::p(mvis)/$my::p(dvis)/$my::p(yvis) -format %D] -format $my::p(dformat)]

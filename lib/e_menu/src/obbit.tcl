@@ -342,6 +342,21 @@ proc ::apave::lsearchFile {flist fname} {
   }
   return -1
 }
+#_______________________
+
+proc ::apave::splitGeometry {geom} {
+  # Gets widget's geometry components.
+  #   geom - geometry
+  # Returns a list of width, height, X and Y (coordinates are always with + or -).
+
+  lassign [split $geom x+-] w h
+  lassign [regexp -inline -all {([+-][[:digit:]]+)} $geom] -> x y
+  if {$geom ne {}} {
+    if {$x in {"" 0} || [catch {expr {$x+0}}]} {set x {+0}}
+    if {$y in {"" 0} || [catch {expr {$y+0}}]} {set y {+0}}
+  }
+  return [list $w $h $x $y]
+}
 
 ## ________________________ Inits _________________________ ##
 

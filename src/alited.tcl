@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.5b9  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5b10  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -433,7 +433,7 @@ namespace eval alited {
       set res 0
     } else {
       set al(obDlg-BUSY) yes
-      set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
+      set res [$obDlg $type $icon $title "\n$message\n" {*}$defb -resizable no {*}$args]
       unset -nocomplain al(obDlg-BUSY)
     }
     return [lindex $res 0]
@@ -616,7 +616,7 @@ namespace eval alited {
       ::apave::APaveInput create $pobj
     }
     set res [$pobj ok {} Help "\n$msg\n" -text 1 -geometry root=$win -scroll no \
-      -tags ::alited::textTags -w [incr wmax] -modal no -ontop yes {*}$args]
+      -tags ::alited::textTags -w [incr wmax] -modal no -ontop yes -resizable no {*}$args]
     catch {alitedHelpObjToDel destroy}
     return $res
   }
