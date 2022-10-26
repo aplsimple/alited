@@ -1219,6 +1219,49 @@ proc project::Klnd_next2 {} {
 }
 #_______________________
 
+proc project::Klnd_previous {} {
+  # Moves a reminder back to 1 day.
+
+  Klnd_next -1
+}
+#_______________________
+
+proc project::Klnd_previous2 {} {
+  # Moves a reminder back to 7 days.
+
+  Klnd_next -7
+}
+#_______________________
+
+proc project::KlndPopup {w y m d X Y} {
+  # Handles a popup menu for the calendar.
+  #   w - day widget clicked
+  #   y - year
+  #   m - month
+  #   d - day
+  #   X - X-coordinate of pointer
+  #   Y - Y-coordinate of pointer
+
+  namespace upvar ::alited obDl2 obDl2 al al
+  KlndClick $y $m $d
+  ::klnd::selectedDay {} $y $m $d no
+  set popm $w.popup
+  catch {destroy $popm}
+  menu $popm -tearoff 0
+  foreach img {delete - previous2 previous - next next2} {
+    if {$img eq {-}} {
+      $popm add separator
+    } else {
+      $popm add command -image alimg_$img  -compound left \
+        -label $alited::al(MC,prjT$img) -command alited::project::Klnd_$img
+    }
+  }
+  $obDl2 themePopup $popm
+  tk_popup $popm $X $Y
+  KlndUpdate
+}
+#_______________________
+
 proc project::ViewDir {} {
   # Shows file chooser just to view the project's dir
   namespace upvar ::alited al al obDl2 obDl2
@@ -1476,7 +1519,7 @@ proc project::Tab1 {} {
   variable klnddata
   set klnddata(SAVEDATE) [set klnddata(SAVEPRJ) {}]
   set klnddata(toobar) "labKlndProm {on } LabKlndDate {} sev 6"
-  foreach img {delete paste undo redo - next next2} {
+  foreach img {delete paste undo redo - previous2 previous - next next2} {
     # -method option for possible disable/enable BuT_alimg_delete etc.
     if {$img eq {-}} {
       append klnddata(toobar) " sev 6"
@@ -1502,7 +1545,7 @@ proc project::Tab1 {} {
     {.sbv .TexPrj L - - {pack -side left}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
-    {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate; alited::project::KlndBorderText} -dateformat $alited::project::klnddata(dateformat) -tip {alited::project::KlndText %D}}}
+    {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate; alited::project::KlndBorderText} -dateformat $alited::project::klnddata(dateformat) -tip {alited::project::KlndText %D} -popup {alited::project::KlndPopup %W %y %m %d %X %Y}}}
     {fra3.fra - - - - {pack -fill both -expand 1} {}}
     {.seh2 - - - - {pack -side top -fill x}}
     {.too - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::project::klnddata(toobar)}}}

@@ -409,10 +409,14 @@ proc tool::EM_optionTF {args} {
   # If there is no selection, TF= option is a current file's name.
 
   namespace upvar ::alited al al
-  set wtxt [alited::main::CurrentWTXT]
-  if {[catch {set sel [$wtxt get sel.first sel.last]}]} {set sel {}}
-  if {[string length [string trim $sel]]<2 || \
-  ($args ne {} && {m=tests.mnu} ni $args)} {
+  set sels [alited::edit::SelectedLines {} yes]
+  set wtxt [lindex $sels 0]
+  set sel {}
+  foreach {l1 l2} [lrange $sels 1 end] {
+    append sel [$wtxt get $l1.0 $l2.end] \n
+  }
+  if {[string length [string trimright $sel]]<2 || \
+  (![is_mainmenu $args] && {m=tests.mnu} ni $args)} {
     set tmpname [alited::bar::FileName]
   } else {
     set tmpname [file join $al(EM,mnudir) SELECTION~]
@@ -536,7 +540,7 @@ proc tool::BeforeRunDialogue {focrun} {
   if {$focrun || [ComForced]} {set foc {-focus cbx}} {set foc {}}
   lassign [$obDl2 input {} $al(MC,beforerun) [list \
     seh1 {{} {-pady 15}} {} \
-    Tex "{$prompt2} {} {-w 80 -h 16 -tabnext cbx}" $run \
+    Tex "{$prompt2} {} {-w 80 -h 16 -tabnext *cbx*}" $run \
     seh2 {{} {-pady 15}} {} \
     lab {{} {} {-t { Also, you can set "forced command" to be run by "Run" tool:}}} {} \
     fiL [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \

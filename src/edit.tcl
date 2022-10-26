@@ -10,47 +10,60 @@
 namespace eval edit {}
 # ________________________ Indent _________________________ #
 
-proc edit::SelectedLines {{wtxt ""}} {
+proc edit::SelectedLines {{wtxt ""} {strict no}} {
   # Gets a range of lines of text that are selected at least partly.
   #   wtxt - text's path
-  # Returns a list of the text widget's path, the range of lines, "selection".
+  #   strict - if yes, only a real selection is counted
+  # Returns a list of the text widget's path and ranges of selected lines.
 
   if {$wtxt eq {}} {set wtxt [alited::main::CurrentWTXT]}
-  lassign [$wtxt tag ranges sel] pos1 pos2
-  if {[set selection $pos1] ne {}} {
-    set pos21 [$wtxt index "$pos2 linestart"]
-    if {[$wtxt get $pos21 $pos2] eq {}} {
-      set pos2 [$wtxt index "$pos2 - 1 line"]
+  set res [list $wtxt]
+  if {[catch {$wtxt tag ranges sel} sels] || ![llength $sels]} {
+    if {$strict} {
+      set sels [list]
+    } else {
+      set pos1 [set pos2 [$wtxt index insert]]
+      set sels [list $pos1 $pos2]
     }
-  } else {
-    set pos1 [set pos2 [$wtxt index insert]]
   }
-  set l1 [expr {int($pos1)}]
-  set l2 [expr {int($pos2)}]
-  return [list $wtxt $l1 $l2 $selection]
+  foreach {pos1 pos2} $sels {
+    if {$pos1 ne {}} {
+      set pos21 [$wtxt index "$pos2 linestart"]
+      if {[$wtxt get $pos21 $pos2] eq {}} {
+        set pos2 [$wtxt index "$pos2 - 1 line"]
+      }
+    }
+    set l1 [expr {int($pos1)}]
+    set l2 [expr {max($l1,int($pos2))}]
+    lappend res $l1 $l2
+  }
+  return $res
 }
 #_______________________
 
 proc edit::Indent {} {
   # Indent selected lines of text.
 
-  lassign [SelectedLines] wtxt l1 l2
   set indent $::apave::_AP_VARS(INDENT)
   set len [string length $::apave::_AP_VARS(INDENT)]
-  for {set l $l1} {$l<=$l2} {incr l} {
-    set line [$wtxt get $l.0 $l.end]
-    if {[string trim $line] eq {}} {
-      $wtxt replace $l.0 $l.end {}
-    } else {
-      set leadsp [::apave::obj leadingSpaces $line]
-      set sp [expr {$leadsp % $len}]
-      # align by the indent edge
-      if {$sp==0} {
-        set ind $indent
+  set sels [SelectedLines]
+  set wtxt [lindex $sels 0]
+  foreach {l1 l2} [lrange $sels 1 end] {
+    for {set l $l1} {$l<=$l2} {incr l} {
+      set line [$wtxt get $l.0 $l.end]
+      if {[string trim $line] eq {}} {
+        $wtxt replace $l.0 $l.end {}
       } else {
-        set ind [string repeat " " [expr {$len - $sp}]]
+        set leadsp [::apave::obj leadingSpaces $line]
+        set sp [expr {$leadsp % $len}]
+        # align by the indent edge
+        if {$sp==0} {
+          set ind $indent
+        } else {
+          set ind [string repeat " " [expr {$len - $sp}]]
+        }
+        $wtxt insert $l.0 $ind
       }
-      $wtxt insert $l.0 $ind
     }
   }
   alited::main::HighlightLine
@@ -60,19 +73,22 @@ proc edit::Indent {} {
 proc edit::UnIndent {} {
   # Unindent selected lines of text.
 
-  lassign [SelectedLines] wtxt l1 l2
   set len [string length $::apave::_AP_VARS(INDENT)]
   set spaces [list { } \t]
-  for {set l $l1} {$l<=$l2} {incr l} {
-    set line [$wtxt get $l.0 $l.end]
-    if {[string trim $line] eq {}} {
-      $wtxt replace $l.0 $l.end {}
-    } elseif {[string index $line 0] in $spaces} {
-      set leadsp [::apave::obj leadingSpaces $line]
-      # align by the indent edge
-      set sp [expr {$leadsp % $len}]
-      if {$sp==0} {set sp $len}
-      $wtxt delete $l.0 "$l.0 + ${sp}c"
+  set sels [SelectedLines]
+  set wtxt [lindex $sels 0]
+  foreach {l1 l2} [lrange $sels 1 end] {
+    for {set l $l1} {$l<=$l2} {incr l} {
+      set line [$wtxt get $l.0 $l.end]
+      if {[string trim $line] eq {}} {
+        $wtxt replace $l.0 $l.end {}
+      } elseif {[string index $line 0] in $spaces} {
+        set leadsp [::apave::obj leadingSpaces $line]
+        # align by the indent edge
+        set sp [expr {$leadsp % $len}]
+        if {$sp==0} {set sp $len}
+        $wtxt delete $l.0 "$l.0 + ${sp}c"
+      }
     }
   }
 }
@@ -119,14 +135,20 @@ proc edit::Comment {} {
   # See also: UnComment
 
   set ch [CommentChar]
-  lassign [SelectedLines] wtxt l1 l2
+  set sels [SelectedLines]
+  set wtxt [lindex $sels 0]
   ::apave::undoIn $wtxt
-  for {set l $l1} {$l<=$l2} {incr l} {
-    $wtxt insert $l.0 $ch
-    if {$ch eq "#"} {
-      # for Tcl code: it needs to disable also all braces with #\{ #\} patterns
-      set line [$wtxt get $l.0 $l.end]
-      $wtxt replace $l.0 $l.end [string map [list \} #\\\} \{ #\\\{] $line]
+  foreach {l1 l2} [lrange $sels 1 end] {
+    for {set l $l1} {$l<=$l2} {incr l} {
+      if {$ch eq "#"} {
+        # comment-out with TODO comments: to see / to find / to do them afterwards
+        $wtxt insert $l.0 $ch!
+        # for Tcl code: it needs to disable also all braces with #\{ #\} patterns
+        set line [$wtxt get $l.0 $l.end]
+        $wtxt replace $l.0 $l.end [string map [list \} #\\\} \{ #\\\{] $line]
+      } else {
+        $wtxt insert $l.0 $ch
+      }
     }
   }
   ::apave::undoOut $wtxt
@@ -142,17 +164,24 @@ proc edit::UnComment {} {
   set ch [CommentChar]
   set lch [string length $ch]
   set lch0 [expr {$lch-1}]
-  lassign [SelectedLines] wtxt l1 l2
+  set sels [SelectedLines]
+  set wtxt [lindex $sels 0]
   ::apave::undoIn $wtxt
-  for {set l $l1} {$l<=$l2} {incr l} {
-    set line [$wtxt get $l.0 $l.end]
-    set isp [$obPav leadingSpaces $line]
-    if {[string range $line $isp $isp+$lch0] eq $ch} {
-      $wtxt delete $l.$isp "$l.$isp + ${lch}c"
-      if {$ch eq "#"} {
-        # for Tcl code: it needs to enable also all braces with #\{ #\} patterns
-        set line [$wtxt get $l.0 $l.end]
-        $wtxt replace $l.0 $l.end [string map [list #\\\} \} #\\\{ \{] $line]
+  foreach {l1 l2} [lrange $sels 1 end] {
+    for {set l $l1} {$l<=$l2} {incr l} {
+      set line [$wtxt get $l.0 $l.end]
+      set isp [$obPav leadingSpaces $line]
+      if {[string range $line $isp $isp+$lch0] eq $ch} {
+        set lch2 $lch
+        if {$ch eq "#"} {
+          if {[regexp {^\s*#!} $line]} {incr lch2}  ;# remove the todo comments
+        }
+        $wtxt delete $l.$isp "$l.$isp + ${lch2}c"
+        if {$ch eq "#"} {
+          # for Tcl code: it needs to enable also all braces with #\{ #\} patterns
+          set line [$wtxt get $l.0 $l.end]
+          $wtxt replace $l.0 $l.end [string map [list #\\\} \} #\\\{ \{] $line]
+        }
       }
     }
   }

@@ -832,7 +832,11 @@ oo::class create ::apave::APaveDialog {
     upvar $widlistName widlist
     set defb1 [set defb2 [set bhlist {}]]
     foreach {but txt res} $buttons {
-      set com "${_pdg(ns)}my res $_pdg(dlg) $res"
+      if {[info commands $res] eq {}} {
+        set com "${_pdg(ns)}my res $_pdg(dlg) $res"
+      } else {
+        set com $res
+      }
       if {$but eq {butHELP}} {
         # Help button contains the command in "res"
         set com [string map "%w $win" $res]
@@ -931,7 +935,7 @@ oo::class create ::apave::APaveDialog {
     set modal yes
     set tags {}
     set themed 0
-    set wasgeo [set textmode 0]
+    set wasgeo [set textmode [set stay 0]]
     set cc [set themecolors [set optsGrid [set addpopup {}]]]
     set readonly [set hidefind [set scroll 1]]
     set curpos {1.0}
@@ -983,13 +987,10 @@ oo::class create ::apave::APaveDialog {
         -theme {append themecolors " {$val}"}
         -ontop {set ontop "-ontop $val"}
         -post {set postcom $val}
-        -focusback {set focusback $val}
-        -timeout {set timeout $val}
-        -modal {set modal $val}
         -popup {set addpopup [string map [list %w $qdlg.fra.texM] "$val"]}
-        -scroll {set scroll "$val"}
-        -themed {set themed $val}
-        -tab2 {set tab2 $val}
+        -timeout - -focusback - -modal - -scroll - -themed - -tab2 - -stay {
+          set [string range $opt 1 end] $val
+        }
         default {
           append optsFont " $opt $val"
           if {$opt ne "-family"} {
@@ -1325,7 +1326,7 @@ oo::class create ::apave::APaveDialog {
     my showModal $qdlg -themed $themed \
       -focus $focusnow -geometry $geometry {*}$root {*}$modal {*}$ontop {*}$args
     oo::objdefine [self] unexport InitFindInText Pdg
-    set pdgeometry [winfo geometry $qdlg]
+    set pdgeometry [wm geometry $qdlg]
     # the dialog's result is defined by "pave res" + checkbox's value
     set res [set result [my res $qdlg]]
     set chv [set ${_pdg(ns)}PD::ch]
@@ -1354,14 +1355,16 @@ oo::class create ::apave::APaveDialog {
     if {$textmode && $rotext ne {}} {
       set $rotext [string trimright [[my TexM] get 1.0 end]]
     }
-    destroy $qdlg
-    update
-    # pause a bit and restore the old focus
-    if {$focusback ne {} && [winfo exists $focusback]} {
-      set w ".[lindex [split $focusback .] 1]"
-      after 50 [list if "\[winfo exist $focusback\]" "focus -force $focusback" elseif "\[winfo exist $w\]" "focus $w"]
-    } else {
-      after 50 list focus .
+    if {!$stay} {
+      destroy $qdlg
+      update
+      # pause a bit and restore the old focus
+      if {$focusback ne {} && [winfo exists $focusback]} {
+        set w ".[lindex [split $focusback .] 1]"
+        after 50 [list if "\[winfo exist $focusback\]" "focus -force $focusback" elseif "\[winfo exist $w\]" "focus $w"]
+      } else {
+        after 50 list focus .
+      }
     }
     if {$wasgeo} {
       lassign [split $pdgeometry x+] w h x y

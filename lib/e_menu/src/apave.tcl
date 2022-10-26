@@ -311,8 +311,31 @@ namespace eval ::apave {
     #   ev - event
     # The hl_tcl needs to call MemPos before any action changing the text.
 
-     catch {::hl_tcl::my::MemPos $w}
-     event generate $w $ev
+    catch {::hl_tcl::my::MemPos $w}
+    if {[catch {$w tag ranges sel} sels]} {set sels [list]}
+    switch -exact -- $ev {
+      <<Cut>> - <<Copy>> {
+        if {[set llen [expr {[llength $sels]-1}]] < 2} return
+        # multiple ranges of selection:
+        # first, copy all selections to clipboard
+        clipboard clear -displayof $w
+        foreach {pos1 pos2} $sels {
+          clipboard append -displayof $w [$w get $pos1 $pos2]
+        }
+        if {$ev eq {<<Cut>>}} {
+          # for Cut event: delete all selections
+          for {set i $llen} {$i>0} {incr i -2} {
+            set pos1 [lindex $sels $i-1]
+            set pos2 [lindex $sels $i]
+            $w delete $pos1 $pos2
+          }
+        }
+        return -code break
+      }
+      default {
+        event generate $w $ev
+      }
+    }
   }
   #_______________________
 
@@ -2232,10 +2255,12 @@ oo::class create ::apave::APave {
       }
     } else {
       if {$istext} {
+        ::apave::bindToEvent $w <<Copy>> ::apave::eventOnText $w <<Copy>>
+        ::apave::bindToEvent $w <<Cut>> ::apave::eventOnText $w <<Cut>>
         $pop add command {*}[my iconA cut] -accelerator Ctrl+X -label Cut \
-          -command "::apave::eventOnText $w <<Cut>>"
+          -command "event generate $w <<Cut>>"
         $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label Copy \
-          -command "::apave::eventOnText $w <<Copy>>"
+          -command "event generate $w <<Copy>>"
         $pop add command {*}[my iconA paste] -accelerator Ctrl+V -label Paste \
           -command "::apave::eventOnText $w <<Paste>>"
         $pop add separator

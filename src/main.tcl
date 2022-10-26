@@ -453,6 +453,7 @@ proc main::GotoLine {} {
     set ::alited::main::gotoline1 {}
     set ::alited::main::gotolineTID $TID
   }
+  after 300 {catch {bind [apave::dlgPath] <F1> {alited::HelpAlited #units5}}}
   lassign [$obDl2 input {} $head [list \
     spx "{$prompt1} {} {-w 6 -justify center -from 1 -to $lmax -selected yes}" "{$ln}" \
     cbx "{$prompt2} {} {-tvar ::alited::main::gotoline1 -state readonly -h 16 -w 20}" "{$::alited::main::gotoline1} $::alited::main::gotoline2" \
@@ -541,6 +542,17 @@ proc main::AfterUndoRedo {} {
 
   HighlightLine
   after 0 {after idle {alited::main::SaveVisitInfo ; alited::main::UpdateUnitTree}}
+}
+#_______________________
+
+proc main::AfterCut {} {
+  # Actions after cutting text: resets the unit tree's selection.
+
+  namespace upvar ::alited al al obPav obPav
+  if {$al(TREE,isunits)} {
+    [$obPav Tree] selection set {}
+    after idle alited::main::FocusText
+  }
 }
 
 # ________________________ GUI _________________________ #
@@ -651,6 +663,7 @@ proc main::BindsForText {TID wtxt} {
   ::apave::bindToEvent $wtxt <KeyRelease> alited::main::SaveVisitInfo $wtxt %K %s
   ::apave::bindToEvent $wtxt <<Undo>> alited::main::AfterUndoRedo
   ::apave::bindToEvent $wtxt <<Redo>> alited::main::AfterUndoRedo
+  ::apave::bindToEvent $wtxt <<Cut>> after 50 {after 50 alited::main::AfterCut}
   alited::keys::ReservedAdd $wtxt
   alited::keys::BindKeys $wtxt action
   alited::keys::BindKeys $wtxt template

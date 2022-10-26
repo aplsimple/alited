@@ -18,7 +18,7 @@ proc  ::hl_tcl_html::insertTag {pN tN lcodeN} {
   #   pN - variable's name for a position of the tag
   #   tN - variable's name for the tag
   #   lcodeN - variable's name for the list of code lines
-  
+
   upvar 1 $pN p $tN t $lcodeN lcode
   lassign [split $p .] l c
   incr l -1
@@ -43,6 +43,9 @@ proc ::hl_tcl_html::highlight {htmlfile darkedit args} {
   chan configure $chan -encoding utf-8
   set text [read $chan]
   close $chan
+  lassign [::hl_tcl::hl_colors 1 $darkedit] clrCOM clrCOMTK clrSTR \
+    clrVAR clrCMN clrPROC clrOPT clrBRA
+  lassign [::hl_tcl::addingColors $darkedit] -> clrCMN2
   foreach {tag1 tag2} $args {
     set ic [set ic2 0]
     while {$ic>=0 && $ic2>=0} {
@@ -58,8 +61,6 @@ proc ::hl_tcl_html::highlight {htmlfile darkedit args} {
           }
           set code [string map [list "&quot;" \" "&amp;" &] $code]
           ::hl_tcl::hl_init $txt -dark $darkedit -seen 99999999
-          lassign [::hl_tcl::hl_colors 1 $darkedit] clrCOM clrCOMTK clrSTR \
-            clrVAR clrCMN clrPROC clrOPT clrBRA - clrCMN2
           $txt replace 1.0 end $code
           ::hl_tcl::hl_text $txt
           set taglist [list]
@@ -75,7 +76,7 @@ proc ::hl_tcl_html::highlight {htmlfile darkedit args} {
           set lcode [split $code \n]
           foreach tagdat $taglist {
             lassign $tagdat -> tag typ pos
-            switch $tag {
+            switch -exact $tag {
               tagCOM {
                 set t1 "<b><font color=$clrCOM>"
                 set t2 "</font></b>"

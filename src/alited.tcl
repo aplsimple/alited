@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.5b5  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5b9  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -30,7 +30,7 @@ foreach _ {apave baltip bartabs hl_tcl ttk::theme::awlight ttk::theme::awdark aw
   unset __
 }
 
-# __________________________ alited NS _________________________ #
+# __________________________ alited:: Main _________________________ #
 
 namespace eval alited {
 
@@ -177,14 +177,14 @@ namespace eval alited {
   }
 
   proc main_user_dirs {} {
-  # Gets names of main user directories for settings.
+    # Gets names of main user directories for settings.
 
     set ::alited::USERDIR [file join $::alited::CONFIGDIR alited]
     set ::alited::INIDIR [file join $::alited::USERDIR ini]
     set ::alited::PRJDIR [file join $::alited::USERDIR prj]
   }
 
-  ## _ EONS _ ##
+  ## _ EONS: Main _ ##
 }
 
 # _____________________________ Packages used __________________________ #
@@ -330,7 +330,7 @@ if {[package versions alited] eq {}} {
 
 }
 
-# __________________________ Common procs ________________________ #
+# __________________________ alited:: Common ________________________ #
 
 namespace eval alited {
 
@@ -528,23 +528,23 @@ namespace eval alited {
     #   red - yes for red background
     #   timo - millisec. before showing the message
 
-  variable al
-  variable obPav
-  if {$red} {
-    set fg white
-    set bg #bf0909
-  } else {
-    set cs [$obPav csGet]
-    set fg [lindex $cs 14]  ;# colors of baltip's tips
-    set bg [lindex $cs 15]
-  }
-  lassign [split [winfo geometry $al(WIN)] x+] w h x y
-  set geo "+([expr {$w+$x}]-W-8)+$y-20"
-  set msg [string map [list \n "  \n  "] $msg]
-  ::baltip clear $al(WIN)
-  after $timo [list ::baltip tip $al(WIN) $msg -fg $fg -bg $bg -alpha 0.9 \
-      -font {-weight bold -size 11} -pause 1000 -fade 1000 \
-      -geometry $geo -bell $red -on yes -relief groove]
+    variable al
+    variable obPav
+    if {$red} {
+      set fg white
+      set bg #bf0909
+    } else {
+      set cs [$obPav csGet]
+      set fg [lindex $cs 14]  ;# colors of baltip's tips
+      set bg [lindex $cs 15]
+    }
+    lassign [split [winfo geometry $al(WIN)] x+] w h x y
+    set geo "+([expr {$w+$x}]-W-8)+$y-20"
+    set msg [string map [list \n "  \n  "] $msg]
+    ::baltip clear $al(WIN)
+    after $timo [list ::baltip tip $al(WIN) $msg -fg $fg -bg $bg -alpha 0.9 \
+        -font {-weight bold -size 11} -pause 1000 -fade 1000 \
+        -geometry $geo -bell $red -on yes -relief groove]
   }
   #_______________________
 
@@ -568,10 +568,11 @@ namespace eval alited {
   }
   #_______________________
 
-  proc HelpAlited {} {
+  proc HelpAlited {{ilink ""}} {
     # Shows a main help of alited.
+    #   ilink - internal link
 
-    ::apave::openDoc [file join $alited::DIR doc index.html]
+    ::apave::openDoc file://[file join $alited::DIR doc index.html]$ilink
   }
   #_______________________
 
@@ -728,7 +729,7 @@ namespace eval alited {
     }
   }
 
-  ## _______________________ Sources in alited NS _______________________ ##
+  ## _______________________ Sources in alited:: _______________________ ##
 
   source [file join $SRCDIR ini.tcl]
   source [file join $SRCDIR img.tcl]
@@ -751,6 +752,9 @@ namespace eval alited {
   source [file join $SRCDIR project.tcl]
   source [file join $SRCDIR complete.tcl]
   source [file join $SRCDIR edit.tcl]
+
+  ## _ EONS: Common _ ##
+
 }
 
 # _________________________ Run the app _________________________ #

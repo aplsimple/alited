@@ -244,8 +244,10 @@ namespace eval ::alited {
     {No selected files} {Немає виділених файлів}
     {Open file:} {Відкрито файл:}
     {Open files: %n} {Відкрито файлів: %n}
-    {Move TODO to next day} {Перенести TODO на день}
-    {Move TODO to next week} {Перенести TODO на тиждень}
+    {TODO previous day} {TODO на день раніше}
+    {TODO previous week} {TODO на тиждень раніше}
+    {TODO next day} {TODO на день піздніше}
+    {TODO next week} {TODO на тиждень піздніше}
     on на
     {Incorrect name: %n} {Некоректна назва: %n}
     {The project template is empty!} {Шаблон проекту пустий!}
@@ -345,6 +347,7 @@ namespace eval ::alited {
     {\n Enter a list of words divided by spaces: \n} {\n Введіть список слів, разділених пробілами: \n}
     {FOUND:} {ЗНАЙДЕНІ:}
     {NOT FOUND:} {НЕ ЗНАЙДЕНІ:}
+    "Use this geometry of the dialogue\nby default" "Використовувати цю геометрію діалогу\nза замовчуванням"
   }
 
   ## ________________________ Checking ini directory ________________________ ##
@@ -363,7 +366,7 @@ namespace eval ::alited {
     {Authors:} {Автори:}
     {License:} {Ліцензія:}
     {Acknowledgements} {Вдячності}
-    "Many thanks to the following people\n who have contributed to this project" "Щира подяка всім цим людям,\n що внесли свій вклад в цей проект"
+    "Many thanks to the following people\n who have contributed to this project\n with their participation, advice and code" "Щира подяка всім цим людям,\n що внесли свій вклад в цей проект\n своїми порадами, співучастю та кодом"
     {Special thanks also to} {Особлива вдячність також}
     {Packages} {Пакети}
     {Packages used by <red>alited %ver</red>:} {Пакети, використовані в <red>alited %ver</red>:}

@@ -18,6 +18,7 @@ namespace eval find {
 
   # initial geometry of the dialogue
   variable geo root=$::alited::al(WIN)
+  variable geo2 $geo
 
   # -minsize option of the dialogue
   variable minsize {-minsize {400 100}}
@@ -448,6 +449,23 @@ proc find::InitShowResults {} {
 
 # ________________________ Do search _________________________ #
 
+proc find::FoundTag {wtxt} {
+  # Adds a tag of found strings to a text widget.
+  #   wtxt - path to the text
+
+  namespace upvar ::alited obPav obPav
+  if {[$obPav csDark]} {
+    set fg white
+    set bg #1c1cff
+  } else {
+    set fg black
+    set bg #8fc7ff
+  }
+  $wtxt tag configure fndTag -borderwidth 1 -relief raised -foreground $fg -background $bg
+  $wtxt tag lower fndTag
+}
+#_______________________
+
 proc find::CheckWord {wtxt index1 index2 {wordonly {}}} {
   # Check if the found string is a word, at searching by words,
   #   wtxt - text widget's path
@@ -498,15 +516,7 @@ proc find::Search {wtxt} {
   lassign [FindOptions $wtxt] findstr options
   if {![CheckData find]} {return {}}
   $obPav set_HighlightedString $findstr
-  if {[$obPav csDark]} {
-    set fg white
-    set bg #1c1cff
-  } else {
-    set fg black
-    set bg #8fc7ff
-  }
-  $wtxt tag configure fndTag -borderwidth 1 -relief raised -foreground $fg -background $bg
-  $wtxt tag lower fndTag
+  FoundTag $wtxt
   lassign [Search1 $wtxt 1.0] err fnd
   if {$err} {return {}}
   set i 0
@@ -865,6 +875,8 @@ proc find::SearchByList_Do {} {
   set found [set notfound [list]]
   set wtxt [alited::main::CurrentWTXT]
   set list [string map {\n { }} $al(listSBL)]
+  FoundTag $wtxt
+  ClearTags
   foreach findword [split $list] {
     lassign [SearchByList_Options $findword] findstr options
     if {[catch {set fnd [$wtxt search {*}$options -count alited::find::counts -all -- $findstr 1.0]} err]} {
@@ -880,6 +892,7 @@ proc find::SearchByList_Do {} {
           if {[lsearch -exact $found $word]==-1} {
             lappend found $word
           }
+          $wtxt tag add fndTag $index1 $index2
         }
         incr i
       }
@@ -896,20 +909,24 @@ proc find::SearchByList {} {
   # Searches words by list.
 
   namespace upvar ::alited al al obFN2 obFN2
+  variable geo2
   set head [msgcat::mc {\n Enter a list of words divided by spaces: \n}]
   while {1} {
+    after 300 {catch {bind [apave::dlgPath] <F3> alited::find::NextFoundByList}}
     set text [string map [list $alited::EOL \n] $al(listSBL)]
     if {$al(matchSBL) eq {}} {set al(matchSBL) $al(MC,frExact)}
     after idle [list catch {set ::alited::al(FN2WINDOW) $::apave::MODALWINDOW}]
     lassign [$obFN2 input {} [msgcat::mc {Find by List}] [list \
-      tex "{[msgcat::mc List:]} {} {-w 50 -h 8}" "$text" \
+      Text "{[msgcat::mc List:]} {} {-w 50 -h 8 -tabnext *radA1}" "$text" \
       seh1  {{} {} {}} {} \
       radA  {$::alited::al(MC,frMatch)} {"$::alited::al(matchSBL)" "$::alited::al(MC,frExact)" Glob RE} \
       seh2  {{} {} {}} {} \
       chb1  {$::alited::al(MC,frWord)} {$::alited::al(wordonlySBL)} \
       chb2  {$::alited::al(MC,frCase)} {$::alited::al(caseSBL)} \
-      ] -head $head -weight bold -modal no] res list match wordonly case
+      ] -head $head -buttons {ButNxt {Find Next} ::alited::find::NextFoundByList} -weight bold -modal no -geometry $geo2 -help {alited::find::HelpFind 2}] res geo - values
+    lassign $values list match wordonly case
     if {$res} {
+      set geo2 [string range $geo [string first + $geo] end]
       set al(listSBL) $list
       set al(matchSBL) $match
       set al(wordonlySBL) $wordonly
@@ -918,6 +935,35 @@ proc find::SearchByList {} {
     } else {
       break
     }
+  }
+  ClearTags
+}
+#_______________________
+
+proc find::HelpFind {suff} {
+  # Helps on search by list.
+  #   suff - help's suffix
+
+  alited::Help [apave::dlgPath] $suff
+}
+#_______________________
+
+proc find::NextFoundByList {} {
+  # Finds next occurence of found strings.
+
+  namespace upvar ::alited obFN2 obFN2
+  set wtxt [alited::main::CurrentWTXT]
+  set pos [$wtxt index insert]
+  set nextpos [$wtxt tag nextrange fndTag "$pos + 1c"]
+  if {$nextpos eq {}} {
+    set nextpos [$wtxt tag nextrange fndTag 1.0]
+  }
+  if {$nextpos eq {}} {
+    bell
+    focus [$obFN2 Text]
+  } else {
+    alited::main::FocusText [alited::bar::CurrentTabID] [lindex $nextpos 0]
+    focus [$obFN2 ButNxt]
   }
 }
 
@@ -941,6 +987,7 @@ proc find::_create {} {
   variable minsize
   variable data
   set data(lastinvoke) 1
+  set data(geoDefault) 0
   set res 1
   set w $win.fra
   while {$res} {
@@ -969,21 +1016,23 @@ proc find::_create {} {
       {But1 sev2 L 1 1 {-st wes -pady 2} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
       {But2 but1 T 1 1 {-st we -pady 0} {-t "All in Text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
       {But3 but2 T 1 1 {-st wen -pady 2} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
-      {seh2 but3 T 1 1 {-st ews}}
-      {seh3 seh2 T 1 1 {-st ews}}
-      {but4 seh3 T 1 1 {-st wes -pady 2} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
+      {Chb but3 T 2 1 {-st en} {-var ::alited::find::data(geoDefault) -tip "Use this geometry of the dialogue\nby default" -takefocus 0}}
+      {but4 Chb T 1 1 {-st wes -pady 2} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
       {but5 but4 T 1 1 {-st we -pady 0} {-t "All in Text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
       {But6 but5 T 1 1 {-st wen -pady 2} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
     }
     SessionButtons
     bind $win <Enter> alited::find::SessionButtons
+    bind $win <F1> {alited::HelpAlited #search1}
     bind $win <F3> "$w.but1 invoke"
     bind $w.cbx1 <Return> "$w.but1 invoke"  ;# hotkeys in comboboxes
     bind $w.cbx2 <Return> "$w.but4 invoke"
     foreach k {f F} {bind $w.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}
     after idle "$w.cbx1 selection range 0 end"
     set res [$obFND showModal $win -geometry $geo {*}$minsize -focus $w.cbx1 -modal no]
-    set geo [wm geometry $win] ;# save the new geometry of the dialogue
+    if {[string match root=* $geo] || $data(geoDefault)} {
+      set geo [wm geometry $win] ;# save the new geometry of the dialogue
+    }
     destroy $win
     ClearTags
   }

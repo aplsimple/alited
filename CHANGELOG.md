@@ -1,12 +1,22 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b5 (19 Oct'22)`
+Version `1.3.5b9 (25 Oct'22)`
 
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
   - BUGFIX: (esp. for Windows) Alt+F4 for exit only
   - BUGFIX: dismissing "internal" e_menu, at least temporarily
   - BUGFIX: correct colors of cursor & selection for code snippets in Preferences
+  - BUGFIX: selected text for "Run Tcl" of menu.mnu
+  - NEW   : highlight strings found by "Find by List" dialogue while it's open
+  - NEW   : "Find Next" and F3 for occurences found by "Find by List" dialogue
+  - NEW   : Projects: new TODO buttons; changed tips; popup menu for days
+  - NEW   : helps for: "Find by List", "Find/Replace" (F1), "Go to Line" (F1)
+  - NEW   : save position of "Find by List" dialogue
+  - NEW   : checkbox "Use this geometry of the dialogue by default" in Find/Replace
+  - NEW   : Ctrl/Shift at clicking the unit tree: multiple selections,
+            which are used to: cut & copy, comment & uncomment, doctest
+  - NEW   : comment-out with TODO comments: to see / to find / to do them afterwards
   - NEW   : "Pause" option for Screen Loop tool
   - NEW   : "Rename" action for favorites' list
   - NEW   : balloons at opening non-existing files (Recent files, e_menu/Edit)
@@ -24,7 +34,7 @@ Version `1.3.5b5 (19 Oct'22)`
   - CHANGE: display tips for favorites and menu file lists at right side of pointer
   - CHANGE: checks for outward changes disabled at saving files
   - CHANGE: alited docs
-  - CHANGE: packages: apave/e_menu 3.5.7, baltip 1.5
+  - CHANGE: packages: apave/e_menu 3.5.8, baltip 1.5.1, hl_tcl 0.9.43
 
 
 Version `1.3.4 (21 Sep'22)`

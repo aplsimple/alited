@@ -94,7 +94,7 @@ proc about::About {} {
     <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>"
   set wmax [expr {4+max([string length $long1], \
     [string length $long2],[string length $long3])}]
-  set ackn [msgcat::mc "Many thanks to the following people\n who have contributed to this project"]
+  set ackn [msgcat::mc "Many thanks to the following people\n who have contributed to this project\n with their participation, advice and code"]
   set spec [msgcat::mc "Special thanks also to"]
   set ::alited::AboutAckn "\n $ackn\n\n \
     \u2022 <linkSH>Steve Huntley</linkSH>\n \

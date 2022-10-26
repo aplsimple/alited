@@ -506,11 +506,12 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
       set exts $al(TclExtensions)
       append exts { } $al(ClangExtensions)
       append exts { } $al(TextExtensions)
+      set sexts "  $al(TclExtensions)\n  $al(ClangExtensions)\n  $al(TextExtensions)"
       set exts [string trim [string map {{ } {, } . {}} $exts]]
       set ext [string tolower [string trim [file extension $fname] .]]
       set esp [split [string map [list { } {} \n ,] $exts] ,]
       if {!$reload && $ext ni $esp} {
-        set msg [string map [list %f [file tail $fname] %s $exts] $al(MC,nottoopen)]
+        set msg [string map [list %f [file tail $fname] %s $sexts] $al(MC,nottoopen)]
         if {$askopen<11} {
           set askopen [alited::msg $ync warn $msg YES {*}$chopt]
         }
@@ -1112,7 +1113,7 @@ proc file::ChooseRecent {idx} {
   namespace upvar ::alited al al
   set fname [lindex $al(RECENTFILES) $idx]
   AddRecent $fname
-  if {[OpenFile $fname] eq {}} {
+  if {[OpenFile $fname] eq {} && ![file exists $fname]} {
     alited::menu::FillRecent 0
     alited::Balloon1 $fname
   }

@@ -239,8 +239,10 @@ namespace eval ::alited {
     {No selected files} {Keine ausgewählte(n) Datei(en)}
     {Open file:} {Ausgewählt Datei:}
     {Open files: %n} {Ausgewählten Dateien: %n}
-    {Move TODO to next day} {Vertagen TODO auf Tage}
-    {Move TODO to next week} {Vertagen TODO auf Woche}
+    {TODO previous day} {TODO auf vorherigen Tag}
+    {TODO previous week} {TODO auf vorherige Woche}
+    {TODO next day} {TODO auf folgenden Tag}
+    {TODO next week} {TODO auf folgende Woche}
     on zum
     {Incorrect name: %n} {Inkorrekter Name: %n}
     {The project template is empty!} {Die Projektvorlage ist leer!}
@@ -341,6 +343,7 @@ namespace eval ::alited {
     {\n Enter a list of words divided by spaces: \n} {\n Eine Liste von durch Leerzeichen getrennten Wörter eingeben: \n}
     {FOUND:} {TREFFER:}
     {NOT FOUND:} {KEIN TREFFER:}
+    "Use this geometry of the dialogue\nby default" "Standardmäßig diese Geometrie\ndes Dialogs verwenden"
   }
 
   ## ________________________ Checking ini directory ________________________ ##
@@ -360,7 +363,7 @@ namespace eval ::alited {
     {Authors:} {Authoren:}
     {License:} {Lizens:}
     {Acknowledgements} {Anerkennungen}
-    "Many thanks to the following people\n who have contributed to this project" "Vielen Dank an die folgenden Personen,\n die zu diesem Projekt beigetragen haben"
+    "Many thanks to the following people\n who have contributed to this project\n with their participation, advice and code" "Vielen Dank an die folgenden Personen,\n die zu diesem Projekt beigetragen haben\n mit ihrer Teilnahme, Beratung und Code"
     {Special thanks also to} {Besonderen Dank auch an}
     {Packages} {Pakete}
     {Packages used by <red>alited %ver</red>:} {Von <red>alited %ver</red> verwendete Pakete:}

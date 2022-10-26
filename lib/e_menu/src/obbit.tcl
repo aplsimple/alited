@@ -81,7 +81,7 @@ namespace eval ::apave {
   set ::apave::_CS_(ALL) {
 {{ 0: AwLight}        "#141414" #151616 #dfdfde #d1d1d0 #28578a #85b4e7 #000 #444 grey #4776a9 #000 #97c6f9 - #bebebd #000 #FBFB96 #cacaca #a20000 #76b2f1 #005 #006 #007}
 
-{{ 1: AzureLight}     "#050b0d" #050b0d #ffffff #e1e1e1 #00516b #66e5ff #000 #444 grey #007f99 #000 #77f6ff - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
+{{ 1: AzureLight}     "#050b0d" #050b0d #ffffff #e1e1e1 #00516b #a2f2ff #000 #444 grey #007f99 #000 #92e2ef - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
 
 {{ 2: ForestLight}    "#050b0d" #050b0d #ffffff #e1e1e1 #1d5d1d #A8CCA8 #000 #185818 grey #328457 #000 #b6cbb6 - #cccccc #000 #FBFB95 #e2e2e0 #ad0000 #76b2f1 #005 #006 #007}
 

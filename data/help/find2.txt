@@ -1,0 +1,28 @@
+ Sometimes it may be needed to know whether some words /
+ names / tags / keys etc. are used in some files.
+
+ When the list of words to find is long, this feature
+ of alited might be useful.
+ ___________________________________________________________
+
+ Enter a list of words to search. Divide them by spaces.
+
+ Use additional options to search:
+
+ - by exact coincidence
+ - by glob pattern like <b>this*</b> or <b>this?that</b>
+ - by regular expression like <b>^\s*[Tt]his\s+or\s+that</b>
+ - by words only
+ - with matching case
+
+ After the search you will see a window of results.
+ You can copy the results to paste them into your files.
+
+ Close "Results" window and search again if it's necessary.
+
+ Hit "Find Next" button or press F3 key to walk through the
+ list of found occurences.
+
+ You need not to close "Find by List" window to go to a next
+ file where you want to repeat the search.
+ <b>Just select the file's tab.</b>

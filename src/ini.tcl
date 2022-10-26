@@ -300,6 +300,7 @@ proc ini::ReadIniGeometry {nam val} {
       set ::alited::al(GEOM) "-geometry +$x+$y"
     }
     geomfind       {set ::alited::find::geo $val}
+    geomfind2      {set ::alited::find::geo2 $val}
     geomproject    {set ::alited::project::geo $val}
     geompref       {set ::alited::pref::geo $val}
     dirgeometry    {set ::alited::DirGeometry $val}
@@ -727,7 +728,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "emcs=$al(EM,CS)"
   puts $chan "emowncs=$al(EM,ownCS)"
   puts $chan "emgeometry=$al(EM,geometry)"
-#  puts $chan "emexec=$al(EM,exec)"
+  #  puts $chan "emexec=$al(EM,exec)"
   puts $chan "emdiff=$al(EM,DiffTool)"
   for {set i 0} {$i<$em_Num} {incr i} {
     if {[info exists em_sep($i)]} {
@@ -754,6 +755,7 @@ proc ini::SaveIni {{newproject no}} {
   }
   puts $chan "GEOM=[wm geometry $al(WIN)]"
   puts $chan "geomfind=$::alited::find::geo"
+  puts $chan "geomfind2=$::alited::find::geo2"
   puts $chan "geomproject=$::alited::project::geo"
   puts $chan "geompref=$::alited::pref::geo"
   puts $chan "treecw0=[[$obPav Tree] column #0 -width]"
@@ -1100,8 +1102,8 @@ proc ini::_init {} {
   set listIcons [::apave::iconImage]
   # the below icons' order defines their order in the toolbar
   TipToolHotkeys
-  foreach {icon} {none gulls heart add change delete up down paste plus minus \
-  retry misc previous next next2 folder file OpenFile SaveFile saveall categories \
+  foreach {icon} {none gulls heart add change delete up down paste plus minus retry \
+  misc previous previous2 next next2 folder file OpenFile SaveFile saveall categories \
   undo redo replace ok color date help run e_menu other trash actions paste} {
     set img [CreateIcon $icon]
     if {$icon in {file OpenFile SaveFile saveall categories undo redo replace \

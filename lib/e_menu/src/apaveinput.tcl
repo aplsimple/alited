@@ -8,7 +8,7 @@
 
 package require Tk
 
-package provide apave 3.5.7
+package provide apave 3.5.9
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -257,8 +257,9 @@ oo::class create ::apave::APaveInput {
       lappend _savedvv $vv [set $vv]
       set frameprev $framename
     }
-    lassign [::apave::parseOptions $args -titleHELP {} -titleOK OK -titleCANCEL Cancel \
-      -centerme {}] titleHELP titleOK titleCANCEL centerme
+    lassign [::apave::parseOptions $args \
+      -titleHELP {} -buttons {} -titleOK OK -titleCANCEL Cancel -centerme {}] \
+      titleHELP buttons titleOK titleCANCEL centerme
     if {$titleHELP eq {}} {
       set butHelp {}
     } else {
@@ -275,11 +276,12 @@ oo::class create ::apave::APaveInput {
     } else {
       set centerme "-centerme $centerme"
     }
-    set args [::apave::removeOptions $args -titleHELP -titleOK -titleCANCEL -centerme]
+    set args [::apave::removeOptions $args \
+      -titleHELP -buttons -titleOK -titleCANCEL -centerme]
     lappend args {*}$focusopt
     if {[catch { \
-    set res [my Query $icon $ttl {} "$butHelp butOK $titleOK 1 $butCancel" butOK \
-    $inopts [my PrepArgs $args] "" {*}$centerme]} e]} {
+        set res [my Query $icon $ttl {} "$butHelp $buttons butOK $titleOK 1 $butCancel" \
+        butOK $inopts [my PrepArgs $args] "" {*}$centerme]} e]} {
       catch {destroy $_pdg(dlg)}  ;# Query's window
       ::apave::obj ok err "ERROR" "\n$e\n" \
         -t 1 -head "\nAPaveInput returned an error: \n" -hfg red -weight bold

@@ -238,8 +238,10 @@ namespace eval ::alited {
     {No selected files} {Нет выделенных файлов}
     {Open file:} {Открыт файл:}
     {Open files: %n} {Открыто файлов: %n}
-    {Move TODO to next day} {Перенести TODO на день}
-    {Move TODO to next week} {Перенести TODO на неделю}
+    {TODO previous day} {TODO на день раньше}
+    {TODO previous week} {TODO на неделю раньше}
+    {TODO next day} {TODO на день позже}
+    {TODO next week} {TODO на неделю позже}
     on на
     {Incorrect name: %n} {Некорректное имя: %n}
     {The project template is empty!} {Шаблон проекта пуст!}
@@ -338,6 +340,7 @@ namespace eval ::alited {
     {\n Enter a list of words divided by spaces: \n} {\n Введите список слов, разделенных пробелами: \n}
     {FOUND:} {НАЙДЕНЫ:}
     {NOT FOUND:} {НЕ НАЙДЕНЫ:}
+    "Use this geometry of the dialogue\nby default" "Использовать эту геометрию диалога\nпо умолчанию"
   }
 
   ## ________________________ Checking ini directory ________________________ ##
@@ -356,7 +359,7 @@ namespace eval ::alited {
     {Authors:} {Авторы:}
     {License:} {Лицензия:}
     {Acknowledgements} {Благодарности}
-    "Many thanks to the following people\n who have contributed to this project" "Огромное спасибо всем этим людям,\n внесшим свой вклад в этот проект"
+    "Many thanks to the following people\n who have contributed to this project\n with their participation, advice and code" "Огромное спасибо всем этим людям,\n внесшим свой вклад в этот проект\n своими советами, соучастием и кодом"
     {Special thanks also to} {Особая благодарность также}
     {Packages} {Пакеты}
     {Packages used by <red>alited %ver</red>:} {Пакеты, использованные в <red>alited %ver</red>:}

@@ -682,6 +682,22 @@ proc tree::DropItems {ID} {
 }
 #_______________________
 
+proc tree::SelectUnits {wtree ctrl} {
+  # Selects units at Ctrl/Shift clicking the unit tree.
+  #   wtree - path to tree widget
+  #   ctrl - 1 if pressed Ctrl/Shift key at clicking
+
+  namespace upvar ::alited al al
+  if {!$ctrl || !$al(TREE,isunits)} return
+  set wtxt [alited::main::CurrentWTXT]
+  $wtxt tag remove sel 1.0 end
+  foreach ID [$wtree selection] {
+    lassign [$wtree item $ID -values] l1 l2
+    $wtxt tag add sel $l1.0 [incr l2].0
+  }
+}
+#_______________________
+
 proc tree::ButtonRelease {but s x y X Y} {
   # Handles a mouse button releasing on the tree, at moving an item.
   #   but - mouse button
@@ -696,8 +712,9 @@ proc tree::ButtonRelease {but s x y X Y} {
   set ID [$wtree identify item $x $y]
   DestroyMoveWindow no
   set msec [clock milliseconds]
-  if {([info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<400}]) \
-  || ($s & 7)} {
+  set ctrl [expr {$s & 7}]
+  if {([info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<400}]) || $ctrl} {
+    SelectUnits $wtree $ctrl
     set al(movWin) {}
     return
   }
