@@ -414,6 +414,8 @@ namespace eval alited {
     if {$type eq {ok}} {
       set args [linsert $args 0 $defb]
       set defb {}
+    } elseif {$defb eq {}} {
+      set defb YES
     }
     lassign [::apave::extractOptions args -title {} -noesc 0] title noesc
     if {$title eq {}} {
