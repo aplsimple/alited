@@ -930,14 +930,12 @@ oo::class create ::apave::APaveDialog {
     set focusback [focus]
     set focusmatch {}
     # options of dialog
-    lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM root ontop \
-      rotext head optsHead hsz binds postcom onclose timeout tab2 resizable
+    lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM optsHead \
+      root rotext head hsz binds postcom onclose timeout tab2 \
+      tags cc themecolors optsGrid addpopup
     set modal yes
-    set tags {}
-    set themed 0
     set wasgeo [set textmode [set stay 0]]
-    set cc [set themecolors [set optsGrid [set addpopup {}]]]
-    set readonly [set hidefind [set scroll [set checkgeometry 1]]]
+    set readonly [set hidefind [set scroll 1]]
     set curpos {1.0}
     set ${_pdg(ns)}PD::ch 0
     foreach {opt val} {*}$argdia {
@@ -962,7 +960,9 @@ oo::class create ::apave::APaveDialog {
         -c - -color {append optsLabel " -foreground {$val}"}
         -a { ;# additional grid options of message labels
           append optsGrid " $val" }
-        -centerme {lappend args -centerme $val}
+        -centerme - -ontop - -themed - -resizable - -checkgeometry {
+          lappend args $opt $val
+        }
         -t - -text {set textmode $val}
         -tags {
           upvar 2 $val _tags
@@ -985,10 +985,9 @@ oo::class create ::apave::APaveDialog {
         -hsz {append hsz " -size $val"}
         -focus {set focusmatch "$val"}
         -theme {append themecolors " {$val}"}
-        -ontop {set ontop "-ontop $val"}
         -post {set postcom $val}
         -popup {set addpopup [string map [list %w $qdlg.fra.texM] "$val"]}
-        -timeout - -focusback - -modal - -scroll - -themed - -tab2 - -stay - -resizable - -checkgeometry {
+        -timeout - -focusback - -modal - -scroll - -tab2 - -stay {
           set [string range $opt 1 end] $val
         }
         default {
@@ -1323,8 +1322,7 @@ oo::class create ::apave::APaveDialog {
     catch "$binds"
     set args [::apave::removeOptions $args -focus]
     set ::apave::querydlg $qdlg
-    my showModal $qdlg -themed $themed -resizable $resizable -checkgeometry $checkgeometry \
-      -focus $focusnow -geometry $geometry {*}$root {*}$modal {*}$ontop {*}$args
+    my showModal $qdlg -focus $focusnow -geometry $geometry {*}$root {*}$modal {*}$args
     oo::objdefine [self] unexport InitFindInText Pdg
     set pdgeometry [wm geometry $qdlg]
     # the dialog's result is defined by "pave res" + checkbox's value

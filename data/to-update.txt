@@ -1,0 +1,284 @@
+=== 2022-10-27 ===
+   EDITED lib/e_menu/menus/fossil.mnu
+
+=== 2022-10-14 ===
+   EDITED lib/e_menu/menus/menu.mnu
+
+=== 2022-10-12 ===
+   EDITED lib/e_menu/menus/misc.mnu
+   EDITED lib/e_menu/menus/tests.mnu
+
+=== 2022-10-11 ===
+   EDITED lib/e_menu/menus/tests.mnu
+
+=== 2022-10-08 ===
+   EDITED lib/e_menu/menus/git2.mnu
+
+=== 2022-08-24 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2022-08-15 ===
+   EDITED lib/e_menu/menus/fossil.mnu
+   EDITED lib/e_menu/menus/git.mnu
+
+=== 2022-08-03 ===
+   EDITED lib/e_menu/menus/git2.mnu
+
+=== 2022-07-27 ===
+   EDITED lib/e_menu/menus/misc.mnu
+   EDITED lib/e_menu/menus/utils.mnu
+
+=== 2022-07-15 ===
+   EDITED lib/e_menu/menus/menu.mnu
+   EDITED lib/e_menu/menus/utils.mnu
+
+=== 2022-07-03 ===
+   EDITED lib/e_menu/menus/side.mnu
+
+=== 2022-06-25 ===
+   EDITED lib/e_menu/menus/menu.mnu
+
+=== 2022-06-18 ===
+   EDITED data/user/ini/alited.ini
+   EDITED data/user/ini/alited.ini
+   EDITED lib/e_menu/menus/fossil.mnu
+   EDITED lib/e_menu/menus/git.mnu
+   EDITED lib/e_menu/menus/menu.mnu
+   EDITED lib/e_menu/menus/test1.mnu
+   EDITED lib/e_menu/menus/tests.mnu
+
+=== 2022-06-16 ===
+   EDITED lib/e_menu/menus/fossil.mnu
+   EDITED lib/e_menu/menus/git.mnu
+   EDITED lib/e_menu/menus/menu.mnu
+   EDITED lib/e_menu/menus/test1.mnu
+   EDITED lib/e_menu/menus/tests.mnu
+
+=== 2022-06-15 ===
+   EDITED lib/e_menu/menus/test1.mnu
+   EDITED lib/e_menu/menus/tests.mnu
+
+=== 2022-06-08 ===
+   EDITED lib/e_menu/menus/fossil.mnu
+   EDITED lib/e_menu/menus/git.mnu
+
+=== 2022-06-04 ===
+   EDITED lib/e_menu/menus/side.mnu
+   EDITED lib/e_menu/menus/tests.mnu
+
+=== 2022-06-03 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2022-05-22 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2022-05-21 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2022-05-14 ===
+   EDITED lib/e_menu/menus/misc.mnu
+
+=== 2022-03-03 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2022-02-27 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2022-02-12 ===
+   EDITED lib/e_menu/menus/side.mnu
+
+=== 2022-02-06 ===
+   EDITED lib/e_menu/menus/side.mnu
+
+=== 2022-02-02 ===
+   EDITED lib/e_menu/menus/menu.mnu
+
+=== 2022-01-23 ===
+   EDITED lib/e_menu/menus/grep.mnu
+
+=== 2022-01-19 ===
+   EDITED lib/e_menu/menus/misc.mnu
+
+=== 2022-01-06 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-12-19 ===
+   EDITED lib/e_menu/menus/fossil.mnu
+   EDITED lib/e_menu/menus/git.mnu
+   EDITED lib/e_menu/menus/menu.mnu
+
+=== 2021-12-04 ===
+   EDITED lib/e_menu/menus/menu.mnu
+
+=== 2021-11-24 ===
+   EDITED lib/e_menu/menus/menu.mnu
+   EDITED lib/e_menu/menus/misc.mnu
+   EDITED lib/e_menu/menus/side.mnu
+
+=== 2021-11-19 ===
+   EDITED lib/e_menu/menus/misc.mnu
+   EDITED lib/e_menu/menus/tests.mnu
+
+=== 2021-11-16 ===
+   EDITED lib/e_menu/menus/menu.mnu
+   EDITED lib/e_menu/menus/utils.mnu
+
+=== 2021-11-03 ===
+   EDITED lib/e_menu/menus/utils.mnu
+   EDITED lib/e_menu/menus/menu.mnu
+
+=== 2021-10-22 ===
+   EDITED lib/e_menu/menus/fossil.mnu
+   EDITED lib/e_menu/menus/fossil2.mnu
+   EDITED lib/e_menu/menus/git.mnu
+   EDITED lib/e_menu/menus/git2.mnu
+   EDITED lib/e_menu/menus/grep.mnu
+   EDITED lib/e_menu/menus/hg.mnu
+   EDITED lib/e_menu/menus/links.mnu
+   EDITED lib/e_menu/menus/menu.mnu
+   EDITED lib/e_menu/menus/misc.mnu
+   EDITED lib/e_menu/menus/side.mnu
+   EDITED lib/e_menu/menus/test1.mnu
+   EDITED lib/e_menu/menus/test2.mnu
+   EDITED lib/e_menu/menus/test3.mnu
+   EDITED lib/e_menu/menus/tests.mnu
+   EDITED lib/e_menu/menus/utils.mnu
+
+=== 2021-10-17 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-10-11 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-10-08 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-10-03 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-09-29 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-09-17 ===
+   EDITED lib/e_menu/menus/fossil2.mnu
+   EDITED lib/e_menu/menus/menu.mnu
+   EDITED lib/e_menu/menus/side.mnu
+
+=== 2021-09-12 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-09-04 ===
+   EDITED lib/e_menu/menus/menu.mnu
+
+=== 2021-08-07 ===
+   EDITED lib/e_menu/menus/menu.mnu
+
+=== 2021-08-03 ===
+   EDITED lib/e_menu/menus/fossil.mnu
+   EDITED lib/e_menu/menus/misc.mnu
+
+=== 2021-07-24 ===
+   EDITED lib/e_menu/menus/misc.mnu
+
+=== 2021-07-21 ===
+   EDITED lib/e_menu/menus/fossil.mnu
+   EDITED lib/e_menu/menus/git.mnu
+   EDITED lib/e_menu/menus/menu.mnu
+   EDITED lib/e_menu/menus/side.mnu
+   EDITED lib/e_menu/menus/test1.mnu
+   EDITED lib/e_menu/menus/tests.mnu
+
+=== 2021-06-30 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-06-28 ===
+   EDITED lib/e_menu/menus/fossil.mnu
+   EDITED lib/e_menu/menus/git.mnu
+   EDITED lib/e_menu/menus/menu.mnu
+   EDITED lib/e_menu/menus/side.mnu
+   EDITED lib/e_menu/menus/test1.mnu
+   EDITED lib/e_menu/menus/tests.mnu
+
+=== 2021-06-26 ===
+   EDITED lib/e_menu/menus/menu.mnu
+
+=== 2021-06-19 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-06-14 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-06-12 ===
+   EDITED data/user/ini/alited.ini
+   EDITED lib/e_menu/menus/grep.mnu
+   EDITED lib/e_menu/menus/misc.mnu
+   EDITED lib/e_menu/menus/side.mnu
+   ADDED lib/e_menu/menus/tests.mnu
+   EDITED lib/e_menu/menus/utils.mnu
+
+=== 2021-06-08 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-06-04 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-06-03 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-05-29 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-05-20 ===
+   EDITED lib/e_menu/menus/grep.mnu
+
+=== 2021-05-14 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-05-13 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-05-08 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2021-04-29 ===
+   EDITED data/user/ini/alited.ini
+   EDITED lib/e_menu/menus/fossil2.mnu
+   EDITED lib/e_menu/menus/side.mnu
+   EDITED lib/e_menu/menus/test3.mnu
+
+=== 2021-04-24 ===
+   EDITED data/user/ini/alited.ini
+   EDITED lib/e_menu/menus/menu.mnu
+
+=== 2021-04-12 ===
+   EDITED lib/e_menu/menus/grep.mnu
+   EDITED lib/e_menu/menus/side.mnu
+   EDITED lib/e_menu/menus/utils.mnu
+
+=== 2021-04-02 ===
+   EDITED lib/e_menu/menus/fossil.mnu
+   EDITED lib/e_menu/menus/menu.mnu
+   EDITED lib/e_menu/menus/misc.mnu
+   EDITED lib/e_menu/menus/side.mnu
+   EDITED lib/e_menu/menus/test1.mnu
+   EDITED lib/e_menu/menus/utils.mnu
+
+=== 2021-03-29 ===
+   ADDED data/user/ini/alited.ini
+   ADDED lib/e_menu/menus/fossil.mnu
+   ADDED lib/e_menu/menus/fossil2.mnu
+   ADDED lib/e_menu/menus/git.mnu
+   ADDED lib/e_menu/menus/git2.mnu
+   ADDED lib/e_menu/menus/grep.mnu
+   ADDED lib/e_menu/menus/hg.mnu
+   ADDED lib/e_menu/menus/hg2.mnu
+   ADDED lib/e_menu/menus/links.mnu
+   ADDED lib/e_menu/menus/links2.mnu
+   ADDED lib/e_menu/menus/menu.mnu
+   ADDED lib/e_menu/menus/misc.mnu
+   ADDED lib/e_menu/menus/side.mnu
+   ADDED lib/e_menu/menus/tcltk.mnu
+   ADDED lib/e_menu/menus/test1.mnu
+   ADDED lib/e_menu/menus/test2.mnu
+   ADDED lib/e_menu/menus/test3.mnu
+   ADDED lib/e_menu/menus/utils.mnu

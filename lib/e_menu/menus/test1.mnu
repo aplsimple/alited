@@ -97,7 +97,7 @@ rt=2/5
   chb2  {{Match case           }} {$::C2} \
   seh2  {} {} \
   v_    {} {} \
-  cbx1  {{Where:   } {} {-state readonly}} {"$::W1" {in file} {in session} {in directory}} \
+  cbx1  {{Where:   } {} {}} {"$::W1" $::W1LIST} \
   tex1  {{Any text:} {} {-h 3 -w 50 -wrap word -tabnext lbx1}} {$::TEX} \
   lbx1  {{Related: } {} {-h 3}} {"$::LBX" {my Father} Mother Son Daughter Brother Sister Uncle Aunt Cousin {Big Brother} "Second cousin" "1000th cousin"} \
   opc1  {{Color:   } {-fill none -anchor w}} {{$::OPT} {{color red green blue -- {{other colors} yellow magenta cyan \
@@ -114,7 +114,16 @@ rt=2/5
  R: Input dialog R: %M "> RESULTS:\n ::EN1= '$::EN1' \n ::EN2= '$::EN2' \n ::V1 = $::V1 \
 \n ::C1 = $::C1 \n ::C2 = $::C2\n ::W1 = $::W1 \
 \n ::TEX = $::TEX\n ::LBX = $::LBX\n ::OPT = $::OPT\n ::TBL = $::TBL\n"
-
+ R: Input dialog R: %C ###################################################################
+ R: Input dialog R: %C # save ::W1 to combobox values' list, restricting its size by 5
+ R: Input dialog R: %C # 'catch' is necessary because of possible unmatched braces in ::W1
+ R: Input dialog R: %C # also, we need to use separate %C's for saving results of commands
+ R: Input dialog R: %C # ... and to test any %C with following '%M $::W1LIST'
+ R: Input dialog R: %C catch {if {[set _ [lsearch -exact [list $::W1LIST] {$::W1}]]>=0} \
+     {set ::W1LIST [lreplace [list $::W1LIST] [set _] [set _]]}}
+ R: Input dialog R: %C catch {set ::W1LIST [linsert [list $::W1LIST] 0 {$::W1}]}
+ R: Input dialog R: %C catch {set ::W1LIST [lreplace [list $::W1LIST] 5 end]}
+ R: Input dialog R: %C ###################################################################
 
  R: Input dialog: choosers R: cd %d
  R: Input dialog: choosers R: %C if {![info exists ::CHFIL]} { \
@@ -144,13 +153,14 @@ rt=2/5
 in=1.0
 ::EN1=%s
 ::EN2====
-::V1=RE
+::V1=Glob
 ::C1=0
-::C2=0
-::W1=in directory
+::C2=1
+::W1=in file
+::W1LIST={in file} {in directory} {in session}
 ::OPT=opc widget example
 ::LBX=Big Brother
 ::TBL=ent ttk::entry 212 6
 ::TEX=and	tabs	entered with copy-paste\n1234\n\nsome multi-line text			123
-pos=24.38
+pos=159.12
 %#s geo=969x487+250+140;pos=6.21 # this script is run with %#s wildcard in test1.mnu|!|# it does the same as the previous "Shell script"|!||!|err=1|!|cd ~/FOSSIL|!|while [ $err -eq 1 ];|!|  do repo=$(find *.fossil 2>/dev/null )|!|  err=$?|!|  if [ $? -eq 1 ]; then|!|    if [ $(pwd) = '/' ]; then|!|      echo "repo non esistente" ; break|!|    fi|!|    cd ../|!|  else|!|    echo "$(pwd)/${repo}"|!|  fi|!|done

@@ -454,7 +454,7 @@ proc tool::AfterStartDlg {} {
   set run [string map [list $alited::EOL \n] $al(afterstart)]
   lassign [$obDl2 input {} $al(MC,afterstart) [list \
     tex "{[msgcat::mc Commands:]    } {} {-w 80 -h 16 -tabnext butOK}" "$run" ] \
-      -head $head -help {alited::tool::HelpTool %w 1} -resizable no] res run
+      -head $head -help {alited::tool::HelpTool %w 1}] res run
   if {$res} {
     set al(afterstart) [string map [list \n $alited::EOL] [string trim $run]]
     alited::ini::SaveIni
@@ -546,7 +546,7 @@ proc tool::BeforeRunDialogue {focrun} {
     fiL [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
     buT1 [list {} {-padx 5} "-com alited::tool::DeleteForcedRun -takefocus 0 -tip Delete -toprev 1 -image [::apave::iconImage no] -relief flat -highlightthickness 0"] {} \
     butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test}" [msgcat::mc Test] \
-  ] -head $head {*}$foc -help {alited::tool::HelpTool %w 2} -resizable no] \
+  ] -head $head {*}$foc -help {alited::tool::HelpTool %w 2}] \
   res run com
   return [list $res $run $com]
 }
@@ -681,7 +681,7 @@ proc tool::RunMode {} {
     set al(RES,RunMode) [$obDl2 misc ques $al(MC,run) \
       "\n $al(MC,run) $fname \n" \
       [list $al(MC,inconsole) Terminal $al(MC,intkcon) Other Cancel 0] \
-      1 -focus $focusedBut -ch $al(MC,noask) -resizable no]
+      1 -focus $focusedBut -ch $al(MC,noask)]
   }
   switch -glob $al(RES,RunMode) {
     Terminal* {

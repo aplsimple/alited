@@ -280,7 +280,7 @@ proc check::_create {} {
     set geo [string range $geo [string first + $geo] end]
     set geo "-geometry $geo"
   }
-  set res [$obCHK showModal $win -resizable no -focus [$obCHK ButOK] \
+  set res [$obCHK showModal $win -focus [$obCHK ButOK] \
     {*}$geo -modal no -onclose alited::check::Cancel]
   set al(checkgeo) [wm geometry $win]
   if {!$res} {destroy $win}

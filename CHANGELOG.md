@@ -1,13 +1,15 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b10 (25 Oct'22)`
+Version `1.3.5b11 (27 Oct'22)`
 
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
   - BUGFIX: (esp. for Windows) Alt+F4 for exit only
   - BUGFIX: dismissing "internal" e_menu, at least temporarily
   - BUGFIX: correct colors of cursor & selection for code snippets in Preferences
   - BUGFIX: selected text for "Run Tcl" of menu.mnu
+  - BUGFIX: flowing column widths of the tree
+  - NEW   : fossil.mnu: 'fossil timeline --showfiles' allows to filter file/dirs
   - NEW   : highlight strings found by "Find by List" dialogue while it's open
   - NEW   : "Find Next" and F3 for occurences found by "Find by List" dialogue
   - NEW   : Projects: new TODO buttons; changed tips; popup menu for days

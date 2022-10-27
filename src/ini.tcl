@@ -9,6 +9,13 @@
 # ___________ Default settings of alited app ____________ #
 
 namespace eval ::alited {
+
+  # versions of mnu/ini to update to
+  set al(MNUversion) 1.3.5b11
+  set al(INIversion) 1.3.5b11
+  # previous version of alited to update from
+  set al(ALEversion) 0.0.1
+
   set al(MAXFILES) 5000     ;# maximum size of file tree (max size of project)
   set al(ED,sp1) 1          ;# -spacing1 option of texts
   set al(ED,sp2) 0          ;# -spacing2 option of texts
@@ -377,6 +384,7 @@ proc ini::ReadIniOptions {nam val} {
     DEFAULT,*     {set al($nam) $val}
     findunit      {set al(findunitvals) $val}
     afterstart    {set al(afterstart) $val}
+    ALEversion    {set al(ALEversion) $val}
   }
 }
 #_______________________
@@ -697,6 +705,7 @@ proc ini::SaveIni {{newproject no}} {
   }
   puts $chan "findunit=$al(findunitvals)"
   puts $chan "afterstart=$al(afterstart)"
+#!  puts $chan "ALEversion=[AlitedVersion]"
 
   puts $chan {}
   puts $chan {[Templates]}
@@ -749,7 +758,7 @@ proc ini::SaveIni {{newproject no}} {
     if {[info exists al(width$v)]} {
       set w $al(width$v)
     } else {
-      set w [winfo geometry [$::alited::obPav $v]]
+      set w [winfo geometry [$obPav $v]]
     }
     puts $chan $v=$w
   }
@@ -758,8 +767,11 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "geomfind2=$::alited::find::geo2"
   puts $chan "geomproject=$::alited::project::geo"
   puts $chan "geompref=$::alited::pref::geo"
-  puts $chan "treecw0=[[$obPav Tree] column #0 -width]"
-  puts $chan "treecw1=[[$obPav Tree] column #1 -width]"
+  set wtree [$obPav Tree]
+  set al(TREE,cw0) [$wtree column #0 -width]
+  set al(TREE,cw1) [$wtree column #1 -width]
+  puts $chan "treecw0=$al(TREE,cw0)"
+  puts $chan "treecw1=$al(TREE,cw1)"
   puts $chan "dirgeometry=$::alited::DirGeometry"
   puts $chan "filgeometry=$::alited::FilGeometry"
   # save other options
@@ -859,6 +871,72 @@ proc ini::SaveIniPrj {{newproject no}} {
   close $chan
 }
 
+# ______________________ Updating alited app ______________________ #
+
+proc ini::AlitedVersion {} {
+  # Gets current version of alited.
+
+  return [package require alited]
+}
+#_______________________
+
+proc ini::ViewUpdates {} {
+  # Views changes for updating.
+
+  namespace upvar ::alited DATADIR DATADIR
+  ::apave::obj vieweditFile [file join $DATADIR to-update.txt] {} -rotext 1 -h 25
+}
+#_______________________
+
+proc ini::CheckUpdates {} {
+  # Updates significant data of current version of alited.
+
+  namespace upvar ::alited al al DATAUSERINIFILE DATAUSERINIFILE MNUDIR MNUDIR
+  set al(_updmnu_) [expr {[package vcompare $al(ALEversion) $al(MNUversion)]<0}]
+  set al(_updini_) [expr {[package vcompare $al(ALEversion) $al(INIversion)]<0}]
+  if {!$al(_updmnu_) && !$al(_updini_)} return
+  set head " [msgcat::mc {Some things have been changed in alited %v!}] "
+  set head [string map [list %v v[AlitedVersion]] $head]
+  set date _[clock format [clock seconds] -format %Y-%m-%d]
+  set al(_updDirMnu_) $al(EM,mnudir)$date
+  set inidir [file dirname $al(INI)]
+  set inifile [file tail $al(INI)]
+  set iniext [file extension $inifile]
+  set inifile [file rootname $inifile]
+  set al(_updFileIni_) [file join $inidir $inifile$date$iniext]
+  set pobj alitedObjToDel
+  ::apave::APaveInput create $pobj
+  lassign [$pobj input {} [msgcat::mc {Complete Updating}] [list \
+    lab1  {{} {} {-t {$::alited::al(MC,updLab1)}}}  {} \
+    chb1  {{} {-padx 10} {-t {$::alited::al(MC,updmnu)}}} {$::alited::al(_updmnu_)} \
+    chb2  {{} {-padx 10} {-t {$::alited::al(MC,updini)}}} {$::alited::al(_updini_)} \
+    seh1  {{} {} {}} {} \
+    lab2  {{} {} {-t {$::alited::al(MC,updLab2)}}} {} \
+    lab3  {{} {-padx 20} {-t {$::alited::al(_updDirMnu_)}}} {} \
+    lab4  {{} {-padx 20} {-t {$::alited::al(_updFileIni_)}}} {} \
+    ] -head $head -weight bold -help ::alited::ini::ViewUpdates -resizable no -focus *YES] \
+    res updmnu updini
+  catch {$pobj destroy}
+  if {!$res || (!$updmnu && !$updini)} exit
+  set err {}
+  if {$updmnu && ![catch {file rename $al(EM,mnudir) $al(_updDirMnu_)} err]} {
+    set err {}
+  }
+  if {$err eq {} && $updmnu && ![catch {file copy $MNUDIR $al(EM,mnudir)} err]} {
+    set err {}
+  }
+  if {$err eq {} && $updini && ![catch {file rename $al(INI) $al(_updFileIni_)} err]} {
+    set err {}
+  }
+  if {$err eq {} && $updini && ![catch {file copy $DATAUSERINIFILE $al(INI)} err]} {
+    set err {}
+  }
+  if {$err ne {}} {
+    if {![tk_messageBox -type yesno -message "$err\n\nYet continue with alited?"]} exit
+  }
+}
+#_______________________
+
 # ______________________ Initializing alited app ______________________ #
 
 proc ini::GetConfiguration {} {
@@ -913,6 +991,7 @@ proc ini::HelpConfiguration {} {
 proc ini::CheckIni {} {
   # Checks if the configuration directory exists and if not asks for it.
 
+  namespace upvar ::alited al al
   if {[file exists $::alited::INIDIR] && [file exists $::alited::PRJDIR]} {
     return
   }
@@ -922,6 +1001,7 @@ proc ini::CheckIni {} {
   ::alited::main_user_dirs
   GetUserDirs yes
   CreateUserDirs
+  set al(ALEversion) [AlitedVersion]
 }
 #_______________________
 
@@ -1013,6 +1093,7 @@ proc ini::InitGUI {} {
   if {[llength $clrvals]==[llength $clrnams]} {
     ::hl_tcl::hl_colors {-AddTags} $Dark {*}$clrvals
   }
+  ::apave::obj setShowOption -resizable 0
 }
 #_______________________
 
@@ -1199,6 +1280,7 @@ proc ini::_init {} {
   lassign [::apave::obj create_FontsType small -size $al(FONTSIZE,small)] \
      al(FONT,defsmall) al(FONT,monosmall)
   lassign [alited::FgFgBold] -> al(FG,Bold)
+#!  CheckUpdates
 }
 #_______________________
 

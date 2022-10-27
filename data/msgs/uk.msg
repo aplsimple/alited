@@ -134,6 +134,7 @@ namespace eval ::alited {
     {Selected files: %n} {Виділених файлів: %n}
     {Configurations...} {Конфігурації...}
     {Tips on / off} {Підказки вкл / викл}
+    {Exit} {Вихід}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##

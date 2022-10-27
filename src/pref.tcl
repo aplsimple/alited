@@ -1585,7 +1585,7 @@ proc pref::_create {tab} {
   $obDl2 untouchWidgets *.texSample *.texCSample
 
   # open Preferences dialogue
-  set res [$obDl2 showModal $win -geometry $geo -minsize {800 600} \
+  set res [$obDl2 showModal $win -geometry $geo -minsize {800 600} -resizable 1 \
     -onclose ::alited::pref::Cancel]
 
   set fcont [$wtxt get 1.0 {end -1c}]

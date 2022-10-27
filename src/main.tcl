@@ -724,20 +724,23 @@ proc main::InitActions {} {
     set al(EM,Tcl) [::apave::autoexec tclsh .exe]
   }
 }
-#_______________________
 
-proc main::CheckCW01 {} {
-  # Checks and fixes widths of tree's columns (they can overlap the scrollbar).
+# TODO: delete CheckCW01 proc
 
-  namespace upvar ::alited al al obPav obPav
-  set wtree [$obPav Tree]
-  set cw0 [$wtree column #0 -width]
-  set cw1 [$wtree column 0 -width]
-  set cwfv [[$obPav TreeFavor] column 0 -width]
-  if {($cwfv-$cw0-$cw1)<1} {
-    $wtree column 0 -width [expr {$cwfv-$cw0-1}]
-  }
-}
+#!#_______________________
+#!proc main::CheckCW01 #\{#\} #\{
+#!  # Checks and fixes widths of tree's columns (they can overlap the scrollbar).
+#!
+#!#
+#!  namespace upvar ::alited al al obPav obPav
+#!  set wtree [$obPav Tree]
+#!  set cw0 [$wtree column #0 -width]
+#!  set cw1 [$wtree column 0 -width]
+#!  set cwfv [[$obPav TreeFavor] column 0 -width]
+#!  if #\{($cwfv-$cw0-$cw1)<1#\} #\{
+#!    $wtree column 0 -width [expr #\{$cwfv-$cw0-1#\}]
+#!  #\}
+#!#\}
 
 # ________________________ Main _create _________________________ #
 
@@ -874,7 +877,7 @@ proc main::_create {} {
   }
   UpdateProjectInfo
   # there should be a pause enough for FillBar got -wbar option normally sized
-  after 500 {after idle {alited::main::InitActions ; alited::main::CheckCW01}}
+  after 500 {after idle alited::main::InitActions}
   bind [$obPav Pan] <ButtonRelease> ::alited::tree::AdjustWidth
   set sbhi [$obPav SbhInfo]
   set lbxi [$obPav LbxInfo]
@@ -899,7 +902,7 @@ proc main::_run {} {
   namespace upvar ::alited al al obPav obPav
   ::apave::setAppIcon $al(WIN) $::alited::img::_AL_IMG(ale)
   set ans [$obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
-    -onclose alited::Exit {*}$al(GEOM)]
+    -onclose alited::Exit {*}$al(GEOM) -resizable 1]
   # ans==2 means 'no saves of settings' (imaginary mode)
   if {$ans ne {2}} {alited::ini::SaveIni}
   destroy $al(WIN)

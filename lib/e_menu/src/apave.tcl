@@ -125,7 +125,7 @@ namespace eval ::apave {
     h_ {{-sticky ew -csz 3 -padx 3} {}} \
     v_ {{-sticky ns -rsz 3 -pady 3} {}}]
 
-# _______________________ Helpers _____________________ #
+  ## _______________________ Helpers _____________________ ##
 
   proc obj {com args} {
     # Calls a method of APaveInput class.
@@ -303,7 +303,7 @@ namespace eval ::apave {
     return [string map {Control Ctrl - + bracketleft [ bracketright ]} $acc]
   }
 
-# _______________________ Text little procs _________________________ #
+  ## _______________________ Text little procs _________________________ ##
 
   proc eventOnText {w ev} {
     # Generates an event on a text, saving its current index in hl_tcl.
@@ -379,7 +379,9 @@ namespace eval ::apave {
     set _AP_VARS(INDENT) [string repeat $padchar $len]
   }
 
-}  ;# ::apave
+  ## ________________________ EONS ::apave _________________________ ##
+
+}
 
 # ________________________ source *.tcl _________________________ #
 
@@ -391,7 +393,7 @@ if {[info commands ::baltip::configure] eq {}} {
   source [file join $::apave::apaveDir baltip baltip.tcl]
 }
 
-# ________________________ Creating APave oo::class _________________________ #
+# ________________________ APave oo::class _________________________ #
 
 oo::class create ::apave::APave {
 
@@ -3174,6 +3176,35 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
+  method ShowOption {name} {
+    # Gets a default show option, used in showModal.
+    #   name - name of option
+    # See also: getShowOption, setShowOption
+
+    return "_SHOWMODAL_$name"
+  }
+  #_______________________
+
+  method getShowOption {name {defval ""}} {
+    # Gets a default show option, used in showModal.
+    #   name - name of option
+    #   defval - default value
+    # See also: showModal
+
+    ::apave::getProperty [my ShowOption $name] $defval
+  }
+  #_______________________
+
+  method setShowOption {name args} {
+    # Sets / gets a default show option, used in showModal.
+    #   name - name of option
+    #   args - value of option
+    # See also: showModal
+
+    ::apave::setProperty [my ShowOption $name] {*}$args
+  }
+  #_______________________
+
   method Window {w inplists} {
     # Paves the window with widgets.
     #   w - window's name (path)
@@ -3458,8 +3489,11 @@ oo::class create ::apave::APave {
     }
     set minsize [::apave::getOption -minsize {*}$args]
     set args [::apave::removeOptions $args -centerme -ontop -modal -minsize -themed]
-    array set opt [list -focus {} -onclose {} -geometry {} -decor 1 \
-      -root $root -resizable {} -variable {} -escape 1 -checkgeometry 1 {*}$args]
+    foreach {o v} [list -focus {} -onclose {} -geometry {} -decor 1 \
+    -root $root -resizable {} -variable {} -escape 1 -checkgeometry 1] {
+      lappend defargs $o [my getShowOption $o $v]
+    }
+    array set opt [list {*}$defargs {*}$args]
     lassign [::apave::splitGeometry [wm geometry $root]] rw rh rx ry
     if {[winfo parent $win] ni {{} .}} {
       set opt(-decor) 0

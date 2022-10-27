@@ -4,7 +4,7 @@ w=25
 t4==%b-%Y/%U-week
 u=%s
 in=1.0
-pos=77.56
+pos=129.76
 ::FSLUSER=aplsimple
 ::FSLBRANCH=TclOO forced
 ::FSLBRANCHCOLOR=#fe95ca
@@ -16,6 +16,8 @@ pos=77.56
 ::EM_T_VERBOSE=1
 ::EM_COMOPT=
 ::EMENUGREP=
+::EMENUTF=-e .
+::EMENUTFLIST={} {-e /menus} {-F -e .msg -e .txt} {-F -e .png} {-e data/}
 %C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT ""}
 %C if {![info exist ::EMENUCOMMIT1]} {set ::EMENUCOMMIT1 tip}
 %C if {![info exist ::EMENUCOMMIT2]} {set ::EMENUCOMMIT2 ""}
@@ -111,8 +113,22 @@ SW:fossil diff ? SW: cat "$::EMENUTMPFILE"
  S:fossil timeline S: cd %PD
  S:fossil timeline S: fossil timeline
 
- S:fossil timeline --showfiles S: cd %PD
- S:fossil timeline --showfiles S: fossil timeline --showfiles -n 0
+ R:fossil timeline --showfiles ? R: %I {} "TIMELINE FOR FILE(S)" { \
+   v_ {{} {-pady 4} {}} {} \
+   dir1 {{Directory:} {} {}} {"%PD"}\
+   cbx1 {{   Filter:} {} {}} {"$::EMENUTF" $::EMENUTFLIST} \
+   seh {{} {-pady 3} {}} {}\
+   texc {{     Hint:} {} {-h 9 -w 60 -ro 1  -tabnext butOK}}\
+   { To filter file(s), use "-e /dir -e file" pattern(s).\n\n For example:\n   -e /menus/ -e /src/\n   -e README\n   -e .\n\n Use -F option to search exactly (not by regexp):\n   -F -e .tcl -e .mnu} \
+   } \
+   -head {\n This will show a timeline for separate file(s):} -weight bold == ::EMENUTFDIR ::EMENUTF
+ R:fossil timeline --showfiles ? R: cd $::EMENUTFDIR
+ R:fossil timeline --showfiles ? R: %C catch {if {[set _ [lsearch -exact [list $::EMENUTFLIST] {$::EMENUTF}]]>=0} \
+     {set ::EMENUTFLIST [lreplace [list $::EMENUTFLIST] [set _] [set _]]}}
+ R:fossil timeline --showfiles ? R: %C catch {set ::EMENUTFLIST [linsert [list $::EMENUTFLIST] 0 {$::EMENUTF}]}
+ R:fossil timeline --showfiles ? R: %C catch {set ::EMENUTFLIST [lreplace [list $::EMENUTFLIST] 16 end]}
+RW:fossil timeline --showfiles ? RW: fossil timeline --showfiles -n 0 > "$::EMENUTMPFILE"
+ S:fossil timeline --showfiles ? S: grep $::EMENUTF -e === "$::EMENUTMPFILE"
 
  R:  R: 2
 

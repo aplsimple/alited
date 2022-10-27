@@ -926,7 +926,7 @@ proc find::SearchByList {} {
       seh2  {{} {} {}} {} \
       chb1  {$::alited::al(MC,frWord)} {$::alited::al(wordonlySBL)} \
       chb2  {$::alited::al(MC,frCase)} {$::alited::al(caseSBL)} \
-      ] -head $head -buttons {ButNxt {Find Next} ::alited::find::NextFoundByList} -weight bold -modal no -geometry $geo2 -help {alited::find::HelpFind 2} -resizable no] \
+      ] -head $head -buttons {ButNxt {Find Next} ::alited::find::NextFoundByList} -weight bold -modal no -geometry $geo2 -help {alited::find::HelpFind 2}] \
       res geo - values
     lassign $values list match wordonly case
     if {$res} {
@@ -1039,7 +1039,8 @@ proc find::_create {} {
     bind $w.cbx2 <Return> "$w.but4 invoke"
     foreach k {f F} {bind $w.cbx1 <Control-$k> {::alited::find::LastInvoke; break}}
     after idle "$w.cbx1 selection range 0 end"
-    set res [$obFND showModal $win -geometry $geo {*}$minsize -focus $w.cbx1 -modal no]
+    set res [$obFND showModal $win \
+      -geometry $geo {*}$minsize -resizable 1 -focus $w.cbx1 -modal no]
     if {[string match root=* $geo] || $data(geoDefault)} {
       set geo [wm geometry $win] ;# save the new geometry of the dialogue
     }

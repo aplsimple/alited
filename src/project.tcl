@@ -1654,7 +1654,7 @@ proc project::_create {} {
   ::hl_tcl::hl_text $prjtex
   ::hl_tcl::hl_text $klndtex
   $obDl2 displayText [$obDl2 TexTemplate] $al(PTP,text)
-  set res [$obDl2 showModal $win  -geometry $geo -minsize {600 400} \
+  set res [$obDl2 showModal $win  -geometry $geo -minsize {600 400} -resizable 1 \
     -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
   set oldTab [$win.fra.fraR.nbk select]
   set al(PTP,text) [string trimright [[$obDl2 TexTemplate] get 1.0 end]]

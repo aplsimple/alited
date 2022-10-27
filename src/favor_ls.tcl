@@ -379,8 +379,7 @@ proc favor_ls::_create {} {
   bind $lbx <Return> ::alited::favor_ls::Ok
   bind $win <F1> "[$obDl2 ButHelp] invoke"
   after 500 ::alited::favor_ls::HelpMe ;# show an introduction after a short pause
-  set res [$obDl2 showModal $win -resizable no \
-    -onclose ::alited::favor_ls::Cancel -focus [$obDl2 EntFav]]
+  set res [$obDl2 showModal $win -onclose ::alited::favor_ls::Cancel -focus [$obDl2 EntFav]]
   baltip::configure {*}$tipson
   return $res
 }
