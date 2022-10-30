@@ -12,7 +12,7 @@ namespace eval ::alited {
 
   # versions of mnu/ini to update to
   set al(MNUversion) 1.3.5b11
-  set al(INIversion) 1.3.5b11
+  set al(INIversion) 1.3.3b7
   # previous version of alited to update from
   set al(ALEversion) 0.0.1
 
@@ -194,6 +194,9 @@ namespace eval ::alited {
   set al(TIPS,Preferences) 1
   set al(TIPS,Templates) 1
   set al(TIPS,SavedFavorites) 1
+
+  # flag "sorted file list"
+  set al(sortList) 0
 }
 
 # ________________________ Variables _________________________ #
@@ -389,27 +392,46 @@ proc ini::ReadIniOptions {nam val} {
 }
 #_______________________
 
-proc ini::ReadIniTemplates {nam val} {
-  # Gets templates options of alited.
+proc ini::ReadIniTemplates {nam val {updwc yes}} {
+  # Sets new or updates old templates.
   #   nam - name of option
   #   val - value of option
+  #   updwc - if yes, sets wild cards for templates
 
   namespace upvar ::alited al al
   switch -exact -- $nam {
     tpl {
-      lappend al(TPL,list) $val
-      # key bindings
       lassign $val tplname tplkey
-      if {$tplkey ne {}} {
-        set kbval "template {$tplname} $tplkey {[lrange $val 2 end]}"
-        lappend al(KEYS,bind) $kbval
+      if {[set i [lsearch -exact -index 0 $al(TPL,list) $tplname]]<0} {
+        # at inserting new, check for possible duplicate 'tplkey'
+        set i [lsearch -exact -index 1 $al(TPL,list) $tplkey]
+        lappend al(TPL,list) $val
+        # key bindings
+        if {$tplkey ne {}} {
+          if {$i<0} {
+            # add a new key binding, for this template
+            set kbval "template {$tplname} $tplkey {[lrange $val 2 end]}"
+            lappend al(KEYS,bind) $kbval
+          } else {
+            # duplicate 'tplkey' => clear it in the new template, no key binding
+            set val [lreplace $val 1 1 {}]
+            set al(TPL,list) [lreplace $al(TPL,list) end end $val]
+          }
+        }
+      } else {
+        # at updating old, replace the contents only (remaining 'tplname tplkey')
+        set val2 [lindex $al(TPL,list) $i]
+        set val [list {*}[lrange $val2 0 1] {*}[lrange $val 2 end]]
+        set al(TPL,list) [lreplace $al(TPL,list) $i $i $val]
       }
     }
   }
-  foreach n {%d %t %u %U %m %w %a} {
-    if {$n eq $nam} {
-      if {$val ne ""} {set al(TPL,$n) $val}
-      break
+  if {$updwc} {
+    foreach n {%d %t %u %U %m %w %a} {
+      if {$n eq $nam} {
+        if {$val ne ""} {set al(TPL,$n) $val}
+        break
+      }
     }
   }
 }
@@ -485,14 +507,11 @@ proc ini::ReadIniMisc {nam val} {
   namespace upvar ::alited al al
   switch -glob -- $nam {
     isfavor {set al(FAV,IsFavor) $val}
-    chosencolor {set alited::al(chosencolor) $val}
-    showinfo {set alited::al(TREE,showinfo) $val}
-    listSBL {set alited::al(listSBL) $val}
-    moveall {set al(moveall) $val}
-    tonemoves {set al(tonemoves) $val}
-    checkgeo {set al(checkgeo) $val}
-    HelpedMe {set al(HelpedMe) $val}
+    showinfo {set al(TREE,showinfo) $val}
     TIPS,* {set al($nam) $val}
+    listSBL - HelpedMe - checkgeo - tonemoves - moveall - chosencolor - sortList {
+      set al($nam) $val
+    }
   }
 }
 
@@ -705,7 +724,7 @@ proc ini::SaveIni {{newproject no}} {
   }
   puts $chan "findunit=$al(findunitvals)"
   puts $chan "afterstart=$al(afterstart)"
-#!  puts $chan "ALEversion=[AlitedVersion]"
+  puts $chan "ALEversion=[AlitedVersion]"
 
   puts $chan {}
   puts $chan {[Templates]}
@@ -789,6 +808,7 @@ proc ini::SaveIni {{newproject no}} {
   foreach k [array names al TIPS,*] {
     puts $chan "$k=$al($k)"
   }
+  puts $chan "sortList=$al(sortList)"
   close $chan
   SaveIniPrj $newproject
   # save last directories entered
@@ -871,7 +891,7 @@ proc ini::SaveIniPrj {{newproject no}} {
   close $chan
 }
 
-# ______________________ Updating alited app ______________________ #
+# ______________________ Updating alited's data ______________________ #
 
 proc ini::AlitedVersion {} {
   # Gets current version of alited.
@@ -888,56 +908,95 @@ proc ini::ViewUpdates {} {
 }
 #_______________________
 
-proc ini::CheckUpdates {} {
+proc ini::UpdateTemplates {inideffile} {
+  # Updates templates.
+  #   inideffile - ini file name of default templates
+
+  set tplmode 0
+  # read new templates: from [Templates] to [Keys]
+  foreach stini [split [::apave::readTextFile $inideffile {} 1] \n] {
+    switch -exact $stini {
+      {[Templates]} {set tplmode 1}
+      {[Keys]} break
+    }
+    if {$tplmode && [set i [string first = $stini]]>0} {
+      set nam [string range $stini 0 $i-1]
+      set val [string range $stini $i+1 end]
+      ReadIniTemplates $nam $val no
+    }
+  }
+}
+#_______________________
+
+proc ini::CheckUpdates {doit} {
   # Updates significant data of current version of alited.
+  #   doit - yes, if it's called from menu
 
   namespace upvar ::alited al al DATAUSERINIFILE DATAUSERINIFILE MNUDIR MNUDIR
-  set al(_updmnu_) [expr {[package vcompare $al(ALEversion) $al(MNUversion)]<0}]
-  set al(_updini_) [expr {[package vcompare $al(ALEversion) $al(INIversion)]<0}]
+  set al(_updmnu_) [expr {$doit || [package vcompare $al(ALEversion) $al(MNUversion)]<0}]
+  set al(_updini_) [expr {$doit || [package vcompare $al(ALEversion) $al(INIversion)]<0}]
   if {!$al(_updmnu_) && !$al(_updini_)} return
-  set head " [msgcat::mc {Some things have been changed in alited %v!}] "
+  set head "\n [msgcat::mc {Some things have been changed in alited %v.}] \n"
   set head [string map [list %v v[AlitedVersion]] $head]
   set date _[clock format [clock seconds] -format %Y-%m-%d]
-  set al(_updDirMnu_) $al(EM,mnudir)$date
+  set al(_updDirMnu_) [file normalize $al(EM,mnudir)$date]
   set inidir [file dirname $al(INI)]
   set inifile [file tail $al(INI)]
   set iniext [file extension $inifile]
   set inifile [file rootname $inifile]
-  set al(_updFileIni_) [file join $inidir $inifile$date$iniext]
+  set al(_updFileIni_) [file normalize [file join $inidir $inifile$date$iniext]]
   set pobj alitedObjToDel
   ::apave::APaveInput create $pobj
-  lassign [$pobj input {} [msgcat::mc {Complete Updating}] [list \
+  lassign [$pobj input {} $al(MC,updateALE) [list \
     lab1  {{} {} {-t {$::alited::al(MC,updLab1)}}}  {} \
     chb1  {{} {-padx 10} {-t {$::alited::al(MC,updmnu)}}} {$::alited::al(_updmnu_)} \
     chb2  {{} {-padx 10} {-t {$::alited::al(MC,updini)}}} {$::alited::al(_updini_)} \
-    seh1  {{} {} {}} {} \
+    seh1  {{} {-pady 10} {}} {} \
     lab2  {{} {} {-t {$::alited::al(MC,updLab2)}}} {} \
     lab3  {{} {-padx 20} {-t {$::alited::al(_updDirMnu_)}}} {} \
-    lab4  {{} {-padx 20} {-t {$::alited::al(_updFileIni_)}}} {} \
-    ] -head $head -weight bold -help ::alited::ini::ViewUpdates -resizable no -focus *YES] \
+    lab4  {{} {-padx 20} {-t {$::alited::al(_updFileIni_)\n}}} {} \
+    ] -head $head -weight bold -buttons "butHELP {View Changes} ::alited::ini::ViewUpdates" -resizable no -focus *YES] \
     res updmnu updini
   catch {$pobj destroy}
-  if {!$res || (!$updmnu && !$updini)} exit
+  if {!$res} {if {$doit} return else exit}
+  if {!$updmnu && !$updini} return
   set err {}
-  if {$updmnu && ![catch {file rename $al(EM,mnudir) $al(_updDirMnu_)} err]} {
+  if {$updini && ![catch {file copy $al(INI) $al(_updFileIni_)} err]} {
+    set err {}
+  }
+  if {$err eq {} && $updmnu && ![catch {file rename $al(EM,mnudir) $al(_updDirMnu_)} err]} {
     set err {}
   }
   if {$err eq {} && $updmnu && ![catch {file copy $MNUDIR $al(EM,mnudir)} err]} {
     set err {}
   }
-  if {$err eq {} && $updini && ![catch {file rename $al(INI) $al(_updFileIni_)} err]} {
-    set err {}
-  }
-  if {$err eq {} && $updini && ![catch {file copy $DATAUSERINIFILE $al(INI)} err]} {
-    set err {}
+  if {$err eq {} && $updini} {
+    UpdateTemplates $DATAUSERINIFILE
   }
   if {$err ne {}} {
-    if {![tk_messageBox -type yesno -message "$err\n\nYet continue with alited?"]} exit
+    ::apave::APaveInput create $pobj
+    if {$doit} {
+      set dlg ok
+      set h {3 5}
+      set but {}
+    } else {
+      set dlg yesno
+      set h {3 8}
+      set but NO
+      append err "\n\nYet continue with alited?"
+    }
+    if {![$pobj $dlg err Error $err {*}$but -text 1 -w 50 -h $h] && !$doit} exit
+    catch {$pobj destroy}
+  } else {
+    set msg "$al(MC,updateALE):"
+    if {$updmnu} {append msg "   $al(MC,updmnu)"}
+    if {$updini} {append msg "   $al(MC,updini)"}
+    after 2000 [list alited::Message "\n $msg \n" 3]
   }
+  set al(Save_Ini_After_Updates) $err
 }
-#_______________________
 
-# ______________________ Initializing alited app ______________________ #
+# ______________________ Configuring alited ______________________ #
 
 proc ini::GetConfiguration {} {
   # Gets the configuration directory's name.
@@ -1280,7 +1339,7 @@ proc ini::_init {} {
   lassign [::apave::obj create_FontsType small -size $al(FONTSIZE,small)] \
      al(FONT,defsmall) al(FONT,monosmall)
   lassign [alited::FgFgBold] -> al(FG,Bold)
-#!  CheckUpdates
+  CheckUpdates no
 }
 #_______________________
 

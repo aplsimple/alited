@@ -347,12 +347,19 @@ namespace eval ::alited {
     "Use this geometry of the dialogue\nby default" "Standardmäßig diese Geometrie\ndes Dialogs verwenden"
   }
 
-  ## ________________________ Checking ini directory ________________________ ##
+  ## ________________________ Start and update ________________________ ##
   ::msgcat::mcmset de {
     {Choosing Directory for Settings} {Verzeichnis für die Konfiguration auswählen}
     "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n"
     "\n \"alited\" benötigt ein Konfigurationsverzeichnis um die Einstellungen zu speichern.\n Du kannst den Namen an alited als Argument übergeben.\n\n Das vorgegebene Konfigurationsverzeichnis ist \"%d\".\n Dies ist zu bevorzugen um  \"alited\" ohne Argumente zu benuzten.\n"
     {Choose a directory} {Verzeichnis auswählen}
+    {Some things have been changed in alited %v.} {Im alited %v hat sich etwas geändert.}
+    {Updating alited} {Aktualisierung alited}
+    " You are highly recommended to accept\n these changes in order to complete updating:" " Es wird dringend empfohlen, diese Änderungen zu akzeptieren,\n um die Aktualisierung abzuschließen:"
+    {.mnu files for "Tools"} {.mnu Dateien für "Werkzeugen"}
+    {.ini file for "Templates"} {.ini Datei für "Vorlagen"}
+    { Your previous files will be saved to:} { Ihre Dateien gesichert werden zu:}
+    {View Changes} {Zeigen Änderungen}
   }
 
   ## ________________________ "About" dialogue ________________________ ##
@@ -432,7 +439,7 @@ namespace eval ::alited {
     {closing a file:} {Schließe eine Datei:}
     {saving a file:} {Sichere eine Datei}
     {Back up files to a project's subdirectory:} {Sichere Dateien in ein Unterverzeichnis des Projektes:}
-    "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." "Ein Unterverzeichnis von Projekten indem Sicherungskopien der Dateien gesichert werden..\nFeld leeren um Backup abzubrechen."
+    "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." "Ein Unterverzeichnis von Projekten indem Sicherungskopien der Dateien gesichert werden.\nFeld leeren um Backup abzubrechen."
     {  Maximum:} {  Мaximum:}
     {Maximum of backup copies per a file} {Maximale Anzahl von Sicherungen pro Datei}
     {Bell at warnings:} {Klingel bei Warnungen:}
@@ -591,6 +598,7 @@ namespace eval ::alited {
     {File List} {Liste von Dateien}
     {Sort} {Sortieren}
     {Sort the tabs?} {Sortieren Tabs?}
+    {Sorted} {Sortiert}
   }
 
   ## ________________________ --EONS-- _________________________ ##

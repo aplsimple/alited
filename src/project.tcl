@@ -1496,12 +1496,12 @@ proc project::MainFrame {} {
       -traverse yes -select f1
     }}
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
-    {.buTad - - - - {pack -side left -anchor n} {-takefocus 0 -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big -relief flat -highlightthickness 0}}
-    {.buTch - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big -relief flat -highlightthickness 0}}
-    {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big -relief flat -highlightthickness 0}}
+    {.buTad - - - - {pack -side left -anchor n} {-takefocus 0 -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big -relief flat -overrelief raised -highlightthickness 0}}
+    {.buTch - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big -relief flat -overrelief raised -highlightthickness 0}}
+    {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big -relief flat -overrelief raised -highlightthickness 0}}
     {.h_ - - - - {pack -side left -expand 1}}
-    {.buTtpl - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Template -tip {$alited::al(MC,CrTemplPrj)} -image alimg_plus-big -relief flat -highlightthickness 0}}
-    {.buTtview - - - - {pack -side left -padx 4} {-takefocus 0 -image alimg_OpenFile-big -relief flat -highlightthickness 0 -com alited::project::ViewDir -tip {$alited::al(MC,ViewDir)}}}
+    {.buTtpl - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Template -tip {$alited::al(MC,CrTemplPrj)} -image alimg_plus-big -relief flat -overrelief raised -highlightthickness 0}}
+    {.buTtview - - - - {pack -side left -padx 4} {-takefocus 0 -image alimg_OpenFile-big -relief flat -overrelief raised -highlightthickness 0 -com alited::project::ViewDir -tip {$alited::al(MC,ViewDir)}}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 seh T 1 2 {-st nsew} {-padding {2 2}}}

@@ -351,11 +351,18 @@ namespace eval ::alited {
     "Use this geometry of the dialogue\nby default" "Використовувати цю геометрію діалогу\nза замовчуванням"
   }
 
-  ## ________________________ Checking ini directory ________________________ ##
+  ## ________________________ Start and update ________________________ ##
   ::msgcat::mcmset uk {
     {Choosing Directory for Settings} {Вибір каталогу для опцій}
     "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" "\n Програма \"alited\" мусить мати каталог для збереження своїх опцій.\n Ви можете задати його як аргумент при виклику alited.\n\n За замовчуванням, каталог збереження опцій - \"%d\".\n Це рекомендований каталог, що дозволяє викликати \"alited\" без аргументів.\n"
     {Choose a directory} {Вибір каталогу}
+    {Some things have been changed in alited %v.} {Дещо змінилося у alited %v.}
+    {Updating alited} {Оновлення alited}
+    " You are highly recommended to accept\n these changes in order to complete updating:" " Наполегливо рекомендовано прийняти\n ці зміни для завершення оновлення:"
+    {.mnu files for "Tools"} {.mnu файли для "Струментів"}
+    {.ini file for "Templates"} {.ini файл для "Шаблонів"}
+    { Your previous files will be saved to:} { Ваші файли будуть збережені у:}
+    {View Changes} {Огляд змін}
   }
 
   ## ________________________ "About" dialogue ________________________ ##
@@ -593,6 +600,7 @@ namespace eval ::alited {
     {File List} {Список файлів}
     {Sort} {Сортувати}
     {Sort the tabs?} {Сортувати заставки?}
+    {Sorted} {Сортований}
   }
 
   ## ________________________ --EONS-- _________________________ ##

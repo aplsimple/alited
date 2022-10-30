@@ -755,7 +755,7 @@ oo::class create ::apave::APave {
       } else {
         set retval {}
         foreach ln [split [::apave::readTextFile $fname {} 1] \n] {
-          set ln [string map [list \\ \\\\ \{ \\\{ \} \\\}] $ln]
+          # probably, it's bad idea to have braces in the file of contents
           if {$ln ne {}} {lappend retval $ln}
         }
       }
@@ -954,7 +954,9 @@ oo::class create ::apave::APave {
     }
     set nam3 [string tolower [string index $name 0]][string range $name 1 2]
     if {[string index $nam3 1] eq "_"} {set k [string range $nam3 0 1]} {set k $nam3}
-    lassign [dict get $::apave::_Defaults $k] defopts defattrs
+    if {[catch {lassign [dict get $::apave::_Defaults $k] defopts defattrs}]} {
+      set defopts [set defattrs {}]
+    }
     set options "[subst $defopts] $options"
     set attrs "[subst $defattrs] $attrs"
     switch -glob -- $nam3 {
@@ -1175,7 +1177,9 @@ oo::class create ::apave::APave {
     #   - else: a list of updated options and attributes of the widget type
 
     if {$typ eq {}} {return $::apave::_Defaults}
-    set def1 [subst [dict get $::apave::_Defaults $typ]]
+    if {[catch {set def1 [subst [dict get $::apave::_Defaults $typ]]}]} {
+      return {}
+    }
     if {"$opt$atr" eq {}} {return $def1}
     lassign $def1 defopts defattrs
     set newval [list "$defopts $opt" "$defattrs $atr"]
@@ -1854,7 +1858,7 @@ oo::class create ::apave::APave {
     }
     set com "[self] chooser $chooser \{$vv\} $addopt $wpar $addattrs2 $entname"
     if {$view ne {}} {set anc n} {set anc center}
-    set butf [list [my Transname buT $name] - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
+    set butf [list [my Transname buT $name] - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -relief flat -overrelief raised -highlightthickness 0 -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
     if {$view ne {}} {
       set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $inname" {}]
       set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname" {}]
@@ -1994,15 +1998,14 @@ oo::class create ::apave::APave {
             } else {
               set but BuT
             }
-            lassign [my csGet] - fg - bg
+            lassign [my csGet] fga fg bga bg
             if {[string match _* $v1]} {
               set font [my boldTextFont 16]
-              set img "-font {$font} -foreground $fg -background $bg -width 2 -bd 0 -pady 0 -padx 2"
-              set v1 _untouch_$v1
+              set img "-font {$font} -foreground $fg -background $bg -width 2 -pady 0 -padx 2"
             } else {
               set img "-image $v1 -background $bg"
             }
-            set v2 "$img -command $v2 -relief flat -highlightthickness 0 -takefocus 0"
+            set v2 "$img -command $v2 -relief flat -overrelief raised -activeforeground $fga -activebackground $bga -highlightthickness 0 -takefocus 0"
             lassign [::apave::extractOptions v2 -method {}] ismeth
             set v1 [my Transname $but _$v1]
             if {[string is true -strict $ismeth]} {

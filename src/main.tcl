@@ -723,6 +723,7 @@ proc main::InitActions {} {
     # important: refer to tclsh (not wish), to run it in Windows console
     set al(EM,Tcl) [::apave::autoexec tclsh .exe]
   }
+  if {[info exists al(Save_Ini_After_Updates)]} alited::ini::SaveIni
 }
 
 # TODO: delete CheckCW01 proc
@@ -755,7 +756,7 @@ proc main::_create {} {
     -lightcolor [list focus $::alited::FRABG active $::alited::FRABG] \
     -darkcolor [list focus $::alited::FRABG active $::alited::FRABG]
   ttk::style layout TreeNoHL [ttk::style layout Treeview]
-  $obPav untouchWidgets *.frAText *.lbxInfo
+  $obPav untouchWidgets *.frAText *.lbxInfo *.too*
   # make the main apave object and populate it
   $obPav makeWindow $al(WIN).fra alited
 
@@ -788,19 +789,19 @@ proc main::_create {} {
 {#
 #### ________________________ Tree's toolbar _________________________ ####
 }
-    {.fraBot.panBM.fraTree.fra1.BuTswitch - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_gulls -command alited::tree::SwitchTree}}
-    {.fraBot.panBM.fraTree.fra1.BuTUpdT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_retry -tip {$alited::al(MC,updtree)}
+    {.fraBot.panBM.fraTree.fra1.BuTswitch - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_gulls -command alited::tree::SwitchTree}}
+    {.fraBot.panBM.fraTree.fra1.BuTUpdT - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_retry -tip {$alited::al(MC,updtree)}
     -command alited::main::UpdateAll}}
     {.fraBot.panBM.fraTree.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
-    {.fraBot.panBM.fraTree.fra1.BuTUp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_up -command {alited::tree::MoveItem up}}}
-    {.fraBot.panBM.fraTree.fra1.BuTDown - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_down -command {alited::tree::MoveItem down}}}
+    {.fraBot.panBM.fraTree.fra1.BuTUp - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_up -command {alited::tree::MoveItem up}}}
+    {.fraBot.panBM.fraTree.fra1.BuTDown - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_down -command {alited::tree::MoveItem down}}}
     {.fraBot.panBM.fraTree.fra1.sev2 - - - - {pack -side left -fill y -padx 5}}
-    {.fraBot.panBM.fraTree.fra1.BuTAddT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -command alited::tree::AddItem}}
-    {.fraBot.panBM.fraTree.fra1.BuTRenT - - - - {pack forget -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_change -tip {$alited::al(MC,renamefile)} -command {::alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
-    {.fraBot.panBM.fraTree.fra1.BuTDelT - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -command alited::tree::DelItem}}
+    {.fraBot.panBM.fraTree.fra1.BuTAddT - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_add -command alited::tree::AddItem}}
+    {.fraBot.panBM.fraTree.fra1.BuTRenT - - - - {pack forget -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_change -tip {$alited::al(MC,renamefile)} -command {::alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
+    {.fraBot.panBM.fraTree.fra1.BuTDelT - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_delete -command alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
-    {.fraBot.panBM.fraTree.fra1.buTCtr - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_minus -command {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}
-    {.fraBot.panBM.fraTree.fra1.buTExp - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_plus -command {alited::tree::ExpandContractTree Tree} -tip "Expand All"}}
+    {.fraBot.panBM.fraTree.fra1.buTCtr - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_minus -command {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}
+    {.fraBot.panBM.fraTree.fra1.buTExp - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_plus -command {alited::tree::ExpandContractTree Tree} -tip "Expand All"}}
 {#
 #### ________________________ Tree _________________________ ####
 }
@@ -819,14 +820,14 @@ proc main::_create {} {
 {#
 #### ________________________ Favorites' toolbar _________________________ ####
 }
-    {.fraFV.fra1.BuTVisitF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_misc -tip {$alited::al(MC,lastvisit)} -com alited::favor::SwitchFavVisit}}
+    {.fraFV.fra1.BuTVisitF - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_misc -tip {$alited::al(MC,lastvisit)} -com alited::favor::SwitchFavVisit}}
     {.fraFV.fra1.sev0 - - - - {pack -side left -fill y -padx 5}}
-    {.fraFV.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_SaveFile -tip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
+    {.fraFV.fra1.BuTListF - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_SaveFile -tip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
     {.fraFV.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
-    {.fraFV.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_add -tip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
-    {.fraFV.fra1.BuTRenF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_change -tip {$alited::al(MC,favorren)} -command ::alited::favor::Rename}}
-    {.fraFV.fra1.BuTDelF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_delete -tip {$alited::al(MC,favordel)} -com alited::favor::Delete}}
-    {.fraFV.fra1.BuTDelAllF - - - - {pack -side left -fill x} {-relief flat -highlightthickness 0 -takefocus 0 -image alimg_trash -tip {$alited::al(MC,favordelall)} -com alited::favor::DeleteAll}}
+    {.fraFV.fra1.BuTAddF - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_add -tip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
+    {.fraFV.fra1.BuTRenF - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_change -tip {$alited::al(MC,favorren)} -command ::alited::favor::Rename}}
+    {.fraFV.fra1.BuTDelF - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_delete -tip {$alited::al(MC,favordel)} -com alited::favor::Delete}}
+    {.fraFV.fra1.BuTDelAllF - - - - {pack -side left -fill x} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -image alimg_trash -tip {$alited::al(MC,favordelall)} -com alited::favor::DeleteAll}}
     {.fraFV.fra1.h_2 - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraFV.fra1.sev2 - - - - {pack -side right -fill y -padx 0}}
     {.fraFV.fra - - - - {pack -fill both -expand 1} {}}
@@ -855,11 +856,11 @@ proc main::_create {} {
     {.fraTop.FraHead  - - - - {pack forget -side bottom -fill x} {-padding {4 4 4 4} -relief groove}}
     {.fraTop.fraHead.labFind - - - - {pack -side left} {-t "    Unit: "}}
     {.fraTop.fraHead.CbxFindSTD - - - - {pack -side left} {-tvar alited::al(findunit) -values {$alited::al(findunitvals)} -w 30 -tip {$al(MC,findunit)}}}
-    {.fraTop.fraHead.buT - - - - {pack -side left -padx 4} {-t "Find: " -relief flat -com alited::find::DoFindUnit -takefocus 0 -bd 0 -highlightthickness 0 -w 8 -anchor e -tip {Find Unit}}}
+    {.fraTop.fraHead.buT - - - - {pack -side left -padx 4} {-t "Find: " -relief flat -overrelief raised -com alited::find::DoFindUnit -takefocus 0 -highlightthickness 0 -w 8 -anchor e -tip {Find Unit}}}
     {.fraTop.fraHead.rad1 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in all} -value 1}}
     {.fraTop.fraHead.rad2 - - - - {pack -side left -padx 4} {-takefocus 0 -var alited::main::findunits -t {in current} -value 2}}
     {.fraTop.fraHead.h_ - - - - {pack -side left -fill x -expand 1}}
-    {.fraTop.fraHead.buTno - - - - {pack -side left} {-relief flat -highlightthickness 0 -takefocus 0 -command {alited::find::HideFindUnit}}}
+    {.fraTop.fraHead.buTno - - - - {pack -side left} {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0 -command {alited::find::HideFindUnit}}}
 {#
 ### ________________________ Status bar _________________________ ###
 }

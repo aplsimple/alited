@@ -40,7 +40,6 @@
 
 === 2022-06-18 ===
    EDITED data/user/ini/alited.ini
-   EDITED data/user/ini/alited.ini
    EDITED lib/e_menu/menus/fossil.mnu
    EDITED lib/e_menu/menus/git.mnu
    EDITED lib/e_menu/menus/menu.mnu

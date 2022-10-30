@@ -1594,21 +1594,23 @@ oo::class create ::apave::ObjectTheming {
     foreach i [my csMapTheme] {
       set color [lindex $CS $i]
       if {$i in $mainc} {
-        set color [string map {black #000000 white #ffffff grey #808080 \
-          red #ff0000 yellow #ffff00 orange #ffa500 #000 #000000 #fff #ffffff} $color]
-        scan $color #%2x%2x%2x R G B
-        foreach valname {R G B} {
-          set val [expr {int([set $valname]*$hue)}]
-          set $valname [expr {max(min($val,255),0)}]
+        catch {  ;# for CS=-1 not working
+          set clr [string map {black #000000 white #ffffff grey #808080 \
+            red #ff0000 yellow #ffff00 \
+            orange #ffa500 #000 #000000 #fff #ffffff} $color]
+          scan $clr #%2x%2x%2x R G B
+          foreach valname {R G B} {
+            set val [expr {int([set $valname]*$hue)}]
+            set $valname [expr {max(min($val,255),0)}]
+          }
+          set color [format #%02x%02x%02x $R $G $B]
         }
-        set color [format #%02x%02x%02x $R $G $B]
       }
       lappend TWargs $color
     }
     my themeWindow . $TWargs no
     set ::apave::_CS_(TONED) [list $cs [my csCurrent]]
     return yes
-
   }
 
 # _______________________________________________________________________ #
@@ -1680,7 +1682,7 @@ oo::class create ::apave::ObjectTheming {
         set ::apave::_CS_(def_bclr) $bclr
       }
       return [list default \
-           $fg    $fg     $bA    $bg     $fg2    $bS     $fS    #444  grey   #4f6379 $fS $bS - $bg $fW $bW $bg2]
+           $fg    $fg     $bA    $bg     $fg2    $bS     $fS    #444  grey   #4f6379 $fS $bS - $bg $fW $bW $bg2 #a20000 #76b2f1 #005 #006 #007]
       # clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk fI  bI fM bM fW bW
     }
     return [lindex $::apave::_CS_(ALL) $ncolor]

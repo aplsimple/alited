@@ -56,8 +56,9 @@ proc unit_tpl::SaveIni {} {
   # Puts templates' data to al(TPL,list) to save in alited.ini.
 
   variable ilast
-  RegisterKeys
   set ilast [Selected index no]
+  RegisterKeys
+  alited::ini::SaveIni
 }
 
 # ________________________ Keys _________________________ #
@@ -105,8 +106,9 @@ proc unit_tpl::Focus {isel} {
 }
 #_______________________
 
-proc unit_tpl::UpdateTree {} {
+proc unit_tpl::UpdateTree {{saveini yes}} {
   # Updates the template list.
+  #   saveini - save templates in ini-file
 
   namespace upvar ::alited al al obDl3 obDl3
   variable tpllist
@@ -124,6 +126,7 @@ proc unit_tpl::UpdateTree {} {
   }
   if {$item0 ne {} && $ilast<0} {Focus $item0}
   ClearCbx
+  if {$saveini} SaveIni
 }
 #_______________________
 
@@ -451,11 +454,11 @@ proc unit_tpl::_create {{geom ""}} {
   $obDl3 paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big -relief flat -highlightthickness 0}}
-    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big -relief flat -highlightthickness 0}}
-    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big -relief flat -highlightthickness 0}}
+    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big -relief flat -overrelief raised -highlightthickness 0}}
+    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big -relief flat -overrelief raised -highlightthickness 0}}
+    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big -relief flat -overrelief raised -highlightthickness 0}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill x -pady 2} {}}
-    {.fra.buTImp - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Import -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big -relief flat -highlightthickness 0}}
+    {.fra.buTImp - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Import -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big -relief flat -overrelief raised -highlightthickness 0}}
     {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 12 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-stretch 0}"}}
     {.sbvTpls fraTreeTpl.TreeTpl L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
@@ -482,7 +485,7 @@ proc unit_tpl::_create {{geom ""}} {
   set tree [$obDl3 TreeTpl]
   $tree heading C1 -text [msgcat::mc Template]
   $tree heading C2 -text [msgcat::mc {Hot keys}]
-  UpdateTree
+  UpdateTree no
   Select
   set wtxt [$obDl3 TexTpl]
   bind $tree <<TreeviewSelect>> ::alited::unit_tpl::Select

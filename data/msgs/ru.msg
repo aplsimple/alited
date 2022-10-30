@@ -344,11 +344,18 @@ namespace eval ::alited {
     "Use this geometry of the dialogue\nby default" "Использовать эту геометрию диалога\nпо умолчанию"
   }
 
-  ## ________________________ Checking ini directory ________________________ ##
+  ## ________________________ Start and update ________________________ ##
   ::msgcat::mcmset ru {
     {Choosing Directory for Settings} {Выбор каталога для настроек}
     "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" "\n Программе \"alited\" нужно указать каталог для сохранения своих настроек.\n Вы можете задавать его как аргумент при вызове alited.\n\n По умолчанию, каталог сохранения настроек - \"%d\".\n Это рекомендуемый каталог, позволяющий вызывать \"alited\" без аргументов.\n"
     {Choose a directory} {Выбор каталога}
+    {Some things have been changed in alited %v.} {Кое-что изменилось в alited %v.}
+    {Updating alited} {Обновление alited}
+    " You are highly recommended to accept\n these changes in order to complete updating:" " Настоятельно рекомендуется принять\n эти изменения для завершения обновления:"
+    {.mnu files for "Tools"} {.mnu файлы для "Снастей"}
+    {.ini file for "Templates"} {.ini файл для "Шаблонов"}
+    { Your previous files will be saved to:} { Ваши файлы сохранятся в:}
+    {View Changes} {Просмотр изменений}
   }
 
   ## ________________________ "About" dialogue ________________________ ##
@@ -586,6 +593,7 @@ namespace eval ::alited {
     {File List} {Список файлов}
     {Sort} {Сортировать}
     {Sort the tabs?} {Сортировать закладки?}
+    {Sorted} {Сортированный}
   }
 
   ## ________________________ --EONS-- _________________________ ##

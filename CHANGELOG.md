@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b11 (27 Oct'22)`
+Version `1.3.5b13 (30 Oct'22)`
 
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
   - BUGFIX: (esp. for Windows) Alt+F4 for exit only
@@ -9,6 +9,9 @@ Version `1.3.5b11 (27 Oct'22)`
   - BUGFIX: correct colors of cursor & selection for code snippets in Preferences
   - BUGFIX: selected text for "Run Tcl" of menu.mnu
   - BUGFIX: flowing column widths of the tree
+  - BUGFIX: erroneous combination CS=-1 & Tint!=0
+  - NEW   : sorted and tear-offed file list
+  - NEW   : update menus & templates (if touched) at updating alited's version
   - NEW   : fossil.mnu: 'fossil timeline --showfiles' allows to filter file/dirs
   - NEW   : highlight strings found by "Find by List" dialogue while it's open
   - NEW   : "Find Next" and F3 for occurences found by "Find by List" dialogue
@@ -30,6 +33,8 @@ Version `1.3.5b11 (27 Oct'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
+  - CHANGE: highlightbackground for main toolbar buttons + overrelief (esp. for Windows)
+  - CHANGE: saving alited's settings at changing templates & favorites' lists
   - CHANGE: "-resizable no" and other geometry things
   - CHANGE: for Windows: default Tkcon as Preferences/Tools/Run
   - CHANGE: save choice of Run query called with F5 key
@@ -37,7 +42,7 @@ Version `1.3.5b11 (27 Oct'22)`
   - CHANGE: display tips for favorites and menu file lists at right side of pointer
   - CHANGE: checks for outward changes disabled at saving files
   - CHANGE: alited docs
-  - CHANGE: packages: apave/e_menu 3.5.8, baltip 1.5.1, hl_tcl 0.9.43
+  - CHANGE: packages: apave/e_menu 3.5.10, bartabs 1.5.9, baltip 1.5.1, hl_tcl 0.9.43
 
 
 Version `1.3.4 (21 Sep'22)`

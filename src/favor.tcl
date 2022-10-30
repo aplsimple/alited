@@ -117,7 +117,7 @@ proc favor::GoToUnit {TID name header {forfavor no} {it1 {}} {values {}}} {
   # See also: tree::SaveCursorPos
 
   namespace upvar ::alited al al obPav obPav
-  lassign $header - nameorig
+  if {[catch {lassign $header - nameorig}]} {set nameorig $header}
   foreach it $al(_unittree,$TID) {
     set treeID [alited::tree::NewItemID [incr iit]]
     lassign $it lev leaf fl1 title l1 l2

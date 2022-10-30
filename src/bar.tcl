@@ -20,6 +20,10 @@ proc bar::BAR {args} {
   #   args - method's name and its arguments
 
   namespace upvar ::alited al al
+  if {[lindex $args 0] eq {popList}} {
+    if {[llength $args] eq 1} {lappend args {} {}}
+    lappend args $al(sortList)
+  }
   return [al(bts) $al(BID) {*}$args]
 }
 #_______________________
@@ -218,6 +222,15 @@ proc bar::Sort {} {
   }
 }
 
+proc bar::SelFile {tip} {
+  # Open a file from the file list even when it's closed
+  # (the file list may be open due to -tearoff option).
+
+  lassign [split $tip \n] fname
+  alited::file::OpenFile $fname yes
+}
+#_______________________
+
 # ________________________ Identification  _________________________ #
 
 proc bar::CurrentTabID {} {
@@ -411,7 +424,7 @@ proc bar::ColorBar {} {
   set cs [$obPav csCurrent]
   if {$cs>-1} {
     lassign [$obPav csGet $cs] cfg2 cfg1 cbg2 cbg1 cfhh - - - - - - - - - - - - fgmark
-    BAR configure -fgmark $fgmark
+    BAR configure -fgmark $fgmark -comlist {::alited::bar::SelFile "%t"}
   }
 }
 #_______________________

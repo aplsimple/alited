@@ -202,9 +202,10 @@ namespace eval ::alited {
     set al(MC,chini1)      [msgcat::mc {Choosing Directory for Settings}]
     set al(MC,chini2)      [msgcat::mc "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n"]
     set al(MC,chini3)      [msgcat::mc {Choose a directory}]
+    set al(MC,updateALE)   [msgcat::mc {Updating alited}]
     set al(MC,updLab1)     [msgcat::mc " You are highly recommended to accept\n these changes in order to complete updating:"]
-    set al(MC,updmnu)      [msgcat::mc {  .mnu files for tools}]
-    set al(MC,updini)      [msgcat::mc {  .ini file for templates}]
+    set al(MC,updmnu)      [msgcat::mc {.mnu files for "Tools"}]
+    set al(MC,updini)      [msgcat::mc {.ini file for "Templates"}]
     set al(MC,updLab2)     [msgcat::mc { Your previous files will be saved to:}]
 
     ## _ misc _ ##

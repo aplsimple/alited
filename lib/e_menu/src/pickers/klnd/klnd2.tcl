@@ -146,7 +146,7 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
     }
     # as last refuge: highlighting fg by hllist
     set fg [fgMayHL $obj $fg $y $m $iday]
-    $wbut configure {*}$att -relief flat -overrelief flat -fg $fg -bg $bg
+    $wbut configure {*}$att -relief flat -overrelief raised -fg $fg -bg $bg
   }
   set p(mvis$obj) $m  ;# month & year currently visible
   set p(yvis$obj) $y
@@ -355,7 +355,7 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
         if {\$i<8} { \
           set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh) -background $::klnd::my::p(bg1)}\" \
         } else { \
-          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-relief flat -overrelief flat -bd 0 -takefocus 0  -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w 3 -background $::klnd::my::p(bg1)}\" \
+          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-relief flat -overrelief raised -takefocus 0  -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w 3 -background $::klnd::my::p(bg1)}\" \
         } ; \
         %C \$lwid ; \
         set pr \$cur \
