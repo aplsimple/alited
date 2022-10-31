@@ -862,7 +862,7 @@ proc project::Delete {} {
   variable win
   variable curinfo
   if {[set isel [Selected index]] eq ""} return
-  set geo "-geometry root=$win"
+  set geo "-centerme $win"
   set nametodel [lindex $prjlist $isel]
   if {$nametodel eq $curinfo(prjname)} {
     alited::msg ok err $al(MC,prjcantdel) {*}$geo
@@ -993,7 +993,7 @@ proc project::Ok {args} {
   if {[set N [llength [alited::bar::BAR listFlag m]]]} {
     set msg [msgcat::mc "All modified files (%n) will be saved.\n\nDo you agree?"]
     set msg [string map [list %n $N] $msg]
-    if {![alited::msg yesno ques $msg NO -geometry root=$win]} return
+    if {![alited::msg yesno ques $msg NO -centerme $win]} return
   }
   if {![alited::file::SaveAll]} {
     $obDl2 res $win 0
@@ -1002,7 +1002,7 @@ proc project::Ok {args} {
   if {[set N [llength [alited::bar::BAR cget -select]]]} {
     set msg [msgcat::mc "All selected files (%n) will remain open\nin the project you are switching to.\n\nDo you agree?"]
     set msg [string map [list %n $N] $msg]
-    if {![alited::msg yesno ques $msg NO -geometry root=$win]} return
+    if {![alited::msg yesno ques $msg NO -centerme $win]} return
   }
   set curinfo(_NO2ENT) 1
   set fname [ProjectFileName $pname]
@@ -1654,7 +1654,7 @@ proc project::_create {} {
   ::hl_tcl::hl_text $prjtex
   ::hl_tcl::hl_text $klndtex
   $obDl2 displayText [$obDl2 TexTemplate] $al(PTP,text)
-  set res [$obDl2 showModal $win  -geometry $geo -minsize {600 400} -resizable 1 \
+  set res [$obDl2 showModal $win -geometry $geo -minsize {600 400} -resizable 1 \
     -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
   set oldTab [$win.fra.fraR.nbk select]
   set al(PTP,text) [string trimright [[$obDl2 TexTemplate] get 1.0 end]]

@@ -357,6 +357,20 @@ proc ::apave::splitGeometry {geom} {
   }
   return [list $w $h $x $y]
 }
+#_______________________
+
+proc ::apave::rootModalWindow {pwin} {
+  # Gets a parent modal window for a given one.
+  #   pwin - default parent
+
+  set root $pwin
+  foreach w [winfo children $pwin] {
+    if {[winfo ismapped $w] && [::apave::InfoFind $w yes] ne {}} {
+      set root [winfo toplevel $w]
+    }
+  }
+  return $root
+}
 
 ## ________________________ Inits _________________________ ##
 
@@ -510,6 +524,75 @@ proc ::apave::InitTheme {intheme libdir} {
 }
 #_______________________
 
+proc ::apave::iconifyOption {args} {
+  # Gets/sets "-iconify" option.
+  #   args - if contains no arguments, gets "-iconify" option; otherwise sets it
+  # Option values mean:
+  #   none - do nothing: no withdraw/deiconify
+  #   Linux - do withdraw/deiconify for Linux
+  #   Windows - do withdraw/deiconify for Windows
+  #   default - do withdraw/deiconify depending on the platform
+  # See also: withdraw, deiconify
+
+  if {[llength $args]} {
+    set iconify [::apave::obj setShowOption -iconify $args]
+  } else {
+    set iconify [::apave::obj getShowOption -iconify]
+  }
+  return $iconify
+}
+#_______________________
+
+proc ::apave::withdraw {w} {
+  # Does 'withdraw' for a window.
+  #   w - the window's path
+  # See also: iconifyOption
+
+  switch -- [iconifyOption] {
+    none {          ; # no withdraw/deiconify actions
+    }
+    Linux {         ; # do it for Linux
+      wm withdraw $w
+    }
+    Windows {       ; # do it for Windows
+      wm withdraw $w
+      wm attributes $w -alpha 0.0
+    }
+    default {       ; # do it depending on the platform
+      wm withdraw $w
+      if {[::iswindows]} {
+        wm attributes $w -alpha 0.0
+      }
+    }
+  }
+}
+#_______________________
+
+proc ::apave::deiconify {w} {
+  # Does 'deiconify' for a window.
+  #   w - the window's path
+  # See also: iconifyOption
+
+  switch -- [iconifyOption] {
+    none {          ; # no withdraw/deiconify actions
+    }
+    Linux {         ; # do it for Linux
+      catch {wm deiconify $w ; raise $w}
+    }
+    Windows {       ; # do it for Windows
+      if {[wm attributes $w -alpha] < 0.1} {wm attributes $w -alpha 1.0}
+      catch {wm deiconify $w ; raise $w}
+    }
+    default {       ; # do it depending on the platform
+      if {[::iswindows]} {
+        if {[wm attributes $w -alpha] < 0.1} {wm attributes $w -alpha 1.0}
+      }
+      catch {wm deiconify $w ; raise $w}
+    }
+  }
+}
+#_______________________
+
 proc ::apave::initWM {args} {
 
   # Initializes Tcl/Tk session. Used to be called at the beginning of it.
@@ -522,10 +605,7 @@ proc ::apave::initWM {args} {
   set ::apave::_CS_(initWM) 0
   set ::apave::_CS_(CURSORWIDTH) $cursorwidth
   set ::apave::_CS_(LABELBORDER) $labelborder
-  wm withdraw .
-  if {$::tcl_platform(platform) eq {windows}} {
-    wm attributes . -alpha 0.0
-  }
+  ::apave::withdraw .
   # for default theme: only most common settings
   set tfg1 $::apave::_CS_(!FG)
   set tbg1 $::apave::_CS_(!BG)

@@ -109,9 +109,9 @@ proc ::klnd::my::ShowMonth {m y} {
   set iday [set p(icurr) 0]
   for {set i 1} {$i<43} {incr i} {
     if {$i<=$i0 || $iday>=$lday} {
-      set att "-takefocus 0 -text {    } -activebackground $p(bg1)"
+      set att "-takefocus 0 -text {    } -activebackground $p(bg1) -overrelief flat"
     } else {
-      set att "-takefocus 1 -text {[incr iday]} -activeforeground $p(fg0) -activebackground $p(bg0)"
+      set att "-takefocus 1 -text {[incr iday]} -activeforeground $p(fg0) -activebackground $p(bg0) -overrelief raised"
       if {$iday==$p(dvis) || ($iday==$lday && $iday<$p(dvis))} {
         if {[info exists p(after)]} {set af 20} {set af 200} ;# less at key pressing tight
         catch {after cancel $p(after)}
@@ -122,7 +122,7 @@ proc ::klnd::my::ShowMonth {m y} {
         set p(icurr) $i  ;# button's index of the current date
       }
     }
-    [$p(obj) BuT_KLNDSTD$i] configure {*}$att -fg $p(fg1) -bg $p(bg1) -relief flat -overrelief raised
+    [$p(obj) BuT_KLNDSTD$i] configure {*}$att -fg $p(fg1) -bg $p(bg1) -relief flat
   }
   set p(mvis) $m  ;# month & year currently visible
   set p(yvis) $y

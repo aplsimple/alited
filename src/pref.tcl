@@ -275,7 +275,7 @@ proc pref::Ok {args} {
 
   fetchVars
   alited::CloseDlg
-  set ans [alited::msg okcancel info [msgcat::mc "For the settings to be active,\nalited application should be restarted."] OK -geometry root=$win]
+  set ans [alited::msg okcancel info [msgcat::mc "For the settings to be active,\nalited application should be restarted."] OK -centerme $win]
   if {$ans} {
     GetEmSave out
     # check options that can make alited unusable
@@ -964,7 +964,7 @@ proc pref::Template_Tab {} {
     {.labt .labd T 1 1 {-st w -pady 1 -padx 3} {-t "Time format:"}}
     {.entt .labt L 1 1 {-st sw -pady 5} {-tvar alited::al(TPL,%t) -w 30}}
     {.seh .labt T 1 2 {-pady 3}}
-    {.but .seh T 1 1 {-st w} {-t {$::alited::al(MC,tpllist)} -com {alited::unit_tpl::_run no "-geometry root=$::alited::pref::win"}}}
+    {.but .seh T 1 1 {-st w} {-t {$::alited::al(MC,tpllist)} -com {alited::unit_tpl::_run no "-centerme $::alited::pref::win"}}}
   }
 }
 

@@ -381,8 +381,7 @@ proc unit_tpl::Delete {} {
   if {[set isel [Selected index]] eq {}} return
   set nsel [expr {$isel+1}]
   set msg [string map [list %n $nsel] $al(MC,tpldelq)]
-  set geo "-geometry root=$win"
-  if {![alited::msg yesno warn $msg NO {*}$geo]} {
+  if {![alited::msg yesno warn $msg NO -centerme $win]} {
     return
   }
   foreach tl {tpllist tplcont tplpos tplpla tplid tplkeys} {

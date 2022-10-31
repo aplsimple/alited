@@ -3428,11 +3428,7 @@ oo::class create ::apave::APave {
     #   minsize - list {minwidth minheight} or {}
 
     ::apave::InfoWindow [expr {[::apave::InfoWindow] + 1}] $win $modal $var yes
-    if {[::iswindows]} {
-      if {[wm attributes $win -alpha] < 0.1} {wm attributes $win -alpha 1.0}
-    } else {
-      catch {wm deiconify $win ; raise $win}
-    }
+    ::apave::deiconify $win
     if {$minsize eq {}} {
       set minsize [list [winfo width $win] [winfo height $win]]
     }
@@ -3544,10 +3540,12 @@ oo::class create ::apave::APave {
     set w [winfo width $win]
     set h [winfo height $win]
     if {$inpgeom eq {}} {  ;# final geometrizing with actual sizes
-      if {($h/2-$ry-$rh/2)>30 && $root ne "."} {
+      set geo [my CenteredXY $rw $rh $rx $ry $w $h]
+      set y [lindex [split $geo +] end]
+      if {$root ne {.} && (($h/2-$ry-$rh/2)>30 || [::iswindows] && $y>0)} {
         # ::tk::PlaceWindow needs correcting in rare cases, namely:
         # when 'root' is of less sizes than 'win' and at screen top
-        wm geometry $win [my CenteredXY $rw $rh $rx $ry $w $h]
+        wm geometry $win $geo
       } else {
         ::tk::PlaceWindow $win widget $root
       }
@@ -3616,11 +3614,7 @@ oo::class create ::apave::APave {
     }
     catch {destroy $wtop}
     toplevel $wtop {*}$args
-    if {[::iswindows]} { ;# maybe nice to hide all windows manipulations
-      wm attributes $wtop -alpha 0.0
-    } else {
-      wm withdraw $wtop
-    }
+    ::apave::withdraw $wtop ;# nice to hide all windows manipulations
     if {$withfr} {
       pack [ttk::frame $w] -expand 1 -fill both
     }

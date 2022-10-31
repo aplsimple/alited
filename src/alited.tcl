@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.5b13  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5b14  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -417,6 +417,7 @@ namespace eval alited {
     } elseif {$defb eq {}} {
       set defb YES
     }
+    lappend defb -centerme [::apave::rootModalWindow $al(WIN)]
     lassign [::apave::extractOptions args -title {} -noesc 0] title noesc
     if {$title eq {}} {
       switch $icon {
@@ -617,7 +618,7 @@ namespace eval alited {
       set pobj alitedHelpObjToDel
       ::apave::APaveInput create $pobj
     }
-    set res [$pobj ok {} Help "\n$msg\n" -text 1 -geometry root=$win -scroll no \
+    set res [$pobj ok {} Help "\n$msg\n" -text 1 -centerme $win -scroll no \
       -tags ::alited::textTags -w [incr wmax] -modal no -ontop yes {*}$args]
     catch {alitedHelpObjToDel destroy}
     return $res
