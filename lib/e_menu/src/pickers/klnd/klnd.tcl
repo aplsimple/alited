@@ -305,13 +305,13 @@ proc ::klnd::my::MainWidgets {} {
     {fra - - 1 7 {-st new} {}} \
     {.frATool - - 1 7 {-st new} {-bg $::klnd::my::p(bg1)}}
     {.frATool.tool - - - - {pack -side top} {-array {
-      IM_KLND_0 {::klnd::my::SetCurrentDay} sev 6
-      IM_KLND_1 {{::klnd::my::GoYear -1} -tip "$::klnd::my::prevY\n(Home)@@-under 5"} h_ 2
-      IM_KLND_2 {{::klnd::my::GoMonth -1} -tip "$::klnd::my::prevM\n(PageUp)@@-under 5"} h_ 3
-      LabMonth {"" {-fill x -expand 1} {-anchor center -w 14}} h_ 2
-      IM_KLND_3 {{::klnd::my::GoMonth 1} -tip "$::klnd::my::nextM\n(PageDown)@@-under 5"} h_ 3
-      IM_KLND_4 {{::klnd::my::GoYear 1} -tip "$::klnd::my::nextY\n(End)@@-under 5"} h_ 2
-    }}}
+      IM_KLND_0 {::klnd::my::SetCurrentDay} sev 2
+      IM_KLND_1 {{::klnd::my::GoYear -1} -tip "$::klnd::my::prevY\n(Home)@@-under 5"} h_ 1
+      IM_KLND_2 {{::klnd::my::GoMonth -1} -tip "$::klnd::my::prevM\n(PageUp)@@-under 5"} h_ 2
+      LabMonth {"" {-fill x -expand 1} {-anchor center -w 14}} h_ 1
+      IM_KLND_3 {{::klnd::my::GoMonth 1} -tip "$::klnd::my::nextM\n(PageDown)@@-under 5"} h_ 2
+      IM_KLND_4 {{::klnd::my::GoYear 1} -tip "$::klnd::my::nextY\n(End)@@-under 5"}
+      }}}
     {.frADays .frATool T - - {-st nsew} {-bg $::klnd::my::p(bg1)}}
     {.frADays.tcl {
       # make headers and buttons of days
@@ -327,7 +327,7 @@ proc ::klnd::my::MainWidgets {} {
         if {$i<8} {
           set lwid "$cur $pw $p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh) -background $::klnd::my::p(bg1)}"
         } else {
-          set lwid "$cur $pw $p 1 1 {-st ew} {-relief flat -overrelief raised -takefocus 0 -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter [expr {$i-7}] 1} $::klnd::TMPTIP $att -w 3 -background $::klnd::my::p(bg1)}"
+          set lwid "$cur $pw $p 1 1 {-st ew} {-relief flat -overrelief raised -takefocus 0 -padx 8 -pady 1 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter [expr {$i-7}] 1} $::klnd::TMPTIP $att -w 2 -background $::klnd::my::p(bg1)}"
         }
         %C $lwid
         set pr $cur
@@ -452,8 +452,8 @@ proc ::klnd::calendar {args} {
   $my::p(obj) makeWindow $win.fra $title
   $my::p(obj) paveWindow $win.fra [list \
     {*}[my::MainWidgets] \
-    {seh fra T 1 7 {-pady 4}} \
-    {fraBottom seh T 1 7 {-st ew}} \
+    {seh fra T 1 7 {-pady 0}} \
+    {fraBottom seh T 1 7 {-st ew -pady 1}} \
     {fraBottom.h_ - - - - {pack -fill both -expand 1 -side left} {}} \
     {fraBottom.But_KLNDCLOSE - - - - {pack -side left} {-t "Close" -com "$::klnd::my::p(obj) res $win 0"}} \
   ]

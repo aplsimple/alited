@@ -41,6 +41,9 @@ namespace eval project {
   # todo message and its project
   variable msgtodo {}
   variable itemtodo {}
+
+  # flag "projects changed"
+  variable updateGUI no
 }
 
 # ________________________ Common _________________________ #
@@ -822,6 +825,7 @@ proc project::Change {} {
   variable curinfo
   variable prjlist
   variable prjinfo
+  variable updateGUI
   SaveNotes
   if {[set isel [Selected index]] eq {}} return
   if {![ValidProject]} return
@@ -849,6 +853,7 @@ proc project::Change {} {
   GetProjects
   UpdateTree
   Select $prjinfo($newprj,ID)
+  set updateGUI yes
   alited::Message2 [string map [list %n [lindex $prjlist $isel]] $al(MC,prjupd)] 3
 }
 #_______________________
@@ -979,6 +984,7 @@ proc project::Ok {args} {
   variable prjlist
   variable prjinfo
   variable curinfo
+  variable updateGUI
   alited::CloseDlg
   if {$curinfo(_NO2ENT)} {
     # disables entering twice (at multiple double-clicks)
@@ -1004,6 +1010,7 @@ proc project::Ok {args} {
     set msg [string map [list %n $N] $msg]
     if {![alited::msg yesno ques $msg NO -centerme $win]} return
   }
+  ::apave::withdraw $win
   set curinfo(_NO2ENT) 1
   set fname [ProjectFileName $pname]
   RestoreSettings
@@ -1038,8 +1045,11 @@ proc project::Ok {args} {
   }
   unset al(project::Ok)
   alited::file::CheckForNew yes
-  alited::main::ShowText
-  if {!$al(TREE,isunits)} {after idle alited::tree::RecreateTree}
+  after 200 {after idle alited::main::FocusText}
+  if {!$al(TREE,isunits)} {
+    after 200 {after idle alited::tree::RecreateTree}
+  }
+  set updateGUI no ;# GUI will be updating anyway
   $obDl2 res $win 1
 }
 #_______________________
@@ -1496,12 +1506,12 @@ proc project::MainFrame {} {
       -traverse yes -select f1
     }}
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
-    {.buTad - - - - {pack -side left -anchor n} {-takefocus 0 -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big -relief flat -overrelief raised -highlightthickness 0}}
-    {.buTch - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big -relief flat -overrelief raised -highlightthickness 0}}
-    {.buTdel - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big -relief flat -overrelief raised -highlightthickness 0}}
+    {.buTad - - - - {pack -side left -anchor n} {$::apave::BUTTOOL -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big}}
+    {.buTch - - - - {pack -side left} {$::apave::BUTTOOL -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big}}
+    {.buTdel - - - - {pack -side left} {$::apave::BUTTOOL -com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big}}
     {.h_ - - - - {pack -side left -expand 1}}
-    {.buTtpl - - - - {pack -side left} {-takefocus 0 -com ::alited::project::Template -tip {$alited::al(MC,CrTemplPrj)} -image alimg_plus-big -relief flat -overrelief raised -highlightthickness 0}}
-    {.buTtview - - - - {pack -side left -padx 4} {-takefocus 0 -image alimg_OpenFile-big -relief flat -overrelief raised -highlightthickness 0 -com alited::project::ViewDir -tip {$alited::al(MC,ViewDir)}}}
+    {.buTtpl - - - - {pack -side left} {$::apave::BUTTOOL -com ::alited::project::Template -tip {$alited::al(MC,CrTemplPrj)} -image alimg_plus-big}}
+    {.buTtview - - - - {pack -side left -padx 4} {$::apave::BUTTOOL -image alimg_OpenFile-big -com alited::project::ViewDir -tip {$alited::al(MC,ViewDir)}}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 seh T 1 2 {-st nsew} {-padding {2 2}}}
@@ -1519,10 +1529,10 @@ proc project::Tab1 {} {
   variable klnddata
   set klnddata(SAVEDATE) [set klnddata(SAVEPRJ) {}]
   set klnddata(toobar) "labKlndProm {on } LabKlndDate {} sev 6"
-  foreach img {delete paste undo redo - previous2 previous - next next2} {
+  foreach img {delete paste undo redo - previous2 previous next next2} {
     # -method option for possible disable/enable BuT_alimg_delete etc.
     if {$img eq {-}} {
-      append klnddata(toobar) " sev 6"
+      append klnddata(toobar) " sev 4"
       continue
     }
     append klnddata(toobar) " alimg_$img \{{} \
@@ -1536,9 +1546,9 @@ proc project::Tab1 {} {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labName - - 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,prjName)}}}
-    {.EntName .labName L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 60}}
+    {.EntName .labName L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 40}}
     {.labDir .labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
-    {.Dir .labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 60 -validate all -validatecommand alited::project::ValidateDir}}
+    {.Dir .labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 40 -validate all -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 lab T 2 1 {-st nsew -rw 1 -cw 99}}
     {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext *.texKlnd -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
@@ -1567,7 +1577,7 @@ proc project::Tab2 {} {
     {lab1 v_ T 1 2 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,DEFopts)} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fra2 lab1 T 1 2 {-st nsew -cw 1}}
     {.labIgn - - 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,Ign:)}}}
-    {.entIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 50}}
+    {.entIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 40}}
     {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,EOL:)}}}
     {.cbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,indent:)}}}
@@ -1675,6 +1685,8 @@ proc project::_run {{checktodo yes}} {
   namespace upvar ::alited al al
   variable win
   variable msgtodo
+  variable updateGUI
+  set updateGUI no
   if {[winfo exists $win]} {return {}}
   set msgtodo {}
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
@@ -1690,7 +1702,9 @@ proc project::_run {{checktodo yes}} {
   }
   after 200 alited::project::CanProjectEnter  ;# checking the project's TODOs
   set res [_create]
-  alited::main::UpdateTextGutterTree ;# settings may be changed as for GUI
+  if {$updateGUI} {
+    alited::main::UpdateTextGutterTree ;# settings may be changed as for GUI
+  }
   return $res
 }
 

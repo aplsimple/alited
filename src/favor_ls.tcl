@@ -344,11 +344,11 @@ proc favor_ls::_create {} {
   $obDl2 paveWindow $win {
     {fraLbxFav - - 1 2 {-st nswe -pady 4} {}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::favor_ls::Add -tip "Add a list of favorites" -image alimg_add-big -relief flat -overrelief raised -highlightthickness 0}}
-    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Change -tip "Change a list of favorites" -image alimg_change-big -relief flat -overrelief raised -highlightthickness 0}}
-    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::Delete -tip "Delete a list of favorites" -image alimg_delete-big -relief flat -overrelief raised -highlightthickness 0}}
+    {.fra.buTAd - - - - {pack -side top -anchor n} {$::apave::BUTTOOL -com ::alited::favor_ls::Add -tip "Add a list of favorites" -image alimg_add-big}}
+    {.fra.buTChg - - - - {pack -side top} {$::apave::BUTTOOL -com ::alited::favor_ls::Change -tip "Change a list of favorites" -image alimg_change-big}}
+    {.fra.buTDel - - - - {pack -side top} {$::apave::BUTTOOL -com ::alited::favor_ls::Delete -tip "Delete a list of favorites" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill y}}
-    {.fra.buTCur - - - - {pack -side top} {-takefocus 0 -com ::alited::favor_ls::GetCurrentList -tip "$alited::al(MC,currfavs)" -image alimg_heart-big -relief flat -overrelief raised -highlightthickness 0}}
+    {.fra.buTCur - - - - {pack -side top} {$::apave::BUTTOOL -com ::alited::favor_ls::GetCurrentList -tip "$alited::al(MC,currfavs)" -image alimg_heart-big}}
     {.LbxFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 40 -lvar ::alited::favor_ls::favlist}}
     {.sbvFavs fraLbxFav.LbxFav L - - {pack -side left -fill y} {}}
     {fra1 fraLbxFav T 1 2 {-st nswe}}

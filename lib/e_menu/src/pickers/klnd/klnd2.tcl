@@ -103,7 +103,7 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
   set hlcolor red ;#[lindex [::apave::obj csGet] 17]
   # display day names
   for {set i 1} {$i<8} {incr i} {
-    [$p($obj) LabDay$obj$i] configure -text " [lindex $p(days$obj) $i-1] "
+    [$p($obj) LabDay$obj$i] configure -text " [lindex $p(days$obj) $i-1]"
   }
   # 1st day of the month's first week:
   set i0 [clock format [clock scan "$m/1/$y" -format %D] -format %w]
@@ -117,7 +117,7 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
     set bg $p(bg1)
     set wbut [$p($obj) BuT$obj-${i}KLND]
     if {$i<=$i0 || $iday>=$lday} {
-      set att "-takefocus 0 -text {    } -activebackground $p(bg1) -overrelief flat"
+      set att "-takefocus 0 -text {   } -activebackground $p(bg1) -overrelief flat"
       set script {}
     } else {
       set att "-takefocus 0 -text {[incr iday]} -activeforeground $p(fg0) -activebackground $p(bg0) -overrelief raised"
@@ -329,33 +329,33 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
   set p(tipF3$obj) \
     "[::msgcat::mc {Current date}]: \
       [clock format [CurrentDate] -format $p(dformat$obj) -locale $p(loc$obj)]"
-  set res [list "$ownname.frA - - 1 10 {-st new} {-bg $::klnd::my::p(bg1)}"]
+  set res [list "$ownname.laB - - 1 10 {-st nsew} {-bg $::klnd::my::p(bg1)}"]
   # if calendars are united, no display of tool bar
   if {$p(united$obj)} {
     lappend res \
-      "$ownname.frA.LabMonth$obj - - - - {pack -fill x -expand 1} {-anchor center -w 14}"
+      "$ownname.laB.LabMonth$obj - - - - {pack -fill x -expand 1} {-anchor center -w 14}"
   } else {
     lappend res \
-    "$ownname.frA.tool - - - - {pack -side top} {-array { \
-      IM_KLND_0 {{::klnd::my::SetCurrentDay2 $obj} -tip {$::klnd::my::p(tipF3$obj)@@-under 5}} sev 6 \
-      IM_KLND_1 {{::klnd::my::GoYear2 $obj -1} -tip {$::klnd::my::prevY\n(Home)@@-under 5}} h_ 2 \
-      IM_KLND_2 {{::klnd::my::GoMonth2 $obj -1} -tip {$::klnd::my::prevM\n(PageUp)@@-under 5}} h_ 3 \
-      LabMonth$obj {{} {-fill x -expand 1} {-anchor center -w 14}} h_ 2 \
-      IM_KLND_3 {{::klnd::my::GoMonth2 $obj 1} -tip {$::klnd::my::nextM\n(PageDown)@@-under 5}} h_ 3 \
-      IM_KLND_4 {{::klnd::my::GoYear2 $obj 1} -tip {$::klnd::my::nextY\n(End)@@-under 5}} h_ 2 \
+    "$ownname.laB.tool - - - - {pack -side top} {-array { \
+      IM_KLND_0 {{::klnd::my::SetCurrentDay2 $obj} -tip {$::klnd::my::p(tipF3$obj)@@-under 5}} sev 3 \
+      IM_KLND_1 {{::klnd::my::GoYear2 $obj -1} -tip {$::klnd::my::prevY\n(Home)@@-under 5}} h_ 1 \
+      IM_KLND_2 {{::klnd::my::GoMonth2 $obj -1} -tip {$::klnd::my::prevM\n(PageUp)@@-under 5}} h_ 2 \
+      LabMonth$obj {{} {-fill x -expand 1} {-anchor center -w 14}} h_ 1 \
+      IM_KLND_3 {{::klnd::my::GoMonth2 $obj 1} -tip {$::klnd::my::nextM\n(PageDown)@@-under 5}} h_ 2 \
+      IM_KLND_4 {{::klnd::my::GoYear2 $obj 1} -tip {$::klnd::my::nextY\n(End)@@-under 5}} \
     }}"
   }
-  lappend res "$ownname.frADays $ownname.frA T - - {-st nsew} {-bg $::klnd::my::p(bg1)}"
+  lappend res "$ownname.laBDays $ownname.laB T - - {-st nsew} {-bg $::klnd::my::p(bg1)}"
   lappend res \
-    [list $ownname.frADays.tcl " \
+    [list $ownname.laBDays.tcl " \
       set wt - ; \
       for {set i 1} {\$i<50} {incr i} { \
-        if {\$i<8} {set cur $ownname.frADays.LabDay$obj\$i} {set cur $ownname.frADays.BuT$obj-\[expr {\$i-7}\]KLND} ; \
+        if {\$i<8} {set cur $ownname.laBDays.LabDay$obj\$i} {set cur $ownname.laBDays.BuT$obj-\[expr {\$i-7}\]KLND} ; \
         if {(\$i%7)!=1} {set p L; set pw \$pr} {set p T; set pw \$wt; set wt \$cur} ; \
         if {\$i<8} { \
           set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh) -background $::klnd::my::p(bg1)}\" \
         } else { \
-          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-relief flat -overrelief raised -takefocus 0  -padx 8 -pady 4 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w 3 -background $::klnd::my::p(bg1)}\" \
+          set lwid \"\$cur \$pw \$p 1 1 {-st ew -pady 1} {-relief flat -overrelief raised -takefocus 0  -padx 8 -pady 0 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w 2 -background $::klnd::my::p(bg1)}\" \
         } ; \
         %C \$lwid ; \
         set pr \$cur \

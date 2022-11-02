@@ -453,11 +453,11 @@ proc unit_tpl::_create {{geom ""}} {
   $obDl3 paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAd - - - - {pack -side top -anchor n} {-takefocus 0 -com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big -relief flat -overrelief raised -highlightthickness 0}}
-    {.fra.buTChg - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big -relief flat -overrelief raised -highlightthickness 0}}
-    {.fra.buTDel - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big -relief flat -overrelief raised -highlightthickness 0}}
+    {.fra.buTAd - - - - {pack -side top -anchor n} {$::apave::BUTTOOL -com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
+    {.fra.buTChg - - - - {pack -side top} {$::apave::BUTTOOL -com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
+    {.fra.buTDel - - - - {pack -side top} {$::apave::BUTTOOL -com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill x -pady 2} {}}
-    {.fra.buTImp - - - - {pack -side top} {-takefocus 0 -com ::alited::unit_tpl::Import -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big -relief flat -overrelief raised -highlightthickness 0}}
+    {.fra.buTImp - - - - {pack -side top} {$::apave::BUTTOOL -com ::alited::unit_tpl::Import -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big}}
     {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 12 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-stretch 0}"}}
     {.sbvTpls fraTreeTpl.TreeTpl L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}

@@ -756,6 +756,7 @@ oo::class create ::apave::APave {
         set retval {}
         foreach ln [split [::apave::readTextFile $fname {} 1] \n] {
           # probably, it's bad idea to have braces in the file of contents
+          set ln [string map [list \\ \\\\ \{ \\\{ \} \\\}] $ln]
           if {$ln ne {}} {lappend retval $ln}
         }
       }
@@ -1858,7 +1859,7 @@ oo::class create ::apave::APave {
     }
     set com "[self] chooser $chooser \{$vv\} $addopt $wpar $addattrs2 $entname"
     if {$view ne {}} {set anc n} {set anc center}
-    set butf [list [my Transname buT $name] - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -relief flat -overrelief raised -highlightthickness 0 -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
+    set butf [list [my Transname buT $name] - - - - "pack -side right -anchor $anc -in $inname -padx 2" "$::apave::BUTTOOL -com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
     if {$view ne {}} {
       set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $inname" {}]
       set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname" {}]
@@ -2275,14 +2276,16 @@ oo::class create ::apave::APave {
           -command "::apave::eventOnText $w <<Undo>>"
         $pop add command {*}[my iconA redo] -accelerator Ctrl+Shift+Z -label Redo \
           -command "::apave::eventOnText $w <<Redo>>"
-        eval [my popupBlockCommands $pop $w]
-        eval [my popupHighlightCommands $pop $w]
-        if {$addpop ne {}} {
-          lassign $addpop com par1 par2
-          eval [my $com $pop $w {*}$par1 {*}$par2]
+        catch {
+          eval [my popupBlockCommands $pop $w]
+          eval [my popupHighlightCommands $pop $w]
+          if {$addpop ne {}} {
+            lassign $addpop com par1 par2
+            eval [my $com $pop $w {*}$par1 {*}$par2]
+          }
+          after idle [list [self] set_highlight_matches $w]
+          after idle [my setTextBinds $w]
         }
-        after idle [list [self] set_highlight_matches $w]
-        after idle [my setTextBinds $w]
       } else {
         if {$clearcom ne {}} {
           $pop add command {*}[my iconA no] -label Clear \

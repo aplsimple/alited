@@ -19,6 +19,7 @@ namespace eval ::apave {
   set ::apave::BGMAIN #d9d9d9
   set ::apave::FONTMAIN [font actual TkDefaultFont]
   set ::apave::FONTMAINBOLD [list {*}$::apave::FONTMAIN -weight bold]
+  set ::apave::BUTTOOL {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0}
 
   # - common options/constants of apave utils
   variable _PU_opts;       array set _PU_opts [list -NONE =NONE=]
@@ -390,41 +391,32 @@ proc ::apave::initPOP {w} {
 }
 #_______________________
 
-proc ::apave::initStyles {} {
+proc ::apave::initStyle {wt wbase args} {
+  # Initializes a style for a widget type, e.g. button's.
+  #   wt - target widget type
+  #   wbase - base widget type
+  #   args - options of the style
 
+  ttk::style configure $wt {*}[ttk::style configure $wbase]
+  ttk::style configure $wt {*}$args
+  ttk::style map       $wt {*}[ttk::style map $wbase]
+  ttk::style layout    $wt [ttk::style layout $wbase]
+}
+#_______________________
+
+proc ::apave::initStyles {} {
   # Initializes miscellaneous styles, e.g. button's.
 
-  ::apave::obj create_Fonts
-
-  ttk::style configure TButtonWest {*}[ttk::style configure TButton]
-  ttk::style configure TButtonWest -anchor w -font $::apave::FONTMAIN
-  ttk::style map       TButtonWest {*}[ttk::style map TButton]
-  ttk::style layout    TButtonWest [ttk::style layout TButton]
-
-  ttk::style configure TButtonBold {*}[ttk::style configure TButton]
-  ttk::style configure TButtonBold -font $::apave::FONTMAINBOLD
-  ttk::style map       TButtonBold {*}[ttk::style map TButton]
-  ttk::style layout    TButtonBold [ttk::style layout TButton]
-
-  ttk::style configure TButtonWestBold {*}[ttk::style configure TButton]
-  ttk::style configure TButtonWestBold -anchor w -font $::apave::FONTMAINBOLD
-  ttk::style map       TButtonWestBold {*}[ttk::style map TButton]
-  ttk::style layout    TButtonWestBold [ttk::style layout TButton]
-
-  ttk::style configure TButtonWestHL {*}[ttk::style configure TButton]
-  ttk::style configure TButtonWestHL -anchor w -foreground [lindex [obj csGet] 4]
-  ttk::style map       TButtonWestHL {*}[ttk::style map TButton]
-  ttk::style layout    TButtonWestHL [ttk::style layout TButton]
-
-  ttk::style configure TMenuButtonWest {*}[ttk::style configure TMenubutton]
-  ttk::style configure TMenuButtonWest -anchor w -font $::apave::FONTMAIN -relief raised
-  ttk::style map       TMenuButtonWest {*}[ttk::style map TMenubutton]
-  ttk::style layout    TMenuButtonWest [ttk::style layout TMenubutton]
+  obj create_Fonts
+  initStyle TButtonWest TButton -anchor w -font $::apave::FONTMAIN
+  initStyle TButtonBold TButton -font $::apave::FONTMAINBOLD
+  initStyle TButtonWestBold TButton -anchor w -font $::apave::FONTMAINBOLD
+  initStyle TButtonWestHL TButton -anchor w -foreground [lindex [obj csGet] 4]
+  initStyle TMenuButtonWest TMenubutton -anchor w -font $::apave::FONTMAIN -relief raised
 }
 #_______________________
 
 proc ::apave::initStylesFS {args} {
-
   # Initializes miscellaneous styles, e.g. button's.
   #   args - font options ("name value" pairs)
 
@@ -432,40 +424,13 @@ proc ::apave::initStylesFS {args} {
   set font  "$::apave::FONTMAIN $args"
   set fontB "$::apave::FONTMAINBOLD $args"
 
-  ttk::style configure TLabelFS {*}[ttk::style configure TLabel]
-  ttk::style configure TLabelFS -font $font
-  ttk::style map       TLabelFS {*}[ttk::style map TLabel]
-  ttk::style layout    TLabelFS [ttk::style layout TLabel]
-
-  ttk::style configure TCheckbuttonFS {*}[ttk::style configure TCheckbutton]
-  ttk::style configure TCheckbuttonFS -font $font
-  ttk::style map       TCheckbuttonFS {*}[ttk::style map TCheckbutton]
-  ttk::style layout    TCheckbuttonFS [ttk::style layout TCheckbutton]
-
-  ttk::style configure TComboboxFS {*}[ttk::style configure TCombobox]
-  ttk::style configure TComboboxFS -font $font
-  ttk::style map       TComboboxFS {*}[ttk::style map TCombobox]
-  ttk::style layout    TComboboxFS [ttk::style layout TCombobox]
-
-  ttk::style configure TRadiobuttonFS {*}[ttk::style configure TRadiobutton]
-  ttk::style configure TRadiobuttonFS -font $font
-  ttk::style map       TRadiobuttonFS {*}[ttk::style map TRadiobutton]
-  ttk::style layout    TRadiobuttonFS [ttk::style layout TRadiobutton]
-
-  ttk::style configure TButtonWestFS {*}[ttk::style configure TButton]
-  ttk::style configure TButtonWestFS -anchor w -font $font
-  ttk::style map       TButtonWestFS {*}[ttk::style map TButton]
-  ttk::style layout    TButtonWestFS [ttk::style layout TButton]
-
-  ttk::style configure TButtonBoldFS {*}[ttk::style configure TButton]
-  ttk::style configure TButtonBoldFS -font $fontB
-  ttk::style map       TButtonBoldFS {*}[ttk::style map TButton]
-  ttk::style layout    TButtonBoldFS [ttk::style layout TButton]
-
-  ttk::style configure TButtonWestBoldFS {*}[ttk::style configure TButton]
-  ttk::style configure TButtonWestBoldFS -anchor w -font $fontB
-  ttk::style map       TButtonWestBoldFS {*}[ttk::style map TButton]
-  ttk::style layout    TButtonWestBoldFS [ttk::style layout TButton]
+  initStyle TLabelFS TLabel -font $font
+  initStyle TCheckbuttonFS TCheckbutton -font $font
+  initStyle TComboboxFS TCombobox -font $font
+  initStyle TRadiobuttonFS TRadiobutton -font $font
+  initStyle TButtonWestFS TButton -anchor w -font $font
+  initStyle TButtonBoldFS TButton -font $fontB
+  initStyle TButtonWestBoldFS TButton -anchor w -font $fontB
 }
 #_______________________
 
@@ -2471,6 +2436,6 @@ oo::class create ::apave::ObjectTheming {
 # ___________________________________ EOF _____________________________________ #
 
 #%   DOCTEST   SOURCE  ~/PG/github/pave/tests/obbit_1.test
-#RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#-RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #-RUNF1: ./tests/test2_pave.tcl
 #RUNF1: ./tests/test2_pave.tcl alt 41 9 12 "small icons"
