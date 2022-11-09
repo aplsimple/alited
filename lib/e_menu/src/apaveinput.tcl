@@ -221,7 +221,7 @@ oo::class create ::apave::APaveInput {
         }
         bu - bt - ch {
           set prompt ""
-          if {$typ in {bu bt}} {set tvar [set vv {}]}
+          # TODO if {$typ in {bu bt}} {set tvar [set vv {}]}
           if {$toprev eq {}} {
             lappend inopts [list $ff - - - - \
               "pack -side left -expand 1 -fill both $gopts" "$tvar $vv $attrs"]
