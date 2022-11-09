@@ -450,8 +450,9 @@ proc ::em::change_PD {} {
       fco1 [list {Project:} {} \
       [list -h 10 -state readonly -inpval [get_PD]]] \
       "@@-RE {^(\\s*)(\[^#\]+)\$} {$::em::PD}@@" \
-      btTChange [list {} {-padx 5} "-com {::em::edit {$::em::PD} ::em::none; ::em::dialog \
-        res .em -1} -tip {Click to edit\n$::em::PD} -toprev 1"] {}]
+      but1 [list {} {-padx 5} "-com {::em::edit {$::em::PD} ::em::none; ::em::dialog \
+        res .em -1} -takefocus 0 -tooltip {Click to edit\n$::em::PD} \
+        -toprev 1 -image [::apave::iconImage change]"] {}]
   }
   if {[::iswindows]} {
     set dkst disabled
