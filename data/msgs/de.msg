@@ -392,6 +392,7 @@ namespace eval ::alited {
   ::msgcat::mcmset de {
     {Ttk theme:} {Ttk Theme:}
     {Color scheme:} {Farbschema:}
+    {Windows themes} {Windows Themen}
     {Darker:} {Dunkler:}
     {Lighter:} {Heller:}
     {Tint} {Farbton}
@@ -407,6 +408,7 @@ namespace eval ::alited {
     {Light / Dark} {Hell / Dunkel}
     {Makes colors darker .. lighter} {Macht Farben dunkler .. heller}
     "These themes need\nlight / dark color schemes\naccordingly" "Diese Themen benötigen\nhelle / dunkle Farbschemas\nentsprechend"
+    "These themes need\nlight color schemes" "Diese Themen benötigen\nhelle Farbschemas"
     {Fit for theme} {Gut geeignet zu Theme}
     {No color scheme at all} {Keine Farbschema überhaupt}
   }
@@ -422,6 +424,7 @@ namespace eval ::alited {
     {Space between wraps:} {Platz zwischen Umbrüche:}
     {Tab bar label's length:} {Tab-Leiste Beschriftungslänge:}
     {Tab bar tip's length:} {Tab-Leiste Tiplänge:}
+    {Border for bar tabs:} {Borte für Tab-Leiste:}
     {Code snippet:} {Codeausschnitt:}
   }
 

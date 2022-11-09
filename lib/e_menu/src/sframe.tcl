@@ -4,7 +4,7 @@
 # Date:    07/04/2022
 # Brief:   Handles a ttk-compatible, scrollable frame widget.
 # License: Tcl/Tk.
-# 
+#
 # Usage:
 #     sframe new <path> ?-toplevel true?  ?-anchor nsew? ?-mode x|y|xy|both?
 #       -> <path>
@@ -111,7 +111,7 @@ namespace eval sframe {
   }
   #_______________________
 
-  proc content {path} {
+  proc content {{path ""}} {
     # Gets the path of the child frame suitable for content.
     #   path - path to the scrollable window/frame
 

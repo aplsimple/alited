@@ -285,28 +285,28 @@ proc favor::Show {} {
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav TreeFavor]
   if {$al(FAV,IsFavor)} {
-    pack [$obPav BuTRenF] -side left -after [$obPav BuTAddF]
-    [$obPav BuTVisitF] configure -image alimg_misc
+    pack [$obPav BtTRenF] -side left -after [$obPav BtTAddF]
+    [$obPav BtTVisitF] configure -image alimg_misc
     set tip $alited::al(MC,lastvisit)
     set state normal
     SetFavorites $al(FAV,current)
     $wtree heading #1 -text [msgcat::mc $al(MC,favorites)]
   } else {
-    pack forget [$obPav BuTRenF]
+    pack forget [$obPav BtTRenF]
     set al(FAV,current) [list]
     foreach it [alited::tree::GetTree {} TreeFavor] {
       lappend al(FAV,current) $it
     }
-    [$obPav BuTVisitF] configure -image alimg_heart
+    [$obPav BtTVisitF] configure -image alimg_heart
     set tip $al(MC,favorites)
     set state disable
     SetFavorites $al(FAV,visited)
     $wtree heading #1 -text [msgcat::mc $al(MC,lastvisit)]
   }
-  foreach but {BuTListF BuTAddF BuTRenF} {
+  foreach but {BtTListF BtTAddF BtTRenF} {
     [$obPav $but] configure -state $state
   }
-  baltip::tip [$obPav BuTVisitF] $tip
+  baltip::tip [$obPav BtTVisitF] $tip
 }
 #_______________________
 

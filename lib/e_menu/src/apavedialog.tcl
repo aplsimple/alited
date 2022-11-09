@@ -235,7 +235,7 @@ oo::class create ::apave::APaveDialog {
     set qdlg $::apave::_AP_VARS(win)
     set atr1 "-maximum 100 -value 0 -mode determinate -length 300 -orient horizontal"
     set widlist [list \
-      "fra - - - - {pack } {-h 10}" \
+      "fra - - - - {pack} {-h 10}" \
       ".Lab1SplashScreen - - - - {pack} {-t {$msg1}}" \
       ".ProgSplashScreen - - - - {pack} {$atr1 $args}" \
       ".Lab2SplashScreen - - - - {pack -anchor w} {-t {$msg2}}" \
@@ -1378,5 +1378,6 @@ oo::class create ::apave::APaveDialog {
 
 }
 # _____________________________ EOF _____________________________________ #
+#RUNF1: ~/PG/github/pave/tests/test2_pave.tcl alt 27 11 12 "middle icons"
 #RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

@@ -19,7 +19,6 @@ namespace eval ::apave {
   set ::apave::BGMAIN #d9d9d9
   set ::apave::FONTMAIN [font actual TkDefaultFont]
   set ::apave::FONTMAINBOLD [list {*}$::apave::FONTMAIN -weight bold]
-  set ::apave::BUTTOOL {-relief flat -overrelief raised -highlightthickness 0 -takefocus 0}
 
   # - common options/constants of apave utils
   variable _PU_opts;       array set _PU_opts [list -NONE =NONE=]
@@ -372,6 +371,46 @@ proc ::apave::rootModalWindow {pwin} {
   }
   return $root
 }
+#_______________________
+
+proc ::apave::focusedWidget {w} {
+  # Gets a flag "is a widget can be focused".
+  #   w - widget's path
+
+  set wclass [string tolower [winfo class $w]]
+  foreach c [list entry text button box list view] {
+    if {[string match *$c $wclass]} {
+      if {[catch {set state [$w cget -state]}]} {set state normal}
+      if {$state ne {disabled}} {
+        if {[catch {set focus [$w cget -takefocus]}]} {set focus no}
+        return [expr {![string is boolean -strict $focus] || $focus}]
+      }
+      break
+    }
+  }
+  return no
+}
+#_______________________
+
+proc ::apave::focusFirst {w {dofocus yes} {res {}}} {
+  # Sets a focus on a first widget of a parent widget.
+  #  w - the parent widget
+  #  dofocus - if no, means "only return the widget's path"
+  #  res - used for recursive call
+  # Returns a path to a focused widget or "".
+
+  if {$w ne {}} {
+    foreach w [winfo children $w] {
+      if {[focusedWidget $w]} {
+        if {$dofocus} {after 200 "catch {focus -force $w}"}
+        return $w
+      } else {
+        if {[set res [::apave::focusFirst $w $dofocus]] ne {}} break
+      }
+    }
+  }
+  return $res
+}
 
 ## ________________________ Inits _________________________ ##
 
@@ -401,6 +440,20 @@ proc ::apave::initStyle {wt wbase args} {
   ttk::style configure $wt {*}$args
   ttk::style map       $wt {*}[ttk::style map $wbase]
   ttk::style layout    $wt [ttk::style layout $wbase]
+}
+#_______________________
+
+proc ::apave::ttkToolbutton {} {
+  # Initializes Toolbutton's style, depending on CS.
+  # Creates also btt / brt / blt widget types to be paved,
+  # with images top / right / left accordingly.
+
+  lassign [obj csGet] fg1 - bg1
+  ttk::style map Toolbutton {*}[dict replace [ttk::style map Toolbutton] \
+    -foreground "pressed $fg1 active $fg1" -background "pressed $bg1 active $bg1"]
+  defaultAttrs btt {} {-style Toolbutton -compound top -takefocus 0} ttk::button
+  defaultAttrs brt {} {-style Toolbutton -compound right -takefocus 0} ttk::button
+  defaultAttrs blt {} {-style Toolbutton -compound left -takefocus 0} ttk::button
 }
 #_______________________
 
@@ -565,8 +618,8 @@ proc ::apave::initWM {args} {
 
   if {!$::apave::_CS_(initWM)} return
   lassign [::apave::parseOptions $args -cursorwidth $::apave::cursorwidth -theme {clam} \
-    -buttonwidth -8 -buttonborder 1 -labelborder 0 -padding 1] \
-    cursorwidth theme buttonwidth buttonborder labelborder padding
+    -buttonwidth -8 -buttonborder 1 -labelborder 0 -padding 1 -cs -2] \
+    cursorwidth theme buttonwidth buttonborder labelborder padding cs
   set ::apave::_CS_(initWM) 0
   set ::apave::_CS_(CURSORWIDTH) $cursorwidth
   set ::apave::_CS_(LABELBORDER) $labelborder
@@ -585,10 +638,7 @@ proc ::apave::initWM {args} {
     -relief raised -borderwidth $buttonborder -padding $padding
   ttk::style configure TMenubutton -width 0 -padding 0
   # TLabel's standard style saved for occasional uses
-  ttk::style configure TLabelSTD {*}[ttk::style configure TLabel]
-  ttk::style configure TLabelSTD -anchor w
-  ttk::style map       TLabelSTD {*}[ttk::style map TLabel]
-  ttk::style layout    TLabelSTD [ttk::style layout TLabel]
+  ::apave::initStyle TLabelSTD TLabel -anchor w
   # ... TLabel new style
   ttk::style configure TLabel -borderwidth $labelborder -padding $padding
   # ... Treeview colors
@@ -601,9 +651,9 @@ proc ::apave::initWM {args} {
   # ... TCombobox colors
   ttk::style map TCombobox -fieldforeground [list {active focus} $tfg1 readonly $tfg1 disabled grey]
   ttk::style map TCombobox -fieldbackground [list {active focus} $tbg1 {readonly focus} $tbg1 {readonly !focus} white]
-
-  initPOP .
   initStyles
+  initPOP .
+  if {$cs!=-2} {obj csSet $cs}
 }
 #_______________________
 
@@ -1960,6 +2010,7 @@ oo::class create ::apave::ObjectTheming {
         my Ttk_style map $ts -foreground [list {readonly focus} $tfg2 {active focus} $tfg2]
         my Ttk_style map $ts -fieldforeground [list {active focus} $tfg2 readonly $tfg2 disabled $tfgD]
         my Ttk_style map $ts -fieldbackground [list {active focus} $tbg2 {readonly focus} $tbg2 {readonly !focus} $tbg1 disabled $tbgD]
+        my Ttk_style map $ts -focusfill	[list {readonly focus} $tbgS]
       } else {
         my Ttk_style configure $ts -foreground $tfg2
         my Ttk_style configure $ts -background $tbg2

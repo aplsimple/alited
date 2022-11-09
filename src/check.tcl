@@ -78,21 +78,26 @@ proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""}} {
   variable errors3
   variable errors4
   set cc1 [set cc2 [set ck1 [set ck2 [set cp1 [set cp2 [set cq1 0]]]]]]
+  set mapB1 [list "{\[}" {}] ;# skip this usage (not regexp's alas)
+  set mapB2 [list "{\]}" {}]
+  set mapP1 [list "{\(}" {}]
+  set mapP2 [list "{\)}" {}]
+  set mapQ [list "{\"}" {}]
   foreach line [split [$wtxt get $pos1 $pos2] \n] {
     if {$chBrace} {
       incr cc1 [::apave::countChar $line \{]
       incr cc2 [::apave::countChar $line \}]
     }
     if {$chBracket} {
-      incr ck1 [::apave::countChar $line \[]
-      incr ck2 [::apave::countChar $line \]]
+      incr ck1 [::apave::countChar [string map $mapB1 $line] \[]
+      incr ck2 [::apave::countChar [string map $mapB2 $line] \]]
     }
     if {$chParenthesis} {
-      incr cp1 [::apave::countChar $line (]
-      incr cp2 [::apave::countChar $line )]
+      incr cp1 [::apave::countChar [string map $mapP1 $line] (]
+      incr cp2 [::apave::countChar [string map $mapP2 $line] )]
     }
     if {$chQuotes} {
-      incr cq1 [::apave::countChar $line \"]
+      incr cq1 [::apave::countChar [string map $mapQ $line] \"]
     }
   }
   set err 0
@@ -260,12 +265,12 @@ proc check::_create {} {
     {v_ - -}
     {labHead v_ T 1 1 {-st w -pady 4 -padx 8} {-t "Checks available:"}}
     {chb1 labHead T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chBrace -t {Consistency of {} }}}
-    {chb2 chb1 T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chBracket -t {Consistency of []}}}
-    {chb3 chb2 T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chParenthesis -t {Consistency of ()}}}
-    {chb4 chb3 T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chQuotes -t {Consistency of ""}}}
-    {chb9 chb4 T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chDuplUnits -t {Duplicate units}}}
-    {v_2 chb9 T}
-    {fra v_2 T 1 1 {-st nsew -pady 0 -padx 3} {-padding {5 5 5 5} -relief groove}}
+    {chb2 + T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chBracket -t {Consistency of []}}}
+    {chb3 + T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chParenthesis -t {Consistency of ()}}}
+    {chb4 + T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chQuotes -t {Consistency of ""}}}
+    {chb9 + T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chDuplUnits -t {Duplicate units}}}
+    {v_2 + T}
+    {fra + T 1 1 {-st nsew -pady 0 -padx 3} {-padding {5 5 5 5} -relief groove}}
     {fra.lab - - - - {pack -side left} {-t "Check:"}}
     {fra.radA - - - - {pack -side left -padx 9}  {-t "current file" -var ::alited::check::what -value 1}}
     {fra.radB - - - - {pack -side left -padx 9}  {-t "all of session files" -var ::alited::check::what -value 2}}

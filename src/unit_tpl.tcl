@@ -453,21 +453,21 @@ proc unit_tpl::_create {{geom ""}} {
   $obDl3 paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.buTAd - - - - {pack -side top -anchor n} {$::apave::BUTTOOL -com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
-    {.fra.buTChg - - - - {pack -side top} {$::apave::BUTTOOL -com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
-    {.fra.buTDel - - - - {pack -side top} {$::apave::BUTTOOL -com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big}}
+    {.fra.btTAd - - - - {pack -side top -anchor n} {-com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
+    {.fra.btTChg - - - - {pack -side top} {-com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
+    {.fra.btTDel - - - - {pack -side top} {-com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill x -pady 2} {}}
-    {.fra.buTImp - - - - {pack -side top} {$::apave::BUTTOOL -com ::alited::unit_tpl::Import -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big}}
+    {.fra.btTImp - - - - {pack -side top} {-com ::alited::unit_tpl::Import -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big}}
     {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 12 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-stretch 0}"}}
-    {.sbvTpls fraTreeTpl.TreeTpl L - - {pack -side left -fill both}}
+    {.sbvTpls + L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
     {.h_ - - 1 1 {-st we} {-h 20}}
     {.labTpl .h_ T 1 1 {-st we} {-anchor center -t "Current template:"}}
     {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {-BALTIP {$alited::al(MC,tplent1)} -MAXEXP 1}}}
-    {.CbxKey .EntTpl L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {-BALTIP {$alited::al(MC,tplent3)} -MAXEXP 1}}}
+    {.CbxKey + L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {-BALTIP {$alited::al(MC,tplent3)} -MAXEXP 1}}}
     {fra1.fratex fra1.labTpl T 10 10 {-st nsew} {}}
     {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip  {-BALTIP {$alited::al(MC,tplent2)} -MAXEXP 1}}}
-    {.sbvTpl .TexTpl L - - {pack -side left -fill both} {}}
+    {.sbvTpl + L - - {pack -side left -fill both} {}}
     {fra2 fra1 T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Place after:"}}
     {.radA - - - - {pack -side left -padx 8}  {-t "line" -var ::alited::unit_tpl::place -value 1 -tip {-BALTIP {$al(MC,tplaft1)} -UNDER 4}}}
@@ -475,7 +475,7 @@ proc unit_tpl::_create {{geom ""}} {
     {.radC - - - - {pack -side left -padx 8}  {-t "cursor" -var ::alited::unit_tpl::place -value 3 -tip {-BALTIP {$al(MC,tplaft3)} -UNDER 4}}}
     {.radD - - - - {pack -side left -padx 8}  {-t "file's beginning" -var ::alited::unit_tpl::place -value 4 -tip {-BALTIP {$al(MC,tplaft4)} -UNDER 4}}}
     {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
-    {fra3 labMess T 1 10 {-st nsew}}
+    {fra3 + T 1 10 {-st nsew}}
     {.ButHelp - - - - {pack -side left} {-t {$alited::al(MC,help)} -tip F1 -command ::alited::unit_tpl::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
     {.butOK - - - - {pack $::alited::unit_tpl::PACKOK -side left -padx 2} {-t "$alited::al(MC,select)" -command ::alited::unit_tpl::Ok}}

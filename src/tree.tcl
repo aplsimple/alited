@@ -269,7 +269,7 @@ proc tree::Create {} {
   || !$al(TREE,isunits) && $al(TREE,files)} return  ;# no need
   set wtree [$obPav Tree]
   if {!$al(TREE,isunits)} {
-    pack [$obPav BuTRenT] -side left -after [$obPav BuTAddT]  ;# display 'Rename' button
+    pack [$obPav BtTRenT] -side left -after [$obPav BtTAddT]  ;# display 'Rename' button
     # for file tree: get its current "open branch" flags
     # in order to check them in CreateFilesTree
     set al(SAVED_FILE_TREE) [list]
@@ -281,7 +281,7 @@ proc tree::Create {} {
       }
     }
   } else {
-    pack forget [$obPav BuTRenT] ;# hide 'Rename' button
+    pack forget [$obPav BtTRenT] ;# hide 'Rename' button
   }
   set TID [alited::bar::CurrentTabID]
   Delete $wtree {} $TID
@@ -320,12 +320,12 @@ proc tree::CreateUnitsTree {TID wtree} {
 
   namespace upvar ::alited al al obPav obPav
   set al(TREE,units) yes
-  [$obPav BuTswitch] configure -image alimg_folder
-  baltip::tip [$obPav BuTswitch] $al(MC,swunits)
-  baltip::tip [$obPav BuTAddT] $al(MC,tpllist)
-  baltip::tip [$obPav BuTDelT] $al(MC,unitsdel)
-  baltip::tip [$obPav BuTUp] $al(MC,moveupU)
-  baltip::tip [$obPav BuTDown] $al(MC,movedownU)
+  [$obPav BtTswitch] configure -image alimg_folder
+  baltip::tip [$obPav BtTswitch] $al(MC,swunits)
+  baltip::tip [$obPav BtTAddT] $al(MC,tpllist)
+  baltip::tip [$obPav BtTDelT] $al(MC,unitsdel)
+  baltip::tip [$obPav BtTUp] $al(MC,moveupU)
+  baltip::tip [$obPav BtTDown] $al(MC,movedownU)
   $al(MENUEDIT) entryconfigure 0 -label $al(MC,moveupU)
   $al(MENUEDIT) entryconfigure 1 -label $al(MC,movedownU)
   $wtree heading #0 -text [alited::bar::CurrentTab 1]
@@ -391,12 +391,12 @@ proc tree::CreateFilesTree {wtree} {
 
   namespace upvar ::alited al al obPav obPav
   set al(TREE,files) yes
-  [$obPav BuTswitch] configure -image alimg_gulls
-  baltip::tip [$obPav BuTswitch] $al(MC,swfiles)
-  baltip::tip [$obPav BuTAddT] $al(MC,filesadd)
-  baltip::tip [$obPav BuTDelT] $al(MC,filesdel)
-  baltip::tip [$obPav BuTUp] $al(MC,moveupF)
-  baltip::tip [$obPav BuTDown] $al(MC,movedownF)
+  [$obPav BtTswitch] configure -image alimg_gulls
+  baltip::tip [$obPav BtTswitch] $al(MC,swfiles)
+  baltip::tip [$obPav BtTAddT] $al(MC,filesadd)
+  baltip::tip [$obPav BtTDelT] $al(MC,filesdel)
+  baltip::tip [$obPav BtTUp] $al(MC,moveupF)
+  baltip::tip [$obPav BtTDown] $al(MC,movedownF)
   $al(MENUEDIT) entryconfigure 0 -label $al(MC,moveupF)
   $al(MENUEDIT) entryconfigure 1 -label $al(MC,movedownF)
   $wtree heading #0 -text ":: [file tail $al(prjroot)] ::"

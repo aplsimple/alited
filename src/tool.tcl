@@ -237,6 +237,11 @@ proc tool::EM_Options {opts} {
     }
     set tdir $::alited::LIBDIR
   }
+  if {$al(EM,geometry) eq {}} {
+    # at 1st exposition, center e_menu approximately
+    lassign [split [wm geometry $al(WIN)] x+] w h x y
+    set al(EM,geometry) [apave::obj EXPORT CenteredXY $w $h $x $y 300 [expr {$h/2}]]
+  }
   set ed [info nameofexecutable]\ $SCRIPTNORMAL\ $CONFIGDIR
   set R [list "md=$al(EM,mnudir)" "m=$al(EM,mnu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
@@ -544,7 +549,7 @@ proc tool::BeforeRunDialogue {focrun} {
     seh2 {{} {-pady 15}} {} \
     lab {{} {} {-t { Also, you can set "forced command" to be run by "Run" tool:}}} {} \
     fiL [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
-    buT1 [list {} {-padx 5} "$::apave::BUTTOOL -com alited::tool::DeleteForcedRun -tip Delete -toprev 1 -image [::apave::iconImage no]"] {} \
+    btT1 [list {} {-padx 5} "-com alited::tool::DeleteForcedRun -tip Delete -toprev 1 -image [::apave::iconImage no]"] {} \
     butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test}" [msgcat::mc Test] \
   ] -head $head {*}$foc -help {alited::tool::HelpTool %w 2}] \
   res run com

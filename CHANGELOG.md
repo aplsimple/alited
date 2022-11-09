@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b15 (2 Nov'22)`
+Version `1.3.5b20 (9 Nov'22)`
 
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
   - BUGFIX: (esp. for Windows) Alt+F4 for exit only
@@ -10,6 +10,8 @@ Version `1.3.5b15 (2 Nov'22)`
   - BUGFIX: selected text for "Run Tcl" of menu.mnu
   - BUGFIX: flowing column widths of the tree
   - BUGFIX: erroneous combination CS=-1 & Tint!=0
+  - NEW   : -expand option of bartabs = 9 for "smart expanding the tabs"
+  - NEW   : Preferences: Windows' themes (in Windows), tabbar's border, 1st widget focused
   - NEW   : sorted and tear-offed file list
   - NEW   : update menus & templates (if touched) at updating alited's version
   - NEW   : fossil.mnu: 'fossil timeline --showfiles' allows to filter file/dirs
@@ -33,6 +35,7 @@ Version `1.3.5b15 (2 Nov'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
+  - CHANGE: at 1st exposition, center e_menu approximately
   - CHANGE: highlightbackground for main toolbar buttons + overrelief (esp. for Windows)
   - CHANGE: saving alited's settings at changing templates & favorites' lists
   - CHANGE: "-resizable no" and other geometry things
@@ -42,7 +45,7 @@ Version `1.3.5b15 (2 Nov'22)`
   - CHANGE: display tips for favorites and menu file lists at right side of pointer
   - CHANGE: checks for outward changes disabled at saving files
   - CHANGE: alited docs
-  - CHANGE: packages: apave/e_menu 3.5.10, bartabs 1.5.9, baltip 1.5.1, hl_tcl 0.9.43
+  - CHANGE: packages: apave/e_menu 3.6.0, bartabs 1.5.9, baltip 1.5.1, hl_tcl 0.9.44
 
 
 Version `1.3.4 (21 Sep'22)`

@@ -394,6 +394,7 @@ namespace eval ::alited {
   ### ________________________ General _________________________ ###
   ::msgcat::mcmset uk {
     {Ttk theme:} {Тема Ttk:}
+    {Windows themes} {Теми Windows}
     {Color scheme:} {Колірна схема:}
     {Darker:} {Темніше:}
     {Lighter:} {Світліше:}
@@ -407,9 +408,10 @@ namespace eval ::alited {
     {Cursor width:} {Ширина курсора:}
     {Notes:} {Замітки:}
     "Sort of diary.\nList of TODOs etc." "Типа щоденника.\nСписок TODO та інше."
-    {Light / Dark} {Світла / Темна}
+    {Light / Dark} {Світлі / Темні}
     {Makes colors darker .. lighter} {Робить коліри темніше .. світліше}
     "These themes need\nlight / dark color schemes\naccordingly" "Цим темам потрібні\nсвітлі / темні колірні схеми\nвідповідно"
+    "These themes need\nlight color schemes" "Цим темам потрібні\nсвітлі колірні схеми"
     {Fit for theme} {Гідно для теми}
     {No color scheme at all} {Ніякої колірної схеми взагалі}
   }
@@ -425,6 +427,7 @@ namespace eval ::alited {
     {Space between wraps:} {Відступ згортованих рядків:}
     {Tab bar label's length:} {Довжина назв панелі файлів:}
     {Tab bar tip's length:} {Довжина підказок панелі файлів:}
+    {Border for bar tabs:} {Окравка для панелі файлів:}
     {Code snippet:} {Фрагмент коду:}
   }
 

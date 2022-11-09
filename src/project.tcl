@@ -1497,7 +1497,7 @@ proc project::MainFrame {} {
   return {
     {fraTreePrj - - 10 1 {-st nswe -pady 4 -rw 1}}
     {.TreePrj - - - - {pack -side left -expand 1 -fill both} {-h 16 -show headings -columns {C1} -displaycolumns {C1}}}
-    {.sbvPrjs .TreePrj L - - {pack -side left -fill both}}
+    {.sbvPrjs + L - - {pack -side left -fill both}}
     {fraR fraTreePrj L 10 1 {-st nsew -cw 1 -pady 4}}
     {fraR.nbk - - - - {pack -side top -expand 1 -fill both} {
       f1 {-text {$al(MC,info)}}
@@ -1506,15 +1506,15 @@ proc project::MainFrame {} {
       -traverse yes -select f1
     }}
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
-    {.buTad - - - - {pack -side left -anchor n} {$::apave::BUTTOOL -com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big}}
-    {.buTch - - - - {pack -side left} {$::apave::BUTTOOL -com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big}}
-    {.buTdel - - - - {pack -side left} {$::apave::BUTTOOL -com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big}}
+    {.btTad - - - - {pack -side left -anchor n} {-com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big}}
+    {.btTch - - - - {pack -side left} {-com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big}}
+    {.btTdel - - - - {pack -side left} {-com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big}}
     {.h_ - - - - {pack -side left -expand 1}}
-    {.buTtpl - - - - {pack -side left} {$::apave::BUTTOOL -com ::alited::project::Template -tip {$alited::al(MC,CrTemplPrj)} -image alimg_plus-big}}
-    {.buTtview - - - - {pack -side left -padx 4} {$::apave::BUTTOOL -image alimg_OpenFile-big -com alited::project::ViewDir -tip {$alited::al(MC,ViewDir)}}}
+    {.btTtpl - - - - {pack -side left} {-com ::alited::project::Template -tip {$alited::al(MC,CrTemplPrj)} -image alimg_plus-big}}
+    {.btTtview - - - - {pack -side left -padx 4} {-image alimg_OpenFile-big -com alited::project::ViewDir -tip {$alited::al(MC,ViewDir)}}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
-    {fraB2 seh T 1 2 {-st nsew} {-padding {2 2}}}
+    {fraB2 + T 1 2 {-st nsew} {-padding {2 2}}}
     {.ButHelp - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,help)} -tip F1 -command ::alited::project::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
     {.butOK - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,select)} -command ::alited::project::Ok}}
@@ -1546,13 +1546,13 @@ proc project::Tab1 {} {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labName - - 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,prjName)}}}
-    {.EntName .labName L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 40}}
+    {.EntName + L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 40}}
     {.labDir .labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
-    {.Dir .labDir L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 40 -validate all -validatecommand alited::project::ValidateDir}}
+    {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 40 -validate all -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
-    {fra2 lab T 2 1 {-st nsew -rw 1 -cw 99}}
+    {fra2 + T 2 1 {-st nsew -rw 1 -cw 99}}
     {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext *.texKlnd -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
-    {.sbv .TexPrj L - - {pack -side left}}
+    {.sbv + L - - {pack -side left}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
     {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate; alited::project::KlndBorderText} -dateformat $alited::project::klnddata(dateformat) -tip {alited::project::KlndText %D} -popup {alited::project::KlndPopup %W %y %m %d %X %Y}}}
@@ -1574,25 +1574,25 @@ proc project::Tab2 {} {
   }
   return {
     {v_ - - 1 10}
-    {lab1 v_ T 1 2 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,DEFopts)} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
-    {fra2 lab1 T 1 2 {-st nsew -cw 1}}
+    {lab1 + T 1 2 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,DEFopts)} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {fra2 + T 1 2 {-st nsew -cw 1}}
     {.labIgn - - 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,Ign:)}}}
-    {.entIgn .labIgn L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 40}}
+    {.entIgn + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 40}}
     {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,EOL:)}}}
-    {.cbxEOL .labEOL L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
+    {.cbxEOL + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,indent:)}}}
-    {.spxIndent .labIndent L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 9 -from 0 -to 8 -justify center -com {::alited::pref::CheckIndent ""}}}
-    {.chbIndAuto .spxIndent L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjindentAuto) -t {$alited::al(MC,indentAuto)}}}
+    {.spxIndent + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 9 -from 0 -to 8 -justify center -com {::alited::pref::CheckIndent ""}}}
+    {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjindentAuto) -t {$alited::al(MC,indentAuto)}}}
     {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
-    {.spxRedunit .labRedunit L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 9 -from $alited::al(minredunit) -to 100 -justify center}}
+    {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 9 -from $alited::al(minredunit) -to 100 -justify center}}
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
-    {.swiMult .labMult L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
+    {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
-    {.swiTrWs .labTrWs L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite)}}
+    {.swiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite)}}
     {.labFlist .labTrWs T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
-    {fraFlist .labFlist T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
+    {fraFlist + T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -tip {-BALTIP {$alited::al(MC,TipLbx)} -MAXEXP 1} -popup {::alited::project::LbxPopup %X %Y}}}
-    {.sbvFlist .lbxFlist L - - {pack -side left}}
+    {.sbvFlist + L - - {pack -side left}}
   }
 }
 #_______________________
@@ -1603,12 +1603,12 @@ proc project::Tab3 {} {
   namespace upvar ::alited al al
   return {
     {v_ - - 1 9}
-    {lab1 v_ T 1 9 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,TemplPrj)}}}
-    {lab2 lab1 T 1 1 {-st ew -pady 5 -padx 3} {-t Template:}}
-    {CbxTpl lab2 L 1 3 {-st ew -pady 5} {-w 40 -h 12 -cbxsel {$::alited::al(PTP,name)} -tvar alited::al(PTP,name) -values {$alited::al(PTP,names)} -clearcom alited::project::DeleteFromTplList -selcombobox alited::project::UpdateTplText}}
-    {fraTlist CbxTpl T 1 8 {-st nswe -padx 3 -cw 1 -rw 1}}
+    {lab1 + T 1 9 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,TemplPrj)}}}
+    {lab2 + T 1 1 {-st ew -pady 5 -padx 3} {-t Template:}}
+    {CbxTpl + L 1 3 {-st ew -pady 5} {-w 40 -h 12 -cbxsel {$::alited::al(PTP,name)} -tvar alited::al(PTP,name) -values {$alited::al(PTP,names)} -clearcom alited::project::DeleteFromTplList -selcombobox alited::project::UpdateTplText}}
+    {fraTlist + T 1 8 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.TexTemplate - - - - {pack -side left -fill both -expand 1} {-h 20 -w 40 -tabnext *.butTplDef -wrap none}}
-    {.sbv .TexTemplate L - - {pack -side left}}
+    {.sbv + L - - {pack -side left}}
     {butTplDef fraTlist T 1 1 {-st w -padx 4 -pady 4} {-t Default -com alited::project::TplDefault}}
   }
 }

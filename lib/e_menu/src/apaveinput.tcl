@@ -8,7 +8,7 @@
 
 package require Tk
 
-package provide apave 3.6.0a1
+package provide apave 3.6.0b1
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -219,16 +219,17 @@ oo::class create ::apave::APaveInput {
           lappend inopts [list $ff - - - - "pack -anchor w $gopts" "$prompt$attrs"]
           continue
         }
-        bu - ch {
+        bu - bt - ch {
           set prompt ""
-          if {$toprev eq ""} {
+          if {$typ in {bu bt}} {set tvar [set vv {}]}
+          if {$toprev eq {}} {
             lappend inopts [list $ff - - - - \
               "pack -side left -expand 1 -fill both $gopts" "$tvar $vv $attrs"]
           } else {
             lappend inopts [list $frameprev.$name - - - - \
               "pack -side left $gopts" "$tvar $vv $attrs"]
           }
-          if {$vv ne ""} {
+          if {$vv ne {}} {
             if {![info exist $vv]} {
               catch {
                 if {$vsel eq ""} {set vsel 0}

@@ -2,7 +2,7 @@
 in=1.0
 bd=1
 w=25
-pos=57.47
+pos=34.30
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENU_FOSGIT]} {set ::EMENU_FOSGIT Fossil}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE [set ::EMENURUNFILE "%f"] ; if {[::iswindows]} {set ::EMENURUNFILE [string map [list \\ \\\\] "%f"]; set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
@@ -31,6 +31,7 @@ pos=57.47
  RE: F4 Run me {+selection} RE: "$::EMENURUNFILE" %AR
 
  S: Run Tcl {all selection} S: cd %d
+RE: Run Tcl {all selection} RE: %IF "%TF" eq "%f" || ![file exists "%TF"] %THEN %M \n Select Tcl snippet\n while editing a file in alited editor!\n
  S: Run Tcl {all selection} S: tclsh %m/src/ch_.tcl "%TF"
 
  RE: Edit/create file "%s" RE: cd %d

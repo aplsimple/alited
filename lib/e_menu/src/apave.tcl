@@ -65,6 +65,7 @@ namespace eval ::apave {
     bts {{} {}} \
     but {{} {}} \
     buT {{} {-width -20 -pady 1}} \
+    btT {{} {-width -20 -pady 1 -relief flat -overrelief raised -highlightthickness 0 -takefocus 0}} \
     can {{} {}} \
     chb {{} {}} \
     swi {{} {}} \
@@ -301,6 +302,18 @@ namespace eval ::apave {
 
     set acc [lindex $acc 0]
     return [string map {Control Ctrl - + bracketleft [ bracketright ]} $acc]
+  }
+  #_______________________
+
+  proc defaultAttrs {{type ""} {opts ""} {atrs ""} {widget ""}} {
+    # Sets, gets or registers default options and attributes for widget type.
+    #   type - widget type
+    #   opts - new default grid/pack options
+    #   atrs - new default attributes
+    #   widget - Tcl/Tk command for the new registered widget type
+    # See also: APave::defaultAttrs
+
+    return [obj defaultAttrs $type $opts $atrs $widget]
   }
 
   ## _______________________ Text little procs _________________________ ##
@@ -641,6 +654,7 @@ oo::class create ::apave::APave {
     #   attrsName - name of variable containing attributes of the button
 
     upvar 1 $attrsName attrs
+    if {[::apave::getOption -image {*}$attrs] ne {}} return
     set txt [::apave::getOption -t {*}$attrs]
     if {$txt eq {}} { set txt [::apave::getOption -text {*}$attrs] }
     set im {}
@@ -653,8 +667,8 @@ oo::class create ::apave::APave {
       lassign $icon ic1 ic2
       # text of button is of highest priority at defining its icon
       if {[string match -nocase $ic1 $txt] || \
-      [string match -nocase but$ic1 $w] || ($ic2 ne {} && ( \
-      [string match -nocase but$ic2 $w] || [string match -nocase $ic2 $txt]))} {
+      [string match -nocase b*t$ic1 $w] || ($ic2 ne {} && ( \
+      [string match -nocase b*t$ic2 $w] || [string match -nocase $ic2 $txt]))} {
         append attrs " [my iconA $ic1 small]"
         break
       }
@@ -955,11 +969,12 @@ oo::class create ::apave::APave {
     }
     set nam3 [string tolower [string index $name 0]][string range $name 1 2]
     if {[string index $nam3 1] eq "_"} {set k [string range $nam3 0 1]} {set k $nam3}
-    if {[catch {lassign [dict get $::apave::_Defaults $k] defopts defattrs}]} {
-      set defopts [set defattrs {}]
-    }
-    set options "[subst $defopts] $options"
-    set attrs "[subst $defattrs] $attrs"
+#!    if #\{[catch #\{lassign [dict get $::apave::_Defaults $k] defopts defattrs#\}]#\} #\{
+#!      set defopts [set defattrs #\{#\}]
+#!    #\}
+    lassign [my defaultAttrs $k] defopts defattrs newtype
+    set options "$defopts $options"
+    set attrs "$defattrs $attrs"
     switch -glob -- $nam3 {
       bts {
         set widget ttk::frame
@@ -970,7 +985,7 @@ oo::class create ::apave::APave {
         set widget ttk::button
         my AddButtonIcon $name attrs
       }
-      buT {
+      buT - btT {
         set widget button
         my AddButtonIcon $name attrs
         }
@@ -1089,7 +1104,7 @@ oo::class create ::apave::APave {
             source [file join $::apave::apaveDir sframe.tcl]
           }
         }
-        ;# scrolledFrame - example of "my method" widget
+        # scrolledFrame - example of "my method" widget
         set widget {my scrolledFrame}
       }
       seh {set widget ttk::separator}
@@ -1138,7 +1153,7 @@ oo::class create ::apave::APave {
       }
       h_* {set widget ttk::frame}
       v_* {set widget ttk::frame}
-      default {set widget {}}
+      default {set widget $newtype}
     }
     set attrs [my GetMC $attrs]
     if {$nam3 in {cbx ent enT fco spx spX}} {
@@ -1167,24 +1182,49 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
-  method defaultAttrs {{typ ""} {opt ""} {atr ""}} {
-    # Sets or gets default grid options and attributes for widget type.
-    #   typ - widget type
-    #   opt - new default grid options
-    #   atr - new default attributes
+  method defaultAttrs {{type ""} {opts ""} {atrs ""} {widget ""}} {
+    # Sets, gets or registers default options and attributes for widget type.
+    #   type - widget type
+    #   opts - new default grid/pack options
+    #   atrs - new default attributes
+    #   widget - Tcl/Tk command for the new registered widget type
+    #
+    # The *type* should be a three letter unique string.
+    #
+    # If the *type* is absent in the registered types and *opts* and/or *atrs*
+    # is not set to "", defaultAttrs registers the new *type* with its grid/pack
+    # options and attributes. At that *widget* is a command for the new widget
+    # type. For example, to register "toolbutton" widget:
+    #   my defaultAttrs tbt {} {-style Toolbutton -compound top} ttk::button
+    #
+    # Options and attributes may contain data (variables and commands)
+    # to be processed by [subst].
+    #
     # Returns:
-    #   - if not set typ: a full list of options and attributes of all types
-    #   - if set 'typ' only: a list of options and attributes of 'typ'
-    #   - else: a list of updated options and attributes of the widget type
+    #   - if not set *type*: a full list of options and attributes of all types
+    #   - if set *type* only: a list of options, attributes and *widget*
+    #   - else: a list of updated options, attributes and *widget*
 
-    if {$typ eq {}} {return $::apave::_Defaults}
-    if {[catch {set def1 [subst [dict get $::apave::_Defaults $typ]]}]} {
-      return {}
+    if {$type eq {}} {return $::apave::_Defaults}
+    set optatr "$opts$atrs"
+    if {[catch {set def1 [dict get $::apave::_Defaults $type]}]} {
+      if {$optatr eq {}} {
+        set err "defaultAttrs: \"$type\" widget type not registered."
+        puts -nonewline stderr $err
+        return -code error $err
+      }
+      set def1 [list $opts $atrs $widget]
     }
-    if {"$opt$atr" eq {}} {return $def1}
-    lassign $def1 defopts defattrs
-    set newval [list "$defopts $opt" "$defattrs $atr"]
-    dict set ::apave::_Defaults $typ $newval
+    if {$optatr eq {}} {return [subst $def1]}
+    lassign $def1 defopts defatrs widget
+    if {[catch {set defopts [dict replace $defopts {*}$opts]}]} {
+      set defopts [string trim "$defopts $opts"]
+    }
+    if {[catch {set defatrs [dict replace $defatrs {*}$atrs]}]} {
+      set defatrs [string trim "$defatrs $atrs"]
+    }
+    set newval [list $defopts $defatrs $widget]
+    dict set ::apave::_Defaults $type $newval
     return $newval
   }
   #_______________________
@@ -1830,7 +1870,7 @@ oo::class create ::apave::APave {
     }
     lset lwidgets $i $args
     if {$view ne {}} {
-      append attrs1 " -callF2 $w.[my Transname buT $name]"
+      append attrs1 " -callF2 {.texF .btTf .texf .btTf}"
       set tvar [::apave::getOption -tvar {*}$attrs1]
       set attrs1 [::apave::removeOptions $attrs1 -tvar]
       if {$tvar ne {} && [file exist [set $tvar]]} {
@@ -1849,8 +1889,11 @@ oo::class create ::apave::APave {
         set field ent
       }
       if {$entname ne {}} {append entname $tname}
-      append attrs1 " -callF2 {.$field .buT}"
+      append attrs1 " -callF2 {.$field .btT}"
       append wpar " -tname $tname"
+      if {$chooser eq {fontChooser}} {
+        append wpar " -parent \[[self] [my ownWName $tname]\]"
+      }
       set entf [list $tname - - - - "pack -padx $padx -pady $pady -side left -expand 1 -fill x -in $inname" "$attrs1 $tvar"]
     }
     set icon folder
@@ -1859,7 +1902,7 @@ oo::class create ::apave::APave {
     }
     set com "[self] chooser $chooser \{$vv\} $addopt $wpar $addattrs2 $entname"
     if {$view ne {}} {set anc n} {set anc center}
-    set butf [list [my Transname buT $name] - - - - "pack -side right -anchor $anc -in $inname -padx 2" "$::apave::BUTTOOL -com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
+    set butf [list [my Transname btT $name] - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
     if {$view ne {}} {
       set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $inname" {}]
       set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname" {}]
@@ -1879,7 +1922,7 @@ oo::class create ::apave::APave {
           "-t \{    \} -relief raised"]
         lassign $entf f1 - - - - f2 f3
         set com "[self] validateColorChoice $f0 $f1"
-        append f3 " -afteridle \"$com; bind \[string map \{.entclr .labclr\} %w\] <ButtonPress> \{eval \[string map \{.entclr .buTclr\} %w\] invoke\}\""
+        append f3 " -afteridle \"$com; bind \[string map \{.entclr .labclr\} %w\] <ButtonPress> \{eval \[string map \{.entclr .btTclr\} %w\] invoke\}\""
         append f3 " -validate all -validatecommand \{$com\}"
         set entf [list $f1 - - - - $f2 $f3]
         set lwidgets [linsert $lwidgets [expr {$i+1}] $entf $butf $labf]
@@ -2060,8 +2103,10 @@ oo::class create ::apave::APave {
     #
     # Returns a selected font.
 
-    proc [namespace current]::applyFont {font} "
-      set $tvar \[font actual \$font\]"
+    set parw [::apave::parseOptions $args -parent [::apave::rootModalWindow .]]
+    proc [namespace current]::applyFont {font} " \
+      set $tvar \[font actual \$font\]; \
+      focus -force $parw"
     set font [set $tvar]
     if {$font eq {}} {
       catch {font create fontchoose {*}$::apave::FONTMAIN}
@@ -2069,9 +2114,13 @@ oo::class create ::apave::APave {
       catch {font delete fontchoose}
       catch {font create fontchoose {*}[font actual $font]}
     }
-    tk fontchooser configure -parent . -font fontchoose {*}[my ParentOpt] \
+    tk fontchooser configure -font fontchoose {*}[my ParentOpt] \
       {*}$args -command [namespace current]::applyFont
     set res [tk fontchooser show]
+    # core Tk font chooser is bad with focusing in and out, it isn't modal :(
+    if {[set foc [info commands *__tk__fontchooser.ok]] ne {}} {
+      after idle [list after 0 [list catch "focus -force $foc"]]
+    }
     return [set $tvar] ;#$font
   }
 
@@ -2140,16 +2189,18 @@ oo::class create ::apave::APave {
     #   w - name of root widget
     #   name - name of widget
     #   an - additional prefix for name
+    # See also: apave::sframe::content
 
     set wn [string trim [my parentWName $name].$an[my ownWName $name] .]
     set wnamefull $w.$wn
+    set wcc canvas.container.content ;# sframe.tcl may be not sourced
     if {[set i1 [string first .scf $wnamefull]]>0 && \
     [set i2 [string first . $wnamefull $i1+1]]>0 && \
-    [string first .canvas.container.content. $wnamefull]<0} {
+    [string first .$wcc. $wnamefull]<0} {
       # insert a container's name into a scrolled frame's child
       set wend [string range $wnamefull $i2 end]
       set wnamefull [string range $wnamefull 0 $i2]
-      append wnamefull canvas.container.content $wend
+      append wnamefull $wcc $wend
     }
     return $wnamefull
   }
@@ -3244,14 +3295,16 @@ oo::class create ::apave::APave {
       set lst1 [lindex $lwidgets $i]
       if {[my Replace_Tcl i lwlen lwidgets {*}$lst1] ne {}} {incr i}
     }
-    # firstly, normalize all names that are "subwidgets": .lab instead fra.lab etc
+    # firstly, normalize all names that are "subwidgets" (.lab for fra.lab)
+    # also, "+" for previous neighbors
     set i [set lwlen [llength $lwidgets]]
     while {$i>1} {
       incr i -1
       set lst1 [lindex $lwidgets $i]
       lassign $lst1 name neighbor
+      if {$neighbor eq {+}} {set neighbor [lindex $lwidgets $i-1 0]}
       lassign [my NormalizeName name i lwidgets] name wname
-      lassign [my NormalizeName neighbor i lwidgets] neighbor
+      set neighbor [lindex [my NormalizeName neighbor i lwidgets] 0]
       set lst1 [lreplace $lst1 0 1 $wname $neighbor]
       set lwidgets [lreplace $lwidgets $i $i $lst1]
     }
@@ -3268,7 +3321,6 @@ oo::class create ::apave::APave {
         continue
       }
       lassign $lst1 name neighbor posofnei rowspan colspan options1 attrs1
-      set prevw $name
       lassign [my NormalizeName name i lwidgets] name wname
       set wname [my MakeWidgetName $w $wname]
       if {$colspan eq {} || $colspan eq {-}} {
@@ -3343,9 +3395,6 @@ oo::class create ::apave::APave {
       lappend lused [list $name $row $col $rowspan $colspan]
       if {[incr i] < $lwlen} {
         lassign [lindex $lwidgets $i] name neighbor posofnei
-        if {$neighbor eq {+}} {
-          set neighbor $prevw
-        }
         set neighbor [lindex [my LowercaseWidgetName $neighbor] 0]
         set row -1
         foreach cell $lused {
@@ -3771,5 +3820,5 @@ oo::class create ::apave::APave {
 }
 
 # _____________________________ EOF _____________________________________ #
-#RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#-RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl alt 2 11 12 "middle icons"

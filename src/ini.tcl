@@ -24,6 +24,7 @@ namespace eval ::alited {
   set al(ED,CKeyWords) {}   ;# user's key words for C/C++
   set al(ED,gutterwidth) 5  ;# gutter's windth in chars
   set al(ED,guttershift) 3  ;# space between gutter and text
+  set al(ED,btsbd) 0        ;# borderwidth for bartabs
   set al(TREE,isunits) yes  ;# current mode of tree: units/files
   set al(TREE,units) no     ;# flag "is a unit tree created"
   set al(TREE,files) no     ;# flag "is a file tree created"
@@ -109,7 +110,7 @@ namespace eval ::alited {
   set al(KEYS,bind) [list]
 
   # e_menu settings and arguments
-  set al(EM,geometry) +1+31
+  set al(EM,geometry) {}
   set al(EM,save) {}
   set al(EM,PD=) ~/.config/alited/e_menu/em_projects
   set al(EM,Tcl) {}
@@ -382,6 +383,7 @@ proc ini::ReadIniOptions {nam val} {
     maxbackup     {set al(MAXBACKUP) $val}
     gutterwidth   {set al(ED,gutterwidth) $val}
     guttershift   {set al(ED,guttershift) $val}
+    btsbd         {set al(ED,btsbd) $val}
     cursorwidth   {set al(CURSORWIDTH) $val}
     prjdefault    {set al(PRJDEFAULT) $val}
     DEFAULT,*     {set al($nam) $val}
@@ -718,6 +720,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "maxbackup=$al(MAXBACKUP)"
   puts $chan "gutterwidth=$al(ED,gutterwidth)"
   puts $chan "guttershift=$al(ED,guttershift)"
+  puts $chan "btsbd=$al(ED,btsbd)"
   puts $chan "prjdefault=$al(PRJDEFAULT)"
   foreach k [array names al DEFAULT,*] {
     puts $chan "$k=$al($k)"

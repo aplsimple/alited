@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.43
+package provide hl_tcl 0.9.44
 
 # ______________________ Common data ____________________ #
 
@@ -19,12 +19,12 @@ namespace eval ::hl_tcl {
     # Tcl commands
     set data(PROC_TCL) [lsort [list \
       return proc method self my coroutine yield yieldto constructor destructor \
-      namespace oo::define oo::class oo::objdefine oo::object
+      break continue namespace oo::define oo::class oo::objdefine oo::object
     ]]
     set data(CMD_TCL) [lsort [list \
       set incr if else elseif string expr list lindex lrange llength lappend \
       lreplace lsearch lassign append split info array dict foreach for while \
-      break continue switch default linsert lsort lset lmap lrepeat catch variable \
+      switch default linsert lsort lset lmap lrepeat catch variable \
       concat format scan regexp regsub upvar uplevel try throw read eval \
       after update error global puts file chan open close eof seek flush mixin \
       msgcat gets rename glob fconfigure fblocked fcopy cd pwd mathfunc then \

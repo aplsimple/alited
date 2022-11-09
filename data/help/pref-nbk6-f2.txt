@@ -1,24 +1,16 @@
- The <b>e_menu</b> main options are following:
-
- - <b>Run as external app</b> - if it's set ON runs e_menu as an external app; this is
-   a bit slower than internal e_menu, still <b>more secure</b> and themed by "Color scheme";
-   also when running it external you wouldn't await for time-wasting actions like backups.
-
-   Though you might prefer the internal e_menu for its responsive nature including its
-   saved geometry.
-
- - <b>Color scheme</b> is used when the e_menu is run as an external app
+ - <b>Color scheme</b> of e_menu may be <b>its own</b>, if the checkbox is ON.
 
  - <b>Geometry</b> sets a geometry of the main menu at starting e_menu;
    you can define it as simply as <b>+X+Y</b> meaning x- and y-coordinates;
-   the current geometry of e_menu can be seen in "Project" of its context menu
+   e_menu's current geometry is seen in "Project" of its context menu
 
  - <b>Directory of menus</b> contains .mnu files to be used by e_menu
 
  - <b>Main menu</b> is a menu file to be shown at starting e_menu
 
- - <b>Projects (%PD wildcard)</b> refers to a file containing directories to be chosen in
-   "Project" dialogue; menu items use %PD wildcard as a project directory
+ - <b>Projects (%PD wildcard)</b> refers to a text file containing
+   directories to be chosen in "Project" dialogue;
+   menu items use %PD wildcard as a project directory
 
  Use <b>Default</b> button to set default options of e_menu.
 

@@ -50,9 +50,10 @@ proc bar::FillBar {wframe {newproject no}} {
   set lab2 [msgcat::mc {... All at Left}]
   set lab3 [msgcat::mc {... All at Right}]
   set lab4 [msgcat::mc {... All}]
+  if {$al(ED,btsbd)} {set bd {-bd 2 -relief sunken}} {set bd {}}
   set bar1Opts [list -wbar $wframe -wbase $wbase -pady 2 -scrollsel no -lifo yes \
     -lowlist $al(FONTSIZE,small) -lablen $al(INI,barlablen) -tiplen $al(INI,bartiplen) \
-    -bg [lindex [$obPav csGet] 3] -popuptip ::alited::bar::PopupTip\
+    -bg [lindex [$obPav csGet] 3] -popuptip ::alited::bar::PopupTip \
     -menu [list \
       sep \
       "com {$lab0} {::alited::bar::SelTab %t} {} {}" \
@@ -64,7 +65,9 @@ proc bar::FillBar {wframe {newproject no}} {
     -csel2 {alited::bar::OnTabSelection %t} \
     -csel3 alited::bar::OnControlClick \
     -cdel {alited::file::CloseFile %t} \
-    -cmov2 alited::bar::OnTabMove]
+    -cmov2 alited::bar::OnTabMove \
+    -title $al(MC,filelist) \
+    -expand 9 -padx 0 {*}$bd]
   set tabs [set files [set posis [set wraps [list]]]]
   foreach tab $al(tabs) {
     lassign [split $tab \t] tab pos wrap

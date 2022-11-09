@@ -388,6 +388,7 @@ namespace eval ::alited {
   ::msgcat::mcmset ru {
     {Ttk theme:} {Тема Ttk:}
     {Color scheme:} {Цветовая схема:}
+    {Windows themes} {Темы Windows}
     {Darker:} {Темнее:}
     {Lighter:} {Светлее:}
     {Tint} {Оттенок}
@@ -400,9 +401,10 @@ namespace eval ::alited {
     {Cursor width:} {Ширина курсора:}
     {Notes:} {Заметки:}
     "Sort of diary.\nList of TODOs etc." "Типа дневника.\nСписок TODO и пр."
-    {Light / Dark} {Светлая / Темная}
+    {Light / Dark} {Светлые / Темные}
     {Makes colors darker .. lighter} {Делает цвета темнее .. светлее}
     "These themes need\nlight / dark color schemes\naccordingly" "Этим темам нужны\nсветлые / темные цветовые схемы\nсоответственно"
+    "These themes need\nlight color schemes" "Этим темам нужны\nсветлые цветовые схемы"
     {Fit for theme} {Годится для темы}
     {No color scheme at all} {Никакой цветовой схемы вовсе}
   }
@@ -418,6 +420,7 @@ namespace eval ::alited {
     {Space between wraps:} {Отступ сворачиваемых строк:}
     {Tab bar label's length:} {Длина имен панели файлов:}
     {Tab bar tip's length:} {Длина подсказок панели файлов:}
+    {Border for bar tabs:} {Кайма для панели файлов:}
     {Code snippet:} {Фрагмент кода:}
   }
 
