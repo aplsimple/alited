@@ -1137,8 +1137,8 @@ proc ini::InitGUI {} {
 
   namespace upvar ::alited al al
   ::apave::obj basicFontSize $al(FONTSIZE,std)
-  ::apave::obj csSet $al(INI,CS) . -doit
   if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE)}
+  ::apave::obj csSet $al(INI,CS) . -doit
   set Dark [::apave::obj csDark]
   if {![info exists al(ED,clrCOM)] || ![info exists al(ED,CclrCOM)] || \
   ![info exists al(ED,Dark)] || $al(ED,Dark) != $Dark} {

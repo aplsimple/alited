@@ -439,11 +439,10 @@ proc file::DisplayFile {TID fname wtxt doreload} {
   # this is most critical: displayed text should correspond to the tab
   #control::assert {$wtxt eq [alited::main::GetWTXT $TID]}
   if {$wtxt ne [alited::main::GetWTXT $TID]} {
-    set errmsg "\n ERROR file::DisplayFile: \
+    puts [set msg "\n ERROR file::DisplayFile: \
       \n ($TID) $wtxt != [alited::main::GetWTXT $TID] \
-      \n Please, notify alited's authors!\n"
-    puts $errmsg
-    return -code error $errmsg
+      \n Please, notify alited's authors!\n"]
+    return -code error $msg
   }
   # another critical point: read the file only at need
   if {$doreload || [set filecont [ReadFileByTID $TID yes]] eq {}} {

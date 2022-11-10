@@ -1678,6 +1678,10 @@ oo::class create ::apave::ObjectTheming {
     # This method allows only one external CS, eliminating others.
     # Returns: "yes" if the CS was toned
 
+    if {[my csCurrent] > $::apave::_CS_(NONCS)} {
+      puts [set msg "\napave method csToned must be run before csSet!\n"]
+      return -code error $msg
+    }
     if {$cs <= $::apave::_CS_(NONCS) || $cs > $::apave::_CS_(STDCS)} {
       return no
     }
@@ -1947,14 +1951,15 @@ oo::class create ::apave::ObjectTheming {
       }
       set ::apave::_CS_(expo,$arg) [set $arg]
     }
+    if {[set darkCS [my csDark]]} {set aclr #ff9dff} {set aclr #890970}
     set fontdef [font actual apaveFontDef]
     # configuring themed widgets
-    foreach ts {TLabel TButton TCheckbutton TRadiobutton} {
+    foreach ts {TLabel TButton TCheckbutton TRadiobutton TMenubutton} {
       my Ttk_style configure $ts -font $fontdef
       my Ttk_style configure $ts -foreground $tfg1
       my Ttk_style configure $ts -background $tbg1
       my Ttk_style map $ts -background [list pressed $tbg2 active $tbg2 alternate $tbg2]
-      my Ttk_style map $ts -foreground [list disabled $tfgD pressed $bclr active $tfg2 alternate $tfg2 focus $tfg2 selected $tfg1]
+      my Ttk_style map $ts -foreground [list disabled $tfgD pressed $bclr active $aclr alternate $tfg2 focus $tfg2 selected $tfg1]
       my Ttk_style map $ts -bordercolor [list focus $bclr pressed $bclr]
       my Ttk_style map $ts -lightcolor [list focus $bclr]
       my Ttk_style map $ts -darkcolor [list focus $bclr]
@@ -1968,9 +1973,7 @@ oo::class create ::apave::ObjectTheming {
     }
     foreach ts {TNotebook.Tab} {
       my Ttk_style configure $ts -font $fontdef
-      if {[my apaveTheme]} {
-        my Ttk_style map $ts -foreground [list {selected !active} $tfgS {!selected !active} $tfgM active $tfg2 {selected active} $tfg2]
-      }
+      my Ttk_style map $ts -foreground [list {selected !active} $tfgS {!selected !active} $tfgM active $aclr {selected active} $aclr]
       my Ttk_style map $ts -background [list {selected !active} $tbgS {!selected !active} $tbgM {!selected active} $tbg2 {selected active} $tbg2]
     }
     foreach ts {TEntry Treeview TSpinbox TCombobox TCombobox.Spinbox TMatchbox TNotebook.Tab TScrollbar TScale} {
@@ -2021,6 +2024,7 @@ oo::class create ::apave::ObjectTheming {
       }
     }
     ttk::style configure Heading -font $fontdef -relief raised -padding 1 -background $tbg1
+    ttk::style map Heading -foreground [list active $aclr]
     option add *Listbox.font $fontdef
     option add *Menu.font $fontdef
     my Ttk_style configure TMenubutton -foreground $tfgM
@@ -2036,7 +2040,7 @@ oo::class create ::apave::ObjectTheming {
     foreach ts {TRadiobutton TCheckbutton} {
       ttk::style map $ts -background [list focus $tbg2 !focus $tbg1]
     }
-    if {[my csDark]} {
+    if {$darkCS} {
       # esp. for default/alt/classic themes and dark CS:
       # checked buttons to be lighter
       foreach ts {TCheckbutton TRadiobutton} {
@@ -2081,7 +2085,7 @@ oo::class create ::apave::ObjectTheming {
               set ::apave::_C_($ts,7) {-borderwidth 1}
               set ::apave::_C_($ts,8) {-relief groove}
           }
-          if {[my csDark]} {set c white} {set c black}
+          if {$darkCS} {set c white} {set c black}
           set ::apave::_C_($ts,9) "-selectcolor $c"
         }
         canvas {

@@ -608,13 +608,14 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
-  method iconA {icon {iconset small}} {
+  method iconA {icon {iconset small} {cmpd left}} {
     # Gets icon attributes for buttons, menus etc.
     #   icon - name of icon
     #   iconset - one of small/middle/large
+    #   cmpd - value of -compound option
     # The *iconset* is "small" for menus (recommended and default).
 
-    return "-image [::apave::iconImage $icon $iconset] -compound left"
+    return "-image [::apave::iconImage $icon $iconset] -compound $cmpd"
   }
   #_______________________
 
@@ -669,7 +670,12 @@ oo::class create ::apave::APave {
       if {[string match -nocase $ic1 $txt] || \
       [string match -nocase b*t$ic1 $w] || ($ic2 ne {} && ( \
       [string match -nocase b*t$ic2 $w] || [string match -nocase $ic2 $txt]))} {
-        append attrs " [my iconA $ic1 small]"
+        if {[string match -nocase btT* $w]} {
+          set cmpd none
+        } else {
+          set cmpd left
+        }
+        append attrs " [my iconA $ic1 small $cmpd]"
         break
       }
     }
@@ -988,7 +994,7 @@ oo::class create ::apave::APave {
       buT - btT {
         set widget button
         my AddButtonIcon $name attrs
-        }
+      }
       can {set widget canvas}
       chb {set widget ttk::checkbutton}
       swi {

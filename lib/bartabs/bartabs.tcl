@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.5.9b1
+package provide bartabs 1.5.9b2
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -1250,12 +1250,18 @@ method InitColors {} {
     set bgdsbl $bgmain
   }
   if {[catch { \
-    set bgo [dict get [ttk::style map . -background] active]
+
     set fgo [ttk::style map TButton -foreground]
     if {[dict exists $fgo active]} {
       set fgo [dict get $fgo active]
     } else {
       set fgo $fgmain
+    }
+    set bgo [ttk::style map TButton -background]
+    if {[dict exists $bgo active]} {
+      set bgo [dict get $bgo active]
+    } else {
+      set bgo $bgmain
     }
   }]} {
     set bgo $fgmain  ;# reversed

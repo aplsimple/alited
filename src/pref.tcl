@@ -562,7 +562,7 @@ proc pref::General_Tab3 {} {
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.SwiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
-    {.SwiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(DEFAULT,prjtrailwhite)}}
+    {.SwiTrWs + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(DEFAULT,prjtrailwhite)}}
   }
 }
 #_______________________

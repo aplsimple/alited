@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b20 (9 Nov'22)`
+Version `1.3.5b21 (10 Nov'22)`
 
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
   - BUGFIX: (esp. for Windows) Alt+F4 for exit only
