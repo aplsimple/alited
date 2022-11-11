@@ -102,7 +102,7 @@ proc menu::SetTint {tint} {
   #   tint - value of the tint
 
   namespace upvar ::alited al al obPav obPav
-  $obPav csToned $al(INI,CS) $tint
+  $obPav csToned $al(INI,CS) $tint yes
   alited::file::MakeThemHighlighted
   alited::main::ShowText
   alited::bar::BAR update

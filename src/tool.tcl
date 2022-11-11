@@ -133,8 +133,10 @@ proc tool::SrcPath {toolpath} {
 proc tool::Loupe {} {
   # Calls a screen loupe.
 
+  namespace upvar ::alited al al
   set loupe [SrcPath [file join $::alited::PAVEDIR pickers color aloupe aloupe.tcl]]
-  alited::Run $loupe -locale $alited::al(LOCAL)
+  alited::Run $loupe -locale $alited::al(LOCAL) -apavedir $::alited::PAVEDIR \
+    -cs $al(INI,CS) -fcgeom $::alited::FilGeometry
 }
 #_______________________
 

@@ -1671,14 +1671,15 @@ oo::class create ::apave::ObjectTheming {
   }
   #_______________________
 
-  method csToned {cs hue} {
+  method csToned {cs hue {doit no}} {
     # Make an external CS that has tones (hues) of colors for a CS.
     #   cs - internal apave CS to be toned
     #   hue - a percent to get light (> 0) or dark (< 0) tones
+    #   doit - flag "do it anyway"
     # This method allows only one external CS, eliminating others.
     # Returns: "yes" if the CS was toned
 
-    if {[my csCurrent] > $::apave::_CS_(NONCS)} {
+    if {!$doit && [my csCurrent] > $::apave::_CS_(NONCS)} {
       puts [set msg "\napave method csToned must be run before csSet!\n"]
       return -code error $msg
     }

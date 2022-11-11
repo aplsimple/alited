@@ -1607,12 +1607,15 @@ oo::class create ::apave::APave {
     # Returns a selected value.
 
     set isfilename 0
-    lassign [::apave::extractOptions args -ftxvar {} -tname {}] ftxvar tname
+    lassign [::apave::extractOptions args -ftxvar {} -tname {} -parent {}] \
+      ftxvar tname parent
+    if {$parent ne {}} {
+      set parent "-parent $parent"
+    } else {
+      set parent [my ParentOpt]
+    }
     lassign [::apave::getProperty DirFilGeoVars] dirvar filvar
-    set vargeo [set dirgeo [set filgeo {}]]
-    set parent [my ParentOpt]
-    if {$dirvar ne {}} {set dirgeo [set $dirvar]}
-    if {$filvar ne {}} {set filgeo [set $filvar]}
+    set vargeo {}
     if {$nchooser eq {ftx_OpenFile}} {
       set nchooser tk_getOpenFile
     }

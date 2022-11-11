@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b21 (10 Nov'22)`
+Version `1.3.5b22 (11 Nov'22)`
 
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
   - BUGFIX: (esp. for Windows) Alt+F4 for exit only
@@ -10,6 +10,7 @@ Version `1.3.5b21 (10 Nov'22)`
   - BUGFIX: selected text for "Run Tcl" of menu.mnu
   - BUGFIX: flowing column widths of the tree
   - BUGFIX: erroneous combination CS=-1 & Tint!=0
+  - NEW   : screen loupe: theme & file chooser geometry, got from alited
   - NEW   : -expand option of bartabs = 9 for "smart expanding the tabs"
   - NEW   : Preferences: Windows' themes (in Windows), tabbar's border, 1st widget focused
   - NEW   : sorted and tear-offed file list
