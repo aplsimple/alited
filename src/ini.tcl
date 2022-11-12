@@ -1139,6 +1139,7 @@ proc ini::InitGUI {} {
   ::apave::obj basicFontSize $al(FONTSIZE,std)
   if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE)}
   ::apave::obj csSet $al(INI,CS) . -doit
+  if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE) yes}
   set Dark [::apave::obj csDark]
   if {![info exists al(ED,clrCOM)] || ![info exists al(ED,CclrCOM)] || \
   ![info exists al(ED,Dark)] || $al(ED,Dark) != $Dark} {
@@ -1196,6 +1197,15 @@ proc ini::InitFonts {} {
   } else {
     msgcat::mclocale en
   }
+}
+#_______________________
+
+proc ini::initStyles {} {
+  # Initializes widget styles for alited.
+
+  namespace upvar ::alited al al
+  ::apave::initStyles
+  ::apave::initStylesFS -size $al(FONTSIZE,small)
 }
 #_______________________
 
@@ -1338,7 +1348,7 @@ proc ini::_init {} {
   image create photo alimg_tclfile -data [set alited::img::_AL_IMG(Tcl)]
   image create photo alimg_kbd -data [set alited::img::_AL_IMG(kbd)]
   # styles & fonts used in "small" dialogues
-  ::apave::initStylesFS -size $al(FONTSIZE,small)
+  initStyles
   lassign [::apave::obj create_FontsType small -size $al(FONTSIZE,small)] \
      al(FONT,defsmall) al(FONT,monosmall)
   lassign [alited::FgFgBold] -> al(FG,Bold)

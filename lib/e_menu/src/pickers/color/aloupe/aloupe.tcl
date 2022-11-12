@@ -12,6 +12,18 @@
 
 package require Tk
 
+# _____ Remove installed (perhaps) packages used here _____ #
+
+foreach _ {apave baltip bartabs hl_tcl ttk::theme::awlight ttk::theme::awdark awthemes} {
+  set __ [package version $_]
+  catch {
+    package forget $_
+    namespace delete ::$_
+    puts "aloupe: clearing $_ $__"
+  }
+  unset __
+}
+
 # use TCLLIBPATH variable (some tclkits don't see it)
 catch {
   foreach _apave_ [lreverse $::env(TCLLIBPATH)] {
@@ -188,11 +200,8 @@ proc ::aloupe::my::Theme {} {
 
   variable data
   if {$data(-apavedir) eq {}} return
-  set ::auto_path [linsert $::auto_path 0 $data(-apavedir)]
-  package require apave
-  if {$data(-cs)>-2} {
-    ::apave::obj csSet $data(-cs) . -doit
-  }
+  source [file join $data(-apavedir) apaveinput.tcl]
+  ::apave::initWM -cs $data(-cs) -theme alt
   if {$data(-fcgeom) ne {}} {
     ::apave::obj chooserGeomVars {} ::aloupe::my::data(-fcgeom)
   }
@@ -628,7 +637,7 @@ proc ::aloupe::run {args} {
     set my::data($an) [set ${svd}($an)] ;# a bit of addresses
   }
   foreach {a v} $args {
-    if {($v ne "" || $a in {-geometry}) && \
+    if {($v ne "" || $a in {-geometry -fcgeom}) && \
     [info exists my::data($a)] && [string is lower [string index $a 1]]} {
       set my::data($a) $v
     } else {
@@ -658,7 +667,6 @@ proc ::aloupe::run {args} {
 
 if {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]} {
   wm withdraw .
-  if {[catch {ttk::style theme use alt}]} {catch {ttk::style theme use default}}
   catch {
     ttk::style config TButton -width 9 -buttonborder 1 -labelborder 0 -padding 1
   }

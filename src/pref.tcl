@@ -449,7 +449,7 @@ proc pref::General_Tab1 {} {
   set opcThemes [list default clam classic alt -- "{$lightdark} awlight awdark -- \
     azure-light azure-dark -- forest-light forest-dark -- sun-valley-light sun-valley-dark"]
   if {[::iswindows]} {
-    lappend opcThemes -- "{[msgcat::mc {Windows themes}]} xpTheme vistaTheme winTheme"
+    lappend opcThemes -- "{[msgcat::mc {Windows themes}]} vista xpnative winnative"
   }
   if {[string first $alited::al(THEME) $opcThemes]<0} {
     set opc1 [lindex $opcThemes 0]
@@ -460,11 +460,11 @@ proc pref::General_Tab1 {} {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labTheme - - 1 1 {-st w -pady 1 -padx 3} {-t "Ttk theme:"}}
-    {.opc1 + L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 21 -tip {-indexedtips \
+    {.opc1 + L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 21 -compound left -image alimg_gulls -tip {-indexedtips \
       5 {$alited::al(MC,needcs)} 7 {$alited::al(MC,needcsl)} \
       }} {}}}
     {.labCS .labTheme T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
-    {.opc2 + L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 21 -tip {-indexedtips \
+    {.opc2 + L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 21 -compound left -image alimg_color -tip {-indexedtips \
       0 {$alited::al(MC,nocs)} \
       2 {$alited::al(MC,fitcs): awlight} \
       3 {$alited::al(MC,fitcs): azure-light} \
@@ -1240,7 +1240,7 @@ proc pref::Emenu_Tab {} {
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode x}}
     {.labCS - - 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.SwiCS + L 1 1 {-st sw -pady 5} {-t {e_menu's own} -var alited::al(EM,ownCS) -com alited::pref::OwnCS -afteridle alited::pref::OwnCS}}
-    {.OpcCS + L 1 1 {-st sw -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 21} {alited::pref::opcToolPre %a}}}
+    {.OpcCS + L 1 1 {-st sw -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 21 -compound left -image alimg_color} {alited::pref::opcToolPre %a}}}
     {.labGeo .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
     {.entGeo + L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,geometry) -w 22}}
     {.labDir .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Directory of menus:"}}
@@ -1381,23 +1381,23 @@ proc pref::Runs_Tab {tab} {
     }
     incr icr
   }
-  EmSeparators no
+  Em_ShowAll no
   # get a layout of "bar/menu" tab
   set res {
     {v_ - - 1 1}
-    {fra + T 1 1 {-st nsew -cw 1 -rw 1} {-afteridle {::alited::pref::EmSeparators yes}}}
+    {fra + T 1 1 {-st nsew -cw 1 -rw 1} {-afteridle ::alited::pref::Em_ShowAll}}
     {fra.ScfRuns - - 1 1  {pack -fill both -expand 1}}
     {tcl {
         set prt "- -"
         for {set i 0} {$i<$::alited::pref::em_Num} {incr i} {
           set nit [expr {$i+1}]
-          set lwid ".btTAdd$i $prt 1 1 {-padx 0} {-tip {Inserts a new line.} -com {::alited::pref::EmAddLine $i} -image alimg_add}"
+          set lwid ".btTAdd$i $prt 1 1 {-padx 0} {-tip {Inserts a new line.} -com {::alited::pref::Em_AddLine $i} -image alimg_add}"
           %C $lwid
-          set lwid ".btTDel$i + L 1 1 {-padx 1} {-tip {Deletes a line.} -com {::alited::pref::EmDelLine $i} -image alimg_delete}"
+          set lwid ".btTDel$i + L 1 1 {-padx 1} {-tip {Deletes a line.} -com {::alited::pref::Em_DelLine $i} -image alimg_delete}"
           %C $lwid
-          set lwid ".ChbMT$i + L 1 1 {-padx 10} {-t separator -var ::alited::pref::em_sep($i) -tip {If 'yes', means a separator of the toolbar/menu.} -com {::alited::pref::EmSeparators yes}}"
+          set lwid ".ChbMT$i + L 1 1 {-padx 10} {-t separator -var ::alited::pref::em_sep($i) -tip {If 'yes', means a separator of the toolbar/menu.} -com ::alited::pref::Em_ShowAll}"
           %C $lwid
-          set lwid ".OpcIco$i + L 1 1 {-st nsw} {::alited::pref::em_ico($i) alited::pref::em_Icons {-width 10 -tooltip {{An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar.}}} {alited::pref::opcIcoPre %a}}"
+          set lwid ".OpcIco$i + L 1 1 {-st nsw} {::alited::pref::em_ico($i) alited::pref::em_Icons {-width 10 -com alited::pref::Em_ShowAll -tooltip {{An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar.}}} {alited::pref::opcIcoPre %a}}"
           %C $lwid
           set lwid ".ButMnu$i + L 1 1 {-st sw -pady 1 -padx 10} {-t {$::alited::pref::em_mnu($i)} -com {alited::pref::PickMenuItem $i} -style TButtonWest -tip {{The run item for the menu and/or the toolbar.\nSelect it from the e_menu items.}}}"
           %C $lwid
@@ -1416,7 +1416,7 @@ proc pref::Runs_Tab {tab} {
 }
 #_______________________
 
-proc pref::EmAddLine {idx} {
+proc pref::Em_AddLine {idx} {
   # Inserts a new "bar/menu" action before a current one.
   #   idx - index of a current action
 
@@ -1435,11 +1435,11 @@ proc pref::EmAddLine {idx} {
       set em_inf($i) $em_inf($ip)
     }
   }
-  EmSeparators yes
+  Em_ShowAll
 }
 #_______________________
 
-proc pref::EmDelLine {idx} {
+proc pref::Em_DelLine {idx} {
   # Deletes a current "bar/menu" action.
   #   idx - index of a current action
 
@@ -1457,12 +1457,12 @@ proc pref::EmDelLine {idx} {
       set em_inf($i) $em_inf($ip)
     }
   }
-  EmSeparators yes
+  Em_ShowAll
   ScrollRuns
 }
 #_______________________
 
-proc pref::EmSeparators {upd} {
+proc pref::Em_ShowAll {{upd yes}} {
   # Handles separators of bar/menu.
   #   upd - if yes, displays the widgets of bar/menu settings.
   fetchVars
@@ -1477,7 +1477,15 @@ proc pref::EmSeparators {upd} {
     if {$upd} {
       if {$em_sep($i)} {set state disabled} {set state normal}
       [$obDl2 ButMnu$i] configure -text $em_mnu($i) -state $state
-      [$obDl2 OpcIco$i] configure -state $state
+      set ico [$obDl2 OpcIco$i]
+      if {[set k [lsearch $listIcons [$ico cget -text]]]>-1} {
+        set img [::apave::iconImage [lindex $listIcons $k]]
+        set cmpd left
+      } else {
+        set img alimg_none
+        set cmpd right
+      }
+      $ico configure -state $state -image $img -compound $cmpd
     }
   }
   if {$upd} ScrollRuns

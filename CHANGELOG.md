@@ -1,8 +1,9 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b22 (11 Nov'22)`
+Version `1.3.5b23 (12 Nov'22)`
 
+  - BUGFIX: (partly) issues with tinting
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
   - BUGFIX: (esp. for Windows) Alt+F4 for exit only
   - BUGFIX: dismissing "internal" e_menu, at least temporarily
@@ -10,9 +11,9 @@ Version `1.3.5b22 (11 Nov'22)`
   - BUGFIX: selected text for "Run Tcl" of menu.mnu
   - BUGFIX: flowing column widths of the tree
   - BUGFIX: erroneous combination CS=-1 & Tint!=0
-  - NEW   : screen loupe: theme & file chooser geometry, got from alited
+  - NEW   : screen loupe: CS, file chooser geometry from alited, alt theme by default
   - NEW   : -expand option of bartabs = 9 for "smart expanding the tabs"
-  - NEW   : Preferences: Windows' themes (in Windows), tabbar's border, 1st widget focused
+  - NEW   : Preferences: Windows' themes (vista, xpnative, winnative), tabbar's border, 1st widget focused, icons for theme/CS/tools
   - NEW   : sorted and tear-offed file list
   - NEW   : update menus & templates (if touched) at updating alited's version
   - NEW   : fossil.mnu: 'fossil timeline --showfiles' allows to filter file/dirs

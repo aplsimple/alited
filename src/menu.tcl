@@ -102,11 +102,16 @@ proc menu::SetTint {tint} {
   #   tint - value of the tint
 
   namespace upvar ::alited al al obPav obPav
+#!  namespace upvar ::alited obFND obFND        ;# TODO TLabelFS not tinted immediately
+#!  set ef [winfo exists $alited::find::win]    ;# TODO TLabelFS ...
+#!  if #\{$ef#\} #\{$obFND res $alited::find::win 0#\}  ;# TODO TLabelFS ...
   $obPav csToned $al(INI,CS) $tint yes
   alited::file::MakeThemHighlighted
   alited::main::ShowText
   alited::bar::BAR update
   CheckTint
+  alited::ini::initStyles
+#!  if #\{$ef#\} #\{after idle #\{after 10 alited::find::_run#\}#\}  ;# TODO TLabelFS ...
 }
 #_______________________
 

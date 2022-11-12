@@ -1607,8 +1607,8 @@ oo::class create ::apave::APave {
     # Returns a selected value.
 
     set isfilename 0
-    lassign [::apave::extractOptions args -ftxvar {} -tname {} -parent {}] \
-      ftxvar tname parent
+    lassign [::apave::extractOptions args \
+      -ftxvar {} -tname {} -bname {} -parent {}] ftxvar tname bname parent
     if {$parent ne {}} {
       set parent "-parent $parent"
     } else {
@@ -1641,7 +1641,7 @@ oo::class create ::apave::APave {
       set args "-initialdir \"[set $tvar]\" $parent $args"
       incr isfilename
     }
-    if {$::tcl_platform(platform) eq {unix} && $choosname ne {dateChooser}} {
+    if {[::islinux] && $choosname ne {dateChooser}} {
       my themeExternal *.foc.* *f1.demo  ;# don't touch tkcc's boxes
     }
     set res [{*}$nchooser {*}$args]
@@ -1671,8 +1671,15 @@ oo::class create ::apave::APave {
     }
     if {$tname ne {}} {
       set tname [my [my ownWName $tname]]
+      if {$bname ne {}} {
+        # re-focus to fire invalidation of the entry (esp. for Windows)
+        set ent [my ownWName $tname]
+        set but [my ownWName $bname]
+        set bname [string map [list .$ent .$but] $tname]
+        focus $bname
+      }
       focus $tname
-      after idle [$tname selection range 0 end]
+      after idle [list $tname selection range 0 end]
     }
     return $res
   }
@@ -1688,7 +1695,7 @@ oo::class create ::apave::APave {
     #
     # Returns a selected color.
 
-    if {$_pav(initialcolor) eq {} && $::tcl_platform(platform) eq {unix}} {
+    if {$_pav(initialcolor) eq {} && [::islinux]} {
       source [file join $::apave::apaveDir pickers color clrpick.tcl]
     }
     if {[set _ [string trim [set $tvar]]] ne {}} {
@@ -1878,6 +1885,7 @@ oo::class create ::apave::APave {
       set args [list $name $neighbor $posofnei $rowspan $colspan {-st ew} $addattrs]
     }
     lset lwidgets $i $args
+    set btTname [my Transname btT $name]
     if {$view ne {}} {
       append attrs1 " -callF2 {.texF .btTf .texf .btTf}"
       set tvar [::apave::getOption -tvar {*}$attrs1]
@@ -1899,7 +1907,7 @@ oo::class create ::apave::APave {
       }
       if {$entname ne {}} {append entname $tname}
       append attrs1 " -callF2 {.$field .btT}"
-      append wpar " -tname $tname"
+      append wpar " -tname $tname -bname $btTname"
       if {$chooser eq {fontChooser}} {
         append wpar " -parent \[[self] [my ownWName $tname]\]"
       }
@@ -1911,7 +1919,7 @@ oo::class create ::apave::APave {
     }
     set com "[self] chooser $chooser \{$vv\} $addopt $wpar $addattrs2 $entname"
     if {$view ne {}} {set anc n} {set anc center}
-    set butf [list [my Transname btT $name] - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
+    set butf [list $btTname - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
     if {$view ne {}} {
       set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $inname" {}]
       set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname" {}]
@@ -3230,12 +3238,14 @@ oo::class create ::apave::APave {
 
   ## ________________________ Paving windows _________________________ ##
 
-  method colorWindow {win} {
+  method colorWindow {win args} {
     # Initialize colors of a window.
     #   win - window's path
+    #   args - arguments for csSet
 
     if {[my apaveTheme]} {
-      my csSet [my csCurrent] $win -doit
+      my csSet [my csCurrent] $win {*}$args
+      if {$args ne {-doit}} {my themeNonThemed $win}
     } else {
       my themeNonThemed $win
     }
@@ -3453,7 +3463,7 @@ oo::class create ::apave::APave {
         set what [lindex $lwidgets 0 1]
         if {$what eq {idle} || [string is integer -strict $what]} {
           after $what [list [self] paveWindow $w [lrange $lwidgets 1 end]]
-          after $what [list [self] colorWindow $w]
+          after $what [list [self] colorWindow $w -doit]
         }
         continue
       }
