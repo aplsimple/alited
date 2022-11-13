@@ -285,7 +285,7 @@ proc ini::ReadIni {{projectfile ""}} {
   ReadIniPrj
   set al(TEXT,opts) "-padx 3 -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3)"
   if {!$al(INI,belltoll)} {
-    proc ::bell args {}  ;# no bells
+    ; proc ::bell args {}  ;# no bells
   }
   if {![info exists al(tkcon,clrbg)]} {
     alited::pref::Tkcon_Default

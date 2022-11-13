@@ -138,6 +138,8 @@ yROnlsp+4xkRFgAuSmqo6nf+ATq/yK22zWynAAAAAElFTkSuQmCC}
     return $res
   }
 
+# ________________________ EONS bartabs _________________________ #
+
 }
 
 # __________________ Declaring bartabs class hierarchy __________________ #
@@ -236,7 +238,7 @@ method Tab_create {tabCom label} {
   if {[set TID [my $BID tabID $label]] eq {}} {
     return -code error "No label {$label} in $BID"
   }
-  proc $tabCom {args} "return \[[self] $TID {*}\$args\]"
+; proc $tabCom {args} "return \[[self] $TID {*}\$args\]"
   set lObj [my $BID cget -TABCOM]
   my $BID configure -TABCOM [lappend lObj [list $TID $tabCom]]
 }
@@ -373,7 +375,7 @@ method Tab_BID {TID {act ""}} {
 # Gets BID from TID.
 #   act - if "check", only checks the existance of TID
 # If 'act' is "check" and a bar not found, -1 is returned, otherwise BID.
-# Returns a list of 1) BID (or -1 if no bar found) 2) index of the tab in tab list 3) the tab data.
+# Returns a list of 1. BID (or -1 if no bar found) 2. index of the tab in tab list 3. the tab data.
 
   variable btData
   set BID {}
@@ -1073,7 +1075,9 @@ method close {{redraw yes} args} {
   return 1
 }
 
-} ;#  bartabs::Tab
+# ________________________ EOC bartabs::Tab _________________________ #
+
+}
 
 # ________________________ Private methods of Bar _______________________ #
 
@@ -2036,7 +2040,9 @@ method bindToEvent {w event args} {
   }
 }
 
-} ;#  bartabs::Bar
+# ________________________ EOC bartabs::Bar _________________________ #
+
+}
 
 # ___________________________ Methods of Bars ___________________________ #
 
@@ -2165,7 +2171,7 @@ method create {barCom {barOpts ""} {tab1 ""}} {
       my $BID bindToEvent $wbase <Configure> [self] _runBound_ $wbase <Configure> $BID NeedDraw]
   }
   if {!$noComm} {
-    proc $barCom {args} "return \[[self] $BID {*}\$args\]"
+  ; proc $barCom {args} "return \[[self] $BID {*}\$args\]"
     my $BID configure -BARCOM $barCom
   }
   if {$tab1 eq {}} {
@@ -2314,7 +2320,10 @@ method moveSelTab {TID1 TID2} {
   }
   my $BID configure -lifo $lifo  ;# restore -lifo option
 }
-} ;#  bartabs::Bars
+
+# ________________________ EOC bartabs::Bars _________________________ #
+
+}
 
 # ________________________________ EOF __________________________________ #
 #RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

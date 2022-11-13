@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.5b23  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5b24  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -386,6 +386,16 @@ namespace eval alited {
     # Return a list of apave objects for dialogues.
 
     return [list obDlg obDl2 obDl3 obFND obFN2 obCHK]
+  }
+  #_______________________
+
+  proc CursorAtEnd {w} {
+    # Sets the cursor at the end of a field.
+    #   w - the field's path
+
+    focus $w
+    $w selection clear
+    event generate $w <Key> -keysym End
   }
 
   ## ________________________ Messages _________________________ ##

@@ -159,7 +159,7 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
     set uniterr 0
     foreach item [lsort -index 3 $unittree] {
       lassign $item lev leaf fl1 title l1
-      if {$prevtitle eq $title} {
+      if {$prevtitle eq $title && $title ni {constructor destructor}} {
         set uniterr 1
         lappend errduplist [list "$curfile: $errmsg $title" $l1]
       }

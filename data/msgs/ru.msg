@@ -342,6 +342,7 @@ namespace eval ::alited {
     {FOUND:} {НАЙДЕНЫ:}
     {NOT FOUND:} {НЕ НАЙДЕНЫ:}
     "Use this geometry of the dialogue\nby default" "Использовать эту геометрию диалога\nпо умолчанию"
+    "Paste 'Find'\nCtrl+R" "Вставить искомое\nCtrl+R"
   }
 
   ## ________________________ Start and update ________________________ ##

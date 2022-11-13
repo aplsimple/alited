@@ -89,7 +89,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
   # create the text and the scrollbar if new
   if {![winfo exists $wtxt]} {
     lassign [GutterAttrs] canvas width shift
-    set texopts [lindex [$obPav defaultAttrs tex] 1]
+    set texopts [lindex [::apave::defaultAttrs tex] 1]
     lassign [::apave::extractOptions texopts -selborderwidth 1] selbw
     text $wtxt {*}$texopts {*}$al(TEXT,opts)
     $wtxt tag configure sel -borderwidth $selbw
@@ -725,23 +725,6 @@ proc main::InitActions {} {
   }
   if {[info exists al(Save_Ini_After_Updates)]} alited::ini::SaveIni
 }
-
-# TODO: delete CheckCW01 proc
-
-#!#_______________________
-#!proc main::CheckCW01 #\{#\} #\{
-#!  # Checks and fixes widths of tree's columns (they can overlap the scrollbar).
-#!
-#!#
-#!  namespace upvar ::alited al al obPav obPav
-#!  set wtree [$obPav Tree]
-#!  set cw0 [$wtree column #0 -width]
-#!  set cw1 [$wtree column 0 -width]
-#!  set cwfv [[$obPav TreeFavor] column 0 -width]
-#!  if #\{($cwfv-$cw0-$cw1)<1#\} #\{
-#!    $wtree column 0 -width [expr #\{$cwfv-$cw0-1#\}]
-#!  #\}
-#!#\}
 
 # ________________________ Main _create _________________________ #
 

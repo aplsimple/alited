@@ -211,7 +211,7 @@ namespace eval ::apave {
     variable _AP_IMG
     variable _AP_ICO
     if {$icon eq {}} {return $_AP_ICO}
-    proc imagename {icon} {   # Get a defined icon's image name
+  ; proc imagename {icon} {   # Get a defined icon's image name
       return _AP_IMG(img$icon)
     }
     variable apaveDir
@@ -311,9 +311,9 @@ namespace eval ::apave {
     #   opts - new default grid/pack options
     #   atrs - new default attributes
     #   widget - Tcl/Tk command for the new registered widget type
-    # See also: APave::defaultAttrs
+    # See also: APave::defaultATTRS
 
-    return [obj defaultAttrs $type $opts $atrs $widget]
+    return [obj defaultATTRS $type $opts $atrs $widget]
   }
 
   ## _______________________ Text little procs _________________________ ##
@@ -458,7 +458,7 @@ oo::class create ::apave::APave {
 
     # object's procedures
 
-    proc ListboxHandle {W offset maxChars} {
+  ; proc ListboxHandle {W offset maxChars} {
 
       set list {}
       foreach index [$W curselection] { lappend list [$W get $index] }
@@ -466,7 +466,7 @@ oo::class create ::apave::APave {
       return [string range $text $offset [expr {$offset+$maxChars-1}]]
     }
 
-    proc ListboxSelect {W} {
+  ; proc ListboxSelect {W} {
       # This code had been taken from Tcl's wiki:
       #   https://wiki.tcl-lang.org/page/listbox+selection
 
@@ -479,7 +479,7 @@ oo::class create ::apave::APave {
       return
     }
 
-    proc WinResize {win} {
+  ; proc WinResize {win} {
       # Restricts the window's sizes (thus fixing Tk's issue with a menubar)
       #   win - path to a window to be of restricted sizes
 
@@ -767,7 +767,7 @@ oo::class create ::apave::APave {
     #   wnamefull - name (path) of fco widget
     #   attrs - attributes of the widget
 
-    proc readFCO {fname} {
+  ; proc readFCO {fname} {
       # Reads a file's content.
       # Returns a list of (non-empty) lines of the file.
       if {$fname eq {}} {
@@ -783,7 +783,7 @@ oo::class create ::apave::APave {
       return $retval
     }
 
-    proc contFCO {fline opts edge args} {
+  ; proc contFCO {fline opts edge args} {
       # Given a file's line and options,
       # cuts a substring from the line.
       lassign [::apave::parseOptionsFile 1 $opts {*}$args] opts
@@ -975,10 +975,7 @@ oo::class create ::apave::APave {
     }
     set nam3 [string tolower [string index $name 0]][string range $name 1 2]
     if {[string index $nam3 1] eq "_"} {set k [string range $nam3 0 1]} {set k $nam3}
-#!    if #\{[catch #\{lassign [dict get $::apave::_Defaults $k] defopts defattrs#\}]#\} #\{
-#!      set defopts [set defattrs #\{#\}]
-#!    #\}
-    lassign [my defaultAttrs $k] defopts defattrs newtype
+    lassign [my defaultATTRS $k] defopts defattrs newtype
     set options "$defopts $options"
     set attrs "$defattrs $attrs"
     switch -glob -- $nam3 {
@@ -1188,7 +1185,7 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
-  method defaultAttrs {{type ""} {opts ""} {atrs ""} {widget ""}} {
+  method defaultATTRS {{type ""} {opts ""} {atrs ""} {widget ""}} {
     # Sets, gets or registers default options and attributes for widget type.
     #   type - widget type
     #   opts - new default grid/pack options
@@ -1198,10 +1195,10 @@ oo::class create ::apave::APave {
     # The *type* should be a three letter unique string.
     #
     # If the *type* is absent in the registered types and *opts* and/or *atrs*
-    # is not set to "", defaultAttrs registers the new *type* with its grid/pack
+    # is not set to "", defaultATTRS registers the new *type* with its grid/pack
     # options and attributes. At that *widget* is a command for the new widget
     # type. For example, to register "toolbutton" widget:
-    #   my defaultAttrs tbt {} {-style Toolbutton -compound top} ttk::button
+    #   my defaultATTRS tbt {} {-style Toolbutton -compound top} ttk::button
     #
     # Options and attributes may contain data (variables and commands)
     # to be processed by [subst].
@@ -1770,7 +1767,7 @@ oo::class create ::apave::APave {
     upvar 1 $r1 _ii $r2 _lwlen $r3 _lwidgets
     lassign $args _name _code
     if {[my ownWName $_name] ne {tcl}} {return $args}
-    proc lwins {lwName i w} {
+  ; proc lwins {lwName i w} {
       upvar 2 $lwName lw
       set lw [linsert $lw $i $w]
     }
@@ -2121,7 +2118,7 @@ oo::class create ::apave::APave {
     # Returns a selected font.
 
     set parw [::apave::parseOptions $args -parent [::apave::rootModalWindow .]]
-    proc [namespace current]::applyFont {font} " \
+  ; proc [namespace current]::applyFont {font} " \
       set $tvar \[font actual \$font\]; \
       focus -force $parw"
     set font [set $tvar]
@@ -2134,7 +2131,7 @@ oo::class create ::apave::APave {
     tk fontchooser configure -font fontchoose {*}[my ParentOpt] \
       {*}$args -command [namespace current]::applyFont
     set res [tk fontchooser show]
-    # core Tk font chooser is bad with focusing in and out, it isn't modal :(
+    # core Tk font chooser is bad with focusing in and out, it isn't modal
     if {[set foc [info commands *__tk__fontchooser.ok]] ne {}} {
       after idle [list after 0 [list catch "focus -force $foc"]]
     }
@@ -2265,8 +2262,7 @@ oo::class create ::apave::APave {
     set method [my ownWName $name]
     set root1 [string index $method 0]
     if {[string is upper $root1]} {
-      oo::objdefine [self] " \
-        method $method {} {return $wnamefull} ; \
+      oo::objdefine [self] "method $method {} {return $wnamefull} ; \
         export $method"
     }
     return $wnamefull  ;# first try: [set ${_pav(ns)}PN::wn $wnamefull]
@@ -2384,9 +2380,9 @@ oo::class create ::apave::APave {
     # which all require some actions before and after their creation e.g.:
     #   the text widget's text cannot be filled if disabled
     #   so, we must act this way:
-    #     1) call Pre - to get a text of widget
-    #     2) create the widget
-    #     3) call Post - to enable, then fill it with a text, then disable it
+    #     1. call Pre - to get a text of widget
+    #     2. create the widget
+    #     3. call Post - to enable, then fill it with a text, then disable it
     # It's only possible with Pre and Post methods.
     # See also: Post
 
@@ -3025,7 +3021,7 @@ oo::class create ::apave::APave {
       rename $w ::$newcom
       if {$com eq {}} {
         # text to be readonly
-        proc ::$w {args} "
+      ; proc ::$w {args} "
           switch -exact -- \[lindex \$args 0\] \{
               insert \{\}
               delete \{\}
@@ -3036,7 +3032,7 @@ oo::class create ::apave::APave {
           \}"
       } else {
         # text to be sensible to changes
-        proc ::$w {args} "
+      ; proc ::$w {args} "
           set _res_of_TextCommandForChange \[eval ::$newcom \$args\]
           switch -exact -- \[lindex \$args 0\] \{
               insert \{$com\}
@@ -3836,6 +3832,9 @@ oo::class create ::apave::APave {
     my resetText $w $state
     return
   }
+
+# ________________________ EOC ::apave::APave _________________________ #
+
 }
 
 # _____________________________ EOF _____________________________________ #

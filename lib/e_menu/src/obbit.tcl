@@ -732,7 +732,7 @@ proc ::apave::getProperty {name {defvalue ""}} {
   return $defvalue
 }
 
-## ________________________ Color schemes _________________________ ##
+## ________________________ CS procs _________________________ ##
 
 proc ::apave::cs_Non {} {
 
@@ -1323,7 +1323,7 @@ oo::class create ::apave::ObjectTheming {
 
   mixin ::apave::ObjectProperty
 
-## ________________________ Inits _________________________ ##
+## ________________________ Obj theming Inits _________________________ ##
 
   constructor {args} {
 
@@ -1741,7 +1741,7 @@ oo::class create ::apave::ObjectTheming {
 
 # ________________________ Theming _________________________ #
 
-## ________________________ Common procs _________________________ ##
+## ________________________ Theme procs _________________________ ##
 
   method ColorScheme {{ncolor ""}} {
     # Gets a full record of color scheme from a list of available ones
@@ -2447,11 +2447,11 @@ oo::class create ::apave::ObjectTheming {
 
     if {[info commands ::apave::_TK_TOPLEVEL] ne ""} return
     rename ::toplevel ::apave::_TK_TOPLEVEL
-    proc ::toplevel {args} {
+  ; proc ::toplevel {args} {
       set res [eval ::apave::_TK_TOPLEVEL $args]
       set w [lindex $args 0]
       rename $w ::apave::_W_TOPLEVEL$w
-      proc ::$w {args} " \
+    ; proc ::$w {args} " \
         set cs \[::apave::obj csCurrent\] ;\
         if {{configure -menu} eq \$args} {set args {configure}} ;\
         if {\$cs>-2 && \[string first {configure} \$args\]==0} { \
@@ -2463,12 +2463,12 @@ oo::class create ::apave::ObjectTheming {
       return $res
     }
     rename ::canvas ::apave::_TK_CANVAS
-    proc ::canvas {args} {
+  ; proc ::canvas {args} {
       set res [eval ::apave::_TK_CANVAS $args]
       set w [lindex $args 0]
       if {[string match "*cHull.canvas" $w]} {
         rename $w ::apave::_W_CANVAS$w
-        proc ::$w {args} " \
+      ; proc ::$w {args} " \
           set cs \[::apave::obj csCurrent\] ;\
           lassign \[::apave::obj csGet \$cs\] fg - bg ;\
           if {\$cs>-2} { \

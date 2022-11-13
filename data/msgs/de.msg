@@ -345,6 +345,7 @@ namespace eval ::alited {
     {FOUND:} {TREFFER:}
     {NOT FOUND:} {KEIN TREFFER:}
     "Use this geometry of the dialogue\nby default" "Standardmäßig diese Geometrie\ndes Dialogs verwenden"
+    "Paste 'Find'\nCtrl+R" "'Finde' einfügen\nCtrl+R"
   }
 
   ## ________________________ Start and update ________________________ ##
