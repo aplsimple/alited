@@ -1212,7 +1212,7 @@ oo::class create ::apave::APave {
     set optatr "$opts$atrs"
     if {[catch {set def1 [dict get $::apave::_Defaults $type]}]} {
       if {$optatr eq {}} {
-        set err "defaultAttrs: \"$type\" widget type not registered."
+        set err "[self method]: \"$type\" widget type not registered."
         puts -nonewline stderr $err
         return -code error $err
       }
@@ -1695,6 +1695,13 @@ oo::class create ::apave::APave {
     if {$_pav(initialcolor) eq {} && [::islinux]} {
       source [file join $::apave::apaveDir pickers color clrpick.tcl]
     }
+    lassign [::apave::extractOptions args -entry {}] ent
+    if {$ent ne {}} {
+      set ent [my [my ownWName $ent]]
+      set x [winfo rootx $ent]
+      set y [expr {[winfo rooty $ent]+32}]
+      dict set args -geometry +$x+$y  ;# the same as with date picker
+    }
     if {[set _ [string trim [set $tvar]]] ne {}} {
       set ic $_
       set _ [. cget -background]
@@ -1710,7 +1717,7 @@ oo::class create ::apave::APave {
     if {[catch {lassign [tk_chooseColor -moveall $_pav(moveall) \
     -tonemoves $_pav(tonemoves) -initialcolor $_pav(initialcolor) {*}$args] \
     res _pav(moveall) _pav(tonemoves)}]} {
-      set args [::apave::removeOptions $args -moveall -tonemoves]
+      set args [::apave::removeOptions $args -moveall -tonemoves -geometry]
       set res [tk_chooseColor -initialcolor $_pav(initialcolor) {*}$args]
     }
     if {$res ne {}} {
@@ -1835,6 +1842,7 @@ oo::class create ::apave::APave {
         if {$showcolor eq {}} {set showcolor 1} ;# default is "show color label"
         set showcolor [string is true -strict $showcolor]
         set wpar "-parent $w" ;# specific for color chooser (parent of $w)
+        set entname {-entry }
       }
       dat {set chooser dateChooser; set entname {-entry }}
       ftx {
@@ -3224,7 +3232,7 @@ oo::class create ::apave::APave {
         [list event generate $wname <Key> -keysym space]
       }
     }
-    if {$widget in {ttk::entry entry spinbox ttk::spinbox}} {
+    if {$widget in {ttk::entry entry spinbox ttk::spinbox ttk::combobox}} {
       foreach k {<Return> <KP_Enter>} {
         bind $wname $k \
           "+ $wname selection clear ; event generate $wname <Key> -keysym Tab"
@@ -3306,6 +3314,10 @@ oo::class create ::apave::APave {
     }
     set lused [list]
     set lwlen [llength $lwidgets]
+    if {$lwlen<2 && [string trim $lwidgets "{} "] eq {}} {
+      set lwidgets [list {fra - - - - {pack -padx 99 -pady 99}}]
+      set lwlen 1
+    }
     for {set i 0} {$i < $lwlen} {} {
       set lst1 [lindex $lwidgets $i]
       if {[my Replace_Tcl i lwlen lwidgets {*}$lst1] ne {}} {incr i}
@@ -3683,7 +3695,7 @@ oo::class create ::apave::APave {
     toplevel $wtop {*}$args
     ::apave::withdraw $wtop ;# nice to hide all windows manipulations
     if {$withfr} {
-      pack [ttk::frame $w] -expand 1 -fill both
+      pack [frame $w -background [lindex [my csGet] 3]] -expand 1 -fill both
     }
     wm title $wtop $ttl
     return $wtop

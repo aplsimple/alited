@@ -128,9 +128,10 @@ proc find::GetCommandOfText {wtxt {mode ""}} {
 }
 #_______________________
 
-proc find::GetWordOfText {{mode ""}} {
+proc find::GetWordOfText {{mode ""} {getdollar no}} {
   # Gets a word of text under the cursor.
   #   mode - if "select", try to get the word from a line with a selection
+  #   getdollar - if no word found and the cursor is set on $, get "$" as the word
   #  If 'mode' ends with "2", the result includes a range of found string.
 
   set wtxt [alited::main::CurrentWTXT]
@@ -139,6 +140,12 @@ proc find::GetWordOfText {{mode ""}} {
     set idx [$wtxt index insert]
     set line [$wtxt get "$idx linestart" "$idx lineend"]
     set sel [GetWordOfLine $line $idx $mode]
+    if {$getdollar && [lindex $sel 0] eq {}} {
+      set idx [$wtxt index "insert -1 c"]
+      if {[$wtxt get $idx] eq "\$"} {
+        set sel "\$ [lrange $sel 1 end]"
+      }
+    }
   } elseif {[string index $mode end] eq "2"} {
     set sel [list $sel]
   }

@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b24 (13 Nov'22)`
+Version `1.3.5b26 (16 Nov'22)`
 
   - BUGFIX: (partly) issues with tinting
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
@@ -11,6 +11,7 @@ Version `1.3.5b24 (13 Nov'22)`
   - BUGFIX: selected text for "Run Tcl" of menu.mnu
   - BUGFIX: flowing column widths of the tree
   - BUGFIX: erroneous combination CS=-1 & Tint!=0
+  - NEW   : completion: unit's variables (incl. after $), not restricted for 1st column
   - NEW   : Find/Replace dialogue: "Paste Find" button; Ctrl+F, Ctrl+R hotkeys
   - NEW   : screen loupe: CS, file chooser geometry from alited, alt theme by default
   - NEW   : -expand option of bartabs = 9 for "smart expanding the tabs"
@@ -38,6 +39,8 @@ Version `1.3.5b24 (13 Nov'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
+  - CHANGE: ale.ico
+  - CHANGE: color chooser placed under pointer / entry if run from toolbar / dialogue
   - CHANGE: in info bar, found line numbers are separated with spaces
   - CHANGE: at checking Tcl, constructor/destructor aren't detected duplicates
   - CHANGE: clearance trick: "; proc" not seen by Tcl checker & seen as internal proc!

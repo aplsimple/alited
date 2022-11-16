@@ -93,7 +93,21 @@ proc ::tk::dialog::color:: {args} {
   # so we know how big it wants to be, then center the window in the
   # display (Motif style) and de-iconify it.
 
-  ::tk::PlaceWindow $w widget $data(-parent)
+  if {[info exists data(-geometry)] && $data(-geometry) ne {-}} {
+    if {[set geo $data(-geometry)] eq {}} {
+      set X [winfo rootx $data(-parent)]
+      set Y [expr {[winfo rooty $data(-parent)]+32}]
+      set geo +$X+$Y
+    } elseif {[string match pointer+*+* $geo]} {  ;# e.g.  pointer+10+10
+      lassign [split $geo +] -> X Y
+      set geo +[expr {[winfo pointerx .]+$X}]+[expr {[winfo pointery .]+$Y}]
+    }
+    lassign [lrange [split $geo +] end-1 end] X Y
+    wm geometry $w +$X+$Y
+    unset data(-geometry)
+  } else {
+    ::tk::PlaceWindow $w widget $data(-parent)
+  }
   wm title $w $data(-title)
   wm deiconify $w
 
@@ -189,6 +203,7 @@ proc ::tk::dialog::color::Config {dataName argList} {
   set specs [list \
     [list -moveall "" "" 0] \
     [list -tonemoves "" "" 1] \
+    [list -geometry "" "" -] \
     [list -initialcolor "" "" $defaultColor] \
     [list -parent "" "" "."] \
     [list -title "" "" [mc "Color"]] \

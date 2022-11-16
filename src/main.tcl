@@ -806,7 +806,7 @@ proc main::_create {} {
     {.fraFV.fra1.BtTVisitF - - - - {pack -side left -fill x} {-image alimg_misc -tip {$alited::al(MC,lastvisit)} -com alited::favor::SwitchFavVisit}}
     {.fraFV.fra1.sev0 - - - - {pack -side left -fill y -padx 5}}
     {.fraFV.fra1.BtTListF - - - - {pack -side left -fill x} {-image alimg_SaveFile -tip {$alited::al(MC,FavLists)} -com alited::favor::Lists}}
-    {.fraFV.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
+    {.fraFV.fra1.SevF - - - - {pack -side left -fill y -padx 5}}
     {.fraFV.fra1.BtTAddF - - - - {pack -side left -fill x} {-image alimg_add -tip {$alited::al(MC,favoradd)} -com alited::favor::Add}}
     {.fraFV.fra1.BtTRenF - - - - {pack -side left -fill x} {-image alimg_change -tip {$alited::al(MC,favorren)} -command ::alited::favor::Rename}}
     {.fraFV.fra1.btTDelF - - - - {pack -side left -fill x} {-image alimg_delete -tip {$alited::al(MC,favordel)} -com alited::favor::Delete}}

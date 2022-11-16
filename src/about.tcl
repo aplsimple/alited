@@ -109,6 +109,7 @@ proc about::About {} {
     \u2022 <linkCW>Christian Werner</linkCW>\n \
     \u2022 <linkNB>Nicolas Bats</linkNB>\n \
     \u2022 <linkTZ>Thanos Zygouris</linkTZ>\n \
+    \u2022 Alexis Martin\n \
     \n $spec\n\n \
     \u2022 <linkTW>Trevor Williams</linkTW>\n \
     \u2022 <linkDF>Donal K. Fellows</linkDF>\n \

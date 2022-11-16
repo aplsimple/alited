@@ -41,10 +41,12 @@ proc complete::TextCursorCoordinates {wtxt} {
 }
 #_______________________
 
-proc complete::AllSessionCommands {{currentTID ""}} {
+proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
   # Gets all commands available in Tcl/Tk and in session files.
   #   currentTID - ID of a current tab
+  #   idx1 - starting position of the current word
   # If currentTID is set, the commands of this TID are shown unqualified.
+  # Returns a list of "proc variables + commands" and a flag "with commands"
 
   namespace upvar ::alited al al
   if {[set isread [info exists al(_SessionCommands)]]} {
@@ -55,27 +57,69 @@ proc complete::AllSessionCommands {{currentTID ""}} {
   }
   set al(_SessionCommands) [dict create]
   set res [list]
-  foreach tab [alited::find::SessionList] {
-    set TID [lindex $tab 0]
-    lassign [alited::main::GetText $TID no no] curfile wtxt
-    foreach it $al(_unittree,$TID) {
-      lassign $it lev leaf fl1 ttl l1 l2
-      if {$leaf && [llength $ttl]==1} {
-        if {$TID eq $currentTID} {
-          set ttl [lindex [split $ttl :] end]
-        }
-        lappend res $ttl
-        # save arguments of proc/method
-        set h [alited::unit::GetHeader {} {} 0 $wtxt $ttl $l1 $l2]
-        dict set al(_SessionCommands) $ttl [lindex [split $h \n] 0 2]
+  # first, add variables
+  set wtxt [alited::main::CurrentWTXT]
+  lassign [alited::favor::CurrentName] itemID name l1 l2
+  catch {
+    # get variables from the current proc's header
+    lassign [split [$wtxt get $l1.0 [expr {$l1+4}].0] \n] h1 h2 h3 h4
+    foreach i {2 3 4} {
+      incr l1
+      if {[string index $h1 end] eq "\\"} {
+        set h1 [string trimright $h1 \\]\ [set h$i]
+      } else {
+        break
+      }
+    }
+    lassign [string trimright $h1 \{] typ - argums
+    if {$typ in {proc method}} {
+      foreach v $argums {
+        lappend res \$[lindex $v 0]
       }
     }
   }
-  if {[llength $al(ED,TclKeyWords)]} {
-    lappend res {*}$al(ED,TclKeyWords)  ;# user's commands
+  # get variables from the current proc's body
+  set RE \
+{(?:(^|\[|\{)*\s*((set|unset|append|lappend|incr|variable|global)\s+|\$)([():a-zA-Z0-9,_\-]*))}
+  foreach line [split [$wtxt get $l1.0 [incr l2].0] \n] {
+    foreach {- - - - v} [regexp -all -inline $RE $line] {
+      if {[string match *(* $v] || [string match *)* $v]} {
+        if {![string match *(*) $v]} {
+          set v [string trim $v ()]
+        }
+      }
+      if {$v ne {} && [lsearch -exact $res $v]==-1} {lappend res \$$v}
+    }
+  }
+  # if it's not a variable's value, add also commands
+  set idx1 [expr {int([$wtxt index insert])}].$idx1
+  if {[$wtxt get "$idx1 -1 c"] eq "\$"} {
+    set withcomm no
+  } else {
+    set withcomm yes
+    # get commands available in files of current session
+    foreach tab [alited::find::SessionList] {
+      set TID [lindex $tab 0]
+      lassign [alited::main::GetText $TID no no] curfile wtxt
+      foreach it $al(_unittree,$TID) {
+        lassign $it lev leaf fl1 ttl l1 l2
+        if {$leaf && [llength $ttl]==1} {
+          if {$TID eq $currentTID} {
+            set ttl [lindex [split $ttl :] end]
+          }
+          lappend res $ttl
+          # save arguments of proc/method
+          set h [alited::unit::GetHeader {} {} 0 $wtxt $ttl $l1 $l2]
+          dict set al(_SessionCommands) $ttl [lindex [split $h \n] 0 2]
+        }
+      }
+    }
+    if {[llength $al(ED,TclKeyWords)]} {
+      lappend res {*}$al(ED,TclKeyWords)  ;# user's commands
+    }
   }
   if {!$isread} {alited::info::Clear end}
-  return $res
+  return [list $res $withcomm]
 }
 #_______________________
 
@@ -85,16 +129,18 @@ proc complete::MatchedCommands {} {
 
   variable comms
   variable maxwidth
-  lassign [alited::find::GetWordOfText noselect2] curword idx1 idx2
+  lassign [alited::find::GetWordOfText noselect2 yes] curword idx1 idx2
   if {![namespace exists ::alited::repl]} {
     namespace eval ::alited {
       source [file join $::alited::LIBDIR repl repl.tcl]
     }
   }
-  set allcomms [lindex [::alited::repl::complete command {}] 1]
-  lappend allcomms {*}[AllSessionCommands [alited::bar::CurrentTabID]]
+  lassign [AllSessionCommands [alited::bar::CurrentTabID] $idx1] allcomms withcomms
+  if {$withcomms} {
+    lappend allcomms {*}[lindex [::alited::repl::complete command {}] 1]
+  }
   set comms [list]
-  set excluded [list {[._]*} alimg_* bts_* \$*]
+  set excluded [list {[._]*} alimg_* bts_*]
   set maxwidth 20
   foreach com $allcomms {
     set incl 1
@@ -104,7 +150,8 @@ proc complete::MatchedCommands {} {
         break
       }
     }
-    if {$incl && [string match "${curword}*" $com]} {
+    if {$incl && ([string match ${curword}* $com] || \
+    [regexp "^\[\$\]?${curword}" $com])} {
       lappend comms $com
       set maxwidth [expr {max($maxwidth,[string length $com])}]
     }
@@ -157,17 +204,14 @@ proc complete::PickCommand {wtxt} {
   $lbx selection set 0
   lassign [TextCursorCoordinates $wtxt] X Y
   if {$X==-1} {
-    catch {after cancel $afterid}
-    bell
-    set res {}
-  } else {
-    if {$::alited::al(IsWindows)} {
-      incr X 10
-      incr Y 40
-      after 100 "wm deiconify $win"
-    }
-    set res [$obj showModal $win -focus $lbx -geometry +$X+$Y -ontop yes]
+    lassign [winfo pointerxy $wtxt] X Y  ;# popup at mouse pointer (not at caret)
   }
+  if {$::alited::al(IsWindows)} {
+    incr X 10
+    incr Y 40
+    after 100 "wm deiconify $win"
+  }
+  set res [$obj showModal $win -focus $lbx -geometry +$X+$Y -ontop yes]
   destroy $win
   $obj destroy
   if {$res ne "0"} {return $res}
@@ -193,8 +237,12 @@ proc complete::AutoCompleteCommand {} {
   lassign [MatchedCommands] curword idx1 idx2
   set wtxt [alited::main::CurrentWTXT]
   if {[set com [PickCommand $wtxt]] ne {}} {
-    set TID [alited::bar::CurrentTabID]
     set row [expr {int([$wtxt index insert])}]
+    if {[$wtxt get "$row.$idx1 -1 c"] eq "\$"} {
+      incr idx1 -1
+    } elseif {[string match \$* $com]} {
+      set com [string range $com 1 end]
+    }
     $wtxt delete $row.$idx1 $row.[incr idx2]
     set pos $row.$idx1
     if {[dict exists $al(_SessionCommands) $com]
