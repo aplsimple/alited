@@ -131,7 +131,8 @@ proc tree::AddTagSel {wtree ID} {
   #   wtree - the tree's path
   #   ID - the item's ID
 
-  if {![$wtree tag has tagTODO $ID]} {
+  set leaf [lindex [$wtree item $ID -values] 5]
+  if {[string is true -strict $leaf] && ![$wtree tag has tagTODO $ID]} {
     $wtree tag add tagSel $ID
   }
 }
@@ -159,10 +160,8 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
     }
   }
   set header [alited::unit::GetHeader $wtree $itnew]
-  lassign [$wtree item $itnew -values] l1 l2 - - - leaf
-  if {[string is true -strict $leaf]} {
-    AddTagSel $wtree $itnew
-  }
+  lassign [$wtree item $itnew -values] l1 l2
+  AddTagSel $wtree $itnew
   # get saved pos
   if {[info exists al(CPOS,$ctab,$header)]} {
     set pos [alited::p+ $l1 $al(CPOS,$ctab,$header)]

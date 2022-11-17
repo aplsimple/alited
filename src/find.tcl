@@ -152,10 +152,10 @@ proc find::GetWordOfText {{mode ""} {getdollar no}} {
   return $sel
 }
 
-# ________________________ Search units (Ctrl-Shift-F) _________________________ #
+# ________________________ Search declaration (Ctrl-L) _________________________ #
 
-proc find::SearchUnit1 {wtxt isNS} {
-  # Searches units in a text.
+proc find::LookDecl1 {wtxt isNS} {
+  # Searches a declaration in a text.
   #   wtxt - the text's path
   #   isNS - flag "search a qualified unit name"
 
@@ -180,7 +180,7 @@ proc find::SearchUnit1 {wtxt isNS} {
     if {[set i [lsearch -exact -index 0 $tabs $tab]]>0} {
       set tabs [linsert [lreplace $tabs $i $i] 0 $tab]
     }
-    set what "*$com2"
+    if {$withNS} {set what "*$com2"} {set what " $com2"}
   } else {
     # search a non-qualified name: in the current tab only
     set what "*::$com2"
@@ -191,8 +191,10 @@ proc find::SearchUnit1 {wtxt isNS} {
     alited::main::GetText $TID no no
     foreach it $al(_unittree,$TID) {
       lassign $it lev leaf fl1 ttl l1 l2
-      if {[string match $what $ttl] || [string match "*::$ttl" $com2] || $com2 eq $ttl} {
-        return [list $l1 $TID $what]
+      if {$leaf} {
+        if {[string match $what $ttl] || [string match "*::$ttl" $com2] || $com2 eq $ttl} {
+          return [list $l1 $TID $what]
+        }
       }
     }
   }
@@ -200,17 +202,17 @@ proc find::SearchUnit1 {wtxt isNS} {
 }
 #_______________________
 
-proc find::SearchUnit {{wtxt ""}} {
-  # Prepares and runs searching units in a text.
+proc find::LookDecl {{wtxt ""}} {
+  # Prepares and runs searching a declaration in a text.
   #   wtxt - the text's path
 
   namespace upvar ::alited al al obPav obPav
   # switch to the unit tree: 1st to enable the search, 2nd to show units found & selected
   if {!$al(TREE,isunits)} alited::tree::SwitchTree
-  lassign [SearchUnit1 $wtxt yes] found TID what
+  lassign [LookDecl1 $wtxt yes] found TID what
   if {$found eq {}} {
     # if the qualified not found, try to find the non-qualified (first encountered)
-    lassign [SearchUnit1 $wtxt no] found TID
+    lassign [LookDecl1 $wtxt no] found TID
   }
   if {$found ne {}} {
     alited::main::SaveVisitInfo
@@ -225,7 +227,8 @@ proc find::SearchUnit {{wtxt ""}} {
     alited::Message $msg 4
   }
 }
-#_______________________
+
+# ________________________ Search units (Ctrl-Shift-F) _________________________ #
 
 proc find::DoFindUnit {} {
   # Runs searching units in current text / all texts.

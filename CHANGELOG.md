@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b26 (16 Nov'22)`
+Version `1.3.5b27 (17 Nov'22)`
 
   - BUGFIX: (partly) issues with tinting
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
@@ -11,6 +11,8 @@ Version `1.3.5b26 (16 Nov'22)`
   - BUGFIX: selected text for "Run Tcl" of menu.mnu
   - BUGFIX: flowing column widths of the tree
   - BUGFIX: erroneous combination CS=-1 & Tint!=0
+  - BUGFIX: erroneous marking branch as unit visited
+  - BUGFIX: search declaration: skip branches, match exactly if no NS
   - NEW   : completion: unit's variables (incl. after $), not restricted for 1st column
   - NEW   : Find/Replace dialogue: "Paste Find" button; Ctrl+F, Ctrl+R hotkeys
   - NEW   : screen loupe: CS, file chooser geometry from alited, alt theme by default

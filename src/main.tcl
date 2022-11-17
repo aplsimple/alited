@@ -655,7 +655,7 @@ proc main::BindsForText {TID wtxt} {
   if {[alited::bar::BAR isTab $TID]} {
     bind $wtxt <FocusIn> [list after 500 "::alited::main::FocusInText $TID $wtxt"]
   }
-  bind $wtxt <Control-ButtonRelease-1> "::alited::find::SearchUnit ; break"
+  bind $wtxt <Control-ButtonRelease-1> "::alited::find::LookDecl ; break"
   bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
   bind $wtxt <Control-Tab> {::alited::bar::ControlTab}
   bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}

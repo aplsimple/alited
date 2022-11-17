@@ -207,7 +207,7 @@ proc keys::ReservedAdd {wtxt} {
   Add action comment      [alited::pref::BindKey 8 - Control-bracketleft] {::alited::edit::Comment; break}
   Add action uncomment    [alited::pref::BindKey 9 - Control-bracketright] {::alited::edit::UnComment; break}
   Add action find-next    [alited::pref::BindKey 12 - F3] "$obPav findInText 1 $wtxt"
-  Add action look-declaration    [alited::pref::BindKey 13 - Control-L] "::alited::find::SearchUnit ; break"
+  Add action look-declaration    [alited::pref::BindKey 13 - Control-L] "::alited::find::LookDecl ; break"
   Add action look-word    [alited::pref::BindKey 14 - Control-Shift-L] "::alited::find::SearchWordInSession ; break"
   Add action item-up      [alited::pref::BindKey 15 - F11] {+ ::alited::tree::MoveItem up yes}
   Add action item-down    [alited::pref::BindKey 16 - F12] {+ ::alited::tree::MoveItem down yes}

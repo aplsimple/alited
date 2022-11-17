@@ -220,7 +220,7 @@ proc menu::RunTip {} {
   $m add command -label $al(MC,findreplace) -command alited::find::_run -accelerator Ctrl+F
   $m add command -label $al(MC,findnext) -command {alited::find::Next ; after idle alited::main::SaveVisitInfo} -accelerator $al(acc_12)
   $m add separator
-  $m add command -label $al(MC,lookdecl) -command alited::find::SearchUnit -accelerator $al(acc_13)
+  $m add command -label $al(MC,lookdecl) -command alited::find::LookDecl -accelerator $al(acc_13)
   $m add command -label $al(MC,lookword) -command alited::find::SearchWordInSession -accelerator $al(acc_14)
   $m add command -label [msgcat::mc {Find Unit}] -command alited::find::FindUnit -accelerator Ctrl+Shift+F
   $m add command -label [msgcat::mc {Find by List}] -command alited::find::SearchByList
