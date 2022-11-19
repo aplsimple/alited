@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.5b27  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5b29  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 if {![package vsatisfies $_ 8.6.10-]} {
@@ -20,7 +20,7 @@ catch {package require comm}  ;# Generic message transport
 
 # _____ Remove installed (perhaps) packages used in alited _____ #
 
-foreach _ {apave baltip bartabs hl_tcl ttk::theme::awlight ttk::theme::awdark awthemes} {
+foreach _ {apave baltip bartabs hl_tcl} {
   set __ [package version $_]
   catch {
     package forget $_
@@ -395,7 +395,7 @@ namespace eval alited {
 
     focus $w
     $w selection clear
-    event generate $w <Key> -keysym End
+    $w icursor end
   }
 
   ## ________________________ Messages _________________________ ##

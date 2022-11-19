@@ -177,7 +177,8 @@ proc complete::PickCommand {wtxt} {
   # allowing a user to select from it.
   #   wtxt - text's path
 
-  if {![llength $alited::complete::comms]} {return {}}
+  variable comms
+  if {[set llen [llength $comms]]==0} {return {}}
   set win .pickcommand
   catch {destroy $win}
   if {$::alited::al(IsWindows)} {
@@ -200,6 +201,13 @@ proc complete::PickCommand {wtxt} {
   set lbx [$obj LbxPick]
   foreach ev {ButtonPress-1 Return KP_Enter KeyPress-space} {
     catch {bind $lbx <$ev> "after idle {::alited::complete::SelectCommand $win $obj $lbx}"}
+  }
+  # highlights variables if any exist
+  lassign [::hl_tcl::hl_colors {} [::apave::obj csDark]] fgcom - - fgvar
+  for {set i 0} {$i<$llen}  {incr i} {
+    if {[string first \$ [lindex $comms $i]]<0} {
+      $lbx itemconfigure $i -foreground $fgcom
+    }
   }
   $lbx selection set 0
   lassign [TextCursorCoordinates $wtxt] X Y
@@ -240,6 +248,8 @@ proc complete::AutoCompleteCommand {} {
     set row [expr {int([$wtxt index insert])}]
     if {[$wtxt get "$row.$idx1 -1 c"] eq "\$"} {
       incr idx1 -1
+    } elseif {[$wtxt get $row.$idx1] eq "\$"} {
+      # replace $variable
     } elseif {[string match \$* $com]} {
       set com [string range $com 1 end]
     }

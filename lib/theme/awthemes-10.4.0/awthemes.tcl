@@ -2667,10 +2667,10 @@ namespace eval ::ttk::awthemes {
       }
 
       ::ttk::style element create ${pfx}Horizontal.Scrollbar.thumb image \
-          [list $images(sb-slider-hn${sfx}) \
+          [list $images(sb-slider-hd${sfx}) \
           disabled $images(sb-slider-hd${sfx}) \
           {pressed !disabled} $images(sb-slider-hp${sfx}) \
-          {active !pressed !disabled} $images(sb-slider-ha${sfx}) \
+          {active !disabled} $images(sb-slider-hn${sfx}) \
           ] \
           -border $imgbord \
           -padding 0 \
@@ -2713,10 +2713,10 @@ namespace eval ::ttk::awthemes {
       }
 
       ::ttk::style element create ${pfx}Vertical.Scrollbar.thumb image \
-          [list $images(sb-slider-vn${sfx}) \
+          [list $images(sb-slider-vd${sfx}) \
           disabled $images(sb-slider-vd${sfx}) \
           {pressed !disabled} $images(sb-slider-vp${sfx}) \
-          {active !pressed !disabled} $images(sb-slider-va${sfx}) \
+          {active !disabled} $images(sb-slider-vn${sfx}) \
           ] \
           -border $imgbord \
           -padding 0 \
@@ -2727,6 +2727,7 @@ namespace eval ::ttk::awthemes {
         set imgpad [_adjustSizes trough.image.border $scale]
         ::ttk::style element create ${pfx}Horizontal.Scrollbar.trough image \
             [list $images(sb-trough-hn${sfx}) \
+                active $images(sb-trough-hd${sfx}) \
                 disabled $images(sb-trough-hd${sfx})] \
             -border $imgbord \
             -padding 0 \
@@ -2735,6 +2736,7 @@ namespace eval ::ttk::awthemes {
         set imgbord [list [lindex $imgbord 1] [lindex $imgbord 0]]
         ::ttk::style element create ${pfx}Vertical.Scrollbar.trough image \
             [list $images(sb-trough-vn${sfx}) \
+                active $images(sb-trough-vd${sfx}) \
                 disabled $images(sb-trough-vd${sfx})] \
             -border $imgbord \
             -padding 0 \

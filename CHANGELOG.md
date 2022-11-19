@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b27 (17 Nov'22)`
+Version `1.3.5b29 (19 Nov'22)`
 
   - BUGFIX: (partly) issues with tinting
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
@@ -13,8 +13,9 @@ Version `1.3.5b27 (17 Nov'22)`
   - BUGFIX: erroneous combination CS=-1 & Tint!=0
   - BUGFIX: erroneous marking branch as unit visited
   - BUGFIX: search declaration: skip branches, match exactly if no NS
+  - BUGFIX: F3 (find next) at switching tabs; + "not found"
   - NEW   : completion: unit's variables (incl. after $), not restricted for 1st column
-  - NEW   : Find/Replace dialogue: "Paste Find" button; Ctrl+F, Ctrl+R hotkeys
+  - NEW   : Find/Replace dialogue: "Paste Find" button; Ctrl+F, Ctrl+R & other hotkeys
   - NEW   : screen loupe: CS, file chooser geometry from alited, alt theme by default
   - NEW   : -expand option of bartabs = 9 for "smart expanding the tabs"
   - NEW   : Preferences: Windows' themes (vista, xpnative, winnative), tabbar's border, 1st widget focused, icons for theme/CS/tools
@@ -41,7 +42,8 @@ Version `1.3.5b27 (17 Nov'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
-  - CHANGE: ale.ico
+  - CHANGE: aw* themes: scrollbars' colors (active and !active)
+  - CHANGE: squeezed ale.ico & find/replace dialogue
   - CHANGE: color chooser placed under pointer / entry if run from toolbar / dialogue
   - CHANGE: in info bar, found line numbers are separated with spaces
   - CHANGE: at checking Tcl, constructor/destructor aren't detected duplicates

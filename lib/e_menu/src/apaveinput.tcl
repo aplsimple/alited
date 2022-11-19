@@ -6,9 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package require Tk
-
-package provide apave 3.6.0b6
+package provide apave 3.6.0b7
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 

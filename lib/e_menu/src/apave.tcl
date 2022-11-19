@@ -6,8 +6,6 @@
 # License: MIT.
 ###########################################################
 
-package require Tk
-
 # ________________________ TCLLIBPATH _________________________ #
 
 # use TCLLIBPATH variable (some tclkits don't see it)

@@ -182,7 +182,7 @@ namespace eval ::alited {
 
     ## _ find-replace dialogue _ ##
     set al(MC,frMatch) [msgcat::mc {Match: }]
-    set al(MC,frWord)  [msgcat::mc {Match whole word only}]
+    set al(MC,frWord)  [msgcat::mc {Match whole word}]
     set al(MC,frExact) [msgcat::mc {Exact}]
     set al(MC,frCase)  [msgcat::mc {Match case}]
     set al(MC,frres1)  [msgcat::mc "Found %n matches for \"%s\"."]

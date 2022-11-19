@@ -9,8 +9,6 @@
 #
 # _______________________________________________________________________ #
 
-package require Tk
-
 namespace eval ::apave {
 
 # ________________________ apave's global variables _________________________ #
@@ -599,6 +597,10 @@ proc ::apave::InitTheme {intheme libdir} {
       set lbd 0
     }
     awdark - awlight {
+      catch {package forget ttk::theme::$intheme}
+      catch {namespace delete ttk::theme::$intheme}
+      catch {package forget awthemes}
+      catch {namespace delete awthemes}
       InitAwThemesPath $libdir
       package require awthemes
       package require ttk::theme::$intheme
@@ -1979,11 +1981,12 @@ oo::class create ::apave::ObjectTheming {
       my Ttk_style map $ts -foreground [list {selected !active} $tfgS {!selected !active} $tfgM active $aclr {selected active} $aclr]
       my Ttk_style map $ts -background [list {selected !active} $tbgS {!selected !active} $tbgM {!selected active} $tbg2 {selected active} $tbg2]
     }
-    foreach ts {TEntry Treeview TSpinbox TCombobox TCombobox.Spinbox TMatchbox TNotebook.Tab TScrollbar TScale} {
+    foreach ts {TEntry Treeview TSpinbox TCombobox TCombobox.Spinbox TMatchbox TNotebook.Tab TScale} {
       my Ttk_style map $ts -lightcolor [list focus $bclr active $bclr]
       my Ttk_style map $ts -darkcolor [list focus $bclr active $bclr]
     }
     my Ttk_style map TScrollbar -troughcolor [list !active $tbg1 active $tbg2]
+    my Ttk_style map TScrollbar -background [list !active $tbg1 {!selected active} $tbgS]
     my Ttk_style map TProgressbar -troughcolor [list !active $tbg2 active $tbg1]
     my Ttk_style configure TProgressbar -background $tbgS
     if {[set cs [my csCurrent]]<20} {
@@ -2066,9 +2069,9 @@ oo::class create ::apave::ObjectTheming {
           set ::apave::_C_($ts,7) "-selectcolor $tbg1"
           set ::apave::_C_($ts,8) "-highlightbackground $tbg1"
         }
-        frame - scrollbar - scale - tframe - tnotebook {
+        frame - scrollbar - scale {
           set ::apave::_C_($ts,0) 8
-          set ::apave::_C_($ts,4) "-activebackground $bclr"
+          set ::apave::_C_($ts,4) "-activebackground $tbgS"
           set ::apave::_C_($ts,7) "-troughcolor $tbg1"
           set ::apave::_C_($ts,8) "-elementborderwidth 2"
         }

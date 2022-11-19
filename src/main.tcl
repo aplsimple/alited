@@ -664,10 +664,8 @@ proc main::BindsForText {TID wtxt} {
   ::apave::bindToEvent $wtxt <<Undo>> alited::main::AfterUndoRedo
   ::apave::bindToEvent $wtxt <<Redo>> alited::main::AfterUndoRedo
   ::apave::bindToEvent $wtxt <<Cut>> after 50 {after 50 alited::main::AfterCut}
-  alited::keys::ReservedAdd $wtxt
-  alited::keys::BindKeys $wtxt action
-  alited::keys::BindKeys $wtxt template
-  alited::keys::BindKeys $wtxt preference
+  alited::keys::ReservedAdd
+  alited::keys::BindAllKeys $wtxt no
 }
 #_______________________
 
@@ -845,7 +843,7 @@ proc main::_create {} {
     {.fraTop.fraHead.h_ - - - - {pack -side left -fill x -expand 1}}
     {.fraTop.fraHead.btTno - - - - {pack -side left} {-command {alited::find::HideFindUnit}}}
 {#
-### ________________________ Status bar _________________________ ###
+### ________________________ Info & status bar _________________________ ###
 }
     {.fraBot - - - - {add}}
     {.fraBot.fra - - - - {pack -fill both -expand 1}}

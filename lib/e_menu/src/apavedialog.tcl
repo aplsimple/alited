@@ -6,10 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package require Tk
-
 source [file join [file dirname [info script]] apave.tcl]
-
 
 # ________________________ apave NS _________________________ #
 
@@ -498,15 +495,17 @@ oo::class create ::apave::APaveDialog {
     #   donext - "1" means 'from a current position'
     #   txt - path to the text widget
     #   varFind - variable
+    # Returns yes, if found (or nothing to find), otherwise returns "no";
+    # also, if there was a real search, the search string is added.
 
     if {$txt eq {}} {
-      if {![info exists ${_pdg(ns)}PD::fnd]} return
+      if {![info exists ${_pdg(ns)}PD::fnd]} {return yes}
       set txt [my TexM]
       set sel [set ${_pdg(ns)}PD::fnd]
     } elseif {$donext && [set sel [my get_HighlightedString]] ne {}} {
       # find a string got with alt+left/right
     } elseif {$varFind eq {}} {
-      if {![info exists ${_pdg(ns)}PD::fnd]} return
+      if {![info exists ${_pdg(ns)}PD::fnd]} {return yes}
       set sel [set ${_pdg(ns)}PD::fnd]
     } else {
       set sel [set $varFind]
@@ -528,10 +527,12 @@ oo::class create ::apave::APaveDialog {
       ::tk::TextSetCursor $txt $pos
       $txt tag add sel $pos [$txt index "$pos + [string length $sel] chars"]
       focus $txt
+      set res yes
     } else {
       bell -nice
+      set res no
     }
-    return
+    return [list $res $sel]
   }
   #_______________________
 

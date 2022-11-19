@@ -314,11 +314,10 @@ namespace eval ::alited {
     {Replace: } {Ersetze: }
     {Match: } {Entsprechen: }
     {Exact} {Exakt}
-    {Match whole word only} {Nur ganze Wörter vergleichen}
+    {Match whole word} {Ganze Wörter vergleichen}
     {Match case} {Groß.-/Kleinschreibung}
-    {Wrap around} {Fortsetze am Ende/Anfang}
+    {Wrap} {Fortsetze}
     {Replace by blank} {Ersetzte durch freie Stelle}
-    {Direction:} {Richtung:}
     {Down} {Abwärts}
     {Up} {Aufwärts}
     {Stay on top} {Bleibe oben}
@@ -346,6 +345,7 @@ namespace eval ::alited {
     {NOT FOUND:} {KEIN TREFFER:}
     "Use this geometry of the dialogue\nby default" "Standardmäßig diese Geometrie\ndes Dialogs verwenden"
     "Paste 'Find'\nCtrl+R" "'Finde' einfügen\nCtrl+R"
+    {Not found: %s} {Nicht gefunden: %s}
   }
 
   ## ________________________ Start and update ________________________ ##

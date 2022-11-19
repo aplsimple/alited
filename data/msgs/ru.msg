@@ -311,11 +311,10 @@ namespace eval ::alited {
     {Replace: } {Заменить: }
     {Match: } {Совпадение: }
     {Exact} {Точное}
-    {Match whole word only} {Только целые слова}
+    {Match whole word} {Только целые слова}
     {Match case} {Учет регистра букв}
-    {Wrap around} {По кругу}
+    {Wrap} {По кругу}
     {Replace by blank} {Пустые замены}
-    {Direction:} {Направление:}
     {Down} {Вниз}
     {Up} {Вверх}
     {Stay on top} {Поверх всех окон}
@@ -343,6 +342,7 @@ namespace eval ::alited {
     {NOT FOUND:} {НЕ НАЙДЕНЫ:}
     "Use this geometry of the dialogue\nby default" "Использовать эту геометрию диалога\nпо умолчанию"
     "Paste 'Find'\nCtrl+R" "Вставить искомое\nCtrl+R"
+    {Not found: %s} {Не найдено: %s}
   }
 
   ## ________________________ Start and update ________________________ ##

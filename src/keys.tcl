@@ -13,19 +13,21 @@ namespace eval ::alited::keys {
 
 # ________________________ Common _________________________ #
 
-proc keys::BindKeys {wtxt type} {
+proc keys::BindKeys {wtxt type {asfind no}} {
   # Binds keys to appropriate events of text.
   #   wtxt - text's path
   #   type - type of keys (template etc.)
+  #   asfind - do it for "find/replace" as well
 
   namespace upvar ::alited obPav obPav
   variable firstbind
-  if {$firstbind} {
+  if {$firstbind || $asfind} {
     # some bindings must be active in "info" listbox, "find units" combobox and tree
     set activeForOthers [list ::tool: ::find:: ::file:: ::main::GotoLine ::bar::BAR]
     set w1 [$obPav LbxInfo]
     set w2 [$obPav CbxFindSTD]
     set w3 [$obPav Tree]
+    set w4 $::alited::find::win
   }
   foreach kb [alited::keys::EngagedList $type all] {
     lassign $kb -> tpl keys tpldata
@@ -45,12 +47,16 @@ proc keys::BindKeys {wtxt type} {
           set tpldata [string map [list %k $keys] $tpldata]
           {*}$tpldata
         } else {
-          if {$firstbind} {
+          if {$firstbind || $asfind} {
             foreach afo $activeForOthers {
               if {[string first $afo $tpldata]>-1} {
-                bind $w1 "<$k>" $tpldata
-                bind $w2 "<$k>" $tpldata
-                bind $w3 "<$k>" $tpldata
+                if {$asfind} {
+                  bind $w4 "<$k>" $tpldata
+                } else {
+                  bind $w1 "<$k>" $tpldata
+                  bind $w2 "<$k>" $tpldata
+                  bind $w3 "<$k>" $tpldata
+                }
                 break
               }
             }
@@ -80,6 +86,17 @@ proc keys::UnBindKeys {wtxt type} {
       puts "Error of unbinding: $tpl <$keys> - $err"
     }
   }
+}
+#_______________________
+
+proc keys::BindAllKeys {wtxt asfind} {
+  # Binds all keys to appropriate events of text.
+  #   wtxt - text's path
+  #   asfind - do it for "find/replace" as well
+
+  BindKeys $wtxt action $asfind
+  BindKeys $wtxt template $asfind
+  BindKeys $wtxt preference $asfind
 }
 #_______________________
 
@@ -185,7 +202,7 @@ proc keys::VacantList {} {
 }
 # _______________________ Handling keys data _____________________ #
 
-proc keys::ReservedAdd {wtxt} {
+proc keys::ReservedAdd {} {
   # Saves reserved ("action") keys to a list of keys data.
 
   namespace upvar ::alited obPav obPav
@@ -206,7 +223,7 @@ proc keys::ReservedAdd {wtxt} {
   Add action unindent     [alited::pref::BindKey 7 - Control-U] {::alited::edit::UnIndent; break}
   Add action comment      [alited::pref::BindKey 8 - Control-bracketleft] {::alited::edit::Comment; break}
   Add action uncomment    [alited::pref::BindKey 9 - Control-bracketright] {::alited::edit::UnComment; break}
-  Add action find-next    [alited::pref::BindKey 12 - F3] "$obPav findInText 1 $wtxt"
+  Add action find-next    [alited::pref::BindKey 12 - F3] {alited::find::FindNext}
   Add action look-declaration    [alited::pref::BindKey 13 - Control-L] "::alited::find::LookDecl ; break"
   Add action look-word    [alited::pref::BindKey 14 - Control-Shift-L] "::alited::find::SearchWordInSession ; break"
   Add action item-up      [alited::pref::BindKey 15 - F11] {+ ::alited::tree::MoveItem up yes}
