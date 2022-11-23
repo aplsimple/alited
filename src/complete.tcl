@@ -80,20 +80,28 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
   }
   # get variables from the current proc's body
   set RE \
-{(?:(^|\[|\{)*\s*((set|unset|append|lappend|incr|variable|global)\s+|\$)([():a-zA-Z0-9,_\-]*))}
+{(?:(((^\s*|\[\s*|\{\s*)+((set|unset|append|lappend|incr|variable|global)\s+))|\$)([:a-zA-Z0-9_]*[\(]*[:a-zA-Z0-9_,\$]*[\)]*))}
   foreach line [split [$wtxt get $l1.0 [incr l2].0] \n] {
-    foreach {- - - - v} [regexp -all -inline $RE $line] {
+    foreach {- - - - - - v} [regexp -all -inline $RE $line] {
       if {[string match *(* $v] || [string match *)* $v]} {
         if {![string match *(*) $v]} {
           set v [string trim $v ()]
         }
       }
-      if {$v ne {} && [lsearch -exact $res $v]==-1} {lappend res \$$v}
+      if {$v ni {{} : ::} && [lsearch -exact $res $v]==-1} {lappend res \$$v}
+    }
+  }
+  set idx1 [expr {int([$wtxt index insert])}].$idx1
+  set isdol [expr {[$wtxt get "$idx1 -1 c"] eq "\$"}]
+  set isdol1 [expr {[$wtxt get "$idx1 -2 c" $idx1] eq "\$:"}]
+  set isdol2 [expr {[$wtxt get "$idx1 -3 c" $idx1] eq "\$::"}]
+  if {$isdol1 || $isdol2} {
+    foreach v [info vars ::*] {
+      if {[llength $v]==1} {lappend res \$$v}
     }
   }
   # if it's not a variable's value, add also commands
-  set idx1 [expr {int([$wtxt index insert])}].$idx1
-  if {[$wtxt get "$idx1 -1 c"] eq "\$"} {
+  if {$isdol || $isdol1 || $isdol2} {
     set withcomm no
   } else {
     set withcomm yes
@@ -172,6 +180,22 @@ proc complete::SelectCommand {win obj lbx} {
 }
 #_______________________
 
+proc complete::WinGeometry {win lht} {
+  # Checks and corrects the completion window's geometry (esp. for KDE).
+  #   win - window's path
+  #   lht - height of completion list
+
+  update
+  lassign [split [wm geometry $win] x+] w h x y
+  set h2 [winfo reqheight $win]
+  if {$h2>20} {
+    wm geometry $win ${w}x${h2}+${x}+${y}
+  } else {
+    wm geometry $win 220x325+${x}+${y}
+  }
+}
+#_______________________
+
 proc complete::PickCommand {wtxt} {
   # Shows a frame of commands for auto completion,
   # allowing a user to select from it.
@@ -179,7 +203,10 @@ proc complete::PickCommand {wtxt} {
 
   variable comms
   if {[set llen [llength $comms]]==0} {return {}}
+  set mlen 16
+  set lht [expr {max(min($llen,$mlen),1)}]
   set win .pickcommand
+  set obj ::alited::pavedPickCommand
   catch {destroy $win}
   if {$::alited::al(IsWindows)} {
     toplevel $win
@@ -187,17 +214,20 @@ proc complete::PickCommand {wtxt} {
     frame $win
     wm manage $win
     # the line below is of an issue in kubuntu (KDE?): small sizes of the popup window
-    set afterid [after idle [subst -nocom {wm geometry $win [regsub {([0-9]+x[0-9]+)} [wm geometry $win] 220x325]}]]
+    after idle [list ::alited::complete::WinGeometry $win $lht]
   }
   wm withdraw $win
   wm overrideredirect $win 1
-  set obj pavedPickCommand
   catch {$obj destroy}
   ::apave::APaveInput create $obj $win
-  $obj paveWindow $win {
-    {LbxPick - - - - {pack -side left -expand 1 -fill both} {-h 16 -w $::alited::complete::maxwidth -lvar ::alited::complete::comms}}
-    {#sbvPick LbxPick L - - {pack -side left -fill both} {}}
+  set lwidgets [list \
+    "LbxPick - - - - {pack -side left -expand 1 -fill both} {-h $lht -w $::alited::complete::maxwidth -lvar ::alited::complete::comms}"
+  ]
+  if {$llen>$mlen} {
+    # add vertical scrollbar if number of items exceeds max.height
+    lappend lwidgets {sbvPick + L - - {pack -side left -fill both} {}}
   }
+  $obj paveWindow $win $lwidgets
   set lbx [$obj LbxPick]
   foreach ev {ButtonPress-1 Return KP_Enter KeyPress-space} {
     catch {bind $lbx <$ev> "after idle {::alited::complete::SelectCommand $win $obj $lbx}"}
@@ -219,7 +249,8 @@ proc complete::PickCommand {wtxt} {
     incr Y 40
     after 100 "wm deiconify $win"
   }
-  set res [$obj showModal $win -focus $lbx -geometry +$X+$Y -ontop yes]
+  bind $win <FocusOut> "$obj res $win 0"
+  set res [$obj showModal $win -focus $lbx -modal no -geometry +$X+$Y]
   destroy $win
   $obj destroy
   if {$res ne "0"} {return $res}
@@ -246,29 +277,36 @@ proc complete::AutoCompleteCommand {} {
   set wtxt [alited::main::CurrentWTXT]
   if {[set com [PickCommand $wtxt]] ne {}} {
     set row [expr {int([$wtxt index insert])}]
+    set isvar [string match \$* $com]
     if {[$wtxt get "$row.$idx1 -1 c"] eq "\$"} {
       incr idx1 -1
+    } elseif {[$wtxt get "$row.$idx1 -2 c" $row.$idx1] eq "\$:"} {
+      incr idx1 -2
+    } elseif {[$wtxt get "$row.$idx1 -3 c" $row.$idx1] eq "\$::"} {
+      incr idx1 -3
     } elseif {[$wtxt get $row.$idx1] eq "\$"} {
       # replace $variable
-    } elseif {[string match \$* $com]} {
+    } elseif {$isvar} {
       set com [string range $com 1 end]
     }
     $wtxt delete $row.$idx1 $row.[incr idx2]
     set pos $row.$idx1
-    if {[dict exists $al(_SessionCommands) $com]
-    && [set argums [dict get $al(_SessionCommands) $com]] ne {}} {
-      # add all of the unit's arguments
-      catch {
-        foreach ar $argums {
-          if {[llength $ar]==1} {
-            append com " \$$ar"
-          } else {
-            append com " {\$$ar}" ;# default value to be seen
+    if {!$isvar} {
+      if {[dict exists $al(_SessionCommands) $com]
+      && [set argums [dict get $al(_SessionCommands) $com]] ne {}} {
+        # add all of the unit's arguments
+        catch {
+          foreach ar $argums {
+            if {[llength $ar]==1} {
+              append com " \$$ar"
+            } else {
+              append com " {\$$ar}" ;# default value to be seen
+            }
           }
         }
+      } elseif {$com in $tclcoms} {
+        append com { }
       }
-    } elseif {$com in $tclcoms} {
-      append com { }
     }
     $wtxt insert $pos $com
     ::alited::main::HighlightLine
@@ -276,4 +314,4 @@ proc complete::AutoCompleteCommand {} {
   focus -force $wtxt
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#RUNF1: ~/PG/github/alited.release/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

@@ -11,10 +11,8 @@
 namespace eval find {
 
   # "Find/Replace" dialogue's path
-  variable win $::alited::al(WIN).winFind
 
-  # "Search by list" dialogue's path
-  variable win3 $::alited::al(WIN).winSBL
+  variable win $::alited::al(WIN).winFind
 
   # initial geometry of the dialogue
   variable geo root=$::alited::al(WIN)
@@ -675,6 +673,7 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
   alited::info::Clear 0
   ShowResults1 $allfnd
 }
+#_______________________
 
 proc find::FindNext {} {
   # Performs "find next" (F3 key) for the current text.
@@ -687,7 +686,6 @@ proc find::FindNext {} {
     alited::Message [string map [list %s $what] $msg] 3
   }
 }
-#_______________________
 
 # _______________________ "Replace" buttons _______________________ #
 
@@ -990,7 +988,7 @@ proc find::SearchByList {} {
       seh2  {{} {} {}} {} \
       chb1  {$::alited::al(MC,frWord)} {$::alited::al(wordonlySBL)} \
       chb2  {$::alited::al(MC,frCase)} {$::alited::al(caseSBL)} \
-      ] -head $head -buttons {ButNxt {Find Next} ::alited::find::NextFoundByList} -weight bold -modal no -geometry $geo2 -help {alited::find::HelpFind 2}] \
+      ] -head $head -buttons {ButNxt {Find Next} ::alited::find::NextFoundByList} -weight bold -modal no -ontop [::isKDE] -geometry $geo2 -help {alited::find::HelpFind 2}] \
       res geo - values
     lassign $values list match wordonly case
     if {$res} {
@@ -1065,7 +1063,7 @@ proc find::_create {} {
   set res 1
   set w $win.fra
   while {$res} {
-    $obFND makeWindow $w $al(MC,findreplace)
+    $obFND makeWindow $w $al(MC,findreplace) -type dialog
     $obFND paveWindow $w {
       {labB1 - - 1 1    {-st es -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Find: " -style TLabelFS}}
       {Cbx1 + L 1 4 {-st wes -ipadx 0 -padx 0 -ipady 0 -pady 0} {-tvar ::alited::find::data(en1) -values {$::alited::find::data(vals1)}}}
@@ -1104,7 +1102,7 @@ proc find::_create {} {
     foreach k {f F} {bind $win <Control-$k> {::alited::find::LastInvoke; break}}
     foreach k {r R} {bind $win <Control-$k> {::alited::find::btTPaste; break}}
     FocusCbx1 100 "wm deiconify $win"
-    set res [$obFND showModal $win -geometry $geo {*}$minsize -resizable 1 -modal no]
+    set res [$obFND showModal $win -geometry $geo {*}$minsize -resizable 1 -modal no -ontop no]
     if {[string match root=* $geo] || $data(geoDefault)} {
       set geo [wm geometry $win] ;# save the new geometry of the dialogue
     }
@@ -1118,11 +1116,10 @@ proc find::_create {} {
 proc find::_run {} {
   # Runs Find/Replace dialogue.
 
-  namespace upvar ::alited obFND obFND
   variable win
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   GetFindEntry
-  if {[winfo exists $win]} {
+  if {[::apave::repaintWindow $win]} {
     SessionButtons
     FocusCbx1
   } else {

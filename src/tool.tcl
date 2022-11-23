@@ -111,7 +111,7 @@ proc tool::DatePicker {} {
     set al(klnddate) [FormatDate]
   }
   set res [::apave::obj chooser dateChooser alited::al(klnddate) \
-    -parent $al(WIN) -dateformat $al(TPL,%d)]
+    -parent $al(WIN) -geometry pointer+10+10 -dateformat $al(TPL,%d)]
   if {$res ne {}} {
     set al(klnddate) $res
     InsertInText $res $pos1 $pos2
@@ -134,9 +134,15 @@ proc tool::SrcPath {toolpath} {
 proc tool::Loupe {} {
   # Calls a screen loupe.
 
-  namespace upvar ::alited al al
-  set loupe [SrcPath [file join $::alited::PAVEDIR pickers color aloupe aloupe.tcl]]
-  alited::Run $loupe -locale $alited::al(LOCAL) -apavedir $::alited::PAVEDIR \
+  namespace upvar ::alited al al LIBDIR LIBDIR PAVEDIR PAVEDIR
+  if {$al(IsWindows)} {set le aloupe.exe} {set le aloupe}
+  set loupe [file join $LIBDIR util $le]
+  if {[file exists $loupe]} {
+    # try to run the loupe executable from lib/util
+    if {![catch {exec $loupe}]} return
+  }
+  set loupe [SrcPath [file join $PAVEDIR pickers color aloupe aloupe.tcl]]
+  alited::Run $loupe -locale $alited::al(LOCAL) -apavedir $PAVEDIR \
     -cs $al(INI,CS) -fcgeom $::alited::FilGeometry
 }
 #_______________________
@@ -637,6 +643,23 @@ proc tool::RunArgs {} {
 }
 #_______________________
 
+proc tool::CheckTcl {} {
+  # Check a current unit for errors, before running Tcl file.
+
+  lassign [alited::tree::CurrentItemByLine {} 1] - - leaf - name l1 l2
+  if {$leaf} {
+    alited::CheckSource
+    set wtxt [alited::main::CurrentWTXT]
+    set TID [alited::bar::CurrentTabID]
+    set err [alited::check::CheckUnit $wtxt $l1.0 $l2.end $TID $name yes yes]
+    if {$err} {
+      set msg [msgcat::mc {Errors found in unit:}]\ $name
+      alited::Message $msg 4
+    }
+  }
+}
+#_______________________
+
 proc tool::RunTcl {{runmode ""}} {
   # Try to run tcl source file by means of tkcon utility.
   #   runmode - mode of running (in console or in tkcon)
@@ -836,13 +859,15 @@ proc tool::_run {{what ""} {runmode ""}} {
       set ::alited::pID 0
     }
     BeforeRun
+    set fnameCur [alited::bar::FileName]
+    if {[alited::file::IsTcl $fnameCur]} CheckTcl
     if {[ComForced]} {
       ::alited::Message "$al(MC,run): $al(comForce)" 3
       set tc {}
       set tw %t
       catch {
         if {[set fname [lindex $al(comForce) 0]] eq {%f}} {
-          set fname [alited::bar::FileName]
+          set fname $fnameCur
         }
         if {[alited::file::IsTcl $fname]} {
           if {!$al(tkcon,topmost)} {

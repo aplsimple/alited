@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide apave 3.6.0b7
+package provide apave 3.6.0
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 

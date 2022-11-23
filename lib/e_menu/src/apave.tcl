@@ -1617,7 +1617,7 @@ oo::class create ::apave::APave {
     set widname {}
     set choosname $nchooser
     if {$choosname in {fontChooser colorChooser dateChooser}} {
-      set nchooser "my $choosname $tvar"
+      set nchooser "my $choosname $tvar $parent $args"
     } elseif {$choosname in {tk_getOpenFile tk_getSaveFile}} {
       set vargeo $filvar
       set widname [my AuxSetChooserGeometry $vargeo $dirvar $parent __tk_filedialog]
@@ -3546,30 +3546,35 @@ oo::class create ::apave::APave {
       ;# forced centering relative to a caller's window
       if {[winfo exist $centerme]} {set root $centerme}
     }
-    if {[set ontop [::apave::getOption -ontop {*}$args]] eq {}} {
-      set ontop no
-      catch {
-        set ontop [wm attributes [winfo parent $win] -topmost]
-      }
-      if {!$ontop} {
-        # find if a window child of "." is topmost
-        # if so, let this one be topmost too
-        foreach w [winfo children .] {
-          catch {set ontop [wm attributes $w -topmost]}
-          if {$ontop} break
-        }
-      }
-    }
     if {[set modal [::apave::getOption -modal {*}$args]] eq {}} {
       set modal yes
     }
     set minsize [::apave::getOption -minsize {*}$args]
+    set ontop [::apave::getOption -ontop {*}$args]
     set args [::apave::removeOptions $args -centerme -ontop -modal -minsize -themed]
     foreach {o v} [list -focus {} -onclose {} -geometry {} -decor 1 \
-    -root $root -resizable {} -variable {} -escape 1 -checkgeometry 1] {
+    -root $root -resizable {} -ontop 0 -variable {} -escape 1 -checkgeometry 1] {
       lappend defargs $o [my getShowOption $o $v]
     }
     array set opt [list {*}$defargs {*}$args]
+    if {$ontop eq {}} {
+      if {$opt(-ontop)} {
+        set ontop yes
+      } else {
+        set ontop no
+        catch {
+          set ontop [wm attributes [winfo parent $win] -topmost]
+        }
+        if {!$ontop} {
+          # find if a window child of "." is topmost
+          # if so, let this one be topmost too
+          foreach w [winfo children .] {
+            catch {set ontop [wm attributes $w -topmost]}
+            if {$ontop} break
+          }
+        }
+      }
+    }
     lassign [::apave::splitGeometry [wm geometry $root]] rw rh rx ry
     if {[winfo parent $win] ni {{} .}} {
       set opt(-decor) 0
@@ -3690,8 +3695,12 @@ oo::class create ::apave::APave {
       set wtop [string range $w 0 $pp-1]
     }
     catch {destroy $wtop}
+    lassign [::apave::extractOptions args -type {}] type
     toplevel $wtop {*}$args
-    ::apave::withdraw $wtop ;# nice to hide all windows manipulations
+    ::apave::withdraw $wtop ;# nice to hide all gui manipulations
+    if {$type ne {} && [tk windowingsystem] eq {x11}} {
+      wm attributes $wtop -type $type
+    }
     if {$withfr} {
       pack [frame $w -background [lindex [my csGet] 3]] -expand 1 -fill both
     }
@@ -3743,27 +3752,28 @@ oo::class create ::apave::APave {
     #
     # The lines in *text contents* are divided by \n and can include
     # *tags* like in a html layout, e.g. <red>RED ARMY</red>.
-    #
     # The *tags* is a list of "name/value" pairs. 1st is a tag's name, 2nd
     # is a tag's value.
-    #
     # The tag's name is "pure" one (without <>) so e.g.for <b>..</b> the tag
     # list contains "b".
-    #
     # The tag's value is a string of text attributes (-font etc.).
+    # If the tag's name is FG, FG2, BG or BG2, then it is really a link color.
 
     upvar $contsName conts
     if {$tags eq {}} {
       my displayText $w $conts
       return
     }
+    lassign [my csGet] fg fg2 bg bg2
     if { [set state [$w cget -state]] ne {normal}} {
       $w configure -state normal
     }
     set taglist [set tagpos [set taglen [list]]]
     foreach tagi $tags {
       lassign $tagi tag opts
-      if {![string match link* $tag]} {
+      if {$tag in {FG FG2 BG BG2} } {
+        set [string tolower $tag] $opts
+      } elseif {![string match link* $tag]} {
         $w tag config $tag {*}$opts
       }
       lappend tagpos 0
@@ -3816,7 +3826,6 @@ oo::class create ::apave::APave {
       incr irow
     }
     $w replace 1.0 end $disptext
-    lassign [my csGet] fg fg2 bg bg2
     set lfont [$w cget -font]
     catch {set lfont [font actual $lfont]}
     foreach {o v} [my initLinkFont] {dict set lfont $o $v}

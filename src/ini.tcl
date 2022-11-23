@@ -35,7 +35,7 @@ namespace eval ::alited {
   set al(FONTSIZE,small) 10 ;# small font size
   set al(FONTSIZE,std) 12   ;# middle font size
   set al(FONT,txt) {}       ;# font for edited texts
-  set al(THEME) clam        ;# ttk theme
+  set al(THEME) default     ;# ttk theme
   set al(INI,CS) -1         ;# color scheme
   set al(INI,HUE) 0         ;# tint of color scheme
   set al(INI,ICONS) "middle icons"  ;# this sets tollbar icons' size as middle
@@ -1157,6 +1157,10 @@ proc ini::InitGUI {} {
     ::hl_tcl::hl_colors {-AddTags} $Dark {*}$clrvals
   }
   ::apave::obj setShowOption -resizable 0
+  if {[::isKDE]} {  ;# esp. for KDE:
+    # dialogue windows should be topmost, otherwise KDE hides them at losing focus
+    ::apave::obj setShowOption -ontop yes
+  }
 }
 #_______________________
 

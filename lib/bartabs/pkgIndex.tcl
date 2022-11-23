@@ -1,5 +1,5 @@
 
-package ifneeded bartabs 1.5.9b2 [list source [file join $dir bartabs.tcl]]
+package ifneeded bartabs 1.5.9 [list source [file join $dir bartabs.tcl]]
 
 # short intro (for Ruff! docs generator)
 

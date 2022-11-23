@@ -563,6 +563,7 @@ namespace eval ::alited {
     {current file} {поточний файл}
     {Found %f file error(s), %u unit error(s).} {Знайдено помилок: %f файлів, %u юнітів.}
     {No errors found.} {Помилок не знайдено.}
+    {Errors found in unit:} {Знайдено помилки у юніті:}
     {Duplicate units} {Дублікатні юніти}
     {duplicate unit:} {дублікатний юніт:}
   }

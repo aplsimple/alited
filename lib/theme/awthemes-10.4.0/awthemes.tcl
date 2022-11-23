@@ -2652,11 +2652,15 @@ namespace eval ::ttk::awthemes {
 
       if { $colors(scrollbar.has.arrows) } {
         ::ttk::style element create ${pfx}Horizontal.Scrollbar.leftarrow image \
-            [list $images(arrow-left-n${sfx}) \
-            disabled  $images(arrow-left-d${sfx})]
+            [list $images(arrow-left-d${sfx}) \
+            disabled  $images(arrow-left-d${sfx}) \
+            {active !disabled}  $images(arrow-left-n${sfx}) \
+            ]
         ::ttk::style element create ${pfx}Horizontal.Scrollbar.rightarrow image \
-            [list $images(arrow-right-n${sfx}) \
-            disabled  $images(arrow-right-d${sfx})]
+            [list $images(arrow-right-d${sfx}) \
+            disabled  $images(arrow-right-d${sfx}) \
+            {active !disabled}  $images(arrow-right-n${sfx}) \
+            ]
       }
       set hasgrip false
       if { [info exists images(sb-slider-h-grip)] } {
@@ -2671,6 +2675,7 @@ namespace eval ::ttk::awthemes {
           disabled $images(sb-slider-hd${sfx}) \
           {pressed !disabled} $images(sb-slider-hp${sfx}) \
           {active !disabled} $images(sb-slider-hn${sfx}) \
+          {active disabled} $images(sb-slider-hd${sfx}) \
           ] \
           -border $imgbord \
           -padding 0 \
@@ -2701,11 +2706,15 @@ namespace eval ::ttk::awthemes {
 
       if { $colors(scrollbar.has.arrows) } {
         ::ttk::style element create ${pfx}Vertical.Scrollbar.uparrow image \
-            [list $images(arrow-up-n${sfx}) \
-            disabled  $images(arrow-up-d${sfx})]
+            [list $images(arrow-up-d${sfx}) \
+            disabled  $images(arrow-up-d${sfx}) \
+            {active !disabled}  $images(arrow-up-n${sfx}) \
+            ]
         ::ttk::style element create ${pfx}Vertical.Scrollbar.downarrow image \
-            [list $images(arrow-down-n${sfx}) \
-            disabled  $images(arrow-down-d${sfx})]
+            [list $images(arrow-down-d${sfx}) \
+            disabled  $images(arrow-down-d${sfx}) \
+            {active !disabled}  $images(arrow-down-n${sfx}) \
+            ]
       }
       if { $hasgrip && [info exists images(sb-slider-v-grip)] } {
         ::ttk::style element create ${pfx}Vertical.Scrollbar.grip image \
@@ -2717,6 +2726,7 @@ namespace eval ::ttk::awthemes {
           disabled $images(sb-slider-vd${sfx}) \
           {pressed !disabled} $images(sb-slider-vp${sfx}) \
           {active !disabled} $images(sb-slider-vn${sfx}) \
+          {active disabled} $images(sb-slider-vd${sfx}) \
           ] \
           -border $imgbord \
           -padding 0 \
@@ -3211,7 +3221,7 @@ namespace eval ::ttk::awthemes {
           -troughcolor $colors(trough.color)
       ::ttk::style map ${pfx}TScrollbar \
           -troughcolor [list disabled $colors(bg.dark)] \
-          -arrowcolor [list disabled $colors(arrow.color.disabled)] \
+          -arrowcolor [list !active $colors(arrow.color.disabled)] \
           -darkcolor [list disabled $colors(bg.bg)] \
           -lightcolor [list disabled $colors(bg.bg)]
 

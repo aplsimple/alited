@@ -71,6 +71,16 @@ proc info::Clear {{i -1}} {
     set info [lreplace $info $i $i]
   }
 }
+#_______________________
+
+proc info::ClearOut {} {
+  # Clears and out of the info listbox.
+
+  namespace upvar ::alited obPav obPav
+  Clear
+  alited::main::FocusText
+  FocusOut [$obPav SbhInfo]
+}
 
 # ________________________ GUI _________________________ #
 
@@ -135,8 +145,23 @@ proc info::FocusOut {sbhi} {
 proc info::SwitchFocustext {} {
   # Switches a variable of flag "listbox is focused".
 
+  namespace upvar ::alited obPav obPav
   variable focustext
-  if {$focustext} {set focustext 0} {set focustext 1}
+  if {$focustext} {
+    set focustext 0
+    set lbx [$obPav LbxInfo]
+    focus $lbx
+    catch {
+      $lbx selection clear 0 end
+      $lbx selection set 0
+      $lbx activate 0
+      $lbx see 0
+    }
+  } else {
+    set focustext 1
+    FocusOut [$obPav SbhInfo]
+    alited::main::FocusText
+  }
 }
 #_______________________
 
@@ -150,12 +175,13 @@ proc info::PopupMenu {X Y} {
   set popm $al(WIN).popupInfo
   catch {destroy $popm}
   menu $popm -tearoff 0
+  $popm add command -label $al(MC,favordelall) -command alited::info::ClearOut
   if {$focustext} {
     set msg [msgcat::mc {Don't focus a text after selecting in infobar}]
   } else {
     set msg [msgcat::mc {Focus a text after selecting in infobar}]
   }
-  $popm add command -label $msg -command "alited::info::SwitchFocustext"
+  $popm add command -label $msg -command alited::info::SwitchFocustext
   $obPav themePopup $popm
   tk_popup $popm $X $Y
 }

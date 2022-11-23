@@ -14,13 +14,34 @@ namespace eval about {
 
 # ________________________ Procedures _________________________ #
 
+proc about::textImaged {w} {
+  # Makes the feather blink.
+  #  w - window's path
+
+  ::apave::obj labelFlashing [::apave::obj textLink $w 5] "" 1 \
+    -data $::alited::img::_AL_IMG(feather) -pause 0.5 -incr 0.1 -after 40
+}
+#_______________________
+
 proc about::About {} {
   # Shows "About" dialogue.
 
-  ::alited::source_e_menu
   namespace upvar ::alited al al
   variable textTags
+
+  ## ________________________ Preparing tabs _________________________ ##
+
+  ::alited::source_e_menu
   lassign [::apave::obj csGet] fg - bg - - bS fS
+  ::apave::InitAwThemesPath $::alited::LIBDIR
+  foreach _ {alited apave bartabs baltip hl_tcl awthemes} {
+    if {[catch {set v$_ v[package require $_]}]} {
+      set v$_ {}
+    }
+  }
+
+  ### ________________________ Tags and links _________________________ ###
+
   set textTags [list \
     [list "red" "-font {[::apave::obj csFontDef] -weight bold} -foreground $fS -background $bS"] \
     [list "link1" "::apave::openDoc %t@@https://%l@@"] \
@@ -66,12 +87,9 @@ proc about::About {} {
     [list "link_" "::apave::openDoc %t@@https://aplsimple.github.io/en/misc/links/links.html@@"] \
     [list "linkRH" "::apave::openDoc %t@@http://www.hwaci.com/drh/@@"] \
     ]
-  ::apave::InitAwThemesPath $::alited::LIBDIR
-  foreach _ {alited apave bartabs baltip hl_tcl awthemes} {
-    if {[catch {set v$_ v[package require $_]}]} {
-      set v$_ {}
-    }
-  }
+
+  ### ________________________ "General" tab _________________________ ###
+
   set long1 [msgcat::mc {And well fit for programming with it.}]
   set long2 __________________________________________
   set long3 [info nameofexecutable]
@@ -92,8 +110,29 @@ proc about::About {} {
     <red> $alited::tcltk_version </red> <link2></link2>\n \
     \n \
     <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>"
-  set wmax [expr {4+max([string length $long1], \
-    [string length $long2],[string length $long3])}]
+
+  ### ________________________ "Packages" tab _________________________ ###
+
+  set packages [msgcat::mc {Packages used by <red>alited %ver</red>:}]
+  set packages [string map [list %ver $valited] $packages]
+  set vemenu   v[lindex $::em::em_version 1]
+  set ::alited::AboutPack "\n $packages\n\n \
+    \u2022 <link-apave>apave $vapave</link-apave>\n\n \
+    \u2022 <link-e_menu>e_menu $vemenu</link-e_menu>\n\n \
+    \u2022 <link-baltip>baltip $vbaltip</link-baltip>\n\n \
+    \u2022 <link-bartabs>bartabs $vbartabs</link-bartabs>\n\n \
+    \u2022 <link-hl_tcl>hl_tcl $vhl_tcl</link-hl_tcl>\n\n \
+    \u2022 <link-aloupe>aloupe v0.9.5</link-aloupe>\n\n \
+    \u2022 <link-tkcon>tkcon v2.7</link-tkcon>\n\n \
+    \u2022 <link-awthemes>awthemes $vawthemes</link-awthemes>\n\n \
+    \u2022 <link-ale_themes>ale_themes</link-ale_themes>\n\n \
+    \u2022 <link-tkcc>tkcc</link-tkcc>\n\n \
+    \u2022 <link-repl>tcl-repl</link-repl>\n \
+    \n menus/.mnu v$al(MNUversion) \
+    \n alited.ini v$al(INIversion)"
+
+  ### ________________________ "Acknowledgements" tab _________________________ ###
+
   set ackn [msgcat::mc "Many thanks to the following people\n who have contributed to this project\n with their participation, advice and code"]
   set spec [msgcat::mc "Special thanks also to"]
   set ::alited::AboutAckn "\n $ackn\n\n \
@@ -126,42 +165,38 @@ proc about::About {} {
     \u2022 <linkDA>Danilo Chang</linkDA>\n \
     \u2022 <linkET>Enrico Tröger</linkET>\n \
     \n <link_>Excuse my memory if I omitted someone's name.</link_>\n"
-  set packages [msgcat::mc {Packages used by <red>alited %ver</red>:}]
-  set packages [string map [list %ver $valited] $packages]
-  set vemenu   v[lindex $::em::em_version 1]
-  set ::alited::AboutPack "\n $packages\n\n \
-    \u2022 <link-apave>apave $vapave</link-apave>\n\n \
-    \u2022 <link-e_menu>e_menu $vemenu</link-e_menu>\n\n \
-    \u2022 <link-baltip>baltip $vbaltip</link-baltip>\n\n \
-    \u2022 <link-bartabs>bartabs $vbartabs</link-bartabs>\n\n \
-    \u2022 <link-hl_tcl>hl_tcl $vhl_tcl</link-hl_tcl>\n\n \
-    \u2022 <link-aloupe>aloupe v0.9.5</link-aloupe>\n\n \
-    \u2022 <link-tkcon>tkcon v2.7</link-tkcon>\n\n \
-    \u2022 <link-awthemes>awthemes $vawthemes</link-awthemes>\n\n \
-    \u2022 <link-ale_themes>ale_themes</link-ale_themes>\n\n \
-    \u2022 <link-tkcc>tkcc</link-tkcc>\n\n \
-    \u2022 <link-repl>tcl-repl</link-repl>\n \
-    \n menus/.mnu v$al(MNUversion) \
-    \n alited.ini v$al(INIversion)"
+
+  ### ________________________ Combining tabs _________________________ ###
+
+  set wmax [expr {4+max([string length $long1], \
+    [string length $long2],[string length $long3])}]
   set tab2 [list General Packages "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexPack - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutPack -tags ::alited::about::textTags}}" Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 34 -rotext ::alited::AboutAckn -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
+
+  ## ________________________ Change default options _________________________ ##
+
+  # invert link colors
+  set aopts "{-fg $::apave::FGMAIN -bg $::apave::BGMAIN}"
+  apave::obj untouchWidgets "*.texM $aopts" "*.texPack $aopts" "*.texAckn $aopts"
+  lassign [apave::obj csGet] fg fg2 bg bg2
+  lappend textTags "FG $fg2" "FG2 $fg" "BG $bg2" "BG2 $bg"
+
+  # tooltips to show in the left & bottom point from the mouse pointer
   lassign [::baltip cget -shiftX] -> shiftX
   ::baltip configure -shiftX 10
+
+  ## ________________________ Open dialogue _________________________ ##
+
   ::alited::msg ok {} $msg \
     -title [msgcat::mc About] -t 1 -w $wmax -h {30 30} -scroll 0 \
     -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}" \
     -tab2 $tab2
+
+  ## ________________________ Restore defaults _________________________ ##
+
   ::baltip configure -shiftX $shiftX
+  apave::obj touchWidgets *.texM *.texPack *.texAckn
   unset ::alited::AboutAckn  ;# was used in this dialogue only, for readonly text
   unset ::alited::AboutPack  ;# -//-
-}
-#_______________________
-
-proc about::textImaged {w} {
-  # Makes the feather blink.
-  #  w - window's path
-
-  ::apave::obj labelFlashing [::apave::obj textLink $w 5] "" 1 \
-    -data $::alited::img::_AL_IMG(feather) -pause 0.5 -incr 0.1 -after 40
 }
 
 # _____________________________ EOF _____________________________________ #

@@ -91,7 +91,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
     lassign [GutterAttrs] canvas width shift
     set texopts [lindex [::apave::defaultAttrs tex] 1]
     lassign [::apave::extractOptions texopts -selborderwidth 1] selbw
-    text $wtxt {*}$texopts {*}$al(TEXT,opts)
+    text $wtxt {*}$texopts {*}$al(TEXT,opts) -bd 0
     $wtxt tag configure sel -borderwidth $selbw
     $obPav themeNonThemed [winfo parent $wtxt]
     set bind [list $obPav fillGutter $wtxt $canvas $width $shift]
@@ -722,6 +722,7 @@ proc main::InitActions {} {
     set al(EM,Tcl) [::apave::autoexec tclsh .exe]
   }
   if {[info exists al(Save_Ini_After_Updates)]} alited::ini::SaveIni
+  after idle {alited::main::UpdateGutter; alited::main::FocusText}  ;# get it for sure
 }
 
 # ________________________ Main _create _________________________ #
@@ -825,8 +826,8 @@ proc main::_create {} {
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
     {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3}}
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
-    {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both} {-background $::alited::FRABG}}
-    {.fraTop.panTop.frAText.Text - - - - {pack -expand 1 -fill both} {-borderwidth 1 -w 2 -h 20 -gutter GutText -gutterwidth $::alited::al(ED,gutterwidth) -guttershift $::alited::al(ED,guttershift) $alited::al(TEXT,opts)}}
+    {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both -padx 0 -pady 0 -ipadx 0 -ipady 0} {-background $::alited::FRABG}}
+    {.fraTop.panTop.frAText.Text - - - - {pack -expand 1 -fill both} {-bd 0 -w 80 -h 20 -gutter GutText -gutterwidth $::alited::al(ED,gutterwidth) -guttershift $::alited::al(ED,guttershift) $alited::al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
 {#
 ### ________________________ Find units _________________________ ###
@@ -884,7 +885,7 @@ proc main::_run {} {
   namespace upvar ::alited al al obPav obPav
   ::apave::setAppIcon $al(WIN) $::alited::img::_AL_IMG(ale)
   set ans [$obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
-    -onclose alited::Exit {*}$al(GEOM) -resizable 1]
+    -onclose alited::Exit {*}$al(GEOM) -resizable 1 -ontop no]
   # ans==2 means 'no saves of settings' (imaginary mode)
   if {$ans ne {2}} {alited::ini::SaveIni}
   destroy $al(WIN)

@@ -7,9 +7,10 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.5b29  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
+
 if {![package vsatisfies $_ 8.6.10-]} {
   wm withdraw .
   tk_messageBox -message "\nalited needs Tcl/Tk v8.6.10+ \
@@ -17,7 +18,6 @@ if {![package vsatisfies $_ 8.6.10-]} {
   exit
 }
 catch {package require comm}  ;# Generic message transport
-
 # _____ Remove installed (perhaps) packages used in alited _____ #
 
 foreach _ {apave baltip bartabs hl_tcl} {
@@ -710,13 +710,20 @@ namespace eval alited {
   }
   #_______________________
 
+  proc CheckSource {} {
+    # Sources check.tcl (at need).
+
+    variable SRCDIR
+    if {[info commands ::alited::check::_run] eq {}} {
+      source [file join $SRCDIR check.tcl]
+    }
+  }
+  #_______________________
+
   proc CheckRun {} {
     # Runs "Check Tcl".
 
-    variable SRCDIR
-    if {[info commands check::_run] eq {}} {
-      source [file join $SRCDIR check.tcl]
-    }
+    CheckSource
     check::_run
   }
   #_______________________
@@ -819,6 +826,12 @@ if {[info exists ALITED_PORT]} {
     catch {wm attributes . -alpha 0.0}
     catch {wm withdraw $alited::al(WIN)}
     cd $alited::DIR
+    for {set i [llength $alited::ARGV]} {$i} {} {
+      incr i -1
+      if {[file isfile [lindex $alited::ARGV $i]]} {  ;# remove file names passed to ALE
+        set alited::ARGV [lreplace $alited::ARGV $i $i]
+      }
+    }
     exec -- [info nameofexecutable] $alited::SCRIPT {*}$alited::ARGV &
   } elseif {$alited::LOG ne {}} {
     ::apave::logMessage {QUIT ------------}

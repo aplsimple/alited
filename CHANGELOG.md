@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5b29 (19 Nov'22)`
+Version `1.3.5 (22 Nov'22)`
 
   - BUGFIX: (partly) issues with tinting
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
@@ -14,8 +14,9 @@ Version `1.3.5b29 (19 Nov'22)`
   - BUGFIX: erroneous marking branch as unit visited
   - BUGFIX: search declaration: skip branches, match exactly if no NS
   - BUGFIX: F3 (find next) at switching tabs; + "not found"
-  - NEW   : completion: unit's variables (incl. after $), not restricted for 1st column
-  - NEW   : Find/Replace dialogue: "Paste Find" button; Ctrl+F, Ctrl+R & other hotkeys
+  - NEW   : if current is Tcl file, check a current unit before running Tcl file
+  - NEW   : completion: unit's variables, $ / $: / $:: bring vars, colored commands, not restricted for 1st column, hide at clicking text, compact view, scrollbar if number>16
+  - NEW   : Find/Replace dialogue: "Paste Find" button; Ctrl+F, Ctrl+R & other hotkeys, compact view
   - NEW   : screen loupe: CS, file chooser geometry from alited, alt theme by default
   - NEW   : -expand option of bartabs = 9 for "smart expanding the tabs"
   - NEW   : Preferences: Windows' themes (vista, xpnative, winnative), tabbar's border, 1st widget focused, icons for theme/CS/tools
@@ -42,8 +43,10 @@ Version `1.3.5b29 (19 Nov'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
-  - CHANGE: aw* themes: scrollbars' colors (active and !active)
-  - CHANGE: squeezed ale.ico & find/replace dialogue
+  - CHANGE: esp. for KDE: parenting & repainting dialogues, -ontop option
+  - CHANGE: popup menu of infobar
+  - CHANGE: themes: aw* scrollbars' colors (active and !active); "default" as default
+  - CHANGE: ale.ico
   - CHANGE: color chooser placed under pointer / entry if run from toolbar / dialogue
   - CHANGE: in info bar, found line numbers are separated with spaces
   - CHANGE: at checking Tcl, constructor/destructor aren't detected duplicates
@@ -58,6 +61,7 @@ Version `1.3.5b29 (19 Nov'22)`
   - CHANGE: display tips for favorites and menu file lists at right side of pointer
   - CHANGE: checks for outward changes disabled at saving files
   - CHANGE: alited docs
+  - CHANGE: About..
   - CHANGE: packages: apave/e_menu 3.6.0, bartabs 1.5.9, baltip 1.5.1, hl_tcl 0.9.44
 
 

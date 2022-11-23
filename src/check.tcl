@@ -60,13 +60,16 @@ proc check::PosInfo {TID pos1} {
 }
 #_______________________
 
-proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""}} {
+proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""} {bold no} {see no}} {
   # Checks a unit.
   #   wtxt - text's path
   #   pos1 - starting position of the unit in the text
   #   pos2 - ending position of the unit in the text
   #   TID - tab's ID
   #   title - title of the unit
+  #   bold - if yes, displays errors bolded
+  #   see - if yes, displays errors in red color
+  # See also: info::Put
 
   variable chBrace
   variable chBracket
@@ -101,26 +104,26 @@ proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""}} {
     }
   }
   set err 0
-  set info [PosInfo $TID $pos1]
+  set arg [list [PosInfo $TID $pos1] $bold $see]
   if {$cc1 != $cc2} {
     incr err
     incr errors1
-    if {$TID ne {}} {alited::info::Put "$title: inconsistent \{\}: $cc1 != $cc2" $info}
+    if {$TID ne {}} {alited::info::Put "$title: inconsistent \{\}: $cc1 != $cc2" {*}$arg}
   }
   if {$ck1 != $ck2} {
     incr err
     incr errors2
-    if {$TID ne {}} {alited::info::Put "$title: inconsistent \[\]: $ck1 != $ck2" $info}
+    if {$TID ne {}} {alited::info::Put "$title: inconsistent \[\]: $ck1 != $ck2" {*}$arg}
   }
   if {$cp1 != $cp2} {
     incr err
     incr errors3
-    if {$TID ne {}} {alited::info::Put "$title: inconsistent (): $cp1 != $cp2" $info}
+    if {$TID ne {}} {alited::info::Put "$title: inconsistent (): $cp1 != $cp2" {*}$arg}
   }
   if {$cq1 % 2} {
     incr err
     incr errors4
-    if {$TID ne {}} {alited::info::Put "$title: inconsistent \"\": $cq1" $info}
+    if {$TID ne {}} {alited::info::Put "$title: inconsistent \"\": $cq1" {*}$arg}
   }
   return $err
 }
@@ -286,7 +289,7 @@ proc check::_create {} {
     set geo "-geometry $geo"
   }
   set res [$obCHK showModal $win -focus [$obCHK ButOK] \
-    {*}$geo -modal no -onclose alited::check::Cancel]
+    {*}$geo -modal no -ontop [::isKDE] -onclose alited::check::Cancel]
   set al(checkgeo) [wm geometry $win]
   if {!$res} {destroy $win}
   return $res
@@ -295,11 +298,9 @@ proc check::_create {} {
 proc check::_run {} {
   # Runs "Checking" dialogue.
 
+  namespace upvar ::alited al al obCHK obCHK
   variable win
-  if {[winfo exists $win]} {
-    focus -force $win
-    return
-  }
+  if {[::apave::repaintWindow $win "$obCHK ButOK"]} return
   while {1} {
     if {[_create]} {
       Check
