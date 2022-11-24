@@ -1041,6 +1041,7 @@ proc tree::RecreateTree {{wtree ""} {headers ""}} {
   }
   Create
   # restore selections
+  if {$headers eq {-}} return
   if {$headers ne {}} {
     set selection [list]
     foreach item [alited::tree::GetTree] {

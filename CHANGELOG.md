@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5 (22 Nov'22)`
+Version `1.3.5 (24 Nov'22)`
 
   - BUGFIX: (partly) issues with tinting
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
@@ -43,9 +43,10 @@ Version `1.3.5 (22 Nov'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
+  - CHANGE: file tree: add/rename/delete focus on the tree
   - CHANGE: esp. for KDE: parenting & repainting dialogues, -ontop option
   - CHANGE: popup menu of infobar
-  - CHANGE: themes: aw* scrollbars' colors (active and !active); "default" as default
+  - CHANGE: themes: aw* scrollbars' colors (active and !active); "default" theme by default
   - CHANGE: ale.ico
   - CHANGE: color chooser placed under pointer / entry if run from toolbar / dialogue
   - CHANGE: in info bar, found line numbers are separated with spaces

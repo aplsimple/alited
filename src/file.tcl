@@ -334,15 +334,14 @@ proc file::RenameFile {TID fname {doshow yes}} {
 }
 #_______________________
 
-proc file::DoRenameFileInTree {wtree ID fname name2} {
+proc file::DoRenameFileInTree {wtree ID fname fname2} {
   # Performs renaming a current file in a file tree.
   #   wtree - file tree's path
   #   ID    - ID of the file in the file tree
   #   fname - old file name (full)
-  #   name2 - new file name (tail)
+  #   fname2 - new file name (full)
 
   set fsplit [file split $fname]
-  set fname2 [file join [file dirname $fname] $name2]
   if {[catch {file rename $fname $fname2} err]} {
     alited::msg ok err $err -text 1 -w 40 -h {5 7}
     return
@@ -392,8 +391,13 @@ proc file::RenameFileInTree {{undermouse yes} args} {
     -head [msgcat::mc {File name:}] {*}$args] res name2
   set name2 [string trim $name2]
   if {$res && $name2 ne {} && $name2 ne $name} {
-    DoRenameFileInTree $wtree $ID $fname $name2
-    after 200 alited::main::FocusText
+    set fname2 [file join [file dirname $fname] $name2]
+    DoRenameFileInTree $wtree $ID $fname $fname2
+    alited::tree::RecreateTree $wtree -
+    set ltree [alited::tree::GetTree]
+    set i [lsearch -exact -index {4 1} $ltree $fname2]
+    if {$i>-1} {set ID [lindex $ltree $i 2]}
+    SelectInTree $wtree $ID
   }
 }
 #_______________________
@@ -999,15 +1003,14 @@ proc file::Add {ID} {
         OpenFile $fname
       }
       $wtree selection set {}
-      alited::tree::RecreateTree
+      alited::tree::RecreateTree $wtree -
       if {$isdir} {
         # find the created directory
         foreach item [alited::tree::GetTree] {
           lassign $item - - ID - data
           if {[set dname [lindex $data 1]] eq $fname} {
             catch {$wtree selection remove [$wtree selection]}
-            $wtree selection add $ID
-            $wtree see $ID
+            SelectInTree $wtree $ID
             break
           }
         }
@@ -1015,7 +1018,7 @@ proc file::Add {ID} {
     } err]} then {
       alited::msg ok err $err
     }
-    after 200 alited::main::FocusText
+    if {!$isdir} {after 200 alited::main::FocusText}
   }
 }
 #_______________________
@@ -1023,7 +1026,7 @@ proc file::Add {ID} {
 proc file::DeleteOne {ID wtree dlg dlgopts res} {
   # Deletes a file at the file tree.
   #   ID - tree item's ID
-  #   wtree file tree widget
+  #   wtree - file tree widget
   #   dlg - dialogue's type (yesno / yesnocancel)
   #   dlgopts - dialogue's options
   #   res - previous answer
@@ -1057,11 +1060,11 @@ proc file::DeleteOne {ID wtree dlg dlgopts res} {
 proc file::Delete {ID wtree sy} {
   # Deletes file(s) at the file tree.
   #   ID - tree item's ID
-  #   wtree file tree widget
+  #   wtree - file tree widget
   #   sy - relative Y-coordinate for a query
 
   namespace upvar ::alited al al
-  set wasdel no
+  set wasdel 0
   set selection [$wtree selection]
   if {[llength $selection]>1} {
     set dlg yesnocancel
@@ -1071,19 +1074,41 @@ proc file::Delete {ID wtree sy} {
     set dlgopts [alited::tree::syOption $sy]
     set selection $ID
   }
+  set ltree [alited::tree::GetTree]
+  set id1 [lindex $selection 0]
+  set in1 [lsearch -exact -index 2 $ltree $id1]
+  set id1 [lindex $ltree $in1-1 2]
   set ans 1
   foreach id $selection {
     set ans [DeleteOne $id $wtree $dlg $dlgopts $ans]
     switch $ans {
-      1 - 11 {set wasdel yes}
+      1 - 11 {set wasdel 1; $wtree delete $id}
       0 - 12 break
     }
   }
   if {$wasdel} {
     $wtree selection set {}
-    alited::tree::RecreateTree
-    after 200 alited::main::FocusText
+    alited::tree::RecreateTree $wtree -
+    if {$id1 eq {}} {
+      set ltree [alited::tree::GetTree]
+      set id1 [lindex $ltree 0 2]
+    }
+    SelectInTree $wtree $id1
   }
+}
+#_______________________
+
+proc file::SelectInTree {wtree id} {
+  # Selects an item in the file tree.
+  #   wtree - file tree widget
+  #   id - item's id
+
+  catch {
+    $wtree selection add $id
+    $wtree see $id
+  }
+  after idle [list after 200 \
+    "catch {focus $wtree ;  $wtree selection set $id ; $wtree focus $id}"]
 }
 
 # ________________________ Recent files _________________________ #
