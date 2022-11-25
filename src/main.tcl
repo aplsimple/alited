@@ -742,6 +742,8 @@ proc main::_create {} {
   # make the main apave object and populate it
   $obPav makeWindow $al(WIN).fra alited
 
+  # alited_checked
+
 ## ________________________ Main window _________________________ ##
 
   $obPav paveWindow $al(WIN).fra {

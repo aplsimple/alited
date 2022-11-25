@@ -368,7 +368,6 @@ proc ::klnd::currentYearMonthDay {} {
     [clock format $ym -format %Y] \
     [clock format $ym -format %N] \
     [clock format $ym -format %e]"]
-  ]
 }
 #_______________________
 

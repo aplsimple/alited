@@ -951,12 +951,12 @@ proc file::RemoveFile {fname dname mode} {
     catch {file delete $fname2}
   }
   if {[catch {file copy $fname $dname} err]} {
-    set msg [string map [list %f $ftail %d $dname] $al(MC,errcopy)]
-    if {![alited::msg yesno warn "$err\n\n$msg" NO]} {return {}}
+    # more zeal than sense: to show $err here
   }
   catch {file mtime $fname2 [file mtime $fname]}
   if {[catch {file delete $fname} err]} {
     alited::msg ok err "Error of deleting\n$fname\n\n$err"
+    return {}
   } else {
     alited::Message [string map [list %f $ftail %d $dtail] $al(MC,removed)]
     if {$mode eq "move" && [set TID [alited::bar::FileTID $fname]] ne {}} {
@@ -1077,7 +1077,6 @@ proc file::Delete {ID wtree sy} {
   set ltree [alited::tree::GetTree]
   set id1 [lindex $selection 0]
   set in1 [lsearch -exact -index 2 $ltree $id1]
-  set id1 [lindex $ltree $in1-1 2]
   set ans 1
   foreach id $selection {
     set ans [DeleteOne $id $wtree $dlg $dlgopts $ans]
@@ -1087,12 +1086,10 @@ proc file::Delete {ID wtree sy} {
     }
   }
   if {$wasdel} {
+    set ltree [alited::tree::GetTree]
+    if {$in1>=[llength $ltree]} {set in1 end}
+    set id1 [lindex $ltree $in1 2]
     $wtree selection set {}
-    alited::tree::RecreateTree $wtree -
-    if {$id1 eq {}} {
-      set ltree [alited::tree::GetTree]
-      set id1 [lindex $ltree 0 2]
-    }
     SelectInTree $wtree $id1
   }
 }

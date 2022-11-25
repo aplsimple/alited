@@ -170,6 +170,8 @@ proc menu::RunTip {} {
   proc menu::FillMenu {} {
   # Populates alited's main menu.
 
+  # alited_checked
+
   namespace upvar ::alited al al
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu

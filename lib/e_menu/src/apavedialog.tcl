@@ -22,6 +22,8 @@ namespace eval ::apave {
     return $::apave::querydlg
   }
 
+  ## ________________________ EONS apave _________________________ ##
+
 }
 
 # ________________________ APaveDialog class _________________________ #
@@ -47,7 +49,7 @@ oo::class create ::apave::APaveDialog {
     namespace eval ${_pdg(ns)}PD {}
 
     # Actions on closing the editor
-    proc exitEditor {resExit} {
+  ; proc exitEditor {resExit} {
       upvar $resExit res
       if {[[my TexM] edit modified]} {
         set w [set [namespace current]::_pdg(dlg)]
@@ -255,7 +257,7 @@ oo::class create ::apave::APaveDialog {
     set ::apave::_AP_VARS(ProSplash,after) [list]
     # 'after' should be postponed, as 'update' messes it up
     rename ::after ::ProSplash_after
-    proc ::after {args} {
+  ; proc ::after {args} {
       lappend ::apave::_AP_VARS(ProSplash,after) $args
     }
   }
@@ -402,7 +404,7 @@ oo::class create ::apave::APaveDialog {
     #
     # If not set, the text widget is identified as `my TexM`.
 
-    proc NewRow {ind rn} {
+  ; proc NewRow {ind rn} {
       set i [string first . $ind]
       set row [string range $ind 0 $i-1]
       return [incr row $rn][string range $ind $i end]
@@ -1102,7 +1104,7 @@ oo::class create ::apave::APaveDialog {
       set prevw fraM
     } elseif {$textmode} {
       # here is text widget (in fraM frame)
-      proc vallimits {val lowlimit isset limits} {
+    ; proc vallimits {val lowlimit isset limits} {
         set val [expr {max($val,$lowlimit)}]
         if {$isset} {
           upvar $limits lim
@@ -1377,7 +1379,10 @@ oo::class create ::apave::APaveDialog {
     return "$result$textcont$inopts"
   }
 
+  ## ________________________ EOC apave::APaveDialog _________________________ ##
+
 }
+
 # _____________________________ EOF _____________________________________ #
 #RUNF1: ~/PG/github/pave/tests/test2_pave.tcl alt 27 11 12 "middle icons"
 #RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

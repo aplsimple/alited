@@ -26,6 +26,8 @@ proc about::textImaged {w} {
 proc about::About {} {
   # Shows "About" dialogue.
 
+  # alited_checked
+
   namespace upvar ::alited al al
   variable textTags
 

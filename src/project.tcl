@@ -1027,13 +1027,15 @@ proc project::Ok {args} {
     set al(prjfile) $fname
     alited::ini::ReadIni $fname
     alited::bar::FillBar [$obPav BtsBar]
+    set fnames [list]
     for {set i [llength $selfiles]} {$i} {} { ;# reopen selected files of previous project
       incr i -1
       set fname [lindex $selfiles $i]
       if {[alited::bar::FileTID $fname] eq {}} {
-        alited::file::OpenFile $fname yes
+        lappend fnames $fname
       }
     }
+    if {[llength $fnames]} {alited::file::OpenFile $fnames yes yes}
     set TID [lindex [alited::bar::BAR listTab] $al(curtab) 0]
     catch {alited::bar::BAR $TID show yes no}
     alited::main::UpdateProjectInfo

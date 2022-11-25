@@ -468,7 +468,7 @@ namespace eval ::alited {
     {Complete Commands} {Vervollständige Befehle}
   }
 
-  ### ________________________ Templates _________________________ ###
+  ### ________________________ Templates tab _________________________ ###
   ::msgcat::mcmset de {
     {Enter %U, %u, %m, %w, %d, %t wildcards of templates:} {Gebe  %U, %u, %m, %w, %d, %t ein als Platzhalter in Vorlagen:}
     {User name:} {Anwendername:}
@@ -568,7 +568,6 @@ namespace eval ::alited {
 
   ## ________________________ Misc. ________________________ ##
   ::msgcat::mcmset de {
-    "Can't backup \"%f\" to\n\"%d\"!\n\nDelete it anyway?" "Datei \"%f\" kann nicht nach \n\"%d\" gesichert werden!\n\nTrotzdem löschen?"
     "\"%f\" removed to \"%d\"" "\"%f\" entfernt aus \"%d\""
     {File name:} {Dateiname:}
     {Directory} {Verzeichnis}
@@ -606,7 +605,7 @@ namespace eval ::alited {
     {Sorted} {Sortiert}
   }
 
-  ## ________________________ --EONS-- _________________________ ##
+  ## ________________________ EONS alited _________________________ ##
 }
 
 # _ bartabs NS _ #
@@ -624,7 +623,7 @@ namespace eval ::bartabs {
     {... All at Right} {... alles rechts}
   }
 
-  ## ________________________ --EONS-- _________________________ ##
+  ## ________________________ EONS bartabs _________________________ ##
 }
 
 # _________________________________ EOF _________________________________ #

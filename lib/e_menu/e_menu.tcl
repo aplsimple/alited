@@ -1423,7 +1423,7 @@ proc ::em::prepr_pn {refpn {dt 0}} {
   set pndt [prepr_dt pn]
   if {$dt} {return $pndt} {return $pn}
 }
-#___ convert all Windows' "\" to Unix' "/"
+#___ convert all Windows' '\' to Unix '/'
 proc ::em::prepr_win {refprog typ} {
   upvar $refprog prog
   if {[string last / $typ] > 0} {
@@ -1569,7 +1569,7 @@ proc ::em::menuof {commands s1 domenu} {
   while {1} {
     if {$domenu} {
       set line {}
-      while {$icont<$lcont} { ;# lines ending with " \" or ::em::conti to be continued
+      while {$icont<$lcont} { ;# lines ending with \ or ::em::conti to be continued
         set tmp [lindex $fcont $icont]
         incr icont
         switch -exact -- $tmp {

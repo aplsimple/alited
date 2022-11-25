@@ -87,6 +87,11 @@ proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""} {bold no} {see no}} {
   set mapP2 [list "{\)}" {}]
   set mapQ [list "{\"}" {}]
   foreach line [split [$wtxt get $pos1 $pos2] \n] {
+    if {[regexp {\s*#\s*alited_checked\s*$} $line]} {
+      # if a line is like: # alited_checked
+      # skip this unit as checked by a human
+      return 0
+    }
     if {$chBrace} {
       incr cc1 [::apave::countChar $line \{]
       incr cc2 [::apave::countChar $line \}]

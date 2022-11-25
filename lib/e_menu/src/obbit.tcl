@@ -68,7 +68,7 @@ namespace eval ::apave {
 
   ## ________________________ CS list _________________________ ##
 
-# Colors for <MildDark CS> : 1) meanings 2) code names
+# Colors for <MildDark CS> : 1. meanings 2. code names
 
 # <CS>    itemfg  mainfg  itembg  mainbg  itemsHL  actbg   actfg  cursor  greyed   hot \
   emfg  embg   -  menubg  winfg   winbg   itemHL2 tabHL chkHL #005...reserved... #007

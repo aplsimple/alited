@@ -633,8 +633,8 @@ proc ::aloupe::run {args} {
   }
   # restore the default settings of aloupe (for a 2nd/3rd... run)
   set svd $my::data(DEFAULTS)
-  foreach an [array names $svd)] {
-    set my::data($an) [set ${svd}($an)] ;# a bit of addresses
+  foreach an [array names $svd] {
+    set my::data($an) [set ${svd}($an)] ;# "by variable address"
   }
   foreach {a v} $args {
     if {($v ne "" || $a in {-geometry -fcgeom}) && \

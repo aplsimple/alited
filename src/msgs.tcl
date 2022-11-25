@@ -11,7 +11,10 @@ namespace eval ::alited {
   proc msgcatMessages {} {
     # Sets common localized messages.
 
+    # alited_checked
+
     variable al
+
     ## _ common _ ##
     set al(MC,nofile)      [msgcat::mc {No name}]
     set al(MC,warning)     [msgcat::mc Warning]
@@ -192,7 +195,6 @@ namespace eval ::alited {
     set al(MC,frdoit2) [msgcat::mc "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all texts?"]
 
     ## _ file & directory _ ##
-    set al(MC,errcopy)     [msgcat::mc "Can't backup \"%f\" to\n\"%d\"!\n\nDelete it anyway?"]
     set al(MC,removed)     [msgcat::mc "\"%f\" removed to \"%d\""]
     set al(MC,nottoopen)   [msgcat::mc "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?"]
     set al(MC,renamefile)  [msgcat::mc {Rename File}]

@@ -17,7 +17,6 @@ namespace eval ttk::theme::sun-valley-dark {
             }
         }
 
-        # _ load_images _ #
         load_images [file join [file dirname [info script]] dark]
 
         array set colors {

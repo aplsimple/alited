@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5 (24 Nov'22)`
+Version `1.3.5 (25 Nov'22)`
 
   - BUGFIX: (partly) issues with tinting
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
@@ -14,6 +14,7 @@ Version `1.3.5 (24 Nov'22)`
   - BUGFIX: erroneous marking branch as unit visited
   - BUGFIX: search declaration: skip branches, match exactly if no NS
   - BUGFIX: F3 (find next) at switching tabs; + "not found"
+  - NEW   : skip Tcl check of a unit, if it contains a line like "# alited_checked"
   - NEW   : if current is Tcl file, check a current unit before running Tcl file
   - NEW   : completion: unit's variables, $ / $: / $:: bring vars, colored commands, not restricted for 1st column, hide at clicking text, compact view, scrollbar if number>16
   - NEW   : Find/Replace dialogue: "Paste Find" button; Ctrl+F, Ctrl+R & other hotkeys, compact view
@@ -43,6 +44,7 @@ Version `1.3.5 (24 Nov'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
+  - CHANGE: dismiss Tcl check's whine (aloupe.tcl & klnd.tcl debugged btw)
   - CHANGE: file tree: add/rename/delete focus on the tree
   - CHANGE: esp. for KDE: parenting & repainting dialogues, -ontop option
   - CHANGE: popup menu of infobar

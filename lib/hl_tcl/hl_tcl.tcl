@@ -208,7 +208,7 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
   set slen [expr {[string length $st]-1}]
   set cnt [CountChar $st \$ dlist no]
   foreach dl $dlist {
-    if {[string index $st $dl+1] eq "\{"} {
+    if { [string index $st $dl+1] eq "\{" } {
       if {[set br2 [string first \} $st $dl+2]]!=-1} {
         $txt tag add tagVAR "$ln.$pri +$dl char" "$ln.$pri +[incr br2] char"
       }
@@ -314,7 +314,7 @@ proc ::hl_tcl::my::FirstQtd {lineName iName currQtd} {
         while {$i1>0} {
           set c1 [string index $line $i1-1]
           set c2 [string index $line $i1]
-          if {$c1 in $data(S_SPACE)} {return [expr {$c2 ne "\{"}]}
+          if {$c1 in $data(S_SPACE)} {return [expr { $c2 ne "\{" }]}
           incr i1 -1
         }
         return no

@@ -114,7 +114,7 @@ wE4nN4X9rZoHZk4tqIjYIzDzAEky9Lq55yQZImo0PIKcidPJg06/vr2nZtKieh27nQ6t3YPz1Z0o
 yROnlsp+4xkRFgAuSmqo6nf+ATq/yK22zWynAAAAAElFTkSuQmCC}
 
   variable BarsList [list]
-  proc drawAll {} {
+; proc drawAll {} {
     # Draws all bars. Used at updating themes etc.
     foreach bars $bartabs::BarsList {$bars drawAll}
   }
