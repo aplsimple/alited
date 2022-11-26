@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5 (25 Nov'22)`
+Version `1.3.5 (26 Nov'22)`
 
   - BUGFIX: (partly) issues with tinting
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
@@ -44,6 +44,7 @@ Version `1.3.5 (25 Nov'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
+  - CHANGE: initialize the tab bar: quicker & surer
   - CHANGE: dismiss Tcl check's whine (aloupe.tcl & klnd.tcl debugged btw)
   - CHANGE: file tree: add/rename/delete focus on the tree
   - CHANGE: esp. for KDE: parenting & repainting dialogues, -ontop option

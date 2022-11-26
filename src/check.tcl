@@ -49,7 +49,7 @@ proc check::PosInfo {TID pos1} {
   #   TID - tab's ID
   #   pos1 - starting position of the unit in the text
   # Returns a list of TID and the normalized unit's position.
-  # See also: ::alited::info::Put
+  # See also: info::Put
 
   if {$TID eq {}} {
     set res {}

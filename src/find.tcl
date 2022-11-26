@@ -462,7 +462,7 @@ proc find::PutInfo {fname line info TID} {
   #   line - the line's number
   #   info - found info
   #   TID - tab's ID of the file
-  # See also: alited::info::Put
+  # See also: info::Put
 
   set msg "$fname  :$line:  $info"
   set dat [list $TID $line]
