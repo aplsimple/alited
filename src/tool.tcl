@@ -134,7 +134,7 @@ proc tool::SrcPath {toolpath} {
 proc tool::Loupe {} {
   # Calls a screen loupe.
 
-  namespace upvar ::alited al al LIBDIR LIBDIR PAVEDIR PAVEDIR
+  namespace upvar ::alited al al LIBDIR LIBDIR PAVEDIR PAVEDIR USERDIR USERDIR
   if {$al(IsWindows)} {set le aloupe.exe} {set le aloupe}
   set loupe [file join $LIBDIR util $le]
   if {[file exists $loupe]} {
@@ -142,8 +142,8 @@ proc tool::Loupe {} {
     if {![catch {exec $loupe}]} return
   }
   set loupe [SrcPath [file join $PAVEDIR pickers color aloupe aloupe.tcl]]
-  alited::Run $loupe -locale $alited::al(LOCAL) -apavedir $PAVEDIR \
-    -cs $al(INI,CS) -fcgeom $::alited::FilGeometry
+  alited::Run $loupe -locale $alited::al(LOCAL) -apavedir $PAVEDIR -cs $al(INI,CS) \
+  -fcgeom $::alited::FilGeometry -inifile [file join $USERDIR aloupe.conf]
 }
 #_______________________
 
