@@ -887,6 +887,8 @@ proc pref::InitSyntaxTcl {colornames} {
 
   fetchVars
   set tex [$obDl2 TexSample]
+  lassign [$obDl2 csGet] - - - - - - - - tfgD bclr
+  $tex configure -highlightbackground $tfgD -highlightcolor $bclr
   if {[string trim [$tex get 1.0 end]] eq {}} {
   $obDl2 displayText $tex {proc foo {args} {
   # Tcl code to test colors.

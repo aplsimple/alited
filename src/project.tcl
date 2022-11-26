@@ -1035,9 +1035,9 @@ proc project::Ok {args} {
         lappend fnames $fname
       }
     }
-    if {[llength $fnames]} {alited::file::OpenFile $fnames yes yes}
     set TID [lindex [alited::bar::BAR listTab] $al(curtab) 0]
     catch {alited::bar::BAR $TID show yes no}
+    if {[llength $fnames]} {alited::file::OpenFile $fnames yes yes}
     alited::main::UpdateProjectInfo
     alited::ini::GetUserDirs
     alited::file::MakeThemHighlighted

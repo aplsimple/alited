@@ -700,7 +700,7 @@ proc main::InitActions {} {
   # Initializes working with a main form of alited.
 
   namespace upvar ::alited al al obPav obPav
-  # fill the main menu of alited
+  # fill the tab bar of alited
   alited::bar::FillBar [$obPav BtsBar]
   # check for outdated TODOs for current project
   lassign [alited::project::IsOutdated $al(prjname) yes] is date todo
@@ -861,8 +861,8 @@ proc main::_create {} {
     }}}
   }
   UpdateProjectInfo
-  # there should be a pause enough for FillBar got -wbar option normally sized
-  after 500 {after idle alited::main::InitActions}
+  # a pause (and cycles) must be enough for FillBar to have proper -wbar option
+  after 10 {after 10 {after 10 {after 10 {after 10 alited::main::InitActions}}}} ;# 50msec
   bind [$obPav Pan] <ButtonRelease> ::alited::tree::AdjustWidth
   set sbhi [$obPav SbhInfo]
   set lbxi [$obPav LbxInfo]
