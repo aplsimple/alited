@@ -511,7 +511,7 @@ proc pref::General_Tab2 {} {
     {.labport - - 1 1 {-st w -pady 1 -padx 3} {-t "Port to listen alited:"}}
     {.cbxport + L 1 1 {-st sw -pady 5} {-tvar alited::al(comm_port) -values {$alited::al(comm_port_list)} -w 8 -tip "The empty value allows\nmultiple alited apps."}}
     {.labConf .labport T 1 1 {-st w -pady 1 -padx 3} {-t "Confirm exit:"}}
-    {.swiConf + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,confirmexit)}}
+    {.spxConf + L 1 1 {-st sw -pady 1 -padx 3} {-tvar alited::al(INI,confirmexit) -from 0 -to 60 -justify center -w 9 -tip {"> 1" : N sec.}}}
     {.seh1 .labConf T 1 4 {-st ew -pady 5}}
     {.labS + T 1 1 {-st w -pady 1 -padx 3} {-t "Save configuration on"}}
     {.labSonadd + T 1 1 {-st e -pady 1 -padx 3} {-t "opening a file:"}}

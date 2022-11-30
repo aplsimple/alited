@@ -9,7 +9,8 @@
 #package require control
 
 namespace eval file {
-  variable ansDoSave 0
+  variable ansSave 0
+  variable firstSave -1
   variable ansOpenOfDir 0
 }
 
@@ -36,27 +37,31 @@ proc file::IsNoName {fname} {
 }
 #_______________________
 
-proc file::IsSaved {TID} {
+proc file::IsSaved {TID args} {
   # Checks if a file is modified and if yes, offers to save it.
   #   TID - ID of tab
+  #   args - options of dialogue
+  # The appearance of dialogue is controled by $ansSave and $firstSave:
+  #   if $ansSave>10, no dialogue at all, meaning the answer = $ansSave
+  #   if $firstSave==-1, no "No ask anymore" (as run by "Close" menu or by "x" icon)
   # Returns 1 for "yes, needs saving", 2 for "needs no saving", 0 for "cancel".
 
-  variable ansDoSave
+  variable ansSave
+  variable firstSave
   namespace upvar ::alited al al
   if {[IsModified $TID]} {
     set fname [alited::bar::BAR $TID cget -text]
-    set nmark [llength [alited::bar::BAR listFlag "m"]]
-    if {$ansDoSave<10} {
-      if {$nmark<2} {
+    if {$ansSave<10} {
+      if {$firstSave==-1} {
         set ch {}
       } else {
         # the option for "save/not save other changed files, without further questions"
         set ch [list -ch $al(MC,noask)]
       }
-      set ansDoSave [alited::msg yesnocancel warn [string map [list %f $fname] \
-        $al(MC,notsaved)] YES -title $al(MC,saving) {*}$ch]
+      set ansSave [alited::msg yesnocancel warn [string map [list %f $fname] \
+        $al(MC,notsaved)] YES -title $al(MC,saving) {*}$ch {*}$args]
     }
-    return $ansDoSave
+    return $ansSave
   }
   return 2  ;# as if "No" chosen
 }
@@ -298,22 +303,26 @@ proc file::WrapLines {{wrapnone no}} {
 proc file::AllSaved {} {
   # Checks whether all files are saved. Saves them if not.
 
-  variable ansDoSave
-  set ansDoSave 0
+  variable ansSave
+  variable firstSave
+  set ansSave 0
+  set firstSave 1
+  set res 1
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
     switch [IsSaved $TID] {
       0 { ;# "Cancel" chosen for a modified
-        set ansDoSave 0
-        return no
+        set res 0
+        break
       }
       1 - 11 { ;# "Save" chosen for a modified
-        set res [SaveFile $TID yes]
+        if {![set res [SaveFile $TID yes]]} break
       }
     }
   }
-  set ansDoSave 0
-  return yes
+  set ansSave 0
+  set firstSave -1
+  return $res
 }
 #_______________________
 
@@ -656,19 +665,33 @@ proc file::SaveAll {} {
 }
 # _______________________ Close file(s) _______________________ #
 
-proc file::CloseFile {{TID ""} {checknew yes}} {
+proc file::CloseFile {{TID ""} {checknew yes} args} {
   # Closes a file.
   #   TID - tab's ID
   #   checknew - if yes, checks if new file's tab should be created
+  #   args - arguments added by bartabs
   # Returns 0, if a user selects "Cancel".
 
   namespace upvar ::alited al al obPav obPav
+  variable ansSave
+  variable firstSave
+  lassign [::apave::extractOptions args -withicon 0 -first -1] withicon first
+  if {$withicon || $first} {
+    set ansSave 0
+    set nmark [llength [alited::bar::BAR listFlag "m"]]
+    if {$nmark<2 || $withicon} {
+      set firstSave -1
+      if {$withicon} {lappend args -geometry pointer+-100+20}
+    } else {
+      set firstSave $first ;# controls "No ask anymore" checkbox at questions
+    }
+  }
   set res 1
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
   lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
   if {$TID ni {{-1} {}} && $wtxt ne {}} {
-    switch [IsSaved $TID] {
+    switch [IsSaved $TID {*}$args] {
       0 { ;# "Cancel" chosen for a modified
         return 0
       }
@@ -707,6 +730,8 @@ proc file::CloseAll {func args} {
   #   args - may contain -skipsel to not close selected tabs
 
   namespace upvar ::alited al al
+  variable ansSave
+  set ansSave 0
   set TID [alited::bar::CurrentTabID]
   set al(closefunc) $func ;# disables "recent files" at closing all
   alited::bar::BAR closeAll $::alited::al(BID) $TID $func {*}$args

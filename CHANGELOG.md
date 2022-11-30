@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5 (26 Nov'22)`
+Version `1.3.5 (30 Nov'22)`
 
   - BUGFIX: (partly) issues with tinting
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
@@ -44,6 +44,8 @@ Version `1.3.5 (26 Nov'22)`
   - NEW   : fill Preferences/Tools/tclsh if it's empty (for Windows console mainly)
   - NEW   : choose file button for forced command of "Setup/For Run" dialogue
   - NEW   : use tc= option of e_menu to run Tcl code
+  - CHANGE: Preferences/../Confirm exit: 0, 1 or >1 for exit with timeout
+  - CHANGE: better behaviour at closing all / all at left/right / by [x]
   - CHANGE: initialize the tab bar: quicker & surer
   - CHANGE: dismiss Tcl check's whine (aloupe.tcl & klnd.tcl debugged btw)
   - CHANGE: file tree: add/rename/delete focus on the tree
@@ -66,7 +68,7 @@ Version `1.3.5 (26 Nov'22)`
   - CHANGE: checks for outward changes disabled at saving files
   - CHANGE: alited docs
   - CHANGE: About..
-  - CHANGE: packages: apave/e_menu 3.6.0, bartabs 1.5.9, baltip 1.5.1, hl_tcl 0.9.44
+  - CHANGE: packages: apave/e_menu 3.6.0, bartabs 1.6.0, baltip 1.5.1, hl_tcl 0.9.44
 
 
 Version `1.3.4 (21 Sep'22)`

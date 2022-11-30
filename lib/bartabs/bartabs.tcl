@@ -7,7 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-package provide bartabs 1.5.9
+package provide bartabs 1.6.0
 catch {package require baltip}
 
 # __________________ Common data of bartabs:: namespace _________________ #
@@ -208,10 +208,10 @@ method Tab_Create {BID TID w text} {
     ttk::label $wb1
     if {[my TtkTheme]} {
       ttk::button $wb2 -style ClButton$BID -image bts_ImgNone \
-        -command [list [self] $TID close] -takefocus 0
+        -command [list [self] $TID close yes -withicon yes] -takefocus 0
     } else {
       button $wb2 -relief flat -borderwidth 0 -highlightthickness 0 -image bts_ImgNone \
-        -command [list [self] $TID close] -takefocus 0 -background $bgm
+        -command [list [self] $TID close yes -withicon yes] -takefocus 0 -background $bgm
     }
   }
   $wb configure -relief $relief
@@ -628,13 +628,15 @@ method Tab_CloseFew {{TID -1} {left no} args} {
   set skipsel [expr {[lsearch $args -skipsel]>-1}]
   set seltabs [my $BID cget -select]
   set doupdate no
+  set first 1
   for {set i [llength $tabs]} {$i} {} {
     incr i -1
     set tID [lindex $tabs $i 0]
     if {!$skipsel || $tID ni $seltabs} {
       if {$TID eq {-1} || ($left && $i<$icur) || (!$left && $i>$icur)} {
-        if {![set res [my $tID close no]]} break
+        if {![set res [my $tID close no -first $first]]} break
         if {$res==1} {set doupdate yes}
+        set first 0  ;# -first option is "1" for the very first closed tab
       }
     }
   }
@@ -665,6 +667,7 @@ method PrepareCmd {TID BID opt args} {
       set label {}
     }
     set label [string map {\{ ( \} )} $label]
+    lappend com {*}$args
     return [string map [list %b $BID %t $TID %l $label] $com]
   }
   return {}
@@ -681,7 +684,7 @@ method Tab_Cmd {opt args} {
 
   lassign [my IDs [my ID]] TID BID
   if {[set com [my PrepareCmd $TID $BID $opt {*}$args]] ne {}} {
-    if {[catch {set res [{*}$com {*}$args]}]} {set res yes}
+    if {[catch {set res [{*}$com]}]} {set res yes}
     if {$res eq {} || !$res} {return 0}
     return $res
   }
@@ -1157,10 +1160,10 @@ method Bar_DefaultMenu {BID popName} {
   "s {} {} {} $dsbl" \
   "m {BHND} {} bartabs_cascade2 $dsbl" \
   "s {} {} {} $dsbl" \
-  "c {$close} {[self] %t close} {} $dsbl" \
-  "c {$closeall} {$bar Tab_CloseFew} {} $dsbl" \
-  "c {$closeleft} {$bar Tab_CloseFew %t 1} {} $dsbl" \
-  "c {$closeright} {$bar Tab_CloseFew %t} {} $dsbl"] {
+  "c {$close} {[self] %t close yes -first -1} {} $dsbl" \
+  "c {$closeall} {$bar closeAll $BID -1 1} {} $dsbl" \
+  "c {$closeleft} {$bar closeAll $BID %t 2} {} $dsbl" \
+  "c {$closeright} {$bar closeAll $BID %t 3} {} $dsbl"] {
     lappend pop $item
   }
 }

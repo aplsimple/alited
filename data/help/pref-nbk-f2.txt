@@ -2,8 +2,11 @@
  working simultaneously. Otherwise, alited would listen the chosen port
  and arise (with passed file names) when you try to start it again.
 
- Switch <b>Confirm exit</b> ON to avoid an unintended exit of alited,
- i.e. at clicking [x] button or pressing Alt+F4.
+ <b>Confirm exit</b> may be:
+   <b>0</b> for "no confirming"
+   <b>1</b> for "confirming"
+   <b>> 1</b> for "confirming with a timeout"
+ to confirm exit at clicking [x] button or pressing Alt+F4.
 
  You can <b>save a current alited configuration</b> on:
    - opening a file

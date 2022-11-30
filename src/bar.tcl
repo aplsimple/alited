@@ -64,7 +64,7 @@ proc bar::FillBar {wframe {newproject no}} {
     -separator no -font apaveFontDefTypedsmall \
     -csel2 {alited::bar::OnTabSelection %t} \
     -csel3 alited::bar::OnControlClick \
-    -cdel {alited::file::CloseFile %t} \
+    -cdel {alited::file::CloseFile %t yes} \
     -cmov2 alited::bar::OnTabMove \
     -title $al(MC,filelist) \
     -expand 9 -padx 0 {*}$bd]

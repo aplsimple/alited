@@ -287,6 +287,9 @@ proc ini::ReadIni {{projectfile ""}} {
   if {!$al(INI,belltoll)} {
     ; proc ::bell args {}  ;# no bells
   }
+  if {![string is digit -strict $al(INI,confirmexit)]} {
+    set al(INI,confirmexit) 1
+  }
   if {![info exists al(tkcon,clrbg)]} {
     alited::pref::Tkcon_Default
     alited::pref::Tkcon_Default1
