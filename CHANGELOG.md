@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.5 (30 Nov'22)`
+Version `1.3.5 (7 Dec'22)`
 
   - BUGFIX: (partly) issues with tinting
   - BUGFIX: (esp. for Windows) checks for spaces in "config dir" & "file name"
