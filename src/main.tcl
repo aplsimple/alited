@@ -455,8 +455,8 @@ proc main::GotoLine {} {
   }
   after 300 {catch {bind [apave::dlgPath] <F1> {alited::HelpAlited #units5}}}
   lassign [$obDl2 input {} $head [list \
-    spx "{$prompt1} {} {-w 6 -justify center -from 1 -to $lmax -selected yes}" "{$ln}" \
-    cbx "{$prompt2} {} {-tvar ::alited::main::gotoline1 -state readonly -h 16 -w 20}" "{$::alited::main::gotoline1} $::alited::main::gotoline2" \
+    spx "{$prompt1} {} {-from 1 -to $lmax -selected yes}" "{$ln}" \
+    cbx "{$prompt2} {} {-tvar ::alited::main::gotoline1 -state readonly -h 16 -w 25}" "{$::alited::main::gotoline1} $::alited::main::gotoline2" \
   ]] res ln unit
   if {$res} {
     set ::alited::main::gotoline1 $unit

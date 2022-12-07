@@ -183,23 +183,20 @@ namespace eval ::apave {
 proc ::iswindows {} {
   # Checks for "platform is MS Windows".
 
-  return [expr {$::tcl_platform(platform) eq "windows"} ? 1: 0]
+  expr {$::tcl_platform(platform) eq {windows}}
 }
 
 proc ::islinux {} {
   # Checks for "platform is Linux".
 
-  return [expr {$::tcl_platform(platform) eq "unix"} ? 1: 0]
+  expr {$::tcl_platform(platform) eq {unix}}
 }
 #_______________________
 
 proc ::isKDE {} {
   # Checks for "desktop is KDE".
 
-  if {[info exists ::env(XDG_CURRENT_DESKTOP)] && $::env(XDG_CURRENT_DESKTOP) eq {KDE}} {
-    return yes
-  }
-  return no
+  expr {[info exists ::env(XDG_CURRENT_DESKTOP)] && $::env(XDG_CURRENT_DESKTOP) eq {KDE}}
 }
 #_______________________
 

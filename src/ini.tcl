@@ -32,8 +32,8 @@ namespace eval ::alited {
   set al(TREE,cw1) 70       ;# tree column #1 width
   set al(TREE,showinfo) 0   ;# flag "show info on a file in tips"
   set al(FONT) {}           ;# default font
-  set al(FONTSIZE,small) 10 ;# small font size
-  set al(FONTSIZE,std) 12   ;# middle font size
+  set al(FONTSIZE,small) 9  ;# small font size
+  set al(FONTSIZE,std) 10   ;# middle font size
   set al(FONT,txt) {}       ;# font for edited texts
   set al(THEME) default     ;# ttk theme
   set al(INI,CS) -1         ;# color scheme
@@ -1164,6 +1164,8 @@ proc ini::InitGUI {} {
     # dialogue windows should be topmost, otherwise KDE hides them at losing focus
     ::apave::obj setShowOption -ontop yes
   }
+  lassign [::apave::defaultAttrs spx] opts atrs
+  ::apave::defaultAttrs spx $opts "$atrs -justify center -w 9"
 }
 #_______________________
 

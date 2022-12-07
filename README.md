@@ -34,7 +34,16 @@ It's quick at saving [Tcl/Tk](https://wiki.tcl-lang.org/) code.
 
 It's quick at maintaining [Tcl/Tk](https://wiki.tcl-lang.org/) code.
 
-Briefly, alited is totally quick, being at that *a pure [Tcl/Tk](https://wiki.tcl-lang.org/) application.*
+Briefly, *alited* is totally quick, being at that *a pure [Tcl/Tk](https://wiki.tcl-lang.org/) application.*
+
+For a quick acquaintance of *alited*, a few of demo videos are available:
+
+   * [1. First start](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/1.Start_alited-1.3.5.mp4)
+   * [2. Units](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/2.Units_alited-1.3.5.mp4)
+   * [3. Projects](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/3.Projects_alited-1.3.5.mp4)
+   * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/4.Find_alited-1.3.5.mp4)
+   * [5. Tools](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/5.Tools_alited-1.3.5.mp4)
+   * [6. Themes](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/6.Themes_alited-1.3.5.mp4)
 
 # Links
 
@@ -43,26 +52,6 @@ Briefly, alited is totally quick, being at that *a pure [Tcl/Tk](https://wiki.tc
    * [Source #1](https://chiselapp.com/user/aplsimple/repository/alited/download)
    * [Source #2](https://github.com/aplsimple/alited)
    * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.3)
-
-For a quick acquaintance of *alited*, a few of demo videos are available:
-
-1. Dark themed
-
-   * [1. First start](https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.3/1.Start_alited-1.3-dark.mp4)
-   * [2. Units](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.3/2.Units_alited-1.3-dark.mp4)
-   * [3. Projects](https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.3/3.Projects_alited-1.3-dark.mp4)
-   * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.3/4.Find_alited-1.3-dark.mp4)
-   * [5. Tools](https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.3/5.Tools_alited-1.3-dark.mp4)
-   * [6. Themes](https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.3/6.Themes_alited-1.3-dark.mp4)
-
-2. Light themed
-
-   * [1. First start](https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.3/1.Start_alited-1.3-light.mp4)
-   * [2. Units](https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.3/2.Units_alited-1.3-light.mp4)
-   * [3. Projects](https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.3/3.Projects_alited-1.3-light.mp4)
-   * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.3/4.Find_alited-1.3-light.mp4)
-   * [5. Tools](https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.3/5.Tools_alited-1.3-light.mp4)
-   * [6. Themes](https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.3/6.Themes_alited-1.3-light.mp4)
 
 # Inevitable blah-blah
 

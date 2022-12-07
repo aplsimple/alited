@@ -1583,10 +1583,10 @@ proc project::Tab2 {} {
     {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,EOL:)}}}
     {.cbxEOL + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,indent:)}}}
-    {.spxIndent + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -w 9 -from 0 -to 8 -justify center -com {::alited::pref::CheckIndent ""}}}
+    {.spxIndent + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -from 0 -to 8 -com {::alited::pref::CheckIndent ""}}}
     {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjindentAuto) -t {$alited::al(MC,indentAuto)}}}
     {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
-    {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -w 9 -from $alited::al(minredunit) -to 100 -justify center}}
+    {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -from $alited::al(minredunit) -to 100}}
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}

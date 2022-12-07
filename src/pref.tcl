@@ -275,13 +275,18 @@ proc pref::Ok {args} {
 
   fetchVars
   alited::CloseDlg
-  set ans [alited::msg okcancel info [msgcat::mc "For the settings to be active,\nalited application should be restarted."] OK -centerme $win]
+  if {$al(INI,confirmexit)>1} {
+    set timo "-timeout {$al(INI,confirmexit) ButOK}"
+  } else {
+    set timo {}
+  }
+  set ans [alited::msg okcancel info [msgcat::mc "For the settings to be active,\nalited application should be restarted."] OK -centerme $win {*}$timo]
   if {$ans} {
     GetEmSave out
     # check options that can make alited unusable
     if {$al(INI,HUE)<-50 || $al(INI,HUE)>50} {set al(INI,HUE) 0}
-    if {$al(FONTSIZE,small)<8 || $al(FONTSIZE,small)>72} {set al(FONTSIZE,small) 10}
-    if {$al(FONTSIZE,std)<9 || $al(FONTSIZE,std)>72} {set al(FONTSIZE,std) 11}
+    if {$al(FONTSIZE,small)<6 || $al(FONTSIZE,small)>72} {set al(FONTSIZE,small) 9}
+    if {$al(FONTSIZE,std)<7 || $al(FONTSIZE,std)>72} {set al(FONTSIZE,std) 10}
     if {$al(INI,RECENTFILES)<10 || $al(INI,RECENTFILES)>50} {set al(INI,RECENTFILES) 16}
     if {$al(FAV,MAXLAST)<10 || $al(FAV,MAXLAST)>100} {set al(FAV,MAXLAST) 100}
     if {$al(MAXFILES)<1000 || $al(MAXFILES)>9999} {set al(MAXFILES) 2000}
@@ -477,7 +482,7 @@ proc pref::General_Tab1 {} {
       30 {$alited::al(MC,fitcs): sun-valley-dark} \
       }} {alited::pref::opcToolPre %a}}}
     {.labHue .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Tint:"}}
-    {.SpxHue + L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -justify center -w 9 -tip {$alited::al(MC,hue)}}}
+    {.SpxHue + L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -tip {$alited::al(MC,hue)}}}
     {seh_ .labHue T 1 2 {-pady 4}}
     {fra2 + T 1 2 {-st nsew -cw 1}}
     {.labLocal - - 1 1 {-st w -pady 1 -padx 3} {-t "Preferable locale:" -tip {$alited::al(MC,locale)}}}
@@ -486,11 +491,11 @@ proc pref::General_Tab1 {} {
     {.labFon .labLocal T 1 1 {-st w -pady 1 -padx 3} {-t "Font:"}}
     {.fonTxt1 + L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONT) -w 40}}
     {.labFsz1 .labFon T 1 1 {-st w -pady 1 -padx 3} {-t "Small font size:"}}
-    {.spxFsz1 + L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONTSIZE,small) -from 8 -to 72 -justify center -w 9}}
+    {.spxFsz1 + L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONTSIZE,small) -from 6 -to 72}}
     {.labFsz2 .labFsz1 T 1 1 {-st w -pady 1 -padx 3} {-t "Middle font size:"}}
-    {.spxFsz2 + L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONTSIZE,std) -from 9 -to 72 -justify center -w 9}}
+    {.spxFsz2 + L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(FONTSIZE,std) -from 7 -to 72}}
     {.labCurw .labFsz2 T 1 1 {-st w -pady 1 -padx 3} {-t "Cursor width:"}}
-    {.spxCurw + L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(CURSORWIDTH) -from 1 -to 8 -justify center -w 9}}
+    {.spxCurw + L 1 9 {-st sw -pady 1 -padx 3} {-tvar alited::al(CURSORWIDTH) -from 1 -to 8}}
     {seh_2 fra2 T 1 2 {-pady 4}}
     {lab + T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra3 + T 1 2 {-st nsew -rw 1 -cw 1}}
@@ -511,7 +516,7 @@ proc pref::General_Tab2 {} {
     {.labport - - 1 1 {-st w -pady 1 -padx 3} {-t "Port to listen alited:"}}
     {.cbxport + L 1 1 {-st sw -pady 5} {-tvar alited::al(comm_port) -values {$alited::al(comm_port_list)} -w 8 -tip "The empty value allows\nmultiple alited apps."}}
     {.labConf .labport T 1 1 {-st w -pady 1 -padx 3} {-t "Confirm exit:"}}
-    {.spxConf + L 1 1 {-st sw -pady 1 -padx 3} {-tvar alited::al(INI,confirmexit) -from 0 -to 60 -justify center -w 9 -tip {"> 1" : N sec.}}}
+    {.spxConf + L 1 1 {-st sw -pady 1 -padx 3} {-tvar alited::al(INI,confirmexit) -from 0 -to 60 -tip {"> 1" : N sec.}}}
     {.seh1 .labConf T 1 4 {-st ew -pady 5}}
     {.labS + T 1 1 {-st w -pady 1 -padx 3} {-t "Save configuration on"}}
     {.labSonadd + T 1 1 {-st e -pady 1 -padx 3} {-t "opening a file:"}}
@@ -525,16 +530,16 @@ proc pref::General_Tab2 {} {
     {.cbxSave + L 1 2 {-st sw -pady 1} {-values {$alited::al(pref,saveonrun)} -tvar alited::al(EM,save) -state readonly -w 20}}
     {.seh3 .labSave T 1 4 {-st ew -pady 5}}
     {.labRecnt + T 1 1 {-st w -pady 1 -padx 3} {-t "'Recent Files' length:"}}
-    {.spxRecnt + L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,RECENTFILES) -from 10 -to 50 -justify center -w 9}}
+    {.spxRecnt + L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,RECENTFILES) -from 10 -to 50}}
     {.labMaxLast .labRecnt T 1 1 {-st w -pady 1 -padx 3} {-t "'Last Visited' length:"}}
-    {.spxMaxLast + L 1 1 {-st sw -pady 1} {-tvar alited::al(FAV,MAXLAST) -from 10 -to 100 -justify center -w 9}}
+    {.spxMaxLast + L 1 1 {-st sw -pady 1} {-tvar alited::al(FAV,MAXLAST) -from 10 -to 100}}
     {.labMaxFiles .labMaxLast T 1 1 {-st w -pady 1 -padx 3} {-t "Maximum of project files:"}}
-    {.spxMaxFiles + L 1 1 {-st sw -pady 1} {-tvar alited::al(MAXFILES) -from 1000 -to 9999 -justify center -w 9}}
+    {.spxMaxFiles + L 1 1 {-st sw -pady 1} {-tvar alited::al(MAXFILES) -from 1000 -to 9999}}
     {.seh4 .labMaxFiles T 1 4 {-st ew -pady 5}}
     {.labBackup + T 1 1 {-st w -pady 1 -padx 3} {-t "Back up files to a project's subdirectory:"}}
     {.CbxBackup + L 1 1 {-st sw -pady 1} {-tvar alited::al(BACKUP) -values {{} .bak} -state readonly -w 6 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." -afteridle alited::pref::CbxBackup -selcombobox alited::pref::CbxBackup}}
     {.LabMaxBak + L 1 1 {-st w -pady 1 -padx 1} {-t "  Maximum:"}}
-    {.SpxMaxBak + L 1 1 {-st sw -pady 1 -padx 1} {-tvar alited::al(MAXBACKUP) -from 1 -to 99 -justify center -w 9 -tip {$alited::al(MC,maxbak)}}}
+    {.SpxMaxBak + L 1 1 {-st sw -pady 1 -padx 1} {-tvar alited::al(MAXBACKUP) -from 1 -to 99 -tip {$alited::al(MC,maxbak)}}}
     {.labBell .labBackup T 1 1 {-st w -pady 1 -padx 3} {-t "Bell at warnings:"}}
     {.swiBell + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,belltoll)}}
   }
@@ -555,10 +560,10 @@ proc pref::General_Tab3 {} {
     {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,EOL:)}}}
     {.CbxEOL + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjEOL) -values {{} LF CR CRLF} -state readonly -w 9}}
     {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,indent:)}}}
-    {.SpxIndent + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjindent) -w 9 -from 0 -to 8 -justify center -com ::alited::pref::CheckIndent}}
+    {.SpxIndent + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjindent) -from 0 -to 8 -com ::alited::pref::CheckIndent}}
     {.ChbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjindentAuto) -t {$alited::al(MC,indentAuto)}}}
     {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,redunit)}}}
-    {.SpxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjredunit) -w 9 -from $alited::al(minredunit) -to 100 -justify center}}
+    {.SpxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(DEFAULT,prjredunit) -from $alited::al(minredunit) -to 100}}
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.SwiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
@@ -694,21 +699,21 @@ proc pref::Edit_Tab1 {} {
     {.labFon - - 1 1 {-st w -pady 8 -padx 3} {-t Font:}}
     {.fonTxt2 + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(FONT,txt) -w 40}}
     {.labSp1 .labFon T 1 1 {-st w -pady 1 -padx 3} {-t {Space above lines:}}}
-    {.spxSp1 .labSp1 L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp1) -from 0 -to 16 -justify center -w 9}}
+    {.spxSp1 .labSp1 L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp1) -from 0 -to 16}}
     {.labSp3 .labSp1 T 1 1 {-st w -pady 1 -padx 3} {-t {Space below lines:}}}
-    {.spxSp3 + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp3) -from 0 -to 16 -justify center -w 9}}
+    {.spxSp3 + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp3) -from 0 -to 16}}
     {.labSp2 .labSp3 T 1 1 {-st w -pady 1 -padx 3} {-t {Space between wraps:}}}
-    {.spxSp2 + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp2) -from 0 -to 16 -justify center -w 9}}
+    {.spxSp2 + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,sp2) -from 0 -to 16}}
     {.seh .labSp2 T 1 10 {-pady 3}}
     {.labGW + T 1 1 {-st w -pady 1 -padx 3} {-t {Gutter's width:}}}
-    {.spxGW + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,gutterwidth) -from 3 -to 7 -justify center -w 9}}
+    {.spxGW + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,gutterwidth) -from 3 -to 7}}
     {.labGS .labGW T 1 1 {-st w -pady 1 -padx 3} {-t {Gutter's shift from text:}}}
-    {.spxGS + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,guttershift) -from 0 -to 10 -justify center -w 9}}
+    {.spxGS + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(ED,guttershift) -from 0 -to 10}}
     {.seh2 .labGS T 1 10 {-pady 3}}
     {.labLl + T 1 1 {-st w -pady 1 -padx 3} {-t {Tab bar label's length:}}}
-    {.spxLl + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(INI,barlablen) -from 10 -to 100 -justify center -w 9}}
+    {.spxLl + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(INI,barlablen) -from 10 -to 100}}
     {.labTl .labLl T 1 1 {-st w -pady 1 -padx 3} {-t {Tab bar tip's length:}}}
-    {.spxTl + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(INI,bartiplen) -from 10 -to 100 -justify center -w 9}}
+    {.spxTl + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(INI,bartiplen) -from 10 -to 100}}
     {.labBD .labTl T 1 1 {-st w -pady 1 -padx 3} {-t {Border for bar tabs:}}}
     {.swiBD + L 1 1 {-st sw -pady 5 -padx 3} {-var ::alited::al(ED,btsbd)}}
   }

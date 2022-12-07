@@ -738,12 +738,12 @@ namespace eval alited {
     variable obPav
     variable obFN2
     if {$al(INI,confirmexit)>1} {
-      set timo "-timeout {$al(INI,confirmexit) ButYES}"
+      set timo "-timeout {$al(INI,confirmexit) ButOK}"
     } else {
       set timo {}
     }
     if {!$ask || !$al(INI,confirmexit) || \
-    [msg yesno ques [msgcat::mc {Quit alited?}] YES {*}$timo]} {
+    [msg okcancel info [msgcat::mc {Quitting alited.}] OK {*}$timo]} {
       if {[alited::file::AllSaved]} {
         alited::find::_close
         alited::tool::_close

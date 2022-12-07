@@ -678,9 +678,14 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
 proc find::FindNext {} {
   # Performs "find next" (F3 key) for the current text.
 
-  namespace upvar ::alited obPav obPav
+  namespace upvar ::alited al al obPav obPav
+  set wtxt [alited::main::CurrentWTXT]
+  if {[info exists al(findSearchByList)] && $al(findSearchByList) eq $wtxt} {
+    NextFoundByList no
+    return
+  }
   alited::Message {}
-  lassign [$obPav findInText 1 [alited::main::CurrentWTXT]] res what
+  lassign [$obPav findInText 1 $wtxt] res what
   if {!$res} {
     set msg [msgcat::mc {Not found: %s}]
     alited::Message [string map [list %s $what] $msg] 3
@@ -938,6 +943,7 @@ proc find::SearchByList_Do {{show yes}} {
   set found [set notfound [list]]
   set wtxt [alited::main::CurrentWTXT]
   set list [string map {\n { }} $al(listSBL)]
+  set al(findSearchByList) $wtxt
   FoundTag $wtxt
   ClearTags
   foreach findword [split $list] {
@@ -974,6 +980,7 @@ proc find::SearchByList {} {
   # Searches words by list.
 
   namespace upvar ::alited al al obFN2 obFN2
+  set al(findSearchByList) {}
   variable geo2
   set head [msgcat::mc {\n Enter a list of words divided by spaces: \n}]
   while {1} {
@@ -1005,6 +1012,7 @@ proc find::SearchByList {} {
       break
     }
   }
+  unset al(findSearchByList)
   ClearTags
 }
 #_______________________
@@ -1017,8 +1025,9 @@ proc find::HelpFind {suff} {
 }
 #_______________________
 
-proc find::NextFoundByList {} {
+proc find::NextFoundByList {{focusDLG yes}} {
   # Finds next occurence of found strings.
+  #   focusDLG - if yes, focuses on "First by List" dialogue, otherwise the text is focused
 
   namespace upvar ::alited obFN2 obFN2
   set wtxt [alited::main::CurrentWTXT]
@@ -1032,10 +1041,15 @@ proc find::NextFoundByList {} {
   if {$nextpos eq {}} {set nextpos $pos0}
   if {$nextpos eq {}} {
     bell
-    focus [$obFN2 Text]
   } else {
     alited::main::FocusText [alited::bar::CurrentTabID] [lindex $nextpos 0]
-    focus [$obFN2 ButNxt]
+  }
+  if {$focusDLG} {
+    if {$nextpos eq {}} {
+      focus [$obFN2 Text]
+    } else {
+      focus [$obFN2 ButNxt]
+    }
   }
 }
 

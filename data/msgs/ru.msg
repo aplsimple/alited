@@ -65,7 +65,7 @@ namespace eval ::alited {
     {Color Picker} {Выбор цвета}
     {Date Picker} {Выбор даты}
     {Screen Loupe} {Экранная лупа}
-    {Quit alited?} {Выйти из alited?}
+    {Quitting alited.} {Выходим из alited.}
     {Wait a little ...} {Подождите ...}
     {Default} {По умолчанию}
     {Default 2} {По умолчанию 2}

@@ -665,7 +665,7 @@ proc file::SaveAll {} {
 }
 # _______________________ Close file(s) _______________________ #
 
-proc file::CloseFile {{TID ""} {checknew yes} args} {
+proc file::CloseFile {TID checknew args} {
   # Closes a file.
   #   TID - tab's ID
   #   checknew - if yes, checks if new file's tab should be created
@@ -687,7 +687,6 @@ proc file::CloseFile {{TID ""} {checknew yes} args} {
     }
   }
   set res 1
-  if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
   lassign [alited::bar::GetTabState $TID --wtxt --wsbv] wtxt wsbv
   if {$TID ni {{-1} {}} && $wtxt ne {}} {
