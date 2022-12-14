@@ -778,6 +778,17 @@ proc project::ValidateDir {} {
   }
   return yes
 }
+#_______________________
+
+proc project::TipOnFile {idx} {
+  # Shows info on a file in the file list as a tooltip.
+  #   idx - item index
+
+  namespace upvar ::alited obDl2 obDl2
+  set lbx [$obDl2 LbxFlist]
+  set item [$lbx get $idx]
+  return [alited::file::FileStat $item]
+}
 
 # ________________________ Buttons for project list _________________________ #
 
@@ -1553,7 +1564,7 @@ proc project::Tab1 {} {
     {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 40 -validate all -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 + T 2 1 {-st nsew -rw 1 -cw 99}}
-    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext *.texKlnd -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext "*.texKlnd *.entdir" -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
     {.sbv + L - - {pack -side left}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
@@ -1561,7 +1572,7 @@ proc project::Tab1 {} {
     {fra3.fra - - - - {pack -fill both -expand 1} {}}
     {.seh2 - - - - {pack -side top -fill x}}
     {.too - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::project::klnddata(toobar)}}}
-    {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext $alited::project::win.fra.fraB2.butHelp -w 4 -h 8 -tip {-BALTIP {$alited::al(MC,prjTtext)} -MAXEXP 1}}}
+    {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext "$alited::project::win.fra.fraB2.butHelp *.texPrj" -w 4 -h 8 -tip {-BALTIP {$alited::al(MC,prjTtext)} -MAXEXP 1}}}
 }
 }
 #_______________________
@@ -1593,7 +1604,7 @@ proc project::Tab2 {} {
     {.swiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite)}}
     {.labFlist .labTrWs T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
     {fraFlist + T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
-    {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -tip {-BALTIP {$alited::al(MC,TipLbx)} -MAXEXP 1} -popup {::alited::project::LbxPopup %X %Y}}}
+    {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}
     {.sbvFlist + L - - {pack -side left}}
   }
 }
@@ -1609,7 +1620,7 @@ proc project::Tab3 {} {
     {lab2 + T 1 1 {-st ew -pady 5 -padx 3} {-t Template:}}
     {CbxTpl + L 1 3 {-st ew -pady 5} {-w 40 -h 12 -cbxsel {$::alited::al(PTP,name)} -tvar alited::al(PTP,name) -values {$alited::al(PTP,names)} -clearcom alited::project::DeleteFromTplList -selcombobox alited::project::UpdateTplText}}
     {fraTlist + T 1 8 {-st nswe -padx 3 -cw 1 -rw 1}}
-    {.TexTemplate - - - - {pack -side left -fill both -expand 1} {-h 20 -w 40 -tabnext *.butTplDef -wrap none}}
+    {.TexTemplate - - - - {pack -side left -fill both -expand 1} {-h 20 -w 40 -tabnext "*.butTplDef *.cbxTpl" -wrap none}}
     {.sbv + L - - {pack -side left}}
     {butTplDef fraTlist T 1 1 {-st w -padx 4 -pady 4} {-t Default -com alited::project::TplDefault}}
   }
@@ -1653,6 +1664,7 @@ proc project::_create {} {
     bind $lbx <Control-$a> alited::project::SelectAllFiles
   }
   bind $lbx <Double-Button-1> {::alited::project::OpenFile %y}
+  ::baltip tip $lbx {::alited::project::TipOnFile %i} -shiftX 10
   if {$ilast>-1} {Select $ilast}
   after 500 ::alited::project::HelpMe ;# show an introduction after a short pause
   set prjtex [$obDl2 TexPrj]

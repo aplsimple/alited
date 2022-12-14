@@ -205,7 +205,7 @@ proc keys::VacantList {} {
 proc keys::ReservedAdd {} {
   # Saves reserved ("action") keys to a list of keys data.
 
-  namespace upvar ::alited obPav obPav
+  namespace upvar ::alited al al
   Add action exit-app     Alt-F4 {alited::Exit; break}
   Add action find-replace Control-F {alited::find::_run; break}
   Add action find-unit    Shift-Control-F {::alited::find::FindUnit; break}
@@ -230,7 +230,8 @@ proc keys::ReservedAdd {} {
   Add action item-down    [alited::pref::BindKey 16 - F12] {+ ::alited::tree::MoveItem down yes}
   Add action goto-line    [alited::pref::BindKey 17 - Control-G] {alited::main::GotoLine; break}
   Add action insert-line  [alited::pref::BindKey 18 - Control-P] {alited::main::InsertLine; break}
-  Add action autocomplete [alited::pref::BindKey 19 - Tab] {alited::complete::AutoCompleteCommand; break}
+  if {$::alited::al(IsWindows)} {set i1 %s==0} {set i1 1}
+  Add action autocomplete [alited::pref::BindKey 19 - Tab] [list + if $i1 {alited::complete::AutoCompleteCommand; break}]
   Add action goto-bracket [alited::pref::BindKey 20 - Alt-B] {alited::main::GotoBracket; break}
   Add action file-list [alited::pref::BindKey 21 - F9] {alited::bar::BAR popList %X %Y; break}
 }

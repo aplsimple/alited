@@ -621,10 +621,12 @@ proc file::SaveFileAs {{TID ""}} {
   set alited::al(filename) [file tail $fname]
   if {[IsNoName $alited::al(filename)]} {
     set alited::al(filename) {}
+    set defext {-defaultextension .tcl}
+  } else {
+    set defext {}
   }
   set fname [$obPav chooser tk_getSaveFile alited::al(filename) -title \
-    [msgcat::mc {Save as}] -initialdir [file dirname $fname] -parent $al(WIN) \
-    -defaultextension .tcl]
+    [msgcat::mc {Save as}] -initialdir [file dirname $fname] -parent $al(WIN) {*}$defext]
   if {[IsNoName $fname]} {
     set res 0
   } elseif {[set res [SaveFileByName $TID $fname]]} {

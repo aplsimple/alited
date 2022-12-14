@@ -25,8 +25,8 @@
 </head>
 
   <div id="bodyContent" class="dokuwiki">
-    <!-- start rendered wiki content -->
-    <!-- TOC START -->
+  <!-- start rendered wiki content -->
+  <!-- TOC START -->
 <div id="dw__toc" class="dw__toc">
 <h3 class="toggle open" style="cursor: pointer;">Table of Contents</h3>
 <div aria-expanded="true" style="">
@@ -67,6 +67,7 @@
 <ul>
 <li class="level3"><div class="li"><a href="#runtool">Run tool</a></div></li>
 <li class="level3"><div class="li"><a href="#helptool">Tcl/Tk help tool</a></div></li>
+<li class="level3"><div class="li"><a href="#checktool">Check Tcl tool</a></div></li>
 <li class="level3"><div class="li"><a href="#custtool">Customizing tools</a></div></li>
 </ul></li>
 <li class="level2"><div class="li"><a href="#edit">Editing</a></div>
@@ -130,56 +131,27 @@ Briefly, <span class="curid"><a href="#" class="wikilink1" title="Table of Conte
 For a <i>quick</i> acquaintance of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, a few of demo videos are available:
 <ul>
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.3/1.Start_alited-1.3-dark.mp4">1. First start</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/1.Start_alited-1.3.5.mp4">1. First start</A>
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.3/2.Units_alited-1.3-dark.mp4">2. Units (alited's main point)</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/2.Units_alited-1.3.5.mp4">2. Units (alited's main point)</A>
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.3/3.Projects_alited-1.3-dark.mp4">3. Projects</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/3.Projects_alited-1.3.5.mp4">3. Projects</A>
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.3/4.Find_alited-1.3-dark.mp4">4. Find and replace</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/4.Find_alited-1.3.5.mp4">4. Find and replace</A>
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.3/5.Tools_alited-1.3-dark.mp4">5. Tools</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/5.Tools_alited-1.3.5.mp4">5. Tools</A>
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.3/6.Themes_alited-1.3-dark.mp4">6. Themes</A>
-</li>
-</ul>
-</p>
-
-<p>
-... or the same, just light themed:
-<ul>
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.3/1.Start_alited-1.3-light.mp4">1. First start</A>
-</li>
-
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.3/2.Units_alited-1.3-light.mp4">2. Units (alited's main point)</A>
-</li>
-
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.3/3.Projects_alited-1.3-light.mp4">3. Projects</A>
-</li>
-
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.3/4.Find_alited-1.3-light.mp4">4. Find and replace</A>
-</li>
-
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.3/5.Tools_alited-1.3-light.mp4">5. Tools</A>
-</li>
-
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.3/6.Themes_alited-1.3-light.mp4">6. Themes</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/6.Themes_alited-1.3.5.mp4">6. Themes</A>
 </li>
 </ul>
 </p>
@@ -229,8 +201,7 @@ The installation of <span class="curid"><a href="#" class="wikilink1" title="Tab
 <ul>
 
   <li> to run the installed <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, use the command:
-<pre class="code">
-wish ~/PG/alited/src/alited.tcl</code></li>
+<pre class="code">wish ~/PG/alited/src/alited.tcl
 </pre>
 </ul>
 </p>
@@ -291,8 +262,7 @@ Besides, a stand-alone <span class="curid"><a href="#" class="wikilink1" title="
 
 <p>
 If you use a stand-alone <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkit</a> instead of fully installed <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a>, run <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> with a command:
-<pre class="code">
-tclkit ~/PG/alited/src/alited.tcl</code></li>
+<pre class="code">tclkit ~/PG/alited/src/alited.tcl
 </pre>
 </p>
 
@@ -301,14 +271,13 @@ While <span class="curid"><a href="#" class="wikilink1" title="Table of Contents
 </p>
 
 <p>Another way to have <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkits</a> be friendly with the non-core packages is setting <code>TCLLIBPATH</code> environment variable before running <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>:
-<pre class="code">
-# in Linux:
-export TCLLIBPATH="~/myPrj/package1 ~/myPrj/package2"
-# in MS Windows:
-set TCLLIBPATH=~/myPrj/package1 ~/myPrj/package2
-# run alited to edit/run/debug a script
+<pre class="code"><i><font color=#4b5d50># in Linux:</font></i>
+export TCLLIBPATH=<font color=#8b2a0e>&quot;~/myPrj/package1 ~/myPrj/package2&quot;</font>
+<i><font color=#4b5d50># in MS Windows:</font></i>
+<b><font color=#3a6797>set</font></b> TCLLIBPATH=~/myPrj/package1 ~/myPrj/package2
+<i><font color=#4b5d50># run alited to edit/run/debug a script</font></i>
 tclkit alited.tcl myScript.tcl
-# or a whole project:
+<i><font color=#4b5d50># or a whole project:</font></i>
 tclkit alited.tcl ~/.config/myAlitedOptionsDir
 </pre>
 ... and when in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> we run a script, there are no errors at <code>package require package1; package require package2</code>.
@@ -336,8 +305,7 @@ Also, here are some direct links to download the stand-alone tclkits:
 </p>
 
 <p>Like <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkit</a>, <i>vanilla Tcl/Tk</i> is a stand-alone executable that can be used instead of fully deployed  <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a>. Just run <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> with a command:
-<pre class="code">
-vanillawish ~/PG/alited/src/alited.tcl</code></li>
+<pre class="code">vanillawish ~/PG/alited/src/alited.tcl
 </pre>
 </p>
 
@@ -427,29 +395,25 @@ At the next starts of <span class="curid"><a href="#" class="wikilink1" title="T
 
 <p>
 <b>1.</b> For using a previous configuration directory:
-<pre class="code">
-  tclsh alited.tcl
+<pre class="code">tclsh alited.tcl
 </pre>
 </p>
 
 <p>
 <b>2.</b> The same, with opening file(s):
-<pre class="code">
-  tclsh alited.tcl file1.tcl ?file2.tcl ...?
+<pre class="code">tclsh alited.tcl file1.tcl ?file2.tcl ...?
 </pre>
 </p>
 
 <p>
 <b>3.</b> For using a new configuration directory (it should exist!):
-<pre class="code">
-  tclsh alited.tcl new-config-dir
+<pre class="code">tclsh alited.tcl new-config-dir
 </pre>
 </p>
 
 <p>
 <b>4.</b> The same, with opening file(s):
-<pre class="code">
-  tclsh alited.tcl new-config-dir file1.tcl ?file2.tcl ...?
+<pre class="code">tclsh alited.tcl new-config-dir file1.tcl ?file2.tcl ...?
 </pre>
 </p>
 
@@ -492,59 +456,58 @@ For example:
 </p>
 
 <p>
-<pre class="code">
-#! /usr/bin/env tclsh
-#
-# It's just an example.
+<pre class="code"><i><font color=#ff0000>#! /usr/bin/env tclsh</font></i>
+<i><font color=#4b5d50>#</font></i>
+<i><font color=#4b5d50># It's just an example.</font></i>
 
-# ________________ Packages used _____________ #
-package require Tk
+<i><font color=#4b5d50># ________________ Packages used _____________ #</font></i>
+<b><font color=#3a6797>package</font></b> require Tk
 
-# ________________ "example" _________________ #
-#
-# Some words about...
+<i><font color=#4b5d50># ________________ &quot;example&quot; _________________ #</font></i>
+<i><font color=#4b5d50>#</font></i>
+<i><font color=#4b5d50># Some words about...</font></i>
 
-namespace eval example {
+<b><font color=#ca14ca>namespace</font></b> eval example {
 
-  ## ___________ example's variables _________ ##
+  <i><font color=#4b5d50>## ___________ example's variables _________ ##</font></i>
 
-  variable var1 "value 1"
-  variable var2 "value 2"
+  <b><font color=#3a6797>variable</font></b> var1 <font color=#8b2a0e>&quot;value 1&quot;</font>
+  <b><font color=#3a6797>variable</font></b> var2 <font color=#8b2a0e>&quot;value 2&quot;</font>
 
-  ## __________ example's procedures _________ ##
-  #
-  # Below are procedure doing so and so.
+  <i><font color=#4b5d50>## __________ example's procedures _________ ##</font></i>
+  <i><font color=#4b5d50>#</font></i>
+  <i><font color=#4b5d50># Below are procedure doing so and so.</font></i>
 
-  # this proc prints one
-  proc one {} {puts "one"}
+  <i><font color=#4b5d50># this proc prints one</font></i>
+  <b><font color=#ca14ca>proc</font></b> one {} {<b><font color=#3a6797>puts</font></b> <font color=#8b2a0e>&quot;one&quot;</font>}
 
-  # this proc prints two
-  proc two {} {puts "two"}
+  <i><font color=#4b5d50># this proc prints two</font></i>
+  <b><font color=#ca14ca>proc</font></b> two {} {<b><font color=#3a6797>puts</font></b> <font color=#8b2a0e>&quot;two&quot;</font>}
 
-  ## _________________ "my" __________________ ##
-  #
-  # Some words about...
+  <i><font color=#4b5d50>## _________________ &quot;my&quot; __________________ ##</font></i>
+  <i><font color=#4b5d50>#</font></i>
+  <i><font color=#4b5d50># Some words about...</font></i>
 
-  namespace eval my {
+  <b><font color=#ca14ca>namespace</font></b> eval my {
 
-    ### ___________ my's variables ___________ ###
-    variable var1 "val1"
+  <i><font color=#4b5d50>### ___________ my's variables ___________ ###</font></i>
+  <b><font color=#3a6797>variable</font></b> var1 <font color=#8b2a0e>&quot;val1&quot;</font>
 
-    ### ___________ my's procedures __________ ###
+  <i><font color=#4b5d50>### ___________ my's procedures __________ ###</font></i>
 
 
-    proc myone {} {puts "my one"}
-    proc mytwo {} {puts "my two"}
+  <b><font color=#ca14ca>proc</font></b> myone {} {<b><font color=#3a6797>puts</font></b> <font color=#8b2a0e>&quot;my one&quot;</font>}
+  <b><font color=#ca14ca>proc</font></b> mytwo {} {<b><font color=#3a6797>puts</font></b> <font color=#8b2a0e>&quot;my two&quot;</font>}
 
-    # this proc prints "my three"
-    proc mythree {} {puts "my three"}
+  <i><font color=#4b5d50># this proc prints &quot;my three&quot;</font></i>
+  <b><font color=#ca14ca>proc</font></b> mythree {} {<b><font color=#3a6797>puts</font></b> <font color=#8b2a0e>&quot;my three&quot;</font>}
 
-  ## ______________ end of "my" ______________ ##
+  <i><font color=#4b5d50>## ______________ end of &quot;my&quot; ______________ ##</font></i>
   }
 
-# _____________ end of "example" _____________ #
+<i><font color=#4b5d50># _____________ end of &quot;example&quot; _____________ #</font></i>
 }
-# _____________________  EOF _________________ #
+<i><font color=#4b5d50># _____________________  EOF _________________ #</font></i>
 </pre>
 </p>
 
@@ -553,23 +516,22 @@ This example will produce the following unit tree:
 </p>
 
 <p>
-<pre class="code">
-ROOT
+<pre class="code">ROOT
   |__ Lines 1-4
   |__ Packages used
-  |__ "example"
+  |__ <font color=#8b2a0e>&quot;example&quot;</font>
   |     |__ example's variables
   |     |__ example's procedures
   |     |     |__ one
   |     |     |__ two
-  |     |__ "my"
+  |     |__ <font color=#8b2a0e>&quot;my&quot;</font>
   |     |     |__ my's variables
   |     |     |__ my's procedures
   |     |           |__ myone
   |     |           |__ mytwo
   |     |           |__ mythree
-  |     |__ end of "my"
-  |__ end of "example"
+  |     |__ end of <font color=#8b2a0e>&quot;my&quot;</font>
+  |__ end of <font color=#8b2a0e>&quot;example&quot;</font>
   |__ EOF
 </pre>
 
@@ -607,19 +569,17 @@ The first # characters define the unit tree's level: # means 1, ## means 2, ### 
 <p>
 Still, if you want to use # alone (without adding _ = - + ~ * . : etc.), you can customize <a href="#" class="wikilink1" title="Table of Contents">alited</a></span> so that ## will mean 1st level, ### 2nd level, #### 3rd level etc., using a branch regexp like this:
 
-<pre class="code">
-^\s*#(#+)\s+([^_]+[^[:blank:]]*)
+<pre class="code">^\s*#(#+)\s+([^_]+[^[:blank:]]*)
 </pre>
 
 thus allowing the tree comments as follows:
 
-<pre class="code">
-## Initialize GUI
+<pre class="code"><i><font color=#4b5d50>## Initialize GUI</font></i>
   ...some code
-  ### This widget group
-    ... this code
-  ### That widget group
-    ... that code
+  <i><font color=#4b5d50>### This widget group</font></i>
+  ... this code
+  <i><font color=#4b5d50>### That widget group</font></i>
+  ... that code
 </pre>
 
 The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> recognizes the units by these comments and presents them as a tree.
@@ -664,6 +624,15 @@ In fact, they are moved through a code, so that you can arrange your code withou
 
 <p>
 To move a group of units, select them with Ctrl+click. Then you can use "Move Up" and "Move Down" buttons to move the group up or down in the code.
+</p>
+
+<p>
+Also, Shift key can be used to select a range of units, this way:
+<ul>
+<li> click a first unit of the range</li>
+
+<li> press Shift and click a last unit</li>
+</ul>
 </p>
 
 <p>
@@ -836,6 +805,11 @@ To open a project, just select it in the project list, then hit "Select" button.
 
 <p>
  Use <i>Create a project by template</i> button for templating projects.
+This method is based on the template of directory / file tree, in <i>Templates</i> tab.
+Use the text field to set the structure of directory, indenting it with equal indentations.
+<br>
+<b>Note</b>: There may be up to 16 templates, all their
+names being collected in the combobox. A new template is saved only at using it.
 </p>
 
 <p>
@@ -891,21 +865,19 @@ When the TODO is done, just erase it with <i>Erase</i> button.
 </p>
 
 <p>"Multiline strings" option means that Tcl strings can be continued in several lines without "\" and "\n", for example:
-<pre class="code">
-set multistr "It's
-  a multiline
-  string
-  "
+<pre class="code"><b><font color=#3a6797>set</font></b> multistr <font color=#8b2a0e>&quot;It's</font>
+<font color=#8b2a0e>  a multiline</font>
+<font color=#8b2a0e>  string</font>
+<font color=#8b2a0e>  &quot;</font>
 </pre>
 However convenient, this practice is not recommended for projects with "large" files, i.e. containing more than 2000 LOC. On these files, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> works rather slow with multiline strings.
 </p>
 
 <p>Instead, you might switch this option off and use the following layout of strings:
-<pre class="code">
-set multistr "It's \
-\n  a multiline \
-\n  string \
-\n  "
+<pre class="code"><b><font color=#3a6797>set</font></b> multistr <font color=#8b2a0e>&quot;It's \</font>
+<font color=#8b2a0e>\n  a multiline \</font>
+<font color=#8b2a0e>\n  string \</font>
+<font color=#8b2a0e>\n  &quot;</font>
 </pre>
 (or just avoid the multilines at all).
 </p>
@@ -925,7 +897,7 @@ set multistr "It's \
  The template is set in the text field, by these simple rules:
 <ul>
    <li> the lines contain directory / file names; blank lines are ignored;
-     special characters in the names (", /, \, ~, *, ? etc.) aren't allowed</li>
+   special characters in the names (", /, \, ~, *, ? etc.) aren't allowed</li>
 </ul>
 <ul>
    <li> <i>file names</i> are the names that satisfy one of -nocase patterns:</li>
@@ -937,18 +909,18 @@ set multistr "It's \
 </ul>
 <ul>
    <li> if a <i>license</i> file is found in a current project, it will be
-     copied to a templated project; other files will be created blank</li>
+   copied to a templated project; other files will be created blank</li>
 </ul>
 <ul>
    <li> all of other names are directory names</li>
 </ul>
 <ul>
    <li> first non-empty line of the template sets an initial indent,
-     the following lines must be indented at least by this indent</li>
+   the following lines must be indented at least by this indent</li>
 </ul>
 <ul>
    <li> first additional indent means an indent to set subdirectories;
-     the following subdirectories must be equally indented by this indent</li>
+   the following subdirectories must be equally indented by this indent</li>
 </ul>
 <ul>
    <li> the directories and files will be created under the project's root</li>
@@ -1068,7 +1040,7 @@ Both contain 3 buttons:
 
 <p>
 The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> has the find and replace functions united in this dialogue.
-</p>
+</p><b>~~~</b>
 
 <p>
 The dialogue provides standard options of such type. Probably, except for two of them.
@@ -1084,7 +1056,16 @@ Another uncommon option is a search in selected files. Sometimes very useful.
 </p>
 <p>
 If you select tabs of the tab bar with Ctrl+click, the "Find / Replace" dialogue will offer "All in N" meaning selected files (including a current one).
+</p><b>~~~</b>
+
+<p>
+Also, the dialogue contains a checkbox (between "Find" and "Replace" buttons) allowing to set a default geometry of the dialogue.
 </p>
+<p>
+Check it, then set the desirable geometry, then close the dialogue - this default geometry would be set every time at opening the dialogue.
+</p>
+</p><b>~~~</b>
+
 <p>
 All of the found in text / session / selected files instances are presented in the info listbox.
 </p>
@@ -1094,15 +1075,19 @@ The info listbox allows to go to a found instance's line, with just clicking it.
 </p>
 
 <p>
-While the "Find / Replace" dialogue is open, the found strings are highlighted. When you close the dialogue, the highlighting disappears.
-</p>
+The info listbox has a context menu allowing you to navigate through its items just with keys (Up / Down / Ctrl+Home / Ctrl+End).
+</p><b>~~~</b>
 
 <p>
-The info listbox has a context menu allowing you to navigate through its items just with keys (Up / Down / Ctrl+Home / Ctrl+End).
-</p>
+While the "Find / Replace" dialogue is open, the found strings are highlighted. When you close the dialogue, the highlighting disappears.
+</p><b>~~~</b>
 
 <p>
 The "Find / Replace" dialogue allows you to replace the found strings with a new one. At single replacements, first hit "Find", then "Replace" - next found strings will be presented one by one.
+</p>
+
+<p>
+To copy "Find" entry to "Replace" entry, click the button "Paste" or press Ctrl+R keys.
 </p>
 
 <br><p>
@@ -1117,8 +1102,10 @@ Search facilities of <span class="curid"><a href="#" class="wikilink1" title="Ta
 <li> Find a word</li>
 <li> Find by list</li>
 <li> Find in a directory</li>
+<li> Completion of commands and variables</li>
+<li> Highlighting words and selections</li>
 </ul>
-</p>
+</p><b>~~~</b>
 
 <p>
 Press Ctrl+Shift+F or hit "Edit / Find Unit" menu item to find unit(s) by <i>case insensitive glob</i> patterns.
@@ -1126,7 +1113,7 @@ Press Ctrl+Shift+F or hit "Edit / Find Unit" menu item to find unit(s) by <i>cas
 
 <p>
 It's very helpful when you remember a part of a unit's name, so just enter this part to find the unit.
-</p>
+</p><b>~~~</b>
 
 <p>
 To look for a proc/method declaration, you can try:
@@ -1135,15 +1122,15 @@ To look for a proc/method declaration, you can try:
 <li> press Ctrl+L, when the cursor is on its name</li>
 <li> hit "Edit / Look for Declaration" menu item</li>
 </ul>
-</p>
+</p><b>~~~</b>
 
 <p>
 For a quick search of a word (or a selected text), there is a nice Ctrl+Shift+click applied to the word. It means a search throughout <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session and is <i>very helpful</i> in some cases.
-</p>
+</p><b>~~~</b>
 
 <p>
 Sometimes, a whole list of words should be sought in a file. There is an appropriate item in "Search" menu. The search result is displayed in a text widget, so that you can copy-paste it to a code. After closing the window of search results, you can switch to another file without closing the window of search options.
-</p>
+</p><b>~~~</b>
 
 <p>
 To find a word or a selection in a directory, hit the appropriate button of the toolbar. The search will be performed by "grep" command with options:
@@ -1155,10 +1142,12 @@ To find a word or a selection in a directory, hit the appropriate button of the 
 
 <p>
 Other "grep" facilities are available in "e_menu". Run it with F4 key and hit "Search all" item.
-</p>
+</p><b>~~~</b>
 
 <p>
-To complete a command, press Tab key while the cursor is on initial characters of a command - this will offer you to select from a list of commands available in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session's files.
+To complete a command / variable, press Tab key while the cursor is on initial characters of it - this will offer you to select from a list of variables / commands available in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session's files.
+</p>
+<p>If Tab key is pressed at $ or $::, the completion list would include only the variables of current proc/method or the global variables.
 </p>
 
 <p>
@@ -1166,15 +1155,23 @@ The Tab key of this option is customizeable (like many other keys) in "Setup / P
 </p>
 
 <p>
-At the completion, the commands offered to choose are:
+At the completion, the commands to choose are:
 <ul>
 <li> not qualified for a current file</li>
-<li> qualified for others</li>
+<li> qualified for others (if they are declared so)</li>
 </ul>
+</p><b>~~~</b>
+
+<p>
+The double click on a word highlights all of its occurences (if red) or only one (if not red). E.g., this allows to view a variable's usage.
 </p>
 
 <p>
-Double clicking a word highlights all of its occurences (if red) or only one. This allows, e.g., quick overview of a variable's usage. If you want to highlight a selection, run a context menu.
+Also, the double click allows to prove that the clicked word is unique throughout the file, which greatly facilitates the introduction of new names, symbols, tags etc.
+</p>
+
+<p>
+If you want to highlight a selection, run a context menu.
 </p>
 
 <p>
@@ -1222,20 +1219,18 @@ The <i>Run</i> tool tries to run an application chosen as default for the curren
 But <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> recognizes special comments like:
 </p>
 
-<p><pre class="code">
-#RUNF: file.tcl args
-#RUNF1: file.tcl args
-#RUNF2: file.tcl args
+<p><pre class="code"><i><font color=#4b5d50>#RUNF: file.tcl args</font></i>
+<i><font color=#4b5d50>#RUNF1: file.tcl args</font></i>
+<i><font color=#4b5d50>#RUNF2: file.tcl args</font></i>
 ...
 </pre>
 which means running "tclsh <i>file.tcl</i> args". Use <i>Alt+R</i> hot keys to insert its template into a text.
 </p>
 
 <p>
-<pre class="code">
-#EXEC: command args
-#EXEC1: command args
-#EXEC2: command args
+<pre class="code"><i><font color=#4b5d50>#EXEC: command args</font></i>
+<i><font color=#4b5d50>#EXEC1: command args</font></i>
+<i><font color=#4b5d50>#EXEC2: command args</font></i>
 ...
 </pre>
 which means running "<i>command</i> args". Use <i>Alt+E</i> hot keys to insert its template into a text.
@@ -1345,15 +1340,85 @@ You can download Tcl/Tk 8.6.11 help by using the direct link:
 
 <p>
 Also, to download the last version of Tcl/Tk 8.6 help, you can use:
-<pre class="code">
-  wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6
+<pre class="code">wget <font color=#6c3e67>-r</font> <font color=#6c3e67>-k</font> <font color=#6c3e67>-l</font> 2 <font color=#6c3e67>-p</font> -<font color=#6c3e67>-accept-regex</font>=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6
 </pre>
 For Tcl/Tk 8.7 help, you can use:
-<pre class="code">
-  wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.7.+ https://www.tcl.tk/man/tcl8.7
+<pre class="code">wget <font color=#6c3e67>-r</font> <font color=#6c3e67>-k</font> <font color=#6c3e67>-l</font> 2 <font color=#6c3e67>-p</font> -<font color=#6c3e67>-accept-regex</font>=.+/man/tcl8\.7.+ https://www.tcl.tk/man/tcl8.7
 </pre>
 Tcl/Tk context help in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> will be enabled by setting a path to the downloaded man pages in "Preferences / Tools / Path to man/tcl" field.
 </p>
+
+
+<br>
+<p>
+<h3 id=checktool><i>Check Tcl tool</i></h3>
+</p>
+
+<p>
+The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> provides a tool to check Tcl code for some consistencies. The tool is available in "Tools" menu and in the tool bar.
+</p>
+
+<p>
+Every proc/method is checked for consistencies of braces, brackets and quotes as well as for duplicate unit names. Also a whole of the file is checked for the consistencies.
+</p>
+
+<p>
+It's very useful at getting an obscure Tcl error.
+</p>
+
+<p>
+The results contain general info about a file and specific data on its <em>leaves</em> (procedures and methods). The <em>branches</em> are not checked.
+</p>
+<p>
+The <em>file results</em> cover the whole file. There might be inconsistencies in some specific leaves and seemingly good results for the file as whole.
+</p>
+<p>
+The file results include <em>(a/b/c/d)</em> data meaning inconsistencies found
+ for {}, [], () and "".
+</p>
+<p>
+The clicking on a result line would open its appropriate unit.
+</p>
+<p>
+An inconsistency for {} may occur if a procedure is located at edges of a namespace or a
+ class - in such cases the unit may include its finishing braces. Another case of inconsistency is when some procedure declares a procedure inside itself.
+</p>
+<p>
+To get rid of these "inconsistencies" you can insert branches named like "End of class/NS so and so". Or use a trick with semicolon before <em>proc</em> command, this way:
+<pre class="code"><i><font color=#4b5d50># ________________________ NS fooNS _________________________ #</font></i>
+<b><font color=#ca14ca>namespace</font></b> eval fooNS {
+  <i><font color=#4b5d50>## ________________________ Procedures _________________________ ##</font></i>
+  <b><font color=#ca14ca>proc</font></b> foo {} {
+      some_command
+      <i><font color=#4b5d50># a proc inside another proc: good to mark and skip in the unit tree</font></i>
+    ; <b><font color=#ca14ca>proc</font></b> foo2 {} {
+          some_command2
+      }
+  }
+<i><font color=#4b5d50># ________________________ EONS fooNS _________________________ #</font></i>
+}
+</pre>
+</p>
+<p>
+There may be inconsistencies of "", when the double quotes are used in regular expressions. Also, some procedures or methods may be rather voluminous (though mostly uniform, like a creation of menu items), so that they are divided into components with <a href=#units1> alited's branches</a>. As a result, their units become "inconsistent".
+</p>
+<p>
+To overcome these false inconsistencies, you can use special comments meaning "this unit is checked and proved normal":
+<pre class="code"><i><font color=#4b5d50># alited_checked</font></i>
+</pre>
+or this way:
+<pre class="code">command checked...  ;<i><font color=#4b5d50># alited_checked</font></i>
+</pre>
+</p>
+
+<p>
+<b>Note</b>: The checking for consistencies is executed for a current proc / method before "Run the file" automatically! If found, they are reported about in the status bar, with a bell.
+</p>
+
+<p>
+It's very good to eliminate all inconsistencies in a project - this would greatly help with eliminating the errors and omissions, however trifling they seem to be.
+</p>
+
 
 <br>
 <p>
@@ -1502,27 +1567,25 @@ applied to a current unit, moves it down
 <p>
 <b>Note 1:
 </b> <i>Comment</i> and <i>Uncomment</i> commands use escaping/unescaping braces with <code>#\{ #\}</code> patterns. Thus, you can safely comment/uncomment any code blocks, this way:
-<pre class="code">
-  set num 2
-  if { $num == 1 } {
-    puts 1
-#!  #\} elseif #\{ $num == 2 #\} #\{
-#!    puts 2
-  } else {
-    puts 99
-  }
+<pre class="code"><b><font color=#3a6797>set</font></b> num 2
+<b><font color=#3a6797>if</font></b> { <font color=#1b1baa>$num</font> == 1 } {
+  <b><font color=#3a6797>puts</font></b> 1
+<i><font color=#ff0000>#!#\} elseif #\{ $num == 2 #\} #\{</font></i>
+<i><font color=#ff0000>#!  puts 2</font></i>
+} <b><font color=#3a6797>else</font></b> {
+  <b><font color=#3a6797>puts</font></b> 99
+}
 </pre>
 instead of this mistaken out-commenting as noted in
 <a href="https://groups.google.com/g/comp.lang.tcl/c/F0K3HdZ2stw">comp.lang.tcl</a>:
-<pre class="code">
-  set num 2
-  if { $num == 1 } {
-    puts 1
-#  } <b>elseif { $num == 2 } {</b>
-#    puts 2
-  } else {
-    puts 99
-  }
+<pre class="code"><b><font color=#3a6797>set</font></b> num 2
+<b><font color=#3a6797>if</font></b> { <font color=#1b1baa>$num</font> == 1 } {
+  <b><font color=#3a6797>puts</font></b> 1
+<i><font color=#4b5d50>#} <b>elseif { $num == 2 } {</b></font></i>
+<i><font color=#4b5d50>#  puts 2</font></i>
+} <b><font color=#3a6797>else</font></b> {
+  <b><font color=#3a6797>puts</font></b> 99
+}
 </pre>
 where <code>elseif { $num == 2 }</code> is still active.
 </p>
@@ -1530,25 +1593,27 @@ where <code>elseif { $num == 2 }</code> is still active.
 </b> If you comment a code with menu "Edit/Comment" or keys Ctrl+[, you should uncomment it with "Edit/Uncomment" or Ctrl+], to uncomment braces as well.
 </p>
 <p><b>Note 3:
-</b> Anyhow, avoid using non-escaped unmatched braces in a command. Instead, use them escaped, as in the following snippet:
-<pre class="code">
-  proc foo {} {
-    puts \{
-    foreach c [split qwerty {}] {
-      puts -nonewline $c-
-    }
-    puts \n\}    ;# also fit: puts "\n\}"
+</b> Anyhow, avoid using non-escaped unmatched braces in a command.
+</p>
+<p>Escape braces, as in the following snippet:
+<pre class="code"><b><font color=#ca14ca>proc</font></b> foo {} {
+  <b><font color=#3a6797>puts</font></b> \{
+  <b><font color=#3a6797>foreach</font></b> c [<b><font color=#3a6797>split</font></b> qwerty {}] {
+    <b><font color=#3a6797>puts</font></b> <font color=#6c3e67>-nonewline</font> <font color=#1b1baa>$c</font>-
   }
-  foo
-
-  # BAD STYLE: there will be Tcl error after
-  # removing either of bracing "puts" or removing/escaping its brace
-  proc foo {} {
-    puts "{"
-    foreach c [split qwerty {}] {puts -nonewline $c-}
-    puts "\n}"
-  }
-  foo
+  <b><font color=#3a6797>puts</font></b> \n\}    ;<i><font color=#4b5d50># also fit: puts &quot;\n\}&quot;</font></i>
+}
+foo
+</pre>
+instead of:
+<pre class="code"><i><font color=#4b5d50># BAD STYLE: there will be Tcl error after</font></i>
+<i><font color=#4b5d50># removing either of bracing &quot;puts&quot; or removing/escaping its brace</font></i>
+<b><font color=#ca14ca>proc</font></b> foo {} {
+  <b><font color=#3a6797>puts</font></b> <font color=#8b2a0e>&quot;<font color=#1b1baa>{</font>&quot;</font>
+  <b><font color=#3a6797>foreach</font></b> c [<b><font color=#3a6797>split</font></b> qwerty {}] {<b><font color=#3a6797>puts</font></b> <font color=#6c3e67>-nonewline</font> <font color=#1b1baa>$c</font>-}
+  <b><font color=#3a6797>puts</font></b> <font color=#8b2a0e>&quot;\n<font color=#1b1baa>}</font>&quot;</font>
+}
+foo
 </pre>
 </p>
 
@@ -1737,70 +1802,46 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 <a href="https://github.com/aplsimple/alited" rel="nofollow">Download #2</a>
 </li>
 
+<li class="level1"><div class="li">
+<a href="https://github.com/aplsimple/alited/releases/tag/install-alited-v1.3" rel="nofollow">Installers</a>
+</li>
+<br>
 
 <li>
 <A href="alited.html">Reference</A>
 </li>
-
-
-<li>
-<A href="https://github.com/aplsimple/alited/releases">Demo videos</A> (dark themed):
-
-<ul>
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.3/1.Start_alited-1.3-dark.mp4">1. First start</A>
-</li>
+<br>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.3/2.Units_alited-1.3-dark.mp4">2. Units</A>
-</li>
-
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.3/3.Projects_alited-1.3-dark.mp4">3. Projects</A>
-</li>
-
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.3/4.Find_alited-1.3-dark.mp4">4. Find and replace</A>
-</li>
-
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.3/5.Tools_alited-1.3-dark.mp4">5. Tools</A>
-</li>
-
-<li>
-<A href="https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.3/6.Themes_alited-1.3-dark.mp4">6. Themes</A>
-</li>
-</ul>
-</li>
-<li>
-<A href="https://github.com/aplsimple/alited/releases">Demo videos</A> (light themed):
+<A href="https://github.com/aplsimple/alited/releases">Demo videos</A>:
 
 <ul>
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/1.Start_alited-1.3/1.Start_alited-1.3-light.mp4">1. First start</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/1.Start_alited-1.3.5.mp4">1. First start</A>
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/2.Units_alited-1.3/2.Units_alited-1.3-light.mp4">2. Units</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/2.Units_alited-1.3.5.mp4">2. Units</A>
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/3.Projects_alited-1.3/3.Projects_alited-1.3-light.mp4">3. Projects</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/3.Projects_alited-1.3.5.mp4">3. Projects</A>
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/4.Find_alited-1.3/4.Find_alited-1.3-light.mp4">4. Find and replace</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/4.Find_alited-1.3.5.mp4">4. Find and replace</A>
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/5.Tools_alited-1.3/5.Tools_alited-1.3-light.mp4">5. Tools</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/5.Tools_alited-1.3.5.mp4">5. Tools</A>
 </li>
 
 <li>
-<A href="https://github.com/aplsimple/alited/releases/download/6.Themes_alited-1.3/6.Themes_alited-1.3-light.mp4">6. Themes</A>
+<A href="https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/6.Themes_alited-1.3.5.mp4">6. Themes</A>
 </li>
 </ul>
 </li>
+<br>
 
 <li>
 <a href="https://wiki.tcl-lang.org/">Tcl/Tk distributions:</a>
@@ -1809,6 +1850,7 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 <li><a href="https://www.magicsplat.com/tcl-installer">Magicsplat distribution for MS Windows</a></li>
 </ul>
 </li>
+<br>
 
 <li>
 <a href="https://github.com/aplsimple/tclbag/releases">Tclkits</a>
@@ -1829,8 +1871,10 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 </li>
 </ul>
 </li>
+<br>
 
 <li> <a href=https://github.com/auriocus/kbskit/releases>Linux, MS Windows and MacOS kbskits</a></li>
+<br>
 
 <li>
 <a href="https://github.com/aplsimple/tclbag/releases">Vanilla Tcl/Tk</a>
@@ -1848,6 +1892,7 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 </li>
 </ul>
 </li>
+<br>
 
 <li> <a href=https://github.com/aplsimple/tclbag/releases/download/TclTk-docs-8.6.11/TclTk-docs-8.6.11.zip>TclTk-docs-8.6.11.zip</a></li>
 

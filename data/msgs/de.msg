@@ -236,7 +236,6 @@ namespace eval ::alited {
     {Redo changes} {Änderungen wiederherstellen}
     {Text of a reminder} {Text einer Erinnerung}
     {TODO reminders for the past: %d. Delete them or try "Select".} {TODO Erinnerungen an die Vergangenheit: %d. Lösche sie oder versuche "Auswählen".}
-    "You may select file(s)\nand open them with a context menu.\n\nOr just double-click." "Datei(en) auswählen\nund über das Kontextmenü öffnen.\n\nOder öffne sie mit Double-click."
     {No selected files} {Keine ausgewählte(n) Datei(en)}
     {Open file:} {Ausgewählt Datei:}
     {Open files: %n} {Ausgewählten Dateien: %n}

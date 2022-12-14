@@ -13,8 +13,11 @@ namespace eval ::apave {
 
 # ________________________ apave's global variables _________________________ #
 
-  set ::apave::FGMAIN #000000
+  set ::apave::FGMAIN #000000   ;# base fg/bg
   set ::apave::BGMAIN #d9d9d9
+  set ::apave::FGMAIN2 #000000  ;# field fg/bg
+  set ::apave::BGMAIN2 #ffffff
+
   set ::apave::FONTMAIN [font actual TkDefaultFont]
   set ::apave::FONTMAINBOLD [list {*}$::apave::FONTMAIN -weight bold]
 
@@ -568,6 +571,11 @@ proc ::apave::initStyles {} {
   initStyle TButtonWestBold TButton -anchor w -font $::apave::FONTMAINBOLD
   initStyle TButtonWestHL TButton -anchor w -foreground [lindex [obj csGet] 4]
   initStyle TMenuButtonWest TMenubutton -anchor w -font $::apave::FONTMAIN -relief raised
+  initStyle TreeNoHL Treeview -borderwidth 0
+  lassign [obj csGet] - - - - thlp tbgS tfgS - - bclr
+  ttk::style map TreeNoHL {*}[ttk::style map Treeview] \
+    -foreground [list {selected focus} $tfgS {selected !focus} $tfgS] \
+    -background [list {selected focus} $tbgS {selected !focus} $tbgS]
 }
 #_______________________
 
@@ -1658,6 +1666,8 @@ oo::class create ::apave::ObjectTheming {
     }
     set ::apave::FGMAIN $fg
     set ::apave::BGMAIN $bg
+    set ::apave::FGMAIN2 $fE
+    set ::apave::BGMAIN2 $bE
     catch {
       if {[my csDark $ncolor]} {::baltip::configure -relief groove}
     }
@@ -1999,8 +2009,8 @@ oo::class create ::apave::ObjectTheming {
       my Ttk_style configure $ts -font $fontdef
       my Ttk_style configure $ts -foreground $tfg1
       my Ttk_style configure $ts -background $tbg1
-      my Ttk_style map $ts -background [list pressed $tbg2 active $tbg2 alternate $tbg2]
-      my Ttk_style map $ts -foreground [list disabled $tfgD pressed $bclr active $aclr alternate $tfg2 focus $tfg2 selected $tfg1]
+      my Ttk_style map $ts -background [list pressed $tbg2 active $tbg2 focus $tbgS alternate $tbg2]
+      my Ttk_style map $ts -foreground [list disabled $tfgD pressed $bclr active $aclr focus $tfgS alternate $tfg2 focus $tfg2 selected $tfg1]
       my Ttk_style map $ts -bordercolor [list focus $bclr pressed $bclr]
       my Ttk_style map $ts -lightcolor [list focus $bclr]
       my Ttk_style map $ts -darkcolor [list focus $bclr]
@@ -2059,10 +2069,15 @@ oo::class create ::apave::ObjectTheming {
       } else {
         my Ttk_style configure $ts -foreground $tfg2
         my Ttk_style configure $ts -background $tbg2
-        my Ttk_style map $ts -foreground [list readonly $tfgD disabled $tfgD selected $tfgS]
-        my Ttk_style map $ts -background [list readonly $tbgD disabled $tbgD selected $tbgS]
-        my Ttk_style map $ts -fieldforeground [list readonly $tfgD disabled $tfgD]
-        my Ttk_style map $ts -fieldbackground [list readonly $tbgD disabled $tbgD]
+        if {$ts eq {Treeview}} {
+          my Ttk_style map $ts -foreground [list readonly $tfgD disabled $tfgD {selected focus} $tfgS {selected !focus} $thlp]
+          my Ttk_style map $ts -background [list readonly $tbgD disabled $tbgD {selected focus} $tbgS {selected !focus} $tbg1]
+        } else {
+          my Ttk_style map $ts -foreground [list readonly $tfgD disabled $tfgD selected $tfgS]
+          my Ttk_style map $ts -background [list readonly $tbgD disabled $tbgD selected $tbgS]
+          my Ttk_style map $ts -fieldforeground [list readonly $tfgD disabled $tfgD]
+          my Ttk_style map $ts -fieldbackground [list readonly $tbgD disabled $tbgD]
+        }
       }
     }
     ttk::style configure Heading -font $fontdef -relief raised -padding 1 -background $tbg1

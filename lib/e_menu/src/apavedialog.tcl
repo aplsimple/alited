@@ -1121,7 +1121,7 @@ oo::class create ::apave::APaveDialog {
       lappend widlist [list fraM $prevh T 10 7 {-st nswe -pady 3 -rw 1}]
       lappend widlist [list TexM - - 1 7 {pack -side left -expand 1 -fill both -in \
         $qdlg.fra.fraM} [list -h $il -w $maxw {*}$optsFontM {*}$optsMisc \
-        -wrap word -textpop 0 -tabnext $qdlg.fra.[lindex $buttons 0]]]
+        -wrap word -textpop 0 -tabnext "$qdlg.fra.[lindex $buttons 0] *but0"]]
       if {$scroll} {
         lappend widlist {sbv texM L 1 1 {pack -in $qdlg.fra.fraM}}
       }

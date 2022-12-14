@@ -1,6 +1,17 @@
 # LAST CHANGES:
 
 
+Version `1.3.5.1 (14 Dec'22)`
+
+  - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
+  - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
+  - CHANGE: colors of selection for treeviews
+  - CHANGE: tips on Projects' file list
+  - CHANGE: About / Acknowledgements
+  - CHANGE: docs
+  - CHANGE: packages: apave/e_menu 3.6.1
+
+
 Version `1.3.5 (7 Dec'22)`
 
   - BUGFIX: (partly) issues with tinting

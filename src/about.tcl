@@ -88,6 +88,7 @@ proc about::About {} {
     [list "link-tkcon" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Tkcon"] \
     [list "link_" "::apave::openDoc %t@@https://aplsimple.github.io/en/misc/links/links.html@@"] \
     [list "linkRH" "::apave::openDoc %t@@http://www.hwaci.com/drh/@@"] \
+    [list "linkBL" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/bll@@"] \
     ]
 
   ### ________________________ "General" tab _________________________ ###
@@ -124,7 +125,7 @@ proc about::About {} {
     \u2022 <link-baltip>baltip $vbaltip</link-baltip>\n\n \
     \u2022 <link-bartabs>bartabs $vbartabs</link-bartabs>\n\n \
     \u2022 <link-hl_tcl>hl_tcl $vhl_tcl</link-hl_tcl>\n\n \
-    \u2022 <link-aloupe>aloupe v0.9.5</link-aloupe>\n\n \
+    \u2022 <link-aloupe>aloupe v0.9.6</link-aloupe>\n\n \
     \u2022 <link-tkcon>tkcon v2.7</link-tkcon>\n\n \
     \u2022 <link-awthemes>awthemes $vawthemes</link-awthemes>\n\n \
     \u2022 <link-ale_themes>ale_themes</link-ale_themes>\n\n \
@@ -144,6 +145,7 @@ proc about::About {} {
     \u2022 <linkPO>Paul Obermeier</linkPO>\n \
     \u2022 <linkAN>Ashok P. Nadkarni</linkAN>\n \
     \u2022 <linkRD>rdbende</linkRD>\n \
+    \u2022 <linkBL>Brad Lanam</linkBL>\n \
     \u2022 <linkPW>Paul Walton</linkPW>\n \
     \u2022 <linkJO>Johann Oberdorfer</linkJO>\n \
     \u2022 <linkRS>Richard Suchenwirth</linkRS>\n \

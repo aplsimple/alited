@@ -24,4 +24,9 @@
  Also, there may be shown inconsistencies of "", when the double quotes
  are used in regular expressions.
 
- Take these artifacts "as is", being noticed, so that's okay.
+ To overcome these false inconsistencies, you can use special comments
+ meaning "this unit is checked and proved normal":
+    <b># alited_checked</b>
+
+ <r>Note</r>: The checking for consistencies is executed for a current
+ proc / method before <b>Run the file</b> tool automatically!

@@ -467,7 +467,7 @@ proc tool::AfterStartDlg {} {
   set head [msgcat::mc "\n Enter commands to be run after starting alited.\n They can be Tcl or executables.\n"]
   set run [string map [list $alited::EOL \n] $al(afterstart)]
   lassign [$obDl2 input {} $al(MC,afterstart) [list \
-    tex "{[msgcat::mc Commands:]    } {} {-w 80 -h 16 -tabnext butOK}" "$run" ] \
+    tex "{[msgcat::mc Commands:]    } {} {-w 80 -h 16 -tabnext {butOK butCANCEL}}" "$run" ] \
       -head $head -help {alited::tool::HelpTool %w 1}] res run
   if {$res} {
     set al(afterstart) [string map [list \n $alited::EOL] [string trim $run]]
@@ -554,12 +554,12 @@ proc tool::BeforeRunDialogue {focrun} {
   if {$focrun || [ComForced]} {set foc {-focus cbx}} {set foc {}}
   lassign [$obDl2 input {} $al(MC,beforerun) [list \
     seh1 {{} {-pady 15}} {} \
-    Tex "{$prompt2} {} {-w 80 -h 16 -tabnext *cbx*}" $run \
+    Tex "{$prompt2} {} {-w 80 -h 16 -tabnext {*cbx* *CANCEL}}" $run \
     seh2 {{} {-pady 15}} {} \
     lab {{} {} {-t { Also, you can set "forced command" to be run by "Run" tool:}}} {} \
     fiL [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
     btT1 [list {} {-padx 5} "-com alited::tool::DeleteForcedRun -tip Delete -toprev 1 -image [::apave::iconImage no]"] {} \
-    butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test}" [msgcat::mc Test] \
+    butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test -tabnext *butOK}" [msgcat::mc Test] \
   ] -head $head {*}$foc -help {alited::tool::HelpTool %w 2}] \
   res run com
   return [list $res $run $com]

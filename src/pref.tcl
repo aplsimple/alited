@@ -499,7 +499,7 @@ proc pref::General_Tab1 {} {
     {seh_2 fra2 T 1 2 {-pady 4}}
     {lab + T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra3 + T 1 2 {-st nsew -rw 1 -cw 1}}
-    {.TexNotes - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 90 -wrap word -tabnext $alited::pref::win.fra.fraB.butHelp -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
+    {.TexNotes - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 90 -wrap word -tabnext "$alited::pref::win.fra.fraB.butHelp *.spxCurw" -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
     {.sbv + L - - {pack -side left}}
   }
 }
@@ -754,12 +754,12 @@ proc pref::Edit_Tab2 {} {
     {fraTab2.scf.sehclr fraTab2.scf.FraDefClr1 T 1 2 {-pady 5}}
     {fraTab2.scf.fra2 + T 1 2 {-st nsew}}
     {.lab - - - - {pack -side left -anchor ne -pady 3 -padx 3} {-t "Code snippet:"}}
-    {.TexSample - - - - {pack -side left -fill both -expand 1} {-h 7 -w 48 -afteridle alited::pref::UpdateSyntaxTab}}
+    {.TexSample - - - - {pack -side left -fill both -expand 1} {-h 7 -w 48 -afteridle alited::pref::UpdateSyntaxTab -tabnext "*.texTclKeys *.but3"}}
     {.sbv + L - - {pack -side right}}
     {fraTab2.scf.seh3 fraTab2.scf.fra2 T 1 2 {-pady 5}}
     {fraTab2.scf.fra3 + T 1 2 {-st nsew}}
     {.labAddKeys - - - - {pack -side left -anchor ne -pady 3 -padx 3} {-t "Your commands:"}}
-    {.TexTclKeys - - - - {pack -side left -fill both -expand 1} {-h 3 -w 48 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
+    {.TexTclKeys - - - - {pack -side left -fill both -expand 1} {-h 3 -w 48 -wrap word -tabnext "$alited::pref::win.fra.fraB.butHelp *.texSample"}}
     {.sbv + L - - {pack -side right}}
   }
 }
@@ -799,12 +799,12 @@ proc pref::Edit_Tab3 {} {
     {fraTab3.scf.sehclr fraTab3.scf.fraDefClr2 T 1 2 {-pady 5}}
     {fraTab3.scf.fra2 + T 1 2 {-st nsew}}
     {.lab - - - - {pack -side left -anchor ne -pady 3 -padx 3} {-t "Code snippet:"}}
-    {.TexCSample - - - - {pack -side left -fill both -expand 1} {-h 7 -w 48 -wrap word}}
+    {.TexCSample - - - - {pack -side left -fill both -expand 1} {-h 7 -w 48 -wrap word -tabnext "*.texCKeys *.but3"}}
     {.sbv + L - - {pack -side right}}
     {fraTab3.scf.seh3 fraTab3.scf.fra2 T 1 2 {-pady 5}}
     {fraTab3.scf.fra3 + T 1 2 {-st nsew}}
     {.lab - - - - {pack -side left -anchor ne -pady 3 -padx 3} {-t "Your key words:"}}
-    {.TexCKeys - - - - {pack -side left -fill both -expand 1} {-h 3 -w 48 -wrap word -tabnext $alited::pref::win.fraB.butOK}}
+    {.TexCKeys - - - - {pack -side left -fill both -expand 1} {-h 3 -w 48 -wrap word -tabnext "$alited::pref::win.fra.fraB.butHelp *.texCSample"}}
     {.sbv + L - - {pack -side right}}
   }
 }
@@ -894,6 +894,8 @@ proc pref::InitSyntaxTcl {colornames} {
   set tex [$obDl2 TexSample]
   lassign [$obDl2 csGet] - - - - - - - - tfgD bclr
   $tex configure -highlightbackground $tfgD -highlightcolor $bclr
+  set texC [$obDl2 TexCSample]
+  $texC configure -highlightbackground $tfgD -highlightcolor $bclr
   if {[string trim [$tex get 1.0 end]] eq {}} {
   $obDl2 displayText $tex {proc foo {args} {
   # Tcl code to test colors.

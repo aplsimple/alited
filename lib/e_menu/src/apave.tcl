@@ -3181,9 +3181,19 @@ oo::class create ::apave::APave {
     }
     if {[set wnext [::apave::getOption -tabnext {*}$attrs]] ne {}} {
       set wnext [string trim $wnext "\{\}"]
+      lassign $wnext wnext wprev
       if {$wnext eq {0}} {set wnext $wdg} ;# disables Tab on this widget
+      if {$wprev eq {}} {set wprev $wnext}
+      if {[::iswindows]} {
+        set i1 {{%s}==0}  ;# in Windows: Shift+Tab doesn't work in text
+      } else {
+        set i1 1
+      }
+      set c1 "[self] focusNext $w $wnext ; break"
+      set c2 "[self] focusNext $w $wprev ; break"
+      set i2 [expr {$wprev ne {}}]
       after idle [list if "\[winfo exists $wdg\]" [list bind $wdg <Key> \
-        [list if {{%K} eq {Tab}} "[self] focusNext $w $wnext ; break" ] ] ]
+        [list + if {{%K} eq {Tab}} [list if $i1 $c1 elseif $i2 $c2]]]]
       set attrs [::apave::removeOptions $attrs -tabnext]
     }
     return $addcomms

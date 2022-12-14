@@ -989,7 +989,7 @@ proc find::SearchByList {} {
     if {$al(matchSBL) eq {}} {set al(matchSBL) $al(MC,frExact)}
     after idle [list catch {set ::alited::al(FN2WINDOW) $::apave::MODALWINDOW}]
     lassign [$obFN2 input {} [msgcat::mc {Find by List}] [list \
-      Text "{[msgcat::mc List:]} {} {-w 50 -h 8 -tabnext *radA1}" "$text" \
+      Text "{[msgcat::mc List:]} {} {-w 50 -h 8 -tabnext {*radA1 *CANCEL}}" "$text" \
       seh1  {{} {} {}} {} \
       radA  {$::alited::al(MC,frMatch)} {"$::alited::al(matchSBL)" "$::alited::al(MC,frExact)" Glob RE} \
       seh2  {{} {} {}} {} \

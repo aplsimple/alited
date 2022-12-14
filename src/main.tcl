@@ -652,12 +652,18 @@ proc main::BindsForText {TID wtxt} {
   #   TID - tab's ID
   #   wtxt - text widget's path
 
+  namespace upvar ::alited al al obPav obPav
   if {[alited::bar::BAR isTab $TID]} {
     bind $wtxt <FocusIn> [list after 500 "::alited::main::FocusInText $TID $wtxt"]
   }
   bind $wtxt <Control-ButtonRelease-1> "::alited::find::LookDecl ; break"
   bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
   bind $wtxt <Control-Tab> {::alited::bar::ControlTab}
+  if {$al(IsWindows)} {
+    # unlike Unix, Shift+Key doesn't work in Windows
+    bind $wtxt <Tab> \
+      [list + if {{%K} eq {Tab} && {%s}==1} "focus [$obPav LbxInfo]; break"]
+  }
   bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}
   ::apave::bindToEvent $wtxt <ButtonRelease-1> alited::main::SaveVisitInfo $wtxt
   ::apave::bindToEvent $wtxt <KeyRelease> alited::main::SaveVisitInfo $wtxt %K %s
@@ -731,14 +737,7 @@ proc main::_create {} {
   # Creates a main form of the alited.
 
   namespace upvar ::alited al al obPav obPav
-  lassign [$obPav csGet] - - ::alited::FRABG - - - - - bclr
-  ttk::style configure TreeNoHL {*}[ttk::style configure Treeview] -borderwidth 0
-  ttk::style map TreeNoHL {*}[ttk::style map Treeview] \
-    -bordercolor [list focus $bclr active $bclr] \
-    -lightcolor [list focus $::alited::FRABG active $::alited::FRABG] \
-    -darkcolor [list focus $::alited::FRABG active $::alited::FRABG]
-  ttk::style layout TreeNoHL [ttk::style layout Treeview]
-  $obPav untouchWidgets *.frAText *.lbxInfo *.too*
+  $obPav untouchWidgets *.frAText *.lbxInfo *.lbxFlist *.too*
   # make the main apave object and populate it
   $obPav makeWindow $al(WIN).fra alited
 
@@ -828,7 +827,7 @@ proc main::_create {} {
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$alited::PanTop_wh}}
     {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3}}
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
-    {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both -padx 0 -pady 0 -ipadx 0 -ipady 0} {-background $::alited::FRABG}}
+    {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both -padx 0 -pady 0 -ipadx 0 -ipady 0} {-background $::apave::BGMAIN2}}
     {.fraTop.panTop.frAText.Text - - - - {pack -expand 1 -fill both} {-bd 0 -w 80 -h 20 -gutter GutText -gutterwidth $::alited::al(ED,gutterwidth) -guttershift $::alited::al(ED,guttershift) $alited::al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
 {#
@@ -873,7 +872,6 @@ proc main::_create {} {
   bind $lbxi <ButtonPress-3> {alited::info::PopupMenu %X %Y}
   bind [$obPav ToolTop] <ButtonPress-3> {::alited::tool::PopupBar %X %Y}
   ::baltip tip [$obPav Labstat4] = -command ::alited::main::TipStatus -per10 0
-
 }
 # ________________________ Main _run _________________________ #
 
