@@ -886,9 +886,9 @@ proc pref::InitSyntax {lng} {
 }
 #_______________________
 
-proc pref::InitSyntaxTcl {colornames} {
+proc pref::InitSyntaxTcl {colors} {
   # Initializes syntax stuff for Tcl.
-  #    colornames - names of colors
+  #    colors - highlighting colors
 
   fetchVars
   set tex [$obDl2 TexSample]
@@ -907,17 +907,13 @@ proc pref::InitSyntaxTcl {colornames} {
   set wk [$obDl2 TexTclKeys]
   ::apave::bindToEvent $wk <FocusOut> alited::pref::UpdateSyntaxTab
   set keywords [string trim [$wk get 1.0 end]]
-  ::hl_tcl::hl_init $tex -dark [CsDark] \
-    -multiline 1 -keywords $keywords \
-    -font $al(FONT,txt) -colors $colornames \
-    -insertwidth $al(CURSORWIDTH)
-  ::hl_tcl::hl_text $tex
+  alited::SyntaxHighlight tcl $tex $colors [GetCS] -keywords $keywords
 }
 #_______________________
 
-proc pref::InitSyntaxC {colornames} {
+proc pref::InitSyntaxC {colors} {
   # Initializes syntax stuff for C/C++.
-  #    colornames - names of colors
+  #    colors - highlighting colors
 
   fetchVars
   set tex [$obDl2 TexCSample]
@@ -935,11 +931,7 @@ proc pref::InitSyntaxC {colornames} {
   set wk [$obDl2 TexCKeys]
   ::apave::bindToEvent $wk <FocusOut> alited::pref::UpdateSyntaxTab 2
   set keywords [string trim [$wk get 1.0 end]]
-  ::hl_c::hl_init $tex -dark [CsDark] \
-    -multiline 1 -keywords $keywords \
-    -font $al(FONT,txt) -colors $colornames \
-    -insertwidth $al(CURSORWIDTH)
-  ::hl_c::hl_text $tex
+  alited::SyntaxHighlight c $tex $colors [GetCS] -keywords $keywords
 }
 #_______________________
 

@@ -216,6 +216,19 @@ proc unit_tpl::InText {wtxt} {
     ::tk::TextSetCursor $wtxt $pos
   }
 }
+#_______________________
+
+proc unit_tpl::SyntaxText {wtxt} {
+  # Prepares syntax highlighting of template's text
+  #   wtxt - the text's path
+
+  namespace upvar ::alited al al obDl3 obDl3
+  set clrnams [::hl_tcl::hl_colorNames]
+  set clrCURL [lindex [$obDl3 csGet] 2]  ;# no line highlighting
+  foreach nam $clrnams {lappend colors $al(ED,$nam)}
+  lappend colors $clrCURL
+  alited::SyntaxHighlight tcl $wtxt $colors
+}
 
 # ________________________ GUI Handlers _________________________ #
 
@@ -487,6 +500,7 @@ proc unit_tpl::_create {{geom ""}} {
   UpdateTree no
   Select
   set wtxt [$obDl3 TexTpl]
+  SyntaxText $wtxt
   bind $tree <<TreeviewSelect>> ::alited::unit_tpl::Select
   bind $tree <Delete> ::alited::unit_tpl::Delete
   bind $tree <Double-Button-1> ::alited::unit_tpl::Ok

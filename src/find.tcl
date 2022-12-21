@@ -670,7 +670,6 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
     lappend allfnd {*}[FindAll $wtxt $TID $tagme]
     if {$data(_ERR_)} break
   }
-  alited::info::Clear 0
   ShowResults1 $allfnd
 }
 #_______________________

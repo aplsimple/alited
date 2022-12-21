@@ -780,7 +780,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.BtTDown - - - - {pack -side left -fill x} {-image alimg_down -com {alited::tree::MoveItem down}}}
     {.fraBot.panBM.fraTree.fra1.sev2 - - - - {pack -side left -fill y -padx 5}}
     {.fraBot.panBM.fraTree.fra1.BtTAddT - - - - {pack -side left -fill x} {-image alimg_add -com alited::tree::AddItem}}
-    {.fraBot.panBM.fraTree.fra1.BtTRenT - - - - {pack forget -side left -fill x} {-image alimg_change -tip {$alited::al(MC,renamefile)} -com {::alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
+    {.fraBot.panBM.fraTree.fra1.BtTRenT - - - - {pack forget -side left -fill x} {-image alimg_change -tip "$alited::al(MC,renamefile)\nF2" -com {::alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
     {.fraBot.panBM.fraTree.fra1.BtTDelT - - - - {pack -side left -fill x} {-image alimg_delete -com alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraBot.panBM.fraTree.fra1.btTCtr - - - - {pack -side left -fill x} {-image alimg_minus -com {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}

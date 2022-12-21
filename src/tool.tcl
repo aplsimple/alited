@@ -649,6 +649,7 @@ proc tool::CheckTcl {} {
   lassign [alited::tree::CurrentItemByLine {} 1] - - leaf - name l1 l2
   if {$leaf} {
     alited::CheckSource
+    alited::info::ClearRed
     set wtxt [alited::main::CurrentWTXT]
     set TID [alited::bar::CurrentTabID]
     set err [alited::check::CheckUnit $wtxt $l1.0 $l2.end $TID $name yes yes]

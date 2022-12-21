@@ -392,8 +392,8 @@ proc tree::CreateFilesTree {wtree} {
   set al(TREE,files) yes
   [$obPav BtTswitch] configure -image alimg_gulls
   baltip::tip [$obPav BtTswitch] $al(MC,swfiles)
-  baltip::tip [$obPav BtTAddT] $al(MC,filesadd)
-  baltip::tip [$obPav BtTDelT] $al(MC,filesdel)
+  baltip::tip [$obPav BtTAddT] $al(MC,filesadd)\nInsert
+  baltip::tip [$obPav BtTDelT] $al(MC,filesdel)\nDelete
   baltip::tip [$obPav BtTUp] $al(MC,moveupF)
   baltip::tip [$obPav BtTDown] $al(MC,movedownF)
   $al(MENUEDIT) entryconfigure 0 -label $al(MC,moveupF)
@@ -555,6 +555,8 @@ proc tree::ShowPopupMenu {ID X Y} {
     set moveup $al(MC,moveupU)
     set movedown $al(MC,movedownU)
     set dropitem [msgcat::mc {Drop Selected Units Here}]
+    set accins {}
+    set accdel {}
   } else {
     set img alimg_gulls
     set m1 $al(MC,swfiles)
@@ -563,6 +565,8 @@ proc tree::ShowPopupMenu {ID X Y} {
     set moveup $al(MC,moveupF)
     set movedown $al(MC,movedownF)
     set dropitem [msgcat::mc {Drop Selected Files Here}]
+    set accins {-accelerator Insert}
+    set accdel {-accelerator Delete}
   }
   if {[string length $sname]>25} {set sname "[string range $sname 0 21]..."}
   $popm add command {*}[$obPav iconA none] -label $m1 \
@@ -576,14 +580,14 @@ proc tree::ShowPopupMenu {ID X Y} {
     -accelerator F12 -command {::alited::tree::MoveItem down} -image alimg_down
   $popm add separator
   $popm add command {*}[$obPav iconA none] -label $m2 \
-    -command "::alited::tree::AddItem $ID" -image alimg_add
+    -command "::alited::tree::AddItem $ID" {*}$accins -image alimg_add
   if {!$al(TREE,isunits)} {
     $popm add command {*}[$obPav iconA change] \
       -label $al(MC,renamefile) -accelerator F2 \
       -command {::alited::file::RenameFileInTree no}
   }
   $popm add command {*}[$obPav iconA none] -label $m3 \
-    -command "::alited::tree::DelItem $ID -100" -image alimg_delete
+    -command "::alited::tree::DelItem $ID -100" {*}$accdel -image alimg_delete
   if {$al(TREE,isunits)} {
     if {$al(FAV,IsFavor)} {
       $popm add separator

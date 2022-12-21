@@ -12,6 +12,7 @@ namespace eval ::alited::info {
   variable list [list]   ;# list of listbox items
   variable info [list]   ;# data of listbox items (file, found position etc.)
   variable focustext yes ;# if yes, focuses on a text at the listbox selections
+  variable lastred -2
 
   # these two allow to disable text updates at constant key pressings
   variable selectmsec 0   ;# saved time at key pressing
@@ -40,6 +41,9 @@ proc info::Put {msg {inf ""} {bold no} {see no}} {
   namespace upvar ::alited obPav obPav
   variable list
   variable info
+  variable lastred
+  ClearRed
+  set llen [llength $list]
   lappend list $msg
   lappend info $inf
   set lbx [$obPav LbxInfo]
@@ -47,6 +51,7 @@ proc info::Put {msg {inf ""} {bold no} {see no}} {
   if {$see} {
     set fgbold $fgred
     $lbx see end
+    set lastred $llen
   } elseif {!$bold} {
     return
   }
@@ -61,7 +66,10 @@ proc info::Clear {{i -1}} {
   namespace upvar ::alited obPav obPav
   variable list
   variable info
-  if {$i == -1} {
+  variable lastred
+  if {$i == -2} {
+    # no action
+  } elseif {$i == -1} {
     set list [list]
     set info [list]
   } else {
@@ -70,6 +78,7 @@ proc info::Clear {{i -1}} {
     set list [lreplace $list $i $i]
     set info [lreplace $info $i $i]
   }
+  set lastred -2
 }
 #_______________________
 
@@ -80,6 +89,14 @@ proc info::ClearOut {} {
   Clear
   alited::main::FocusText
   FocusOut [$obPav SbhInfo]
+}
+#_______________________
+
+proc info::ClearRed {} {
+  # Clears a red message in info bar (if it was displayed).
+
+  variable lastred
+  Clear $lastred
 }
 
 # ________________________ GUI _________________________ #

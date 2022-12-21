@@ -1,10 +1,13 @@
 # LAST CHANGES:
 
 
-Version `1.3.5.1 (14 Dec'22)`
+Version `1.3.5.2 (21 Dec'22)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
+  - CHANGE: syntax highlighting in Templates
+  - CHANGE: hot keys in tooltips/menu of file tree
+  - CHANGE: clear the unit error message in info bar, before Run
   - CHANGE: colors of selection for treeviews
   - CHANGE: tips on Projects' file list
   - CHANGE: About / Acknowledgements

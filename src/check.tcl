@@ -227,7 +227,6 @@ proc check::Check {} {
     1 CheckFile
     2 CheckAll
   }
-  alited::info::Clear 0
   ShowResults
 }
 

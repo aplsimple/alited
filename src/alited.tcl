@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.5.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.5.2  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 
@@ -396,6 +396,22 @@ namespace eval alited {
     focus $w
     $w selection clear
     $w icursor end
+  }
+  #_______________________
+
+  proc SyntaxHighlight {lng wtxt colors {cs ""} args} {
+    # Makes a text being syntax highlighted.
+    #   lng - language (tcl, c)
+    #   wtxt - text's path
+    #   colors - highlighting colors
+    #   cs - color scheme
+    #   args - other options
+
+    variable al
+    if {$cs eq {}} {set cs [::apave::obj csCurrent]}
+    ::hl_${lng}::hl_init $wtxt -dark [::apave::obj csDark $cs] -colors $colors \
+      -multiline 1 -font $al(FONT,txt) -insertwidth $al(CURSORWIDTH) {*}$args
+    ::hl_${lng}::hl_text $wtxt
   }
 
   ## ________________________ Messages _________________________ ##
