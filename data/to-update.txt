@@ -1,3 +1,10 @@
+=== 2022-12-22 ===
+   EDITED lib/e_menu/menus/misc.mnu
+   EDITED data/user/ini/alited.ini
+
+=== 2022-11-09 ===
+   EDITED lib/e_menu/menus/menu.mnu
+
 === 2022-10-27 ===
    EDITED lib/e_menu/menus/fossil.mnu
 

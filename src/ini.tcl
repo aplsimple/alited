@@ -11,8 +11,8 @@
 namespace eval ::alited {
 
   # versions of mnu/ini to update to
-  set al(MNUversion) 1.3.5b20
-  set al(INIversion) 1.3.3b7
+  set al(MNUversion) 1.3.6a1
+  set al(INIversion) 1.3.6a1
   # previous version of alited to update from
   set al(ALEversion) 0.0.1
 
@@ -517,6 +517,7 @@ proc ini::ReadIniMisc {nam val} {
     listSBL - HelpedMe - checkgeo - tonemoves - moveall - chosencolor - sortList {
       set al($nam) $val
     }
+    tplilast {set ::alited::unit_tpl::ilast $val}
   }
 }
 
@@ -815,6 +816,7 @@ proc ini::SaveIni {{newproject no}} {
     puts $chan "$k=$al($k)"
   }
   puts $chan "sortList=$al(sortList)"
+  puts $chan "tplilast=$::alited::unit_tpl::ilast"
   close $chan
   SaveIniPrj $newproject
   # save last directories entered

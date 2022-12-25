@@ -22,3 +22,5 @@
     <b>%n</b> - current file's root name (namespace)
     <b>%p</b> - current procedure/method's name
     <b>%a</b> - current procedure/method's arguments
+    <b>%A</b> - alited's directory
+    <b>%M</b> - e_menu menus directory

@@ -202,7 +202,7 @@ proc unit::TemplateData {wtxt l1 tpldata} {
   #   l1 - 1st line of current unit
   #   tpldata - template
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al DIR DIR MNUDIR MNUDIR
   lassign $tpldata tex pos place
   set sec [clock seconds]
   set fname [alited::bar::FileName]
@@ -217,6 +217,8 @@ proc unit::TemplateData {wtxt l1 tpldata} {
     %F $fname \
     %f [file tail $fname] \
     %n [file rootname [file tail $fname]] \
+    %A $DIR \
+    %M $MNUDIR \
     ] $tex]
   # get a list of proc/method's arguments:
   # from "proc pr {ar1 ar2 ar3} " and a template "  # %a -\n"

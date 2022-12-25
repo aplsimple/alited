@@ -264,7 +264,6 @@ proc find::DoFindUnit {} {
       }
     }
   }
-  alited::info::Clear 0
   ShowResults [string map [list %n $n %s $what] $al(MC,frres1)]
 }
 #_______________________

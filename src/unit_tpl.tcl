@@ -148,19 +148,22 @@ proc unit_tpl::Select {{item ""}} {
     if {[string is digit $item]} {  ;# the item is an index
       set item [lindex $tplid $item]
     }
-    set tree [$obDl3 TreeTpl]
-    set isel [$tree index $item]
-    set tpl [lindex $tpllist $isel]
-    set tplkey [lindex $tplkeys $isel]
-    set place [lindex $tplpla $isel]
-    set wtxt [$obDl3 TexTpl]
-    $wtxt delete 1.0 end
-    $wtxt insert end [lindex $tplcont $isel]
-    if {[$tree selection] ne $item} {
-      $tree selection set $item
+    catch {
+      set tree [$obDl3 TreeTpl]
+      set isel [$tree index $item]
+      set tpl [lindex $tpllist $isel]
+      set tplkey [lindex $tplkeys $isel]
+      set place [lindex $tplpla $isel]
+      set wtxt [$obDl3 TexTpl]
+      $wtxt delete 1.0 end
+      $wtxt insert end [lindex $tplcont $isel]
+      if {[$tree selection] ne $item} {
+        $tree selection set $item
+      }
+      focus $tree
+      $tree see $item
+      $tree focus $item
     }
-    $tree see $item
-    $tree focus $item
   }
 }
 #_______________________
@@ -348,7 +351,8 @@ proc unit_tpl::Add {{inpos ""}} {
   UpdateTree
   set item [lindex [$tree children {}] end]
   lappend tplid $item
-  Select [expr {[llength $tplid]-1}]
+  set isel [expr {[llength $tplid]-1}]
+  after idle "::alited::unit_tpl::Select $isel"
   alited::Message3 $msg 3
   return 1
 }
@@ -374,7 +378,7 @@ proc unit_tpl::Change {} {
   set tplpla [lreplace $tplpla $isel $isel $place]
   set tplkeys [lreplace $tplkeys $isel $isel $tplkey]
   UpdateTree
-  Select $isel
+  after idle "::alited::unit_tpl::Select $isel"
   set msg [string map [list %n [incr isel]] $al(MC,tplupd)]
   alited::Message3 $msg 3
 }

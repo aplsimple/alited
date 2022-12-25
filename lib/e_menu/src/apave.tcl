@@ -2301,7 +2301,7 @@ oo::class create ::apave::APave {
     #   clearcom - a command to call, can have %w for *w* (widget's path)
 
     if {$clearcom ne {}} {
-      {*}[string map "%w $w" $clearcom]
+      {*}[string map [list %w $w %p [self]] $clearcom]
     }
     #! perhaps, needs refactoring:
     if {[catch {$w delete 0 end}]} { ;# entry

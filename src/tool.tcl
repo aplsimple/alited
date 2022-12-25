@@ -647,7 +647,7 @@ proc tool::CheckTcl {} {
   # Check a current unit for errors, before running Tcl file.
 
   lassign [alited::tree::CurrentItemByLine {} 1] - - leaf - name l1 l2
-  if {$leaf} {
+  if {[string is true -strict $leaf]} {
     alited::CheckSource
     alited::info::ClearRed
     set wtxt [alited::main::CurrentWTXT]

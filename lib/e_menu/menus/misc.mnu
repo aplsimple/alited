@@ -16,12 +16,12 @@ in=1.0
 ::EMENUMULSTRES1=~/PG/github/aplsimple.github.io/en/tcl/
 ::EMENUMULSTRES2=~/PG/github/aplsimple.github.io/en/tcl/alited
 ::EMENUMULSTRES3=/home/apl/PG/github/aplsimple.github.io/en/tcl
-::EMENURUFFDIR=~/PG/github/pave apave\n~/PG/github/hl_tcl\n~/PG/github/klnd\n~/PG/github/bartabs\n~/PG/github/trimmer\n~/PG/github/mulster\n~/PG/github/transpops\n~/PG/github/screenshooter\n~/PG/github/baltip\n~/PG/github/aloupe
-::EMENURUFFIT=~/PG/github/aplsimple.github.io/en/tcl/bartabs/index.html\n~/PG/github/aplsimple.github.io/en/tcl/booksum/index.html\n~/PG/github/aplsimple.github.io/en/tcl/doctest/index.html\n~/PG/github/aplsimple.github.io/en/tcl/pave/index.html
+::EMENURUFFDIR=~/PG/github/apave pave\n~/PG/github/hl_tcl\n~/PG/github/klnd\n~/PG/github/bartabs\n~/PG/github/trimmer\n~/PG/github/mulster\n~/PG/github/transpops\n~/PG/github/screenshooter\n~/PG/github/baltip\n~/PG/github/aloupe
+::EMENURUFFIT=~/PG/github/aplsimple.github.io/en/tcl/bartabs/index.html\n~/PG/github/aplsimple.github.io/en/tcl/booksum/index.html\n~/PG/github/aplsimple.github.io/en/tcl/doctest/index.html\n~/PG/github/aplsimple.github.io/en/tcl/pave/index.html\n~/PG/github/aplsimple.github.io/en/tcl/alited/index.html
 ::EMENU7ZCNT=0
 ::EMENU7ZCOM=zip -r
 ::EMENU7ZARC=~/PG/github/apl-github
-::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/pave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/klnd/*\n~/PG/github/ale_themes/*\n~/PG/github/wiki.tcl-lang.org/*\n~/PG/github/tclbag/*\n~/PG/github/osetr/*
+::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/apave/*\n~/PG/github/apave_tests/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/klnd/*\n~/PG/github/ale_themes/*\n~/PG/github/wiki.tcl-lang.org/*\n~/PG/github/tclbag/*\n~/PG/github/osetr/*
 ::EMENU7ZSKIP=
 ::EMENU7ZBAK=/media/apl/KINGSTON/
 ::EMENU7ZGIT=0
@@ -29,7 +29,7 @@ in=1.0
 ::EMENU_MULST1=~/TMP/em_mulst.ini
 ::EMENU_MULST2=~/TMP/em_mulst.txt
 ::EMENU_MULST5=regexp--
-pos=84.81
+pos=110.0
 [MENU]
 
  R: Trimmer *.tcl R: cd $::EMENUDIR1
@@ -104,20 +104,23 @@ SW: Ruff! all ... SW: %C \
      set prj [string map [list ~ $home] $prj] ; \
      set ::EMENUMULSTRES3 [string map [list ~ $home] $::EMENUMULSTRES3] ; \
      cd $prj ; \
-     catch {exec tclsh $home/UTILS/ruff.tcl $prjname} ; \
-     set prjnamehtml $prjname.html ; \
+     catch {exec tclsh $home/UTILS/ruff.tcl $prjtail} ; \
+     set prjnamehtml $prjtail.html ; \
      if {$::EMENUMULSTER} { \
        if {![file exists $prjnamehtml]} {set prjnamehtml [lindex [glob *.html] 0]} ; \
        exec [auto_execok mv] -f $prjnamehtml ../mulster/tasks/ruff/src ; \
        cd ../mulster ; exec tclsh mulster.tcl -b 0 tasks/mulster-ruff ; \
-       exec [auto_execok cp] -f $home/PG/github/mulster/tasks/ruff/mulstered/$prjnamehtml $::EMENUMULSTRES3/$prjtail/$prjnamehtml ; \
-       set prjnamehtml $::EMENUMULSTRES3/$prjtail/$prjnamehtml \
+       exec [auto_execok cp] -f $home/PG/github/mulster/tasks/ruff/mulstered/$prjnamehtml $::EMENUMULSTRES3/$prjname/$prjnamehtml ; \
+       set prjnamehtml $::EMENUMULSTRES3/$prjname/$prjnamehtml \
      } ; \
      exec tclsh $home/UTILS/highlight_tcl/tcl_html.tcl $prjnamehtml \
    } ; \
    set flist [string map {\\n \n} $::EMENURUFFIT] ; \
    foreach fit [split $flist \n] { ; \
-     exec tclsh $home/UTILS/highlight_tcl/tcl_html.tcl $fit \
+     exec tclsh $home/UTILS/highlight_tcl/tcl_html.tcl $fit ; \
+     if {$::EMENUMULSTER} { \
+       exec tclsh mulster.tcl -b 0 -infile $fit tasks/mulster-ruff2 \
+     } \
    }
 SW: Ruff! all ... SW: %B file://$::EMENUMULSTRES3
 

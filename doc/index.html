@@ -59,6 +59,7 @@
 </li>
 <li class="level2"><div class="li"><a href="#search">Search</a></div>
 <ul>
+<li class="level3"><div class="li"><a href="#searchmenu">Search menu</a></div></li>
 <li class="level3"><div class="li"><a href="#search1">Find / Replace</a></div></li>
 <li class="level3"><div class="li"><a href="#search2">Other search tools</a></div></li>
 </ul>
@@ -70,12 +71,14 @@
 <li class="level3"><div class="li"><a href="#checktool">Check Tcl tool</a></div></li>
 <li class="level3"><div class="li"><a href="#custtool">Customizing tools</a></div></li>
 </ul></li>
+<li class="level3"><div class="li"><a href="#templates">Templates</a></div>
+<ul>
+<li class="level3"><div class="li"><a href="#profiling">Profiling Tcl</a></div></li>
+</ul></li>
 <li class="level2"><div class="li"><a href="#edit">Editing</a></div>
 <ul>
 <li class="level3"><div class="li"><a href="#contextmenu">Context menu</a></div></li>
 <li class="level3"><div class="li"><a href="#editmenu">Edit menu</a></div></li>
-<li class="level3"><div class="li"><a href="#searchmenu">Search menu</a></div></li>
-<li class="level3"><div class="li"><a href="#templates">Templates</a></div></li>
 <li class="level3"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
 <li class="level3"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
 </ul></li>
@@ -1011,6 +1014,46 @@ So, when you switch to another project, <span class="curid"><a href="#" class="w
 Along with the unit facilities, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> provides a lot of search tools to navigate throughout a project.
 </p>
 
+<br>
+<p>
+<h3 id="searchmenu"><i>Search menu</i></h3>
+</p>
+
+<p>
+The search facilities of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> are presented in <i>Search</i> menu:
+<ul>
+</li>
+<li><i>Find / Replace</i> command (Ctrl+F keys)
+<br>when Ctrl+F pressed twice, performs a search in a last mode (once, in text, in all)
+<br><br></li>
+<li><i>Find Next</i> command (F3 key customized in "Setup / Preferences / Keys")
+<br><br></li>
+<li><i>Look for Declaration</i> command (Ctrl+L keys customized in "Setup / Preferences / Keys")
+<br><br></li>
+<li><i>Look for Word</i> command (Ctrl+Shift+L keys customized in "Setup / Preferences / Keys")
+<br><br></li>
+<li><i>Find Unit</i> command (Ctrl+Shift+F keys)
+<br>when Ctrl+Shift+F pressed twice, performs a search
+<br><br></li>
+<li><i>Find by List</i> command
+<br>searches a list of words in a current text; very useful in some cases
+<br><br></li>
+<li><i>To Last Visited</i> command (Alt+Backspace keys)
+<br>switches between two last visited units
+<br><br></li>
+<li><i>To Matched Bracket</i> command (Alt+B keys)
+<br>when the cursor is on a bracket, goes to its match
+<br><br></li>
+<li><i>Go to Line</i> command (Ctrl+G keys customized in "Setup / Preferences / Keys")
+</ul>
+</p>
+
+<p>
+<b>Note</b>: if Ctrl+F (or Ctrl+Shift+F) keys are pressed twice, a last performed search starts immediately. When you need to repeat a search in text/session with many words of a text, this feature will help a lot: just repeatedly set the cursor on the words and do it.
+</p>
+<p>Also, for  highlighting words / selected strings, use <a href="#contextmenu">alited's context menu</a> on a text or double-click on a word. If there are multiple highlighted instances, they are highlighted with reddish color, otherwise the only instance is highlighted as a usual selection. This feature is very useful for example when you need to see all uses of a variable in a procedure: double click the variable and you'll see all of its occurences. At that, mouse moves and clicks on the text don't remove the highlighting, only a keypressing does.
+</p>
+
 <br><p>
 <h3 id="search1"><i>Find / Replace</i></h3>
 </p>
@@ -1469,6 +1512,84 @@ As <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">a
 </ul>
 </p>
 
+<br>
+<p>
+<h2 id="templates">Templates</h3>
+</p>
+
+<p>
+The templates are available through "Setup / Templates" menu item and "Add Unit" button of the tree toolbar.
+</p>
+
+<p>
+The "Templates" dialogue contain a list of templates, a current template's text and buttons to add / change / delete templates.
+</p>
+
+<p>
+In the template text, use the following wildcards:
+<ul>
+<li><code>%d</code> - date</li>
+<li><code>%t</code> - time</li>
+<li><code>%u</code> - user's login as set in "Preferences"</li>
+<li><code>%U</code> - user's name as set in "Preferences"</li>
+<li><code>%m</code> - user's mail as set in "Preferences"</li>
+<li><code>%w</code> - user's web site as set in "Preferences"</li>
+<li><code>%F</code> - current file's name</li>
+<li><code>%f</code> - current file's tail name</li>
+<li><code>%n</code> - current file's root name (namespace)</li>
+<li><code>%p</code> - current procedure/method's name</li>
+<li><code>%a</code> - current procedure/method's arguments</li>
+<li><code>%A</code> - alited's directory</li>
+<li><code>%M</code> - e_menu menus directory</li>
+</ul>
+</p>
+
+<p>
+After entering a template's text, set the cursor where it should be at inserting. Then save it with "Add" or "Change" button.
+</p>
+
+<p>
+The "Import" button allows to fetch new templates from an external <i>alited.ini</i>, for example from the default <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s.
+</p>
+
+<br>
+<p>
+<h3 id="profiling"><i>Profiling Tcl</i></h3>
+</p>
+
+<p>
+Three templates allow to use a bit modified <a href=https://wiki.tcl-lang.org/profiler>profilers</a> of <a href=https://wiki.tcl-lang.org>Tcl/Tk wiki</a>.
+<ul>
+<li><b>profiler</b> template uses
+  <br><code>::PR start ?command ...?</code>
+  <br><code>::PR end</code>
+  <br>to start and stop the profiling. List the <i>exact</i> command names after <code>::PR start</code>.
+</li>
+<br>
+<li><b>ep_profiler</b> template uses
+  <br><code>::PR start ?pattern ...?</code>
+  <br><code>::PR end</code>
+  <br>to start and stop the profiling. List the <i>glob patterns</i> of command names after <code>::PR start</code>.
+</li>
+<br>
+<li><b>cp_profiler</b> template allows to set a checkpoints (any unique ID):
+  <br><code>::PR start</code>
+  <br><code>...</code>
+  <br><code>::PR start cp1</code>
+  <br><code>...</code>
+  <br><code>::PR start cp2</code>
+  <br><code>...</code>
+  <br><code>::PR end</code>
+  <br>to profile Tcl snippets. The results would refer to the code snippets between "start", "cp1", "cp2"... points.
+</li>
+</ul>
+<b>Note</b>: The profiler templates start the profiling at the point of insertion. You can move "<code>::PR start</code>" line to another point below.
+</p>
+
+<p>
+And don't forget to remove the profiler's lines after the profiling done!
+</p>
+
 <p>
 <br>
 
@@ -1615,58 +1736,6 @@ instead of:
 }
 foo
 </pre>
-</p>
-
-<br>
-<p>
-<h3 id="searchmenu"><i>Search menu</i></h3>
-</p>
-
-<p>
-The search facilities of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> are rather rich:
-<ul>
-</li>
-<li><i>Find / Replace</i> command (Ctrl+F keys)
-<br>when Ctrl+F pressed twice, performs a search in a last mode (once, in text, in all)
-<br><br></li>
-<li><i>Find Next</i> command (F3 key customized in "Setup / Preferences / Keys")
-<br><br></li>
-<li><i>Look for Declaration</i> command (Ctrl+L keys customized in "Setup / Preferences / Keys")
-<br><br></li>
-<li><i>Look for Word</i> command (Ctrl+Shift+L keys customized in "Setup / Preferences / Keys")
-<br><br></li>
-<li><i>Find Unit</i> command (Ctrl+Shift+F keys)
-<br>when Ctrl+Shift+F pressed twice, performs a search
-<br><br></li>
-<li><i>Find by List</i> command
-<br>searches a list of words in a current text; very useful in some cases
-<br><br></li>
-<li><i>To Last Visited</i> command (Alt+Backspace keys)
-<br>switches between two last visited units
-<br><br></li>
-<li><i>To Matched Bracket</i> command (Alt+B keys)
-<br>when the cursor is on a bracket, goes to its match
-<br><br></li>
-<li><i>Go to Line</i> command (Ctrl+G keys customized in "Setup / Preferences / Keys")
-</ul>
-</p>
-
-<p>
-<b>Note</b>: if Ctrl+F (or Ctrl+Shift+F) keys are pressed twice, a last performed search starts immediately. When you need to repeat a search in text/session with many words of a text, this feature will help a lot: just repeatedly set the cursor on the words and do it.
-</p>
-<p>Also, for  highlighting words / selected strings, use <a href="#contextmenu">alited's context menu</a> on a text or double-click on a word. If there are multiple highlighted instances, they are highlighted with reddish color, otherwise the only instance is highlighted as a usual selection. This feature is very useful for example when you need to see all uses of a variable in a procedure: double click the variable and you'll see all of its occurences. At that, mouse moves and clicks on the text don't remove the highlighting, only a keypressing does.
-</p>
-
-<br>
-<p>
-<h3 id="templates"><i>Templates</i></h3>
-</p>
-
-<p>
-The templates are available through "Setup / Templates" menu item and "Add Unit" button of the tree toolbar.
-</p>
-
-<p>
 </p>
 
 <br>
