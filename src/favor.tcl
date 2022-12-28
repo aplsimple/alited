@@ -47,7 +47,9 @@ proc favor::LastVisited {item header {l1 -1}} {
   if {[regexp "^$al(MC,lines) \\d+-\\d+\$" $header]} return
   # check for an empty item - don't save it
   set name [string trim [lindex $item 1]]
-  if {[string trim $name] eq {}} return
+  if {[string trim $name] eq {} || [string range $name end-1 end] eq {::}} {
+    return
+  }
   # checks done, save this last visit
   set fname [alited::bar::FileName]
   set lvisit [list $name $fname $header]
@@ -155,7 +157,10 @@ proc favor::Select {} {
     return
   }
   set values [$wtree item $favID -values]
-  if {[set TID [OpenSelectedFile $fname]] eq {}} return
+  if {[set TID [OpenSelectedFile $fname]] eq {}} {
+    DeleteLastVisited $favID
+    return
+  }
   # scan Favorites/last-visited tree, to find the selected item
   # and remake favorites and last visits; then go to the selected unit
   foreach it1 [$wtree children {}] {
@@ -169,6 +174,7 @@ proc favor::Select {} {
     lassign [$wtree item $it1 -values] name2 - header2
     if {$name eq $name2} {
       if {[GoToUnit $TID $name2 $header2 $al(FAV,IsFavor) $it1 $values]} return
+      DeleteLastVisited $it1
       break
     }
   }
@@ -411,7 +417,7 @@ proc favor::Delete {{undermouse yes}} {
   #   undermouse - if yes, run by mouse click
 
   namespace upvar ::alited al al obPav obPav
-  lassign [CurrentID $undermouse] favID name fname treelist
+  lassign [CurrentID $undermouse] favID name fname
   if {$favID eq {} || ![info exists fname] || $fname eq {}} {
     bell
     return  ;# for empty list
@@ -425,11 +431,7 @@ proc favor::Delete {{undermouse yes}} {
   set msg [string map [list %n $name %f $sname] $al(MC,delfavor)]
   set geo [GeoForQuery $undermouse]
   if {!$al(FAV,IsFavor) || [alited::msg yesno warn $msg NO {*}$geo]} {
-    [$obPav TreeFavor] delete $favID
-    if {!$al(FAV,IsFavor)} {
-      set i [lsearch -exact -index 2 $treelist $favID]
-      set al(FAV,visited) [lreplace $al(FAV,visited) $i $i]
-    }
+    DeleteLastVisited $favID
   }
 }
 #_______________________
@@ -455,6 +457,22 @@ proc favor::DeleteAll {{undermouse yes}} {
     }
     set $listvar [list]
   }
+}
+#_______________________
+
+proc favor::DeleteLastVisited {id} {
+  # Deletes last visited item.
+  #   id - ID of the item
+
+  namespace upvar ::alited al al obPav obPav
+  if {!$al(FAV,IsFavor)} {
+    catch {
+      set treelist [alited::tree::GetTree {} TreeFavor]
+      set i [lsearch -exact -index 2 $treelist $id]
+      set al(FAV,visited) [lreplace $al(FAV,visited) $i $i]
+    }
+  }
+  [$obPav TreeFavor] delete $id
 }
 #_______________________
 

@@ -471,7 +471,7 @@ proc ini::ReadIniEM {nam val emiName} {
     em_run {
       if {$em_i < $em_Num} {
         lassign [split $val \t] em_sep($em_i) em_ico($em_i) em_inf($em_i)
-        set em_mnu($em_i) [lindex $em_inf($em_i) end]
+        set em_mnu($em_i) [alited::NormalizeName [lindex $em_inf($em_i) end]]
       }
       incr em_i
     }
@@ -1272,7 +1272,8 @@ proc ini::_init {} {
     set img [CreateIcon $icon]
     if {$icon in {file OpenFile SaveFile saveall categories undo redo replace \
     ok color date help run e_menu other}} {
-      append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4} "
+      append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4} \
+        -popup {alited::tool::PopupBar %X %Y} "
       switch $icon {
         file {
           append al(atools) "-com alited::file::NewFile\}"
@@ -1332,11 +1333,12 @@ proc ini::_init {} {
       if {$em_sep($i)} {
         append al(atools) { sev 6}
       } else {
-        if {[string length $em_ico($i)]==1} {
-          set img _$em_ico($i)
+        set tico [alited::TextIcon $em_ico($i) in]
+        if {[string length $tico]==1 || ![string is alpha $tico]} {
+          set img _$tico
           set txt "-t $em_ico($i)"
         } else {
-          set img [CreateIcon $em_ico($i)]-big
+          set img [CreateIcon $tico]-big
           set txt {}
         }
         if {[lsearch -exact $limgs $img]>-1} {
@@ -1346,10 +1348,11 @@ proc ini::_init {} {
           continue
         }
         lappend limgs $img
-#        set tip [string map {% %%} $em_mnu($i)]
         set tip $em_mnu($i)
-        append al(atools) " $img \{{} -tip {$tip@@ -under 4 -command {alited::ini::ToolbarTip %w %t}} $txt "
-        append al(atools) "-com {[alited::tool::EM_command $i]}\}"
+        append al(atools) " $img \{{} -tip {$tip@@ -under 4 \
+          -command {alited::ini::ToolbarTip %w %t}} $txt \
+          -popup {alited::tool::PopupBar %X %Y} \
+          -com {[alited::tool::EM_command $i]}\}"
       }
     }
   }

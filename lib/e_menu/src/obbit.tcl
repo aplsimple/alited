@@ -2086,6 +2086,7 @@ oo::class create ::apave::ObjectTheming {
     option add *Menu.font $fontdef
     my Ttk_style configure TMenubutton -foreground $tfgM
     my Ttk_style configure TMenubutton -background $tbgM
+    my Ttk_style map TMenubutton -arrowcolor [list disabled $tfgD]
     my Ttk_style configure TButton -foreground $tfgM
     my Ttk_style configure TButton -background $tbgM
     foreach {nam clr} {back tbg2 fore tfg2 selectBack tbgS selectFore tfgS} {

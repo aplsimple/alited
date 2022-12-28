@@ -787,8 +787,13 @@ proc find::ReplaceInSession {} {
   namespace upvar ::alited al al
   variable data
   if {![CheckData repl]} return
+  if {[set llen [llength [alited::bar::BAR listFlag s]]]>1} {
+    set S " ($llen) "
+  } else {
+    set S " "
+  }
   set msg [string map [list %s [FindReplStr $data(en1)] \
-    %r [FindReplStr $data(en2)]] $al(MC,frdoit2)]
+    %r [FindReplStr $data(en2)] %S $S] $al(MC,frdoit2)]
   if {![alited::msg yesno warn $msg NO]} {
     return {}
   }
@@ -906,8 +911,9 @@ proc find::FocusCbx1 {{aft idle} {deico ""}} {
   #   deico - deiconify command
 
   namespace upvar ::alited obFND obFND
+  {*}$deico
   set cbx [$obFND Cbx1]
-  after $aft " $deico ; focus $cbx ; $cbx selection range 0 end ; $cbx icursor end"
+  after $aft "focus -force $cbx; $cbx selection range 0 end ; $cbx icursor end"
 }
 
 # _____________________ Search by list ____________________ #
@@ -1113,7 +1119,7 @@ proc find::_create {} {
     bind $w.cbx2 <Return> "$w.but4 invoke"
     foreach k {f F} {bind $win <Control-$k> {::alited::find::LastInvoke; break}}
     foreach k {r R} {bind $win <Control-$k> {::alited::find::btTPaste; break}}
-    FocusCbx1 100 "wm deiconify $win"
+    after idle [list after 100 [list alited::find::FocusCbx1 100 "wm deiconify $win"]]
     set res [$obFND showModal $win -geometry $geo {*}$minsize -resizable 1 -modal no -ontop no]
     if {[string match root=* $geo] || $data(geoDefault)} {
       set geo [wm geometry $win] ;# save the new geometry of the dialogue

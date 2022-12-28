@@ -191,7 +191,7 @@ namespace eval ::alited {
     set al(MC,frres2)  [msgcat::mc "Made %n replacements of \"%s\" with \"%r\" in \"%f\"."]
     set al(MC,frres3)  [msgcat::mc "Made %n replacements of \"%s\" with \"%r\" in all of session."]
     set al(MC,frdoit1) [msgcat::mc "Replace all of \"%s\"\n\nwith \"%r\"\n\nin \"%f\" ?"]
-    set al(MC,frdoit2) [msgcat::mc "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all texts?"]
+    set al(MC,frdoit2) [msgcat::mc "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all%Stexts?"]
 
     ## _ file & directory _ ##
     set al(MC,removed)     [msgcat::mc "\"%f\" removed to \"%d\""]

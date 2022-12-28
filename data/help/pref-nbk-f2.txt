@@ -14,9 +14,9 @@
    - saving a file
 
  This option works together with the option (highly recommended "All"):
-   <b>Save before bar/menu runs</b>
- which means saving file(s) at running a bar/menu action.
- See also "Preferences / Tools / bar/menu" tab.
+   <b>Save before bar-menu runs</b>
+ which means saving file(s) at running a bar-menu action.
+ See also "Preferences / Tools / bar-menu" tab.
 
  <b>Other options</b> restrict a number of:
    - files in 'Files/Recent Files' menu item

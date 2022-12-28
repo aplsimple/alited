@@ -50,7 +50,7 @@ namespace eval pref {
   # current CS of e_menu
   variable opcc2 {}
 
-  # number of bar/menu items
+  # number of bar-menu items
   variable em_Num 32
 
   # bar/e_menu action
@@ -200,7 +200,7 @@ proc pref::RestoreSettings {} {
 proc pref::TextIcons {} {
   # Returns a list of letters to be toolbar "icons".
 
-  return ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*=
+  return &~=@$#%ABCDEFGHIJKLMNOPQRSTUVWXYZ
 }
 #_______________________
 
@@ -256,14 +256,15 @@ proc pref::MainFrame {} {
     {fraR.nbk6 - - - - {pack forget -side top} {
         f1 {-t Common}
         f2 {-t e_menu}
-        f3 {-t bar/menu}
+        f3 {-t bar-menu}
         f4 {-t Tkcon}
     }}
-    {#LabMess fraL T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraL T 1 2 {-st nsew -pady 2}}
     {fraB + T 1 2 {-st nsew} {-padding {2 2}}}
     {.ButHelp - - - - {pack -side left} {-t {$alited::al(MC,help)} -tip F1 -com ::alited::pref::Help}}
-    {.LabMess - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
+    {.BtTUp - - - - {pack forget -side left} {-image alimg_up -com ::alited::pref::UpRun}}
+    {.BtTDown - - - - {pack forget -side left} {-image alimg_down -com ::alited::pref::DownRun}}
+    {.LabMess - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 40}}
     {.butOK - - - - {pack -side left -anchor s -padx 2} {-t Save -command ::alited::pref::Ok}}
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::pref::Cancel}}
   }
@@ -369,6 +370,7 @@ proc pref::Tab {tab {nt ""} {doit no}} {
     nbk5 {set but Keys}
     nbk6 {set but Tools}
   }
+  ShowUpDownArrows [expr {$tab ne "nbk6"}]
   [$obDl2 But$but] configure -style TButtonWestHL
   fillCan [$obDl2 Can$tab] yes
   if {$tab ne $curTab || $doit} {
@@ -526,7 +528,7 @@ proc pref::General_Tab2 {} {
     {.labSonsave .labSonclose T 1 1 {-st e -pady 1 -padx 3} {-t "saving a file:"}}
     {.swiOnsave + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,save_onsave)}}
     {.seh2 .labSonsave T 1 4 {-st ew -pady 5}}
-    {.labSave + T 1 1 {-st w -pady 1 -padx 3} {-t "Save before bar/menu runs:"}}
+    {.labSave + T 1 1 {-st w -pady 1 -padx 3} {-t "Save before bar-menu runs:"}}
     {.cbxSave + L 1 2 {-st sw -pady 1} {-values {$alited::al(pref,saveonrun)} -tvar alited::al(EM,save) -state readonly -w 20}}
     {.seh3 .labSave T 1 4 {-st ew -pady 5}}
     {.labRecnt + T 1 1 {-st w -pady 1 -padx 3} {-t "'Recent Files' length:"}}
@@ -1354,14 +1356,14 @@ proc pref::Tkcon_Tab {} {
   }
 }
 
-## ________________________ bar/menu _________________________ ##
+## ________________________ bar-menu _________________________ ##
 
 proc pref::Runs_Tab {tab} {
-  # Prepares and layouts "Tools/bar/menu" tab.
+  # Prepares and layouts "Tools/bar-menu" tab.
   #   tab - a tab to open (saved at previous session) or {}
 
   fetchVars
-  # get a list of all available icons for "bar/menu" actions
+  # get a list of all available icons for "bar-menu" actions
   set listIcons [::apave::iconImage]
   set em_Icons [list]
   set n [llength $listIcons]
@@ -1378,12 +1380,13 @@ proc pref::Runs_Tab {tab} {
     } elseif {$ii<10} {
       lappend em_Icons $ii
     } else {
-      lappend em_Icons [string index [TextIcons] [expr {$ii -10}]]
+      set ico [string index [TextIcons] [expr {$ii -10}]]
+      lappend em_Icons [alited::TextIcon $ico]
     }
     incr icr
   }
   Em_ShowAll no
-  # get a layout of "bar/menu" tab
+  # get a layout of "bar-menu" tab
   set res {
     {v_ - - 1 1}
     {fra + T 1 1 {-st nsew -cw 1 -rw 1} {-afteridle ::alited::pref::Em_ShowAll}}
@@ -1418,7 +1421,7 @@ proc pref::Runs_Tab {tab} {
 #_______________________
 
 proc pref::Em_AddLine {idx} {
-  # Inserts a new "bar/menu" action before a current one.
+  # Inserts a new "bar-menu" action before a current one.
   #   idx - index of a current action
 
   fetchVars
@@ -1441,7 +1444,7 @@ proc pref::Em_AddLine {idx} {
 #_______________________
 
 proc pref::Em_DelLine {idx} {
-  # Deletes a current "bar/menu" action.
+  # Deletes a current "bar-menu" action.
   #   idx - index of a current action
 
   fetchVars
@@ -1464,8 +1467,8 @@ proc pref::Em_DelLine {idx} {
 #_______________________
 
 proc pref::Em_ShowAll {{upd yes}} {
-  # Handles separators of bar/menu.
-  #   upd - if yes, displays the widgets of bar/menu settings.
+  # Handles separators of bar-menu.
+  #   upd - if yes, displays the widgets of bar-menu settings.
   fetchVars
   for {set i 0} {$i<$em_Num} {incr i} {
     if {![info exists em_sep($i)]} {
@@ -1494,8 +1497,8 @@ proc pref::Em_ShowAll {{upd yes}} {
 #_______________________
 
 proc pref::PickMenuItem {it} {
-  # Selects e_menu's action for a "bar/menu" item.
-  #   it - index of "bar/menu" item
+  # Selects e_menu's action for a "bar-menu" item.
+  #   it - index of "bar-menu" item
 
   fetchVars
   ::alited::source_e_menu
@@ -1513,7 +1516,7 @@ proc pref::PickMenuItem {it} {
       set idx - ;# to open the whole menu
     }
     $w configure -text $item2
-    set em_mnu($it) $item2
+    set em_mnu($it) [alited::NormalizeName $item2]
     set em_inf($it) [list [file tail $menu] $idx $item2]
     ScrollRuns
   }
@@ -1522,7 +1525,7 @@ proc pref::PickMenuItem {it} {
 #_______________________
 
 proc pref::ScrollRuns {} {
-  # Updates scrollbars of bar/menu tab because its contents may have various length.
+  # Updates scrollbars of bar-menu tab because its contents may have various length.
 
   fetchVars
   update
@@ -1531,18 +1534,18 @@ proc pref::ScrollRuns {} {
 #_______________________
 
 proc pref::opcIcoPre {args} {
-  # Gets an item for icon list of a bar/menu action.
+  # Gets an item for icon list of a bar-menu action.
   #   args - contains a name of current icon
 
   fetchVars
   lassign $args a
   if {[set i [lsearch $listIcons $a]]>-1} {
     set img [::apave::iconImage [lindex $listIcons $i]]
-    set res "-image $img"
+    set res "-image $img -compound left "
   } else {
-    set res "-image alimg_none"
+    set res {}
   }
-  append res " -compound left -label $a"
+  append res "-label " [alited::TextIcon $a]
 }
 #_______________________
 
@@ -1554,6 +1557,97 @@ proc pref::OwnCS {} {
   [$obDl2 SwiCS] configure -state $st
   if {$al(EM,ownCS)} {set st normal} {set st disabled}
   [$obDl2 OpcCS] configure -state $st
+}
+
+### ________________________ Up/Down buttons _________________________ ###
+
+proc pref::ShowUpDownArrows {{hide no}} {
+  # Shows two buttons for menu-bar tab.
+  #   hide - if yes, hides buttons
+
+  fetchVars
+  set nt [$win.fra.fraR.nbk6 select]
+  set bh [$obDl2 ButHelp]
+  set bu [$obDl2 BtTUp]
+  set bd [$obDl2 BtTDown]
+  if {$hide || $nt ne "$win.fra.fraR.nbk6.f3"} {
+    pack forget $bu
+    pack forget $bd
+  } else {
+    pack $bu -side left -after $bh -padx 8
+    pack $bd -side left -after $bu
+  }
+}
+#_______________________
+
+proc pref::FocusedRun {} {
+  # Gets an index of current run.
+
+  fetchVars
+  set fr -1
+  for {set i 0} {$i<$::alited::pref::em_Num} {incr i} {
+    set foc [focus]
+    if {$foc in [list [$obDl2 ChbMT$i] [$obDl2 OpcIco$i] [$obDl2 ButMnu$i]]} {
+      set fr $i
+      break
+    }
+  }
+  if {$fr<0} {
+    alited::Message2 [msgcat::mc {Select any of run item}] 3
+  }
+  return $fr
+}
+#_______________________
+
+proc pref::ExchangeRuns {f1 f2} {
+  # Exchanges two run items.
+  #   f1 - 1st item
+  #   f2 - 2nd item
+
+  fetchVars
+  set sep1 $em_sep($f2)
+  set ico1 $em_ico($f2)
+  set mnu1 $em_mnu($f2)
+  set inf1 $em_inf($f2)
+  set em_sep($f2) $em_sep($f1)
+  set em_ico($f2) $em_ico($f1)
+  set em_mnu($f2) $em_mnu($f1)
+  set em_inf($f2) $em_inf($f1)
+  set em_sep($f1) $sep1
+  set em_ico($f1) $ico1
+  set em_mnu($f1) $mnu1
+  set em_inf($f1) $inf1
+  Em_ShowAll
+  set foc [focus]
+  if       {$foc eq [$obDl2 OpcIco$f1]} {focus [$obDl2 OpcIco$f2]
+  } elseif {$foc eq [$obDl2 ButMnu$f1]} {focus [$obDl2 ButMnu$f2]
+  } else                                {focus [$obDl2 ChbMT$f2]}
+}
+#_______________________
+
+proc pref::UpRun {} {
+  # Move a current run item up.
+
+  if {[set fr [FocusedRun]]<0} return
+  if {$fr==0} {
+    bell
+  } else {
+    set f2 [expr {$fr - 1}]
+    ExchangeRuns $fr $f2
+  }
+}
+#_______________________
+
+proc pref::DownRun {} {
+  # Move a current run item down.
+
+  if {[set fr [FocusedRun]]<0} return
+  set f2 [expr {$fr + 1}]
+  if {$f2>=$::alited::pref::em_Num} {
+    bell
+  } else {
+    ExchangeRuns $fr $f2
+  }
 }
 
 # ________________________ GUI procs _________________________ #
@@ -1604,6 +1698,7 @@ proc pref::_create {tab} {
   } else {
     after idle "::alited::pref::Tab nbk" ;# first entering
   }
+  bind $win.fra.fraR.nbk6 <<NotebookTabChanged>> alited::pref::ShowUpDownArrows
   bind $win <Control-o> alited::ini::EditSettings
   bind $win <F1> "[$obDl2 ButHelp] invoke"
   $obDl2 untouchWidgets *.texSample *.texCSample

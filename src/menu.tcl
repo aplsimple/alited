@@ -45,31 +45,6 @@ proc menu::CheckMenuItems {} {
 #}
 #_______________________
 
-proc menu::FillRecent {{delit ""}} {
-  # Creates "Recent Files" menu items.
-  #   delit - index of Recent Files item to be deleted
-
-  namespace upvar ::alited al al
-  catch {
-    set al(RECENTFILES) [lreplace $al(RECENTFILES) $delit $delit]
-  }
-  set m $al(MENUFILE).recentfiles
-  $m configure -tearoff 0
-  $m delete 0 end
-  if {[llength $al(RECENTFILES)]} {
-    $al(MENUFILE) entryconfigure 2 -state normal
-    set i 0
-    foreach rf $al(RECENTFILES) {
-      $m add command -label $rf -command "alited::file::ChooseRecent $i"
-      incr i
-    }
-  } else {
-    $al(MENUFILE) entryconfigure 2 -state disabled
-  }
-  $m configure -tearoff 1
-}
-#_______________________
-
 proc menu::CheckTint {{doit no}} {
   # Sets a check in menu "Tint" according to the current tint.
   #   doit - "yes" at restarting this procedure after a pause
@@ -167,7 +142,8 @@ proc menu::RunTip {} {
   return $tip
 }
 #_______________________
-  proc menu::FillMenu {} {
+
+proc menu::FillMenu {} {
   # Populates alited's main menu.
 
   # alited_checked
@@ -187,11 +163,13 @@ proc menu::RunTip {} {
   $m add command -label $al(MC,save) -command alited::file::SaveFile -accelerator $al(acc_0)
   $m add command -label $al(MC,saveas...) -command alited::file::SaveFileAs -accelerator $al(acc_1)
   $m add command -label $al(MC,saveall) -command alited::file::SaveAll -accelerator Ctrl+Shift+S
+  $m add command -label [msgcat::mc {Save and Close}] -command alited::file::SaveAndClose -accelerator Ctrl+W
   $m add separator
   $m add command -label $al(MC,close) -command alited::file::CloseFileMenu
   $m add command -label $al(MC,clall) -command {alited::file::CloseAll 1}
   $m add command -label $al(MC,clallleft) -command {alited::file::CloseAll 2}
   $m add command -label $al(MC,clallright) -command {alited::file::CloseAll 3}
+  $m add command -label [msgcat::mc {Close and Delete}] -command alited::file::CloseAndDelete -accelerator Ctrl+Alt+W
   $m add separator
   $m add command -label $al(MC,quit) -command {alited::Exit - 0 no}
 
@@ -243,8 +221,8 @@ proc menu::RunTip {} {
   for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
     if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
       if {[incr emwas]==1} {
-        menu $m.runs -tearoff 1 -title bar/menu
-        $m add cascade -label bar/menu -menu $m.runs
+        menu $m.runs -tearoff 1 -title bar-menu
+        $m add cascade -label bar-menu -menu $m.runs
       }
       if {$em_sep($i)} {
         $m.runs add separator
@@ -324,7 +302,7 @@ proc menu::RunTip {} {
   $m add command -label $al(MC,updateALE) -command {alited::ini::CheckUpdates yes}
   $m add separator
   $m add command -label [msgcat::mc "About..."] -command alited::HelpAbout
-  FillRecent
+  alited::file::FillRecent
 }
 
 # _________________________________ EOF _________________________________ #

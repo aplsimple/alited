@@ -131,6 +131,7 @@ proc keys::ReservedList {} {
     Control-R \
     Control-V \
     Control-W \
+    Control-Alt-W \
     Control-X \
     Control-Z \
     Control-Shift-Z \
@@ -212,7 +213,8 @@ proc keys::ReservedAdd {} {
   Add action new-file     Control-N {::alited::file::NewFile; break}
   Add action open-file    Control-O {::alited::file::OpenFile; break}
   Add action save-all     Shift-Control-S {::alited::file::SaveAll; break}
-  Add action save-close   Control-W {::alited::file::SaveFileAndClose; break}
+  Add action save-close   Control-W {::alited::file::SaveAndClose; break}
+  Add action close-delete Control-Alt-W {::alited::file::CloseAndDelete; break}
   Add action help         F1 {alited::tool::Help}
   # other keys are customized in Preferences
   Add action save-file    [alited::pref::BindKey 0 - F2] {::alited::file::SaveFile}

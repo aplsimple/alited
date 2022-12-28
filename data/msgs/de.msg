@@ -40,9 +40,8 @@ namespace eval ::alited {
     {Save} {Speichern}
     {Save as...} {Speichern unter...}
     {Save All} {Alles speichern}
-    {... All} {... alles}
-    {... All at Left} {... alles links}
-    {... All at Right} {... alles rechts}
+    {Save and Close} {Speichern und Schließen}
+    {Close and Delete} {Schließen und Löschen}
     {Preferences} {Einstellungen}
     {Preferences...} {Einstellungen ...}
     {Quit} {Beenden}
@@ -334,7 +333,7 @@ namespace eval ::alited {
     "Made %n replacements of \"%s\" with \"%r\" in \"%f\"." "%n Ersetzungen von \"%s\" mit \"%r\" in \"%f\"."
     "Made %n replacements of \"%s\" with \"%r\" in all of session." "%n Ersetzungen von \"%s\" mit \"%r\" in allen Dateien der Sitzung."
     "Replace all of \"%s\"\n\nwith \"%r\"\n\nin \"%f\" ?" "Ersetzte alle Vorkommen von \"%s\"\n\n mit \"%r\"\n\n in \"%f\" ?"
-    "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all texts?" "Ersetzte alle Vorkommen von \"%s\"\n\n mit \"%r\"\n\n in allen Dateien der Sitzung?"
+    "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all%Stexts?" "Ersetzte alle Vorkommen von \"%s\"\n\n mit \"%r\"\n\n in allen%SDateien der Sitzung?"
     {Don't focus a text after selecting in infobar} {Nicht den Text fokussieren nach der Auswahl in der Infoleiste}
     {Focus a text after selecting in infobar} {Fokussiere den Text nach Auswahl in der Infoleiste}
     {Find by List} {Suche nach Liste}
@@ -430,7 +429,7 @@ namespace eval ::alited {
 
   ### ________________________ Saving _________________________ ###
   ::msgcat::mcmset de {
-    {Save before bar/menu runs:} {Speichern bevor bar/menu ausgeführt wird:}
+    {Save before bar-menu runs:} {Speichern bevor bar-menu ausgeführt wird:}
     {Current file} {Aktuelle Datein}
     {All files} {Alle Dateien}
     {'Recent Files' length:} {Maximale Anzahl 'Letzte Dateien':}
@@ -516,7 +515,7 @@ namespace eval ::alited {
 
   ### ________________________ Tools _________________________ ###
   ::msgcat::mcmset de {
-    {Open bar/menu settings} {Öffne Leiste/Menü Einstellungen}
+    {Open bar-menu settings} {Öffne bar-menu Einstellungen}
     "An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar." "Ein Icon fügt das Ausführelement der Symbolleiste hinzu.\nLeer oder 'none' entfernt es aus der Symbolleiste."
     "The run item for the menu and/or the toolbar.\nSelect it from the e_menu items." "Das Ausführungselement für das Menü und/oder die Symbolleiste.\nWähle Du es aus dem e_menu-Einträgen aus."
     {Directory of menus:} {Menüverzeichnis:}
@@ -544,6 +543,7 @@ namespace eval ::alited {
     {Forcedly:} {Zwangsweise:}
     {e_menu's own} {e_menu eigen}
     {Also, this makes "tkcon" topmost.} {Also, das macht "tkcon" oben alles.}
+    {Select any of run item} {Wähle ein Ausführens Element}
   }
 
   ## ________________________ Checks ________________________ ##
@@ -593,7 +593,7 @@ namespace eval ::alited {
 
   ## ________________________ Bar of tabs ________________________ ##
   ::msgcat::mcmset de {
-    {(Un)Select} {auswählen/abwählen}
+    {(Un)Select} {Auswählen/Abwählen}
     {... Visible} {... sichtbar}
     {... All} {... alles}
     {... All at Left} {... alles links}

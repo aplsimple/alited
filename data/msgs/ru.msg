@@ -39,9 +39,8 @@ namespace eval ::alited {
     {Save} {Сохранить}
     {Save as...} {Сохранить как...}
     {Save All} {Сохранить все}
-    {... All} {... все}
-    {... All at Left} {... все слева}
-    {... All at Right} {... все справа}
+    {Save and Close} {Сохранить и закрыть}
+    {Close and Delete} {Закрыть и удалить}
     {Preferences} {Настройки}
     {Preferences...} {Настройки...}
     {Quit} {Выход}
@@ -331,7 +330,7 @@ namespace eval ::alited {
     "Made %n replacements of \"%s\" with \"%r\" in \"%f\"." "Сделано %n замен \"%s\" на \"%r\" в \"%f\"."
     "Made %n replacements of \"%s\" with \"%r\" in all of session." "Сделано %n замен \"%s\" на \"%r\" во всём сеансе."
     "Replace all of \"%s\"\n\nwith \"%r\"\n\nin \"%f\" ?" "Заменить все \"%s\"\n\nна \"%r\"\n\nв \"%f\" ?"
-    "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all texts?" "Заменить все \"%s\"\n\nна \"%r\"\n\nво всех текстах?"
+    "Replace all of \"%s\"\n\nwith \"%r\"\n\nin all%Stexts?" "Заменить все \"%s\"\n\nна \"%r\"\n\nво всех%Sтекстах?"
     {Don't focus a text after selecting in infobar} {Не переходить на текст при выборе в инфобаре}
     {Focus a text after selecting in infobar} {Переходить на текст при выборе в инфобаре}
     {Find by List} {Искать по списку}
@@ -426,7 +425,7 @@ namespace eval ::alited {
 
   ### ________________________ Saving _________________________ ###
   ::msgcat::mcmset ru {
-    {Save before bar/menu runs:} {Сохранять при вызовах bar/menu:}
+    {Save before bar-menu runs:} {Сохранять при вызовах bar-menu:}
     {Current file} {Текущий файл}
     {All files} {Все файлы}
     {'Recent Files' length:} {Длина списка 'Недавние файлы':}
@@ -511,7 +510,7 @@ namespace eval ::alited {
 
   ### ________________________ Tools _________________________ ###
   ::msgcat::mcmset ru {
-    {Open bar/menu settings} {Открыть настройки bar/menu}
+    {Open bar-menu settings} {Открыть настройки bar-menu}
     "An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar." "Иконка включит запуск в тулбар.\nПустая или 'none' иконка исключит запуск из тулбара."
     "The run item for the menu and/or the toolbar.\nSelect it from the e_menu items." "Вызов команды для меню и/или тулбара.\nВыберите ее из команд e_menu."
     {Directory of menus:} {Каталог меню:}
@@ -539,6 +538,7 @@ namespace eval ::alited {
     {Forcedly:} {Принудительно:}
     {e_menu's own} {своя в e_menu}
     {Also, this makes "tkcon" topmost.} {Окно "tkcon" будет поверх всех других.}
+    {Select any of run item} {Выберите какую-нибудь команду}
   }
 
   ## ________________________ Checks ________________________ ##

@@ -1777,11 +1777,11 @@ proc ::em::prepare_buttons {refcommands} {
   set ::em::font1a "$::em::font_f1 -size $fs"
   set ::em::font2a "$::em::font_f2 -size $::em::fs"
   set ::em::font3a "$::em::font_f2 -size [expr {$::em::fs-1}]"
-  label .em.fr.win -bg $::em::clrinab -fg $::em::clrinab -state disabled \
-    -takefocus 0
-  checkbutton .em.fr.cb -text {On top} -variable ::em::ontop -fg $::em::clrhelp \
-    -bg $::em::clrtitb -takefocus 0 -command {::em::toggle_ontop} \
-    -font $::em::font1a
+  frame .em.fr.win -bg $::em::clrinab
+  checkbutton .em.fr.cb -text {On top} -fg $::em::clrhelp -bg $::em::clrinab
+  after idle [list .em.fr.cb configure -variable ::em::ontop \
+    -activeforeground $::em::clrtitf -activebackground $::em::clrtitb \
+    -takefocus 0 -command ::em::toggle_ontop -font $::em::font1a]
   if {$::eh::pk eq {} && $::em::ornament!=-2} {
     grid [label .em.fr.h0 -text [string repeat { } [expr {$::em::itviewed -3}]] \
       -bg $::em::clrinab] -row 0 -column 0 -sticky nsew
@@ -2376,7 +2376,7 @@ proc ::em::inithotkeys {} {
   }
   bind .em <Button-3>  {::em::addon popup %X %Y}
   bind .em <F1> {::em::addon about}
-  update
+  if {$::em::ex eq {}} update
 }
 #___ init window type
 proc ::em::initdk {} {
@@ -2398,7 +2398,7 @@ proc ::em::initmenu {} {
     ::em::initdk
     ::em::initbegin
   }
-  ttk::frame .em.fr
+  frame .em.fr -bg $::em::clrinab
   if {$::em::dk in {desktop splash dock}} {
     .em.fr configure -borderwidth 2 -relief solid
   }
@@ -2448,7 +2448,7 @@ proc ::em::initmenu {} {
       }
       incr ::em::isep
     }
-    ttk::frame .em.fr.win.fr$i
+    frame .em.fr.win.fr$i -bg $::em::clrinab
     if {[string first M [lindex $comm 3]] == 0} { ;# is menu?
       set img "-image $::em::img"     ;# yes, show arrow
       button .em.fr.win.fr$i.arr {*}$img -relief flat -overrelief flat \
@@ -2492,6 +2492,7 @@ proc ::em::initmenu {} {
       bind $b <ISO_Left_Tab> "::em::mouse_button $iminus"
     }
   }
+  if {$::em::ex ne {}} return
   grid .em.fr.win -columnspan 2 -sticky ew
   grid columnconfigure .em.fr 0 -weight 1
   grid rowconfigure    .em.fr 0 -weight 0
@@ -2499,7 +2500,7 @@ proc ::em::initmenu {} {
   grid rowconfigure    .em.fr 2 -weight 1
   grid columnconfigure .em.fr.win 1 -weight 1
   ::em::toggle_ontop
-  update
+  update idletasks
   set isgeom [string len $::em::geometry]
   wm title .em $::em::menuttl
   if {$::em::start0==1} {
@@ -2773,5 +2774,6 @@ if {$::em::solo} {
 }
 
 # _____________________________ EOF _____________________________________ #
+#RUNF: ~/PG/github/e_menu/e_menu.tcl PD=~/PG/github/e_menu/ d=~/PG/github/e_menu/  md=~/.tke/plugins/e_menu/menus m=menu.mnu fs=11 w=50 o=3 c=24 s=selected g=446x602+533+167
 #RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ../pave/tests/test2_pave.tcl 8 9 12 'small icons'

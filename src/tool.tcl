@@ -391,7 +391,7 @@ proc tool::PopupBar {X Y} {
   set popm $al(WIN).popupBar
   catch {destroy $popm}
   menu $popm -tearoff 0
-  $popm add command -label [msgcat::mc {Open bar/menu settings}] \
+  $popm add command -label [msgcat::mc {Open bar-menu settings}] \
     -command {alited::pref::_run Emenu_Tab}
   $obPav themePopup $popm
   tk_popup $popm $X $Y
@@ -732,7 +732,7 @@ proc tool::RunMode {} {
 proc tool::is_mainmenu {menuargs} {
   # Checks if e_menu's arguments are for the main menu (run by F4).
   #   menuargs - e_menu's arguments
-  # The e_menu's arguments contain ex= or EX= for bar/menu tools only.
+  # The e_menu's arguments contain ex= or EX= for bar-menu tools only.
 
   return [expr {[lsearch -glob -nocase $menuargs EX=*] == -1}]
 }

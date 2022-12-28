@@ -640,16 +640,36 @@ proc file::SaveFileAs {{TID ""}} {
 }
 #_______________________
 
-proc file::SaveFileAndClose {} {
+proc file::SaveAndClose {} {
   # Saves and closes the current file.
   # This handles pressing Ctrl+W.
+  # Returns yes if the file was closed.
 
-  if {[IsModified] && ![SaveFile]} return
+  if {[IsModified] && ![SaveFile]} {return no}
   set fname [lindex $::alited::bar::ctrltablist 1]
   alited::bar::BAR [alited::bar::CurrentTabID] close
   # go to a previously viewed file
   if {[set TID [alited::bar::FileTID $fname]] ne {}} {
     alited::bar::BAR $TID show
+  }
+  return yes
+}
+#_______________________
+
+proc file::CloseAndDelete {} {
+  # Closes and deletes the current file.
+
+  namespace upvar ::alited al al
+  set fname [alited::bar::FileName]
+  if {[IsNoName $fname]} {
+    # for a new file: to save first if modified (to think twice)
+    if {[IsModified]} {SaveFile} else {SaveAndClose}
+    return
+  }
+  set msg [string map [list %f [file tail $fname]] $al(MC,delfile)]
+  if {[alited::msg yesno warn $msg NO]} {
+    # to save first (for normal closing only)
+    if {[SaveAndClose]} {DeleteFile $fname}
   }
 }
 #_______________________
@@ -957,6 +977,18 @@ proc file::MoveFiles {wtree to itemIDs f1112} {
 }
 #_______________________
 
+proc file::DeleteFile {fname} {
+  # Deletes a file.
+  #  fname - file name
+
+  if {[catch {file delete $fname} err]} {
+    alited::msg ok err "Error of deleting\n$fname\n\n$err"
+    return no
+  }
+  return yes
+}
+#_______________________
+
 proc file::RemoveFile {fname dname mode} {
   # Removes or backups a file, trying to save it in a directory.
   #   fname - file name
@@ -980,8 +1012,7 @@ proc file::RemoveFile {fname dname mode} {
     # more zeal than sense: to show $err here
   }
   catch {file mtime $fname2 [file mtime $fname]}
-  if {[catch {file delete $fname} err]} {
-    alited::msg ok err "Error of deleting\n$fname\n\n$err"
+  if {![DeleteFile $fname]} {
     return {}
   } else {
     alited::Message [string map [list %f $ftail %d $dtail] $al(MC,removed)]
@@ -1136,11 +1167,34 @@ proc file::SelectInTree {wtree id} {
 
 # ________________________ Recent files _________________________ #
 
+proc file::FillRecent {{delit ""}} {
+  # Creates "Recent Files" menu items.
+  #   delit - index of Recent Files item to be deleted
+
+  namespace upvar ::alited al al
+  if {[string is integer -strict $delit] && \
+  $delit>-1 && $delit<[llength $al(RECENTFILES)]} {
+    set al(RECENTFILES) [lreplace $al(RECENTFILES) $delit $delit]
+  }
+  set m $al(MENUFILE).recentfiles
+  $m configure -tearoff 0
+  $m delete 0 end
+  if {[llength $al(RECENTFILES)]} {
+    $al(MENUFILE) entryconfigure 2 -state normal
+    foreach rf $al(RECENTFILES) {
+      $m add command -label $rf -command "alited::file::ChooseRecent {$rf}"
+    }
+  } else {
+    $al(MENUFILE) entryconfigure 2 -state disabled
+  }
+  $m configure -tearoff 1
+}
+#_______________________
 
 proc file::InsertRecent {fname pos} {
   namespace upvar ::alited al al
   if {![IsNoName $fname]} {
-    if {[set i [lsearch $al(RECENTFILES) $fname]]>-1} {
+    if {[set i [lsearch -exact $al(RECENTFILES) $fname]]>-1} {
       set al(RECENTFILES) [lreplace $al(RECENTFILES) $i $i]
     }
     set al(RECENTFILES) [linsert $al(RECENTFILES) $pos $fname]
@@ -1153,15 +1207,14 @@ proc file::InsertRecent {fname pos} {
 proc file::AddRecent {fname} {
   namespace upvar ::alited al al
   InsertRecent $fname 0
-  alited::menu::FillRecent
+  FillRecent
 }
 
-proc file::ChooseRecent {idx} {
+proc file::ChooseRecent {fname} {
   namespace upvar ::alited al al
-  set fname [lindex $al(RECENTFILES) $idx]
   AddRecent $fname
   if {[OpenFile $fname] eq {} && ![file exists $fname]} {
-    alited::menu::FillRecent 0
+    FillRecent 0
     alited::Balloon1 $fname
   }
 }

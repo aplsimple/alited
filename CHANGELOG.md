@@ -1,14 +1,22 @@
 # LAST CHANGES:
 
 
-Version `1.3.6a2 (24 Dec'22)`
+Version `1.3.6b2 (28 Dec'22)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
   - BUGFIX: skip Tcl check at Run if unit tree not built yet
+  - BUGFIX: focus 1st cbx at opening Find/Replace
+  - NEW   : up/down buttons to move items of Preferences/Tools/bar-menu
+  - NEW   : remove missing items from last visited list, at selecting
+  - NEW   : File menu: close & delete, for files a-la "try & forget"
+  - NEW   : new "picture character" icons in Preferences/Tools/bar-menu
+  - NEW   : popup menu for toolbar icons
   - NEW   : 3 profilers, available via Templates
   - NEW   : save/restore Templates' selection
   - NEW   : %A and %M wildcards for Templates
+  - CHANGE: check for empty name at adding to last visited
+  - CHANGE: Recent files: about defeating an irregular bug
   - CHANGE: syntax highlighting in Templates
   - CHANGE: hot keys in tooltips/menu of file tree
   - CHANGE: clear the unit error message in info bar, before Run
@@ -101,7 +109,7 @@ Version `1.3.4 (21 Sep'22)`
   - CHANGE: save/restore e_menu's ("internal") geometry for Preferences' cancel
   - CHANGE: OutwardChange called just after saving files to avoid probable issue
   - CHANGE: undo/redo of (un)commenting in one step
-  - CHANGE: delete Item# labels in Preferences/Tools/bar/menu tab
+  - CHANGE: delete Item# labels in Preferences/Tools/bar-menu tab
   - CHANGE: demos: "6.Themes" for dark & light bg
   - CHANGE: packages: apave/e_menu 3.5.5, baltip 1.4.1, bartabs 1.5.8
 
@@ -255,7 +263,7 @@ Version `1.2.2 (4 May'22)`
   - NEW   : "Preferences / Projects / Remove trailing whitespaces" option (for all texts)
   - NEW   : "Projects / Options / Remove trailing whitespaces" option (for all texts)
   - CHANGE: set the current month if no blinking TODO in Projects
-  - CHANGE: %D & %f wildcards filled in bar/menu icon tips & Tools/bar/menu items
+  - CHANGE: %D & %f wildcards filled in bar-menu icon tips & Tools/bar-menu items
   - CHANGE: additional checking to avoid duplicates in "Last Visited"
   - CHANGE: Preferences' code snippets: curr.line & TODO comment (#!..) colors
   - CHANGE: at completion, some commands need no adding a space
