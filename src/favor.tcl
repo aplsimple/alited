@@ -179,7 +179,8 @@ proc favor::Select {} {
     }
   }
   set msg [string map [list %u $name] $al(MC,notfndunit)]
-  alited::Message $msg 4
+  alited::Message $msg 3
+  alited::main::FocusText
 }
 #_______________________
 

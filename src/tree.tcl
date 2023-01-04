@@ -715,7 +715,7 @@ proc tree::ButtonRelease {but s x y X Y} {
   set ID [$wtree identify item $x $y]
   DestroyMoveWindow no
   set msec [clock milliseconds]
-  set ctrl [expr {$s & 7}]
+  set ctrl [expr {$s & 0b100}]
   if {([info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<400}]) || $ctrl} {
     SelectUnits $wtree $ctrl
     set al(movWin) {}
@@ -747,7 +747,7 @@ proc tree::ButtonMotion {but s x y X Y} {
   if {![info exists al(movWin)] || $al(movWin) eq {}} {
     return
   }
-  if {$s & 7} {
+  if {$s & 0b111} {
     set al(movWin) {}
     return
   }

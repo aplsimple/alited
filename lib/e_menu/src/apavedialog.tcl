@@ -82,7 +82,7 @@ oo::class create ::apave::APaveDialog {
     if {[llength [self next]]} next
   }
 
-# ________________________ Standard dialogs _________________________ #
+  ## ________________________ Standard dialogs _________________________ ##
 
   #  ok               - dialog with button OK
   #  okcancel         - dialog with buttons OK, Cancel
@@ -213,7 +213,7 @@ oo::class create ::apave::APaveDialog {
     return [my Query $icon $ttl $msg $apave_msc_bttns But$defb {} [my PrepArgs $args]]
   }
 
-# ________________________ Progress for splash _________________________ #
+  ## ________________________ Progress for splash _________________________ ##
 
   method progress_Begin {type wprn ttl msg1 msg2 maxvalue args} {
     # Creates and shows a progress window. Fit for splash screens.
@@ -326,7 +326,7 @@ oo::class create ::apave::APaveDialog {
     }
   }
 
-# ________________________ Text utilities _________________________ #
+  ## ________________________ Text utilities _________________________ ##
 
   method pasteText {txt} {
     # Removes a selection at pasting.
@@ -589,7 +589,7 @@ oo::class create ::apave::APaveDialog {
        -command \"[self] linesMove {$txt} +1 0\""
   }
 
-# ________________________ Highlighting _________________________ #
+  ## ________________________ Highlighting _________________________ ##
 
   method popupHighlightCommands {{pop ""} {txt ""}} {
     # Returns highlighting commands for a popup menu on a text.
@@ -753,7 +753,7 @@ oo::class create ::apave::APaveDialog {
     }
   }
 
-# ________________________ Query's auxiliaries _________________________ #
+  ## ________________________ Query's auxiliaries _________________________ ##
 
   method varName {wname} {
     # Gets a variable name associated with a widget's name of "input" dialogue.
@@ -899,7 +899,7 @@ oo::class create ::apave::APaveDialog {
     return $_pdg($name)
   }
 
-  # ________________________ Query the terrible _________________________ #
+  ## ________________________ Query the terrible _________________________ ##
 
   method Query {icon ttl msg buttons defb inopts argdia {precom ""} args} {
     # Makes a query (or a message) and gets the user's response.
@@ -1379,11 +1379,10 @@ oo::class create ::apave::APaveDialog {
     return "$result$textcont$inopts"
   }
 
-  ## ________________________ EOC apave::APaveDialog _________________________ ##
+# ________________________ EOC APaveDialog _________________________ #
 
 }
 
 # _____________________________ EOF _____________________________________ #
-#RUNF1: ~/PG/github/pave/tests/test2_pave.tcl alt 27 11 12 "middle icons"
-#RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
+#RUNF: ~/PG/github/pave/tests/test2_pave.tcl alt 27 11 12 "middle icons"
+#RUNF: ~/PG/github/alited/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

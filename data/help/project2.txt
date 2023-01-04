@@ -12,6 +12,8 @@
    - <b>Indentation</b> is a number of spaces to indent your texts' lines;
      if "Auto detection" is on, a text indentation is defined by its
      first indented line while for a new file it's set by this option.
+     This options sets also <b>Tab character</b>'s length, if you mapped
+     the default completion to an other key instead of Tab.
 
    - <b>Unit lines per 1 red bar</b> is a number of lines to mark
      proc/method with 1 red bar in the unit tree; the fully red is bad!

@@ -396,11 +396,10 @@ proc ::em::mouse_button {i} {
   set i [next_button $i]
   if {![winfo exists .em.fr.win.fr$i.butt]} return
   lassign [split [winfo geom .em.fr.win] +] -> x1 y1
-  lassign [split [winfo geom .em.fr.win.fr$i] +x] w - x2 y2
-  lassign [split [winfo geom .em.fr.win.fr$i.butt] +x] - h x3 y3
+  lassign [split [winfo geom .em.fr.win.fr$i] +x] w h x2 y2
   if {$::em::solo} {
-    event generate .em <Motion> -warp 1 -x [expr {$x1+$x2+$x3+$w/2}] \
-    -y [expr {$y1+$y2+$y3+$h-5}]
+    event generate .em <Motion> -warp 1 -x [expr {$x1+$x2+int($w/1.5)}] \
+    -y [expr {$y1+$y2+int($h/1.2)}]
   }
 }
 #___ 'proc' all buttons

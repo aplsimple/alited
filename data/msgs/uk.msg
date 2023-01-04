@@ -348,6 +348,7 @@ namespace eval ::alited {
     "Use this geometry of the dialogue\nby default" "Використовувати цю геометрію діалогу\nза замовчуванням"
     "Paste 'Find'\nCtrl+R" "Вставити шукане\nCtrl+R"
     {Not found: %s} {Не знайдено: %s}
+    {Resize} {Змінити розмір}
   }
 
   ## ________________________ Start and update ________________________ ##

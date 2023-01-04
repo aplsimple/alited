@@ -385,12 +385,6 @@ proc pref::Tab {tab {nt ""} {doit no}} {
       $win.fra.fraR.$curTab select $nt
     }
   }
-  foreach w [$win.fra.fraR.$curTab tabs] {
-    if {[string match *$nt $w]} {
-      ::apave::focusFirst $w
-      break
-    }
-  }
   if {$tab eq {nbk2}} {
     # check if a color scheme is switched light/dark - if yes, disable colors
     set cs [GetCS]
@@ -410,7 +404,13 @@ proc pref::Tab {tab {nt ""} {doit no}} {
   if {[string match root* $geo]} {
     # the geometry of the dialogue - its first setting
     # (makes sense at switching tabs, when open 1st time)
-    after 1000 "wm geometry $win \[wm geometry $win\]"
+    after 10 [list after 10 [list after 10 [list after 10 "wm geometry $win \[wm geometry $win\]"]]]
+  }
+  foreach w [$win.fra.fraR.$curTab tabs] {
+    if {[string match *$nt $w]} {
+      after 10 [list after 10 [list after 10 [list after 10 "::apave::focusFirst $w"]]]
+      break
+    }
   }
 }
 #_______________________
@@ -1399,9 +1399,9 @@ proc pref::Runs_Tab {tab} {
           %C $lwid
           set lwid ".btTDel$i + L 1 1 {-padx 1} {-tip {Deletes a line.} -com {::alited::pref::Em_DelLine $i} -image alimg_delete}"
           %C $lwid
-          set lwid ".ChbMT$i + L 1 1 {-padx 10} {-t separator -var ::alited::pref::em_sep($i) -tip {If 'yes', means a separator of the toolbar/menu.} -com ::alited::pref::Em_ShowAll}"
+          set lwid ".ChbMT$i + L 1 1 {-padx 10} {-t separator -var ::alited::pref::em_sep($i) -tip {If 'yes', means a separator of the toolbar/menu.} -com {::alited::pref::Em_Chbox $i}}"
           %C $lwid
-          set lwid ".OpcIco$i + L 1 1 {-st nsw} {::alited::pref::em_ico($i) alited::pref::em_Icons {-width 10 -com alited::pref::Em_ShowAll -tooltip {{An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar.}}} {alited::pref::opcIcoPre %a}}"
+          set lwid ".OpcIco$i + L 1 1 {-st nsw} {::alited::pref::em_ico($i) alited::pref::em_Icons {-width 9 -com alited::pref::Em_ShowAll -tooltip {{An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar.}}} {alited::pref::opcIcoPre %a}}"
           %C $lwid
           set lwid ".ButMnu$i + L 1 1 {-st sw -pady 1 -padx 10} {-t {$::alited::pref::em_mnu($i)} -com {alited::pref::PickMenuItem $i} -style TButtonWest -tip {{The run item for the menu and/or the toolbar.\nSelect it from the e_menu items.}}}"
           %C $lwid
@@ -1493,6 +1493,36 @@ proc pref::Em_ShowAll {{upd yes}} {
     }
   }
   if {$upd} ScrollRuns
+}
+#_______________________
+
+proc pref::Em_Chbox {it} {
+  # Handles "bar-menu" checkbox's clicking.
+  #   it - index of "bar-menu" item
+  # Saves "bar-menu" item to restore it after 2nd click.
+
+  fetchVars
+  set sv ::alited::pref::Chbox_savedinfo
+  set svico ::alited::pref::Chbox_savedinfoico
+  set svmnu ::alited::pref::Chbox_savedinfomnu
+  set svinf ::alited::pref::Chbox_savedinfoinf
+  if {![info exists $sv] || [set $sv] != $it} {
+    set $sv $it
+    set $svico {}
+    set $svico {}
+    set $svmnu {}
+    set $svinf {}
+  }
+  if {$em_sep($it)} {
+    set $svico $em_ico($it)
+    set $svmnu $em_mnu($it)
+    set $svinf $em_inf($it)
+  } else {
+    set em_ico($it) [set $svico]
+    set em_mnu($it) [set $svmnu]
+    set em_inf($it) [set $svinf]
+  }
+  Em_ShowAll
 }
 #_______________________
 

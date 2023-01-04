@@ -442,6 +442,8 @@ proc doctest::init {args} {
   chan configure $ch -encoding utf-8
   set cnt [split [read $ch] \n]
   close $ch
+  # for those scripts that use Tk and aren't main:
+  set cnt [linsert $cnt 0 {package require Tk; wm withdraw .}]
   # source all tests (by #% source ...)
   set isany [set isopen 0]
   foreach line $cnt {

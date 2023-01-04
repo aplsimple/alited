@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide apave 3.6.2
+package provide apave 3.6.3
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -356,9 +356,8 @@ oo::class create ::apave::APaveInput {
     return $res
   }
 
-
 # ________________________ EONS _________________________ #
 
 }
-# _________________________________ EOF _________________________________ #
+# ________________________ EOF _________________________ #
 #RUNF1: ~/PG/github/pave/tests/test_pavedialog.tcl

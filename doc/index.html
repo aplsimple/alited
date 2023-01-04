@@ -857,7 +857,13 @@ When the TODO is done, just erase it with <i>Erase</i> button.
 
 <p>"Skip subdirectories" option mean that some subdirectories of the project root directory would be ignored. This matters especially for <em>.git</em> subdirectory, as it can contain a lot of files not needed by <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> at all.
 </p>
-
+<p>
+"End of line" option - if it is empty, the EOLs for saved files are defined by your platform. But if you have some projects with other EOLs, set the field accordingly.
+</p>
+<p>
+"Indentation" is a number of spaces to indent your texts' lines. If "Auto detection" is on, a text indentation is defined by its first indented line while for a new file it's set by this option.
+<br><b>Note</b>: This options sets also Tab character's length, if you <a href=#keyssetup>mapped</a> the default completion to an other key instead of Tab.
+</p>
 <p>The "Unit lines per 1 red bar" option means that N lines of a unit are considered normal, while each N additional lines of the unit would add a red bar to its icon at the unit tree, up to 7th bar.
 </p>
 
@@ -1758,8 +1764,6 @@ The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">
 
 <p>
 <ul>
-<li><i>Ctrl+W</i> saves changes and closes a current file
-<br><br></li>
 <li><i>Ctrl+Tab</i> switches between last two edited files
 <br><br></li>
 <li><i>Ctrl+Enter (Shift+Enter)</i> adds a new line without indentation
@@ -1770,11 +1774,13 @@ The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">
 <br><br></li>
 <li><i>Ctrl+K</i> clears a line's right part
 <br><br></li>
-<li><i>Ctrl+Shift+U</i> allows to enter Unicode character, by its number
+<li><i>Ctrl+Shift+U</i> allows to enter Unicode character, by its number (after entering it press <i>Enter</i> key)
 </li>
 </ul>
 </p>
-<p>By default, <i>Tab</i> key is used in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> for "Command complete" tool. Refer to "Preferences/Keys" to redefine it.
+<p><b>Note</b>: By default, <i>Tab</i> key is used in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> for "Command complete" tool. Refer to "Preferences/Keys" to redefine it.
+</p>
+<p><span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> promotes the idea of <a href=https://www.emacswiki.org/emacs/TabsAreEvil>Tabs Are Evil</a>. A typical case: you use 4-space Tabs and get an external code using 8-space Tabs and (unintentionally) Spaces to indent the code - then you get a mess of indentation as well.
 </p>
 
 <p>

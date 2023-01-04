@@ -224,6 +224,7 @@ proc bar::Sort {} {
     set whilesorting no
   }
 }
+#_______________________
 
 proc bar::SelFile {tip} {
   # Open a file from the file list even when it's closed
@@ -232,7 +233,6 @@ proc bar::SelFile {tip} {
   lassign [split $tip \n] fname
   alited::file::OpenFile $fname yes
 }
-#_______________________
 
 # ________________________ Identification  _________________________ #
 

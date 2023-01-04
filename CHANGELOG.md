@@ -1,13 +1,16 @@
 # LAST CHANGES:
 
 
-Version `1.3.6b2 (28 Dec'22)`
+Version `1.3.6b4 (4 Jan'23)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
   - BUGFIX: skip Tcl check at Run if unit tree not built yet
   - BUGFIX: focus 1st cbx at opening Find/Replace
+  - BUGFIX: tips on toolbar items with %f and %D wildcards (%PD added)
+  - NEW   : length of Tab = "Indentation" option of a project if it > 1
   - NEW   : up/down buttons to move items of Preferences/Tools/bar-menu
+  - NEW   : checkbuttons of Preferences/Tools/bar-menu: save/restore items
   - NEW   : remove missing items from last visited list, at selecting
   - NEW   : File menu: close & delete, for files a-la "try & forget"
   - NEW   : new "picture character" icons in Preferences/Tools/bar-menu
@@ -15,6 +18,8 @@ Version `1.3.6b2 (28 Dec'22)`
   - NEW   : 3 profilers, available via Templates
   - NEW   : save/restore Templates' selection
   - NEW   : %A and %M wildcards for Templates
+  - CHANGE: Find/Replace: "wm minsize", button to resize
+  - CHANGE: tests.mnu/doctest: testing Tk scripts without "package require Tk"
   - CHANGE: check for empty name at adding to last visited
   - CHANGE: Recent files: about defeating an irregular bug
   - CHANGE: syntax highlighting in Templates
@@ -24,7 +29,7 @@ Version `1.3.6b2 (28 Dec'22)`
   - CHANGE: tips on Projects' file list
   - CHANGE: About / Acknowledgements
   - CHANGE: docs
-  - CHANGE: packages: apave/e_menu 3.6.2
+  - CHANGE: packages: apave/e_menu 3.6.3, hl_tcl 0.9.45
 
 
 Version `1.3.5 (7 Dec'22)`

@@ -18,9 +18,6 @@ namespace eval find {
   variable geo root=$::alited::al(WIN)
   variable geo2 $geo
 
-  # -minsize option of the dialogue
-  variable minsize {-minsize {400 100}}
-
   # common data of procs
   variable data; array set data [list]
 
@@ -463,7 +460,7 @@ proc find::PutInfo {fname line info TID} {
   #   TID - tab's ID of the file
   # See also: info::Put
 
-  set msg "$fname  :$line:  $info"
+  set msg "$fname  $line:  $info"
   set dat [list $TID $line]
   alited::info::Put $msg $dat
 }
@@ -837,6 +834,40 @@ proc find::btTPaste {} {
     alited::CursorAtEnd [$obFND Cbx2]
   }
 }
+#_______________________
+
+proc find::btTRetry {} {
+  # Resizes Find/Replace dialogue.
+
+  namespace upvar ::alited al al obFND obFND
+  variable win
+  variable geo
+  if {[wm geometry $win] eq $geo} {
+    lassign [split $geo x+] w1 h1 x1 y1
+    lassign [split [winfo geometry [$obFND But1]] x+] w2 h2
+    set w  [expr {($w2+2)*5}] ;# "standard" width
+    set h  [expr {($h2+2)*7}] ;# "standard" height
+    set sw [expr {$w1-$w}]   ;# shift by X
+    set sh [expr {$h1-$h}]   ;# shift by Y
+    set x  [expr {max(1,$x1+$sw)}]  ;# new X coordinate
+    set y  [expr {max(1,$y1+$sh)}]  ;# new Y coordinate
+    # set "standard" geometry, starting from the default's right-bottom corner
+    wm geometry $win ${w}x${h}+$x+$y
+  } else {
+    # set the default geometry
+    wm geometry $win $geo
+    lassign [split $geo x+] w1 h1 x y
+  }
+  # set the mouse pointer on the button
+  update
+  set w1 [$obFND BtTretry]
+  set w2 [winfo parent $w1]
+  set w3 [winfo parent $w2]
+  lassign [split [winfo geometry $w2] +x] - - x2 y2
+  lassign [split [winfo geometry $w1] +x] w h x1 y1
+  event generate $w3 <Motion> -warp 1 \
+    -x [expr {$x1+$x2+int($w/2)}] -y [expr {$y1+$y2+int($h/2)}]
+}
 
 # ________________________ Helpers _________________________ #
 
@@ -1074,7 +1105,6 @@ proc find::_create {} {
   namespace upvar ::alited al al obFND obFND
   variable win
   variable geo
-  variable minsize
   variable data
   set data(lastinvoke) 1
   set data(geoDefault) 0
@@ -1092,6 +1122,7 @@ proc find::_create {} {
       {radA + L 1 1 {-st ens -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Exact" -var ::alited::find::data(v1) -value 1 -style TRadiobuttonFS}}
       {radB + L 1 1 {-st wns -padx 5 -ipady 0 -pady 0}  {-t "Glob" -var ::alited::find::data(v1) -value 2 -tip "Allows to use *, ?, \[ and \]\nin \"find\" string." -style TRadiobuttonFS}}
       {radC + L 1 1 {-st wns -ipadx 0 -padx 0 -ipady 0 -pady 0 -cw 1}  {-t "RE" -var ::alited::find::data(v1) -value 3 -tip "Allows to use the regular expressions\nin \"find\" string." -style TRadiobuttonFS}}
+      {BtTretry + L 1 1 {-ipady 0 -pady 0} {-com alited::find::btTRetry -tip "Resize"}}
       {h_2 labBm T 1 5  {-st es -rw 1 -ipadx 0 -padx 0 -ipady 0 -pady 0}}
       {seh  + T 1 5  {-st ews -ipadx 0 -padx 0 -ipady 0 -pady 0}}
       {chb1 +  T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Match whole word" -var ::alited::find::data(c1) -style TCheckbuttonFS}}
@@ -1120,7 +1151,12 @@ proc find::_create {} {
     foreach k {f F} {bind $win <Control-$k> {::alited::find::LastInvoke; break}}
     foreach k {r R} {bind $win <Control-$k> {::alited::find::btTPaste; break}}
     after idle [list after 100 [list alited::find::FocusCbx1 100 "wm deiconify $win"]]
-    set res [$obFND showModal $win -geometry $geo {*}$minsize -resizable 1 -modal no -ontop no]
+    set but [$obFND But1]
+    lassign [split [winfo geometry $but] x+] w h
+    set minw [expr {([winfo reqwidth $but]+2)*3}]
+    set minh [expr {([winfo reqheight $but]+2)*3}]
+    set res [$obFND showModal $win \
+      -geometry $geo -resizable 1 -minsize "$minw $minh" -modal no -ontop no]
     if {[string match root=* $geo] || $data(geoDefault)} {
       set geo [wm geometry $win] ;# save the new geometry of the dialogue
     }

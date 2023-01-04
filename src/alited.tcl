@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.6b2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.6b4  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 

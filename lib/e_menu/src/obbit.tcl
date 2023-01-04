@@ -2577,9 +2577,8 @@ oo::class create ::apave::ObjectTheming {
 
 }
 
-# ___________________________________ EOF _____________________________________ #
+# __________________ EOF ___________________ #
 
-#%   DOCTEST   SOURCE  ~/PG/github/pave/tests/obbit_1.test
+#%   DOCTEST   SOURCE  ~/PG/github/apave_tests/tests/obbit_1.test
 #-RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#-RUNF1: ./tests/test2_pave.tcl
 #RUNF1: ./tests/test2_pave.tcl alt 41 9 12 "small icons"

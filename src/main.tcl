@@ -120,6 +120,10 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
   }
   if {$doinit} {
     # if the file isn't read yet, read it and initialize its highlighting
+    if {$al(prjindent)>1 && $al(prjindent)<9} {
+      set texttabs [expr {$al(prjindent) * [font measure $al(FONT,txt) 0]}]
+      $wtxt configure -tabs "$texttabs left" -tabstyle wordprocessor
+    }
     alited::file::DisplayFile $TID $curfile $wtxt $doreload
     if {$doshow} {
       HighlightText $TID $curfile $wtxt
@@ -515,7 +519,7 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
   foreach gk {F3 AltQ AltW} {
     lappend gokeys {*}[apave::getTextHotkeys $gk]
   }
-  if {$K in $gokeys || $s==8} {
+  if {$K in $gokeys || ($s & 0b1000)} {
     set l1 -1 ;# to avoid a unit's name spawned in last visits at its change
   }
   alited::favor::LastVisited [$wtree item $itemID] $header $l1

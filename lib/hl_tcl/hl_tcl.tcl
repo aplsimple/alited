@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.44
+package provide hl_tcl 0.9.45
 
 # ______________________ Common data ____________________ #
 
@@ -25,7 +25,7 @@ namespace eval ::hl_tcl {
       set incr if else elseif string expr list lindex lrange llength lappend \
       lreplace lsearch lassign append split info array dict foreach for while \
       switch default linsert lsort lset lmap lrepeat catch variable \
-      concat format scan regexp regsub upvar uplevel try throw read eval \
+      concat format scan regexp regsub upvar uplevel try finally throw read eval \
       after update error global puts file chan open close eof seek flush mixin \
       msgcat gets rename glob fconfigure fblocked fcopy cd pwd mathfunc then \
       mathop apply fileevent unset join next exec refchan package source \

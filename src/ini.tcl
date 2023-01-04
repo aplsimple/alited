@@ -1350,7 +1350,7 @@ proc ini::_init {} {
         lappend limgs $img
         set tip $em_mnu($i)
         append al(atools) " $img \{{} -tip {$tip@@ -under 4 \
-          -command {alited::ini::ToolbarTip %w %t}} $txt \
+          -command {alited::ini::ToolbarTip $i}} $txt \
           -popup {alited::tool::PopupBar %X %Y} \
           -com {[alited::tool::EM_command $i]}\}"
       }
@@ -1370,14 +1370,12 @@ proc ini::_init {} {
 }
 #_______________________
 
-proc ini::ToolbarTip {w tip} {
-  # Gets a tip for a toolbar button.
-  #   w - the button's path
-  #   tip - original tip
-  # Maps %f & %D wildcards to the current file & directory names.
+proc ini::ToolbarTip {i} {
+  # Gets a toolbar button's tip, mapping %f / %D to a current file / directory.
+  #   i - index of e_menu item
 
   set maplist [alited::menu::MapRunItems [alited::bar::FileName]]
-  return [string map $maplist $tip]
+  return [string map $maplist $::alited::pref::em_mnu($i)]
 }
 # _________________________________ EOF _________________________________ #
 #RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
