@@ -1047,7 +1047,7 @@ proc project::Ok {args} {
       }
     }
     set TID [lindex [alited::bar::BAR listTab] $al(curtab) 0]
-    catch {alited::bar::BAR $TID show yes no}
+    catch {alited::bar::BAR $TID show}
     if {[llength $fnames]} {alited::file::OpenFile $fnames yes yes}
     alited::main::UpdateProjectInfo
     alited::ini::GetUserDirs

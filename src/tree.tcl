@@ -71,13 +71,8 @@ proc tree::OpenFile {{ID ""}} {
     }
     lassign [$wtree item $ID -values] -> fname isfile
     if {$isfile} {
-      if {[set TID [alited::bar::FileTID $fname]] eq {}} {
-        alited::file::OpenFile $fname
-      } else {
-        alited::bar::BAR $TID show
-      }
-      alited::bar::BAR draw
-      alited::tree::UpdateFileTree
+      alited::file::OpenFile $fname
+      after idle {alited::bar::BAR draw; alited::tree::UpdateFileTree}
     }
   }
 }

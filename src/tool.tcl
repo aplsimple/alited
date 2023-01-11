@@ -267,9 +267,9 @@ proc tool::EM_dir {} {
 
   namespace upvar ::alited al al
   if {$al(EM,mnudir) eq {}} {
-    return $::e_menu_dir
+    return [file join $::e_menu_dir menus]
   }
-  return [file dirname $al(EM,mnudir)]
+  return $al(EM,mnudir)
 }
 #_______________________
 
@@ -279,7 +279,7 @@ proc tool::EM_Structure {mnu} {
 
   namespace upvar ::alited al al
   set mnu [string trim $mnu "\" "]
-  set fname [file join [EM_dir] menus [file tail $mnu]]
+  set fname [file join [EM_dir] [file tail $mnu]]
   if {[catch {set fcont [::apave::readTextFile $fname {} 1]}]} {
     return [list]
   }
@@ -559,7 +559,7 @@ proc tool::BeforeRunDialogue {focrun} {
     lab {{} {} {-t { Also, you can set "forced command" to be run by "Run" tool:}}} {} \
     fiL [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
     btT1 [list {} {-padx 5} "-com alited::tool::DeleteForcedRun -tip Delete -toprev 1 -image [::apave::iconImage no]"] {} \
-    butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tip Test -tabnext *butOK}" [msgcat::mc Test] \
+    butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tabnext *butOK}" "$alited::al(MC,test)" \
   ] -head $head {*}$foc -help {alited::tool::HelpTool %w 2}] \
   res run com
   return [list $res $run $com]

@@ -34,6 +34,7 @@ proc bar::PopupTip {wmenu idx TID} {
   # idx - index of item
   # TID - ID of item's tab
 
+  if {[$wmenu cget -tearoff]} {incr idx}
   ::baltip::tip $wmenu [alited::file::FileStat [FileName $TID]] -index $idx -shiftX 10
 }
 #_______________________
@@ -51,7 +52,7 @@ proc bar::FillBar {wframe {newproject no}} {
   set lab3 [msgcat::mc {... All at Right}]
   set lab4 [msgcat::mc {... All}]
   if {$al(ED,btsbd)} {set bd {-bd 2 -relief sunken}} {set bd {}}
-  set bar1Opts [list -wbar $wframe -wbase $wbase -pady 2 -scrollsel no -lifo yes \
+  set bar1Opts [list -wbar $wframe -wbase $wbase -pady 2 -scrollsel no -lifo $al(lifo) \
     -lowlist $al(FONTSIZE,small) -lablen $al(INI,barlablen) -tiplen $al(INI,bartiplen) \
     -bg [lindex [$obPav csGet] 3] -popuptip ::alited::bar::PopupTip \
     -menu [list \
@@ -78,12 +79,21 @@ proc bar::FillBar {wframe {newproject no}} {
     lappend tabs $tab
     lappend bar1Opts -tab $tab
   }
+  set byname [msgcat::mc Sort]
+  set bydate [msgcat::mc {... by date}]
+  set bysize [msgcat::mc {... by size}]
+  set byextn [msgcat::mc {... by extension}]
+  set ttl [msgcat::mc {Files to Beginning}]
+  set tip [msgcat::mc \
+    "If it's checked, open files would be placed\nonto the beginning page of the bar."]
   lappend bar1Opts -menu [list \
     sep \
-    "com {[msgcat::mc Sort]} alited::bar::Sort" \
+    "com {$byname} {alited::bar::Sort Name}" \
+    "com {$bydate} {alited::bar::Sort Date {\n$bydate}}" \
+    "com {$bysize} {alited::bar::Sort Size {\n$bysize}}" \
+    "com {$byextn} {alited::bar::Sort Extn {\n$byextn}}" \
     sep \
-    "com {$al(MC,new)} alited::file::NewFile" \
-    "com {$al(MC,open...)} alited::file::OpenFile" \
+    "chb {$ttl} alited::bar::Lifo {} {} {$tip} ::alited::al(lifo)" \
     ]
   set curname [lindex $tabs $al(curtab)]
   catch {::bartabs::Bars create al(bts)}   ;# al(bts) is Bars object
@@ -214,13 +224,113 @@ proc bar::DisableTabRight {tab} {
 }
 #_______________________
 
-proc bar::Sort {} {
-  # Sorts tabs by names.
+proc bar::SortData {{tab ""}} {
+  # Sets or gets data for sorting bar tabs.
+  #   tab - tab info (if empty, sets all tabs' data)
+  # Returns a list of file's name, extension, date and size.
 
+  if {$tab eq {}} {
+    set sortdata [list]
+    foreach tab [BAR listTab] {
+      set tid [lindex $tab 0]
+      set fname [FileName $tid]
+      if {![catch {file stat $fname ares}]} {
+        BAR $tid configure --sortdate $ares(mtime) --sortsize $ares(size)
+      }
+    }
+    return {}
+  } else {
+    set tid [lindex $tab 0]
+    lassign [BAR $tid cget -text --sortdate --sortsize] fname date size
+    set ext [file extension $fname]
+    if {[set i [string first " \(" $ext]]>-1} {
+      set ext [string range $ext 0 $i-1]
+    }
+    return [list $fname $ext $date $size]
+  }
+}
+#_______________________
+
+proc bar::CompareByDate {t1 t2} {
+  # Compares two tabs by date.
+  #   t1 - 1st tab
+  #   t2 - 2nd tab
+
+  lassign [SortData $t1] fname1 - date1
+  lassign [SortData $t2] fname2 - date2
+  if {$date1 < $date2} {
+    set res -1
+  } elseif {$date1 > $date2} {
+    set res 1
+  } elseif {$::alited::al(incdec) eq {increasing}} {
+    set res [string compare -nocase $fname1 $fname2]
+  } else {
+    set res [string compare -nocase $fname2 $fname1]
+  }
+  return $res
+}
+#_______________________
+
+proc bar::CompareBySize {t1 t2} {
+  # Compares two tabs by size.
+  #   t1 - 1st tab
+  #   t2 - 2nd tab
+
+  lassign [SortData $t1] fname1 - - size1
+  lassign [SortData $t2] fname2 - - size2
+  if {$size1 < $size2} {
+    set res -1
+  } elseif {$size1 > $size2} {
+    set res 1
+  } elseif {$::alited::al(incdec) eq {increasing}} {
+    set res [string compare -nocase $fname1 $fname2]
+  } else {
+    set res [string compare -nocase $fname2 $fname1]
+  }
+  return $res
+}
+#_______________________
+
+proc bar::CompareByExtn {t1 t2} {
+  # Compares two tabs by extension.
+  #   t1 - 1st tab
+  #   t2 - 2nd tab
+
+  lassign [SortData $t1] fname1 ext1
+  lassign [SortData $t2] fname2 ext2
+  if {[set res [string compare -nocase $ext1 $ext2]]==0} {
+    if {$::alited::al(incdec) eq {increasing}} {
+      set res [string compare -nocase $fname1 $fname2]
+    } else {
+      set res [string compare -nocase $fname2 $fname1]
+    }
+  }
+  return $res
+}
+#_______________________
+
+proc bar::Sort {by {ttl ""}} {
+  # Sorts tabs.
+  #   by - sort type (by name is default)
+  #   ttl - sort title
+
+  namespace upvar ::alited obDl2 obDl2
   variable whilesorting
-  if {[alited::msg yesno ques [msgcat::mc {Sort the tabs?}]]} {
+  set ::alited::al(incdec) [set ::alited::al(incdec$by)]
+  lassign [$obDl2 input {} [msgcat::mc Sort] [list \
+    radA  {{  }} {"$::alited::al(incdec)" increasing decreasing} \
+  ] -head [msgcat::mc {Sort files}]$ttl] res ::alited::al(incdec)
+  if {$res} {
     set whilesorting yes
-    BAR sort
+    SortData
+    if {$by eq {Name}} {set cmd {}} {set cmd alited::bar::CompareBy$by}
+    if {$::alited::al(incdec) in [list increasing [msgcat::mc increasing]]} {
+      set ::alited::al(incdec) increasing
+    } else {
+      set ::alited::al(incdec) decreasing
+    }
+    BAR sort -$::alited::al(incdec) $cmd
+    set ::alited::al(incdec$by) $::alited::al(incdec)
     set whilesorting no
   }
 }
@@ -232,6 +342,14 @@ proc bar::SelFile {tip} {
 
   lassign [split $tip \n] fname
   alited::file::OpenFile $fname yes
+}
+#_______________________
+
+proc bar::Lifo {} {
+  # Sets -lifo option of the bar.
+
+  namespace upvar ::alited al al
+  BAR configure -lifo $al(lifo)
 }
 
 # ________________________ Identification  _________________________ #

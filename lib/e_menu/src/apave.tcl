@@ -1883,9 +1883,16 @@ oo::class create ::apave::APave {
       set ispack [expr [string first pack $gm]==0]
     }
     if {$ispack} {
-      set args [list $name - - - - "pack -expand 0 -fill x [string range $gm 5 end]" $addattrs]
+      lassign [::apave::parseOptions $options1 -expand 0 -fill x] exp fil
+      set args [list $name - - - - \
+        "pack -expand $exp -fill $fil [string range $gm 5 end]" $addattrs]
     } else {
-      set args [list $name $neighbor $posofnei $rowspan $colspan {-st ew} $addattrs]
+      lassign [::apave::parseOptions $options1 -st ew -sticky {} -rw {} -cw {}] st st2 rw cw
+      if {$st2 ne {}} {set st $st2}
+      if {$rw ne {}} {set rw "-rw $rw"}
+      if {$cw ne {}} {set cw "-cw $cw"}
+      set args [list $name $neighbor $posofnei $rowspan $colspan \
+        "-st $st $rw $cw" $addattrs]
     }
     lset lwidgets $i $args
     set btTname [my Transname btT $name]
@@ -1899,7 +1906,7 @@ oo::class create ::apave::APave {
         set $tcont [::apave::readTextFile [set $tvar]]
         set attrs1 [::apave::putOption -rotext $tcont {*}$attrs1]
       }
-      set entf [list $txtnam - - - - "pack -side left -expand 1 -fill both -in $inname" "$attrs1"]
+      set entf [list $txtnam - - - - "pack -side top -expand 1 -fill both -in $inname" "$attrs1"]
     } else {
       if {$wtyp in {fiL fiS diR foN clR}} {
         set field cbx
@@ -1924,15 +1931,15 @@ oo::class create ::apave::APave {
     if {$view ne {}} {set anc n} {set anc center}
     set butf [list $btTname - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
     if {$view ne {}} {
-      set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $inname" {}]
-      set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname" {}]
+      set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname -side bottom -after [my WidgetNameFull $w $btTname]" {}]
       set lwidgets [linsert $lwidgets [expr {$i+1}] $butf]
       set lwidgets [linsert $lwidgets [expr {$i+2}] $entf]
       set lwidgets [linsert $lwidgets [expr {$i+3}] $scrolv]
       incr lwlen 3
       set wrap [::apave::getOption -wrap {*}$attrs1]
       if {$wrap eq {none}} {
-        set lwidgets [linsert $lwidgets [expr {$i+4}] $scrolh]
+        set scrolh [list [my Transname sbh $name] $txtnam T - - "pack -in $inname -side bottom -after [my WidgetNameFull $w $txtnam]" {}]
+        set lwidgets [linsert $lwidgets [expr {$i+3}] $scrolh]
         incr lwlen
       }
     } else {

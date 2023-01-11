@@ -865,7 +865,7 @@ proc main::_create {} {
   }
   UpdateProjectInfo
   # a pause (and cycles) must be enough for FillBar to have proper -wbar option
-  after 10 {after 10 {after 10 {after 10 {after 10 alited::main::InitActions}}}} ;# 50msec
+  after 50 {after 30 {after 10 {after 10 {after idle alited::main::InitActions}}}}
   bind [$obPav Pan] <ButtonRelease> ::alited::tree::AdjustWidth
   set sbhi [$obPav SbhInfo]
   set lbxi [$obPav LbxInfo]

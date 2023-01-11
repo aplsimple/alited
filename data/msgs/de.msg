@@ -601,8 +601,15 @@ namespace eval ::alited {
     {... All at Right} {... alles rechts}
     {File List} {Liste von Dateien}
     {Sort} {Sortieren}
-    {Sort the tabs?} {Sortieren Tabs?}
+    {Sort files} {Sortieren Dateien}
     {Sorted} {Sortiert}
+    {... by date} {... nach Datum}
+    {... by size} {... nach Grösse}
+    {... by extension} {... nach Dateiendung}
+    {increasing} {ansteigend}
+    {decreasing} {absteigend}
+    {Files to Beginning} {Dateien zum Anfang}
+    "If it's checked, open files would be placed\nonto the beginning page of the bar." "Wenn das ist aktiviert, geöffnete Dateien\nauf der Anfangsseite der Leiste platziert werden."
   }
 
   ## ________________________ EONS alited _________________________ ##

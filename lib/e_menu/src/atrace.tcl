@@ -54,7 +54,7 @@ if {$::argc<2 || ![file exists $fname] || $mode ni {untrace trace}} {
     'excllist' - list of procs/methods untouched by atrace.tcl
   The 'file.tcl' is updated on the disk.
   Example:
-    tclsh atrace.tcl apave.tcl trace ::\$w My
+    tclsh atrace.tcl trace apave.tcl ::\$w My
   "
   exit
 }

@@ -12,7 +12,7 @@ namespace eval ::alited {
 
   # versions of mnu/ini to update to
   set al(MNUversion) 1.3.6a1
-  set al(INIversion) 1.3.6a1
+  set al(INIversion) 1.3.6b5
   # previous version of alited to update from
   set al(ALEversion) 0.0.1
 
@@ -38,7 +38,7 @@ namespace eval ::alited {
   set al(THEME) default     ;# ttk theme
   set al(INI,CS) -1         ;# color scheme
   set al(INI,HUE) 0         ;# tint of color scheme
-  set al(INI,ICONS) "middle icons"  ;# this sets tollbar icons' size as middle
+  set al(INI,ICONS) {middle icons} ;# sets tollbar icons' size as middle
   set al(INI,save_onselect) no  ;# do saving alited configuration at tab selection
   set al(INI,save_onadd) no     ;# do saving alited configuration at tab adding
   set al(INI,save_onmove) no    ;# do saving alited configuration at tab  moving
@@ -198,6 +198,15 @@ namespace eval ::alited {
 
   # flag "sorted file list"
   set al(sortList) 0
+
+  # modes to sort bartabs
+  set al(incdecName) increasing
+  set al(incdecDate) decreasing
+  set al(incdecSize) decreasing
+  set al(incdecExtn) increasing
+
+  # mode "place tabs to the beginning of bar"
+  set al(lifo) 1
 }
 
 # ________________________ Variables _________________________ #
@@ -518,6 +527,8 @@ proc ini::ReadIniMisc {nam val} {
       set al($nam) $val
     }
     tplilast {set ::alited::unit_tpl::ilast $val}
+    incdec {lassign $val al(incdecName) al(incdecDate) al(incdecSize) al(incdecExtn)}
+    blifo {set al(lifo) [string is true $val]}
   }
 }
 
@@ -817,6 +828,8 @@ proc ini::SaveIni {{newproject no}} {
   }
   puts $chan "sortList=$al(sortList)"
   puts $chan "tplilast=$::alited::unit_tpl::ilast"
+  puts $chan "incdec=$al(incdecName) $al(incdecDate) $al(incdecSize) $al(incdecExtn)"
+  puts $chan "blifo=$al(lifo)"
   close $chan
   SaveIniPrj $newproject
   # save last directories entered

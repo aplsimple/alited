@@ -7,12 +7,12 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.6b4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.6b5  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
+wm withdraw .
 
 if {![package vsatisfies $_ 8.6.10-]} {
-  wm withdraw .
   tk_messageBox -message "\nalited needs Tcl/Tk v8.6.10+ \
     \n\nwhile the current is v$_\n"
   exit
@@ -51,7 +51,7 @@ namespace eval alited {
 
   variable SCRIPT [info script]
   variable SCRIPTNORMAL [file normalize $SCRIPT]
-  variable FILEDIR [file dirname [file normalize [info script]]]
+  variable FILEDIR [file dirname $SCRIPTNORMAL]
   variable DIR [file dirname $FILEDIR]
 
   # directories of sources
@@ -436,7 +436,7 @@ namespace eval alited {
 #!    \U0001f4e1 = 📡
 #!    \U0001f4d6 = 📖
 #!    \U0001f300 = 🌀
-#!    \U0001f4de = 📞
+#!    \U0001F58E = 🖎
 #!    \U0001f4d0 = 📐
 #!    \U0001f426 = 🐦
 #!    \U0001f381 = 🎁
@@ -445,7 +445,7 @@ namespace eval alited {
 #!    \U0001f4be = 💾
 
     set in {0 1 2 3 4 5 6 7 8 9 & ~ = @}
-    set out {💥 💻 🏗 📶 📡 📖 🌀 📞 📐 🐦 🎁 🏁 🔑 💾}
+    set out {💥 💻 🏗 📶 📡 📖 🌀 🖎 📐 🐦 🎁 🏁 🔑 💾}
     if {$to eq {out}} {
       set lfrom $in
       set lto $out

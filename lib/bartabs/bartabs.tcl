@@ -6,9 +6,7 @@
 # License: MIT.
 # _______________________________________________________________________ #
 
-package require Tk
-package provide bartabs 1.6.0
-catch {package require baltip}
+package provide bartabs 1.6.1
 
 # __________________ Common data of bartabs:: namespace _________________ #
 
@@ -645,7 +643,7 @@ method Tab_CloseFew {{TID -1} {left no} args} {
     if {$TID eq {-1}} {
       my $BID Refill 0 yes
     } else {
-      my $BID $TID show
+      my $BID $TID show yes yes
     }
   }
 }
@@ -943,7 +941,7 @@ method OnPopup {X Y {BID "-1"} {TID "-1"} {textcur ""}} {
     set popup [list [lindex $popup 0] s {*}$popup0]  ;# let "List" be in
   }
   foreach p $popup {
-    lassign $p typ label comm menu dsbl
+    lassign $p typ label comm menu dsbl tip var
     if {$menu ne {}} {set popc $pop.$menu} {set popc $pop}
     foreach opt {label comm menu dsbl} {
       set $opt [string map [list %b $BID %t $TID %l $textcur] [set $opt]]
@@ -965,8 +963,16 @@ method OnPopup {X Y {BID "-1"} {TID "-1"} {textcur ""}} {
     switch [string index $typ 0] {
       s {$popc add separator}
       c {
-        $popc add command -label $label -command $comm \
-          {*}$dsbl -compound left {*}$comimg {*}$hotk
+        switch [string index $typ 1] {
+          o - {} { ;# command
+            $popc add command -label $label -command $comm \
+              {*}$dsbl -compound left {*}$comimg {*}$hotk
+          }
+          h { ;# checkbutton
+            if {$comm ne {}} {set comm [list -command $comm]}
+            $popc add checkbutton -label $label {*}$comm -variable $var
+          }
+        }
       }
       m {
         if {$menu eq {bartabs_cascade} && !$usermnu && $static} {
@@ -984,6 +990,9 @@ method OnPopup {X Y {BID "-1"} {TID "-1"} {textcur ""}} {
           set ipops [my $BID FillMenuList $BID $popi $TID $menu]
         }
       }
+    }
+    if {$tip ne {}} {
+      catch {baltip::tip $popc $tip -index [$popc index end]}
     }
   }
   if {[llength $lpops]} {
@@ -1004,7 +1013,7 @@ method OnPopup {X Y {BID "-1"} {TID "-1"} {textcur ""}} {
 
 # _________________________ Public methods of Tab _______________________ #
 
-method show {{anyway yes} {lifo yes}} {
+method show {{anyway no} {lifo no}} {
 # Shows a tab in a bar and sets it current.
 #   anyway - if "yes", refill the bar anyway (for choosing from menu)
 
@@ -1020,8 +1029,9 @@ method show {{anyway yes} {lifo yes}} {
     incr itab
   }
   if {$lifo && [my $BID cget -lifo]} {
-    if {![my $TID Visible]} {
-      # if the tab is not visible, move it to 0th position and show from there
+    if {[string is true -strict [my $BID cget -lifoest]] || ![my $TID Visible]} {
+      # if the tab is not visible or -lifoest option=true,
+      # move the tab to 0th position and show from there
       set tabs [my $BID cget -TABS]
       lassign [my Tab_BID $TID] -> i tab
       set tabs [linsert [lreplace $tabs $i $i] 0 $tab]
@@ -1070,7 +1080,7 @@ method close {{redraw yes} args} {
       my [lindex $tabs $icurr 0] Tab_BeCurrent
     } else {
       if {[set TID [lindex $tabs end 0]] ne {}} {
-        my $TID show 1 ;# last tab deleted: show the new last if any
+        my $TID show yes yes ;# last tab deleted: show the new last if any
       }
     }
   }
@@ -1417,7 +1427,7 @@ method FillMenuList {BID popi {TID -1} {mnu ""} {mustBeSorted {}}} {
     set dsbl {}
     if {$TID == -1 || $mnu eq {bartabs_cascade}} {
       if {$comlist eq {}} {
-        set comm "[self] $tID show 1"
+        set comm "[self] $tID show yes yes"
       } else {
         set tip [my $tID cget -tip]
         set comm [string map [list %i $icom %t $tip] $comlist]
@@ -1861,20 +1871,25 @@ method comparetext {it1 it2} {
 
   catch {set it1 [dict get $it1 -text]}
   catch {set it2 [dict get $it2 -text]}
-  return [string compare $it1 $it2]
+  return [string compare -nocase $it1 $it2]
 }
 #_______________________
 
-method sort {{mode -increasing}} {
+method sort {{mode -increasing} {cmd ""}} {
 # Sorts a list of tabs by the tab names.
 #   mode - option of sort
+#   cmd - command to compare two items
 
   set BID [my ID]
   lassign [my $BID cget -tabcurrent -lifo] TID lifo
   set tabs [my $BID cget -TABS]
-  set tabs [lsort $mode -index 1 -dictionary -command "[self] comparetext" $tabs]
+  if {$cmd eq {}} {
+    set tabs [lsort $mode -index 1 -dictionary -command "[self] comparetext" $tabs]
+  } else {
+    set tabs [lsort $mode -dictionary -command $cmd $tabs]
+  }
   my $BID configure -TABS $tabs -lifo no
-  my $TID show
+  my $TID show yes yes
   my $BID configure -lifo $lifo
 }
 #_______________________
@@ -1993,6 +2008,20 @@ method remove {} {
     return yes
   }
   return no
+}
+#_______________________
+
+method moveTab {TID pos} {
+  # Moves a tab to a new position in the bar.
+  #   pos - the new position
+
+  set BID [my ID]
+  set tabs [my $BID cget -TABS]
+  if {[set i [lsearch -index 0 $tabs $TID]]>-1} {
+    set tab [lindex $tabs $i]
+    set tabs [lreplace $tabs $i $i]
+    my $BID configure -TABS [linsert $tabs $pos $tab]
+  }
 }
 #_______________________
 
@@ -2181,7 +2210,7 @@ method create {barCom {barOpts ""} {tab1 ""}} {
     after 50 [list [self] $BID NeedDraw ; [self] $BID draw]
   } else {
     set tab1 [my $BID tabID $tab1]
-    if {$tab1 ne {}} {after 100 "[self] $BID clear; [self] $BID $tab1 show"}
+    if {$tab1 ne {}} {after 100 "[self] $BID clear; [self] $BID $tab1 show yes yes"}
   }
   return $BID
 }
@@ -2296,7 +2325,7 @@ method MoveTab {TID1 TID2} {
     set tabs [lreplace $tabs $i1 $i1]
     set i [expr {$i1>$i2?($i2+1):$i2}]
     my $BID1 configure -TABS [linsert $tabs $i $tab]
-    my $TID1 show 1
+    my $TID1 show yes yes
   }
 }
 

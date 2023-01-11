@@ -603,8 +603,15 @@ namespace eval ::alited {
     {... All} {... всі}
     {File List} {Список файлів}
     {Sort} {Сортувати}
-    {Sort the tabs?} {Сортувати заставки?}
+    {Sort files} {Сортувати файли}
     {Sorted} {Сортований}
+    {... by date} {... по даті}
+    {... by size} {... по розміру}
+    {... by extension} {... по розширенню}
+    {increasing} {зростаючи}
+    {decreasing} {спадаючи}
+    {Files to Beginning} {Файли у початок}
+    "If it's checked, open files would be placed\nonto the beginning page of the bar." "Якщо ця опція включена, файли при відкритті\nрозташовуються на першій сторінці списку."
   }
 
   ## ________________________ EONS alited _________________________ ##

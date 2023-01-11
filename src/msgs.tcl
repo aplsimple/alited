@@ -104,6 +104,7 @@ namespace eval ::alited {
     set al(MC,inconsole)   [msgcat::mc {in console}]
     set al(MC,intkcon)     [msgcat::mc {in Tkcon}]
     set al(MC,on)          [msgcat::mc on]
+    set al(MC,test)        [msgcat::mc Test]
 
     ## _  menu items _ ##
     set al(MC,lookdecl)    [msgcat::mc {Look for Declaration}]

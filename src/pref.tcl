@@ -108,6 +108,9 @@ namespace eval pref {
 
   # locales
   variable locales [list]
+
+  # preview flag
+  variable preview 0
 }
 
 # ________________________ Common procedures _________________________ #
@@ -142,6 +145,7 @@ proc pref::fetchVars {} {
     variable stdkeys
     variable stdkeysSize
     variable locales
+    variable preview
   }
 }
 #_______________________
@@ -276,6 +280,7 @@ proc pref::Ok {args} {
 
   fetchVars
   alited::CloseDlg
+  CheckTheming no
   if {$al(INI,confirmexit)>1} {
     set timo "-timeout {$al(INI,confirmexit) ButOK}"
   } else {
@@ -371,6 +376,7 @@ proc pref::Tab {tab {nt ""} {doit no}} {
     nbk6 {set but Tools}
   }
   ShowUpDownArrows [expr {$tab ne "nbk6"}]
+  CheckTheming no
   [$obDl2 But$but] configure -style TButtonWestHL
   fillCan [$obDl2 Can$tab] yes
   if {$tab ne $curTab || $doit} {
@@ -470,6 +476,7 @@ proc pref::General_Tab1 {} {
     {.opc1 + L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 21 -compound left -image alimg_gulls -tip {-indexedtips \
       5 {$alited::al(MC,needcs)} 7 {$alited::al(MC,needcsl)} \
       }} {}}}
+    {.chbPrv + L 1 1 {-padx 20} {-t "$alited::al(MC,test)" -var alited::pref::preview -com {alited::pref::CheckTheming yes yes}}}
     {.labCS .labTheme T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.opc2 + L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 21 -compound left -image alimg_color -tip {-indexedtips \
       0 {$alited::al(MC,nocs)} \
@@ -687,6 +694,38 @@ proc pref::CheckIndent {{pre "DEFAULT,"}} {
 
   namespace upvar ::alited al al
   if {$al(${pre}prjindent)<=1} {set al(${pre}prjindentAuto) 1}
+}
+#_______________________
+
+proc pref::CheckTheming {{doit yes} {force no}} {
+  # Checks periodically theming options and, if changed, shows their preview.
+  #   doit - if no, deletes both a temporary file and the possible preview
+  #   force - if yes, shows the preview by force
+  # The theming cannot be nice viewed "on fly", so we need to use a separate app.
+
+  namespace upvar ::alited SRCDIR SRCDIR
+  fetchVars
+  set fname [file join [alited::tool::EM_dir] preview~]
+  if {!$force && (!$doit || !$preview || ![winfo exists $win])} {
+    catch {file delete $fname}
+    catch {unset al(CheckTheming)}
+    return
+  }
+  set foc [focus]
+  set thopts "$opc1 [GetCS] $al(INI,HUE)"
+  set timo 100
+  if {$force && $preview || \
+  [info exists al(CheckTheming)] && $al(CheckTheming) ne $thopts} {
+    lassign [split [wm geometry $win] x+] w h x y
+    set ch [open $fname w]
+    puts $ch "+[expr {$x+$w/6}]+[expr {$y+$h/3}] $thopts $alited::al(MC,test)"
+    close $ch
+    after 100 [list alited::Run [file join $SRCDIR preview.tcl] $fname]
+    set timo 500
+  }
+  set al(CheckTheming) $thopts
+  after $timo alited::pref::CheckTheming
+  focus -force $foc
 }
 
 # ________________________ Tab "Editor" _________________________ #
@@ -1255,7 +1294,7 @@ proc pref::Emenu_Tab {} {
     {.seh .labPD T 1 3 {-st ew -pady 5}}
     {.h_ + T}
     {.but1 .h_ L 1 1 {-st w} {-t Default -com alited::pref::Default_e_menu}}
-    {.butok + L 1 1 {-st w} {-t Test -com alited::pref::Test_e_menu}}
+    {.butok + L 1 1 {-st w} {-t "$alited::al(MC,test)" -com alited::pref::Test_e_menu}}
   }
 }
 
@@ -1340,11 +1379,8 @@ proc pref::Tkcon_Tab {} {
     {.clrstdout + L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,clrstdout) -w 20}}
     {.labstderr .labstdout T 1 1 {-st w -pady 1 -padx 3} {-t "stderr:"}}
     {.clrstderr + L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,clrstderr) -w 20}}
-    {.but1 + L 1 1 {-padx 8} {-t Default -com {alited::pref::Tkcon_Default1; alited::pref::UpdateTkconTab}}}
-    {.but2 + L 1 1 {-padx 0} {-t {Default 2} -com {alited::pref::Tkcon_Default2; alited::pref::UpdateTkconTab}}}
-    {.butok + L 1 1 {-padx 20} {-t Test -com alited::tool::tkcon}}
     {fra.scf.v_ fra.scf.lfr T 1 1  {pack} {-h 10}}
-    {fra.scf.lfr2 + T 1 1  {pack -fill x} {-t Options}}
+    {fra.scf.lfr2 - - - - {pack -fill x} {-t Options}}
     {.labRows - - 1 1 {-st w -pady 1 -padx 3} {-t "Rows:"}}
     {.spxRows + L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,rows) -from 4 -to 40 -w 9}}
     {.labCols .labRows T 1 1 {-st w -pady 1 -padx 3} {-t "Columns:"}}
@@ -1353,6 +1389,10 @@ proc pref::Tkcon_Tab {} {
     {.spxFS + L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,fsize) -from 8 -to 20 -w 9}}
     {.labGeo .labFsize T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
     {.entGeo + L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,geo) -w 20}}
+    {fra.scf.frabuts - - - - {pack -fill x}}
+    {.but1 - - - - {-pady 8} {-t Default -com {alited::pref::Tkcon_Default1; alited::pref::UpdateTkconTab}}}
+    {.but2 + L 1 1 {-padx 8} {-t {Default 2} -com {alited::pref::Tkcon_Default2; alited::pref::UpdateTkconTab}}}
+    {.butok + L 1 1 {} {-t "$alited::al(MC,test)" -com alited::tool::tkcon}}
   }
 }
 
@@ -1596,6 +1636,7 @@ proc pref::ShowUpDownArrows {{hide no}} {
   #   hide - if yes, hides buttons
 
   fetchVars
+  CheckTheming no
   set nt [$win.fra.fraR.nbk6 select]
   set bh [$obDl2 ButHelp]
   set bu [$obDl2 BtTUp]
@@ -1689,6 +1730,7 @@ proc pref::_create {tab} {
   fetchVars
   InitLocales
   set tipson [baltip::cget -on]
+  set preview 0
   baltip::configure -on $al(TIPS,Preferences)
   $obDl2 makeWindow $win.fra "$al(MC,pref) :: $::alited::USERDIR"
   $obDl2 paveWindow \
@@ -1729,6 +1771,7 @@ proc pref::_create {tab} {
     after idle "::alited::pref::Tab nbk" ;# first entering
   }
   bind $win.fra.fraR.nbk6 <<NotebookTabChanged>> alited::pref::ShowUpDownArrows
+  bind $win.fra.fraR.nbk <<NotebookTabChanged>> {alited::pref::CheckTheming no}
   bind $win <Control-o> alited::ini::EditSettings
   bind $win <F1> "[$obDl2 ButHelp] invoke"
   $obDl2 untouchWidgets *.texSample *.texCSample
@@ -1744,6 +1787,7 @@ proc pref::_create {tab} {
   set oldTab $curTab
   set arrayTab($curTab) [$win.fra.fraR.$curTab select]
   destroy $win
+  CheckTheming no
   baltip::configure {*}$tipson
   return $res
 }

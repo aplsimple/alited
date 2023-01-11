@@ -136,13 +136,13 @@ namespace eval ::apave {
 
 {{27: ForestDark}     "#ececec" #c7c7c7 #272727 #393939 #a3cda3 #217346 #FFF #42ff42 grey #84ae84 #fff #247649 - #4a4a4a #000 #aaaa6d #383838 #efaf6f #99dd99 #005 #006 #007}
 
-{{28: SunValleyDark} "#ececec" #c7c7c7 #272727 #323232 #aae2ff #2a627f #e1e1e1 #f4f49f grey #7cb4d1 #fff #245c79 - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
+{{28: SunValleyDark} "#ececec" #c7c7c7 #272727 #323232 #aae2ff #2a627f #fff #f4f49f grey #7cb4d1 #fff #245c79 - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
 
-{{29: Dark1}          "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #000 #f4f49f #606060 #ba8d4d #000 #767676 - #363636 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
+{{29: Dark1}          "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #fff #f4f49f #606060 #ba8d4d #000 #767676 - #363636 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
 
-{{30: Dark2}          "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #000 #f4f49f #616161 #b28545 #000 #767676 - #323232 #000 #9d9d60 #262626 #ffc341 #76b2f1 #005 #006 #007}
+{{30: Dark2}          "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #fff #f4f49f #616161 #b28545 #000 #767676 - #323232 #000 #9d9d60 #262626 #ffc341 #76b2f1 #005 #006 #007}
 
-{{31: Dark3}          "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #000 #f4f49f #616161 #aa7d3d #000 #767676 - #303030 #000 #9d9d60 #131313 #ffc341 #76b2f1 #005 #006 #007}
+{{31: Dark3}          "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #fff #f4f49f #616161 #aa7d3d #000 #767676 - #303030 #000 #9d9d60 #131313 #ffc341 #76b2f1 #005 #006 #007}
 
 {{32: Oscuro}         "#f1f1f1" #ffffff #314242 #3e5959 #f1b479 #6c8787 #fff #42ff42 #afafaf #d3a051 #fff #5b7676 - #4d6868 #000 #aaaa6d #425353 #ffc341 #94e2b8 #005 #006 #007}
 
@@ -214,7 +214,6 @@ proc ::apave::mc {msg} {
 #_______________________
 
 proc ::apave::getN {sn {defn 0} {min ""} {max ""}} {
-
   # Gets a number from a string
   #   sn - string containing a number
   #   defn - default value when sn is not a number
@@ -233,7 +232,6 @@ proc ::apave::getN {sn {defn 0} {min ""} {max ""}} {
 #_______________________
 
 proc ::apave::openDoc {url} {
-
   # Opens a document.
   #   url - document's file name, www link, e-mail etc.
 
@@ -448,14 +446,15 @@ proc ::apave::repaintWindow {win {wfoc ""}} {
 ## ________________________ Inits _________________________ ##
 
 proc ::apave::initWM {args} {
-
   # Initializes Tcl/Tk session. Used to be called at the beginning of it.
   #   args - options ("name value" pairs)
 
   if {!$::apave::_CS_(initWM)} return
-  lassign [::apave::parseOptions $args -cursorwidth $::apave::cursorwidth -theme {clam} \
+  lassign [::apave::parseOptions $args -cursorwidth $::apave::cursorwidth -theme default \
     -buttonwidth -8 -buttonborder 1 -labelborder 0 -padding 1 -cs -2] \
     cursorwidth theme buttonwidth buttonborder labelborder padding cs
+  if {$theme eq {}} {set theme default}
+  if {$cs<-2 || $cs>47} {set cs -2}
   set ::apave::_CS_(initWM) 0
   set ::apave::_CS_(CURSORWIDTH) $cursorwidth
   set ::apave::_CS_(LABELBORDER) $labelborder
@@ -496,7 +495,6 @@ proc ::apave::initWM {args} {
 #_______________________
 
 proc ::apave::endWM {args} {
-
   # Finishes the window management by apave, closing and clearing all.
   #   args - if any set, means "ask if apave's WM is finished"
 
@@ -520,7 +518,6 @@ proc ::apave::endWM {args} {
 #_______________________
 
 proc ::apave::initPOP {w} {
-
   # Initializes system popup menu (if possible) to call it in a window.
   #   w - window's name
 
@@ -726,7 +723,6 @@ proc ::apave::deiconify {w} {
 #_______________________
 
 proc ::apave::cs_Active {{flag ""}} {
-
   # Gets/sets "is changing CS possible" flag for a whole application.
 
   if {[string is boolean -strict $flag]} {
@@ -738,13 +734,10 @@ proc ::apave::cs_Active {{flag ""}} {
 ## ________________________ Property _________________________ ##
 
 proc ::apave::setProperty {name args} {
-
   # Sets a property's value as "application-wide".
   #   name - name of property
   #   args - value of property
-  #
   # If *args* is omitted, the method returns a property's value.
-  #
   # If *args* is set, the method sets a property's value as $args.
 
   variable _AP_Properties
@@ -762,9 +755,7 @@ proc ::apave::getProperty {name {defvalue ""}} {
   # Gets a property's value as "application-wide".
   #   name - name of property
   #   defvalue - default value
-  #
   # If the property had been set, the method returns its value.
-  #
   # Otherwise, the method returns the default value (`$defvalue`).
 
   variable _AP_Properties
@@ -777,7 +768,6 @@ proc ::apave::getProperty {name {defvalue ""}} {
 ## ________________________ CS procs _________________________ ##
 
 proc ::apave::cs_Non {} {
-
   # Gets non-existent CS index
 
   return -3
@@ -785,21 +775,18 @@ proc ::apave::cs_Non {} {
 #_______________________
 
 proc ::apave::cs_Min {} {
-
   # Gets a minimum index of available color schemes
 
   return $::apave::_CS_(MINCS)
 }
 
 proc ::apave::cs_Max {} {
-
   # Gets a maximum index of available color schemes
 
   return [expr {[llength $::apave::_CS_(ALL)] - 1}]
 }
 
 proc ::apave::cs_MaxBasic {} {
-
   # Gets a maximum index of basic color schemes
 
   return $::apave::_CS_(STDCS)
@@ -808,7 +795,6 @@ proc ::apave::cs_MaxBasic {} {
 ## ________________________ Opfions _________________________ ##
 
 proc ::apave::parseOptionsFile {strict inpargs args} {
-
   # Parses argument list containing options and (possibly) a file name.
   #   strict - if 0, 'args' options will be only counted for,
   #              other options are skipped
@@ -889,15 +875,11 @@ proc ::apave::parseOptionsFile {strict inpargs args} {
 #_______________________
 
 proc ::apave::parseOptions {opts args} {
-
   # Parses argument list containing options.
   #  opts - list of options and values
   #  args - list of "option / default value" pairs
-  #
   # It's the same as parseOptionsFile, excluding the file name stuff.
-  #
   # Returns a list of options' values, according to args.
-  #
   # See also: parseOptionsFile
 
   lassign [::apave::parseOptionsFile 0 $opts {*}$args] tmp
@@ -909,13 +891,10 @@ proc ::apave::parseOptions {opts args} {
 #_______________________
 
 proc ::apave::extractOptions {optsVar args} {
-
   # Gets options' values and removes the options from the input list.
   #  optsVar - variable name for the list of options and values
   #  args  - list of "option / default value" pairs
-  #
   # Returns a list of options' values, according to args.
-  #
   # See also: parseOptions
 
   upvar 1 $optsVar opts
@@ -928,7 +907,6 @@ proc ::apave::extractOptions {optsVar args} {
 #_______________________
 
 proc ::apave::getOption {optname args} {
-
   # Extracts one option from an option list.
   #   optname - option name
   #   args - option list
@@ -943,7 +921,6 @@ proc ::apave::getOption {optname args} {
 #_______________________
 
 proc ::apave::putOption {optname optvalue args} {
-
   # Replaces or adds one option to an option list.
   #   optname - option name
   #   optvalue - option value
@@ -965,16 +942,12 @@ proc ::apave::putOption {optname optvalue args} {
 #_______________________
 
 proc ::apave::removeOptions {options args} {
-
   # Removes some options from a list of options.
   #   options - list of options and values
   #   args - list of option names to remove
-  #
   # The `options` may contain "key value" pairs and "alone" options
   # without values.
-  #
   # To remove "key value" pairs, `key` should be an exact name.
-  #
   # To remove an "alone" option, `key` should be a glob pattern with `*`.
 
   foreach key $args {
@@ -1090,12 +1063,10 @@ proc ::apave::logMessage {msg {lev 16}} {
 #_______________________
 
 proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
-
   # Reads a text file.
   #   fileName - file name
   #   varName - variable name for file content or ""
   #   doErr - if 'true', exit at errors with error message
-  #
   # Returns file contents or "".
 
   variable _PU_opts
@@ -1114,13 +1085,11 @@ proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
 #_______________________
 
 proc ::apave::writeTextFile {fileName {varName ""} {doErr 0} {doSave 1}} {
-
   # Writes to a text file.
   #   fileName - file name
   #   varName - variable name for file content or ""
   #   doErr - if 'true', exit at errors with error message
   #   doSave - if 'true', saves an empty file, else deletes it
-  #
   # Returns "yes" if the file was saved successfully.
 
   variable _PU_opts
@@ -1173,7 +1142,6 @@ proc ::apave::undoOut {wtxt} {
 ## ________________________ Binds _________________________ ##
 
 proc ::apave::bindToEvent {w event args} {
-
   # Binds an event on a widget to a command.
   #   w - the widget's path
   #   event - the event
@@ -1207,7 +1175,6 @@ proc ::apave::bindCantagToEvent {w tag event args} {
 ## ________________________ Helpers _________________________ ##
 
 proc ::apave::InfoWindow {{val ""} {w .} {modal no} {var ""} {regist no}} {
-
   # Registers/unregisters windows. Also sets/gets 'count of open modal windows'.
   #   val - current number of open modal windows
   #   w - root window's path
@@ -1234,7 +1201,6 @@ proc ::apave::InfoWindow {{val ""} {w .} {modal no} {var ""} {regist no}} {
 #_______________________
 
 proc ::apave::InfoFind {w modal} {
-
   # Searches data of a window in a list of registered windows.
   #   w - root window's path
   #   modal - yes, if the window is modal
@@ -1325,13 +1291,10 @@ oo::class create ::apave::ObjectProperty {
 # _______________________________________________________________________ #
 
   method setProperty {name args} {
-
     # Sets a property's value as "object-wide".
     #   name - name of property
     #   args - value of property
-    #
     # If *args* is omitted, the method returns a property's value.
-    #
     # If *args* is set, the method sets a property's value as $args.
 
     switch -exact [llength $args] {
@@ -1348,9 +1311,7 @@ oo::class create ::apave::ObjectProperty {
     # Gets an property's value as "object-wide".
     #   name - name of property
     #   defvalue - default value
-    #
     # If the property had been set, the method returns its value.
-    #
     # Otherwise, the method returns the default value (`$defvalue`).
 
     if {[info exists _OP_Properties($name)]} {
@@ -1385,7 +1346,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method InitCS {} {
-
     # Initializes the color scheme processing.
 
     if {$::apave::_CS_(initall)} {
@@ -1433,11 +1393,9 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method basicFontSize {{fs 0} {ds 0}} {
-
     # Gets/Sets a basic size of font used in apave
     #    fs - font size
     #    ds - incr/decr of size
-    #
     # If 'fs' is omitted or ==0, this method gets it.
     # If 'fs' >0, this method sets it.
 
@@ -1452,10 +1410,8 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method basicDefFont {{deffont ""}} {
-
     # Gets/Sets a basic default font.
     #    deffont - font
-    #
     # If 'deffont' is omitted or =="", this method gets it.
     # If 'deffont' is set, this method sets it.
 
@@ -1468,10 +1424,8 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method basicTextFont {{textfont ""}} {
-
     # Gets/Sets a basic font used in editing/viewing text widget.
     #    textfont - font
-    #
     # If 'textfont' is omitted or =="", this method gets it.
     # If 'textfont' is set, this method sets it.
 
@@ -1484,10 +1438,8 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method basicSmallFont {{smallfont ""}} {
-
     # Gets/Sets a basic small font used in status bar etc.
     #    smallfont - font
-    #
     # If 'smallfont' is omitted or =="", this method gets it.
     # If 'smallfont' is set, this method sets it.
 
@@ -1500,7 +1452,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method boldDefFont {{fs 0}} {
-
     # Returns a bold default font.
     #    fs - font size
 
@@ -1511,7 +1462,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method boldTextFont {{fs 0}} {
-
     # Returns a bold fixed font.
     #    fs - font size
 
@@ -1524,26 +1474,30 @@ oo::class create ::apave::ObjectTheming {
 
   method csFont {fontname} {
     # Returns attributes of CS font.
+
     if {[catch {set font [font configure $fontname]}]} {
       my create_Fonts
       set font [font configure $fontname]
     }
     return $font
   }
+  #_______________________
 
   method csFontMono {} {
     # Returns attributes of CS monotype font.
+
     return [my csFont apaveFontMono]
   }
+  #_______________________
 
   method csFontDef {} {
     # Returns attributes of CS default font.
+
     return [my csFont apaveFontDef]
   }
   #_______________________
 
   method csDark {{cs ""}} {
-
     # Returns a flag "a color scheme is dark"
     #   cs - the color scheme to be checked (the current one, if not set)
 
@@ -1555,7 +1509,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method csExport {} {
-
     # TODO
 
     set theme ""
@@ -1676,17 +1629,12 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method csAdd {newcs {setnew true}} {
-
     # Registers new color scheme in the list of CS.
     #   newcs -  CS item
     #   setnew - if true, sets the CS as current
-    #
     # Does not register the CS, if it is already registered.
-    #
     # Returns an index of current CS.
-    #
-    # See also:
-    #   themeWindow
+    # See also: themeWindow
 
     if {[llength $newcs]<4} {
       set newcs [my ColorScheme]  ;# CS should be defined
@@ -1758,12 +1706,12 @@ oo::class create ::apave::ObjectTheming {
       }
       lappend TWargs $color
     }
+    set ::apave::_CS_(TONED) [list $cs [my csNewIndex]]
     my themeWindow . $TWargs no
-    set ::apave::_CS_(TONED) [list $cs [my csCurrent]]
+    my csSet [my csCurrent] .  ;# resets new CS's data
     return yes
   }
-
-# _______________________________________________________________________ #
+  #_______________________
 
   method csMainColors {} {
     # Returns a list of main colors' indices of CS.
@@ -1775,16 +1723,17 @@ oo::class create ::apave::ObjectTheming {
 
   method csMapTheme {} {
     # Returns a map of CS / themeWindow method colors.
-    #
     # The map is a list of indices in CS corresponding to themeWindow's args.
-    #
-    # CS record is:
-    # 0-itemfg 1-mainfg 2-itembg 3-mainbg 4-itemsHL 5-actbg 6-actfg 7-cursor 8-greyed 9-hot \
-  10-emfg 11-embg 12-- 13-menubg 14-winfg 15-winbg 16-itemHL2 ...reserved...
-    #
     # See also: themeWindow
 
     return [list 1 3 0 2 6 5 8 3 7 9 4 10 11 1 13 14 15 16 17 18 19 20 21]
+  }
+  #_______________________
+
+  method csNewIndex {} {
+    # Gets a next available CS's index.
+
+    return [expr {[::apave::cs_Max]+1}]
   }
 
 # ________________________ Theming _________________________ #
@@ -1841,7 +1790,6 @@ oo::class create ::apave::ObjectTheming {
 # _______________________________________________________________________ #
 
   method UpdateSelectAttrs {w} {
-
     # Updates attributes for selection.
     #   w - window's name
     # Some widgets (e.g. listbox) need a work-around to set
@@ -1859,7 +1807,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method Ttk_style {oper ts opt val} {
-
     # Sets a new style options.
     #   oper - command of ttk::style ("map" or "configure")
     #   ts - type of style to be configurated
@@ -1896,7 +1843,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method initTooltip {args} {
-
     # Configurates colors and other attributes of tooltip.
     #  args - options of ::baltip::configure
 
@@ -1909,7 +1855,6 @@ oo::class create ::apave::ObjectTheming {
 ## ________________________ Theme methods _________________________ ##
 
   method Main_Style {tfg1 tbg1 tfg2 tbg2 tfgS tbgS bclr tc fA bA bD} {
-
     # Sets main colors of application
     #   tfg1 - main foreground
     #   tbg1 - main background
@@ -1922,7 +1867,6 @@ oo::class create ::apave::ObjectTheming {
     #   fA - foreground active
     #   bA - background active
     #   bD - background disabled
-    #
     # The *foreground disabled* is set as `grey`.
 
     my create_Fonts
@@ -1944,7 +1888,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method themeWindow {win {clrs ""} {isCS true} args} {
-
     # Changes a Tk style (theming a bit)
     #   win - window's name
     #   clrs - list of colors
@@ -1986,7 +1929,7 @@ oo::class create ::apave::ObjectTheming {
 # <CS>    itemfg  mainfg  itembg  mainbg  itemsHL  actbg   actfg  cursor  greyed   hot \
   emfg  embg   -  menubg  winfg   winbg   itemHL2 #003...reserved...
 
-      my csAdd [list CS-[expr {[::apave::cs_Max]+1}] $tfg2 $tfg1 $tbg2 $tbg1 \
+      my csAdd [list CS-[my csNewIndex] $tfg2 $tfg1 $tbg2 $tbg1 \
         $thlp $tbgS $tfgS $tcur $tfgD $bclr $tfgI $tbgI $tfgM $tbgM \
         $twfg $twbg $tHL2 $tbHL $chkHL $res5 $res6 $res7]
     }
@@ -2214,7 +2157,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method themeMandatory {win args} {
-
     # Themes all that must be themed.
     #   win - window's name
     #   args - options
@@ -2239,7 +2181,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method untouchWidgets {args} {
-
     # Makes non-ttk widgets to be untouched by coloring or gets their list.
     #   args - list of widget globs (e.g. {.em.fr.win.* .em.fr.h1 .em.fr.h2})
     # If args not set, returns the list of untouched widgets.
@@ -2261,7 +2202,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method touchWidgets {args} {
-
     # Makes non-ttk widgets to be touched again.
     #   args - list of widget globs (e.g. {.em.fr.win.* .em.fr.h1 .em.fr.h2})
     # If args not set, returns the list of untouched widgets.
@@ -2291,7 +2231,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method themeNonThemed {win {addwid {}}} {
-
     # Updates the appearances of currently used widgets (non-themed).
     #   win - window path whose children will be touched
     #   addwid - additional widget(s) to be touched
@@ -2349,7 +2288,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method NonThemedWidgets {selector} {
-
     # Lists the non-themed widgets to process in apave.
     #   selector - sets a widget group to return as a list
     # The `selector` can be `entry`, `button` or `all`.
@@ -2369,7 +2307,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method NonTtkTheme {win} {
-
     # Calls themeWindow to color non-ttk widgets.
     #   win - window's name
 
@@ -2487,7 +2424,6 @@ oo::class create ::apave::ObjectTheming {
 ## ________________________ Popup menus _________________________ ##
 
   method ThemePopup {mnu args} {
-
     # Recursively configures popup menus.
     #   mnu - menu's name (path)
     #   args - options of configuration
@@ -2510,7 +2446,6 @@ oo::class create ::apave::ObjectTheming {
   #_______________________
 
   method themePopup {mnu} {
-
     # Configures a popup menu so that its colors accord with a current CS.
     #   mnu - menu's name (path)
 
@@ -2528,7 +2463,6 @@ oo::class create ::apave::ObjectTheming {
 ## ________________________ Tk choosers _________________________ ##
 
   method ThemeChoosers {} {
-
     # Configures file/dir choosers so that its colors accord with a current CS.
 
     if {[info commands ::apave::_TK_TOPLEVEL] ne ""} return
@@ -2578,7 +2512,6 @@ oo::class create ::apave::ObjectTheming {
 }
 
 # __________________ EOF ___________________ #
-
 #%   DOCTEST   SOURCE  ~/PG/github/apave_tests/tests/obbit_1.test
 #-RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
 #RUNF1: ./tests/test2_pave.tcl alt 41 9 12 "small icons"

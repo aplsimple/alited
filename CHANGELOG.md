@@ -1,35 +1,42 @@
 # LAST CHANGES:
 
 
-Version `1.3.6b4 (4 Jan'23)`
+Version `1.3.6b5 (11 Jan'23)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
   - BUGFIX: skip Tcl check at Run if unit tree not built yet
   - BUGFIX: focus 1st cbx at opening Find/Replace
-  - BUGFIX: tips on toolbar items with %f and %D wildcards (%PD added)
-  - NEW   : length of Tab = "Indentation" option of a project if it > 1
-  - NEW   : up/down buttons to move items of Preferences/Tools/bar-menu
-  - NEW   : checkbuttons of Preferences/Tools/bar-menu: save/restore items
-  - NEW   : remove missing items from last visited list, at selecting
-  - NEW   : File menu: close & delete, for files a-la "try & forget"
-  - NEW   : new "picture character" icons in Preferences/Tools/bar-menu
-  - NEW   : popup menu for toolbar icons
+  - BUGFIX: tips on toolbar items with %f and %D wildcards
+  - BUGFIX: tips on file list called with F9
   - NEW   : 3 profilers, available via Templates
-  - NEW   : save/restore Templates' selection
+  - NEW   : "Sort by name/date/size/ext" in tab bar's popup menu
+  - NEW   : "Files to Beginning" in tab bar's popup menu: if "no", no moving tabs;
+            if "yes", placing all open files' tabs to the beginning of bar
+  - NEW   : length of Tab = "Indentation" option of a project if it > 1
+  - NEW   : File menu: Close & Delete, for files a-la "try & drop"
+  - NEW   : Find/Replace: a button to resize
+  - NEW   : syntax highlighting in Templates
   - NEW   : %A and %M wildcards for Templates
-  - CHANGE: Find/Replace: "wm minsize", button to resize
+  - NEW   : Preferences/General/View: "Test" chb to test theme, CS, tint
+  - NEW   : Preferences/Tools/bar-menu: new "picture character" icons
+  - NEW   : Preferences/Tools/bar-menu: up/down buttons to move items
+  - NEW   : Preferences/Tools/bar-menu: "separator" chb to save/restore items
+  - NEW   : popup menu for toolbar icons
+  - NEW   : tips on toolbar items with %PD
+  - NEW   : remove missing items from last visited list, at selecting
+  - NEW   : alited.ini: some templates got TODEL comments (nice to find & remove)
+  - CHANGE: Find/Replace: less minimal size
   - CHANGE: tests.mnu/doctest: testing Tk scripts without "package require Tk"
   - CHANGE: check for empty name at adding to last visited
-  - CHANGE: Recent files: about defeating an irregular bug
-  - CHANGE: syntax highlighting in Templates
+  - CHANGE: Recent files: remade (about defeating an irregular bug)
   - CHANGE: hot keys in tooltips/menu of file tree
   - CHANGE: clear the unit error message in info bar, before Run
   - CHANGE: colors of selection for treeviews
   - CHANGE: tips on Projects' file list
   - CHANGE: About / Acknowledgements
   - CHANGE: docs
-  - CHANGE: packages: apave/e_menu 3.6.3, hl_tcl 0.9.45
+  - CHANGE: packages: apave/e_menu 3.6.4, hl_tcl 0.9.45, bartabs 1.6.1
 
 
 Version `1.3.5 (7 Dec'22)`

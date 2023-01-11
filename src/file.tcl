@@ -500,13 +500,15 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
     set chosen yes
     set fnames [$obPav chooser tk_getOpenFile alited::al(filename) -multiple 1 \
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
-    set fnames [lsort -decreasing $fnames]
+    if {$al(lifo)} {set fnames [lsort -decreasing $fnames]}
   } elseif {!$islist} {
     set fnames [list $fnames]
   }
+  if {[set llen [llength $fnames]]==0} {return {}}
   set TID {}
   set askopen 0
-  if {[llength $fnames]>1} {
+  set many [expr {$llen>1}]
+  if {$many} {
     set chopt "-ch {$al(MC,noask)}"  ;# for many files -
     set ync yesnocancel              ;# ask with "Cancel" & "Don't show anymore"
   } else {
@@ -547,11 +549,13 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
         if {$Message ne {}} {
           $Message "[msgcat::mc {Open file:}] $fname"
         }
+      } elseif {$al(lifo)} {             ;# in -lifo mode
+        alited::bar::BAR moveTab $TID 0  ;# move all open files to 1st position
       }
     }
   }
-  if {$TID ne {} && $TID ne [alited::bar::CurrentTabID]} {
-    alited::bar::BAR $TID show
+  if {$TID ne {} && ($al(lifo) || $TID ne [alited::bar::CurrentTabID])} {
+    alited::bar::BAR $TID show $many $many
   }
   RecreateFileTree
   return $TID
