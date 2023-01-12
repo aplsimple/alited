@@ -21,8 +21,6 @@
  M:  M: 3
 
  ME: Tcl/Tk       ME: m=tcltk.mnu "u=%s" w=40
- ME: System       ME: m=system.mnu "u=%s" w=40
- ME: Wiki & Dicts ME: m=wiki.mnu "u=%s" w=40
  ME: Misc         ME: m=misc.mnu "u=%s" w=40
  ME: Tests        ME: m=tests.mnu "u=%s" w=40
  ME: Test1        ME: m=test1.mnu "u=%s" w=40

@@ -338,7 +338,7 @@ proc file::RenameFile {TID fname {doshow yes}} {
   set sname [file tail $fname]
   alited::bar::BAR $TID configure -text $sname -tip [FileStat $fname]
   if {$doshow} {
-    alited::bar::BAR $TID show
+    alited::bar::BAR $TID show yes
   }
 }
 #_______________________
@@ -1099,8 +1099,8 @@ proc file::DeleteOne {ID wtree dlg dlgopts res} {
   set TID [alited::bar::FileTID $fname]
   if {$TID ne ""} {
     bell
+    alited::bar::BAR $TID show no no
     alited::msg ok warn "$al(MC,nodelopen)\n$fname"
-    alited::bar::BAR $TID show
     return 0
   }
   set msg [string map [list %f $name] $al(MC,delfile)]

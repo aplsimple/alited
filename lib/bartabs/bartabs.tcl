@@ -1,14 +1,14 @@
-# _______________________________________________________________________ #
-#
-# The tab bar widget.
-#
-# Scripted by Alex Plotnikov (aplsimple@gmail.com).
+###########################################################
+# Name:    bartabs.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    01/12/2023
+# Brief:   Handles the tab bar widget.
 # License: MIT.
-# _______________________________________________________________________ #
+###########################################################
 
-package provide bartabs 1.6.1
+package provide bartabs 1.6.2
 
-# __________________ Common data of bartabs:: namespace _________________ #
+# ________________________ NS bartabs _________________________ #
 
 namespace eval bartabs {
 
@@ -18,98 +18,21 @@ namespace eval bartabs {
 
   # images made by base64
   image create photo bts_ImgLeft \
-  -data {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADAFBMVEUAAAD/AAAA/wD//wAAAP//
-AP8A///////b29u2traSkpJtbW1JSUkkJCTbAAC2AACSAABtAABJAAAkAAAA2wAAtgAAkgAAbQAA
-SQAAJADb2wC2tgCSkgBtbQBJSQAkJAAAANsAALYAAJIAAG0AAEkAACTbANu2ALaSAJJtAG1JAEkk
-ACQA29sAtrYAkpIAbW0ASUkAJCT/29vbtra2kpKSbW1tSUlJJCT/trbbkpK2bW2SSUltJCT/kpLb
-bW22SUmSJCT/bW3bSUm2JCT/SUnbJCT/JCTb/9u227aStpJtkm1JbUkkSSS2/7aS25Jttm1Jkkkk
-bSSS/5Jt221JtkkkkiRt/21J20kktiRJ/0kk2yQk/yTb2/+2ttuSkrZtbZJJSW0kJEm2tv+Skttt
-bbZJSZIkJG2Skv9tbdtJSbYkJJJtbf9JSdskJLZJSf8kJNskJP///9vb27a2tpKSkm1tbUlJSST/
-/7bb25K2tm2SkkltbST//5Lb2222tkmSkiT//23b20m2tiT//0nb2yT//yT/2//bttu2kraSbZJt
-SW1JJEn/tv/bktu2bbaSSZJtJG3/kv/bbdu2SbaSJJL/bf/bSdu2JLb/Sf/bJNv/JP/b//+229uS
-trZtkpJJbW0kSUm2//+S29tttrZJkpIkbW2S//9t29tJtrYkkpJt//9J29sktrZJ//8k29sk////
-27bbtpK2km2SbUltSSRJJAD/tpLbkm22bUmSSSRtJAD/ttvbkra2bZKSSW1tJElJACT/krbbbZK2
-SW2SJEltACTbtv+2ktuSbbZtSZJJJG0kAEm2kv+SbdttSbZJJJIkAG222/+SttttkrZJbZIkSW0A
-JEmStv9tkttJbbYkSZIAJG22/9uS27ZttpJJkm0kbUkASSSS/7Zt25JJtm0kkkkAbSTb/7a225KS
-tm1tkklJbSQkSQC2/5KS221ttklJkiQkbQD/tgDbkgC2bQCSSQD/ALbbAJK2AG2SAEkAtv8AktsA
-bbYASZIAAAAAAADPKgIEAAAAgElEQVQ4y52T0QnAMAhEr6GjuIzukvXiMHEX+xUopZVrAvlR3sOT
-BJkJ9qpqPmsN5DGzfKs3Fu69Y0tgZqmqn/3GwFsCBgaAs4JFBO4OEUFEcBOYWYpICVER7nBEYM7J
-CcYYRwVQE/yRfEZgJeU7WBJ33xMsyXOpv//CkmwLKskFTjp4qfk0WXsAAAAASUVORK5CYII=}
+  -data {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAElBMVEUAAABJSUmSkpJtbW22trbb
+29vYK8X/AAAAAXRSTlMAQObYZgAAAEBJREFUCNdjAANGBigQhNKMjlCGEJTBqAplCIVCGIwqKopg
+hrATjKGkZAiRMgIyIEJABlTIEGYDjMEoiGQp3BkAc58E+W1dC9QAAAAASUVORK5CYII=}
   image create photo bts_ImgRight \
-  -data {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADAFBMVEUAAAD/AAAA/wD//wAAAP//
-AP8A///////b29u2traSkpJtbW1JSUkkJCTbAAC2AACSAABtAABJAAAkAAAA2wAAtgAAkgAAbQAA
-SQAAJADb2wC2tgCSkgBtbQBJSQAkJAAAANsAALYAAJIAAG0AAEkAACTbANu2ALaSAJJtAG1JAEkk
-ACQA29sAtrYAkpIAbW0ASUkAJCT/29vbtra2kpKSbW1tSUlJJCT/trbbkpK2bW2SSUltJCT/kpLb
-bW22SUmSJCT/bW3bSUm2JCT/SUnbJCT/JCTb/9u227aStpJtkm1JbUkkSSS2/7aS25Jttm1Jkkkk
-bSSS/5Jt221JtkkkkiRt/21J20kktiRJ/0kk2yQk/yTb2/+2ttuSkrZtbZJJSW0kJEm2tv+Skttt
-bbZJSZIkJG2Skv9tbdtJSbYkJJJtbf9JSdskJLZJSf8kJNskJP///9vb27a2tpKSkm1tbUlJSST/
-/7bb25K2tm2SkkltbST//5Lb2222tkmSkiT//23b20m2tiT//0nb2yT//yT/2//bttu2kraSbZJt
-SW1JJEn/tv/bktu2bbaSSZJtJG3/kv/bbdu2SbaSJJL/bf/bSdu2JLb/Sf/bJNv/JP/b//+229uS
-trZtkpJJbW0kSUm2//+S29tttrZJkpIkbW2S//9t29tJtrYkkpJt//9J29sktrZJ//8k29sk////
-27bbtpK2km2SbUltSSRJJAD/tpLbkm22bUmSSSRtJAD/ttvbkra2bZKSSW1tJElJACT/krbbbZK2
-SW2SJEltACTbtv+2ktuSbbZtSZJJJG0kAEm2kv+SbdttSbZJJJIkAG222/+SttttkrZJbZIkSW0A
-JEmStv9tkttJbbYkSZIAJG22/9uS27ZttpJJkm0kbUkASSSS/7Zt25JJtm0kkkkAbSTb/7a225KS
-tm1tkklJbSQkSQC2/5KS221ttklJkiQkbQD/tgDbkgC2bQCSSQD/ALbbAJK2AG2SAEkAtv8AktsA
-bbYASZIAAAAAAADPKgIEAAAAjElEQVQ4y52RwQ3EMAgEN9alE5rBvTjlmSauAyglEveNEkLIIfEx
-mtGC4e44NjP7+S3rhqB6745ihYIxRlnS7gbMXJKkgoqkZcOKJBSYGVQVIgIiSiXtaUczAxGBiELJ
-J4JU9SL56wZHoZnhu29rKUEEzzmX1wme4DSBiABACqffWIHTFSrwraAKA8APNup1woreOEgAAAAA
-SUVORK5CYII=}
+  -data {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAElBMVEUAAABJSUmSkpJtbW22trbb
+29vYK8X/AAAAAXRSTlMAQObYZgAAAEBJREFUCNdjYGAQYIACQRhDRADGUIQxggSgjFCokJCTkwCU
+oWIIZggrKcEYygIQBlAAwgAKQBiCMLsE0C2FCAAAa1IEzBjs2sUAAAAASUVORK5CYII=}
   image create photo bts_ImgNone \
-  -data {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADAFBMVEUAAAD/AAAA/wD//wAAAP//
-AP8A///////b29u2traSkpJtbW1JSUkkJCTbAAC2AACSAABtAABJAAAkAAAA2wAAtgAAkgAAbQAA
-SQAAJADb2wC2tgCSkgBtbQBJSQAkJAAAANsAALYAAJIAAG0AAEkAACTbANu2ALaSAJJtAG1JAEkk
-ACQA29sAtrYAkpIAbW0ASUkAJCT/29vbtra2kpKSbW1tSUlJJCT/trbbkpK2bW2SSUltJCT/kpLb
-bW22SUmSJCT/bW3bSUm2JCT/SUnbJCT/JCTb/9u227aStpJtkm1JbUkkSSS2/7aS25Jttm1Jkkkk
-bSSS/5Jt221JtkkkkiRt/21J20kktiRJ/0kk2yQk/yTb2/+2ttuSkrZtbZJJSW0kJEm2tv+Skttt
-bbZJSZIkJG2Skv9tbdtJSbYkJJJtbf9JSdskJLZJSf8kJNskJP///9vb27a2tpKSkm1tbUlJSST/
-/7bb25K2tm2SkkltbST//5Lb2222tkmSkiT//23b20m2tiT//0nb2yT//yT/2//bttu2kraSbZJt
-SW1JJEn/tv/bktu2bbaSSZJtJG3/kv/bbdu2SbaSJJL/bf/bSdu2JLb/Sf/bJNv/JP/b//+229uS
-trZtkpJJbW0kSUm2//+S29tttrZJkpIkbW2S//9t29tJtrYkkpJt//9J29sktrZJ//8k29sk////
-27bbtpK2km2SbUltSSRJJAD/tpLbkm22bUmSSSRtJAD/ttvbkra2bZKSSW1tJElJACT/krbbbZK2
-SW2SJEltACTbtv+2ktuSbbZtSZJJJG0kAEm2kv+SbdttSbZJJJIkAG222/+SttttkrZJbZIkSW0A
-JEmStv9tkttJbbYkSZIAJG22/9uS27ZttpJJkm0kbUkASSSS/7Zt25JJtm0kkkkAbSTb/7a225KS
-tm1tkklJbSQkSQC2/5KS221ttklJkiQkbQD/tgDbkgC2bQCSSQD/ALbbAJK2AG2SAEkAtv8AktsA
-bbYASZIAAAAAAADPKgIEAAAEG0lEQVQ4EQEQBO/7Af///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABjmgMdwQiP4QAAAABJ
-RU5ErkJggg==}
+  -data {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA1BMVEUAAACnej3aAAAAAXRSTlMA
+QObYZgAAAAtJREFUCNdjIBEAAAAwAAFletZ8AAAAAElFTkSuQmCC}
   image create photo bts_ImgClose \
-  -data {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADAFBMVEUAAAD/AAAA/wD//wAAAP//
-AP8A///////b29u2traSkpJtbW1JSUkkJCTbAAC2AACSAABtAABJAAAkAAAA2wAAtgAAkgAAbQAA
-SQAAJADb2wC2tgCSkgBtbQBJSQAkJAAAANsAALYAAJIAAG0AAEkAACTbANu2ALaSAJJtAG1JAEkk
-ACQA29sAtrYAkpIAbW0ASUkAJCT/29vbtra2kpKSbW1tSUlJJCT/trbbkpK2bW2SSUltJCT/kpLb
-bW22SUmSJCT/bW3bSUm2JCT/SUnbJCT/JCTb/9u227aStpJtkm1JbUkkSSS2/7aS25Jttm1Jkkkk
-bSSS/5Jt221JtkkkkiRt/21J20kktiRJ/0kk2yQk/yTb2/+2ttuSkrZtbZJJSW0kJEm2tv+Skttt
-bbZJSZIkJG2Skv9tbdtJSbYkJJJtbf9JSdskJLZJSf8kJNskJP///9vb27a2tpKSkm1tbUlJSST/
-/7bb25K2tm2SkkltbST//5Lb2222tkmSkiT//23b20m2tiT//0nb2yT//yT/2//bttu2kraSbZJt
-SW1JJEn/tv/bktu2bbaSSZJtJG3/kv/bbdu2SbaSJJL/bf/bSdu2JLb/Sf/bJNv/JP/b//+229uS
-trZtkpJJbW0kSUm2//+S29tttrZJkpIkbW2S//9t29tJtrYkkpJt//9J29sktrZJ//8k29sk////
-27bbtpK2km2SbUltSSRJJAD/tpLbkm22bUmSSSRtJAD/ttvbkra2bZKSSW1tJElJACT/krbbbZK2
-SW2SJEltACTbtv+2ktuSbbZtSZJJJG0kAEm2kv+SbdttSbZJJJIkAG222/+SttttkrZJbZIkSW0A
-JEmStv9tkttJbbYkSZIAJG22/9uS27ZttpJJkm0kbUkASSSS/7Zt25JJtm0kkkkAbSTb/7a225KS
-tm1tkklJbSQkSQC2/5KS221ttklJkiQkbQD/tgDbkgC2bQCSSQD/ALbbAJK2AG2SAEkAtv8AktsA
-bbYASZIAAAAAAADPKgIEAAABHUlEQVQ4y6VTQUoDQRCsXpO4bkDPEUmibO75hIjP8O4DPOYq3oJf
-8Au7P8gDguKhWwTjQQWjmAFREtpLdpzJZhdlGxqGoat6qrqHVBVVIkDFsARXRH8GDZxaWpXwcSe6
-3axBzBxxHBMAiIgebAaYaYCddpcKJcxE9EUBah0iA4qIAsBG+wijm1u8Pk78jqr6m8/3CsQ2mVmZ
-OXfnYjwJWbde73itduYUoTHY6/ep0IOn8bWaKMyRMKdoAmgtffE8uHRcNVFY6P7n27s9ny4x/5YA
-wE4nN4X9rZoHZk4tqIjYIzDzAEky9Lq55yQZImo0PIKcidPJg06/vr2nZtKieh27nQ6t3YPz1Z0o
-yROnlsp+4xkRFgAuSmqo6nf+ATq/yK22zWynAAAAAElFTkSuQmCC}
+  -data {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAACTb29u2trbt4+Ll
+4eHw4eD/6N/y3Nv85N/94t3m29vn0dPjz8/dyssim+gAAAAAAXRSTlMAQObYZgAAAEdJREFUCNdj
+wAvaFZiWgWgORSUlYQcgg11QSFFQAchgUhQUFLoAkjskKKgNVqwkKKjHAJMCqeGEKWYzBGoPAMk5
+KTCp4rURAEWmB5A5tzUJAAAAAElFTkSuQmCC}
 
   variable BarsList [list]
 ; proc drawAll {} {
@@ -136,11 +59,12 @@ yROnlsp+4xkRFgAuSmqo6nf+ATq/yK22zWynAAAAAElFTkSuQmCC}
     return $res
   }
 
-# ________________________ EONS bartabs _________________________ #
+  ## ____________ EONS bartabs ____________ ##
 
 }
 
-# __________________ Declaring bartabs class hierarchy __________________ #
+
+# ____________ bartabs class hierarchy ____________ #
 
 oo::class create bartabs::Tab {
 }
@@ -153,7 +77,9 @@ oo::class create bartabs::Bars {
   superclass bartabs::Bar
 }
 
-# ________________________ Private methods of Tab _______________________ #
+# ________________________ Tab _______________________ #
+
+## ____________ Private methods of Tab ____________ ##
 
 oo::define bartabs::Tab {
 
@@ -643,7 +569,7 @@ method Tab_CloseFew {{TID -1} {left no} args} {
     if {$TID eq {-1}} {
       my $BID Refill 0 yes
     } else {
-      my $BID $TID show yes yes
+      my $BID $TID show yes
     }
   }
 }
@@ -730,7 +656,7 @@ method Visible {} {
   return no
 }
 
-# ____________________________ Event handlers ___________________________ #
+## ____________ Event handlers ____________ ##
 
 method DestroyMoveWindow {} {
   # Destroys the moving window zombi.
@@ -1011,35 +937,31 @@ method OnPopup {X Y {BID "-1"} {TID "-1"} {textcur ""}} {
   my $BID configure -LOCKDRAW {}
 }
 
-# _________________________ Public methods of Tab _______________________ #
+## ____________ Public methods of Tab ____________ ##
 
-method show {{anyway no} {lifo no}} {
+method show {{refill no} {lifo yes}} {
 # Shows a tab in a bar and sets it current.
-#   anyway - if "yes", refill the bar anyway (for choosing from menu)
+#   refill - if "yes", update the bar
+#   lifo - if "yes", allows moving a tab to 0th position
+# When refill=no and lifo=no, just shows a tab in its current position.
 
   lassign [my IDs [my ID]] TID BID
-  if {$anyway} {my $BID clear}
+  if {$refill} {my $BID clear}
   set itab 0
   foreach tab [my $BID listTab]  {
     lassign $tab tID text wb wb1 wb2 pf
     if {$TID eq $tID} {
-      set anyway [expr {$pf eq {}}]  ;# check if visible
+      set refill [expr {$pf eq {}}]  ;# check if visible
       break
     }
     incr itab
   }
-  if {$lifo && [my $BID cget -lifo]} {
-    if {[string is true -strict [my $BID cget -lifoest]] || ![my $TID Visible]} {
-      # if the tab is not visible or -lifoest option=true,
-      # move the tab to 0th position and show from there
-      set tabs [my $BID cget -TABS]
-      lassign [my Tab_BID $TID] -> i tab
-      set tabs [linsert [lreplace $tabs $i $i] 0 $tab]
-      my $BID configure -TABS $tabs
-      set itab 0
-    }
+  if {$refill && $lifo && [my $BID cget -lifo] && (![my $TID Visible] || \
+  [string is true -strict [my $BID cget -lifoest]])} {
+    my $BID moveTab $TID 0
+    set itab 0
   }
-  if {$anyway} {my $BID Refill $itab no yes}
+  if {$refill} {my $BID Refill $itab no yes}
   my $TID Tab_BeCurrent
 }
 #_______________________
@@ -1080,7 +1002,7 @@ method close {{redraw yes} args} {
       my [lindex $tabs $icurr 0] Tab_BeCurrent
     } else {
       if {[set TID [lindex $tabs end 0]] ne {}} {
-        my $TID show yes yes ;# last tab deleted: show the new last if any
+        my $TID show yes ;# last tab deleted: show the new last if any
       }
     }
   }
@@ -1088,11 +1010,13 @@ method close {{redraw yes} args} {
   return 1
 }
 
-# ________________________ EOC bartabs::Tab _________________________ #
+## ________________________ EOC Tab _________________________ ##
 
 }
 
-# ________________________ Private methods of Bar _______________________ #
+# ________________________ Bar _________________________ #
+
+## ____________ Private methods of Bar ____________ ##
 
 oo::define bartabs::Bar {
 
@@ -1427,7 +1351,7 @@ method FillMenuList {BID popi {TID -1} {mnu ""} {mustBeSorted {}}} {
     set dsbl {}
     if {$TID == -1 || $mnu eq {bartabs_cascade}} {
       if {$comlist eq {}} {
-        set comm "[self] $tID show yes yes"
+        set comm "[self] $tID show yes"
       } else {
         set tip [my $tID cget -tip]
         set comm [string map [list %i $icom %t $tip] $comlist]
@@ -1631,7 +1555,7 @@ method NeedDraw {} {
   }
 }
 
-# _________________ Exported 'internal' methods of Bar __________________ #
+## ____________ Exported methods of Bar ____________ ##
 
 method _runBound_ {w ev args} {
 # Runs a method bound to an event occuring at a widget.
@@ -1650,7 +1574,7 @@ method _runBound_ {w ev args} {
 
 export _runBound_
 
-# _______________________ Auxiliary methods of Bar ______________________ #
+## ____________ Auxiliary methods of Bar ____________ ##
 
 method Aux_WidgetWidth {w} {
 # Calculates a widget's width.
@@ -1720,7 +1644,7 @@ method Aux_IndexInList {ID lst} {
   return -1
 }
 
-# _________________________ Public methods of Bar _______________________ #
+## ____________ Public methods of Bar ____________ ##
 
 method cget {args} {
 # Gets values of options of bars & tabs.
@@ -1889,7 +1813,7 @@ method sort {{mode -increasing} {cmd ""}} {
     set tabs [lsort $mode -dictionary -command $cmd $tabs]
   }
   my $BID configure -TABS $tabs -lifo no
-  my $TID show yes yes
+  my $TID show yes
   my $BID configure -lifo $lifo
 }
 #_______________________
@@ -2072,11 +1996,13 @@ method bindToEvent {w event args} {
   }
 }
 
-# ________________________ EOC bartabs::Bar _________________________ #
+## ____________ EOC Bar ____________ ##
 
 }
 
-# ___________________________ Methods of Bars ___________________________ #
+# ________________________ Bars _________________________ #
+
+## ____________ Methods of Bars ____________ ##
 
 oo::define bartabs::Bars {
 
@@ -2097,7 +2023,7 @@ destructor {
   if {[llength [self next]]} next
 }
 
-# ________________________ Private methods of Bars ______________________ #
+## ____________ Private methods of Bars ____________ ##
 
 method Bars_Method {mtd args} {
 # Executes a method for all bars.
@@ -2152,7 +2078,7 @@ method TtkTheme {} {
   return [expr {[ttk::style theme use] in {clam alt classic default awdark awlight}}]
 }
 
-# ________________________ Public methods of Bars _______________________ #
+## ____________ Public methods of Bars ____________ ##
 
 method create {barCom {barOpts ""} {tab1 ""}} {
 # Creates a bar.
@@ -2210,7 +2136,7 @@ method create {barCom {barOpts ""} {tab1 ""}} {
     after 50 [list [self] $BID NeedDraw ; [self] $BID draw]
   } else {
     set tab1 [my $BID tabID $tab1]
-    if {$tab1 ne {}} {after 100 "[self] $BID clear; [self] $BID $tab1 show yes yes"}
+    if {$tab1 ne {}} {after 100 "[self] $BID clear; [self] $BID $tab1 show yes"}
   }
   return $BID
 }
@@ -2325,7 +2251,7 @@ method MoveTab {TID1 TID2} {
     set tabs [lreplace $tabs $i1 $i1]
     set i [expr {$i1>$i2?($i2+1):$i2}]
     my $BID1 configure -TABS [linsert $tabs $i $tab]
-    my $TID1 show yes yes
+    my $TID1 show yes
   }
 }
 
@@ -2353,7 +2279,7 @@ method moveSelTab {TID1 TID2} {
   my $BID configure -lifo $lifo  ;# restore -lifo option
 }
 
-# ________________________ EOC bartabs::Bars _________________________ #
+## ____________ EOC Bars ____________ ##
 
 }
 

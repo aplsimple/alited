@@ -1,3 +1,6 @@
+=== 2023-01-12 ===
+   EDITED lib/e_menu/menus/utils.mnu
+
 === 2023-01-11 ===
    EDITED data/user/ini/alited.ini
 

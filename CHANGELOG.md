@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.6b5 (11 Jan'23)`
+Version `1.3.6b6 (12 Jan'23)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
@@ -36,7 +36,7 @@ Version `1.3.6b5 (11 Jan'23)`
   - CHANGE: tips on Projects' file list
   - CHANGE: About / Acknowledgements
   - CHANGE: docs
-  - CHANGE: packages: apave/e_menu 3.6.4, hl_tcl 0.9.45, bartabs 1.6.1
+  - CHANGE: packages: apave/e_menu 3.6.4, hl_tcl 0.9.45, bartabs 1.6.2
 
 
 Version `1.3.5 (7 Dec'22)`

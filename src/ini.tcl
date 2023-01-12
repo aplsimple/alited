@@ -11,7 +11,7 @@
 namespace eval ::alited {
 
   # versions of mnu/ini to update to
-  set al(MNUversion) 1.3.6a1
+  set al(MNUversion) 1.3.6b6
   set al(INIversion) 1.3.6b5
   # previous version of alited to update from
   set al(ALEversion) 0.0.1
