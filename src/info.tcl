@@ -204,4 +204,3 @@ proc info::PopupMenu {X Y} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

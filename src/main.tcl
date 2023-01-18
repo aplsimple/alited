@@ -614,7 +614,7 @@ proc main::UpdateProjectInfo {{indent {}}} {
   [$obPav BtTswitch] configure -state $stsw
   if {[alited::tool::ComForced]} {
     set run force
-  } elseif {$al(tkcon,topmost)} {
+  } elseif {$al(prjincons)} {
     set run cons
   } else {
     set run tkcon
@@ -624,11 +624,6 @@ proc main::UpdateProjectInfo {{indent {}}} {
   set info "$run, eol=$eol, ind=$indent"
   if {$al(prjindentAuto)} {append info /auto}
   [$obPav Labstat4] configure -text $info
-  set runtip $al(MC,icorun)
-  if {[alited::tool::ComForced]} {
-    set runtip [alited::menu::RunTip]
-  }
-  ::baltip::tip [alited::tool::ToolButName run] $runtip
 }
 #_______________________
 
@@ -638,11 +633,11 @@ proc main::TipStatus {} {
   namespace upvar ::alited al al obPav obPav
   if {$al(IsWindows)} {set term $al(EM,wt=)} {set term $al(EM,tt=)}
   set tip [[$obPav Labstat4] cget -text]
-  set run "$al(MC,run): "
+  set run "$al(MC,run)"
   set tip [string map [list \
-    force "$run[msgcat::mc Setup] / $al(MC,beforerun)\n$run$al(comForce)\n" \
-    cons  "$run$al(MC,inconsole) $term" \
-    tkcon "$run$al(MC,intkcon)" \
+    force "$run: $al(comForce)\n" \
+    cons  "$run Tcl: $al(MC,inconsole) $term\n" \
+    tkcon "$run Tcl: $al(MC,intkcon)\n" \
     eol= "$al(MC,EOL:) " \
     ind= "$al(MC,indent:) " \
     {, } \n \
@@ -897,4 +892,3 @@ proc main::_run {} {
   return $ans
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

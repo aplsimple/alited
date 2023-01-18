@@ -626,11 +626,13 @@ proc file::SaveFileAs {{TID ""}} {
   if {[IsNoName $alited::al(filename)]} {
     set alited::al(filename) {}
     set defext {-defaultextension .tcl}
+    set inidir $al(prjroot)
   } else {
     set defext {}
+    set inidir [file dirname $fname]
   }
   set fname [$obPav chooser tk_getSaveFile alited::al(filename) -title \
-    [msgcat::mc {Save as}] -initialdir [file dirname $fname] -parent $al(WIN) {*}$defext]
+    [msgcat::mc {Save as}] -initialdir $inidir -parent $al(WIN) {*}$defext]
   if {[IsNoName $fname]} {
     set res 0
   } elseif {[set res [SaveFileByName $TID $fname]]} {
@@ -673,7 +675,10 @@ proc file::CloseAndDelete {} {
   set msg [string map [list %f [file tail $fname]] $al(MC,delfile)]
   if {[alited::msg yesno warn $msg NO]} {
     # to save first (for normal closing only)
-    if {[SaveAndClose]} {DeleteFile $fname}
+    if {[SaveAndClose]} {
+      DeleteFile $fname
+      if {!$al(TREE,isunits)} {alited::tree::RecreateTree {} {} yes}
+    }
   }
 }
 #_______________________
@@ -1224,4 +1229,3 @@ proc file::ChooseRecent {fname} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

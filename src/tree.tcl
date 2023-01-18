@@ -1022,14 +1022,17 @@ proc tree::ExpandContractTree {Tree {isexp yes}} {
 }
 #_______________________
 
-proc tree::RecreateTree {{wtree ""} {headers ""}} {
+proc tree::RecreateTree {{wtree ""} {headers ""} {clearsel no}} {
   # Recreates the tree and restores its selections.
   #   wtree - the tree's path
   #   headers - a list of selected items
+  #   clearsel - if yes, clears tree's selection
 
   namespace upvar ::alited al al obPav obPav
   if {$wtree eq {}} {set wtree [$obPav Tree]}
-  if {[catch {set selection [$wtree selection]}]} {set selection [list]}
+  if {$clearsel || [catch {set selection [$wtree selection]}]} {
+    set selection [list]
+  }
   if {$al(TREE,isunits)} {
     set al(TREE,units) no
     set TID [alited::bar::CurrentTabID]
@@ -1090,4 +1093,3 @@ proc tree::UpdateFileTree {{doit no}} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

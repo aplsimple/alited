@@ -90,7 +90,6 @@ namespace eval ::alited {
     set al(MC,Item)        [msgcat::mc Item]
     set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
     set al(MC,afterstart)  [msgcat::mc {For Start}]
-    set al(MC,beforerun)   [msgcat::mc {For Run}]
     set al(MC,locale)      [msgcat::mc "This is a language code: ru, uk, de...\nIn alited, \"en\" means American English."]
     set al(MC,noask)       [msgcat::mc {Don't show anymore}]
     set al(MC,needcs)      [msgcat::mc "These themes need\nlight / dark color schemes\naccordingly"]
@@ -169,8 +168,10 @@ namespace eval ::alited {
     set al(MC,prjTnext)    [msgcat::mc {TODO next day}]
     set al(MC,prjTnext2)   [msgcat::mc {TODO next week}]
     set al(MC,TemplPrj)    [msgcat::mc "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project."]
-    set al(MC,CrTemplPrj)  [msgcat::mc "Create a project by template\nas set in Templates tab"]
+    set al(MC,CrTemplPrj)  [msgcat::mc {Create a project by template}]
     set al(MC,ViewDir)     [msgcat::mc {Project directory}]
+    set al(MC,com)         [msgcat::mc Command]
+    set al(MC,coms)        [msgcat::mc Commands]
 
     ## _ favorites _ ##
     set al(MC,favsel)      [msgcat::mc {Click a list of favorites}]
@@ -244,4 +245,3 @@ namespace eval ::alited {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

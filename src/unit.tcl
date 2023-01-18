@@ -265,8 +265,8 @@ proc unit::InsertTemplate {tpldata} {
   }
   set wtxt [alited::main::CurrentWTXT]
   lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - - l1 l2
-  lassign [TemplateData $wtxt $l1 $tpldata] tex pos place
-  set col0 [string range $pos [string first . $pos] end]
+  lassign [TemplateData $wtxt $l1 $tpldata] tex posc place
+  lassign [split $posc .] -> col0
   switch $place {
     0 { ;# returned by TemplateData: after a declaration
       set pos0 [expr {$l1+1}].0
@@ -281,6 +281,8 @@ proc unit::InsertTemplate {tpldata} {
       if {$l2 ne ""} {
         set pos0 [$wtxt index "$l2.0 +1 line linestart"]
         if {[string index $tex end] ne "\n"} {append tex \n}
+        lassign [CorrectPos $wtxt $tex $posc $pos0] tex pos0 posc
+        lassign [split $posc .] -> col0
       } else {
         set place 1
       }
@@ -291,12 +293,83 @@ proc unit::InsertTemplate {tpldata} {
   }
   if {$place == 1} {
     set pos0 [$wtxt index "insert +1 line linestart"]
+    set posi [$wtxt index "insert linestart"]
+    lassign [CorrectPos $wtxt $tex $posc $pos0 $posi] tex pos0 posc
+    lassign [split $posc .] -> col0
     if {[string index $tex end] ne "\n"} {append tex \n}
   }
-  set pos "[expr {int($pos)-1}]$col0"
-  set pos [alited::p+ $pos0 $pos]
+  set posc "[expr {int($posc)-1}].$col0"
+  set posc [alited::p+ $pos0 $posc]
   $wtxt insert $pos0 $tex
-  ::tk::TextSetCursor $wtxt $pos
+  ::tk::TextSetCursor $wtxt $posc
+}
+#_______________________
+
+proc unit::CorrectPos {wtxt tex posc pos0 {posi {}}} {
+  # Corrects an insert position at "after unit insert" specifically and only
+  # for this type of underlining: #______. Also, corrects the indentation
+  # of the template, counting the insertion point's indentation.
+  #   wtxt - current text widget
+  #   tex - template's text
+  #   posc - relative position of cursor
+  #   pos0 - position of insertion
+  # If 1st line of the template is underlined, we place it under a previous
+  # unit's closing brace. But if the insertion point is already underlined
+  # or is a branch, we move 1st line of the template to its end.
+
+  namespace upvar ::alited al al
+  set tlist [split $tex \n]
+  set line1 [lindex $tlist 0]
+  set indent1 [::apave::obj leadingSpaces $line1]  ;# indentation of the template
+  set pos1 [expr {int([$wtxt index $pos0])}]
+  set line2 [$wtxt get $pos1.0 $pos1.end]
+  if {$posi eq {}} {
+    set indent2 [::apave::obj leadingSpaces $line2]  ;# indentation of the insert point
+  } else {
+    set posi [expr {int($posi)}]
+    set linei [$wtxt get $posi.0 $posi.end]
+    set indent2 [::apave::obj leadingSpaces $linei]
+  }
+  lassign [split $posc .] pl pc
+  set under {^\s*#\s?_+$}
+  # move underline to the end or remove it at all
+  if {[regexp $under $line1]} {
+    set isund [expr {[regexp $under $line2] || [regexp $al(RE,leaf2) $line2]}]
+    while {[incr pos1 -1]>1} {
+      set line [string trim [$wtxt get $pos1.0 $pos1.end]]
+      if {$line ne {}} {
+        if {[regexp $under $line] || [regexp $al(RE,leaf2) $line]} {
+          set tex [string range $tex [string first \n $tex] end]
+          set len1 [llength $tlist]
+          set len2 [llength [split [string trimleft $tex] \n]]
+          set tex \n[string trim $tex]\n
+          if {!$isund} {append tex $line1 \n}
+          incr pl [expr {$len2-$len1+1}]  ;# cursor position changed too
+          set posc $pl.$pc
+        } elseif {$line ne "\}"} {
+          if {$isund} {append tex \n}
+          break
+        }
+        set pos0 [$wtxt index "$pos1.0 + 1 line"]
+        break
+      }
+    }
+  }
+  # indent the template
+  if {$indent1<$indent2} {
+    set indent [string repeat { } [incr indent2 -$indent1]]
+    set tlist [split $tex \n]
+    set tex {}
+    foreach t $tlist {
+      if {$t ne {}} {set t $indent$t}
+      if {[incr pos2]==$pl} {
+        set posc $pl.[incr pc $indent2]  ;# increment the cursor position
+      }
+      append tex $t\n
+    }
+    set tex [string range $tex 0 end-1] ;# remove the last linefeed
+  }
+  return [list $tex $pos0 $posc]
 }
 #_______________________
 
@@ -574,4 +647,3 @@ proc unit::SearchByHeader {header} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

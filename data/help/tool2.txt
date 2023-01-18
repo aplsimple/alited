@@ -1,34 +1,36 @@
- You can enter commands to be run before running a current file with
- <r>Run</r> tool.
+ A current Tcl script (file.tcl) is run in <r>console</r> or <r>Tkcon</r>.
 
- These commands can be Tcl commands or executables, e.g.
-    cd ~/TMP
-    rm log.txt
+ <r>1.</r> You can set a command that is run independently on a type of
+ current file. It can be OS command or executable file. It's run in console.
 
- It can be necessary <b>for a specific project</b>.
- Something like an initialization before <b>Run</b>.
- ___________________________________________________________________________
+ If a Tcl file has to be run, you can set the command with or without
+ <b>tclsh</b>, <b>wish</b>, <b>tclkit</b> etc., for example:
 
- Also, you can set a command that will be run "forcedly", <b>independently
- on the type</b> of currently edited file. Very good for those use cases
- when you have to edit a lot of <b>non-Tcl texts</b> and see them in work.
-
- The command can be any executable file available at your machine.
- It's run in console. Hit <r>Run</r> to test it, <r>Delete</r> to remove it.
-
- If it's a Tcl file that has to be run, you can set the command with or
- without <b>tclsh</b>, <b>wish</b>, <b>tclkit</b> etc., for example:
-
-    /usr/bin/tclsh /home/me/myPG/src/myPG.tcl LOG=~/TMP/log.txt
-    /home/me/myPG/src/myPG.tcl LOG=~/TMP/log.txt
+   /usr/bin/tclsh /home/me/myPG/src/file.tcl LOG=~/TMP/log.txt
+   /home/me/myPG/src/file.tcl LOG=~/TMP/log.txt
 
  The command can include wildcards:
    <b>%f</b>  - current file's name
    <b>%d</b>  - current file's directory
    <b>%pd</b> - project's directory
+ Use the popup menu to remove a command from the combobox.
 
- <r>Note:</r> clear the command to return to "normal" mode of <b>Run</b>. Use
- the context menu to remove the command from the combobox' list as well.
+ <r>2.</r> For <b>By command #RUNF:</b> you write comments in a file, like:
+   #RUNF: file.tcl arg1 arg2 arg3
+ meaning that <b>tclsh file.tcl arg1 arg2 arg3</b> will be run on the file.
 
- Anyhow, "Run me" of <b>e_menu</b> tool allows you to run a current file in
- its "normal" mode by its associated application. Press F4 twice for this.
+ These two ways of running Tcl are selected with <r>Run it</r> switches and
+ are useful for two different type of projects:
+   - <b>monolith</b>: you have a lot of files that need few commands to test
+     and debug the whole application (<b>alited</b> is an example)
+   - <b>heterogeneous</b>: a project contains a lot of files that need to
+     be tested and debugged with their own commands
+
+ Anyhow, "Run me" item of <b>e_menu</b> tool allows running a current file
+ in its "normal" mode by an associated application. Press F4 twice for this.
+
+ <r>3.</r> You can enter commands to be run before running a current file.
+ It can be necessary <b>for a specific project</b>, sort of initialization.
+
+ These commands can be OS commands or executables, for example:
+   cd ~/TMP; rm log.txt

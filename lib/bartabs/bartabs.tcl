@@ -2182,7 +2182,7 @@ method unmarkTab {args} {
 #_______________________
 
 method onSelectCmd {args} {
-  # Runs a command on selecting tabs.
+  # Runs a command (set by "-csel3") on a list of tabs.
   #   args - list of TID
 
   foreach TID $args {

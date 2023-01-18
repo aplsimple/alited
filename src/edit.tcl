@@ -437,4 +437,3 @@ proc edit::RemoveTrailWhites {{TID ""} {doit no} {skipGUI no}} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

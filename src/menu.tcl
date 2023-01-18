@@ -33,18 +33,6 @@ proc menu::CheckMenuItems {} {
 }
 #_______________________
 
-#proc menu::CheckPrjItems {} {
-#  # Checks for states of menu items related to projects.
-
-#  namespace upvar ::alited al al
-#  if {![info exists al(_check_menu_state_)] || $al(_check_menu_state_)} {
-#    if {$al(prjtrailwhite)} {set state disabled} {set state normal}
-#    $al(MENUEDIT) entryconfigure 11 -state $state
-#    set al(_check_menu_state_) 0
-#  }
-#}
-#_______________________
-
 proc menu::CheckTint {{doit no}} {
   # Sets a check in menu "Tint" according to the current tint.
   #   doit - "yes" at restarting this procedure after a pause
@@ -126,20 +114,6 @@ proc menu::Configurations {} {
 }
 #_______________________
 
-proc menu::RunTip {} {
-  # Gets tooltip on "Tools/Run".
-
-  if {[alited::tool::ComForced]} {
-    set tip [alited::main::TipStatus]  ;# full tip of alited status
-    lassign [split $tip \n] tip1 tip2  ;# extract "forced command" from the tip
-    set tip $tip1\n$tip2
-  } else {
-    set tip {} ;# no special tip of Run menu item for this case
-  }
-  return $tip
-}
-#_______________________
-
 proc menu::FillMenu {} {
   # Populates alited's main menu.
 
@@ -209,8 +183,7 @@ proc menu::FillMenu {} {
 
   ## ________________________ Tools _________________________ ##
   set m [set al(TOOLS) $al(WIN).menu.tool]
-  $m add command -label [msgcat::mc Run...] -command alited::tool::RunMode -accelerator $al(acc_3)
-  ::baltip::tip $m $al(MC,icorun) -index 0 -command {::alited::menu::RunTip}
+  $m add command -label [msgcat::mc Run...] -command alited::tool::RunMode
   $m add command -label e_menu -command {alited::tool::e_menu o=0} -accelerator $al(acc_2)
   $m add command -label Tkcon -command alited::tool::tkcon
 
@@ -285,7 +258,6 @@ proc menu::FillMenu {} {
   $m add separator
 
   $m add command -label [msgcat::mc {For Start...}] -command alited::tool::AfterStartDlg
-  $m add command -label [msgcat::mc {For Run...}] -command alited::tool::BeforeRunDlg
   $m add separator
   $m add command -label [msgcat::mc Configurations...] -command alited::menu::Configurations
   $m add separator
@@ -303,4 +275,3 @@ proc menu::FillMenu {} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

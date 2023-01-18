@@ -252,8 +252,12 @@ namespace eval ::alited {
     {The project template is empty!} {Шаблон проекту пустий!}
     {Incorrect indentation in Project template: %n} {Некоректний відступ у шаблоні проекту: %n}
     "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project." "Вкажіть дерево директорій для шаблона проекту.\nРобіть однакові відступи для вказівки піддиректорій.\n\nФайли типа README*, CHANGELOG* будуть створюватися пустими.\nФайли типа LICENSE* будуть братися з поточного проекту."
-    "Create a project by template\nas set in Templates tab" "Створити проект по шаблону,\nяк то вказано на заставці Шаблони"
+    {Create a project by template} {Створити проект по шаблону}
     {Project directory} {Директорія проекту}
+    {Command} {Команда}
+    {Commands} {Команди}
+    {For project} {Для проекту}
+    {%n commands will be executed!} {Буде виконано %n команд!}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -537,15 +541,14 @@ namespace eval ::alited {
     {separator} {роздільник}
     {If 'yes', means a separator of the toolbar/menu.} {Якщо включено, значить роздільник у тулбарі/меню.}
     {For Start...} {Для старту...}
-    {For Run...} {Для Запуску...}
-    {For Run} {Для Запуску}
-    {Commands:} {Команди:}
-    "\n Enter commands to be run after starting alited.\n They can be Tcl or executables.\n" "\n Введіть команди, що мають виконатися після старту alited,\n тобто команди Tcl або зовнішні команди.\n"
-    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n They can be Tcl or executables." "\n Введіть команди, що мають виконатися перед \"Струменти/Запуск\",\n тобто команди Tcl або зовнішні команди."
+    " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Введіть команди, що мають виконатися після старту alited,\n тобто команди Tcl або зовнішні команди:"
+    {By command:} {Командою:}
+    {By command #RUNF:} {Командою #RUNF:}
+    {Run it} {Пуск}
+    { OS or Tcl commands to be run before running a current file:} { Команди OS або Tcl, що мають виконуватися перед запуском поточного файлу:}
     { Also, you can set "forced command" to be run by "Run" tool:} { Також ви можете ввести "примусову команду" для Запуску:}
     {Forcedly:} {Примусово:}
     {e_menu's own} {своя в e_menu}
-    {Also, this makes "tkcon" topmost.} {Вікно "tkcon" буде над всіма іншими.}
     {Select any of run item} {Виберіть яку-небудь команду}
   }
 
@@ -636,4 +639,3 @@ namespace eval ::bartabs {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

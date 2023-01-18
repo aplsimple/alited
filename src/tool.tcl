@@ -7,7 +7,6 @@
 ###########################################################
 
 namespace eval tool {
-  variable focusedBut {}  ;# focused button of Run query
 }
 
 #_______________________
@@ -452,7 +451,7 @@ proc tool::Runs {mc runs} {
       if {[catch {eval $run} e]} {
         catch {exec -- {*}$run} e
       }
-      alited::info::Put "$mc: \"$run\" -> $e"
+      alited::info::Put "$mc\"$run\" -> $e"
       update
     }
   }
@@ -464,11 +463,12 @@ proc tool::AfterStartDlg {} {
   # Dialogue to enter a command before running "Tools/Run"
 
   namespace upvar ::alited al al obDl2 obDl2
-  set head [msgcat::mc "\n Enter commands to be run after starting alited.\n They can be Tcl or executables.\n"]
+  set lab [msgcat::mc " Enter commands to be run after starting alited.\n They can be Tcl or executables:"]
   set run [string map [list $alited::EOL \n] $al(afterstart)]
   lassign [$obDl2 input {} $al(MC,afterstart) [list \
-    tex "{[msgcat::mc Commands:]    } {} {-w 80 -h 16 -tabnext {butOK butCANCEL}}" "$run" ] \
-      -head $head -help {alited::tool::HelpTool %w 1}] res run
+    lab [list {} {-pady 8} [list -t $lab]] {} \
+    tex "{} {} {-w 80 -h 16 -tabnext {butOK butCANCEL}}" "$run" ] \
+    -help {alited::tool::HelpTool %w 1}] res run
   if {$res} {
     set al(afterstart) [string map [list \n $alited::EOL] [string trim $run]]
     alited::ini::SaveIni
@@ -480,139 +480,7 @@ proc tool::AfterStart {} {
   # Runs commands after starting alited.
 
   namespace upvar ::alited al al
-  Runs $al(MC,afterstart) $al(afterstart)
-}
-
-## ________________________ before run _________________________ ##
-
-#! let this commented stuff be a code snippet for tracing apave variables, huh:
-#proc tool::TraceComForce {name1 name2 op} {
-#  # Traces al(comForce) to enable/disable the text field in "Before Run" dialogue.
-#
-#  namespace upvar ::alited obDl2 obDl2
-#  catch {
-#    set txt [$obDl2 Tex]
-#    if {[set $name1] eq {}} {set st normal} {set st disabled}
-#    $txt configure -state $st
-#    $obDl2 makePopup $txt no yes
-#    set cbx [$obDl2 CbxfiL]
-#    if {[focus] ne $cbx && $st eq {disabled}} {
-#      after 300 "focus $cbx"
-#    }
-#  }
-#  return {}
-#}
-##_______________________
-
-proc tool::TestForcedRun {} {
-  # Handler of "Run forced command" button.
-
-  namespace upvar ::alited obDl2 obDl2
-  $obDl2 res {} 11
-}
-#_______________________
-
-proc tool::DeleteForcedRun {} {
-  # Handler of "Delete forced command" button.
-
-  namespace upvar ::alited al al obDl2 obDl2
-  set cbx [$obDl2 CbxfiL]
-  if {[set val [string trim [$cbx get]]] eq {}} return
-  set values [$cbx cget -values]
-  if {[set i [lsearch -exact $values $val]]>-1} {
-    set al(comForceLs) [lreplace $values $i $i]
-    $cbx configure -values $al(comForceLs)
-  }
-  $cbx set {}
-}
-#_______________________
-
-proc tool::BeforeRunDialogue {focrun} {
-  # Dialogue to enter a command before running "Tools/Run"
-  #   focrun - yes, if "Forced command" should be focused.
-
-  namespace upvar ::alited al al obDl2 obDl2
-  set head [msgcat::mc "\n Enter commands to be run before running a current file with \"Tools/Run\".\n They can be Tcl or executables."]
-  set run [string map [list $alited::EOL \n] $al(prjbeforerun)]
-  set prompt1 [string range [msgcat::mc {Forcedly:}][string repeat { } 15] 0 15]
-  set prompt2 [string range [msgcat::mc Commands:][string repeat { } 15] 0 15]
-  set prompt3 [string range [msgcat::mc Run]:[string repeat { } 15] 0 15]
-  if {[lindex $al(comForceLs) 0] eq {-}} {
-    set al(comForceLs) [lreplace $al(comForceLs) 0 0]  ;# legacy
-  }
-  if {[lindex $al(comForceLs) 0] ne {}} {
-    set i [lsearch $al(comForceLs) {}]
-    set al(comForceLs) [lreplace $al(comForceLs) $i $i]
-    set al(comForceLs) [linsert $al(comForceLs) 0 {}]  ;# to allow blank value
-  }
-#! let this commented stuff be a code snippet for tracing apave variables, huh:
-#  after idle [list after 0 " \
-#    set tvar \[$obDl2 varName cbx\] ;\
-#    trace add variable \$tvar write ::alited::tool::TraceComForce ;\
-#    set \$tvar \[set \$tvar\]
-#  "]
-  if {$focrun || [ComForced]} {set foc {-focus cbx}} {set foc {}}
-  lassign [$obDl2 input {} $al(MC,beforerun) [list \
-    seh1 {{} {-pady 15}} {} \
-    Tex "{$prompt2} {} {-w 80 -h 16 -tabnext {*cbx* *CANCEL}}" $run \
-    seh2 {{} {-pady 15}} {} \
-    lab {{} {} {-t { Also, you can set "forced command" to be run by "Run" tool:}}} {} \
-    fiL [list $prompt1 {-fill none -anchor w -pady 8} [list -w 80 -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::tool::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
-    btT1 [list {} {-padx 5} "-com alited::tool::DeleteForcedRun -tip Delete -toprev 1 -image [::apave::iconImage no]"] {} \
-    butRun "{$prompt3} {} {-com alited::tool::TestForcedRun -tabnext *butOK}" "$alited::al(MC,test)" \
-  ] -head $head {*}$foc -help {alited::tool::HelpTool %w 2}] \
-  res run com
-  return [list $res $run $com]
-}
-
-#_______________________
-
-proc tool::BeforeRunDlg {} {
-  # Runs "Before Run" dialogue and does its chosen action.
-
-  namespace upvar ::alited al al
-  set savForce $al(comForce)
-  set savForceLs $al(comForceLs)
-  set focrun 0
-  set res 11
-  while {$res==11} {
-    lassign [BeforeRunDialogue $focrun] res run com
-    if {!$res} {
-      set al(comForce) $savForce
-      set al(comForceLs) $savForceLs
-      break
-    }
-    set al(comForce) [string trim $com]
-    if {[ComForced]} {
-      set i [lsearch -exact $al(comForceLs) $com]
-      set al(comForceLs) [lreplace $al(comForceLs) $i $i]
-      set al(comForceLs) [linsert $al(comForceLs) 1 $com]
-      set al(comForceLs) [lrange $al(comForceLs) 0 $al(INI,RECENTFILES)]
-    }
-    if {$res==11} {
-      if {[ComForced]} _run bell
-      set focrun yes
-    } else {
-      set al(prjbeforerun) [string map [list \n $alited::EOL] [string trim $run]]
-      alited::ini::SaveIniPrj
-      alited::main::UpdateProjectInfo
-    }
-  }
-}
-#_______________________
-
-proc tool::BeforeRun {} {
-  # Runs commands before running "Tools/Run"
-
-  namespace upvar ::alited al al
-  Runs $al(MC,beforerun) $al(prjbeforerun)
-}
-#_______________________
-
-proc tool::ComForced {} {
-  # Checks whether a forced command is set.
-
-  return [expr {[string trim $::alited::al(comForce)] ni {- {}}}]
+  Runs "$al(MC,afterstart) :" $al(afterstart)
 }
 
 ## ________________________ run tcl source _________________________ ##
@@ -666,7 +534,7 @@ proc tool::RunTcl {{runmode ""}} {
   #   runmode - mode of running (in console or in tkcon)
   # Returns yes if a tcl file was started.
 
-  if {($runmode eq {} && !$alited::al(tkcon,topmost)) || $runmode eq {tkcon}} {
+  if {($runmode eq {} && !$alited::al(prjincons)) || $runmode eq {tkcon}} {
     lassign [RunArgs] ar rf
     set tclfile {}
     catch {  ;# ar & rf can be badly formed => catch
@@ -695,36 +563,29 @@ proc tool::RunTcl {{runmode ""}} {
 proc tool::RunMode {} {
   # Runs Tcl source file with choosing the mode - in console or in tkcon.
 
-  namespace upvar ::alited al al obDl2 obDl2
-  variable focusedBut
-  set fname  [file tail [alited::bar::FileName]]
-  if {![alited::file::IsTcl $fname] || [ComForced]} {
-    _run
-    return
-  }
-  if {![info exists al(RES,RunMode)] || ![string match *10 $al(RES,RunMode)]} {
-    if {$focusedBut eq {}} {
-      if {$al(tkcon,topmost)} {
-        set focusedBut *Other
-      } else {
-        set focusedBut *Terminal
-      }
+  namespace upvar ::alited al al
+  if {![namespace exists ::alited::run]} {
+    namespace eval ::alited {
+      source [file join $alited::SRCDIR run.tcl]
     }
-    set al(RES,RunMode) [$obDl2 misc ques $al(MC,run) \
-      "\n $al(MC,run) $fname \n" \
-      [list $al(MC,inconsole) Terminal $al(MC,intkcon) Other Cancel 0] \
-      1 -focus $focusedBut -ch $al(MC,noask)]
   }
-  switch -glob $al(RES,RunMode) {
-    Terminal* {
-      _run {} terminal
-      set focusedBut *Terminal
-      }
-    Other* {
-      _run {} tkcon
-      set focusedBut *Other
-      }
+  if {![alited::run::RunDlg]} return
+  if {![alited::file::IsTcl [alited::bar::FileName]]} {
+    set in {}
+  } elseif {$al(prjincons)} {
+    set in terminal
+  } else {
+    set in tkcon
   }
+  _run {} $in
+}
+#_______________________
+
+proc tool::ComForced {} {
+  # Checks whether a forced command is set.
+
+  return [expr {$::alited::al(comForceCh) && \
+    [string trim $::alited::al(comForce)] ni {- {}}}]
 }
 
 ## ________________________ run/close _________________________ ##
@@ -859,36 +720,48 @@ proc tool::_run {{what ""} {runmode ""}} {
       }
       set ::alited::pID 0
     }
-    BeforeRun
     set fnameCur [alited::bar::FileName]
+    set com [string map [list \
+      %f $fnameCur %d [file dirname $fnameCur] %pd $al(prjroot)] $al(prjbeforerun)]
+    Runs {} $com
     if {[alited::file::IsTcl $fnameCur]} CheckTcl
     if {[ComForced]} {
-      ::alited::Message "$al(MC,run): $al(comForce)" 3
-      set tc {}
-      set tw %t
-      catch {
-        if {[set fname [lindex $al(comForce) 0]] eq {%f}} {
-          set fname $fnameCur
-        }
-        if {[alited::file::IsTcl $fname]} {
-          if {!$al(tkcon,topmost)} {
-            set tc \
-              "tc=[alited::Tclexe] [alited::tool::tkconPath] [alited::tool::tkconOptions]"
-            set tw {}
-          } else {
-            set tw "%t [alited::Tclexe] "
-          }
-        }
-      }
-      e_menu ee=$tw[string map [list \" \\\" \\ \\\\] $al(comForce)] \
-        f=[string map [list \\ \\\\] [alited::bar::FileName]] \
-        pd=[string map [list \\ \\\\] $al(prjroot)] $tc
+      Run_in_e_menu $al(comForce) $fnameCur
       return
     }
     if {[RunTcl $runmode]} return
     set opts {EX=1 PI=1}
   }
   e_menu {*}$opts tc=[alited::Tclexe]
+}
+#_______________________
+
+proc tool::Run_in_e_menu {com {fnameCur ""}} {
+  # Runs a command with e_menu application
+  #   com - the command
+  #   fnameCur - currently edited file
+
+  namespace upvar ::alited al al
+  ::alited::Message "$al(MC,run): $com" 3
+  set tc {}
+  set tw %t
+  catch {
+    if {[set fname [lindex $com 0]] eq {%f}} {
+      set fname $fnameCur
+    }
+    if {[alited::file::IsTcl $fname]} {
+      if {!$al(prjincons)} {
+        set tc \
+          "tc=[alited::Tclexe] [alited::tool::tkconPath] [alited::tool::tkconOptions]"
+        set tw {}
+      } else {
+        set tw "%t [alited::Tclexe] "
+      }
+    }
+  }
+  if {$fnameCur ne {}} {set fnameCur f=[string map [list \\ \\\\] $fnameCur]}
+  e_menu ee=$tw[string map [list \" \\\" \\ \\\\] $com] \
+    pd=[string map [list \\ \\\\] $al(prjroot)] $tc {*}$fnameCur
 }
 #_______________________
 
@@ -899,4 +772,3 @@ proc tool::_close {{fname ""}} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

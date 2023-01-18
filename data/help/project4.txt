@@ -1,0 +1,24 @@
+ <b>Commands</b> tab allow you to set command(s)
+ that would be applied to a <b>current project</b>.
+
+ Also, you can set <b>general commands</b> for all
+ projects of the project list.
+
+ These commands can be OS commands or executables,
+ for example:
+   rm log.txt
+   echo ----------------
+   fossil extras
+
+ All commands are executed in an appropriate project
+ directory, i.e. the above commands will be in fact:
+   <b>cd "a-project-root-dir"</b>
+   rm log.txt
+   echo ----------------
+   fossil extras
+
+ Check the checkbuttons <b>"Run it"</b> to activate
+ the commands.
+
+ Click <b>"Run"</b> button to execute the checked
+ commands. The settings are saved after the click.

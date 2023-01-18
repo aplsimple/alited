@@ -53,8 +53,9 @@
 <li class="level3"><div class="li"><a href="#projects1">"Projects" dialogue</a></div></li>
 <li class="level3"><div class="li"><a href="#projects2">Project options</a></div></li>
 <li class="level3"><div class="li"><a href="#projects3">Project templates</a></div></li>
-<li class="level3"><div class="li"><a href="#projects4">File tree</a></div></li>
-<li class="level3"><div class="li"><a href="#projects5">Switching projects</a></div></li>
+<li class="level3"><div class="li"><a href="#projects4">Project commands</a></div></li>
+<li class="level3"><div class="li"><a href="#projects5">File tree</a></div></li>
+<li class="level3"><div class="li"><a href="#projects6">Switching projects</a></div></li>
 </ul>
 </li>
 <li class="level2"><div class="li"><a href="#search">Search</a></div>
@@ -67,6 +68,7 @@
 <li class="level2"><div class="li"><a href="#tools">Tools</a></div>
 <ul>
 <li class="level3"><div class="li"><a href="#runtool">Run tool</a></div></li>
+<li class="level3"><div class="li"><a href="#runme">"Tools / Run..."</a></div></li>
 <li class="level3"><div class="li"><a href="#helptool">Tcl/Tk help tool</a></div></li>
 <li class="level3"><div class="li"><a href="#checktool">Check Tcl tool</a></div></li>
 <li class="level3"><div class="li"><a href="#custtool">Customizing tools</a></div></li>
@@ -425,7 +427,7 @@ Also, you can switch configurations "on fly", choosing <em>Setup / Configuration
 </p>
 
 <p>
-By default, <a href="#tools">Tools</a> of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> are created per a configuration, in a separate subdirectory handled by <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a>. With <em>Preferences / Tools / e_menu</em> setting you can redefine <em>e_menu</em> directory in any configuration, e.g. to have it common for all.
+By default, <a href="#tools">Tools</a> of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> are created per a configuration, in a separate subdirectory of menus handled by <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a>. With <em>Preferences / Tools / e_menu</em> setting you can redefine the directory of  <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a>'s menus, e.g. to have it common for all configurations.
 </p>
 
 <p>
@@ -899,63 +901,103 @@ However convenient, this practice is not recommended for projects with "large" f
 </p>
 
 <p>
- "Templates" tab of "Projects" dialogue allows to set a directory/file tree that will be used
- at creating a project with <i>Create a project by template</i> button.
+"Templates" tab of "Projects" dialogue allows to set a directory/file tree that will be used
+at creating a project with <i>Create a project by template</i> button.
 </p>
 <p>
- The template is set in the text field, by these simple rules:
+The template is set in the text field, by these simple rules:
 <ul>
-   <li> the lines contain directory / file names; blank lines are ignored;
-   special characters in the names (", /, \, ~, *, ? etc.) aren't allowed</li>
-</ul>
-<ul>
-   <li> <i>file names</i> are the names that satisfy one of -nocase patterns:</li>
-  <ul>
-  <li> <i>license*, licence*</i> (e.g. License.md, LICENSE, licence.txt etc.)</li>
-  <li> <i>readme*</i> (e.g. Readme.md, README, readme.txt etc.)</li>
-  <li> <i>changelog*</i> (e.g. Changelog.md, CHANGELOG, changelog.txt etc.)</li>
-</ul>
+<li> the lines contain directory / file names; blank lines are ignored;
+special characters in the names (", /, \, ~, *, ? etc.) aren't allowed</li>
 </ul>
 <ul>
-   <li> if a <i>license</i> file is found in a current project, it will be
-   copied to a templated project; other files will be created blank</li>
+<li> <i>file names</i> are the names that satisfy one of -nocase patterns:</li>
+<ul>
+<li> <i>license*, licence*</i> (e.g. License.md, LICENSE, licence.txt etc.)</li>
+<li> <i>readme*</i> (e.g. Readme.md, README, readme.txt etc.)</li>
+<li> <i>changelog*</i> (e.g. Changelog.md, CHANGELOG, changelog.txt etc.)</li>
+</ul>
 </ul>
 <ul>
-   <li> all of other names are directory names</li>
+<li> if a <i>license</i> file is found in a current project, it will be
+copied to a templated project; other files will be created blank</li>
 </ul>
 <ul>
-   <li> first non-empty line of the template sets an initial indent,
-   the following lines must be indented at least by this indent</li>
+<li> all of other names are directory names</li>
 </ul>
 <ul>
-   <li> first additional indent means an indent to set subdirectories;
-   the following subdirectories must be equally indented by this indent</li>
+<li> first non-empty line of the template sets an initial indent,
+the following lines must be indented at least by this indent</li>
 </ul>
 <ul>
-   <li> the directories and files will be created under the project's root</li>
+<li> first additional indent means an indent to set subdirectories;
+the following subdirectories must be equally indented by this indent</li>
 </ul>
-</p>
-<p>
-
- Use <i>Default</i> button to set the default template of dir/file tree.
- This button shows also an example of project template.
+<ul>
+<li> the directories and files will be created under the project's root</li>
+</ul>
 </p>
 <p>
 
- Use <i>Create a project by template</i> button for templating projects.
+Use <i>Default</i> button to set the default template of dir/file tree.
+This button shows also an example of project template.
 </p>
 <p>
 
- Use <i>Project directory</i> button to view the result of templating.
+Use <i>Create a project by template</i> button for templating projects.
 </p>
 <p>
- A current template is saved in the <i>Template</i> combobox after running
- <i>Create a project by template</i> (up to 16 templates may be saved).
+
+Use <i>Project directory</i> button to view the result of templating.
+</p>
+<p>
+A current template is saved in the <i>Template</i> combobox after running
+<i>Create a project by template</i> (up to 16 templates may be saved).
 </p>
 
 
 <br><p>
-<h3 id="projects4"><i>File tree</i></h3>
+<h3 id="projects4"><i>Project commands</i></h3>
+</p>
+
+<p>
+In <i>Projects</i> dialogue, <i>Commands</i> tab allow you to set command(s)
+ that would be applied to a current project.
+</p>
+<p>Also, you can set general commands for all projects of the project list. These might be commands:
+<ul>
+<li>to clear projects of trash</li>
+<li>to control projects' consistencies</li>
+<li>to check projects for SCM status</li>
+<li>to synchronize projects</li>
+</ul>
+</p>
+<p>
+These commands can be OS commands or executables,for example:
+<pre class="code">
+rm log.txt
+echo ----------------
+fossil extras
+</pre>
+</p>
+<p>
+All commands are executed in an appropriate project directory, i.e. the above commands will be in fact:
+<pre class="code">
+cd "a-project-root-dir"
+rm log.txt
+echo ----------------
+fossil extras
+</pre>
+</p>
+<p>
+Check the checkbuttons "Run it" to activate the commands.
+</p>
+<p>
+Click "Run" button to execute the checked commands. The settings are saved after the click.
+</p>
+
+<br><p>
+<h3 id="projects5"><i>File tree</i></h3>
 </p>
 
 <p>
@@ -987,7 +1029,7 @@ There are also "Create File/Directory" options of the file tree available throug
 </p>
 
 <br><p>
-<h3 id="projects5"><i>Switching projects</i></h3>
+<h3 id="projects6"><i>Switching projects</i></h3>
 </p>
 
 <p>
@@ -1190,7 +1232,7 @@ To find a word or a selection in a directory, hit the appropriate button of the 
 </p>
 
 <p>
-Other "grep" facilities are available in "e_menu". Run it with F4 key and hit "Search all" item.
+Other "grep" facilities are available in <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tool. Run it with F4 key and hit "Search all" item.
 </p><b>~~~</b>
 
 <p>
@@ -1265,7 +1307,7 @@ The <i>Run</i> tool tries to run an application chosen as default for the curren
 </p>
 
 <p>
-But <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> recognizes special comments like:
+But <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> recognizes special comments like:
 </p>
 
 <p><pre class="code"><i><font color=#4b5d50>#RUNF: file.tcl args</font></i>
@@ -1295,7 +1337,7 @@ So, it's possible to run a main Tcl script at editing any Tcl script of an appli
 </p>
 
 <p>
-If you want to run a script "as is" disregarding those #RUNF1: / #EXEC1:, just call <i>e_menu</i> tool and choose "Run me" item. For non-Tcl files, default run modes are in fact defined in menu.mnu of <i>e_menu</i>.
+If you want to run a script "as is" disregarding those #RUNF1: / #EXEC1:, just call <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tool and choose "Run me" item. Or press F4 key twice. For non-Tcl files, default run modes are in fact defined in <i>menu.mnu</i> ("main menu").
 </p>
 
 <p>
@@ -1305,7 +1347,7 @@ If you want to run a script "as is" disregarding those #RUNF1: / #EXEC1:, just c
 <li>running a file inside Tkcon application</li>
 </ul>
 
-This is customized in "Preferences / Tools". Note, that "in console" mode means also  <i>Tkcon</i> tool running as a topmost application.
+This is customized in <a href=#runme>"Tools / Run..."</a> menu item.
 </p>
 <p>
 You might prefer to run applications inside Tkcon. In this case you get a profit of introspecting your code in Tkcon.
@@ -1317,12 +1359,6 @@ Also, Tkcon window would display puts' debug messages in MS Windows even when yo
 On MS Windows, if you have a fully deployed Tcl/Tk 8.6.10+, the default path to its <i>tclsh.exe</i> is highly recommended. And, on the contrary, <i>wish.exe</i> and
 <i>tclkit.exe</i> aren't recommended, for the reason mentioned above. To install Tcl/Tk 8.6.10+ on MS Windows, use <a href="http://www.bawt.tcl3d.org/download.html#tclbi">Bawt</a> or <a href="https://www.magicsplat.com/tcl-installer">Magicsplat</a> distribution.
 
-</p>
-<p>
-"Run" icon uses the default mode customized in "Preferences / Tools". But when a file is run by "Tools / Run..." menu item or by F5 key, alited offers to run the file either in console or in Tkcon.
-</p>
-<p>
-It's good to have both of these modes with their pros and contras. For example mostly running Tcl scripts in console with Tcl full error messages, yet using Tkcon introspection from time to time.
 </p>
 
 <p>
@@ -1347,16 +1383,71 @@ There are templates to introspect variables:
 There is a template to enter a command, in order to run it immediately in an appropriate place of your application! For example, you can change a local variable to see how your app will behave with the new value.
 </p>
 
+
+<br>
 <p>
-The "Setup / Before Run" menu item allows setting command(s) to be executed before <i>Run</i> tool. This setting is per a project (some specific projects may need it).
+<h3 id=runme><i>"Tools / Run..." menu item</i></h3>
+</p>
+<p>
+ A current Tcl script (file.tcl) is run in <i>console</i> or <i>Tkcon</i>.
 </p>
 
 <p>
-At last, in the "Before Run" dialogue, you can set a command to be run "forcedly" by <i>Run</i> tool - throughout the project, independently on file extensions, RUNF1: comments etc. The command will be executed in console (or in Tkcon if the command begins with %f or file.tcl).
+ <b>1.</b> You can set a command that is run independently on a type of
+ current file. It can be OS command or executable file. It's run in console.
 </p>
 
 <p>
-<b>Note</b>: Even with this most radical setting, you can run <i>e_menu</i> tool and hit "Run me" to run a current file in its "normal" mode. Or just press F4 key twice.
+ If a Tcl file has to be run, you can set the command with or without
+ <i>tclsh</i>, <i>wish</i>, <i>tclkit</i> etc., for example:
+<pre class="code">/usr/bin/tclsh /home/me/myPG/src/file.tcl LOG=~/TMP/log.txt
+/home/me/myPG/src/file.tcl LOG=~/TMP/log.txt
+</pre>
+</p>
+
+<p>
+ The command can include wildcards:
+ <ul>
+   <li><i>%f</i>  - current file's name</li>
+   <li><i>%d</i>  - current file's directory</li>
+   <li><i>%pd</i> - project's directory</li>
+ </ul>
+ Use the popup menu to remove a command from the combobox.
+</p>
+
+<p>
+ <b>2.</b> For <i>"By command #RUNF:"</i> you write comments in a file, like:
+<pre class="code"><i><font color=#4b5d50>#RUNF: file.tcl arg1 arg2 arg3</font></i>
+</pre>
+ meaning that <i>tclsh file.tcl arg1 arg2 arg3</i> will be run on the file.
+</p>
+
+<p>
+ These two ways of running Tcl are selected with <i>"Use it"</i> switches and
+ are useful for two different type of projects:
+ <ul>
+   <li> <i>monolith</i>: you have a lot of files that need few commands to test
+     and debug the whole application (<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is an example)</li>
+   <li> <i>heterogeneous</i>: a project contains a lot of files that need to
+     be tested and debugged with their own commands</li>
+ </ul>
+</p>
+
+<p>
+Anyhow, "Run me" item of <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tool allows running a current file
+ in its "normal" mode by an associated application. Press F4 twice for this.
+</p>
+
+<p>
+ <b>3.</b> Also, you can enter commands to be run before running a current file.
+ It can be necessary <i>for a specific project</i>, sort of initialization.
+</p>
+
+<p>
+ These commands can be OS commands or executables, for example:
+<pre class="code"><b><font color=#3a6797>cd</font></b> ~/TMP
+rm log.txt
+</pre>
 </p>
 
 
@@ -1368,7 +1459,7 @@ At last, in the "Before Run" dialogue, you can set a command to be run "forcedly
 <p>
 In fact, <i>Tcl/Tk help</i> tool is provided by <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> application. Namely:
 <ul>
-<li>"Tcl/Tk help" is one of e_menu's ornamental items (HELP)</li>
+<li>"Tcl/Tk help" is one of <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a>'s ornamental items (HELP)</li>
 </ul>
 </p>
 
@@ -1461,11 +1552,11 @@ or this way:
 </p>
 
 <p>
-<b>Note</b>: The checking for consistencies is executed for a current proc / method before "Run the file" automatically! If found, they are reported about in the status bar, with a bell.
+<b>Note</b>: At opening "Check Tcl" dialogue, the checking for consistencies is executed for a <i>current file</i> automatically! Also, the checking for consistencies is executed for a <i>current proc / method</i> before "Run the file" automatically! If found, errors are reported about in the status bar, with a bell.
 </p>
 
 <p>
-It's very good to eliminate all inconsistencies in a project - this would greatly help with eliminating the errors and omissions, however trifling they seem to be.
+It's very good to eliminate <b>all</b> inconsistencies in a project - this would greatly help with eliminating the errors and omissions, however trifling they seem to be.
 </p>
 
 
@@ -1502,7 +1593,7 @@ Empty items are ignored. The list of items is scrollable.
 </p>
 
 <p>
-To choose a tool, click its button at the right. Any non-menu items can be chosen directly while navigating through menus. If you want to choose a whole submenu, right click on this submenu and choose "Select" from a popup menu. Note: the main menu is run by <i>e_menu</i> tool.
+To choose a tool, click its button at the right. Any non-menu items can be chosen directly while navigating through menus. If you want to choose a whole submenu, right click on this submenu and choose "Select" from a popup menu. Note: the main menu is run by <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tool.
 </p>
 
 <p>
@@ -1545,8 +1636,8 @@ In the template text, use the following wildcards:
 <li><code>%n</code> - current file's root name (namespace)</li>
 <li><code>%p</code> - current procedure/method's name</li>
 <li><code>%a</code> - current procedure/method's arguments</li>
-<li><code>%A</code> - alited's directory</li>
-<li><code>%M</code> - e_menu menus directory</li>
+<li><code>%A</code> - directory of <a href="#" class="wikilink1" title="Table of Contents">alited</a></span></li>
+<li><code>%M</code> - directory of menus used by <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a></li>
 </ul>
 </p>
 
@@ -1798,7 +1889,7 @@ The  <span class="curid"><a href="#" class="wikilink1" title="Table of Contents"
 </p>
 
 <p>
-All of the dialogues contain "Help" button, at their bottom left corners. The button displays a context help describing a current dialogue or its current tab.
+All of the dialogues contain "Help" button, at their bottom left corners. The button displays a context help describing a current dialogue or its current tab. The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s helps are rather comprehensive.
 </p>
 
 <p>

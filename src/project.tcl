@@ -12,6 +12,7 @@ namespace eval project {
 
   # "Projects" dialogue's path
   variable win $::alited::al(WIN).diaPrj
+  variable popm $win.popupmenu
 
   # list of projects
   variable prjlist [list]
@@ -327,12 +328,31 @@ proc project::CurrProject {} {
 
 proc project::SaveNotes {} {
   # Saves a file of notes, for a current item of project list.
+  # Also saves commands of Commands tab.
 
-  namespace upvar ::alited obDl2 obDl2
+  namespace upvar ::alited al al obDl2 obDl2
   variable klnddata
   if {[set prj $klnddata(SAVEPRJ)] ne {}} {
     set fnotes [NotesFile $prj]
     set fcont [[$obDl2 TexPrj] get 1.0 {end -1c}]
+    for {set i 1} {$i<=$al(cmdNum)} {incr i} {
+      set com [string trim $al(PTP,run$i)]
+      set al(PTP,run$i) {}
+      if {$com ne {}} {
+        incr irun   ;# starting commands from #1
+        append fcont \nrun$irun@$al(PTP,runch$i)@$com
+        set al(PTP,run$i) $com
+      }
+    }
+    for {set i 1} {$i<=$al(cmdNum)} {incr i} {
+      set com [string trim $al(PTP,com$i)]
+      set al(PTP,com$i) {}
+      if {$com ne {}} {
+        incr irun   ;# starting commands from #1
+        append fcont \nrun$irun@$al(PTP,comch$i)@@$com
+        set al(PTP,com$i) $com
+      }
+    }
     ::apave::writeTextFile $fnotes fcont 0 0
   }
 }
@@ -437,33 +457,78 @@ proc project::KlndBorderText {{clr {}}} {
 
 # ________________________ GUI helpers _________________________ #
 
+proc project::ReadNotes {prj} {
+  # Reads notes of a project and commands for Commands tab.
+  #   prj - project's name
+
+  namespace upvar ::alited al al obDl2 obDl2
+  for {set i 1} {$i<=$al(cmdNum)} {incr i} {
+    set al(PTP,run$i) [set al(PTP,com$i) {}]
+    set al(PTP,runch$i) [set al(PTP,comch$i) 0]
+  }
+  set al(PTP,chbClearRun) 0
+  set al(PTP,chbClearCom) 0
+  set irun [set icom 0]
+  set wtxt [$obDl2 TexPrj]
+  $wtxt delete 1.0 end
+  set fnotes [NotesFile $prj]
+  if {[file exists $fnotes]} {
+    set cont [::apave::readTextFile $fnotes]
+    if {[set ir [string first run1@ $cont]]>-1} {
+      # get commands for Commands tab (project's and common)
+      foreach com [split [string range $cont $i end] \n] {
+        lassign [split $com @] run ch com1 com2
+        if {$com1 ne {}} {
+          set al(PTP,run[incr irun]) $com1
+          if {$ch} {set al(PTP,runch$irun) [set al(PTP,chbClearRun) 1]}
+        } elseif {$com2 ne {}} {
+          set al(PTP,com[incr icom]) $com2
+          if {$ch} {set al(PTP,comch$icom) [set al(PTP,chbClearCom) 1]}
+        }
+      }
+      set cont [string range $cont 0 $ir-1]
+    }
+    set cont [string trim $cont]
+    if {$cont ne {}} {$wtxt insert end $cont}
+  }
+  $wtxt edit reset; $wtxt edit modified no
+}
+#_______________________
+
+proc project::SelectedPrj {item} {
+  # Gets a project name of selected item.
+  #   item - selected item
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable prjlist
+  variable prjinfo
+  set tree [$obDl2 TreePrj]
+  if {[string is digit $item]} {  ;# the item is an index
+    if {$item<0 || $item>=[llength $prjlist]} {return {}}
+    set prj [lindex $prjlist $item]
+    set item $prjinfo($prj,ID)
+  } elseif {![$tree exists $item]} {
+    return {}
+  }
+  set isel [$tree index $item]
+  if {$isel<0 || $isel>=[llength $prjlist]} {return {}}
+  return [list $tree $item [lindex $prjlist $isel]]
+}
+#_______________________
+
 proc project::Select {{item ""}} {
   # Handles a selection in a list of projects.
 
   namespace upvar ::alited al al obDl2 obDl2 OPTS OPTS
-  variable prjlist
   variable prjinfo
   variable klnddata
+  variable popm
+  if {[winfo exists $popm]} return
   if {$item eq {}} {set item [Selected item no]}
   if {$item ne {}} {
-    set tree [$obDl2 TreePrj]
-    if {[string is digit $item]} {  ;# the item is an index
-      if {$item<0 || $item>=[llength $prjlist]} return
-      set prj [lindex $prjlist $item]
-      set item $prjinfo($prj,ID)
-    } elseif {![$tree exists $item]} {
-      return
-    }
-    set isel [$tree index $item]
-    if {$isel<0 || $isel>=[llength $prjlist]} return
-    set prj [lindex $prjlist $isel]
-    set fnotes [NotesFile $prj]
-    set wtxt [$obDl2 TexPrj]
-    $wtxt delete 1.0 end
-    if {[file exists $fnotes]} {
-      $wtxt insert end [::apave::readTextFile $fnotes]
-    }
-    $wtxt edit reset; $wtxt edit modified no
+    lassign [SelectedPrj $item] tree item prj
+    if {$prj eq {}} return
+    ReadNotes $prj
     lassign [SortRems [ReadRems $prj]] dmin prjinfo($prj,prjrem)
     foreach opt $OPTS {
       if {[catch {set al($opt) $prjinfo($prj,$opt)} e]} {
@@ -484,11 +549,13 @@ proc project::Select {{item ""}} {
     }
     $tree see $item
     $tree focus $item
-#    alited::Message2 {}
     ::klnd::blinking no
     set klnddata(SAVEDATE) {}
     catch {after cancel $klnddata(AFTERKLND)}
     set klnddata(AFTERKLND) [after 200 alited::project::KlndUpdate]
+    [$obDl2 Labprj] configure -text [msgcat::mc {For project}]\ $al(prjname)
+    set tip [string map [list %f "$al(MC,prjName) $al(prjname)"] $al(MC,alloffile)]
+    ::baltip tip [$obDl2 ChbClearRun] $tip
   }
 }
 #_______________________
@@ -789,6 +856,43 @@ proc project::TipOnFile {idx} {
   set item [$lbx get $idx]
   return [alited::file::FileStat $item]
 }
+#_______________________
+
+proc project::PopupMenu {x y X Y} {
+  # Opens a popup menu in the project list.
+  #   x - x-coordinate to identify an item
+  #   y - y-coordinate to identify an item
+  #   X - x-coordinate of the click
+  #   Y - x-coordinate of the click
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable win
+  variable popm
+  set tree [$obDl2 TreePrj]
+  set ID [$tree identify item $x $y]
+  set region [$tree identify region $x $y]
+  if {![$tree exists $ID] || $region ni {tree cell}} {
+    return  ;# only tree items are processed
+  }
+  if {[$tree selection] ne $ID} {
+    $tree selection set $ID
+  }
+  catch {destroy $popm}
+  menu $popm -tearoff 0
+  $popm add command -label $al(MC,prjadd) \
+    -command ::alited::project::Add {*}[$obDl2 iconA add]
+  $popm add command -label $al(MC,prjchg) \
+    -command ::alited::project::Change {*}[$obDl2 iconA change]
+  $popm add command -label $al(MC,prjdel1) \
+    -command ::alited::project::Delete {*}[$obDl2 iconA delete]
+  $popm add separator
+  $popm add command -label $al(MC,CrTemplPrj) \
+    -command ::alited::project::Template {*}[$obDl2 iconA plus]
+  $popm add command -label $al(MC,ViewDir) \
+    -command ::alited::project::ViewDir {*}[$obDl2 iconA OpenFile]
+  $obDl2 themePopup $popm
+  tk_popup $popm $X $Y
+}
 
 # ________________________ Buttons for project list _________________________ #
 
@@ -1088,6 +1192,7 @@ proc project::Help {} {
   switch -glob [$win.fra.fraR.nbk select] {
     *f2 {set curTab 2}
     *f3 {set curTab 3}
+    *f4 {set curTab 4}
     default {set curTab {}}
   }
   alited::Help $win $curTab
@@ -1292,6 +1397,77 @@ proc project::ViewDir {} {
   set res [$obDl2 chooser tk_getOpenFile ::alited::TMP -initialdir $al(prjroot) -title $al(MC,ViewDir)]
   if {$res ne {}} {::apave::openDoc $res}
   unset ::alited::TMP
+}
+#_______________________
+
+proc project::RunComs {} {
+  # Handles running commands of Commands tab.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable win
+  variable prjlist
+  variable prjinfo
+  SaveNotes
+  set comtorun {}
+  set comcnt 0
+  # collect commands executed on the current project
+  if {[info exists prjinfo($al(prjname),prjroot)]} {
+    set dir $prjinfo($al(prjname),prjroot)
+    for {set i 1} {$i<=$al(cmdNum)} {incr i} {
+      if {$al(PTP,runch$i) && $al(PTP,run$i) ne {}} {
+        if {!$comcnt} {
+          append comtorun "cd $dir\n"
+        }
+        append comtorun "$al(PTP,run$i)\n"
+        incr comcnt
+      }
+    }
+  }
+  # collect general commands executed per project
+  foreach prj $prjlist {
+    set dir $prjinfo($prj,prjroot)
+    set com {}
+    for {set i 1} {$i<=$al(cmdNum)} {incr i} {
+      if {$al(PTP,comch$i) && $al(PTP,com$i) ne {}} {
+        if {$com eq {}} {
+          append com "cd $dir\n"
+        }
+        append com "$al(PTP,com$i)\n"
+        incr comcnt
+      }
+    }
+    append comtorun $com
+  }
+  if {$comtorun eq {}} {
+    focus [$obDl2 Entrun1]
+    bell
+  } else {
+    set msg [msgcat::mc {%n commands will be executed!}]
+    set msg [string map [list %n $comcnt] $msg]
+    if {[alited::msg yesno ques $msg YES -centerme $win]} {
+      alited::tool::Run_in_e_menu $comtorun
+    }
+  }
+}
+#_______________________
+
+proc project::ChecksRun {} {
+  # Sets checks of "Commands / Run for project".
+
+  namespace upvar ::alited al al
+  for {set i 1} {$i<=$::alited::al(cmdNum)} {incr i} {
+    set alited::al(PTP,runch$i) $al(PTP,chbClearRun)
+  }
+}
+#_______________________
+
+proc project::ChecksCom {} {
+  # Sets checks of "Commands / Run for all".
+
+  namespace upvar ::alited al al
+  for {set i 1} {$i<=$::alited::al(cmdNum)} {incr i} {
+    set alited::al(PTP,comch$i) $al(PTP,chbClearCom)
+  }
 }
 
 # ________________________ Template procs _________________________ #
@@ -1509,13 +1685,14 @@ proc project::MainFrame {} {
 
   return {
     {fraTreePrj - - 10 1 {-st nswe -pady 4 -rw 1}}
-    {.TreePrj - - - - {pack -side left -expand 1 -fill both} {-h 16 -show headings -columns {C1} -displaycolumns {C1}}}
+    {.TreePrj - - - - {pack -side left -expand 1 -fill both} {-h 16 -show headings -columns {C1} -displaycolumns {C1} -popup {alited::project::PopupMenu %x %y %X %Y}}}
     {.sbvPrjs + L - - {pack -side left -fill both}}
     {fraR fraTreePrj L 10 1 {-st nsew -cw 1 -pady 4}}
     {fraR.nbk - - - - {pack -side top -expand 1 -fill both} {
       f1 {-text {$al(MC,info)}}
       f2 {-text {$al(MC,prjOptions)}}
       f3 {-text Templates}
+      f4 {-text Commands}
       -traverse yes -select f1
     }}
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
@@ -1530,7 +1707,7 @@ proc project::MainFrame {} {
     {fraB2 + T 1 2 {-st nsew} {-padding {2 2}}}
     {.ButHelp - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,help)} -tip F1 -command ::alited::project::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
-    {.butOK - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,select)} -command ::alited::project::Ok}}
+    {.ButOK - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,select)} -command ::alited::project::Ok}}
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::project::Cancel}}
   }
 }
@@ -1559,9 +1736,9 @@ proc project::Tab1 {} {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labName - - 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,prjName)}}}
-    {.EntName + L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 40}}
+    {.EntName + L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 50}}
     {.labDir .labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
-    {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 40 -validate all -validatecommand alited::project::ValidateDir}}
+    {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 50 -validate all -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 + T 2 1 {-st nsew -rw 1 -cw 99}}
     {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext "*.texKlnd *.entdir" -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
@@ -1572,7 +1749,7 @@ proc project::Tab1 {} {
     {fra3.fra - - - - {pack -fill both -expand 1} {}}
     {.seh2 - - - - {pack -side top -fill x}}
     {.too - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::project::klnddata(toobar)}}}
-    {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext "$alited::project::win.fra.fraB2.butHelp *.texPrj" -w 4 -h 8 -tip {-BALTIP {$alited::al(MC,prjTtext)} -MAXEXP 1}}}
+    {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext {alited::Tnext *.texPrj} -w 4 -h 8 -tip {-BALTIP {$alited::al(MC,prjTtext)} -MAXEXP 1}}}
 }
 }
 #_______________________
@@ -1601,7 +1778,7 @@ proc project::Tab2 {} {
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
-    {.swiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite)}}
+    {.swiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite) -tabnext alited::Tnext}}
     {.labFlist .labTrWs T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
     {fraFlist + T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}
@@ -1622,7 +1799,56 @@ proc project::Tab3 {} {
     {fraTlist + T 1 8 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.TexTemplate - - - - {pack -side left -fill both -expand 1} {-h 20 -w 40 -tabnext "*.butTplDef *.cbxTpl" -wrap none}}
     {.sbv + L - - {pack -side left}}
-    {butTplDef fraTlist T 1 1 {-st w -padx 4 -pady 4} {-t Default -com alited::project::TplDefault}}
+    {butTplDef fraTlist T 1 1 {-st w -padx 4 -pady 4} {-t Default -com alited::project::TplDefault -tabnext alited::Tnext}}
+  }
+}
+#_______________________
+
+proc project::Tab4 {} {
+  # Creates Commands tab of "Project".
+
+  namespace upvar ::alited al al
+  set al(PTP,chbClearRun) 0
+  set al(PTP,chbClearCom) 0
+  set al(PTP,chbClearTip) [string map [list %f [msgcat::mc General]] $al(MC,alloffile)]
+  return {
+    {v_ - - 1 3}
+    {Labprj - - 1 2 {} {-foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {ChbClearRun labprj L 1 1 {-st w} {-var alited::al(PTP,chbClearRun) -com alited::project::ChecksRun -takefocus 0}}
+    {tcl {
+        set prt labprj
+        set ent Entrun
+        for {set i 1} {$i<=$::alited::al(cmdNum)} {incr i} {
+          set lwid "lab$i $prt T 1 1 {-st nse} {-t {$alited::al(MC,com) $i:}}"
+          %C $lwid
+          set lwid "$ent$i lab$i L 1 1 {-cw 1 -st ew} {-tvar alited::al(PTP,run$i)}"
+          %C $lwid
+          set lwid "chb$i $ent$i L 1 1 {} {-t {Run it} -var alited::al(PTP,runch$i) -takefocus 0}"
+          %C $lwid
+          set prt lab$i
+          set ent ent
+        }
+        set lwid {seh1 lab5 T 1 3}
+        %C $lwid
+        set lwid {labcom seh1 T 1 2 {} {-t General -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+        %C $lwid
+        set lwid {chbClearCom labcom L 1 1 {-st w} {-var alited::al(PTP,chbClearCom) -com alited::project::ChecksCom -takefocus 0 -tip {$al(PTP,chbClearTip)}}}
+        %C $lwid
+        set prt labcom
+        for {set i 1} {$i<=$::alited::al(cmdNum)} {incr i} {
+          set lwid "labc$i $prt T 1 1 {-st nse} {-t {$alited::al(MC,com) $i:}}"
+          %C $lwid
+          set lwid "entc$i labc$i L 1 1 {-cw 1 -st ew} {-tvar alited::al(PTP,com$i)}"
+          %C $lwid
+          set lwid "chbc$i entc$i L 1 1 {} {-t {Run it} -var alited::al(PTP,comch$i) -takefocus 0}"
+          %C $lwid
+          set prt labc$i
+        }
+      }
+    }
+    {seh2 labc5 T 1 3}
+    {h_ seh2 T 1 1}
+    {butRun h_ L 1 2 {-st ew} {-t Run -com alited::project::RunComs -tip {$alited::al(MC,saving) & $alited::al(MC,run)} -tabnext alited::Tnext}}
   }
 }
 
@@ -1646,7 +1872,8 @@ proc project::_create {} {
     $win.fra [MainFrame] \
     $win.fra.fraR.nbk.f1 [Tab1] \
     $win.fra.fraR.nbk.f2 [Tab2] \
-    $win.fra.fraR.nbk.f3 [Tab3]
+    $win.fra.fraR.nbk.f3 [Tab3] \
+    $win.fra.fraR.nbk.f4 [Tab4]
   set tree [$obDl2 TreePrj]
   $tree heading C1 -text $al(MC,projects)
   if {$oldTab ne {}} {
@@ -1723,4 +1950,3 @@ proc project::_run {{checktodo yes}} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

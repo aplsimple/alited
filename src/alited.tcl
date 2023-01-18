@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.6b6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.6b8  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 wm withdraw .
@@ -105,7 +105,7 @@ namespace eval alited {
 
   # project options' names
   variable OPTS [list \
-    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite]
+    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite prjincons]
 
   # project options' values
   set al(prjname) {}      ;# current project's name
@@ -119,6 +119,7 @@ namespace eval alited {
   set al(minredunit) 4    ;# minimum project's unit lines per 1 red bar
   set al(prjbeforerun) {} ;# a command to be run before "Tools/Run"
   set al(prjtrailwhite) 0 ;# "remove trailing whitespaces" flag
+  set al(prjincons) 1     ;# "run Tcl scripts in console" flag
   set al(prjdirign) {.git .bak} ;# ignored subdirectories of project
   foreach _ $OPTS {set al(DEFAULT,$_) $al($_)}
 
@@ -459,6 +460,16 @@ namespace eval alited {
       set tico $ico
     }
     return $tico
+  }
+  #_______________________
+
+  proc Tnext {{wprev ""}} {
+    # Returns "next & prev widgets" for Tab & Shift/Tab keys, just to skip "Help".
+    #   wprev - widget for Shift/Tab
+    # Used by obDl2 objects.
+
+    variable obDl2
+    return [list [$obDl2 ButOK] $wprev]
   }
 
   ## ________________________ Messages _________________________ ##
@@ -914,5 +925,3 @@ if {[info exists ALITED_PORT]} {
   }
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#~EXEC1: /home/apl/PG/github/freewrap/TEST-kit/tclkit-gui-8.6.11 /home/apl/PG/github/alited/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

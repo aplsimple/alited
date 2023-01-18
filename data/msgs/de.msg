@@ -247,9 +247,12 @@ namespace eval ::alited {
     {The project template is empty!} {Die Projektvorlage ist leer!}
     {Incorrect indentation in Project template: %n} {Inkorrekt Einrücken in der Projektvorlage: %n}
     "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project." "Geben Sie einen Verzeichnisbaum für die Projektvorlage ein.\nVersehen Sie ihn mit gleichem Einrücken, um Unterverzeichnisse zu bedeuten.\n\nDateien wie README*, CHANGELOG* werden leer erstellt.\nDateien wie LICENSE* werden aus dem aktuellen Projekt übernommen."
-    "Create a project by template\nas set in Templates tab" "Ein Projekt nach Vorlage erstellen\nwie auf dem Tab Vorlagen festgelegt"
+    {Create a project by template} {Ein Projekt nach Vorlage erstellen}
     {Project directory} {Projektverzeichnis}
-
+    {Command} {Befehl}
+    {Commands} {Befehle}
+    {For project} {Für dem Project}
+    {%n commands will be executed!} {%n Befehle werden ausgeführt!}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -535,15 +538,14 @@ namespace eval ::alited {
     {separator} {Trennezichen}
     {If 'yes', means a separator of the toolbar/menu.} {'ja' bedeutet Trennzeichen in der Werkzeugliste/Menü.}
     {For Start...} {Für dem Starten...}
-    {For Run...} {Für Ausführen...}
-    {For Run} {Für Ausführen}
-    {Commands:} {Befehle:}
-    "\n Enter commands to be run after starting alited.\n They can be Tcl or executables.\n" "\n Geben Sie Befehle ein, die nach dem Starten von alited ausgeführt werden sollen,\n das heißt Tcl Befehle oder ausführbare Dateien.\n"
-    "\n Enter commands to be run before running a current file with \"Tools/Run\".\n They can be Tcl or executables." "\n Eingabe von Befehlen, die ausgeführt werde bevor die aktuelle Datei ausgeführt wird mit \"Werkzeuge/ausführen\",\n das heißt Tcl Befehle oder ausführbare Dateien."
+    " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Geben Sie Befehle ein, die nach dem Starten von alited ausgeführt werden sollen,\n das heißt Tcl Befehle oder ausführbare Dateien:"
+    {By command:} {Durch Befehl:}
+    {By command #RUNF:} {Durch Befehl #RUNF:}
+    {Run it} {Ausführe}
+    { OS or Tcl commands to be run before running a current file:} {OS oder Tcl Befehle, die ausgeführt werde bevor die aktuelle Datei ausgeführt wird:}
     { Also, you can set "forced command" to be run by "Run" tool:} { Ebenfalls, können Sie festlegen "erzwungener Befehl" für Ausführen:}
     {Forcedly:} {Zwangsweise:}
     {e_menu's own} {e_menu eigen}
-    {Also, this makes "tkcon" topmost.} {Also, das macht "tkcon" oben alles.}
     {Select any of run item} {Wähle ein Ausführens Element}
   }
 
@@ -634,4 +636,3 @@ namespace eval ::bartabs {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

@@ -11,8 +11,8 @@
 namespace eval ::alited {
 
   # versions of mnu/ini to update to
-  set al(MNUversion) 1.3.6b6
-  set al(INIversion) 1.3.6b5
+  set al(MNUversion) 1.3.6b7
+  set al(INIversion) 1.3.6b8
   # previous version of alited to update from
   set al(ALEversion) 0.0.1
 
@@ -39,25 +39,26 @@ namespace eval ::alited {
   set al(INI,CS) -1         ;# color scheme
   set al(INI,HUE) 0         ;# tint of color scheme
   set al(INI,ICONS) {middle icons} ;# sets tollbar icons' size as middle
-  set al(INI,save_onselect) no  ;# do saving alited configuration at tab selection
-  set al(INI,save_onadd) no     ;# do saving alited configuration at tab adding
-  set al(INI,save_onmove) no    ;# do saving alited configuration at tab  moving
-  set al(INI,save_onclose) no   ;# do saving alited configuration at tab closing
-  set al(INI,save_onsave) yes   ;# do saving alited configuration at file saving
-  set al(INI,maxfind) 16        ;# size for comboboxes of "Find/Replace" dialogue
-  set al(INI,barlablen) 16      ;# width of tab labels in chars
-  set al(INI,bartiplen) 32      ;# size of tips for tab bar's arrows & of tabs submenu
-  set al(INI,confirmexit) 1     ;# flag "confirm exiting alited"
-  set al(INI,belltoll) 1        ;# flag "bell at warnings"
-  set al(INI,LINES1) 10         ;# number of initial "untouched" lines (to ban moves in it)
-  set al(PTP,text) {}           ;# project template's text
-  set al(PTP,name) {}           ;# current template name
-  set al(PTP,names) [list]      ;# all template names
-  set al(PTP,list) [list]       ;# list of pairs "name contents"
-  set al(moveall) 1             ;# "move all" of color chooser
-  set al(tonemoves) 1           ;# "tone moves" of color chooser
-  set al(checkgeo) {}           ;# geometry of "Check Tcl" window
-  set al(HelpedMe) {}             ;# list of helped windows shown by HelpMe proc
+  set al(INI,save_onselect) no ;# do saving alited configuration at tab selection
+  set al(INI,save_onadd) no    ;# do saving alited configuration at tab adding
+  set al(INI,save_onmove) no   ;# do saving alited configuration at tab  moving
+  set al(INI,save_onclose) no  ;# do saving alited configuration at tab closing
+  set al(INI,save_onsave) yes  ;# do saving alited configuration at file saving
+  set al(INI,maxfind) 16       ;# size for comboboxes of "Find/Replace" dialogue
+  set al(INI,barlablen) 16     ;# width of tab labels in chars
+  set al(INI,bartiplen) 32     ;# size of tips for tab bar's arrows & of tabs submenu
+  set al(INI,confirmexit) 1    ;# flag "confirm exiting alited"
+  set al(INI,belltoll) 1       ;# flag "bell at warnings"
+  set al(INI,LINES1) 10        ;# number of initial "untouched" lines (to ban moves in it)
+  set al(PTP,text) {}          ;# project template's text
+  set al(PTP,name) {}          ;# current template name
+  set al(PTP,names) [list]     ;# all template names
+  set al(PTP,list) [list]      ;# list of pairs "name contents"
+  set al(moveall) 1            ;# "move all" of color chooser
+  set al(tonemoves) 1          ;# "tone moves" of color chooser
+  set al(checkgeo) {}          ;# geometry of "Check Tcl" window
+  set al(HelpedMe) {}          ;# list of helped windows shown by HelpMe proc
+  set al(cmdNum) 5             ;# number of commands on Commands tab
 
   # flag "use special RE for leafs of unit tree"
   set al(INI,LEAF) 0
@@ -186,6 +187,7 @@ namespace eval ::alited {
 
   # preferrable command to run
   set al(comForce) {}
+  set al(comForceCh) -1
   set al(comForceLs) {}
 
   # flags of tip show
@@ -648,7 +650,11 @@ proc ini::ReadPrjMisc {nam val} {
         set ::alited::find::data(vals2) $data(vals2)
       }
     }
-    comforce {set al(comForce) $val}
+    comforce {
+      set al(comForce) $val
+      if {$al(comForceCh)==-1} {set al(comForceCh) [expr {$val ne {}}]}
+    }
+    comforcech {set al(comForceCh) $val}
     comforcels {set al(comForceLs) $val}
   }
 }
@@ -873,18 +879,18 @@ proc ini::SaveIniPrj {{newproject no}} {
       }
     }
     lappend al(tabs) $tab
-    puts $chan "tab=$tab"
+    puts $chan tab=$tab
   }
   foreach rf $al(RECENTFILES) {
     if {![alited::file::IsNoName $rf]} {
-      puts $chan "recent=$rf"
+      puts $chan recent=$rf
     }
   }
   puts $chan {}
   puts $chan {[Options]}
-  puts $chan "curtab=[alited::bar::CurrentTab 3]"
+  puts $chan curtab=[alited::bar::CurrentTab 3]
   foreach {opt val} [array get al prj*] {
-    puts $chan "$opt=$val"
+    puts $chan $opt=$val
   }
   if {!$newproject} {
     puts $chan {}
@@ -895,19 +901,20 @@ proc ini::SaveIniPrj {{newproject no}} {
       set favlist $al(FAV,current)
     }
     foreach curfav $favlist {
-      puts $chan "current=$curfav"
+      puts $chan current=$curfav
     }
     foreach savfav [::alited::favor_ls::PutIni] {
-      puts $chan "saved=$savfav"
+      puts $chan saved=$savfav
     }
     foreach visited $al(FAV,visited) {
-      puts $chan "visited=$visited"
+      puts $chan visited=$visited
     }
     puts $chan {}
     puts $chan {[Misc]}
-    puts $chan "datafind=[array get ::alited::find::data]"
-    puts $chan "comforce=$al(comForce)"
-    puts $chan "comforcels=$al(comForceLs)"
+    puts $chan datafind=[array get ::alited::find::data]
+    puts $chan comforce=$al(comForce)
+    puts $chan comforcech=$al(comForceCh)
+    puts $chan comforcels=$al(comForceLs)
   }
   close $chan
 }
@@ -1391,5 +1398,3 @@ proc ini::ToolbarTip {i} {
   return [string map $maplist $::alited::pref::em_mnu($i)]
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-# ~/.config2

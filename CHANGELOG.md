@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.6b6 (12 Jan'23)`
+Version `1.3.6b8 (18 Jan'23)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
@@ -9,6 +9,10 @@ Version `1.3.6b6 (12 Jan'23)`
   - BUGFIX: focus 1st cbx at opening Find/Replace
   - BUGFIX: tips on toolbar items with %f and %D wildcards
   - BUGFIX: tips on file list called with F9
+  - NEW   : flexible way to run Tcl scripts (Tools/Run...)
+  - NEW   : immediate check of current file at opening "Check Tcl"
+  - NEW   : Projects: "Commands" tab to run commands in projects
+  - NEW   : Projects: popup menu for project list
   - NEW   : 3 profilers, available via Templates
   - NEW   : "Sort by name/date/size/ext" in tab bar's popup menu
   - NEW   : "Files to Beginning" in tab bar's popup menu: if "no", no moving tabs;
@@ -26,6 +30,10 @@ Version `1.3.6b6 (12 Jan'23)`
   - NEW   : tips on toolbar items with %PD
   - NEW   : remove missing items from last visited list, at selecting
   - NEW   : alited.ini: some templates got TODEL comments (nice to find & remove)
+  - CHANGE: proc / method / underline / branch templates inserted in "smart" manner
+  - CHANGE: Preferences & Projects: skip "Help" at navigating by Tab
+  - CHANGE: Preferences/Keys: Ctrl+S for "Save", Alt-S for "Save as"
+  - CHANGE: saving "no name": "-initialdir" = project dir
   - CHANGE: Find/Replace: less minimal size
   - CHANGE: tests.mnu/doctest: testing Tk scripts without "package require Tk"
   - CHANGE: check for empty name at adding to last visited

@@ -3187,8 +3187,11 @@ oo::class create ::apave::APave {
       lappend addcomms [list my readonlyWidget $wdg [expr $ro||$readonly]]
     }
     if {[set wnext [::apave::getOption -tabnext {*}$attrs]] ne {}} {
+      # two widgets for Tab & Shift/Tab (proc can be used to get them)
       set wnext [string trim $wnext "\{\}"]
-      lassign $wnext wnext wprev
+      if {[catch {lassign [{*}$wnext] wnext wprev}]} {
+        lassign $wnext wnext wprev
+      }
       if {$wnext eq {0}} {set wnext $wdg} ;# disables Tab on this widget
       if {$wprev eq {}} {set wprev $wnext}
       if {[::iswindows]} {

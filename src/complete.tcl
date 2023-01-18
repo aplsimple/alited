@@ -314,4 +314,3 @@ proc complete::AutoCompleteCommand {} {
   focus -force $wtxt
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: ~/PG/github/alited.release/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

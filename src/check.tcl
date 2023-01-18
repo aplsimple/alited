@@ -25,6 +25,9 @@ namespace eval check {
 
   # counts for errors in units and in whole files
   variable errors 0 errors1 0 errors2 0 errors3 0 errors4 0 fileerrors 0
+
+  # flag "at opening the dialogue"
+  variable atopen yes
 }
 
 # ________________________ Checking _________________________ #
@@ -34,13 +37,16 @@ proc check::ShowResults {} {
 
   variable errors
   variable fileerrors
+  variable atopen
   if {$errors || $fileerrors} {
     set msg [msgcat::mc {Found %f file error(s), %u unit error(s).}]
     set msg [string map [list %f $fileerrors %u $errors] $msg]
+    if {$atopen} bell
   } else {
     set msg [msgcat::mc {No errors found.}]
   }
   alited::info::Put $msg {} yes
+  set atopen no
 }
 #_______________________
 
@@ -218,14 +224,16 @@ proc check::Check {} {
 
   namespace upvar ::alited al al
   variable what
+  variable atopen
   variable errors
   variable fileerrors
   alited::info::Clear
   alited::info::Put $al(MC,wait) {} yes yes
   set errors [set fileerrors 0]
-  switch $what {
-    1 CheckFile
-    2 CheckAll
+  if {$atopen || $what==1} {  ;# at start, check a current file
+    CheckFile
+  } elseif {$what==2} {
+    CheckAll
   }
   ShowResults
 }
@@ -304,7 +312,10 @@ proc check::_run {} {
 
   namespace upvar ::alited al al obCHK obCHK
   variable win
+  variable atopen
   if {[::apave::repaintWindow $win "$obCHK ButOK"]} return
+  set atopen yes
+  after idle alited::check::Check
   while {1} {
     if {[_create]} {
       Check
@@ -314,4 +325,3 @@ proc check::_run {} {
   }
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

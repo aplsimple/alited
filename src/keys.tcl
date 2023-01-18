@@ -217,15 +217,15 @@ proc keys::ReservedAdd {} {
   Add action close-delete Control-Alt-W {::alited::file::CloseAndDelete; break}
   Add action help         F1 {alited::tool::Help}
   # other keys are customized in Preferences
-  Add action save-file    [alited::pref::BindKey 0 - F2] {::alited::file::SaveFile}
+  Add action save-file    [alited::pref::BindKey 0 - F2] ::alited::file::SaveFile
   Add action save-as      [alited::pref::BindKey 1 - Control-S] {::alited::file::SaveFileAs; break}
-  Add action e_menu       [alited::pref::BindKey 2 - F4] {alited::tool::e_menu3}
-  Add action run          [alited::pref::BindKey 3 - F5] {alited::tool::RunMode}
+  Add action e_menu       [alited::pref::BindKey 2 - F4] alited::tool::e_menu3
+  Add action run          [alited::pref::BindKey 3 - F5] alited::tool::_run
   Add action indent       [alited::pref::BindKey 6 - Control-I] {::alited::edit::Indent; break}
   Add action unindent     [alited::pref::BindKey 7 - Control-U] {::alited::edit::UnIndent; break}
   Add action comment      [alited::pref::BindKey 8 - Control-bracketleft] {::alited::edit::Comment; break}
   Add action uncomment    [alited::pref::BindKey 9 - Control-bracketright] {::alited::edit::UnComment; break}
-  Add action find-next    [alited::pref::BindKey 12 - F3] {alited::find::FindNext}
+  Add action find-next    [alited::pref::BindKey 12 - F3] alited::find::FindNext
   Add action look-declaration    [alited::pref::BindKey 13 - Control-L] "::alited::find::LookDecl ; break"
   Add action look-word    [alited::pref::BindKey 14 - Control-Shift-L] "::alited::find::SearchWordInSession ; break"
   Add action item-up      [alited::pref::BindKey 15 - F11] {+ ::alited::tree::MoveItem up yes}
@@ -291,4 +291,3 @@ proc keys::Search {type name} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

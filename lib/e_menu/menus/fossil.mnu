@@ -4,10 +4,10 @@ w=25
 t4==%b-%Y/%U-week
 u=%s
 in=1.0
-pos=129.76
+pos=9.22
 ::FSLUSER=aplsimple
-::FSLBRANCH=TclOO forced
-::FSLBRANCHCOLOR=#fe95ca
+::FSLBRANCH=New_branch
+::FSLBRANCHCOLOR=#0000aa
 ::EMENUTMPFILE=%mn.tmp~
 ::EMENUBRIEF=0
 ::EM_T_DRY=0
@@ -192,17 +192,16 @@ SW:fossil commit ? SW: %IF "$::EM_T_TIME" ni {{} none} && "$::EM_T_FILE" ne "" %
  S:fossil commit -f -tag ? S: fossil commit -f -tag "$::COMTAG" -bgcolor '#F8A4F6'
 
  R:fossil commit -m ? --branch ? R: cd %PD
- R:fossil commit -m ? --branch ? R: %C set ::COMMES "%s" ; \
-   if {"$::FSLBRANCH" eq ""} {set ::FSLBRANCH "%s"}
+ R:fossil commit -m ? --branch ? R: %C if {"$::FSLBRANCH" eq ""} {set ::FSLBRANCH "%s"}
  R:fossil commit -m ? --branch ? R: %I warn "COMMIT & BRANCH" { \
-   ent1 {{Commit message:}} {"$::COMMES"} \
-   ent2 {{   Branch name:}} {"$::FSLBRANCH"} \
-   clr1 {{  Branch color:\n    (or empty)}} {"$::FSLBRANCHCOLOR"} \
+   ent {{Branch name  (1 word):}} {"$::FSLBRANCH"} \
+   clr {{Branch color (1 word):\nor empty}} {"$::FSLBRANCHCOLOR"} \
    v_} -head {\n This will COMMIT and create a new BRANCH \
-   \n from a current check-in.\n} -weight bold == ::COMMES ::FSLBRANCH ::FSLBRANCHCOLOR
- R:fossil commit -m ? --branch ? R: %C if {"$::FSLBRANCH" eq {}} exit
- R:fossil commit -m ? --branch ? R: %C if {"$::FSLBRANCHCOLOR" eq {}} {set ::TMPBG ""} {set ::TMPBG "-bgcolor \"$::FSLBRANCHCOLOR\""}
-SW:fossil commit -m ? --branch ? SW: fossil commit -m "$::COMMES" --branch "$::FSLBRANCH" $::TMPBG
+   \n from a current check-in.} -weight bold == ::FSLBRANCH ::FSLBRANCHCOLOR
+ R:fossil commit -m ? --branch ? R: %C lassign {$::FSLBRANCH} ::FSLBRANCH; if {{$::FSLBRANCH} eq {}} EXIT
+ R:fossil commit -m ? --branch ? R: %C lassign {$::FSLBRANCHCOLOR} ::FSLBRANCHCOLOR
+ R:fossil commit -m ? --branch ? R: %C if {"$::FSLBRANCHCOLOR" eq {}} {set ::TMPBG ""} {set ::TMPBG "-bgcolor $::FSLBRANCHCOLOR"}
+SW:fossil commit -m ? --branch ? SW: fossil commit -m $::FSLBRANCH --branch $::FSLBRANCH $::TMPBG
 
  R:  R: 2
 

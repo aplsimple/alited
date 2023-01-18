@@ -269,7 +269,7 @@ proc pref::MainFrame {} {
     {.BtTUp - - - - {pack forget -side left} {-image alimg_up -com ::alited::pref::UpRun}}
     {.BtTDown - - - - {pack forget -side left} {-image alimg_down -com ::alited::pref::DownRun}}
     {.LabMess - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 40}}
-    {.butOK - - - - {pack -side left -anchor s -padx 2} {-t Save -command ::alited::pref::Ok}}
+    {.ButOK - - - - {pack -side left -anchor s -padx 2} {-t Save -command ::alited::pref::Ok}}
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::pref::Cancel}}
   }
 }
@@ -508,7 +508,7 @@ proc pref::General_Tab1 {} {
     {seh_2 fra2 T 1 2 {-pady 4}}
     {lab + T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra3 + T 1 2 {-st nsew -rw 1 -cw 1}}
-    {.TexNotes - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 90 -wrap word -tabnext "$alited::pref::win.fra.fraB.butHelp *.spxCurw" -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
+    {.TexNotes - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 90 -wrap word -tabnext {alited::Tnext *.spxCurw} -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
     {.sbv + L - - {pack -side left}}
   }
 }
@@ -550,7 +550,7 @@ proc pref::General_Tab2 {} {
     {.LabMaxBak + L 1 1 {-st w -pady 1 -padx 1} {-t "  Maximum:"}}
     {.SpxMaxBak + L 1 1 {-st sw -pady 1 -padx 1} {-tvar alited::al(MAXBACKUP) -from 1 -to 99 -tip {$alited::al(MC,maxbak)}}}
     {.labBell .labBackup T 1 1 {-st w -pady 1 -padx 3} {-t "Bell at warnings:"}}
-    {.swiBell + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,belltoll)}}
+    {.swiBell + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(INI,belltoll) -tabnext alited::Tnext}}
   }
 }
 #_______________________
@@ -576,7 +576,7 @@ proc pref::General_Tab3 {} {
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.SwiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
-    {.SwiTrWs + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(DEFAULT,prjtrailwhite)}}
+    {.SwiTrWs + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(DEFAULT,prjtrailwhite) -tabnext alited::Tnext}}
   }
 }
 #_______________________
@@ -756,7 +756,7 @@ proc pref::Edit_Tab1 {} {
     {.labTl .labLl T 1 1 {-st w -pady 1 -padx 3} {-t {Tab bar tip's length:}}}
     {.spxTl + L 1 1 {-st sw -pady 5 -padx 3} {-tvar alited::al(INI,bartiplen) -from 10 -to 100}}
     {.labBD .labTl T 1 1 {-st w -pady 1 -padx 3} {-t {Border for bar tabs:}}}
-    {.swiBD + L 1 1 {-st sw -pady 5 -padx 3} {-var ::alited::al(ED,btsbd)}}
+    {.swiBD + L 1 1 {-st sw -pady 5 -padx 3} {-var ::alited::al(ED,btsbd) -tabnext alited::Tnext}}
   }
 }
 #_______________________
@@ -800,7 +800,7 @@ proc pref::Edit_Tab2 {} {
     {fraTab2.scf.seh3 fraTab2.scf.fra2 T 1 2 {-pady 5}}
     {fraTab2.scf.fra3 + T 1 2 {-st nsew}}
     {.labAddKeys - - - - {pack -side left -anchor ne -pady 3 -padx 3} {-t "Your commands:"}}
-    {.TexTclKeys - - - - {pack -side left -fill both -expand 1} {-h 3 -w 48 -wrap word -tabnext "$alited::pref::win.fra.fraB.butHelp *.texSample"}}
+    {.TexTclKeys - - - - {pack -side left -fill both -expand 1} {-h 3 -w 48 -wrap word -tabnext {alited::Tnext *.texSample}}}
     {.sbv + L - - {pack -side right}}
   }
 }
@@ -845,7 +845,7 @@ proc pref::Edit_Tab3 {} {
     {fraTab3.scf.seh3 fraTab3.scf.fra2 T 1 2 {-pady 5}}
     {fraTab3.scf.fra3 + T 1 2 {-st nsew}}
     {.lab - - - - {pack -side left -anchor ne -pady 3 -padx 3} {-t "Your key words:"}}
-    {.TexCKeys - - - - {pack -side left -fill both -expand 1} {-h 3 -w 48 -wrap word -tabnext "$alited::pref::win.fra.fraB.butHelp *.texCSample"}}
+    {.TexCKeys - - - - {pack -side left -fill both -expand 1} {-h 3 -w 48 -wrap word -tabnext {alited::Tnext *.texCSample}}}
     {.sbv + L - - {pack -side right}}
   }
 }
@@ -861,7 +861,7 @@ proc pref::Edit_Tab4 {} {
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "Plain texts' extensions:"}}
     {.entExt + L 1 1 {-st swe -pady 3} {-tvar alited::al(TextExtensions) -w 54}}
     {.seh .labExt T 1 2 {-pady 3}}
-    {.but + T 1 1 {-st w} {-t Default -com alited::pref::Text_Default}}
+    {.but + T 1 1 {-st w} {-t Default -com alited::pref::Text_Default -tabnext alited::Tnext}}
   }
 }
 #_______________________
@@ -1017,7 +1017,7 @@ proc pref::Template_Tab {} {
     {.labt .labd T 1 1 {-st w -pady 1 -padx 3} {-t "Time format:"}}
     {.entt + L 1 1 {-st sw -pady 5} {-tvar alited::al(TPL,%t) -w 30}}
     {.seh .labt T 1 2 {-pady 3}}
-    {.but + T 1 1 {-st w} {-t {$::alited::al(MC,tpllist)} -com {alited::unit_tpl::_run no "-centerme $::alited::pref::win"}}}
+    {.but + T 1 1 {-st w} {-t {$::alited::al(MC,tpllist)} -com {alited::unit_tpl::_run no "-centerme $::alited::pref::win"} -tabnext alited::Tnext}}
   }
 }
 
@@ -1039,7 +1039,12 @@ proc pref::Keys_Tab1 {} {
           lassign [dict get $alited::pref::stdkeys $i] text key
           set lwid ".$lab $pr T 1 1 {-st w -pady 1 -padx 3} {-t \"$text\"}"
           %C $lwid
-          set lwid ".$cbx + L 1 1 {-st we} {-tvar ::alited::pref::keys($i) -postcommand {::alited::pref::GetKeyList $i} -selcombobox {::alited::pref::SelectKey $i} -state readonly -h 16 -w 20}"
+          if {($i+1)==$alited::pref::stdkeysSize} {
+            set pr {-tabnext alited::Tnext}
+          } else {
+            set pr {}
+          }
+          set lwid ".$cbx + L 1 1 {-st we} {-tvar ::alited::pref::keys($i) -postcommand {::alited::pref::GetKeyList $i} -selcombobox {::alited::pref::SelectKey $i} -state readonly -h 16 -w 20 $pr}"
           %C $lwid
           set pr .$lab
         }
@@ -1177,7 +1182,7 @@ proc pref::Units_Tab {} {
     {.labUnt + T 1 1 {-st w -pady 1 -padx 3} {-t "Untouched top lines:"}}
     {.spxUnt + L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,LINES1) -from 2 -to 200 -w 9}}
     {.seh_3 .labUnt T 1 2 {-pady 5}}
-    {.but + T 1 1 {-st w} {-t Default -com alited::pref::Units_Default}}
+    {.but + T 1 1 {-st w} {-t Default -com alited::pref::Units_Default -tabnext alited::Tnext}}
   }
 }
 #_______________________
@@ -1226,47 +1231,18 @@ proc pref::Common_Tab {} {
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode x}}
     {.labTcl - - 1 1 {-st w -pady 1 -padx 3} {-t "tclsh, wish or tclkit:"}}
     {.fiLTcl + L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,Tcl) -values {$alited::al(TCLLIST)} -w 48 -initialdir $alited::al(TCLINIDIR) -clearcom {alited::main::ClearCbx %w ::alited::al(TCLLIST)}}}
-    {.labRun .labTcl T 1 1 {-st w -pady 1 -padx 3} {-t "$al(MC,run):"}}
-    {.fraRun + L 1 1 {-st sw -pady 5}}
-    {.fraRun.radRunCons - - 1 1 {} {-var alited::al(tkcon,topmost) -value 1 -t {$alited::al(MC,inconsole)} -tip {Also, this makes "tkcon" topmost.}}}
-    {.fraRun.radRunTkcon + L 1 1 {-padx 10} {-var alited::al(tkcon,topmost) -value 0 -t {$alited::al(MC,intkcon)}}}
-    {.labDoc .labRun T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl:"}}
+    {.labDoc .labTcl T 1 1 {-st w -pady 1 -padx 3} {-t "Path to man/tcl:"}}
     {.dirDoc + L 1 1 {-st sw -pady 5} {-tvar alited::al(EM,h=) -w 48}}
     {.labTT .labDoc T 1 1 {-st w -pady 1 -padx 3} {-t "Linux terminal:"}}
     {.cbxTT + L 1 1 {-st swe -pady 5} {-tvar alited::al(EM,tt=) -w 48 -values {$alited::al(TTLIST)} -clearcom {alited::main::ClearCbx %w ::alited::al(TTLIST)}}}
     {.labWT .labTT T 1 1 {-st w -pady 1 -padx 3} {-t "MS Windows shell:"}}
     {.cbxWT + L 1 1 {-st swe -pady 5} {-tvar alited::al(EM,wt=) -w 48 -values {$alited::al(WTLIST)}}}
     {.labDF .labWT T 1 1 {-st w -pady 1 -padx 3} {-t "Diff tool:"}}
-    {.filDF + L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 48}}
+    {.filDF + L 1 1 {-st sw -pady 1} {-tvar alited::al(EM,DiffTool) -w 48 -tabnext alited::Tnext}}
   }
 }
 
 ## ________________________ e_menu _________________________ ##
-
-proc pref::Default_e_menu {} {
-  # Set default a_menu settings.
-
-  fetchVars
-  set al(EM,exec) yes
-  set al(EM,ownCS) no
-  set al(EM,geometry) {}
-  set emdir [file join $::alited::USERDIR e_menu]
-  set al(EM,mnudir) [file join $emdir menus]
-  set al(EM,mnu) [file join $al(EM,mnudir) menu.mnu]
-  set al(EM,PD=) [file join $emdir em_projects]
-}
-#_______________________
-
-proc pref::Test_e_menu {} {
-  # Tests a_menu settings.
-
-  fetchVars
-  set cs $al(EM,CS)
-  set al(EM,CS) [GetCS 2]
-  alited::tool::e_menu o=0
-  set al(EM,CS) $cs
-}
-#_______________________
 
 proc pref::Emenu_Tab {} {
   # Serves to layout "Tools/e_menu" tab.
@@ -1294,62 +1270,36 @@ proc pref::Emenu_Tab {} {
     {.seh .labPD T 1 3 {-st ew -pady 5}}
     {.h_ + T}
     {.but1 .h_ L 1 1 {-st w} {-t Default -com alited::pref::Default_e_menu}}
-    {.butok + L 1 1 {-st w} {-t "$alited::al(MC,test)" -com alited::pref::Test_e_menu}}
+    {.butok + L 1 1 {-st w} {-t "$alited::al(MC,test)" -com alited::pref::Test_e_menu -tabnext alited::Tnext}}
   }
+}
+#_______________________
+
+proc pref::Default_e_menu {} {
+  # Set default a_menu settings.
+
+  fetchVars
+  set al(EM,exec) yes
+  set al(EM,ownCS) no
+  set al(EM,geometry) {}
+  set emdir [file join $::alited::USERDIR e_menu]
+  set al(EM,mnudir) [file join $emdir menus]
+  set al(EM,mnu) [file join $al(EM,mnudir) menu.mnu]
+  set al(EM,PD=) [file join $emdir em_projects]
+}
+#_______________________
+
+proc pref::Test_e_menu {} {
+  # Tests a_menu settings.
+
+  fetchVars
+  set cs $al(EM,CS)
+  set al(EM,CS) [GetCS 2]
+  alited::tool::e_menu o=0
+  set al(EM,CS) $cs
 }
 
 ## ________________________ tkcon _________________________ ##
-
-proc pref::UpdateTkconTab {} {
-  # Updates color labels for "Tools/Tkcon" tab.
-
-  fetchVars
-  set lab1 [$obDl2 Labbg]
-  foreach nam {bg blink cursor disabled proc var prompt stdin stdout stderr} {
-    set lab [string map [list labbg labclr$nam] $lab1]
-    set ent [string map [list labbg entclr$nam] $lab1]
-    $lab configure -background [$ent get]
-  }
-}
-#_______________________
-
-proc pref::Tkcon_Default {} {
-  # Sets defaults for "Tools/Tkcon" tab.
-
-  fetchVars
-  set al(tkcon,rows) 20
-  set al(tkcon,cols) 80
-  set al(tkcon,fsize) 13
-  set al(tkcon,geo) {}
-  set al(tkcon,topmost) [expr {!$al(IsWindows)}]
-}
-#_______________________
-
-proc pref::Tkcon_Default1 {} {
-  # Sets light theme colors for Tkcon.
-
-  fetchVars
-  Tkcon_Default
-  foreach {clr val} { \
-  bg #FFFFFF blink #FFFF00 cursor #000000 disabled #4D4D4D proc #008800 \
-  var #FFC0D0 prompt #8F4433 stdin #000000 stdout #0000FF stderr #FF0000} {
-    set al(tkcon,clr$clr) $val
-  }
-}
-#_______________________
-
-proc pref::Tkcon_Default2 {} {
-  # Sets dark theme colors for Tkcon.
-
-  fetchVars
-  Tkcon_Default
-  foreach {clr val} { \
-  bg #25292b blink #929281 cursor #FFFFFF disabled #999797 proc #66FF10 \
-  var #565608 prompt #ffff00 stdin #FFFFFF stdout #aeaeae stderr #ff7272} {
-    set al(tkcon,clr$clr) $val
-  }
-}
-#_______________________
 
 proc pref::Tkcon_Tab {} {
   # Serves to layout "Tools/Tkcon" tab.
@@ -1392,7 +1342,57 @@ proc pref::Tkcon_Tab {} {
     {fra.scf.frabuts - - - - {pack -fill x}}
     {.but1 - - - - {-pady 8} {-t Default -com {alited::pref::Tkcon_Default1; alited::pref::UpdateTkconTab}}}
     {.but2 + L 1 1 {-padx 8} {-t {Default 2} -com {alited::pref::Tkcon_Default2; alited::pref::UpdateTkconTab}}}
-    {.butok + L 1 1 {} {-t "$alited::al(MC,test)" -com alited::tool::tkcon}}
+    {.butok + L 1 1 {} {-t "$alited::al(MC,test)" -com alited::tool::tkcon -tabnext alited::Tnext}}
+  }
+}
+#_______________________
+
+proc pref::UpdateTkconTab {} {
+  # Updates color labels for "Tools/Tkcon" tab.
+
+  fetchVars
+  set lab1 [$obDl2 Labbg]
+  foreach nam {bg blink cursor disabled proc var prompt stdin stdout stderr} {
+    set lab [string map [list labbg labclr$nam] $lab1]
+    set ent [string map [list labbg entclr$nam] $lab1]
+    $lab configure -background [$ent get]
+  }
+}
+#_______________________
+
+proc pref::Tkcon_Default {} {
+  # Sets defaults for "Tools/Tkcon" tab.
+
+  fetchVars
+  set al(tkcon,rows) 20
+  set al(tkcon,cols) 80
+  set al(tkcon,fsize) 13
+  set al(tkcon,geo) {}
+}
+#_______________________
+
+proc pref::Tkcon_Default1 {} {
+  # Sets light theme colors for Tkcon.
+
+  fetchVars
+  Tkcon_Default
+  foreach {clr val} { \
+  bg #FFFFFF blink #FFFF00 cursor #000000 disabled #4D4D4D proc #008800 \
+  var #FFC0D0 prompt #8F4433 stdin #000000 stdout #0000FF stderr #FF0000} {
+    set al(tkcon,clr$clr) $val
+  }
+}
+#_______________________
+
+proc pref::Tkcon_Default2 {} {
+  # Sets dark theme colors for Tkcon.
+
+  fetchVars
+  Tkcon_Default
+  foreach {clr val} { \
+  bg #25292b blink #929281 cursor #FFFFFF disabled #999797 proc #66FF10 \
+  var #565608 prompt #ffff00 stdin #FFFFFF stdout #aeaeae stderr #ff7272} {
+    set al(tkcon,clr$clr) $val
   }
 }
 
@@ -1814,4 +1814,3 @@ proc pref::_run {{tab {}}} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
