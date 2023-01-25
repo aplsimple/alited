@@ -297,6 +297,46 @@ proc file::WrapLines {{wrapnone no}} {
   if {![info exist al(isSbhText)]} {set al(isSbhText) no}
   SbhText
 }
+#_______________________
+
+proc file::Encoding {{fname ""} {enc ""}} {
+  # Gets/sets a file's encoding.
+  #   fname - file's name
+  #   enc - if "", gets the encoding, otherwise sets the encoding of the file.
+
+  namespace upvar ::alited al al
+  if {$fname eq {}} {set fname [alited::bar::FileName]}
+  if {$enc ne {}} {
+    set al(ENCODING,$fname) $enc
+  } else {
+    if {[info exists al(ENCODING,$fname)]} {
+      set enc [list -encoding $al(ENCODING,$fname)]
+    } else {
+      set enc {}
+    }
+  }
+  return $enc
+}
+#_______________________
+
+proc file::EOL {{fname ""} {eol ""}} {
+  # Gets/sets a file's translation.
+  #   fname - file's name
+  #   eol - if "", gets the translation, otherwise sets the translation of the file.
+
+  namespace upvar ::alited al al
+  if {$fname eq {}} {set fname [alited::bar::FileName]}
+  if {$eol ne {}} {
+    set al(EOL,$fname) $eol
+  } else {
+    if {[info exists al(EOL,$fname)]} {
+      set eol [list -translation $al(EOL,$fname)]
+    } else {
+      set eol {}
+    }
+  }
+  return $eol
+}
 
 # ________________________ Helpers _________________________ #
 
@@ -435,7 +475,9 @@ proc file::ReadFile {TID fname} {
   # Returns the file's contents.
 
   namespace upvar ::alited al al
-  set filecont [::apave::readTextFile $fname]
+  set enc [Encoding $fname]
+  append enc { } [EOL $fname]
+  set filecont [::apave::readTextFile $fname {} 0 {*}$enc]
   set al(_unittree,$TID) [alited::unit::GetUnits $TID $filecont]
   return $filecont
 }
@@ -549,8 +591,15 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
         if {$Message ne {}} {
           $Message "[msgcat::mc {Open file:}] $fname"
         }
-      } elseif {$al(lifo)} {             ;# in -lifo mode
-        alited::bar::BAR moveTab $TID 0  ;# move all open files to 1st position
+      } elseif {$al(lifo)} {
+        # in -lifo mode: move all open files to 1st position
+        # (but if it's one file to be move, then only if it's not visible)
+        if {(![alited::bar::BAR $TID visible] && !$many) || $many} {
+          if {$many} {
+            alited::bar::BAR moveTab $TID 0  ;# one tab is shown by "show" method below
+          }
+          set many yes
+        }
       }
     }
   }
@@ -569,11 +618,22 @@ proc file::SaveFileByName {TID fname {doit no}} {
   #   doit - flag "do save now, without any GUI"
 
   namespace upvar ::alited al al
+  if {[info exists al(THIS-ENCODING)]} {
+    set enc "-encoding $al(THIS-ENCODING)" ;# at saving "no name"
+  } else {
+    set enc [Encoding $fname]
+  }
+  if {[info exists al(THIS-EOL)]} {
+    set eol "-translation $al(THIS-EOL)" ;# at saving "no name"
+  } else {
+    set eol [EOL $fname]
+  }
+  append enc " $eol"
   set al(_NO_OUTWARD_) {}
   set wtxt [alited::main::GetWTXT $TID]
   if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $TID yes $doit}
   set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
-  if {![::apave::writeTextFile $fname fcont]} {
+  if {![::apave::writeTextFile $fname fcont 0 1 {*}$enc]} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1
     unset al(_NO_OUTWARD_)
     return 0
@@ -694,6 +754,94 @@ proc file::SaveAll {} {
   }
   return yes
 }
+#_______________________
+
+proc file::Reload1 {eol} {
+  # Reloads a current file with EOL.
+  #   eol - the end of line
+
+  namespace upvar ::alited al al
+  set eol [string trim $eol]
+  set wtxt [alited::main::CurrentWTXT]
+  set TID [alited::bar::CurrentTabID]
+  set fname [alited::bar::FileName]
+  set dosave no
+  if {[IsNoName $fname]} {
+    set dosave yes
+  } elseif {[IsModified]} {
+    if {![info exists al(EOLASKED)] || $al(EOLASKED)<10} {
+      set msg [msgcat::mc "Save the file:\n%F ?"]
+      set msg [string map [list %F $fname] $msg]
+      set al(EOLASKED) [alited::msg yesnocancel warn $msg CANCEL -ch $al(MC,noask)]
+      if {!$al(EOLASKED)} return
+      if {$al(EOLASKED) in {1 11}} {set dosave yes}
+    }
+    $wtxt edit modified no
+    alited::edit::Modified $TID $wtxt
+  }
+  if {$dosave} {
+    set al(THIS-EOL) $eol
+    set dosave [SaveFile]
+    unset al(THIS-EOL)
+    if {!$dosave} return
+  }
+  set fname [alited::bar::FileName]
+  set pos [$wtxt index insert]
+  EOL $fname $eol
+  DisplayFile $TID $fname $wtxt yes
+  catch {::tk::TextSetCursor $wtxt $pos}
+  alited::main::UpdateProjectInfo
+  alited::main::UpdateAll
+}
+#_______________________
+
+proc file::Reload2 {enc} {
+  # Reloads a current file with an encoding.
+  #   enc - the encoding
+
+  namespace upvar ::alited al al
+  lassign [split $enc] enc
+  set wtxt [alited::main::CurrentWTXT]
+  set TID [alited::bar::CurrentTabID]
+  set fname [alited::bar::FileName]
+  set dosave no
+  if {[IsNoName $fname]} {
+    set dosave yes
+  } elseif {[IsModified]} {
+    if {![info exists al(ENCODINGASKED)] || $al(ENCODINGASKED)<10} {
+      set msg [msgcat::mc \
+        "Saving and reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nSave the file:\n%F ?"]
+      set msg [string map [list %e $enc %f [file tail $fname] %F $fname] $msg]
+      set al(ENCODINGASKED) [alited::msg yesnocancel warn $msg CANCEL -ch $al(MC,noask)]
+      if {!$al(ENCODINGASKED)} return
+      if {$al(ENCODINGASKED) in {1 11}} {set dosave yes}
+    }
+    $wtxt edit modified no
+    alited::edit::Modified $TID $wtxt
+  } else {
+    if {![info exists al(ENCODINGASKED2)] || $al(ENCODINGASKED2)<10} {
+      set msg [msgcat::mc \
+        "Reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nReload the file:\n%F ?"]
+      set msg [string map [list %e $enc %f [file tail $fname] %F $fname] $msg]
+      set al(ENCODINGASKED2) [alited::msg yesno warn $msg YES -ch $al(MC,noask)]
+      if {!$al(ENCODINGASKED2)} return
+    }
+  }
+  if {$dosave} {
+    set al(THIS-ENCODING) $enc
+    set dosave [SaveFile]
+    unset al(THIS-ENCODING)
+    if {!$dosave} return
+  }
+  set fname [alited::bar::FileName]
+  set pos [$wtxt index insert]
+  Encoding $fname $enc
+  DisplayFile $TID $fname $wtxt yes
+  catch {::tk::TextSetCursor $wtxt $pos}
+  alited::main::UpdateProjectInfo
+  alited::main::UpdateAll
+}
+
 # _______________________ Close file(s) _______________________ #
 
 proc file::CloseFile {TID checknew args} {

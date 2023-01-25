@@ -116,7 +116,7 @@ namespace eval ::apave {
 
 {{17: African3}       "#000000" #000000 #e2deb5 #ccc9a6 #813b3b #e1a97b #000 #682800 grey #a44a2d #000 #e6ae80 - #bbb895 #000 #fbfb74 #c9c9b0 #c10000 #76b2f1 #005 #006 #007}
 
-{{18: Yellowstone}    "#00002f" #00003c #ffffd1 #d5d3b7 #7b3e30 #d59e6d #000 #682800 grey #93391c #000000 #cfab86 - #c2c0a4 #000 #ffff45 #e6e6bb #a30000 #76b2f1 #005 #006 #007}
+{{18: Radiance}       "#00002f" #00001a #f6f4f2 #f6f4f2 #7b3e30 #d59e6d #000 #682800 grey #93391c #000000 #cfab86 - #e7e7e7 #000 #ffff45 #e3e2e0 #a30000 #900000 #005 #006 #007}
 
 {{19: Notebook}       "#000000" #000000 #e9e1c8 #d2ccb8 #692323 #d59d6f #000 #682800 #7e7e7e #92381b #000 #c09c77 - #dbd5c1 #000 #eded89 #dad2b9 #a20000 #76b2f1 #005 #006 #007}
 
@@ -142,7 +142,7 @@ namespace eval ::apave {
 
 {{30: Dark2}          "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #fff #f4f49f #616161 #b28545 #000 #767676 - #323232 #000 #9d9d60 #262626 #ffc341 #76b2f1 #005 #006 #007}
 
-{{31: Dark3}          "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #6a6a6a #fff #f4f49f #616161 #aa7d3d #000 #767676 - #303030 #000 #9d9d60 #131313 #ffc341 #76b2f1 #005 #006 #007}
+{{31: DarkBrown}      "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #765632 #fff #f4f49f #616161 #aa7d3d #000 #767676 - #303030 #000 #9d9d60 #131313 #ffc341 #76b2f1 #005 #006 #007}
 
 {{32: Oscuro}         "#f1f1f1" #ffffff #314242 #3e5959 #f1b479 #6c8787 #fff #42ff42 #afafaf #d3a051 #fff #5b7676 - #4d6868 #000 #aaaa6d #425353 #ffc341 #94e2b8 #005 #006 #007}
 
@@ -620,7 +620,10 @@ proc ::apave::InitTheme {intheme libdir} {
       set name [string range $intheme 0 $i-1]
       set type [string range $intheme $i+1 end]
       catch {source [file join $libdir theme $name $name.tcl]}
-      catch {set_theme $type}
+      catch {
+        set_theme $type
+        set theme $intheme
+      }
       set lbd 0
     }
     forest* {
@@ -641,6 +644,12 @@ proc ::apave::InitTheme {intheme libdir} {
       InitAwThemesPath $libdir
       package require awthemes
       package require ttk::theme::$intheme
+      set theme $intheme
+      set lbd 1
+    }
+    plastik - radiance - darkbrown {
+      set path [file join $libdir theme $intheme]
+      source [file join $path $intheme.tcl]
       set theme $intheme
       set lbd 1
     }
@@ -1062,7 +1071,7 @@ proc ::apave::logMessage {msg {lev 16}} {
 }
 #_______________________
 
-proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
+proc ::apave::readTextFile {fileName {varName ""} {doErr 0} args} {
   # Reads a text file.
   #   fileName - file name
   #   varName - variable name for file content or ""
@@ -1075,7 +1084,10 @@ proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
     if {$doErr} {error [::apave::error $fileName]}
     set fvar {}
   } else {
-    ::apave::textChanConfigure $chan {} auto ;# let EOL be autodetected
+    set enc [::apave::getOption -encoding {*}$args]
+    set eol [string tolower [::apave::getOption -translation {*}$args]]
+    if {$eol eq {}} {set eol auto} ;# let EOL be autodetected by default
+    ::apave::textChanConfigure $chan $enc $eol
     set fvar [read $chan]
     close $chan
     logMessage "read $fileName"
@@ -1084,7 +1096,7 @@ proc ::apave::readTextFile {fileName {varName ""} {doErr 0}} {
 }
 #_______________________
 
-proc ::apave::writeTextFile {fileName {varName ""} {doErr 0} {doSave 1}} {
+proc ::apave::writeTextFile {fileName {varName ""} {doErr 0} {doSave 1} args} {
   # Writes to a text file.
   #   fileName - file name
   #   varName - variable name for file content or ""
@@ -1108,7 +1120,9 @@ proc ::apave::writeTextFile {fileName {varName ""} {doErr 0} {doSave 1}} {
   } elseif {[catch {set chan [open $fileName w]} _PU_opts(_ERROR_)]} {
     set res no
   } else {
-    ::apave::textChanConfigure $chan
+    set enc [::apave::getOption -encoding {*}$args]
+    set eol [string tolower [::apave::getOption -translation {*}$args]]
+    ::apave::textChanConfigure $chan $enc $eol
     puts -nonewline $chan $contents
     close $chan
     logMessage "write $fileName"

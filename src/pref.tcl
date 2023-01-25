@@ -286,7 +286,7 @@ proc pref::Ok {args} {
   } else {
     set timo {}
   }
-  set ans [alited::msg okcancel info [msgcat::mc "For the settings to be active,\nalited application should be restarted."] OK -centerme $win {*}$timo]
+  set ans [alited::msg okcancel info $al(MC,restart) OK -centerme $win {*}$timo]
   if {$ans} {
     GetEmSave out
     # check options that can make alited unusable
@@ -460,7 +460,7 @@ proc pref::General_Tab1 {} {
   }
   set lightdark [msgcat::mc {Light / Dark}]
   set opcThemes [list default clam classic alt -- "{$lightdark} awlight awdark -- \
-    azure-light azure-dark -- forest-light forest-dark -- sun-valley-light sun-valley-dark"]
+    azure-light azure-dark -- forest-light forest-dark -- sun-valley-light sun-valley-dark -- plastik radiance darkbrown"]
   if {[::iswindows]} {
     lappend opcThemes -- "{[msgcat::mc {Windows themes}]} vista xpnative winnative"
   }
@@ -1259,7 +1259,7 @@ proc pref::Emenu_Tab {} {
     {.labCS - - 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.SwiCS + L 1 1 {-st sw -pady 5} {-t {e_menu's own} -var alited::al(EM,ownCS) -com alited::pref::OwnCS -afteridle alited::pref::OwnCS}}
     {.OpcCS + L 1 1 {-st sw -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 21 -compound left -image alimg_color} {alited::pref::opcToolPre %a}}}
-    {.labGeo .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
+    {.labGeo .labCS T 1 1 {-st w -pady 1 -padx 3} {-t Geometry:}}
     {.entGeo + L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,geometry) -w 22}}
     {.labDir .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Directory of menus:"}}
     {.dirEM + L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,mnudir) -w 48}}
@@ -1331,14 +1331,7 @@ proc pref::Tkcon_Tab {} {
     {.clrstderr + L 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,clrstderr) -w 20}}
     {fra.scf.v_ fra.scf.lfr T 1 1  {pack} {-h 10}}
     {fra.scf.lfr2 - - - - {pack -fill x} {-t Options}}
-    {.labRows - - 1 1 {-st w -pady 1 -padx 3} {-t "Rows:"}}
-    {.spxRows + L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,rows) -from 4 -to 40 -w 9}}
-    {.labCols .labRows T 1 1 {-st w -pady 1 -padx 3} {-t "Columns:"}}
-    {.spxCols + L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,cols) -from 15 -to 150 -w 9}}
-    {.labFsize .labCols T 1 1 {-st w -pady 1 -padx 3} {-t "Font size:"}}
-    {.spxFS + L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,fsize) -from 8 -to 20 -w 9}}
-    {.labGeo .labFsize T 1 1 {-st w -pady 1 -padx 3} {-t "Geometry:"}}
-    {.entGeo + L 1 2 {-st sw -pady 1} {-tvar alited::al(tkcon,geo) -w 20}}
+    {.entopts - - 1 1 {-st sw -pady 1} {-tvar alited::al(tkcon,options) -w 80}}
     {fra.scf.frabuts - - - - {pack -fill x}}
     {.but1 - - - - {-pady 8} {-t Default -com {alited::pref::Tkcon_Default1; alited::pref::UpdateTkconTab}}}
     {.but2 + L 1 1 {-padx 8} {-t {Default 2} -com {alited::pref::Tkcon_Default2; alited::pref::UpdateTkconTab}}}
@@ -1364,10 +1357,7 @@ proc pref::Tkcon_Default {} {
   # Sets defaults for "Tools/Tkcon" tab.
 
   fetchVars
-  set al(tkcon,rows) 20
-  set al(tkcon,cols) 80
-  set al(tkcon,fsize) 13
-  set al(tkcon,geo) {}
+  set al(tkcon,options) {-rows 24 -cols 80 -fontsize 13 -geometry {} -showmenu 1 -topmost 0}
 }
 #_______________________
 

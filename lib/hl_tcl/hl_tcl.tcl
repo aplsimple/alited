@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.45
+package provide hl_tcl 0.9.46
 
 # ______________________ Common data ____________________ #
 
@@ -629,6 +629,9 @@ proc ::hl_tcl::my::CoroRun {txt pos1 pos2 args} {
 proc ::hl_tcl::my::CoroModified {txt {i1 -1} {i2 -1} args} {
   # Handles modifications of text.
   #   txt - text widget's path
+  #   i1 - 1st index of changes
+  #   i2 - 2nd index of changes
+  #   args - arguments for a command called after the modifications
   # See also: Modified
 
   catch {
@@ -697,8 +700,8 @@ proc ::hl_tcl::my::CoroModified {txt {i1 -1} {i2 -1} args} {
     }
     if {[set cmd $data(CMD,$txt)] ne {}} {
       # run a command after changes done (its arguments are txt, ln1, ln2)
-      append cmd " $txt $lno1 $lno2 $args"
-      {*}$cmd
+      append cmd { } $txt { } $lno1 { } $lno2 { } $args
+      after idle $cmd
     }
     MemPos $txt
   }

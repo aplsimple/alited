@@ -17,7 +17,7 @@ proc menu::CheckMenuItems {} {
 
   namespace upvar ::alited al al
   set TID [alited::bar::CurrentTabID]
-  foreach idx {9 10 11} {
+  foreach idx {10 11 12} {
     if {[alited::bar::BAR isTab $TID]} {
       set dsbl [alited::bar::BAR checkDisabledMenu $al(BID) $TID [incr item]]
     } else {
@@ -112,7 +112,8 @@ proc menu::Configurations {} {
   set alited::ARGV $::alited::CONFIGDIR
   alited::Exit - 1 no
 }
-#_______________________
+
+# ________________________ Fill Menu _________________________ #
 
 proc menu::FillMenu {} {
   # Populates alited's main menu.
@@ -124,6 +125,7 @@ proc menu::FillMenu {} {
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
   ## ________________________ File _________________________ ##
+
   set m [set al(MENUFILE) $al(WIN).menu.file]
   $m add command -label $al(MC,new) -command alited::file::NewFile -accelerator Ctrl+N
   $m add command -label $al(MC,open...) -command alited::file::OpenFile -accelerator Ctrl+O
@@ -131,20 +133,44 @@ proc menu::FillMenu {} {
   menu $m.recentfiles -tearoff 1 -title $title
   $m add cascade -label $title -menu $m.recentfiles
   $m add separator
+
+  ### ________________________ Save _________________________ ###
+
   $m add command -label $al(MC,save) -command alited::file::SaveFile -accelerator $al(acc_0)
   $m add command -label $al(MC,saveas...) -command alited::file::SaveFileAs -accelerator $al(acc_1)
   $m add command -label $al(MC,saveall) -command alited::file::SaveAll -accelerator Ctrl+Shift+S
   $m add command -label [msgcat::mc {Save and Close}] -command alited::file::SaveAndClose -accelerator Ctrl+W
   $m add separator
+
+  ### ________________________ Close _________________________ ###
+
   $m add command -label $al(MC,close) -command alited::file::CloseFileMenu
   $m add command -label $al(MC,clall) -command {alited::file::CloseAll 1}
   $m add command -label $al(MC,clallleft) -command {alited::file::CloseAll 2}
   $m add command -label $al(MC,clallright) -command {alited::file::CloseAll 3}
   $m add command -label [msgcat::mc {Close and Delete}] -command alited::file::CloseAndDelete -accelerator Ctrl+Alt+W
   $m add separator
+
+  ### ________________________ Reload _________________________ ###
+
+  set title [msgcat::mc {Reload with EOL}]
+  menu $m.eol -tearoff 1 -title EOL
+  $m add cascade -label $title -menu $m.eol
+  foreach eol {LF CR CRLF} {
+    $m.eol add command -label "    $eol        " -command [list alited::file::Reload1 $eol]
+  }
+  set title [msgcat::mc {Reload with Encoding}]
+  menu $m.encods -tearoff 1 -title $title
+  $m add cascade -label $title -menu $m.encods
+  foreach enc [lsort -dictionary [encoding names]] {
+    if {[incr icbr]%25} {set cbr {}} {set cbr {-columnbreak 1}}
+    $m.encods add command -label $enc -command [list alited::file::Reload2 $enc] {*}$cbr
+  }
+  $m add separator
   $m add command -label $al(MC,quit) -command {alited::Exit - 0 no}
 
   ## ________________________ Edit _________________________ ##
+
   set m [set al(MENUEDIT) $al(WIN).menu.edit]
   $m add command -label $al(MC,moveupU) -command {alited::tree::MoveItem up yes} -accelerator $al(acc_15)
   $m add command -label $al(MC,movedownU) -command {alited::tree::MoveItem down yes} -accelerator $al(acc_16)
@@ -159,14 +185,8 @@ proc menu::FillMenu {} {
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
   $m add command -label [msgcat::mc {Remove Trailing Whitespaces}] -command alited::edit::RemoveTrailWhites
 
-    ### ________________________ Conversions _________________________ ###
-#  $m add separator
-#  menu $m.convert -tearoff 0
-#  $m add cascade -label [msgcat::mc Conversions] -menu $m.convert
-#  $m.convert add command -label [msgcat::mc {Change Encoding...}] -command alited::edit::ChangeEncoding
-#  $m.convert add command -label [msgcat::mc {Change EOL...}] -command alited::edit::ChangeEOL
-
   ## ________________________ Search _________________________ ##
+
   set m [set al(SEARCH) $al(WIN).menu.search]
   $m add command -label $al(MC,findreplace) -command alited::find::_run -accelerator Ctrl+F
   $m add command -label $al(MC,findnext) -command {alited::find::Next ; after idle alited::main::SaveVisitInfo} -accelerator $al(acc_12)
@@ -182,12 +202,14 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,toline) -command alited::main::GotoLine -accelerator $al(acc_17)
 
   ## ________________________ Tools _________________________ ##
+
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label [msgcat::mc Run...] -command alited::tool::RunMode
   $m add command -label e_menu -command {alited::tool::e_menu o=0} -accelerator $al(acc_2)
   $m add command -label Tkcon -command alited::tool::tkcon
 
     ### ________________________ Runs _________________________ ###
+
   for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
     if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
       if {[incr emwas]==1} {
@@ -204,6 +226,7 @@ proc menu::FillMenu {} {
   }
 
     ### ________________________ Other tools _________________________ ###
+
   $m add separator
   $m add command -label $al(MC,checktcl) -command alited::CheckRun
   menu $m.filelist -tearoff 0
@@ -217,6 +240,7 @@ proc menu::FillMenu {} {
   $m add command -label [msgcat::mc {Screen Loupe}] -command alited::tool::Loupe
 
   ## ________________________ Setup _________________________ ##
+
   set m [set al(SETUP) $al(WIN).menu.setup]
   $m add command -label [msgcat::mc Projects...] -command alited::project::_run
   $m add command -label [msgcat::mc Templates...] -command alited::unit::Add
@@ -264,6 +288,7 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,pref...) -command alited::pref::_run
 
   ## ________________________ Help _________________________ ##
+
   set m [set al(MENUHELP) $al(WIN).menu.help]
   $m add command -label Tcl/Tk -command alited::tool::Help -accelerator F1
   $m add command -label alited -command alited::HelpAlited

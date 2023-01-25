@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.6.4}
+  variable em_version {e_menu 3.6.5}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -117,7 +117,7 @@ proc ::S {incomm} {
     }
   }
 }
-proc ::EXIT {} {::em::on_exit}
+proc ::EXIT {} ::em::on_exit
 
 # ________________________ em's procedures _________________________ #
 
@@ -128,7 +128,7 @@ namespace eval ::em {
     uplevel 1 {
       foreach ar {pars itnames bgcolr saveddata \
       ar_s09 ar_u09 ar_i09 ar_geany ar_tformat ar_macros} {
-        catch {array unset ::em::$ar}
+        if {[array exists ::em::$ar]} {array unset ::em::$ar}
         variable $ar; array set ::em::$ar [list]
       }
     }
@@ -193,7 +193,7 @@ namespace eval ::em {
   variable isep 0
   variable start0 1
   variable prjset 0
-  variable skipfocused 0 shadowed 0
+  variable skipfocused 0
   variable back 0
   variable basedir {}
   variable conti "\\" lconti 0
@@ -208,8 +208,7 @@ namespace eval ::em {
   variable hili no
   variable ls {} pk {}
   variable DF kdiff3 BF {}
-  variable PI 0
-  variable NE 0
+  variable PI 0 NE 0 SH 0
   variable th {alt} td {} g1 {} g2 {}
   variable ee {}
 }
@@ -400,13 +399,6 @@ proc ::em::mouse_button {i} {
   if {$::em::solo} {
     event generate .em <Motion> -warp 1 -x [expr {$x1+$x2+int($w/1.5)}] \
     -y [expr {$y1+$y2+int($h/1.2)}]
-  }
-}
-#___ 'proc' all buttons
-proc ::em::for_buttons {proc} {
-  set ::em::isep 0
-  for {set j $::em::begin} {$j < $::em::ncmd} {incr j} {
-    uplevel 1 "set i $j; set b .em.fr.win.fr$j.butt; $proc"
   }
 }
 #___ get contents of s1 argument (s=,..)
@@ -914,7 +906,9 @@ proc ::em::update_itname {it inc {pr ""}} {
 }
 #___ update all buttons
 proc ::em::update_buttons {{pr ""}} {
-  for_buttons {
+  set ::em::isep 0
+  for {set j $::em::begin} {$j < $::em::ncmd} {incr j} {
+    set i $j; set b .em.fr.win.fr$j.butt
     update_itname $i 0 $pr
   }
 }
@@ -1214,11 +1208,12 @@ proc ::em::get_AR {} {
     ;# %s is preferrable for ARGS (ts= rules)
     return [list [string map {\n \\n \" \\\"} $::em::seltd]]
   }
-  set skipcheck 0
-  catch {
-    set skipcheck [expr {[lsearch -exact $::em::Argv AL=1]>-1}]
-  }
-  if {$skipcheck} {
+#!  set skipcheck 0
+#!  catch #\{
+#!    set skipcheck [expr #\{[lsearch -exact $::em::Argv AL=1]>-1#\}]
+#!  #\}
+#!  if #\{$skipcheck#\} #\{
+  if {[lsearch -exact $::em::Argv AL=1]>-1} {
     # AL=1 option disables checking a current file for ARGS/RUNF/EXEC comments
     return {}
   }
@@ -1252,9 +1247,11 @@ proc ::em::get_AR {} {
 }
 #___ get contents of %l-th line of %f file
 proc ::em::get_L {} {
-  if {![catch {set p $::em::ar_geany(l)}] && \
-       [string is digit $p] && $p>0 && $p<=[llength $::em::filecontent]} {
-    return [lindex $::em::filecontent $p-1]
+  if {[info exists ::em::ar_geany(l)]} {
+    set p $::em::ar_geany(l)
+    if {[string is digit $p] && $p>0 && $p<=[llength $::em::filecontent]} {
+      return [lindex $::em::filecontent $p-1]
+    }
   }
   return {}
 }
@@ -1265,14 +1262,13 @@ proc ::em::prepr_09 {refn refa t {inc 0}} {
   for {set i 0} {$i<=9} {incr i} {
     set p "$t$i"
     set s "$p="
-    if {[string first $p $name] != -1} {
-      if {![catch {set sel $arr($s)} e]} {
-        if {$t eq {i}} {
-          incr sel $inc     ;# increment i1-i9 counters of runs
-          set ${refa}($s) $sel
-        }
-        prepr_1 name $p $sel
+    if {[string first $p $name] != -1 && [info exists arr($s)]} {
+      set sel $arr($s)
+      if {$t eq {i}} {
+        incr sel $inc     ;# increment i1-i9 counters of runs
+        set ${refa}($s) $sel
       }
+      prepr_1 name $p $sel
     }
   }
 }
@@ -1560,7 +1556,7 @@ proc ::em::menuof {commands s1 domenu} {
   set prname ?
   set iline $::em::begsel
   set doafter false
-  set lappend {lappend comms}
+  set lapvar comms
   set ::em::commhidden [list 0]
   set hidden [set options [set ilmenu 0]]
   set separ {}
@@ -1611,7 +1607,7 @@ proc ::em::menuof {commands s1 domenu} {
       ::em::init_menuvars $domenu $options
       set hidden 1
       set options 0
-      set lappend {lappend ::em::commhidden}
+      set lapvar ::em::commhidden
     }
     if {$options} {
       if {[string match co=* $line]} {
@@ -1729,9 +1725,9 @@ proc ::em::menuof {commands s1 domenu} {
         set doafter true       ;# item names to be updated at intervals
       }
       if {$::em::ornament > 1} {
-        {*}$lappend [list "$prom :$name" $torun $hot $typ]
+        lappend $lapvar [list "$prom :$name" $torun $hot $typ]
       } else {
-        {*}$lappend [list "$name" $torun $hot $typ]
+        lappend $lapvar [list "$name" $torun $hot $typ]
       }
     }
     if {[string first $::em::extraspaces $prom]<0} {set ::em::extras false}
@@ -1757,12 +1753,14 @@ proc ::em::prepare_buttons {refcommands} {
   }
   upvar $refcommands commands
   if {$::em::itviewed <= 0} {
-    for_buttons {
+    set ::em::isep 0
+    for {set j $::em::begin} {$j < $::em::ncmd} {incr j} {
+      set i $j; set b .em.fr.win.fr$j.butt
       set comm [lindex $commands $i]
       set name [lindex $comm 0]
       if {$::em::extras} {
         set name [string map [list $::em::extraspaces {}] $name]
-        set comm [lreplace $comm 0 0 "$name"]
+        set comm [lreplace $comm 0 0 $name]
         set commands [lreplace $commands $i $i $comm]
       }
       set name [prepr_idiotic name 0]
@@ -1811,7 +1809,9 @@ proc ::em::prepare_buttons {refcommands} {
 proc ::em::repaint_menu {} {
   catch {
     ::em::initcolorscheme
-    for_buttons {
+    set ::em::isep 0
+    for {set j $::em::begin} {$j < $::em::ncmd} {incr j} {
+      set i $j; set b .em.fr.win.fr$j.butt
       $b configure -fg [color_button $i] -bg [color_button $i bg] \
         -borderwidth $::em::bd -relief flat
       .em.fr.win.l$i configure -bg $::em::clrinab -fg $::em::clrhotk
@@ -1837,19 +1837,10 @@ proc ::em::reread_menu {{ib ""}} {
   initmenu
   if {$ib ne {}} repaintForWindows
 }
-#___ shadow 'w' widget
-proc ::em::shadow_win {w} {
-  if {![catch {set ::em::bgcolr($w) [$w cget -bg]} e]} {
-    if {[::apave::shadowAllowed]} {
-      $w configure -bg $::em::clrgrey
-    }
-  }
-}
 #___ focus in/out
 proc ::em::focused_win {focused} {
   set ::eh::mx [set ::eh::my 0]
-  if {!$::em::shadowed || ![::apave::shadowAllowed] || \
-  ($::em::skipfocused && [isMenuFocused])} {
+  if {$::em::skipfocused && [isMenuFocused]} {
     mouse_button $::em::lasti
     set ::em::skipfocused 0
     return
@@ -1866,16 +1857,6 @@ proc ::em::focused_win {focused} {
     set ::em::skipfocused 1  ;# to disable blinking FocusOut/FocusIn
     ::em::repaint_menu  ;# important esp. for Windows
   } elseif {!$focused && [isMenuFocused]} {
-    # only 2 generations of fathers & sons
-    foreach w [winfo children .em.fr] {
-      shadow_win $w
-      foreach wc [winfo children $w] {
-        shadow_win $wc
-        foreach wc2 [winfo children $wc] {
-          shadow_win $wc2
-        }
-      }
-    }
     catch {.em.fr.win.fr$::em::lasti.butt configure -fg $::em::clrhotk}
     set ::eh::mx [set ::eh::my 0]
     update
@@ -1989,7 +1970,7 @@ proc ::em::get_menutitle {} {
 #___ initialize ::em::commands from argv and menu
 proc ::em::initcommands {lmc amc osm {domenu 0}} {
   set resetpercent2 0
-  foreach s1 {tc= a0= P= N= PD= PN= F= o= ln= cn= s= u= w= sh= \
+  foreach s1 {tc= a0= P= N= PD= PN= F= o= ln= cn= s= u= w= \
   qq= dd= ss= pa= ah= += bd= b0= b1= b2= b3= b4= dk= \
   f1= f2= f3= fs= a1= a2= ed= tf= tg= md= wc= tt= wt= pk= TF= \
   t0= t1= t2= t3= t4= t5= t6= t7= t8= t9= \
@@ -2002,7 +1983,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
   a= d= e= f= p= l= h= b= cs= c= t= g= n= \
   fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= \
   cc= gr= ht= hh= rt= DF= BF= pd= m= om= ts= \
-  yn= in= ex= EX= ee= PI= NE= ls= SD= g1= g2= th= td= } { ;# the processing order matters
+  yn= in= ex= EX= ee= PI= NE= ls= SD= g1= g2= th= td= SH=} { ;# the processing order matters
     if {$s1 in {o= s= m=} && $s1 ni $osm} {
       continue
     }
@@ -2018,7 +1999,7 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
       }
       set s01 [string range $s1 0 1]
       switch -exact -- $s1 {
-        tg= - om= - dk= - ls= - DF= - BF= - pd= - PI= - NE= - tc= - th= - td= - ee= {
+        tg= - om= - dk= - ls= - DF= - BF= - pd= - PI= - NE= - tc= - th= - td= - ee= - SH= {
           # these are set as simply as ::em::NN
           set ::em::$s01 $seltd
         }
@@ -2051,7 +2032,6 @@ proc ::em::initcommands {lmc amc osm {domenu 0}} {
           ::em::menuof ::em::commands $s1 $domenu
         }
         b= {set ::eh::my_browser $seltd}
-        sh= {set ::em::shadowed [::apave::getN $seltd 0]}
         cs= {  ;# user-defined CS
           if {[::em::insteadCS $seltd]} {
             set ::em::ncolor [::apave::obj csAdd $seltd true]
@@ -2203,7 +2183,9 @@ proc ::em::colorlist {} {
 }
 #___ clear off default colors
 proc ::em::unsetdefaultcolors {} {
-  foreach c {fg bg fE bE fS bS fI bI ht hh cc gr fM bM fW bW} {catch {unset ::em::clr$c}}
+  foreach c {fg bg fE bE fS bS fI bI ht hh cc gr fM bM fW bW} {
+    unset -nocomplain ::em::clr$c
+  }
 }
 #___ set default colors from color scheme
 proc ::em::initcolorscheme {{nothemed false}} {
@@ -2227,7 +2209,6 @@ proc ::em::initcolorscheme {{nothemed false}} {
   if {[info exist ::em::clrbI]} {set ::em::bI $::em::clrbI}
   if {[info exist ::em::clrfM]} {set ::em::fM $::em::clrfM}
   if {[info exist ::em::clrbM]} {set ::em::bM $::em::clrbM}
-  catch {::baltip config -shiftX 8 -fg $::em::fW -bg $::em::bW}
   if {[winfo exist .em.fr.win]} {
     .em configure -bg [.em.fr.win cget -bg]
   } else {
@@ -2406,7 +2387,9 @@ proc ::em::initmenu {} {
   if {![prepare_buttons ::em::commands]} return
   set capsbeg [expr {36 + $::em::begsel}]
   set symsmap [list \n { } \[ \\\[ \] \\\] \$ \\\$]
-  for_buttons {
+  set ::em::isep 0
+  for {set j $::em::begin} {$j < $::em::ncmd} {incr j} {
+    set i $j; set b .em.fr.win.fr$j.butt
     set hotkey [string range $::em::hotkeys $i $i]
     set coSM [lindex $::em::commands $i]
     set comm [string map $symsmap $coSM]
@@ -2518,7 +2501,7 @@ proc ::em::initmenu {} {
   }
   if {$::em::start0} {
     if {$::em::wc || [::iswindows] && $::em::start0==1} {
-      ::eh::center_window .em 0   ;# omitted in Linux as 'wish' is centered in it
+     ::tk::PlaceWindow .em widget .
     }
   }
 }
@@ -2538,8 +2521,7 @@ proc ::em::on_exit {{really 1} args} {
   # remove temporary files, at closing a parent menu
   if {!$::em::ischild} {
     set menudir [file dirname $::em::menufilename]
-    catch {file delete {*}[glob "$menudir/*.tmp~"]}
-    catch {file delete {*}[glob "$menudir/*~.tmp"]}
+    catch {file delete {*}[glob "$menudir/*.tmp*"]}
   }
   if {$::em::solo} exit
   menuOption $::em::menufilename geometry [::em::geometry]
@@ -2572,7 +2554,9 @@ proc ::em::run_it {i {hidden 0}} {
 #___ run auto list a=
 proc ::em::run_auto {alist} {
   foreach task [split $alist ,] {
-    for_buttons {
+    set ::em::isep 0
+    for {set j $::em::begin} {$j < $::em::ncmd} {incr j} {
+      set i $j; set b .em.fr.win.fr$j.butt
       if {$task eq [string range $::em::hotkeys $i $i]} {
         $b configure -fg $::em::clrhotk
         run_it $i
@@ -2652,15 +2636,7 @@ cyNjDMdA3NXNcCP747a3VJg6ATkQ0OkoHNcZAAAAAElFTkSuQmCC}
 #___ end up inits
 proc ::em::initend {} {
   ::apave::initPOP .em
-  if {$::em::shadowed && [set d [expr {$::em::dk in {{} dialog}}]]} {
-    bind .em <FocusOut> {if {"%W" eq {.em}} {::em::focused_win false}}
-    bind .em <FocusIn>  {if {"%W" eq {.em}} {::em::focused_win true}}
-  } else {
-    if {$::em::shadowed && !$d} {
-      catch {puts "dk=$::em::dk not used with sh=1"}
-    }
-    bind .em.fr <FocusIn> {::em::focus_button $::em::lasti}
-  }
+  bind .em.fr <FocusIn> {::em::focus_button $::em::lasti}
   bind .em <Control-t> {.em.fr.cb invoke}
   bind .em <Escape> {
     if {$::em::yn && ![::em::is_child] && ![Q $::em::menuttl "Quit e_menu?" \
@@ -2680,7 +2656,6 @@ proc ::em::initend {} {
   catch {wm deiconify .em ; raise .em}
   ::eh::checkgeometry .em
   set ::em::start0 0
-  ::apave::shadowAllowed true
   repaintForWindows
 }
 #___ initializes all of data and runs the menu
@@ -2688,6 +2663,7 @@ proc ::em::initall {} {
   ::em::init_arrays
   ::em::initdefaultcolors
   ::em::initcolorscheme
+  catch {::baltip config -shiftX 8 -fg $::em::fW -bg $::em::bW}
   if {[::em::initcomm]} {
     ::em::initmain
     ::em::initmenu
@@ -2714,7 +2690,7 @@ proc ::em::main {args} {
   if {$prior} {
     set ::em::empool [list]  ;# continue with variables of previous session
   }
-  catch {unset ::EMENUFILE}  ;# a file name to be initialized in .mnu
+  unset -nocomplain ::EMENUFILE  ;# a file name to be initialized in .mnu
   set ::em::Argv $args
   set ::em::Argc [llength $args]
   set ::em::fs [::apave::obj basicFontSize]

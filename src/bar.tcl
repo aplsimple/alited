@@ -458,6 +458,7 @@ proc bar::OnTabSelection {TID} {
   namespace upvar ::alited al al
   variable whilesorting
   if {$whilesorting} return
+  alited::favor::SkipVisited yes
   set fname [FileName $TID]
   alited::main::ShowText
   alited::file::SbhText
@@ -472,10 +473,14 @@ proc bar::OnTabSelection {TID} {
   CurrentControlTab $fname
   alited::menu::FillRunItems $fname
   alited::main::HighlightLine
-  lassign [alited::main::CalcIndentation] indent indentchar
+  lassign [alited::main::CalcIndentation $wtxt] indent indentchar
   ::apave::setTextIndent $indent $indentchar
   if {$al(prjindentAuto)} {alited::main::UpdateProjectInfo $indent}
-  after 10 {::alited::tree::SeeSelection; ::alited::main::UpdateGutter}
+  after 10 {
+    ::alited::tree::SeeSelection
+    ::alited::main::UpdateGutter
+    ::alited::favor::SkipVisited no
+  }
 }
 #_______________________
 
@@ -513,6 +518,7 @@ proc bar::ControlTab {} {
   # Switches between last two active tabs.
 
   variable ctrltablist
+  alited::favor::SkipVisited yes
   set fname [CurrentControlTab]
   set found no
   while {[llength $ctrltablist]} {
@@ -532,7 +538,7 @@ proc bar::ControlTab {} {
     CurrentControlTab $fname
     BAR $TID show
   }
-  after idle {focus [alited::main::CurrentWTXT]}
+  after idle "focus \[alited::main::CurrentWTXT\]; alited::favor::SkipVisited no"
 }
 
 # ________________________ Service  _________________________ #

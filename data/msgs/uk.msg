@@ -30,8 +30,6 @@ namespace eval ::alited {
     {Edit} {Правка}
     {Search} {Пошук}
     {Conversions} {Перетворення}
-    {Change Encoding...} {Змінити кодировку...}
-    {Change EOL...} {Змінити EOL...}
     {Tools} {Струменти}
     {Setup} {Опції}
     {Help} {Допомога}
@@ -134,6 +132,12 @@ namespace eval ::alited {
     {Configurations...} {Конфігурації...}
     {Tips on / off} {Підказки вкл / викл}
     {Exit} {Вихід}
+    {Reload with EOL} {Завантажити з EOL}
+    "Save the file:\n%F ?" "Зберегти файл:\n%F ?"
+    {Reload with Encoding} {Завантажити у кодировці}
+    {Encoding} {Кодировка}
+    "Saving and reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nSave the file:\n%F ?" "Збереження та відкриття \"%f\"\nу кодировці \"%e\" може статися помилковим.\n\nЗберегти файл:\n%F ?"
+    "Reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nReload the file:\n%F ?" "Завантаження \"%f\"\nу кодировці \"%e\" може статися помилковим.\n\nЗавантажити файл:\n%F ?"
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -423,7 +427,6 @@ namespace eval ::alited {
   ### ________________________ Editor _________________________ ###
   ::msgcat::mcmset uk {
     {Font:} {Шрифт:}
-    {Font size:} {Розмір шрифта:}
     {Gutter's width:} {Ширина жолобу}
     {Gutter's shift from text:} {Відступ жолобу від текста:}
     {Space above lines:} {Відступ над рядками:}
@@ -532,8 +535,6 @@ namespace eval ::alited {
     {Diff tool:} {Команда diff:}
     {Path to man/tcl:} {Шлях до man/tcl:}
     {tclsh, wish or tclkit:} {tclsh, wish або tclkit:}
-    {Rows:} {Рядків:}
-    {Columns:} {Колонок:}
     {Geometry:} {Геометрія:}
     {Run as external app:} {Як окрему програму:}
     {Inserts a new line.} {Додає рядок.}

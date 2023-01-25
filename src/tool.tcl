@@ -160,8 +160,8 @@ proc tool::tkconOptions {} {
   foreach opt [array names al tkcon,clr*] {
     lappend opts -color-[string range $opt 9 end] $al($opt)
   }
-  foreach opt {rows cols fsize geo topmost} {
-    lappend opts -apl-$opt $al(tkcon,$opt)
+  foreach {opt val} $al(tkcon,options) {
+    lappend opts -apl$opt $val
   }
   return $opts
 }
@@ -411,7 +411,7 @@ proc tool::EM_command {im} {
     # call a command
     set ex "ex=[alited::tool::EM_HotKey $idx]"
   }
-  return "alited::tool::e_menu \"m=$mnu\" $ex"
+  return "alited::tool::e_menu \"m=$mnu\" $ex SH=1"
 }
 #_______________________
 

@@ -1210,7 +1210,7 @@ oo::class create ::apave::APaveDialog {
              $addpopup
              \$pop add separator
              \$pop add command [my iconA SaveFile] -accelerator Ctrl+W \\
-             -label \"Save and Exit\" -command \"\[[self] Pdg defb1\] invoke\"
+             -label \"Save and Exit\" -command \"[self] res $qdlg 1\"
             "
         }
         lappend args -onclose [namespace current]::exitEditor
@@ -1305,7 +1305,7 @@ oo::class create ::apave::APaveDialog {
           set focusnow [my TexM]
           catch "::tk::TextSetCursor $focusnow $curpos"
           foreach k {w W} \
-            {catch "bind $focusnow <Control-$k> {[my Pdg defb1] invoke; break}"}
+            {catch "bind $focusnow <Control-$k> {[self] res $qdlg 1; break}"}
         }
       }
       if {$readonly} {

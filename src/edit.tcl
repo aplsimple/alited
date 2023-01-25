@@ -189,20 +189,6 @@ proc edit::UnComment {} {
   SelectLines $wtxt $l1 $l2
 }
 
-# ________________________ Conversions _________________________ #
-
-proc edit::ChangeEncoding {} {
-  # Changes encoding of file(s).
-
-  tk_messageBox -message "edit::ChangeEncoding - stub"
-}
-#_______________________
-
-proc edit::ChangeEOL {} {
-  # Changes EOL of file(s).
-
-  tk_messageBox -message "edit::ChangeEOL - stub"
-}
 # ________________________ At modifications _________________________ #
 
 proc edit::BackupFile {TID {mode {}}} {

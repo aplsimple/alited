@@ -12,7 +12,6 @@ namespace eval project {
 
   # "Projects" dialogue's path
   variable win $::alited::al(WIN).diaPrj
-  variable popm $win.popupmenu
 
   # list of projects
   variable prjlist [list]
@@ -522,8 +521,6 @@ proc project::Select {{item ""}} {
   namespace upvar ::alited al al obDl2 obDl2 OPTS OPTS
   variable prjinfo
   variable klnddata
-  variable popm
-  if {[winfo exists $popm]} return
   if {$item eq {}} {set item [Selected item no]}
   if {$item ne {}} {
     lassign [SelectedPrj $item] tree item prj
@@ -867,16 +864,7 @@ proc project::PopupMenu {x y X Y} {
 
   namespace upvar ::alited al al obDl2 obDl2
   variable win
-  variable popm
-  set tree [$obDl2 TreePrj]
-  set ID [$tree identify item $x $y]
-  set region [$tree identify region $x $y]
-  if {![$tree exists $ID] || $region ni {tree cell}} {
-    return  ;# only tree items are processed
-  }
-  if {[$tree selection] ne $ID} {
-    $tree selection set $ID
-  }
+  set popm $win.popupmenu
   catch {destroy $popm}
   menu $popm -tearoff 0
   $popm add command -label $al(MC,prjadd) \

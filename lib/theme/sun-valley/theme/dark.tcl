@@ -324,7 +324,7 @@ namespace eval ttk::theme::sun-valley-dark {
             ] -width 26 -sticky w
 
         # Scrollbar
-        ttk::style element create Horizontal.Scrollbar.trough image $images(scroll-hor-trough) -sticky ew -border 6
+        ttk::style element create Horizontal.Scrollbar.trough image $images(scroll-hor-trough) -sticky ew -border 3
         ttk::style element create Horizontal.Scrollbar.thumb image [list $images(scroll-hor-thumb)  \
                 disabled  $images(scroll-hor-trough) \
                 pressed $images(scroll-hor-hover) \
@@ -334,7 +334,7 @@ namespace eval ttk::theme::sun-valley-dark {
         ttk::style element create Horizontal.Scrollbar.rightarrow image $images(scroll-right) -sticky {} -width 12
         ttk::style element create Horizontal.Scrollbar.leftarrow image $images(scroll-left) -sticky {} -width 12
 
-        ttk::style element create Vertical.Scrollbar.trough image $images(scroll-vert-trough) -sticky ns -border 6
+        ttk::style element create Vertical.Scrollbar.trough image $images(scroll-vert-trough) -sticky ns -border 3
         ttk::style element create Vertical.Scrollbar.thumb image [list $images(scroll-vert-thumb) \
                 disabled  $images(scroll-vert-trough) \
                 pressed $images(scroll-vert-hover) \

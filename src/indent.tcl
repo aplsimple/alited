@@ -97,7 +97,7 @@ proc indent::normalize {} {
 
   namespace upvar ::alited al al
   set txtcurr [alited::main::CurrentWTXT]
-  lassign [alited::main::CalcIndentation] pad padchar
+  lassign [alited::main::CalcIndentation $txtcurr] pad padchar
   if {$pad<1} {
     alited::msg ok err "No indentation set.\nSee 'Setup/Projects/Options'."
     return

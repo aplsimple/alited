@@ -158,7 +158,7 @@ SW:fossil undo SW: fossil undo -n
  S:fossil commit ? S: cd %PD
  R:fossil commit ? R: %I {} "TOUCH & COMMIT" { \
    fil1 {{   File(s):}} {"$::EM_T_FILE"} \
-   opc1 {{Time stamp:}} {{$::EM_T_TIME} {{none} {time --now --checkin --checkout}}} \
+   opc1 {{Time stamp:} {-fill none -anchor w}} {{$::EM_T_TIME} {{none} {time --now --checkin --checkout}} {-width 10}} \
    v_ {{} {-pady 4}} {} \
    chb2 {{   Verbose:}} {$::EM_T_VERBOSE} \
    v_2 {{} {-pady 4}} {} seh {} {} \

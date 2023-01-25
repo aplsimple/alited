@@ -24,8 +24,6 @@ namespace eval ::alited {
     {Edit} {Правка}
     {Search} {Поиск}
     {Conversions} {Преобразования}
-    {Change Encoding...} {Сменить кодировку...}
-    {Change EOL...} {Сменить EOL...}
     {Tools} {Снасти}
     {Setup} {Опции}
     {Help} {Помощь}
@@ -128,6 +126,12 @@ namespace eval ::alited {
     {Configurations...} {Конфигурации...}
     {Tips on / off} {Подсказки вкл / выкл}
     {Exit} {Выход}
+    {Encoding} {Кодировка}
+    {Reload with EOL} {Загрузить с EOL}
+    "Save the file:\n%F ?" "Сохранить файл:\n%F ?"
+    {Reload with Encoding} {Загрузить в кодировке}
+    "Saving and reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nSave the file:\n%F ?" "Сохранение и открытие \"%f\"\nв кодировке \"%e\" может оказаться ошибочным.\n\nСохранить файл:\n%F ?"
+    "Reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nReload the file:\n%F ?" "Загрузка \"%f\"\nв кодировке \"%e\" может оказаться ошибочной.\n\nЗагрузить файл:\n%F ?"
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -416,7 +420,6 @@ namespace eval ::alited {
   ### ________________________ Editor _________________________ ###
   ::msgcat::mcmset ru {
     {Font:} {Шрифт:}
-    {Font size:} {Размер шрифта:}
     {Gutter's width:} {Ширина желобка}
     {Gutter's shift from text:} {Смещение желобка от текста:}
     {Space above lines:} {Отступ выше строк:}
@@ -525,8 +528,6 @@ namespace eval ::alited {
     {Diff tool:} {Команда diff:}
     {Path to man/tcl:} {Путь к man/tcl:}
     {tclsh, wish or tclkit:} {tclsh, wish или tclkit:}
-    {Rows:} {Строк:}
-    {Columns:} {Колонок:}
     {Geometry:} {Геометрия:}
     {Run as external app:} {Как отдельное приложение:}
     {Inserts a new line.} {Добавляет строку.}

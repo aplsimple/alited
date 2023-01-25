@@ -40,9 +40,9 @@ exec wish "$0" ${1+"$@"}
 #
 
 if {$tcl_version < 8.4} {
-    return -code error "tkcon requires at least Tcl/Tk 8.4"
+        return -code error "tkcon requires at least Tcl/Tk 8.4"
 } else {
-    package require Tk 8.4
+        package require Tk 8.4
 }
 
 # We need to load some package to get what's available, and we
@@ -122,7 +122,7 @@ proc ::tkcon::Init {args} {
     foreach {key default} {
 	bg #25292b blink #929281 cursor #FFFFFF disabled #999797 proc #66FF10 \
 	var #565608 prompt #ffff00 stdin #FFFFFF stdout #aeaeae stderr #ff7272
-   } {
+    } {
 	if {![info exists COLOR($key)]} { set COLOR($key) $default }
     }
 
@@ -648,7 +648,7 @@ proc ::tkcon::InitUI {title} {
     }
     set PRIV(base) $w
 
-    if {[info exists OPT(fsize)]} {set fsize $OPT(fsize)} {set fsize 13} ;# apl
+    if {[info exists OPT(fontsize)]} {set fsize $OPT(fontsize)} {set fsize 13} ;# apl
     catch {font create tkconfixed {*}[font actual TkFixedFont] -size -$fsize}
     catch {font create tkconfixedbold {*}[font actual TkFixedFont] -size -$fsize -weight bold}
 
@@ -747,8 +747,8 @@ proc ::tkcon::InitUI {title} {
     if {$OPT(gc-delay)} {
 	after $OPT(gc-delay) ::tkcon::GarbageCollect
     }
-    if {[info exists OPT(geo)]} {
-      catch {wm geometry $root $OPT(geo)}  ;# apl
+    if {[info exists OPT(geometry)]} {
+      catch {wm geometry $root $OPT(geometry)}  ;# apl
     } else {
       wm geometry $root "+100+100"
     }

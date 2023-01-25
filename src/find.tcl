@@ -60,6 +60,30 @@ namespace eval find {
   variable counts {}
 }
 
+
+# ________________________ Common _________________________ #
+
+proc find::SessionList {} {
+  # Returns a list of all tabs or selected tabs (if set).
+
+  set res [alited::bar::BAR listFlag s]
+  if {[llength $res]==1} {set res [alited::bar::BAR listTab]}
+  return $res
+}
+#_______________________
+
+proc find::TabsToSearch {{tab ""}} {
+  # Gets a list of tabs to search something, beginning from a current tab.
+  #   tab - the current tab
+
+  if {$tab eq {}} {set tab [alited::bar::CurrentTabID]}
+  set tabs [SessionList]
+  if {[set i [lsearch -exact -index 0 $tabs $tab]]>0} {
+    set tabs [linsert [lreplace $tabs $i $i] 0 $tab]
+  }
+  return $tabs
+}
+
 # ________________________ Words / commands from text _________________________ #
 
 proc find::GetCommandOfLine {line idx {delim ""} {mode ""}} {
@@ -171,10 +195,7 @@ proc find::LookDecl1 {wtxt isNS} {
   set tab [alited::bar::CurrentTabID]
   if {$isNS} {
     # search a qualified name: beginning from the current tab
-    set tabs [SessionList]
-    if {[set i [lsearch -exact -index 0 $tabs $tab]]>0} {
-      set tabs [linsert [lreplace $tabs $i $i] 0 $tab]
-    }
+    set tabs [TabsToSearch $tab]
     if {$withNS} {set what "*$com2"} {set what " $com2"}
   } else {
     # search a non-qualified name: in the current tab only
@@ -244,7 +265,7 @@ proc find::DoFindUnit {} {
   InitShowResults
   set n 0
   if {$alited::main::findunits==1} {
-    set tabs [SessionList]
+    set tabs [TabsToSearch]
   } else {
     set tabs [alited::bar::CurrentTabID]
   }
@@ -660,7 +681,7 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
   InitShowResults
   set allfnd [list]
   set data(_ERR_) no
-  foreach tab [SessionList] {
+  foreach tab [TabsToSearch] {
     set TID [lindex $tab 0]
     lassign [alited::main::GetText $TID no no] curfile wtxt
     lappend allfnd {*}[FindAll $wtxt $TID $tagme]
@@ -797,7 +818,7 @@ proc find::ReplaceInSession {} {
   set rn 0
   set waseditcurr no
   set data(_ERR_) no
-  foreach tab [SessionList] {
+  foreach tab [TabsToSearch] {
     set TID [lindex $tab 0]
     lassign [alited::main::GetText $TID no no] curfile wtxt
     if {[set rdone [ReplaceAll $TID $wtxt [Search $wtxt]]]} {
@@ -842,7 +863,8 @@ proc find::btTRetry {} {
   namespace upvar ::alited al al obFND obFND
   variable win
   variable geo
-  if {[wm geometry $win] eq $geo} {
+  variable data
+  if {[incr data(btTRetry)]%2} {
     lassign [split $geo x+] w1 h1 x1 y1
     lassign [split [winfo geometry [$obFND But1]] x+] w2 h2
     set w  [expr {($w2+2)*5}] ;# "standard" width
@@ -887,15 +909,6 @@ proc find::ClearTags {} {
       [alited::main::CurrentWTXT] tag remove fndTag 1.0 end
     }
   }
-}
-#_______________________
-
-proc find::SessionList {} {
-  # Returns a list of all tabs or selected tabs (if set).
-
-  set res [alited::bar::BAR listFlag s]
-  if {[llength $res]==1} {set res [alited::bar::BAR listTab]}
-  return $res
 }
 #_______________________
 
@@ -1108,6 +1121,7 @@ proc find::_create {} {
   variable data
   set data(lastinvoke) 1
   set data(geoDefault) 0
+  set data(btTRetry) 0
   set res 1
   set w $win.fra
   while {$res} {

@@ -602,6 +602,10 @@ proc ini::ReadPrjTabs {nam val} {
     switch -exact -- $nam {
       tab {lappend al(tabs) $val}
       recent {alited::file::InsertRecent $val end}
+      encode - eol {
+        lassign [split $val \t] k v
+        set al($k) $v
+      }
     }
   }
 }
@@ -886,6 +890,17 @@ proc ini::SaveIniPrj {{newproject no}} {
       puts $chan recent=$rf
     }
   }
+  foreach {key1 key2} {ENCODING encode EOL eol} {
+    foreach k [array names al $key1,*] {
+      if {$al($k) ne {utf-8}} {
+        # restrict the saved with currently used files only
+        set fname [string range $k [string first , $k]+1 end]
+        if {$fname in $al(RECENTFILES) || [alited::bar::FileTID $fname] ne {}} {
+          puts $chan "$key2=$k\t$al($k)"
+        }
+      }
+    }
+  }
   puts $chan {}
   puts $chan {[Options]}
   puts $chan curtab=[alited::bar::CurrentTab 3]
@@ -975,6 +990,18 @@ proc ini::CheckUpdates {doit} {
   set al(_updFileIni_) [file normalize [file join $inidir $inifile$date$iniext]]
   set pobj alitedObjToDel
   ::apave::APaveInput create $pobj
+  set mnudo [expr {![file exists $al(_updDirMnu_)]}]
+  set inido [expr {![file exists $al(_updFileIni_)]}]
+  if {$doit} {
+    set lab5 {}
+    set ::alited::al(_updmnu_) $mnudo
+    set ::alited::al(_updini_) $inido
+  } else {
+    set lab5 [list \
+      seh2  {{} {-pady 10} {}} {} \
+      lab5  {{} {-padx 5} {-t {$::alited::al(MC,restart)}}} {} \
+    ]
+  }
   lassign [$pobj input {} $al(MC,updateALE) [list \
     lab1  {{} {} {-t {$::alited::al(MC,updLab1)}}}  {} \
     chb1  {{} {-padx 10} {-t {$::alited::al(MC,updmnu)}}} {$::alited::al(_updmnu_)} \
@@ -982,46 +1009,49 @@ proc ini::CheckUpdates {doit} {
     seh1  {{} {-pady 10} {}} {} \
     lab2  {{} {} {-t {$::alited::al(MC,updLab2)}}} {} \
     lab3  {{} {-padx 20} {-t {$::alited::al(_updDirMnu_)}}} {} \
-    lab4  {{} {-padx 20} {-t {$::alited::al(_updFileIni_)\n}}} {} \
+    lab4  {{} {-padx 20} {-t {$::alited::al(_updFileIni_)}}} {} \
+    {*}$lab5 \
     ] -head $head -weight bold -buttons "butHELP {View Changes} ::alited::ini::ViewUpdates" -resizable no -focus *YES] \
     res updmnu updini
   catch {$pobj destroy}
   if {!$res} {if {$doit} return else exit}
   if {!$updmnu && !$updini} return
   set err {}
-  if {$updini && ![catch {file copy $al(INI) $al(_updFileIni_)} err]} {
+  set mnudone 0
+  set inidone 0
+  if {$updmnu && $mnudo && \
+  ![catch {file rename $al(EM,mnudir) $al(_updDirMnu_)} err]} {
     set err {}
   }
-  if {$err eq {} && $updmnu && ![catch {file rename $al(EM,mnudir) $al(_updDirMnu_)} err]} {
-    set err {}
+  if {$err eq {} && $updmnu && $mnudo} {
+    if {![catch {file copy $MNUDIR $al(EM,mnudir)} err]} {
+      set err {}
+      set mnudone 1
+    }
   }
-  if {$err eq {} && $updmnu && ![catch {file copy $MNUDIR $al(EM,mnudir)} err]} {
+  if {$err eq {} && $updini && $inido && \
+  ![catch {file copy $al(INI) $al(_updFileIni_)} err]} {
     set err {}
+    set inidone 1
   }
-  if {$err eq {} && $updini} {
+  if {$err eq {} && $inidone} {
     UpdateTemplates $DATAUSERINIFILE
   }
-  if {$err ne {}} {
-    ::apave::APaveInput create $pobj
-    if {$doit} {
-      set dlg ok
-      set h {3 5}
-      set but {}
-    } else {
-      set dlg yesno
-      set h {3 8}
-      set but NO
-      append err "\n\nYet continue with alited?"
-    }
-    if {![$pobj $dlg err Error $err {*}$but -text 1 -w 50 -h $h] && !$doit} exit
-    catch {$pobj destroy}
+  alited::ini::SaveIni
+  if {!$doit} {
+    alited::Exit - 1 no
   } else {
-    set msg "$al(MC,updateALE):"
-    if {$updmnu} {append msg "   $al(MC,updmnu)"}
-    if {$updini} {append msg "   $al(MC,updini)"}
-    after 2000 [list alited::Message "\n $msg \n" 3]
+    if {$err ne {}} {
+      ::apave::APaveInput create $pobj
+      $pobj ok err Error $err -text 1 -w 50 -h {3 5}
+      catch {$pobj destroy}
+    } elseif {$mnudone || $inidone} {
+      set msg "$al(MC,updateALE):"
+      if {$mnudone} {append msg "   $al(MC,updmnu)"}
+      if {$inidone} {append msg "   $al(MC,updini)"}
+      alited::Message "\n $msg \n" 3
+    }
   }
-  set al(Save_Ini_After_Updates) $err
 }
 
 # ______________________ Configuring alited ______________________ #
@@ -1386,7 +1416,6 @@ proc ini::_init {} {
   lassign [::apave::obj create_FontsType small -size $al(FONTSIZE,small)] \
      al(FONT,defsmall) al(FONT,monosmall)
   lassign [alited::FgFgBold] -> al(FG,Bold)
-  CheckUpdates no
 }
 #_______________________
 

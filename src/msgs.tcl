@@ -104,6 +104,7 @@ namespace eval ::alited {
     set al(MC,intkcon)     [msgcat::mc {in Tkcon}]
     set al(MC,on)          [msgcat::mc on]
     set al(MC,test)        [msgcat::mc Test]
+    set al(MC,restart)     [msgcat::mc "For the settings to be active,\nalited application should be restarted."]
 
     ## _  menu items _ ##
     set al(MC,lookdecl)    [msgcat::mc {Look for Declaration}]

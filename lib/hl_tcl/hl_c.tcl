@@ -428,7 +428,7 @@ proc ::hl_c::my::CoroModified {txt {i1 -1} {i2 -1} args} {
     if {[set cmd $data(CMD,$txt)] ne {}} {
       # run a command after changes done (its arguments are txt, ln1, ln2)
       append cmd " $txt $lno1 $lno2 $args"
-      {*}$cmd
+      after idle $cmd
     }
     MemPos $txt
     return

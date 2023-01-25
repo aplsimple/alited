@@ -80,50 +80,6 @@ proc ::eh::get_language {} {
   }
   return $lang
 }
-#=== maximize 'win' window
-proc ::eh::zoom_window {win} {
-  if {[::iswindows]} {
-    wm state $win zoomed
-  } else {
-    wm attributes $win -zoomed 1
-  }
-}
-#=== center window on screen
-proc ::eh::center_window {win {ornament 1} {winwidth 0} {winheight 0}} {
-  # to center a window regarding taskbar(s) sizes
-  #  center_window win     ;# if win window has borders and titlebar
-  #  center_window win 0   ;# if win window isn't ornamented with those
-  if {$ornament == 0} {
-    lassign {0 0} left top
-    set usewidth [winfo screenwidth .]   ;# it's straightforward
-    set useheight [winfo screenheight .]
-  } else {
-    set tw ${win}_temp_               ;# temp window path
-    catch {destroy $tw}               ;# clear out
-    toplevel $tw                      ;# make a toplevel window
-    wm attributes $tw -alpha 0.0      ;# make it be not visible
-    zoom_window $tw                   ;# maximize the temp window
-    update
-    set usewidth [winfo width $tw]    ;# the window width and height define
-    set useheight [winfo height $tw]  ;# a useful area for all other windows
-    set twgeom [split "[wm geometry $tw]" +]
-    set left [lindex $twgeom 1]       ;# all ornamented windows are shifted
-    set top [lindex $twgeom 2]        ;# from left and top by these values
-    destroy $tw
-  }
-  wm deiconify $win
-  if {$winwidth > 0 && $winheight > 0} {
-    wm geometry $win ${winwidth}x${winheight}  ;# geometry to set
-  } else {
-    set winwidth [eval winfo width $win]       ;# geometry is already set
-    set winheight [eval winfo height $win]
-  }
-  set x [expr $left + ($usewidth - $winwidth) / 2]
-  set y [expr $top + ($useheight - $winheight) / 2]
-  wm geometry $win +$x+$y
-  wm state . normal
-  update
-}
 #=== check and correct (if necessary) the geometry of window
 proc ::eh::checkgeometry {{win .}} {
   lassign [split [winfo geometry $win] x+] w h x y

@@ -461,7 +461,6 @@ proc ::em::change_PD {} {
   }
   append em_message \
     "\n 'Color scheme' is -1 .. [::apave::cs_Max] selected with Up/Down key.  \n"
-  set sa [::apave::shadowAllowed 0]
   set ncolorsav $::em::ncolor
   set fssav $::em::fs
   set geo [wm geometry .em]
@@ -504,7 +503,6 @@ proc ::em::change_PD {} {
     -centerme .em {*}[theming_pave]]
     set r [lindex $res 0]
   }
-  ::apave::shadowAllowed $sa
   set ::em::ncolor [::apave::getN $::em::ncolor $ncolorsav -2 [::apave::cs_Max]]
   if {$r} {
     if {$::em::ncolor==-2} {set ::em::ncolor -1}
@@ -654,14 +652,20 @@ proc ::em::writeable_command {cmd} {
       set opt 0
     }
   }
-  set dialog [::apave::APaveInput new]
   set cmd [string map {|!| "\n"} $cmd]
-  set res [$dialog misc {} "EDIT: $mark" "$cmd" {"Save & Run" 1 Cancel 0} TEXT \
-    -text 1 -ro 0 -w 70 -h 10 -pos $pos {*}[::em::theming_pave] -ontop $::em::ontop \
-    -head "UNCOMMENT usable commands, COMMENT unusable ones.\nUse  \\\\\\\\ \
-    instead of  \\\\  in patterns." -family Times -hsz 14 -size 12 -g $geo]
-  $dialog destroy
-  lassign $res res geo cmd
+  if {$::em::SH} {
+    # res: "true" (run without dialog), "yes" (run with dialog) or "1" (save only)
+    set res true
+    set cmd #\ $cmd ;# to fit a result returned by the dialog
+  } else {
+    set dialog [::apave::APaveInput new]
+    set res [$dialog misc {} "EDIT: $mark" "$cmd" {"Save & Run" yes Cancel 0} TEXT \
+      -text 1 -ro 0 -w 70 -h 10 -pos $pos {*}[::em::theming_pave] -ontop $::em::ontop \
+      -head "UNCOMMENT usable commands, COMMENT unusable ones.\nUse  \\\\\\\\ \
+      instead of  \\\\  in patterns." -family Times -hsz 14 -size 12 -g $geo]
+    $dialog destroy
+    lassign $res res geo cmd
+  }
   if {$res} {
     set cmd [string trim $cmd " \{\}\n"]
     set data [string map {"\n" |!|} $cmd]
@@ -672,9 +676,13 @@ proc ::em::writeable_command {cmd} {
     } else {
       lappend menudata "$data"
     }
-    ::em::write_menufile $menudata
-    set cmd [string map {"\n" "\\n"} $cmd]
-    prepr_name cmd
+    if {$res ne {true}} {::em::write_menufile $menudata}
+    if {$res in {true yes}} {
+      set cmd [string map {"\n" "\\n"} $cmd]
+      prepr_name cmd
+    } else {
+      set cmd {}  ;# saving only: after Ctrl+W or "Save & Exit" of popup menu
+    }
   } else {
     set cmd {}
   }

@@ -25,8 +25,6 @@ namespace eval ::alited {
     {Edit} {Bearbeiten}
     {Search} {Suchen}
     {Conversions} {Umwandlungen}
-    {Change Encoding...} {Ändere Encoding ...}
-    {Change EOL...} {Ändere EOL ...}
     {Tools} {Werkzeuge}
     {Setup} {Einstellungen}
     {Help} {Hilfe}
@@ -129,6 +127,12 @@ namespace eval ::alited {
     {Configurations...} {Konfigurationen...}
     {Tips on / off} {Tipps ein / aus}
     {Exit} {Ausgang}
+    {Encoding} {Kodierung}
+    {Reload with EOL} {Öffne mit EOL}
+    "Save the file:\n%F ?" "Werden Sie die Datei speichern:\n%F ?"
+    {Reload with Encoding} {Öffne mit die Kodierung}
+    "Saving and reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nSave the file:\n%F ?" "Das Speichern und erneute Laden von \"%f\"\nmit der Kodierung \"%e\" kann falsch sein.\n\nWerden Sie die Datei speichern:\n%F ?"
+    "Reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nReload the file:\n%F ?" "Das erneute Laden von \"%f\"\nmit der Kodierung \"%e\" kann falsch sein.\n\nWerden Sie die Datei laden:\n%F ?"
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -419,7 +423,6 @@ namespace eval ::alited {
   ### ________________________ Editor _________________________ ###
   ::msgcat::mcmset de {
     {Font:} {Zeichensatz:}
-    {Font size:} {Zeichensatz Grösse:}
     {Gutter's width:} {Breite Zwischensteg}
     {Gutter's shift from text:} {Zwischensteg's Verschiebung von Text:}
     {Space above lines:} {Platz über Zeilen:}
@@ -529,8 +532,6 @@ namespace eval ::alited {
     {Diff tool:} {Diff-Werkzeug:}
     {Path to man/tcl:} {Pfad von man/tcl:}
     {tclsh, wish or tclkit:} {tclsh, wish oder tclkit:}
-    {Rows:} {Zeilen:}
-    {Columns:} {Spalten:}
     {Geometry:} {Geometrie:}
     {Run as external app:} {Eine externe App ausführen:}
     {Inserts a new line.} {Eine neue Zeile einfügen.}

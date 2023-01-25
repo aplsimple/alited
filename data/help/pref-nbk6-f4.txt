@@ -8,6 +8,7 @@
  Other options define the size of Tkcon's window.
 
  The geometry is set as <b>+X+Y</b> meaning x- and y-coordinates of
- Tkcon's window.
+ Tkcon's window. For <b>-geometry {}</b>, it is shown in the center
+ of the screen.
 
  Use <b>Test</b> button to test your options of Tkcon.

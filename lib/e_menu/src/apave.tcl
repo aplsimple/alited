@@ -40,7 +40,6 @@ namespace eval ::apave {
     err warn ques retry yes no ok cancel exit }
   variable _AP_IMG;  array set _AP_IMG [list]
   variable _AP_VARS; array set _AP_VARS [list]
-  set _AP_VARS(.,SHADOW) 0
   set _AP_VARS(.,MODALS) 0
   set _AP_VARS(TIMW) [list]
   set _AP_VARS(LINKFONT) [list -underline 1]
@@ -183,17 +182,6 @@ namespace eval ::apave {
     set old [WindowStatus $w $name {} 0]
     if {$val ne {}} {WindowStatus $w $name $val 1}
     return $old
-  }
-  #_______________________
-
-  proc shadowAllowed {{val ""} {w .}} {
-    # Sets/gets "shadowing" mode.
-    #   val - integer (0/1)
-    #   w - window's path
-    # The mode may be used at processing "shadow" (grey) of color scheme.
-    # Returns an old value of shadowing mode.
-
-    return [IntStatus $w SHADOW $val]
   }
   #_______________________
 
@@ -3551,7 +3539,6 @@ oo::class create ::apave::APave {
     #   win - window's name
     #   args - attributes of window ("-name value" pairs)
 
-    set shal [::apave::shadowAllowed 0]
     if {[::apave::getOption -themed {*}$args] in {{} {0}} && \
     [my csCurrent] != [apave::cs_Non]} {
       my colorWindow $win
@@ -3670,7 +3657,6 @@ oo::class create ::apave::APave {
       my GetOutputValues
       set res [set [set _ ${_pav(ns)}PN::AR($win)]]
     }
-    ::apave::shadowAllowed $shal ;# restore shadowing
     return $res
   }
   #_______________________

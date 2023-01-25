@@ -45,6 +45,17 @@ proc main::ClearCbx {cbx varname} {
   }
   set $varname $values
 }
+#_______________________
+
+proc main::SetTabs {wtxt indent} {
+  # Configures tabs of a text.
+  #   wtxt - text's path
+  #   indent - indentation (= tab's length)
+
+  namespace upvar ::alited al al
+  set texttabs [expr {$indent * [font measure $al(FONT,txt) 0]}]
+  $wtxt configure -tabs "$texttabs left" -tabstyle wordprocessor
+}
 
 # ________________________ Get and show text widget _________________________ #
 
@@ -120,11 +131,13 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
   }
   if {$doinit} {
     # if the file isn't read yet, read it and initialize its highlighting
-    if {$al(prjindent)>1 && $al(prjindent)<9} {
-      set texttabs [expr {$al(prjindent) * [font measure $al(FONT,txt) 0]}]
-      $wtxt configure -tabs "$texttabs left" -tabstyle wordprocessor
+    if {$al(prjindent)>1 && $al(prjindent)<9 && !$al(prjindentAuto)} {
+      alited::main::SetTabs $wtxt $al(prjindent)
     }
     alited::file::DisplayFile $TID $curfile $wtxt $doreload
+    if {$al(prjindentAuto)} {
+      alited::main::SetTabs $wtxt [lindex [CalcIndentation $wtxt] 0]
+    }
     if {$doshow} {
       HighlightText $TID $curfile $wtxt
     } else {
@@ -501,7 +514,9 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
 
   namespace upvar ::alited al al obPav obPav
   # only for unit tree and not navigation key
-  if {!$al(TREE,isunits) || $K in {Up Down Left Right Next Prior Home End Insert}} {
+  if {!$al(TREE,isunits) || [alited::favor::SkipVisited] || \
+  $K in {Tab Up Down Left Right Next Prior Home End Insert} || \
+  [string match *Cont* $K]} {
     return
   }
   # check for current text and current unit's lines
@@ -579,27 +594,30 @@ proc main::ShowHeader {{doit no}} {
 }
 #_______________________
 
-proc main::CalcIndentation {} {
+proc main::CalcIndentation {{wtxt ""}} {
   # Check for "Auto detection of indentation" and calculates it at need.
+  #   wtxt - text's path
 
   namespace upvar ::alited al al
   set res [list $al(prjindent) { }]
   if {$al(prjindentAuto)} {
-    catch {
-      set wtxt [CurrentWTXT]
-      foreach line [split [$wtxt get 1.0 end] \n] {
-        if {[set lsp [::apave::obj leadingSpaces $line]]>0} {
-          # check if the indentation is homogeneous
-          if {[string first [string repeat { } $lsp] $line]==0} {
-            set res [list $lsp { }]
-            break
-          } elseif {[string first [string repeat \t $lsp] $line]==0} {
-            set res [list $lsp \t]
-            break
-          }
+    if {$wtxt eq {}} {
+      if {[catch {set wtxt [CurrentWTXT]}]} {return $res}
+    }
+    if {[info exists al(_INDENT_,$wtxt)]} {return $al(_INDENT_,$wtxt)}
+    foreach line [split [$wtxt get 1.0 end] \n] {
+      if {[set lsp [::apave::obj leadingSpaces $line]]>0} {
+        # check if the indentation is homogeneous
+        if {[string first [string repeat { } $lsp] $line]==0} {
+          set res [list $lsp { }]
+          break
+        } elseif {[string first [string repeat \t $lsp] $line]==0} {
+          set res [list $lsp \t]
+          break
         }
       }
     }
+    set al(_INDENT_,$wtxt) $res  ;# to omit the calculation next time
   }
   return $res
 }
@@ -612,16 +630,18 @@ proc main::UpdateProjectInfo {{indent {}}} {
   namespace upvar ::alited al al obPav obPav
   if {$al(prjroot) ne {}} {set stsw normal} {set stsw disabled}
   [$obPav BtTswitch] configure -state $stsw
-  if {[alited::tool::ComForced]} {
-    set run force
-  } elseif {$al(prjincons)} {
-    set run cons
+  if {[catch {set eol [alited::file::EOL]}] || $eol eq {}} {
+    if {[set eol $al(prjEOL)] eq {}} {set eol auto}
   } else {
-    set run tkcon
+    lassign [split $eol] -> eol
   }
-  if {[set eol $al(prjEOL)] eq {}} {set eol auto}
   if {$indent eq {}} {set indent [lindex [CalcIndentation] 0]}
-  set info "$run, eol=$eol, ind=$indent"
+  if {[catch {set enc [alited::file::Encoding]}] || $enc eq {}} {
+    set enc utf-8
+  } else {
+    lassign [split $enc] -> enc
+  }
+  set info "$enc, eol=$eol, ind=$indent"
   if {$al(prjindentAuto)} {append info /auto}
   [$obPav Labstat4] configure -text $info
 }
@@ -631,18 +651,22 @@ proc main::TipStatus {} {
   # Gets a tip for a status bar's short info.
 
   namespace upvar ::alited al al obPav obPav
-  if {$al(IsWindows)} {set term $al(EM,wt=)} {set term $al(EM,tt=)}
-  set tip [[$obPav Labstat4] cget -text]
   set run "$al(MC,run)"
+  if {[alited::tool::ComForced]} {
+    append run ": $al(comForce)\n"
+  } elseif {$al(prjincons)} {
+    if {$al(IsWindows)} {set term $al(EM,wt=)} {set term $al(EM,tt=)}
+    append run " Tcl: $al(MC,inconsole) $term\n"
+  } else {
+    append run " Tcl: $al(MC,intkcon)\n" \
+  }
+  set tip [[$obPav Labstat4] cget -text]
   set tip [string map [list \
-    force "$run: $al(comForce)\n" \
-    cons  "$run Tcl: $al(MC,inconsole) $term\n" \
-    tkcon "$run Tcl: $al(MC,intkcon)\n" \
     eol= "$al(MC,EOL:) " \
     ind= "$al(MC,indent:) " \
     {, } \n \
     ] $tip]
-  return $tip
+  return "$run\n[msgcat::mc Encoding]: $tip"
 }
 #_______________________
 
@@ -726,7 +750,6 @@ proc main::InitActions {} {
     # important: refer to tclsh (not wish), to run it in Windows console
     set al(EM,Tcl) [::apave::autoexec tclsh .exe]
   }
-  if {[info exists al(Save_Ini_After_Updates)]} alited::ini::SaveIni
   after idle {alited::main::UpdateGutter; alited::main::FocusText}  ;# get it for sure
 }
 
@@ -883,6 +906,7 @@ proc main::_run {} {
 
   namespace upvar ::alited al al obPav obPav
   ::apave::setAppIcon $al(WIN) $::alited::img::_AL_IMG(ale)
+  after 1000 {alited::ini::CheckUpdates no}
   set ans [$obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
     -onclose alited::Exit {*}$al(GEOM) -resizable 1 -ontop no]
   # ans==2 means 'no saves of settings' (imaginary mode)

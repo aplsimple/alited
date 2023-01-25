@@ -1,17 +1,6 @@
 # test1.mnu
-#
-# use from Geany context:
-#
-# wish e_menu.tcl s=%s m=menus/test1.mnu
-#
-#% doctest
-#% exec tclsh ~/TKE-clone/TKE-clone/plugins/e_menu/e_menu/e_menu.tcl \
-#%      "m=menus/test1.mnu" t=1
-#> doctest
-#
-#######################################################################
 
-# options should go first because of "co=" (line continuator)
+# OPTIONS should go first because of "co=" (line continuator)
 
 [OPTIONS]
 
@@ -68,22 +57,22 @@ rt=2/5
  R: Run me (with %s) R: %M "Edit this menu for file extention: %x"
 
  S: Shell script S: ? \
-    err=1; \
-    cd ~/FOSSIL; \
-    while [ $err -eq 1 ]; \
-      do repo=$(find *.fossil 2>/dev/null ); \
-      err=$?; \
+    err=1 ;
+    cd ~/FOSSIL ;
+    while [ $err -eq 1 ];
+      do repo=$(find *.fossil 2>/dev/null ) ;
+      err=$? ;
       if [ $? -eq 1 ]; then \
         if [ $(pwd) = '/' ]; then \
-          echo "repo non esistente" ; break; \
-        fi; \
-        cd ../; \
+          echo "repo non esistente" ; break;
+        fi;
+        cd ../ ;
       else \
-        echo "$(pwd)/${repo}" ; \
-      fi; \
+        echo "$(pwd)/${repo}" ;
+      fi;
     done
 
- S: Shell script-2 S: %#s err=1; cd ~/FOSSIL
+ S: Shell script (bash) S: %#s err=1; cd ~/FOSSIL
 
  R: Input dialog R: cd %d
  R: Input dialog R: \
@@ -162,5 +151,5 @@ in=1.0
 ::LBX=Big Brother
 ::TBL=ent ttk::entry 212 6
 ::TEX=and	tabs	entered with copy-paste\n1234\n\nsome multi-line text			123
-pos=159.12
-%#s geo=969x487+250+140;pos=6.21 # this script is run with %#s wildcard in test1.mnu|!|# it does the same as the previous "Shell script"|!||!|err=1|!|cd ~/FOSSIL|!|while [ $err -eq 1 ];|!|  do repo=$(find *.fossil 2>/dev/null )|!|  err=$?|!|  if [ $? -eq 1 ]; then|!|    if [ $(pwd) = '/' ]; then|!|      echo "repo non esistente" ; break|!|    fi|!|    cd ../|!|  else|!|    echo "$(pwd)/${repo}"|!|  fi|!|done
+pos=75.18
+%#s geo=969x487+295+250;pos=5.9 # this script is run with %#s wildcard in test1.mnu|!|# it does the same as the previous "Shell script"|!|# being a bash script as it is|!||!|echo ====|!|err=1|!|cd ~/FOSSIL|!|while [ $err -eq 1 ];|!|  do repo=$(find *.fossil 2>/dev/null )|!|  err=$?|!|  if [ $? -eq 1 ]; then|!|    if [ $(pwd) = '/' ]; then|!|      echo "repo non esistente" ; break|!|    fi|!|    cd ../|!|  else|!|    echo "$(pwd)/${repo}"|!|  fi|!|done

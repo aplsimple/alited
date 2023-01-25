@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide bartabs 1.6.2
+package provide bartabs 1.6.3
 
 # ________________________ NS bartabs _________________________ #
 
@@ -639,22 +639,6 @@ method Disabled {TID} {
   set dsbltabs [my [my $TID cget -BID] cget -disable]
   return [expr {[lsearch $dsbltabs $TID]>-1}]
 }
-#_______________________
-
-method Visible {} {
-# Checks if a tab is visible.
-# Returns yes if the tab is visible,.
-
-  lassign [my IDs [my ID]] TID BID
-  lassign [my $BID cget -tleft -tright] tleft tright
-  set tabs [my $BID listTab]
-  for {set i $tleft} {$i<=$tright} {incr i} {
-    if {$TID eq [lindex $tabs $i 0]} {
-      return yes
-    }
-  }
-  return no
-}
 
 ## ____________ Event handlers ____________ ##
 
@@ -956,7 +940,7 @@ method show {{refill no} {lifo yes}} {
     }
     incr itab
   }
-  if {$refill && $lifo && [my $BID cget -lifo] && (![my $TID Visible] || \
+  if {$refill && $lifo && [my $BID cget -lifo] && (![my $TID visible] || \
   [string is true -strict [my $BID cget -lifoest]])} {
     my $BID moveTab $TID 0
     set itab 0
@@ -1008,6 +992,22 @@ method close {{redraw yes} args} {
   }
   my $BID Bar_Cmd2 -cdel2  ;# command after the action
   return 1
+}
+#_______________________
+
+method visible {} {
+# Checks if a tab is visible.
+# Returns yes if the tab is visible,.
+
+  lassign [my IDs [my ID]] TID BID
+  lassign [my $BID cget -tleft -tright] tleft tright
+  set tabs [my $BID listTab]
+  for {set i $tleft} {$i<=$tright} {incr i} {
+    if {$TID eq [lindex $tabs $i 0]} {
+      return yes
+    }
+  }
+  return no
 }
 
 ## ________________________ EOC Tab _________________________ ##
