@@ -44,6 +44,9 @@ namespace eval project {
 
   # flag "projects changed"
   variable updateGUI no
+
+  # flag "dialogue open and ready to accept user's commands"
+  variable readyGUI no
 }
 
 # ________________________ Common _________________________ #
@@ -450,7 +453,7 @@ proc project::KlndBorderText {{clr {}}} {
   #   clr - color of border
 
   namespace upvar ::alited obDl2 obDl2
-  if {$clr eq {}} {set clr [lindex [::apave::obj csGet] 8]} bell
+  if {$clr eq {}} {set clr [lindex [::apave::obj csGet] 8]}
   [$obDl2 TexKlnd] configure -highlightbackground $clr
 }
 
@@ -521,6 +524,10 @@ proc project::Select {{item ""}} {
   namespace upvar ::alited al al obDl2 obDl2 OPTS OPTS
   variable prjinfo
   variable klnddata
+  variable readyGUI
+  if {$readyGUI} {
+    alited::Message2 {}  ;# clears status messages
+  }
   if {$item eq {}} {set item [Selected item no]}
   if {$item ne {}} {
     lassign [SelectedPrj $item] tree item prj
@@ -677,7 +684,7 @@ proc project::ValidProject {} {
     alited::Message2 $msg 4
     set res no
   } else {
-    alited::Message2 {} 5
+    alited::Message2 {}
     set res yes
   }
   return $res
@@ -973,7 +980,7 @@ proc project::Delete {} {
   set geo "-centerme $win"
   set nametodel [lindex $prjlist $isel]
   if {$nametodel eq $curinfo(prjname)} {
-    alited::msg ok err $al(MC,prjcantdel) {*}$geo
+    alited::Message2 $al(MC,prjcantdel) 4
     return
   }
   set msg [string map [list %n $nametodel] $al(MC,prjdelq)]
@@ -1211,12 +1218,12 @@ proc project::CanProjectEnter {} {
       $win.fra.fraR.nbk select $tab1
     }
     KlndDayRem $dmin
-    set msgtodo [msgcat::mc {TODO reminders for the past: %d. Delete them or try "Select".}]
+    set msgtodo [msgcat::mc {TODO reminders for the past: %d.}]
     set dmin [ClockFormat $dmin]
     set msgtodo [string map [list %d $dmin] $msgtodo]
-    alited::Message2 $msgtodo 4
+    alited::Message2 $msgtodo 6
     set itemtodo [Selected item no]
-    return no
+#!    return no
   }
   return yes
 }
@@ -1232,7 +1239,7 @@ proc project::ProcMessage2 {} {
   set lab [$obDl2 LabMess]
   set msg [baltip cget $lab -text]
   if {$msgtodo eq $msg} {
-    alited::Message2 $msg 4
+    alited::Message2 $msg 6
     Select $itemtodo
   } else {
     alited::Message2 $msg 3
@@ -1852,6 +1859,8 @@ proc project::_create {} {
   variable oldTab
   variable ilast
   variable curinfo
+  variable readyGUI
+  set readyGUI no
   set curinfo(_NO2ENT) 0
   set tipson [baltip::cget -on]
   baltip::configure -on $al(TIPS,Projects)
@@ -1893,6 +1902,7 @@ proc project::_create {} {
   ::hl_tcl::hl_text $prjtex
   ::hl_tcl::hl_text $klndtex
   $obDl2 displayText [$obDl2 TexTemplate] $al(PTP,text)
+  set readyGUI yes
   set res [$obDl2 showModal $win -geometry $geo -minsize {600 400} -resizable 1 \
     -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
   set oldTab [$win.fra.fraR.nbk select]

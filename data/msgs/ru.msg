@@ -132,6 +132,11 @@ namespace eval ::alited {
     {Reload with Encoding} {Загрузить в кодировке}
     "Saving and reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nSave the file:\n%F ?" "Сохранение и открытие \"%f\"\nв кодировке \"%e\" может оказаться ошибочным.\n\nСохранить файл:\n%F ?"
     "Reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nReload the file:\n%F ?" "Загрузка \"%f\"\nв кодировке \"%e\" может оказаться ошибочной.\n\nЗагрузить файл:\n%F ?"
+    {Color values #hhhhhh} {Значения цветов #hhhhhh}
+    {Display colors} {Отобразить цвета}
+    {Hide colors} {Скрыть цвета}
+    {Display colors in the whole text?} {Отобразить цвета во всем тексте?}
+    {check RE in Find/Replace box} {включите RE в окошке Поиск/Замена}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -237,7 +242,7 @@ namespace eval ::alited {
     {Undo changes} {Отменить изменения}
     {Redo changes} {Переотменить изменения}
     {Text of a reminder} {Текст напоминания}
-    {TODO reminders for the past: %d. Delete them or try "Select".} {TODO напоминания прошлого: %d. Удалите их или попробуйте "Выбор".}
+    {TODO reminders for the past: %d.} {TODO напоминания прошлого: %d.}
     {No selected files} {Нет выделенных файлов}
     {Open file:} {Открыт файл:}
     {Open files: %n} {Открыто файлов: %n}
@@ -412,7 +417,6 @@ namespace eval ::alited {
     {Light / Dark} {Светлые / Темные}
     {Makes colors darker .. lighter} {Делает цвета темнее .. светлее}
     "These themes need\nlight / dark color schemes\naccordingly" "Этим темам нужны\nсветлые / темные цветовые схемы\nсоответственно"
-    "These themes need\nlight color schemes" "Этим темам нужны\nсветлые цветовые схемы"
     {Fit for theme} {Годится для темы}
     {No color scheme at all} {Никакой цветовой схемы вовсе}
   }

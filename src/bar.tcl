@@ -45,6 +45,7 @@ proc bar::FillBar {wframe {newproject no}} {
   #   newproject - if yes, creates the bar from scratch
 
   namespace upvar ::alited al al obPav obPav
+  update ;# to get real sizes of -wbase
   set wbase [$obPav LbxInfo]
   set lab0 [msgcat::mc (Un)Select]
   set lab1 [msgcat::mc {... Visible}]

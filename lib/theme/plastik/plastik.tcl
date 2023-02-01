@@ -183,6 +183,7 @@ ttk::style theme create plastik -parent default -settings {
     ttk::style element create Combobox.downarrow \
       image [list $I(arrow-n) disabled $I(arrow-d)] \
       -sticky e -border {15 0 0 0}
+    ttk::style configure ComboboxPopdownFrame -borderwidth 1 -relief solid
 
     # ttk::style element create Notebook.client image $I(notebook-c) -border 2
     ttk::style element create Notebook.tab image [list $I(notebook-tn) \
@@ -243,7 +244,7 @@ ttk::style theme create plastik -parent default -settings {
       ]
     ttk::style element create Spinbox.padding image $I(spinbut-n) \
       -border {0 3}
-    
+
     # Treeview (since 8.6b1 or 8.5.9)
     ttk::style configure Treeview -background $colors(-window)
     ttk::style map Treeview \

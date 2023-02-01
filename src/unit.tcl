@@ -227,20 +227,29 @@ proc unit::TemplateData {wtxt l1 tpldata} {
   #   # ar2 -
   #   # ar3 -
   if {[catch {set textcont [$wtxt get $l1.0 $l1.end]}]} {set textcont ""}
-  lassign [split $textcont "\{\}"] proc iarg
+  set indent [string repeat " " [::apave::obj leadingSpaces $textcont]]
+  set textcont [string trim $textcont "\{ "]
+  lassign [split $textcont "\{"] proc
+  set iarg [string range $textcont [string length $proc] end]
   catch {
     set tpla [string map [list \\n \n] $al(TPL,%a)]
     set oarg [set st1 ""]
-    foreach a $iarg {
-      set st [string map [list %a $a] $tpla]
-      if {$st1 eq ""} {set st1 $st}
-      append oarg $st
+    if {[string match \{*\} $iarg]} {set iarg [string range $iarg 1 end-1]}
+    foreach a [list {*}$iarg] {
+      lassign $a a
+      set a [string trim $a "\{\} "]
+      if {$a ne {}} {
+        set st [string map [list %a $a] $tpla]
+        if {$st1 eq ""} {set st1 $st}
+        append oarg $indent$st
+      }
     }
     if {[string first %a $tex]>-1} {
       set place 0
       set pos 1.[string length $st1]
     }
-    set tex [string map [list \\n \n %a $oarg] $tex]
+    set tea [string map [list \\n \n %a $oarg] $tex]
+    if {[string first %a $tex]==-1} {set tex $tea} {set tex $indent$tea}
   }
   set ll1 [string length $tex]
   set tex [string map [list %p [lindex $proc 1]] $tex]

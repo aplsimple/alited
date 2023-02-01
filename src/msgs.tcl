@@ -93,7 +93,6 @@ namespace eval ::alited {
     set al(MC,locale)      [msgcat::mc "This is a language code: ru, uk, de...\nIn alited, \"en\" means American English."]
     set al(MC,noask)       [msgcat::mc {Don't show anymore}]
     set al(MC,needcs)      [msgcat::mc "These themes need\nlight / dark color schemes\naccordingly"]
-    set al(MC,needcsl)     [msgcat::mc "These themes need\nlight color schemes"]
     set al(MC,nocs)        [msgcat::mc {No color scheme at all}]
     set al(MC,fitcs)       [msgcat::mc {Fit for theme}]
     set al(MC,hue)         [msgcat::mc {Makes colors darker .. lighter}]
@@ -111,6 +110,7 @@ namespace eval ::alited {
     set al(MC,lookword)    [msgcat::mc {Look for Word}]
     set al(MC,toline)      [msgcat::mc {Go to Line}]
     set al(MC,tomatched)   [msgcat::mc {To Matched Bracket}]
+    set al(MC,hlcolors)    [msgcat::mc {Display colors}]
 
     ## _  project options _ ##
     set al(MC,Ign:)        [msgcat::mc {Skip subdirectories:}]

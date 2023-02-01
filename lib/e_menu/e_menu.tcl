@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.6.5}
+  variable em_version {e_menu 3.7.0}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -38,9 +38,6 @@ namespace eval ::em {
   variable exedir [file normalize [file dirname $Argv0]]
   if {[info exists ::e_menu_dir]} {set exedir $::e_menu_dir}
   variable srcdir [file join $exedir src]
-  if {[info commands ::baltip::configure] eq {}} {
-    source [file join $::em::srcdir baltip baltip.tcl]
-  }
   if {$solo} {
     # remove all possible installed packages that are used by e_menu
     foreach _ {apave baltip} {
@@ -211,6 +208,7 @@ namespace eval ::em {
   variable PI 0 NE 0 SH 0
   variable th {alt} td {} g1 {} g2 {}
   variable ee {}
+  variable isbaltip yes
 }
 
 
@@ -1162,9 +1160,11 @@ proc ::em::get_PD {{lookdir ""} {lookP2 1}} {
         set ldir [pwd]
       }
     }
+    set Ldir [string toupper $ldir]
     foreach wd $::em::prjdirlist {
       lassign $wd wd p2  ;# second item may set %P2
-      if {[string first [string toupper $wd] [string toupper $ldir]]==0} {
+      if {[string first "[string toupper $wd]/" "$Ldir/"]==0 ||
+      [string first "[string toupper $wd]\\" "$Ldir\\"]==0} {
         set ldir $wd
         set lP2 $p2
         break
@@ -1910,7 +1910,7 @@ proc ::em::initPD {seltd {doit 0}} {
     catch {cd $::em::workdir}
   }
   if {[llength $::em::prjdirlist]==0 && [file isfile $seltd]} {
-      # when PD is indeed a file with projects list
+    # when PD is indeed a file with projects list
     set ch [open $seltd]
     chan configure $ch -encoding utf-8
     foreach wd [split [read $ch] "\n"] {
@@ -2279,6 +2279,7 @@ proc ::em::initcomm {} {
     catch {cd $cpwd}  ;# may be deleted by commands
     set ::em::reallyexit yes
   }
+  if {!$::em::isbaltip} {return yes}
   if {$::em::reallyexit} {return no}
   if {[set lmc [llength $::em::menuoptions]] > 1} {
       # o=, s=, m= options define menu contents & are processed particularly
@@ -2736,11 +2737,12 @@ if {$::em::solo} {
       set ::em::$::em::TMP1 [string range [lindex $::argv $::em::TMP2] 3 end]
     }
   }
+  set ::em::isbaltip [expr {{SH=1} ni $::argv}]
   if {$::em::th eq {} || $::em::td eq {}} {
-    ::apave::initWM
+    ::apave::initWM -isbaltip $::em::isbaltip
   } else {
     lassign [::apave::InitTheme $::em::th $::em::td] ::em::TMP1 ::em::TMP2
-    ::apave::initWM -theme $::em::TMP1 -labelborder $::em::TMP2
+    ::apave::initWM -theme $::em::TMP1 -labelborder $::em::TMP2 -isbaltip $::em::isbaltip
   }
   unset ::em::TMP1
   unset ::em::TMP2

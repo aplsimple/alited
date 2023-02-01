@@ -460,7 +460,7 @@ proc pref::General_Tab1 {} {
   }
   set lightdark [msgcat::mc {Light / Dark}]
   set opcThemes [list default clam classic alt -- "{$lightdark} awlight awdark -- \
-    azure-light azure-dark -- forest-light forest-dark -- sun-valley-light sun-valley-dark -- plastik radiance darkbrown"]
+    azure-light azure-dark -- forest-light forest-dark -- sun-valley-light sun-valley-dark -- lightbrown darkbrown -- plastik"]
   if {[::iswindows]} {
     lappend opcThemes -- "{[msgcat::mc {Windows themes}]} vista xpnative winnative"
   }
@@ -473,9 +473,7 @@ proc pref::General_Tab1 {} {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labTheme - - 1 1 {-st w -pady 1 -padx 3} {-t "Ttk theme:"}}
-    {.opc1 + L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 21 -compound left -image alimg_gulls -tip {-indexedtips \
-      5 {$alited::al(MC,needcs)} 7 {$alited::al(MC,needcsl)} \
-      }} {}}}
+    {.opc1 + L 1 1 {-st sw -pady 1} {::alited::pref::opc1 alited::pref::opcThemes {-width 21 -compound left -image alimg_gulls -tip {-indexedtips 5 "-BALTIP {$alited::al(MC,needcs)} -MAXEXP 1"}} {}}}
     {.chbPrv + L 1 1 {-padx 20} {-t "$alited::al(MC,test)" -var alited::pref::preview -com {alited::pref::CheckTheming yes yes}}}
     {.labCS .labTheme T 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.opc2 + L 1 1 {-st sw -pady 1} {::alited::pref::opcc alited::pref::opcColors {-width 21 -compound left -image alimg_color -tip {-indexedtips \

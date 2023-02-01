@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `1.3.6b12 (25 Jan'23)`
+Version `v1.3.6b17 (1 Feb'23)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
@@ -9,7 +9,8 @@ Version `1.3.6b12 (25 Jan'23)`
   - BUGFIX: focus 1st cbx at opening Find/Replace
   - BUGFIX: tips on toolbar items with %f and %D wildcards
   - BUGFIX: tips on file list called with F9
-  - NEW   : three themes: plastik, radiance, darkbrown
+  - NEW   : Edit / Color values
+  - NEW   : three themes: plastik, lightbrown, darkbrown
   - NEW   : File / Reload with EOL
   - NEW   : File / Reload with Encoding (shown in status bar)
   - NEW   : bar-menu: when run "%#s" items, skip editing (e.g. Test1/Shell)
@@ -34,7 +35,11 @@ Version `1.3.6b12 (25 Jan'23)`
   - NEW   : tips on toolbar items with %PD
   - NEW   : remove missing items from last visited list, at selecting
   - NEW   : alited.ini: some templates got TODEL comments (nice to find & remove)
-  - CHANGE: CS: Radiance & DarkBrown instead of Yellowstone & Dark3
+  - CHANGE: for "args" template: indentation & args with default values
+  - CHANGE: Projects: no bell for pending TODOs (red only)
+  - CHANGE: Projects: double-click on the list not locked at pending TODOs
+  - CHANGE: force recalculating file's (auto) indentation at "Edit/Correct Indentation"
+  - CHANGE: CS: LightBrown & DarkBrown instead of Yellowstone & Dark3
   - CHANGE: tab switchings don't touch Last Visited
   - CHANGE: Find / Search / Replace actions: first do it on a current file
   - CHANGE: proc / method / underline / branch templates inserted in "smart" manner
@@ -52,7 +57,7 @@ Version `1.3.6b12 (25 Jan'23)`
   - CHANGE: tips on Projects' file list
   - CHANGE: About / Acknowledgements
   - CHANGE: docs (index.html, helps)
-  - CHANGE: packages: apave/e_menu 3.6.5, hl_tcl 0.9.45, bartabs 1.6.2
+  - CHANGE: packages: apave/e_menu 3.7.0, hl_tcl 0.9.46, bartabs 1.6.3
 
 
 Version `1.3.5 (7 Dec'22)`

@@ -449,7 +449,7 @@ namespace eval ttk::theme::forest-dark {
 
         # _ Combobox _ #
 
-        ttk::style configure ComboboxPopdownFrame -borderwidth 1 -relief groove
+        ttk::style configure ComboboxPopdownFrame -borderwidth 1 -relief ridge
 
         ttk::style map TCombobox -selectbackground [list \
             {!focus} $colors(-selectbg) \

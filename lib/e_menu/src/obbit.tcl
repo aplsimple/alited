@@ -13,13 +13,13 @@ namespace eval ::apave {
 
 # ________________________ apave's global variables _________________________ #
 
-  set ::apave::FGMAIN #000000   ;# base fg/bg
-  set ::apave::BGMAIN #d9d9d9
-  set ::apave::FGMAIN2 #000000  ;# field fg/bg
-  set ::apave::BGMAIN2 #ffffff
+  variable FGMAIN #000000   ;# base fg/bg
+  variable BGMAIN #d9d9d9
+  variable FGMAIN2 #000000  ;# field fg/bg
+  variable BGMAIN2 #ffffff
 
-  set ::apave::FONTMAIN [font actual TkDefaultFont]
-  set ::apave::FONTMAINBOLD [list {*}$::apave::FONTMAIN -weight bold]
+  variable FONTMAIN [font actual TkDefaultFont]
+  variable FONTMAINBOLD [list {*}$::apave::FONTMAIN -weight bold]
 
   # - common options/constants of apave utils
   variable _PU_opts;       array set _PU_opts [list -NONE =NONE=]
@@ -88,35 +88,35 @@ namespace eval ::apave {
 
 {{ 3: SunValleyLight} "#050b0d" #050b0d #ffffff #e1e1e1 #1056af #74c9ff #000 #444 grey #1574cd #000 #84d9ff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #76b2f1 #005 #006 #007}
 
-{{ 4: Grey1}          "#050b0d" #050b0d #F8F8F8 #dadad8 #933232 #b8b8b8 #000 #444 grey #843e3e #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #76b2f1 #005 #006 #007}
+{{ 4: LightBrown}     "#00002f" #00001a #f6f4f2 #f6f4f2 #7b3e30 #edc89b #000 #682800 grey #d59e6d #000000 #deb98c - #dfdddb #000 #ffff45 #e3e2e0 #a30000 #900000 #005 #006 #007}
 
-{{ 5: Grey2}          "#050b0d" #050b0d #f4f4f4 #F8F8F8 #5c1616 #c8c8c8 #000 #444 grey #933232 #000 #c1c1c1 - #e7e7e7 #000 #FBFB95 #e5e5e5 #a20000 #76b2f1 #005 #006 #007}
+{{ 5: Grey1}          "#050b0d" #050b0d #F8F8F8 #dadad8 #933232 #b8b8b8 #000 #444 grey #843e3e #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #76b2f1 #005 #006 #007}
 
-{{ 6: Rosy}           "#2B122A" #000000 #FFFFFF #F6E6E9 #712371 #d0b8d3 #000 #630063 grey #954799 #000 #ceb6d1 - #e3d3d6 #000 #FBFB95 #e5e3e1 #a20000 #76b2f1 #005 #006 #007}
+{{ 6: Grey2}          "#050b0d" #050b0d #f4f4f4 #F8F8F8 #5c1616 #c8c8c8 #000 #444 grey #933232 #000 #c1c1c1 - #e7e7e7 #000 #FBFB95 #e5e5e5 #a20000 #76b2f1 #005 #006 #007}
 
-{{ 7: Clay}           "#000000" #000000 #fdf4ed #e6dbd4 #6e300d #bcaea2 #000 #444 grey #813b3b #000 #c6b4ac - #d5c9c1 #000 #FBFB95 #e1dfde #a20000 #76b2f1 #005 #006 #007}
+{{ 7: Rosy}           "#2B122A" #000000 #FFFFFF #F6E6E9 #712371 #d0b8d3 #000 #630063 grey #954799 #000 #ceb6d1 - #e3d3d6 #000 #FBFB95 #e5e3e1 #a20000 #76b2f1 #005 #006 #007}
 
-{{ 8: Dawn}           "#08085D" #030358 #FFFFFF #e4fafa #794545 #a3dce5 #000 #195999 grey #ae4d4d #000 #99d2db - #d3e9e9 #000 #FBFB96 #dbe9ed #a20000 #76b2f1 #005 #006 #007}
+{{ 8: Clay}           "#000000" #000000 #fdf4ed #e6dbd4 #6e300d #bcaea2 #000 #444 grey #813b3b #000 #c6b4ac - #d5c9c1 #000 #FBFB95 #e1dfde #a20000 #76b2f1 #005 #006 #007}
 
-{{ 9: Sky}            "#102433" #0A1D33 #d0fdff #bdf6ff #713d3d #95ced7 #000 #195999 grey #a94848 #000 #9ad3dc - #b1eaf3 #000 #FBFB95 #c0e9ef #a20000 #76b2f1 #005 #006 #007}
+{{ 9: Dawn}           "#08085D" #030358 #FFFFFF #e4fafa #794545 #a3dce5 #000 #195999 grey #ae4d4d #000 #99d2db - #d3e9e9 #000 #FBFB96 #dbe9ed #a20000 #76b2f1 #005 #006 #007}
 
-{{10: Florid}         "#000000" #004000 #e4fce4 #fff #8b4545 #93e493 #0F2D0F #185818 grey #9a481a #004000 #a7f8a7 - #d8e7d8 #000 #FBFB96 #d7e6d7 #a20000 #76b2f1 #005 #006 #007}
+{{10: Sky}            "#102433" #0A1D33 #d0fdff #bdf6ff #713d3d #95ced7 #000 #195999 grey #a94848 #000 #9ad3dc - #b1eaf3 #000 #FBFB95 #c0e9ef #a20000 #76b2f1 #005 #006 #007}
 
-{{11: LightGreen}     "#122B05" #091900 #edffed #DEF8DE #764242 #A8CCA8 #000 #185818 grey #a34242 #000 #A8CCA8 - #cde7cd #000 #FBFB96 #dee9de #a20000 #76b2f1 #005 #006 #007}
+{{11: Florid}         "#000000" #004000 #e4fce4 #fff #8b4545 #93e493 #0F2D0F #185818 grey #9a481a #004000 #a7f8a7 - #d8e7d8 #000 #FBFB96 #d7e6d7 #a20000 #76b2f1 #005 #006 #007}
 
-{{12: InverseGreen}   "#122B05" #091900 #e5ffe1 #d7f1d7 #6d3939 #a7cba7 #000 #185818 grey #a94848 #000 #afd3af - #c9e3c9 #000 #FBFB96 #d6e8d5 #a20000 #76b2f1 #005 #006 #007}
+{{12: LightGreen}     "#122B05" #091900 #edffed #DEF8DE #764242 #A8CCA8 #000 #185818 grey #a34242 #000 #A8CCA8 - #cde7cd #000 #FBFB96 #dee9de #a20000 #76b2f1 #005 #006 #007}
 
-{{13: GreenPeace}     "#001000" #001000 #e1ffdd #cfe4cf #733f3f #a5c3a1 #000 #185818 grey #af4e4e #000 #9cb694 - #c1dbc1 #000 #FBFB96 #d2e1d2 #a20000 #76b2f1 #005 #006 #007}
+{{13: InverseGreen}   "#122B05" #091900 #e5ffe1 #d7f1d7 #6d3939 #a7cba7 #000 #185818 grey #a94848 #000 #afd3af - #c9e3c9 #000 #FBFB96 #d6e8d5 #a20000 #76b2f1 #005 #006 #007}
 
-{{14: African}        "#000000" #000000 #ffffff #ffffe7 #8a4444 #ffd797 #000 #682800 #7e7e7e #a44a2d #000 #f7bf91 - #e7e7cf #000 #eded89 #ededd5 #a20000 #76b2f1 #005 #006 #007}
+{{14: GreenPeace}     "#001000" #001000 #e1ffdd #cfe4cf #733f3f #a5c3a1 #000 #185818 grey #af4e4e #000 #9cb694 - #c1dbc1 #000 #FBFB96 #d2e1d2 #a20000 #76b2f1 #005 #006 #007}
 
-{{15: African1}       "#000000" #000000 #ffffff #ebebd3 #8a4444 #ebc383 #000 #682800 #7e7e7e #9d4326 #000 #f7bf91 - #dbdbc3 #000 #eded89 #ededd5 #a20000 #76b2f1 #005 #006 #007}
+{{15: African}        "#000000" #000000 #ffffff #ffffe7 #8a4444 #ffd797 #000 #682800 #7e7e7e #a44a2d #000 #f7bf91 - #e7e7cf #000 #eded89 #ededd5 #a20000 #76b2f1 #005 #006 #007}
 
-{{16: African2}       "#000000" #000000 #f7f7dc #dedbb4 #8e4848 #f2b482 #000 #682800 grey #9f4528 #000 #e6ae80 - #ccc9a2 #000 #fbfb74 #e7e7cb #a20000 #76b2f1 #005 #006 #007}
+{{16: African1}       "#000000" #000000 #ffffff #ebebd3 #8a4444 #ebc383 #000 #682800 #7e7e7e #9d4326 #000 #f7bf91 - #dbdbc3 #000 #eded89 #ededd5 #a20000 #76b2f1 #005 #006 #007}
 
-{{17: African3}       "#000000" #000000 #e2deb5 #ccc9a6 #813b3b #e1a97b #000 #682800 grey #a44a2d #000 #e6ae80 - #bbb895 #000 #fbfb74 #c9c9b0 #c10000 #76b2f1 #005 #006 #007}
+{{17: African2}       "#000000" #000000 #f7f7dc #dedbb4 #8e4848 #f2b482 #000 #682800 grey #9f4528 #000 #e6ae80 - #ccc9a2 #000 #fbfb74 #e7e7cb #a20000 #76b2f1 #005 #006 #007}
 
-{{18: Radiance}       "#00002f" #00001a #f6f4f2 #f6f4f2 #7b3e30 #d59e6d #000 #682800 grey #93391c #000000 #cfab86 - #e7e7e7 #000 #ffff45 #e3e2e0 #a30000 #900000 #005 #006 #007}
+{{18: African3}       "#000000" #000000 #e2deb5 #ccc9a6 #813b3b #e1a97b #000 #682800 grey #a44a2d #000 #e6ae80 - #bbb895 #000 #fbfb74 #c9c9b0 #c10000 #76b2f1 #005 #006 #007}
 
 {{19: Notebook}       "#000000" #000000 #e9e1c8 #d2ccb8 #692323 #d59d6f #000 #682800 #7e7e7e #92381b #000 #c09c77 - #dbd5c1 #000 #eded89 #dad2b9 #a20000 #76b2f1 #005 #006 #007}
 
@@ -138,11 +138,11 @@ namespace eval ::apave {
 
 {{28: SunValleyDark} "#ececec" #c7c7c7 #272727 #323232 #aae2ff #2a627f #fff #f4f49f grey #7cb4d1 #fff #245c79 - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
 
-{{29: Dark1}          "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #fff #f4f49f #606060 #ba8d4d #000 #767676 - #363636 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
+{{29: DarkBrown}      "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #765632 #fff #f4f49f #616161 #aa7d3d #000 #767676 - #303030 #000 #9d9d60 #131313 #ffc341 #76b2f1 #005 #006 #007}
 
-{{30: Dark2}          "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #fff #f4f49f #616161 #b28545 #000 #767676 - #323232 #000 #9d9d60 #262626 #ffc341 #76b2f1 #005 #006 #007}
+{{30: Dark1}          "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #fff #f4f49f #606060 #ba8d4d #000 #767676 - #363636 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
 
-{{31: DarkBrown}      "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #765632 #fff #f4f49f #616161 #aa7d3d #000 #767676 - #303030 #000 #9d9d60 #131313 #ffc341 #76b2f1 #005 #006 #007}
+{{31: Dark2}          "#bebebe" #bebebe #1f1f1f #262626 #de9e5e #6b6b6b #fff #f4f49f #616161 #b28545 #000 #767676 - #323232 #000 #9d9d60 #262626 #ffc341 #76b2f1 #005 #006 #007}
 
 {{32: Oscuro}         "#f1f1f1" #ffffff #314242 #3e5959 #f1b479 #6c8787 #fff #42ff42 #afafaf #d3a051 #fff #5b7676 - #4d6868 #000 #aaaa6d #425353 #ffc341 #94e2b8 #005 #006 #007}
 
@@ -371,7 +371,7 @@ proc ::apave::rootModalWindow {pwin} {
 
   set root $pwin
   foreach w [winfo children $pwin] {
-    if {[winfo ismapped $w] && [::apave::InfoFind $w yes] ne {}} {
+    if {[winfo ismapped $w] && [InfoFind $w yes] ne {}} {
       set root [winfo toplevel $w]
     }
   }
@@ -411,7 +411,7 @@ proc ::apave::focusFirst {w {dofocus yes} {res {}}} {
         if {$dofocus} {after 200 "catch {focus -force $w}"}
         return $w
       } else {
-        if {[set res [::apave::focusFirst $w $dofocus]] ne {}} break
+        if {[set res [focusFirst $w $dofocus]] ne {}} break
       }
     }
   }
@@ -450,9 +450,10 @@ proc ::apave::initWM {args} {
   #   args - options ("name value" pairs)
 
   if {!$::apave::_CS_(initWM)} return
-  lassign [::apave::parseOptions $args -cursorwidth $::apave::cursorwidth -theme default \
-    -buttonwidth -8 -buttonborder 1 -labelborder 0 -padding 1 -cs -2] \
-    cursorwidth theme buttonwidth buttonborder labelborder padding cs
+  lassign [parseOptions $args -cursorwidth $::apave::cursorwidth -theme default \
+    -buttonwidth -8 -buttonborder 1 -labelborder 0 -padding 1 -cs -2 -isbaltip yes] \
+    cursorwidth theme buttonwidth buttonborder labelborder padding cs ::apave::ISBALTIP
+  initBaltip
   if {$theme eq {}} {set theme default}
   if {$cs<-2 || $cs>47} {set cs -2}
   set ::apave::_CS_(initWM) 0
@@ -475,14 +476,14 @@ proc ::apave::initWM {args} {
     -relief raised -borderwidth $buttonborder -padding $padding
   ttk::style configure TMenubutton -width 0 -padding 0
   # TLabel's standard style saved for occasional uses
-  ::apave::initStyle TLabelSTD TLabel -anchor w
+  initStyle TLabelSTD TLabel -anchor w
   # ... TLabel new style
   ttk::style configure TLabel -borderwidth $labelborder -padding $padding
   # ... Treeview colors
   set twfg [ttk::style map Treeview -foreground]
-  set twfg [::apave::putOption selected $tfg1 {*}$twfg]
+  set twfg [putOption selected $tfg1 {*}$twfg]
   set twbg [ttk::style map Treeview -background]
-  set twbg [::apave::putOption selected $tbg1 {*}$twbg]
+  set twbg [putOption selected $tbg1 {*}$twbg]
   ttk::style map Treeview -foreground $twfg
   ttk::style map Treeview -background $twbg
   # ... TCombobox colors
@@ -647,7 +648,7 @@ proc ::apave::InitTheme {intheme libdir} {
       set theme $intheme
       set lbd 1
     }
-    plastik - radiance - darkbrown {
+    plastik - lightbrown - darkbrown {
       set path [file join $libdir theme $intheme]
       source [file join $path $intheme.tcl]
       set theme $intheme
@@ -1852,7 +1853,7 @@ oo::class create ::apave::ObjectTheming {
     #   theme - a theme to be checked (if omitted, a current ttk theme)
 
     if {$theme eq {}} {set theme [ttk::style theme use]}
-    return [expr {$theme in {clam alt classic default awdark awlight}}]
+    return [expr {$theme in {clam alt classic default awdark awlight plastik}}]
   }
   #_______________________
 
@@ -1860,6 +1861,7 @@ oo::class create ::apave::ObjectTheming {
     # Configurates colors and other attributes of tooltip.
     #  args - options of ::baltip::configure
 
+    ::apave::initBaltip
     lassign [lrange [my csGet] 14 15] fW bW
     ::baltip config -fg $fW -bg $bW -global yes
     ::baltip config {*}$args
@@ -1967,7 +1969,7 @@ oo::class create ::apave::ObjectTheming {
       my Ttk_style configure $ts -foreground $tfg1
       my Ttk_style configure $ts -background $tbg1
       my Ttk_style map $ts -background [list pressed $tbg2 active $tbg2 focus $tbgS alternate $tbg2]
-      my Ttk_style map $ts -foreground [list disabled $tfgD pressed $bclr active $aclr focus $tfgS alternate $tfg2 focus $tfg2 selected $tfg1]
+      my Ttk_style map $ts -foreground [list disabled $tfgD pressed $tfgS active $aclr focus $tfgS alternate $tfg2 focus $tfg2 selected $tfg1]
       my Ttk_style map $ts -bordercolor [list focus $bclr pressed $bclr]
       my Ttk_style map $ts -lightcolor [list focus $bclr]
       my Ttk_style map $ts -darkcolor [list focus $bclr]

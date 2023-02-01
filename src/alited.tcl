@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.6b12  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.6b17  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 wm withdraw .
@@ -18,17 +18,14 @@ if {![package vsatisfies $_ 8.6.10-]} {
   exit
 }
 catch {package require comm}  ;# Generic message transport
+
 # _____ Remove installed (perhaps) packages used in alited _____ #
 
-foreach _ {apave baltip bartabs hl_tcl} {
-  set __ [package version $_]
-  catch {
-    package forget $_
-    namespace delete ::$_
-    puts "alited: clearing $_ $__"
-  }
-  unset __
+foreach _ {baltip bartabs hl_tcl} {
+  catch {package forget $_}
+  catch {namespace delete ::$_}
 }
+unset -nocomplain _
 
 # __________________________ alited:: Main _________________________ #
 
@@ -530,7 +527,7 @@ namespace eval alited {
   proc Message {msg {mode 1} {lab ""} {first yes}} {
     # Displays a message in statusbar.
     #   msg - message
-    #   mode - 1: simple; 2: bold; 3: bold colored; 4: bold colored bell; 5: static
+    #   mode - 1: simple; 2: bold; 3: bold color; 4: bold red bell; 5: static; 6: bold red
     #   lab - label's name to display the message in
     #   first - serves to recursively erase the message
 
@@ -551,13 +548,15 @@ namespace eval alited {
     set slen [string length $msg]
     if {[catch {$lab configure -text $msg}] || !$slen} return
     $lab configure -font $font -foreground $fg
-    if {$mode in {2 3 4 5}} {
+    if {$mode in {2 3 4 5 6}} {
       $lab configure -font $fontB
       if {$mode eq {4}} {
         $lab configure -foreground $fgred
         if {$first} bell
       } elseif {$mode in {3 5}} {
         $lab configure -foreground $fgbold
+      } elseif {$mode eq {6}} {
+        $lab configure -foreground $fgred
       }
     }
     if {$mode eq {5}} {
@@ -891,7 +890,11 @@ if {[info exists ALITED_PORT]} {
   alited::favor::_init   ;# initialize favorites
   alited::tool::AfterStart
 #  catch #\{source ~/PG/github/DEMO/alited/demo.tcl#\} ;#------------- TO COMMENT OUT
-  if {[set res [alited::main::_run]]} {     ;# run the main form
+  if {[catch {set res [alited::main::_run]} err]} {
+    set res 0
+    puts stderr "\n\n ERROR in alited:\n $err\n"
+  }
+  if {$res} {     ;# run the main form
     # restarting
     update
     if {[file tail [file dirname $alited::DIR]] eq {alited.kit}} {

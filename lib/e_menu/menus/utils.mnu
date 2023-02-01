@@ -5,13 +5,13 @@
 
  M:  M: 3
 
- R: poApps        R: tclsh /home/apl/PG/github/poApps/poApps.tcl --dirdiff
- R: ruler         R: tclsh /usr/share/tcltk/tklib0.7/widget/ruler.tcl
- R: screenshooter R: cd ~/UTILS
- R: screenshooter R: ./screenshooter
- R: caja here     R: caja "%d"
- R: terminal here R: cd %d
- R: terminal here R: %TT
+RE: poApps        RE: tclsh /home/apl/PG/github/poApps/poApps.tcl --dirdiff
+RE: ruler         RE: tclsh /usr/share/tcltk/tklib0.7/widget/ruler.tcl
+RE: screenshooter RE: cd ~/UTILS
+RE: screenshooter RE ./screenshooter
+RE: caja here     RE: caja "%d"
+RE: terminal here RE: cd %d
+RE: terminal here RE: %TT
 
  S: wget Web page S: %#W wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6/
  R: wget Web page R: %Q "CHANGE ME" "The directory %z5/WGET\n\nwould be open by \"caja\" file manager.\n\nYou can change it by editing:\n%mn"

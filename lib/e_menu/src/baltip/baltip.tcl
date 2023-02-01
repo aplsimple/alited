@@ -8,8 +8,6 @@
 
 package provide baltip 1.5.1
 
-package require Tk
-
 # ________________________ Variables _________________________ #
 
 namespace eval ::baltip {

@@ -156,8 +156,13 @@ proc menu::FillMenu {} {
   set title [msgcat::mc {Reload with EOL}]
   menu $m.eol -tearoff 1 -title EOL
   $m add cascade -label $title -menu $m.eol
-  foreach eol {LF CR CRLF} {
-    $m.eol add command -label "    $eol        " -command [list alited::file::Reload1 $eol]
+  foreach eol {LF CR CRLF - auto} {
+    if {$eol eq {-}} {
+      $m.eol add separator
+    } else {
+      $m.eol add command -label "    $eol        " \
+        -command [list alited::file::Reload1 $eol]
+    }
   }
   set title [msgcat::mc {Reload with Encoding}]
   menu $m.encods -tearoff 1 -title $title
@@ -184,6 +189,11 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
   $m add command -label [msgcat::mc {Remove Trailing Whitespaces}] -command alited::edit::RemoveTrailWhites
+  $m add separator
+  menu $m.hlcolors -tearoff 1
+  $m add cascade -label [msgcat::mc {Color values #hhhhhh}] -menu $m.hlcolors
+  $m.hlcolors add command -label $al(MC,hlcolors) -command alited::edit::ShowColorValues
+  $m.hlcolors add command -label [msgcat::mc {Hide colors}] -command alited::edit::HideColorValues
 
   ## ________________________ Search _________________________ ##
 

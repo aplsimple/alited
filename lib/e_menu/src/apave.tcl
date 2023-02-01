@@ -23,12 +23,23 @@ catch {
 unset -nocomplain _apave_tcllibpath_
 unset -nocomplain _apave_
 
+# _____ Remove installed subpackages of apave _____ #
+
+foreach _ {baltip bartabs hl_tcl} {
+  catch {package forget $_}
+  catch {namespace delete ::$_}
+}
+unset -nocomplain _
+
 # ________________________ apave NS _________________________ #
 
 namespace eval ::apave {
 
+  variable SRCDIR [file normalize [file dirname [info script]]]
+
   ## ________________________ apave variables _________________________ ##
 
+  variable ISBALTIP yes
   variable cursorwidth 1
   variable apaveDir [file dirname [info script]]
   variable _AP_ICO { none folder OpenFile SaveFile saveall print font color \
@@ -301,6 +312,31 @@ namespace eval ::apave {
 
     return [obj defaultATTRS $type $opts $atrs $widget]
   }
+  #_______________________
+
+  proc initBaltip {} {
+    # Initializes baltip package.
+
+    if {![namespace exists ::baltip]} {
+      if {$::apave::ISBALTIP} {
+        source [file join $::apave::SRCDIR baltip baltip.tcl]
+      } else {
+        # disabling baltip facilities with stub proc (no source "baltip.src")
+        namespace eval ::baltip {
+          variable expproc [list configure cget tip update hide repaint \
+            optionlist tippath clear sleep showBalloon showTip]
+          foreach _ $expproc {
+          ; proc $_ {args} {return {}}
+            namespace export $_
+          }
+          namespace ensemble create
+          namespace eval my {
+          ; proc BindToEvent {args} {}
+          }
+        }
+      }
+    }
+  }
 
   ## _______________________ Text little procs _________________________ ##
 
@@ -388,9 +424,6 @@ namespace eval ::apave {
 # that apave's stuff available for them and vice versa.
 
 source [file join $::apave::apaveDir obbit.tcl]
-if {[info commands ::baltip::configure] eq {}} {
-  source [file join $::apave::apaveDir baltip baltip.tcl]
-}
 
 # ________________________ APave oo::class _________________________ #
 
@@ -1510,6 +1543,18 @@ oo::class create ::apave::APave {
         set $savedcont $gcont
       }
     }
+  }
+  #_______________________
+
+  method gutterContents {txt} {
+    # Gets contents of a text's gutter
+    #   txt - text's path
+
+    set savedcont [namespace current]::gc$txt
+    if {[info exists $savedcont]} {
+      return [set $savedcont]
+    }
+    return {}
   }
   #_______________________
 
@@ -3157,6 +3202,7 @@ oo::class create ::apave::APave {
     set addcomms {}
     if {[set tooltip [::apave::getOption -tooltip {*}$attrs]] ne {} ||
     [set tooltip [::apave::getOption -tip {*}$attrs]] ne {}} {
+      ::apave::initBaltip
       if {[set i [string first $_pav(edge) $tooltip]]>=0} {
         set tooltip [string range $tooltip 1 end-1]
         set tattrs [string range $tooltip [incr i -1]+[string length $_pav(edge)] end]
@@ -3177,11 +3223,15 @@ oo::class create ::apave::APave {
     if {[set wnext [::apave::getOption -tabnext {*}$attrs]] ne {}} {
       # two widgets for Tab & Shift/Tab (proc can be used to get them)
       set wnext [string trim $wnext "\{\}"]
-      if {[catch {lassign [{*}$wnext] wnext wprev}]} {
-        lassign $wnext wnext wprev
+      if {[string first \[ $wnext]==0} { ;# if [comm1] [comm2] for next/prev
+        set wprev {}
+        catch {lassign [subst $wnext] wnext wprev}
+      } else {
+        if {[catch {lassign [{*}$wnext] wnext wprev}]} {
+          lassign $wnext wnext wprev
+        }
       }
       if {$wnext eq {0}} {set wnext $wdg} ;# disables Tab on this widget
-      if {$wprev eq {}} {set wprev $wnext}
       if {[::iswindows]} {
         set i1 {{%s}==0}  ;# in Windows: Shift+Tab doesn't work in text
       } else {

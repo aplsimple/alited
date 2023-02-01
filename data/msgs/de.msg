@@ -133,6 +133,11 @@ namespace eval ::alited {
     {Reload with Encoding} {Öffne mit die Kodierung}
     "Saving and reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nSave the file:\n%F ?" "Das Speichern und erneute Laden von \"%f\"\nmit der Kodierung \"%e\" kann falsch sein.\n\nWerden Sie die Datei speichern:\n%F ?"
     "Reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nReload the file:\n%F ?" "Das erneute Laden von \"%f\"\nmit der Kodierung \"%e\" kann falsch sein.\n\nWerden Sie die Datei laden:\n%F ?"
+    {Color values #hhhhhh} {Farbwerte #hhhhhh}
+    {Display colors} {Farben hervorheben}
+    {Hide colors} {Farben ausblenden}
+    {Display colors in the whole text?} {Farben im gesamten Text hervorheben?}
+    {check RE in Find/Replace box} {aktivieren Sie RE im Suchen/Ersetzen}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -238,7 +243,7 @@ namespace eval ::alited {
     {Undo changes} {Änderungen zurücknehmen}
     {Redo changes} {Änderungen wiederherstellen}
     {Text of a reminder} {Text einer Erinnerung}
-    {TODO reminders for the past: %d. Delete them or try "Select".} {TODO Erinnerungen an die Vergangenheit: %d. Lösche sie oder versuche "Auswählen".}
+    {TODO reminders for the past: %d.} {TODO Erinnerungen an die Vergangenheit: %d.}
     {No selected files} {Keine ausgewählte(n) Datei(en)}
     {Open file:} {Ausgewählt Datei:}
     {Open files: %n} {Ausgewählten Dateien: %n}
@@ -415,7 +420,6 @@ namespace eval ::alited {
     {Light / Dark} {Hell / Dunkel}
     {Makes colors darker .. lighter} {Macht Farben dunkler .. heller}
     "These themes need\nlight / dark color schemes\naccordingly" "Diese Themen benötigen\nhelle / dunkle Farbschemas\nentsprechend"
-    "These themes need\nlight color schemes" "Diese Themen benötigen\nhelle Farbschemas"
     {Fit for theme} {Gut geeignet zu Theme}
     {No color scheme at all} {Keine Farbschema überhaupt}
   }

@@ -251,6 +251,7 @@ proc tool::EM_Options {opts} {
     set al(EM,geometry) [apave::obj EXPORT CenteredXY $w $h $x $y 300 [expr {$h/2}]]
   }
   set ed [info nameofexecutable]\ $SCRIPTNORMAL\ $CONFIGDIR
+
   set R [list "md=$al(EM,mnudir)" "m=$al(EM,mnu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
     o=-1 om=0 g=$al(EM,geometry) $z6 $z7 {*}$ls $df {*}$opts {*}$srcdir \

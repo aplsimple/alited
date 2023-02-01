@@ -594,9 +594,10 @@ proc main::ShowHeader {{doit no}} {
 }
 #_______________________
 
-proc main::CalcIndentation {{wtxt ""}} {
+proc main::CalcIndentation {{wtxt ""} {doit no}} {
   # Check for "Auto detection of indentation" and calculates it at need.
   #   wtxt - text's path
+  #   doit - if yes, recalculates the indentation
 
   namespace upvar ::alited al al
   set res [list $al(prjindent) { }]
@@ -604,7 +605,7 @@ proc main::CalcIndentation {{wtxt ""}} {
     if {$wtxt eq {}} {
       if {[catch {set wtxt [CurrentWTXT]}]} {return $res}
     }
-    if {[info exists al(_INDENT_,$wtxt)]} {return $al(_INDENT_,$wtxt)}
+    if {!$doit && [info exists al(_INDENT_,$wtxt)]} {return $al(_INDENT_,$wtxt)}
     foreach line [split [$wtxt get 1.0 end] \n] {
       if {[set lsp [::apave::obj leadingSpaces $line]]>0} {
         # check if the indentation is homogeneous

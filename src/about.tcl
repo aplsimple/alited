@@ -37,7 +37,8 @@ proc about::About {} {
   lassign [::apave::obj csGet] fg - bg - - bS fS
   ::apave::InitAwThemesPath $::alited::LIBDIR
   foreach _ {alited apave bartabs baltip hl_tcl awthemes} {
-    if {[catch {set v$_ v[package require $_]}]} {
+    if {[set v$_ v[package versions $_]] eq {v} \
+    && [catch {set v$_ v[package require $_]}]} {
       set v$_ {}
     }
   }

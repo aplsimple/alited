@@ -21,6 +21,9 @@ namespace eval find {
   # common data of procs
   variable data; array set data [list]
 
+  # last invoked "Find" (initially, "All in session")
+  set data(lastinvoke) 3
+
   # options of "Find/Replace" dialogue
   set data(c1) 0  ;# words only
   set data(c2) 1  ;# case
@@ -864,6 +867,9 @@ proc find::btTRetry {} {
   variable win
   variable geo
   variable data
+  if {[string match root* $geo]} {
+    set geo [wm geometry $win]
+  }
   if {[incr data(btTRetry)]%2} {
     lassign [split $geo x+] w1 h1 x1 y1
     lassign [split [winfo geometry [$obFND But1]] x+] w2 h2
@@ -1119,7 +1125,6 @@ proc find::_create {} {
   variable win
   variable geo
   variable data
-  set data(lastinvoke) 1
   set data(geoDefault) 0
   set data(btTRetry) 0
   set res 1

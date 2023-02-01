@@ -892,7 +892,7 @@ proc ini::SaveIniPrj {{newproject no}} {
   }
   foreach {key1 key2} {ENCODING encode EOL eol} {
     foreach k [array names al $key1,*] {
-      if {$al($k) ne {utf-8}} {
+      if {$al($k) ni {utf-8 auto}} {
         # restrict the saved with currently used files only
         set fname [string range $k [string first , $k]+1 end]
         if {$fname in $al(RECENTFILES) || [alited::bar::FileTID $fname] ne {}} {
@@ -989,7 +989,7 @@ proc ini::CheckUpdates {doit} {
   set inifile [file rootname $inifile]
   set al(_updFileIni_) [file normalize [file join $inidir $inifile$date$iniext]]
   set pobj alitedObjToDel
-  ::apave::APaveInput create $pobj
+  ::apave::APaveInput create $pobj $al(WIN)
   set mnudo [expr {![file exists $al(_updDirMnu_)]}]
   set inido [expr {![file exists $al(_updFileIni_)]}]
   if {$doit} {
@@ -1042,7 +1042,7 @@ proc ini::CheckUpdates {doit} {
     alited::Exit - 1 no
   } else {
     if {$err ne {}} {
-      ::apave::APaveInput create $pobj
+      ::apave::APaveInput create $pobj $al(WIN)
       $pobj ok err Error $err -text 1 -w 50 -h {3 5}
       catch {$pobj destroy}
     } elseif {$mnudone || $inidone} {
@@ -1288,6 +1288,7 @@ proc ini::_init {} {
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
+  ::apave::initBaltip
   ::apave::obj chooserGeomVars ::alited::DirGeometry ::alited::FilGeometry
   GetUserDirs
   CheckIni

@@ -684,10 +684,11 @@ oo::class create ::apave::APaveDialog {
 
   method highlight_matches {txt} {
     # Highlights matches of selected word in a text.
-    #   w - path to the text
+    #   txt - path to the text
 
-    lassign [my get_highlighted $txt] sel pos
+    lassign [my get_highlighted $txt] sel pos pos2
     if {$pos eq {}} return
+    after idle "[self] highlight_matches_real $txt $pos $pos2"
     my set_HighlightedString $sel
     set lenList {}
     set posList [$txt search -all -count lenList -- "$sel" 1.0 end]
@@ -751,6 +752,24 @@ oo::class create ::apave::APaveDialog {
       ::tk::TextSetCursor $txt $pos
       $txt tag add sel $pos [$txt index "$pos + [string length $sel] chars"]
     }
+  }
+  #_______________________
+
+  method highlight_matches_real {txt pos1 pos2} {
+    # Highlights a selected word in a text, esp. fow Windows.
+    # Windows thinks a word is edged by spaces only: not in real case.
+    #   txt - path to the text
+    #   pos1 - starting position of real selection
+    #   pos2 - ending position of real selection
+
+    $txt tag remove sel 1.0 end
+    if {[$txt get $pos1] eq "\n"} {
+      # if a word at line start, Windows select an empty line above
+      lassign [split $pos1 .] l c
+      set pos1 [incr l].$c
+    }
+    catch {::tk::TextSetCursor $txt $pos1}
+    $txt tag add sel $pos1 $pos2
   }
 
   ## ________________________ Query's auxiliaries _________________________ ##

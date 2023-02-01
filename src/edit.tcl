@@ -7,7 +7,10 @@
 ###########################################################
 
 
-namespace eval edit {}
+namespace eval edit {
+  variable hlcolors [list]
+  variable ans_hlcolors 0
+}
 # ________________________ Indent _________________________ #
 
 proc edit::SelectedLines {{wtxt ""} {strict no}} {
@@ -97,6 +100,7 @@ proc edit::UnIndent {} {
 proc edit::NormIndent {} {
   # Normalizes a current text's indenting.
 
+  alited::main::CalcIndentation {} yes
   alited::main::UpdateProjectInfo
   if {![namespace exists alited::indent]} {
     namespace eval alited {
@@ -187,6 +191,84 @@ proc edit::UnComment {} {
   }
   ::apave::undoOut $wtxt
   SelectLines $wtxt $l1 $l2
+}
+
+# ________________________ Color values _________________________ #
+
+proc edit::ShowColorValues {} {
+  # Highlights color values.
+
+  namespace upvar ::alited al al obPav obPav obFND obFND
+  variable hlcolors
+  variable ans_hlcolors
+  set RE {#([0-9a-f]{3}([^0-9a-z]|$)|[0-9a-f]{6}([^0-9a-z]|$))}
+  set txt [alited::main::CurrentWTXT]
+  if {$ans_hlcolors<10} {
+    set ans_hlcolors [alited::msg yesnocancel ques \
+      [msgcat::mc {Display colors in the whole text?}] YES \
+      -title $al(MC,hlcolors) -ch $al(MC,noask)]
+  }
+  if {!$ans_hlcolors} return
+  HideColorValues
+  set l1 1.0
+  set l2 end
+  if {$ans_hlcolors in {2 12} && \
+  ![catch {set gcon [$obPav gutterContents $txt]}] && [llength $gcon]} {
+    set l1 [string trim [lindex $gcon 0 1]].0
+    set l2 [string trim [lindex $gcon end 1]].end
+  }
+  set lenList [set hlcolors [list]]
+  set posList [$txt search -count lenList -regexp -nocase -all -strictlimits $RE $l1 $l2]
+  foreach pos $posList len $lenList {
+    if {$len eq {}} {
+      set st [$txt get $pos "$pos lineend + 1 char"]
+      set len [lindex [regexp -nocase -indices -inline $RE $st] 1 1]
+    }
+    set pos2 [$txt index "$pos + $len char"]
+    set hlc [$txt get $pos $pos2]
+    catch {
+      lassign [InvertBg $hlc] fg bg
+      $txt tag configure $hlc -foreground $fg -background $bg
+      $txt tag add $hlc $pos $pos2
+      lappend hlcolors $hlc
+    }
+  }
+  if {[winfo exists $alited::find::win] && [winfo ismapped $alited::find::win]} {
+    set alited::find::data(en1) $RE  ;# if "Find/Replace" is shown, set Find = RE
+    [$obFND Cbx1] selection clear
+    set msg "   ([msgcat::mc {check RE in Find/Replace box}])"
+    set mode 3
+  } else {
+    set msg {}
+    set mode 1
+  }
+  alited::Message $al(MC,hlcolors):\ [llength $hlcolors]\ $msg $mode
+}
+#_______________________
+
+proc edit::HideColorValues {} {
+  # Unhighlights color values.
+
+  variable hlcolors
+  set txt [alited::main::CurrentWTXT]
+  foreach hlc $hlcolors {$txt tag remove $hlc 1.0 end}
+}
+#_______________________
+
+proc edit::InvertBg {clr} {
+  # Gets a "inverted" color (white/black) for an color.
+  #   clr - color (#hhh or #hhhhhh)
+  # Returns a list of "inverted" color and "normalized" input color
+
+  if {[string length $clr]==4} {
+    lassign [split $clr {}] -> r g b
+    set clr #$r$r$g$g$b$b
+  }
+  scan $clr "#%02x%02x%02x" r g b
+  set c [expr {$r<100 && $g<100 || $r<100 && $b<100 || $b<100 && $g<100 ||
+    ($r+$g+$b)<300 ? 210 : 0}]
+  set res [string toupper [format "#%02x%02x%02x" $c $c $c]]
+  return [list $res $clr]
 }
 
 # ________________________ At modifications _________________________ #

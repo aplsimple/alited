@@ -8,6 +8,7 @@
  for example:
    rm log.txt
    echo ----------------
+   fossil status --changed
    fossil extras
 
  All commands are executed in an appropriate project
