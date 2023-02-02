@@ -410,9 +410,9 @@ proc tool::EM_command {im} {
     set ex {ex= o=-1}
   } else {
     # call a command
-    set ex "ex=[alited::tool::EM_HotKey $idx]"
+    set ex "ex=[alited::tool::EM_HotKey $idx] SH=1"
   }
-  return "alited::tool::e_menu \"m=$mnu\" $ex SH=1"
+  return "alited::tool::e_menu \"m=$mnu\" $ex"
 }
 #_______________________
 

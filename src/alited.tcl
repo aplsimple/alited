@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.6b17  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.6b17.1  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 wm withdraw .
