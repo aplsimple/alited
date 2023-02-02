@@ -2279,7 +2279,7 @@ proc ::em::initcomm {} {
     catch {cd $cpwd}  ;# may be deleted by commands
     set ::em::reallyexit yes
   }
-  if {!$::em::isbaltip} {return yes}
+  if {![llength [array names ::em::ar_macros]] && !$::em::isbaltip} {return yes}
   if {$::em::reallyexit} {return no}
   if {[set lmc [llength $::em::menuoptions]] > 1} {
       # o=, s=, m= options define menu contents & are processed particularly

@@ -645,6 +645,7 @@ proc tool::e_menu {args} {
   if {{EX=1} ni $args} {
     append args { AL=1}  ;# to read a current file only at "Run me"
   }
+  puts "[incr ::-ALE-] tool::e_menu $args"  ;#! TODEL
   if {$alited::al(EM,exec)} {
     e_menu1 $args
   } else {
