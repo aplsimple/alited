@@ -976,16 +976,16 @@ In <i>Projects</i> dialogue, <i>Commands</i> tab allow you to set command(s)
 These commands can be OS commands or executables,for example:
 <pre class="code">rm log.txt
 echo ----------------
-fossil status -<font color=#6c3e67>-changed</font>
+fossil status <font color=#6c3e67>--changed</font>
 fossil extras
 </pre>
 </p>
 <p>
 All commands are executed in an appropriate project directory, i.e. the above commands will be in fact:
-<pre class="code"><b><font color=#3a6797>cd</font></b> <font color=#8b2a0e>&quot;a-project-root-dir&quot;</font>
+<pre class="code"><b><font color=#3a6797>cd</font></b> a-project-root-dir
 rm log.txt
 echo ----------------
-fossil status --changed
+fossil status <font color=#6c3e67>--changed</font>
 fossil extras
 </pre>
 </p>

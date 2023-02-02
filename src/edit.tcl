@@ -202,6 +202,7 @@ proc edit::ShowColorValues {} {
   variable hlcolors
   variable ans_hlcolors
   set RE {#([0-9a-f]{3}([^0-9a-z]|$)|[0-9a-f]{6}([^0-9a-z]|$))}
+  set RF {#([0-9a-fA-F]{3,6})}
   set txt [alited::main::CurrentWTXT]
   if {$ans_hlcolors<10} {
     set ans_hlcolors [alited::msg yesnocancel ques \
@@ -234,7 +235,7 @@ proc edit::ShowColorValues {} {
     }
   }
   if {[winfo exists $alited::find::win] && [winfo ismapped $alited::find::win]} {
-    set alited::find::data(en1) $RE  ;# if "Find/Replace" is shown, set Find = RE
+    set alited::find::data(en1) $RF  ;# if "Find/Replace" is shown, set Find = RE
     [$obFND Cbx1] selection clear
     set msg "   ([msgcat::mc {check RE in Find/Replace box}])"
     set mode 3

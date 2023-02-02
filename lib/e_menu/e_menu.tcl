@@ -41,10 +41,8 @@ namespace eval ::em {
   if {$solo} {
     # remove all possible installed packages that are used by e_menu
     foreach _ {apave baltip} {
-      catch {
-        package forget $_
-        namespace delete ::${_}
-      }
+      catch {package forget $_}
+      catch {namespace delete ::${_}}
     }
   } else {
     append em_version " / [file tail $::em::Argv0]"

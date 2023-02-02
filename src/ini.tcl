@@ -1323,7 +1323,12 @@ proc ini::_init {} {
     set img [CreateIcon $icon]
     if {$icon in {file OpenFile SaveFile saveall categories undo redo replace \
     ok color date help run e_menu other}} {
-      append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4} \
+      if {$icon eq {run}} {
+        set com "-command alited::tool::TooltipRun"
+      } else {
+        set com ""
+      }
+      append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4 $com} \
         -popup {alited::tool::PopupBar %X %Y} "
       switch $icon {
         file {

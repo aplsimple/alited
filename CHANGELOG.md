@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `v1.3.6b17 (1 Feb'23)`
+Version `v1.3.6b18 (2 Feb'23)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
@@ -35,6 +35,7 @@ Version `v1.3.6b17 (1 Feb'23)`
   - NEW   : tips on toolbar items with %PD
   - NEW   : remove missing items from last visited list, at selecting
   - NEW   : alited.ini: some templates got TODEL comments (nice to find & remove)
+  - CHANGE: "Run" icon's tip with "forced command"
   - CHANGE: for "args" template: indentation & args with default values
   - CHANGE: Projects: no bell for pending TODOs (red only)
   - CHANGE: Projects: double-click on the list not locked at pending TODOs
@@ -57,7 +58,7 @@ Version `v1.3.6b17 (1 Feb'23)`
   - CHANGE: tips on Projects' file list
   - CHANGE: About / Acknowledgements
   - CHANGE: docs (index.html, helps)
-  - CHANGE: packages: apave/e_menu 3.7.0, hl_tcl 0.9.46, bartabs 1.6.3
+  - CHANGE: packages: apave/e_menu 3.7.0, hl_tcl 0.9.47, bartabs 1.6.3
 
 
 Version `1.3.5 (7 Dec'22)`

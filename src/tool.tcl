@@ -21,18 +21,6 @@ proc tool::ToolButName {img} {
 
 # ________________________ Edit functions _________________________ #
 
-proc tool::CtrlC {} {
-  catch {event generate [alited::main::CurrentWTXT] <<Copy>>}
-}
-
-proc tool::CtrlX {} {
-  catch {event generate [alited::main::CurrentWTXT] <<Cut>>}
-}
-
-proc tool::CtrlV {} {
-  catch {event generate [alited::main::CurrentWTXT] <<Paste>>}
-}
-
 proc tool::Undo {} {
   catch {event generate [alited::main::CurrentWTXT] <<Undo>>}
 }
@@ -189,6 +177,18 @@ proc tool::HelpTool {win hidx} {
   #   hidx - help's index
 
   alited::Help $win $hidx
+}
+#_______________________
+
+proc tool::TooltipRun {} {
+  # Gets a tip for "Run" tool.
+
+  namespace upvar ::alited al al
+  set res $al(MC,icorun)
+  if {[ComForced]} {
+    set res $al(comForce)\n[lindex [split $res \n] 1]
+  }
+  return $res
 }
 
 # ________________________ emenu support _________________________ #
@@ -645,7 +645,6 @@ proc tool::e_menu {args} {
   if {{EX=1} ni $args} {
     append args { AL=1}  ;# to read a current file only at "Run me"
   }
-  puts "[incr ::-ALE-] tool::e_menu $args"  ;#! TODEL
   if {$alited::al(EM,exec)} {
     e_menu1 $args
   } else {
@@ -732,7 +731,7 @@ proc tool::_run {{what ""} {runmode ""}} {
       return
     }
     if {[RunTcl $runmode]} return
-    set opts {EX=1 PI=1}
+    set opts {EX=1 PI=1 SH=1}
   }
   e_menu {*}$opts tc=[alited::Tclexe]
 }
@@ -763,7 +762,7 @@ proc tool::Run_in_e_menu {com {fnameCur ""}} {
   }
   if {$fnameCur ne {}} {set fnameCur f=[string map [list \\ \\\\] $fnameCur]}
   e_menu ee=$tw[string map [list \" \\\" \\ \\\\] $com] \
-    pd=[string map [list \\ \\\\] $al(prjroot)] $tc {*}$fnameCur
+    pd=[string map [list \\ \\\\] $al(prjroot)] $tc {*}$fnameCur SH=1
 }
 #_______________________
 

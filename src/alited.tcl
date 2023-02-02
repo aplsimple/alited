@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.6b17.2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.6b18  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 wm withdraw .
@@ -771,6 +771,10 @@ namespace eval alited {
     #   args - script's name and arguments
 
     set com [string trimright "$args" &]
+    if {{TEST_ALITED} in $args} {
+      set com [string map [list { TEST_ALITED} {}] $com]
+      puts [Tclexe]\ $com
+    }
     return [pid [open "|\"[Tclexe]\" $com"]]
   }
   #_______________________

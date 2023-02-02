@@ -1293,7 +1293,7 @@ proc pref::Test_e_menu {} {
   fetchVars
   set cs $al(EM,CS)
   set al(EM,CS) [GetCS 2]
-  alited::tool::e_menu o=0
+  alited::tool::e_menu o=0 TEST_ALITED
   set al(EM,CS) $cs
 }
 

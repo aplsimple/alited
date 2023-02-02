@@ -129,9 +129,8 @@ proc menu::FillMenu {} {
   set m [set al(MENUFILE) $al(WIN).menu.file]
   $m add command -label $al(MC,new) -command alited::file::NewFile -accelerator Ctrl+N
   $m add command -label $al(MC,open...) -command alited::file::OpenFile -accelerator Ctrl+O
-  set title [msgcat::mc "Recent Files"]
-  menu $m.recentfiles -tearoff 1 -title $title
-  $m add cascade -label $title -menu $m.recentfiles
+  menu $m.recentfiles -tearoff 1
+  $m add cascade -label [msgcat::mc {Recent Files}] -menu $m.recentfiles
   $m add separator
 
   ### ________________________ Save _________________________ ###
@@ -153,9 +152,8 @@ proc menu::FillMenu {} {
 
   ### ________________________ Reload _________________________ ###
 
-  set title [msgcat::mc {Reload with EOL}]
   menu $m.eol -tearoff 1 -title EOL
-  $m add cascade -label $title -menu $m.eol
+  $m add cascade -label [msgcat::mc {Reload with EOL}] -menu $m.eol
   foreach eol {LF CR CRLF - auto} {
     if {$eol eq {-}} {
       $m.eol add separator
@@ -164,9 +162,8 @@ proc menu::FillMenu {} {
         -command [list alited::file::Reload1 $eol]
     }
   }
-  set title [msgcat::mc {Reload with Encoding}]
-  menu $m.encods -tearoff 1 -title $title
-  $m add cascade -label $title -menu $m.encods
+  menu $m.encods -tearoff 1
+  $m add cascade -label [msgcat::mc {Reload with Encoding}] -menu $m.encods
   foreach enc [lsort -dictionary [encoding names]] {
     if {[incr icbr]%25} {set cbr {}} {set cbr {-columnbreak 1}}
     $m.encods add command -label $enc -command [list alited::file::Reload2 $enc] {*}$cbr
@@ -190,7 +187,7 @@ proc menu::FillMenu {} {
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
   $m add command -label [msgcat::mc {Remove Trailing Whitespaces}] -command alited::edit::RemoveTrailWhites
   $m add separator
-  menu $m.hlcolors -tearoff 1
+  menu $m.hlcolors -tearoff 1 -title [msgcat::mc Colors]
   $m add cascade -label [msgcat::mc {Color values #hhhhhh}] -menu $m.hlcolors
   $m.hlcolors add command -label $al(MC,hlcolors) -command alited::edit::ShowColorValues
   $m.hlcolors add command -label [msgcat::mc {Hide colors}] -command alited::edit::HideColorValues
@@ -223,7 +220,7 @@ proc menu::FillMenu {} {
   for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
     if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
       if {[incr emwas]==1} {
-        menu $m.runs -tearoff 1 -title bar-menu
+        menu $m.runs -tearoff 1
         $m add cascade -label bar-menu -menu $m.runs
       }
       if {$em_sep($i)} {
@@ -262,9 +259,8 @@ proc menu::FillMenu {} {
   $m add checkbutton -label [msgcat::mc {Tip File Info}] \
     -variable alited::al(TREE,showinfo) -command alited::file::UpdateFileStat
 
-  set title [msgcat::mc {Tips on / off}]
-  menu $m.tipson -tearoff 1 -title $title
-  $m add cascade -label $title -menu $m.tipson
+  menu $m.tipson -tearoff 1
+  $m add cascade -label [msgcat::mc {Tips on / off}] -menu $m.tipson
   $m.tipson add checkbutton -label $al(MC,projects) -variable alited::al(TIPS,Projects) -command alited::ini::SaveIni
   $m.tipson add checkbutton -label $al(MC,tpl) -variable alited::al(TIPS,Templates) -command alited::ini::SaveIni
   $m.tipson add checkbutton -label $al(MC,pref) -variable alited::al(TIPS,Preferences) -command alited::ini::SaveIni
@@ -273,10 +269,9 @@ proc menu::FillMenu {} {
   $m.tipson add checkbutton -label [msgcat::mc Units] -variable alited::al(TIPS,Tree) -command alited::ini::SaveIni
   $m.tipson add checkbutton -label $al(MC,favorites) -variable alited::al(TIPS,TreeFavor) -command alited::ini::SaveIni
 
-  set title [msgcat::mc Tint]
-  menu $m.tint -tearoff 1 -title $title
-  $m add cascade -label $title -menu $m.tint
-  foreach ti {50 45 40 35 30 25 20 15 10 5 0 -5 -10 -15 -20 -25 -30 -35 -40 -45 -50} {
+  menu $m.tint -tearoff 1
+  $m add cascade -label [msgcat::mc Tint] -menu $m.tint
+  for {set ti 50} {$ti>=-50} {incr ti -5} {
     set ti1 [string range "   $ti" end-2 end]
     if {$ti<0} {
       set ti2 "[msgcat::mc Darker:] $ti1"
@@ -286,7 +281,7 @@ proc menu::FillMenu {} {
       set ti3 [::apave::obj csGetName $al(INI,CS)]
       set ti2 CS\ #[string trim $ti3]
     }
-    $m.tint add checkbutton -label $ti2 -command "alited::menu::SetTint $ti"
+    $m.tint add checkbutton -label $ti2 -command "alited::menu::SetTint $ti" -variable alited::menu::tint($ti)
   }
   CheckTint
   $m add separator

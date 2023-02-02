@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.46
+package provide hl_tcl 0.9.47
 
 # ______________________ Common data ____________________ #
 
@@ -235,6 +235,7 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
   set dl -1
   while {[set dl [string first - $st [incr dl]]]>-1} {
     if {[string index $st $dl-1] ni $data(S_SPACE2)} continue
+    set idx1 "$ln.$pri +$dl char"
     if {[string index $st $dl+1] eq {-}} {
       incr dl ;# for --longoption
     }
@@ -251,7 +252,7 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
       set dl2 $i
     }
     if {$dl2>-1} {
-      $txt tag add tagOPT "$ln.$pri +$dl char" "$ln.$pri +[incr dl2] char"
+      $txt tag add tagOPT $idx1 "$ln.$pri +[incr dl2] char"
       set dl $dl2
     }
   }

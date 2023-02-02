@@ -317,7 +317,7 @@ namespace eval ::apave {
   proc initBaltip {} {
     # Initializes baltip package.
 
-    if {![namespace exists ::baltip]} {
+    if {[info command ::baltip] eq {}} {
       if {$::apave::ISBALTIP} {
         source [file join $::apave::SRCDIR baltip baltip.tcl]
       } else {
