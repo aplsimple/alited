@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.6b18  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.6b19  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 wm withdraw .
@@ -75,7 +75,11 @@ namespace eval alited {
   variable DATAUSERINIFILE [file join $DATAUSERINI alited.ini]
 
   # directories of user's data
-  variable CONFIGDIRSTD [file normalize {~/.config}]
+  variable CONFIGDIRSTD ~/.config
+  if {![file exists $CONFIGDIRSTD] && $::tcl_platform(platform) eq {windows}} {
+    set CONFIGDIRSTD [file join ~ AppData Local]
+  }
+  set CONFIGDIRSTD [file normalize $CONFIGDIRSTD]
   variable USERLASTINI [file join $CONFIGDIRSTD alited last.ini]
 
   # configurations

@@ -461,7 +461,7 @@ proc pref::General_Tab1 {} {
   set lightdark [msgcat::mc {Light / Dark}]
   set opcThemes [list default clam classic alt -- "{$lightdark} awlight awdark -- \
     azure-light azure-dark -- forest-light forest-dark -- sun-valley-light sun-valley-dark -- lightbrown darkbrown -- plastik"]
-  if {[::iswindows]} {
+  if {$al(IsWindows)} {
     lappend opcThemes -- "{[msgcat::mc {Windows themes}]} vista xpnative winnative"
   }
   if {[string first $alited::al(THEME) $opcThemes]<0} {

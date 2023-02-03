@@ -822,6 +822,21 @@ proc ::em::execom {comm} {
   if {$comm1 eq {%O}} {
     ::apave::openDoc $argm
   } elseif {![string match #* $comm1]} {
+    if {[lindex $argm end-1] eq {>}} {
+      # redirecting results to a file: do it here (in wish & tclkit.exe not working)
+      set fname [lindex $argm end]     ;# file name
+      set com2 [lrange $argm 0 end-2]  ;# command without "> file name"
+      if {[lindex $com2 0] in {/c -nologo}} {
+        set com2 [lrange $com2 1 end]  ;# in Windows: cmd.exe / powershell.exe... command
+      } else {
+        set com2 [linsert $com2 0 $comm1] ;# in Linux: command
+      }
+      if {![catch {set res [exec -- {*}$com2]}]} {
+        if {[::apave::writeTextFile $fname res]} {
+          return {}
+        }
+      }
+    }
     set comm2 [::apave::autoexec $comm1]
     if {[catch {exec -- $comm2 {*}$argm} e]} {
       if {$comm2 eq {}} {
@@ -2277,7 +2292,9 @@ proc ::em::initcomm {} {
     catch {cd $cpwd}  ;# may be deleted by commands
     set ::em::reallyexit yes
   }
-  if {![llength [array names ::em::ar_macros]] && !$::em::isbaltip} {return yes}
+  if {![llength [array names ::em::ar_macros]] && !$::em::isbaltip} {
+    return [expr {!$::em::reallyexit}]
+  }
   if {$::em::reallyexit} {return no}
   if {[set lmc [llength $::em::menuoptions]] > 1} {
       # o=, s=, m= options define menu contents & are processed particularly

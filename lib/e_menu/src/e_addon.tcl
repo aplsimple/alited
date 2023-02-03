@@ -585,11 +585,16 @@ proc ::em::input {cmd} {
   set dp [string last { == } $cmd]
   if {$dp < 0} {set dp 999999}
   set data [string range $cmd $dp+4 end]
-  set cmd "$dialog input [string range $cmd 2 $dp-1] -centerme .em -ontop $::em::ontop"
+  if {[winfo exists .em] && [winfo ismapped .em]} {
+    set geo {-centerme .em}
+  } else {
+    set geo {-centerme .}
+  }
+  set cmd "$dialog input [string range $cmd 2 $dp-1] $geo -ontop $::em::ontop"
   catch {set cmd [subst $cmd]}
   if {[set lb [countCh $cmd \{]] != [set rb [countCh $cmd \}]]} {
     dialog_box ERROR " Number of left braces : $lb\n Number of right braces: $rb \
-      \n\n     are not equal!" ok err OK -centerme .em -ontop $::em::ontop
+      \n\n     are not equal!" ok err OK {*}$geo -ontop $::em::ontop
   }
   set res [eval $cmd [::em::theming_pave]]
   $dialog destroy

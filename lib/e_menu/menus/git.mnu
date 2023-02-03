@@ -26,7 +26,7 @@ w=35
  R:  R: 2
 
  R:git difftool $::FILETAIL ? R: cd %PD
-RW:git difftool $::FILETAIL ? RW: git log --format=oneline -10 > $::EMENUTMPFILE
+RW:git difftool $::FILETAIL ? RW: git log --format=oneline -99 > $::EMENUTMPFILE
  R:git difftool $::FILETAIL ? R: %I {} "DIFFTOOL" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{   File:} {} {-w 70}} {"$::EMENUFILE"} \
@@ -39,7 +39,7 @@ RW:git difftool $::FILETAIL ? RW: git log --format=oneline -10 > $::EMENUTMPFILE
  R:git difftool $::FILETAIL ? R: git difftool $::EMENUCOMMIT HEAD -- "$::EMENUFILE"
 
  S:git diff S: cd %PD
-RW:git diff RW: git log --format=oneline -10 > $::EMENUTMPFILE
+RW:git diff RW: git log --format=oneline -99 > $::EMENUTMPFILE
  R:git diff R: %I {} "DIFF" { \
    v_ {{} {-pady 4} {}} {} \
    fco1 {{     Version :} {} {-h 10 -state readonly -retpos 0:10 -inpval "$::EMENUCOMMIT"}} \

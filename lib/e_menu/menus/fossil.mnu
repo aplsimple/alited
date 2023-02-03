@@ -42,7 +42,7 @@ pos=9.22
  R:  R: 2
 
  R:fossil gdiff $::FILETAIL ? R: cd %PD
-RW:fossil gdiff $::FILETAIL ? RW: fossil tim -t ci -n 9999 > $::EMENUTMPFILE
+RW:fossil gdiff $::FILETAIL ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
  R:fossil gdiff $::FILETAIL ? R: %I {} "GDIFF" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{   File:} {} {}} {"$::EMENUFILE"}\
@@ -57,7 +57,7 @@ RW:fossil gdiff $::FILETAIL ? RW: fossil tim -t ci -n 9999 > $::EMENUTMPFILE
  R:fossil gdiff $::FILETAIL ? R: fossil gdiff $::EMENUTMP "$::EMENUFILE"
 
  S:fossil diff ? S: cd %PD
-RW:fossil diff ? RW: fossil tim -t ci -n 9999 > $::EMENUTMPFILE
+RW:fossil diff ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
  R:fossil diff ? R: %I {} "DIFF" { \
    v_ {{} {-pady 4} {}} {} \
    fco1  {{         From:} {} {-h 10 -state readonly -cbxsel "$::EMENUCOMMIT1"}} \

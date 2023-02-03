@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `v1.3.6b18 (2 Feb'23)`
+Version `v1.3.6b19 (3 Feb'23)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
@@ -9,6 +9,8 @@ Version `v1.3.6b18 (2 Feb'23)`
   - BUGFIX: focus 1st cbx at opening Find/Replace
   - BUGFIX: tips on toolbar items with %f and %D wildcards
   - BUGFIX: tips on file list called with F9
+  - BUGFIX: esp. for Windows & tclkits: commands redirecting to file (> file)
+  - BUGFIX: project::ProjectName: project name for dirname with "."
   - NEW   : Edit / Color values
   - NEW   : three themes: plastik, lightbrown, darkbrown
   - NEW   : File / Reload with EOL
@@ -35,6 +37,7 @@ Version `v1.3.6b18 (2 Feb'23)`
   - NEW   : tips on toolbar items with %PD
   - NEW   : remove missing items from last visited list, at selecting
   - NEW   : alited.ini: some templates got TODEL comments (nice to find & remove)
+  - CHANGE: ini::GetConfiguration: (for Windows) ~/AppData/Local instead of ~/.config
   - CHANGE: "Run" icon's tip with "forced command"
   - CHANGE: for "args" template: indentation & args with default values
   - CHANGE: Projects: no bell for pending TODOs (red only)

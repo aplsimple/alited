@@ -67,7 +67,12 @@ proc project::TabFileInfo {} {
 proc project::ProjectName {fname} {
   # Gets a project name from its file name.
 
-  return [file rootname [file tail $fname]]
+  namespace upvar ::alited PRJEXT PRJEXT
+  set fname [file tail $fname]
+  if {[string match -nocase *$PRJEXT $fname]} {
+    set fname [file rootname $fname]
+  }
+  return $fname
 }
 #_______________________
 
@@ -976,7 +981,7 @@ proc project::Delete {} {
   variable prjinfo
   variable win
   variable curinfo
-  if {[set isel [Selected index]] eq ""} return
+  if {[set isel [Selected index]] eq {}} return
   set geo "-centerme $win"
   set nametodel [lindex $prjlist $isel]
   if {$nametodel eq $curinfo(prjname)} {

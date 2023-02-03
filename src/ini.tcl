@@ -539,7 +539,7 @@ proc ini::ReadIniMisc {nam val} {
 proc ini::ReadIniPrj {} {
   # Reads a project's settings.
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al PRJEXT PRJEXT
   set al(tabs) [list]
   set al(curtab) 0
   set al(_check_menu_state_) 1
@@ -549,7 +549,7 @@ proc ini::ReadIniPrj {} {
   alited::favor::InitFavorites [list]
   alited::favor_ls::GetIni {}
   if {![file exists $al(prjfile)]} {
-    set al(prjfile) [file join $alited::PRJDIR default.ale]
+    set al(prjfile) [file join $alited::PRJDIR default$PRJEXT]
   }
   set al(prjname) [file tail [file rootname $al(prjfile)]]
   if {[catch {
@@ -1147,14 +1147,14 @@ proc ini::GetUserDirs {{initmnu no}} {
 proc ini::CreateUserDirs {} {
   # Creates main directories for settings.
 
-  namespace upvar ::alited al al USERDIR USERDIR INIDIR INIDIR PRJDIR PRJDIR MNUDIR MNUDIR DATAUSER DATAUSER DATAUSERINIFILE DATAUSERINIFILE
+  namespace upvar ::alited al al USERDIR USERDIR INIDIR INIDIR PRJDIR PRJDIR MNUDIR MNUDIR DATAUSER DATAUSER DATAUSERINIFILE DATAUSERINIFILE PRJEXT PRJEXT
   foreach dir {USERDIR INIDIR PRJDIR} {
     catch {file mkdir [set $dir]}
   }
   if {![file exists $al(INI)]} {
     file copy $DATAUSERINIFILE $al(INI)
-    file copy [file join $DATAUSER prj default.ale] \
-      [file join $PRJDIR default.ale]
+    file copy [file join $DATAUSER prj default$PRJEXT] \
+      [file join $PRJDIR default$PRJEXT]
     file copy [file join $DATAUSER notes.txt] [file join $USERDIR notes.txt]
     ReadIni
   }
