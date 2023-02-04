@@ -332,6 +332,7 @@ proc tool::EM_Structure {mnu} {
 
 proc tool::EM_HotKey {idx} {
   # Returns e_menu's hotkeys which numerate menu items.
+  #   idx - item's index
 
   set hk {0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,./}
   return [string index $hk $idx]
@@ -437,6 +438,17 @@ proc tool::EM_optionTF {args} {
     ::apave::writeTextFile $tmpname sel
   }
   return TF=$tmpname
+}
+#_______________________
+
+proc tool::SHarg {} {
+  # Gets SH= argument of e_menu (main window's geometry).
+
+  namespace upvar ::alited al al
+  if {[winfo exists $al(WIN)] && [winfo ismapped $al(WIN)]} {
+    return SH=[wm geometry $al(WIN)]
+  }
+  return {}
 }
 
 ## _____________________ run Tcl/ext commands ___________________ ##
@@ -645,6 +657,9 @@ proc tool::e_menu {args} {
   if {{EX=1} ni $args} {
     append args { AL=1}  ;# to read a current file only at "Run me"
   }
+  if {[set i [lsearch $args {SH=1}]]>-1} {
+    set args [lreplace $args $i $i [SHarg]]
+  }
   if {$alited::al(EM,exec)} {
     e_menu1 $args
   } else {
@@ -731,7 +746,7 @@ proc tool::_run {{what ""} {runmode ""}} {
       return
     }
     if {[RunTcl $runmode]} return
-    set opts {EX=1 PI=1 SH=1}
+    set opts "EX=1 PI=1 [SHarg]"
   }
   e_menu {*}$opts tc=[alited::Tclexe]
 }
@@ -762,7 +777,7 @@ proc tool::Run_in_e_menu {com {fnameCur ""}} {
   }
   if {$fnameCur ne {}} {set fnameCur f=[string map [list \\ \\\\] $fnameCur]}
   e_menu ee=$tw[string map [list \" \\\" \\ \\\\] $com] \
-    pd=[string map [list \\ \\\\] $al(prjroot)] $tc {*}$fnameCur SH=1
+    pd=[string map [list \\ \\\\] $al(prjroot)] $tc {*}$fnameCur [SHarg]
 }
 #_______________________
 

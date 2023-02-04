@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `v1.3.6b19 (3 Feb'23)`
+Version `v1.3.6b20 (4 Feb'23)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
@@ -37,6 +37,7 @@ Version `v1.3.6b19 (3 Feb'23)`
   - NEW   : tips on toolbar items with %PD
   - NEW   : remove missing items from last visited list, at selecting
   - NEW   : alited.ini: some templates got TODEL comments (nice to find & remove)
+  - CHANGE: toolbar dialogues centered on alited's window
   - CHANGE: ini::GetConfiguration: (for Windows) ~/AppData/Local instead of ~/.config
   - CHANGE: "Run" icon's tip with "forced command"
   - CHANGE: for "args" template: indentation & args with default values

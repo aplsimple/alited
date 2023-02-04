@@ -3599,9 +3599,14 @@ oo::class create ::apave::APave {
     $win configure -bg $bg  ;# removes blinking by default bg
     set _pav(modalwin) $win
     set root [winfo parent $win]
+    set rooted 1
     if {[set centerme [::apave::getOption -centerme {*}$args]] ne {}} {
       ;# forced centering relative to a caller's window
-      if {[winfo exist $centerme]} {set root $centerme}
+      lassign [split $centerme x+] rw rh rx ry
+      set rooted [expr {![regexp {[+|-]+\d+\++} $centerme]}]
+      if {$rooted && [winfo exist $centerme]} {
+        set root $centerme
+      }
     }
     if {[set modal [::apave::getOption -modal {*}$args]] eq {}} {
       set modal yes
@@ -3632,7 +3637,9 @@ oo::class create ::apave::APave {
         }
       }
     }
-    lassign [::apave::splitGeometry [wm geometry $root]] rw rh rx ry
+    if {$rooted} {
+      lassign [::apave::splitGeometry [wm geometry $root]] rw rh rx ry
+    }
     if {[winfo parent $win] ni {{} .}} {
       set opt(-decor) 0
     }
@@ -3676,12 +3683,12 @@ oo::class create ::apave::APave {
     set ${_pav(ns)}PN::AR($win) {-}
     if {$opt(-escape)} {bind $win <Escape> $opt(-onclose)}
     update
-    set w [winfo width $win]
-    set h [winfo height $win]
+    set w [winfo reqwidth $win]
+    set h [winfo reqheight $win]
     if {$inpgeom eq {}} {  ;# final geometrizing with actual sizes
       set geo [my CenteredXY $rw $rh $rx $ry $w $h]
       set y [lindex [split $geo +] end]
-      if {$root ne {.} && (($h/2-$ry-$rh/2)>30 || [::iswindows] && $y>0)} {
+      if {!$rooted || $root ne {.} && (($h/2-$ry-$rh/2)>30 || [::iswindows] && $y>0)} {
         # ::tk::PlaceWindow needs correcting in rare cases, namely:
         # when 'root' is of less sizes than 'win' and at screen top
         wm geometry $win $geo

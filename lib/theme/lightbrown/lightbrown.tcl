@@ -312,10 +312,14 @@ namespace eval ttk::theme::lightbrown {
 
     ## ________________________ Progressbar _________________________ ##
 
+    ttk::style element create Horizontal.Progressbar.trough \
+    	image $I(through_h) -border  {3 3}
+    ttk::style element create Vertical.Progressbar.trough \
+    	image $I(through) -border  {3 3}
     ttk::style element create Horizontal.Progressbar.pbar image $I(progress-h) \
-      -border {5 2 5 1} -padding 1
+      -border {3 3} -padding 1
     ttk::style element create Vertical.Progressbar.pbar image $I(progress-v) \
-      -border {5 2 5 1} -padding 1
+      -border {3 3} -padding 1
 
     ## ________________________ Sizegrip _________________________ ##
 

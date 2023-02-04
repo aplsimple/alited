@@ -585,7 +585,9 @@ proc ::em::input {cmd} {
   set dp [string last { == } $cmd]
   if {$dp < 0} {set dp 999999}
   set data [string range $cmd $dp+4 end]
-  if {[winfo exists .em] && [winfo ismapped .em]} {
+  if {$::em::SH ne {}} {
+    set geo "-centerme $::em::SH"
+  } elseif {[winfo exists .em] && [winfo ismapped .em]} {
     set geo {-centerme .em}
   } else {
     set geo {-centerme .}
@@ -658,7 +660,7 @@ proc ::em::writeable_command {cmd} {
     }
   }
   set cmd [string map {|!| "\n"} $cmd]
-  if {$::em::SH} {
+  if {$::em::SH ne {}} {
     # res: "true" (run without dialog), "yes" (run with dialog) or "1" (save only)
     set res true
     set cmd #\ $cmd ;# to fit a result returned by the dialog

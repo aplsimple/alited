@@ -252,13 +252,13 @@ namespace eval ttk::theme::darkbrown {
     ## ________________________ Progressbars _________________________ ##
 
     ttk::style element create Horizontal.Progressbar.trough \
-    	image $I(through_h) -border  {3 3 3 3}
+    	image $I(through_h) -border  {3 3}
     ttk::style element create Vertical.Progressbar.trough \
-    	image $I(through) -border  {3 3 3 3}
+    	image $I(through) -border  {3 3}
     ttk::style element create Horizontal.Progressbar.pbar \
-	    image $I(progress-h) -border {3 3 3 3}
+	    image $I(progress-h) -border {3 3}
     ttk::style element create Vertical.Progressbar.pbar \
-	    image $I(progress-v) -border {1 1 1 1}
+	    image $I(progress-v) -border {3 3}
 
     ## ________________________ Switch _________________________ ##
 

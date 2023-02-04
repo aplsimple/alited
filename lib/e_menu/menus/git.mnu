@@ -35,7 +35,7 @@ RW:git difftool $::FILETAIL ? RW: git log --format=oneline -99 > $::EMENUTMPFILE
    seh {{} {-pady 3} {}} {} \
    texc {{   Hint:} {} {-h 9 -w 70 -ro 1 -wrap word}} \
    {\n Select a version from the combobox to be compared to HEAD.\n\n If it's blank, the current file is compared to HEAD.\n\n No response means no differences.\n\n (temp file: $::EMENUTMPFILE)} \
-   } -head {\n This will compare a selected version of\n     %f\n to its HEAD.} -weight bold == ::EMENUFILE ::EMENUCOMMIT
+   } -head {\n This will compare a selected version of a file to its HEAD.} -weight bold == ::EMENUFILE ::EMENUCOMMIT
  R:git difftool $::FILETAIL ? R: git difftool $::EMENUCOMMIT HEAD -- "$::EMENUFILE"
 
  S:git diff S: cd %PD

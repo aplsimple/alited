@@ -121,17 +121,19 @@ proc preview::Run {} {
   $obj paveWindow $win.fra.nbk.f2 {
     {lab0 - - 1 1 {-st wsn}  {-t "Spinbox: "}}
     {spx + L 1 1 {-st wes} {-tvar ::v2 -from 1 -to 99 -w 5 -justify center}}
-    {h_ + L 1 99}
+    {h_ + L 1 1 {-st ew -cw 1}}
     {v_ lab0 T 1 1 {-pady 10}}
     {lab1 + T 1 1 {-st wsn}  {-t "Progress: "}}
-    {pro + L 1 99 {-st ew} {-mode indeterminate -afteridle {%w start}}}
+    {pro + L 1 2 {-st ew} {-mode indeterminate -afteridle {%w start}}}
     {h_2 lab1}
-    {lab2 + L 1 99 {-st ew} {-tvar ::sc2 -anchor center}}
+    {lab2 + L 1 2 {-st ew} {-tvar ::sc2 -anchor center}}
     {lab3 h_2 T 1 1 {-st wsn} {-t "Scale: "}}
-    {sca + L 1 99 {-st we} {-length 200 -orient horiz -var ::sc -from 0 -to 100}}
+    {sca + L 1 2 {-st we} {-length 200 -orient horiz -var ::sc -from 0 -to 100}}
     {h_3 lab3}
     {lab4 h_3 T 1 1 {-st wsn} {-t "OptCascade: "}}
-    {opc + L 1 4 {-st we} {::opc ::opcSet {-width 12}}}
+    {opc + L 1 1 {-st we} {::opc ::opcSet {-width 12}}}
+    {v_2 lab4 T 1 1 {-st ew -rw 1}}
+    {pro2 h_ L 9 1 {-st ns} {-orient vert -mode indeterminate -afteridle {%w start}}}
   }
   after 100 "preview::Rerun $obj $win"
   $obj showModal $win -focus [$obj Ent1] -geometry $algeom
