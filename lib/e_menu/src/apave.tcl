@@ -3123,12 +3123,13 @@ oo::class create ::apave::APave {
             lassign [$vn curselection] s1
             if {$s1 eq {}} {set s1 0}
             set w [string range $vn [string last . $vn]+1 end]
+            if {[catch {set v0 [$vn get $s1]}]} {set v0 {}}
             if {$optnam eq {-lbxnameALL}} {
               # when -ALL option is set to 1, listbox returns
               # a list of 3 items - sel index, sel contents and all contents
-              set $v1 [list $s1 [$vn get $s1] [set $v1]]
+              set $v1 [list $s1 $v0 [set $v1]]
             } else {
-              set $v1 [$vn get $s1]
+              set $v1 $v0
             }
           }
         }
@@ -3608,6 +3609,7 @@ oo::class create ::apave::APave {
         set root $centerme
       }
     }
+    set input [::apave::extractOptions args -input 0]
     if {[set modal [::apave::getOption -modal {*}$args]] eq {}} {
       set modal yes
     }
@@ -3710,9 +3712,11 @@ oo::class create ::apave::APave {
     }
     my showWindow $win $modal $ontop $var $minsize
     set res 0
-    catch {
-      my GetOutputValues
+    if {[catch {
+      if {$input} {my GetOutputValues}
       set res [set [set _ ${_pav(ns)}PN::AR($win)]]
+    } err]} {
+      puts stderr $err
     }
     return $res
   }
@@ -3920,5 +3924,3 @@ oo::class create ::apave::APave {
 }
 
 # _____________________________ EOF _____________________________________ #
-#-RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#RUNF1: ~/PG/github/pave/tests/test2_pave.tcl alt 2 11 12 "middle icons"

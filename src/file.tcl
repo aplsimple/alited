@@ -10,6 +10,7 @@
 
 namespace eval file {
   variable ansSave 0
+  variable ansOpen 0
   variable firstSave -1
   variable ansOpenOfDir 0
 }
@@ -536,6 +537,7 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
   # Returns the file's tab ID if it's loaded, or {} if not loaded.
 
   namespace upvar ::alited al al obPav obPav
+  variable ansOpen
   set al(filename) {}
   set chosen no
   if {$fnames eq {}} {
@@ -548,15 +550,7 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
   }
   if {[set llen [llength $fnames]]==0} {return {}}
   set TID {}
-  set askopen 0
   set many [expr {$llen>1}]
-  if {$many} {
-    set chopt "-ch {$al(MC,noask)}"  ;# for many files -
-    set ync yesnocancel              ;# ask with "Cancel" & "Don't show anymore"
-  } else {
-    set chopt {}
-    set ync yesno
-  }
   foreach fname $fnames {
     if {[file exists $fname]} {
       set exts $al(TclExtensions)
@@ -566,13 +560,11 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
       set exts [string trim [string map {{ } {, } . {}} $exts]]
       set ext [string tolower [string trim [file extension $fname] .]]
       set esp [split [string map [list { } {} \n ,] $exts] ,]
-      if {!$reload && $ext ni $esp} {
+      if {!$reload && $ext ni $esp && $ansOpen<11} {
         set msg [string map [list %f [file tail $fname] %s $sexts] $al(MC,nottoopen)]
-        if {$askopen<11} {
-          set askopen [alited::msg $ync warn $msg YES {*}$chopt]
-        }
-        if {!$askopen || $askopen==12} break
-        if {$askopen==2} continue
+        set ansOpen [alited::msg yesnocancel warn $msg YES -ch $al(MC,noask)]
+        if {!$ansOpen || $ansOpen==12} break
+        if {$ansOpen==2} continue
       }
       if {[set TID [alited::bar::FileTID $fname]] eq {}} {
         # close  "no name" tab if it's the only one and not changed

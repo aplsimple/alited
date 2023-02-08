@@ -931,6 +931,7 @@ proc ini::SaveIniPrj {{newproject no}} {
     puts $chan comforcech=$al(comForceCh)
     puts $chan comforcels=$al(comForceLs)
   }
+  puts \n
   close $chan
 }
 

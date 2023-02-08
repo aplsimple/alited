@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `v1.3.6b20 (4 Feb'23)`
+Version `v1.3.6 (8 Feb'23)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows
   - BUGFIX: -defaultextension .tcl at saving files: for "no name" only
@@ -37,6 +37,8 @@ Version `v1.3.6b20 (4 Feb'23)`
   - NEW   : tips on toolbar items with %PD
   - NEW   : remove missing items from last visited list, at selecting
   - NEW   : alited.ini: some templates got TODEL comments (nice to find & remove)
+  - CHANGE: run::RunDialogue: "catch" for possibly bad-formed list of commands
+  - CHANGE: "don't show anymore" at opening a file of non-registered extension
   - CHANGE: toolbar dialogues centered on alited's window
   - CHANGE: ini::GetConfiguration: (for Windows) ~/AppData/Local instead of ~/.config
   - CHANGE: "Run" icon's tip with "forced command"
@@ -62,7 +64,7 @@ Version `v1.3.6b20 (4 Feb'23)`
   - CHANGE: tips on Projects' file list
   - CHANGE: About / Acknowledgements
   - CHANGE: docs (index.html, helps)
-  - CHANGE: packages: apave/e_menu 3.7.0, hl_tcl 0.9.47, bartabs 1.6.3
+  - CHANGE: packages: apave/e_menu 3.7.0, hl_tcl 0.9.48, bartabs 1.6.3
 
 
 Version `1.3.5 (7 Dec'22)`

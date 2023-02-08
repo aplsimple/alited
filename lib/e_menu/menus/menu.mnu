@@ -1,6 +1,5 @@
 [OPTIONS]
 in=1.0
-bd=1
 w=25
 pos=34.30
 ::EMENUTMPFILE=%mn.tmp~
@@ -100,10 +99,10 @@ RW: Differences of $::FILETAIL (fossil/git) ... RW: fossil tim -t ci -n 99 > $::
  R: Differences of $::FILETAIL (fossil/git) ... R: %IF {$::EMENU_FOSGIT} eq {Fossil} %THEN \
   fossil gdiff $::EMENUTMP "$::EMENUFILE" %ELSE git difftool -y $::EMENUCOMMIT HEAD -- "$::EMENUFILE"
 
- # call TKE/Geany with all *.tcl of current file's directory
+ # call alited/Geany with all *.tcl of current file's directory
  R: Edit *.tcl of $::DIRTAIL R: %q "EDIT ALL *.tcl" "This will edit all .tcl files of\n\n%d"
- R: Edit *.tcl of $::DIRTAIL R: %C set ::ALLFILES [glob "%d/*.tcl"]
- R: Edit *.tcl of $::DIRTAIL R: %IF [auto_execok geany]!={} %THEN geany $::ALLFILES %ELSE tke $::ALLFILES
+ R: Edit *.tcl of $::DIRTAIL R: %C set ::ALLFILES [glob -nocomplain "%d/*.tcl"]
+ R: Edit *.tcl of $::DIRTAIL R: %IF [auto_execok alited]!={} %THEN alited $::ALLFILES %ELSE geany $::ALLFILES
 RE: Edit *.tcl of $::DIRTAIL RE: %C unset ::ALLFILES
 
  M:  M: 3

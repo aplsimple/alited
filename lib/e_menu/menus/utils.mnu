@@ -8,7 +8,7 @@
 RE: poApps        RE: tclsh /home/apl/PG/github/poApps/poApps.tcl --dirdiff
 RE: ruler         RE: tclsh /usr/share/tcltk/tklib0.7/widget/ruler.tcl
 RE: screenshooter RE: cd ~/UTILS
-RE: screenshooter RE ./screenshooter
+RE: screenshooter RE: ./screenshooter
 RE: caja here     RE: caja "%d"
 RE: terminal here RE: cd %d
 RE: terminal here RE: %TT

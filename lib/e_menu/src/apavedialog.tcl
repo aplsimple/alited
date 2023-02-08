@@ -205,7 +205,8 @@ oo::class create ::apave::APaveDialog {
     # The *butts* is a list of pairs "title of button" "number/ID of button"
 
     foreach {nam num} $butts {
-      lappend apave_msc_bttns But$num "$nam" $num
+      set but But[namespace tail $num] ;# for "num" set as a command
+      lappend apave_msc_bttns $but "$nam" $num
       if {$defb eq {}} {
         set defb $num
       }
@@ -857,7 +858,7 @@ oo::class create ::apave::APaveDialog {
       if {[info commands $res] eq {}} {
         set com "${_pdg(ns)}my res $_pdg(dlg) $res"
       } else {
-        set com $res
+        set com $res  ;# "res" is set as a command
       }
       if {$but eq {butHELP}} {
         # Help button contains the command in "res"
@@ -1137,8 +1138,8 @@ oo::class create ::apave::APaveDialog {
       incr maxw
       set maxw [vallimits $maxw 20 [info exists charwidth] charwidth]
       rename vallimits {}
-      lappend widlist [list fraM $prevh T 10 7 {-st nswe -pady 3 -rw 1}]
-      lappend widlist [list TexM - - 1 7 {pack -side left -expand 1 -fill both -in \
+      lappend widlist [list fraM $prevh T 10 12 {-st nswe -pady 3 -rw 1}]
+      lappend widlist [list TexM - - 1 12 {pack -side left -expand 1 -fill both -in \
         $qdlg.fra.fraM} [list -h $il -w $maxw {*}$optsFontM {*}$optsMisc \
         -wrap word -textpop 0 -tabnext "$qdlg.fra.[lindex $buttons 0] *but0"]]
       if {$scroll} {
@@ -1403,5 +1404,3 @@ oo::class create ::apave::APaveDialog {
 }
 
 # _____________________________ EOF _____________________________________ #
-#RUNF: ~/PG/github/pave/tests/test2_pave.tcl alt 27 11 12 "middle icons"
-#RUNF: ~/PG/github/alited/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

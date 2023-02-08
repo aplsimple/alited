@@ -66,13 +66,17 @@ proc run::RunDialogue {} {
   set prompt0 [string range $al(MC,run):$filler 0 $lr]
   set prompt1 [string range [msgcat::mc {By command:}]$filler 0 $lr]
   set prompt2 [string range [msgcat::mc {By command #RUNF:}]$filler 0 $lr]
-  if {[lindex $al(comForceLs) 0] eq {-}} {
-    set al(comForceLs) [lreplace $al(comForceLs) 0 0]  ;# legacy
-  }
-  if {[lindex $al(comForceLs) 0] ne {}} {
-    set i [lsearch $al(comForceLs) {}]
-    set al(comForceLs) [lreplace $al(comForceLs) $i $i]
-    set al(comForceLs) [linsert $al(comForceLs) 0 {}]  ;# to allow blank value
+  if {[catch {
+    if {[lindex $al(comForceLs) 0] eq {-}} {
+      set al(comForceLs) [lreplace $al(comForceLs) 0 0]  ;# legacy
+    }
+    if {[lindex $al(comForceLs) 0] ne {}} {
+      set i [lsearch $al(comForceLs) {}]
+      set al(comForceLs) [lreplace $al(comForceLs) $i $i]
+      set al(comForceLs) [linsert $al(comForceLs) 0 {}]  ;# to allow blank value
+    }
+  }]} {
+    set al(comForceLs) [list]
   }
 #! let this commented stuff be a code snippet for tracing apave variables, huh:
 #  after idle [list after 0 " \
@@ -98,9 +102,9 @@ proc run::RunDialogue {} {
   lassign [$obDl2 input {} $al(MC,run) [list \
     rad1 [list $prompt0 {}] [list $vrad $al(MC,inconsole) $al(MC,intkcon)] \
     seh1 {{} {-pady 5}} {} \
-    fiL [list $prompt1 {-fill x} [list -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::run::DeleteForcedRun]] [list $al(comForce) {*}$al(comForceLs)] \
-    chb1 [list {} {-padx 5} {-toprev 1 -t {Run it} -var alited::al(TMPchb1) -com {alited::run::ChbForced 1}}] $al(TMPchb1) \
-    ent [list $prompt2 {-fill x -pady 5} [list -state disabled]] "{$vent}" \
+    FiL [list $prompt1 {-fill x} [list -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::run::DeleteForcedRun -tip {-BALTIP ! -COMMAND {[$::alited::obDl2 CbxfiL] get} -UNDER 2 -PER10 0}]] [list $al(comForce) {*}$al(comForceLs)] \
+    Chb1 [list {} {-padx 5} {-toprev 1 -t {Run it} -var alited::al(TMPchb1) -com {alited::run::ChbForced 1}}] $al(TMPchb1) \
+    Ent [list $prompt2 {-fill x -pady 5} [list -state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obDl2 Ent] get} -UNDER 2 -PER10 0}]] "{$vent}" \
     chb2 [list {} {-padx 5} {-toprev 1 -t {Run it} -var alited::al(TMPchb2) -com {alited::run::ChbForced 2}}] $al(TMPchb2) \
     seh2 {{} {-pady 5}} {} \
     lab {{} {} {-t { OS or Tcl commands to be run before running a current file:}}} {} \
@@ -113,7 +117,6 @@ proc run::RunDialogue {} {
   unset al(TMPchb1)
   return $res
 }
-
 #_______________________
 
 proc run::RunDlg {} {

@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide apave 3.7.0a2
+package provide apave 3.7.0
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -92,14 +92,14 @@ oo::class create ::apave::APaveInput {
       my initInput  ;# clear away all internal vars
     }
     set pady "-pady 2"
-    if {[set focusopt [::apave::getOption -focus {*}$args]] ne ""} {
+    if {[set focusopt [::apave::getOption -focus {*}$args]] ne {}} {
       set focusopt "-focus $focusopt"
     }
     lappend inopts [list fraM + T 1 98 "-st nsew $pady -rw 1"]
     set savedvv [list]
-    set frameprev ""
+    set frameprev {}
     foreach {name prompt valopts} $iopts {
-      if {$name eq ""} continue
+      if {$name eq {}} continue
       lassign $prompt prompt gopts attrs
       lassign [::apave::extractOptions attrs -method {} -toprev {}] ismeth toprev
       if {[string toupper $name 0] eq $name} {
@@ -131,7 +131,7 @@ oo::class create ::apave::APaveInput {
       }
       if {$typ ne {la} && $toprev eq {}} {
         set takfoc [::apave::parseOptions $attrs -takefocus 1]
-        if {$focusopt eq "" && $takfoc} {
+        if {$focusopt eq {} && $takfoc} {
           if {$typ in {fi di cl fo da}} {
             set _ en*$name  ;# 'entry-like mega-widgets'
           } elseif {$typ eq "ft"} {
@@ -156,7 +156,7 @@ oo::class create ::apave::APaveInput {
         catch {set vsel [subst -nocommands -nobackslashes $vsel]}
         set vlist [lrange $valopts 1 end]
       }
-      if {[set msgLab [::apave::getOption -msgLab {*}$attrs]] ne ""} {
+      if {[set msgLab [::apave::getOption -msgLab {*}$attrs]] ne {}} {
         set attrs [::apave::removeOptions $attrs -msgLab]
       }
       # define a current widget's info
@@ -164,7 +164,7 @@ oo::class create ::apave::APaveInput {
         lb - tb {
           set $vv $vlist
           lappend attrs -lvar $vv
-          if {$vsel ni {"" "-"}} {
+          if {$vsel ni {{} -}} {
             lappend attrs -lbxsel "$::apave::UFF$vsel$::apave::UFF"
           }
           lappend inopts [list $ff - - - - \
@@ -180,7 +180,7 @@ oo::class create ::apave::APaveInput {
           lappend inopts [list $ff - - - - "pack -side left -expand 1 -fill x $gopts" $attrs]
         }
         fc {
-          if {![info exist $vv]} {catch {set $vv ""}}
+          if {![info exist $vv]} {catch {set $vv {}}}
           lappend inopts [list $ff - - - - "pack -side left -expand 1 -fill x $gopts" "-tvar $vv -values \{$valopts\} $attrs"]
         }
         op {
@@ -207,18 +207,18 @@ oo::class create ::apave::APaveInput {
             set disattr "-rotext \{[set $vv]\}"
             set attrs [::apave::removeOptions $attrs -readonly -ro]
           } else {
-            set disattr ""
+            set disattr {}
           }
           lappend inopts [list $ff - - - - "pack -side left -expand 1 -fill both $gopts" "$attrs $disattr"]
           lappend inopts [list fraM.fra$name.sbv$name $ff L - - "pack -fill y"]
         }
         la {
-          if {$prompt ne ""} { set prompt "-t \"$prompt\" " } ;# prompt as -text
+          if {$prompt ne {}} { set prompt "-t \"$prompt\" " } ;# prompt as -text
           lappend inopts [list $ff - - - - "pack -anchor w $gopts" "$prompt$attrs"]
           continue
         }
         bu - bt - ch {
-          set prompt ""
+          set prompt {}
           if {$toprev eq {}} {
             lappend inopts [list $ff - - - - \
               "pack -side left -expand 1 -fill both $gopts" "$tvar $vv $attrs"]
@@ -229,7 +229,7 @@ oo::class create ::apave::APaveInput {
           if {$vv ne {}} {
             if {![info exist $vv]} {
               catch {
-                if {$vsel eq ""} {set vsel 0}
+                if {$vsel eq {}} {set vsel 0}
                 set $vv $vsel
               }
             }
@@ -239,19 +239,19 @@ oo::class create ::apave::APaveInput {
           if {$vlist ne {}} {lappend attrs -values $vlist}
           lappend inopts [list $ff - - - - \
             "pack -side left -expand 1 -fill x $gopts" "$tvar $vv $attrs"]
-          if {$vv ne ""} {
+          if {$vv ne {}} {
             if {![info exist $vv]} {catch {set $vv $vsel}}
           }
         }
       }
-      if {$msgLab ne ""} {
+      if {$msgLab ne {}} {
         lassign $msgLab lab msg attlab
         set lab [my parentWName [lindex $inopts end 0]].$lab
         if {$msg ne {}} {set msg "-t {$msg}"}
         append msg " $attlab"
         lappend inopts [list $lab - - - - "pack -side left -expand 1 -fill x" $msg]
       }
-      if {![info exist $vv]} {set $vv ""}
+      if {![info exist $vv]} {set $vv {}}
       lappend _savedvv $vv [set $vv]
       set frameprev $framename
     }
@@ -279,7 +279,7 @@ oo::class create ::apave::APaveInput {
     lappend args {*}$focusopt
     if {[catch { \
         set res [my Query $icon $ttl {} "$butHelp $buttons butOK $titleOK 1 $butCancel" \
-        butOK $inopts [my PrepArgs $args] "" {*}$centerme]} e]} {
+        butOK $inopts [my PrepArgs $args] {} {*}$centerme -input yes]} e]} {
       catch {destroy $_pdg(dlg)}  ;# Query's window
       ::apave::obj ok err "ERROR" "\n$e\n" \
         -t 1 -head "\nAPaveInput returned an error: \n" -hfg red -weight bold
@@ -303,7 +303,7 @@ oo::class create ::apave::APaveInput {
     # It's a sort of stub for calling *editfile* method.
     # See also: editfile
 
-    return [my editfile $fname "" "" "" $prepost {*}$args]
+    return [my editfile $fname {} {} {} $prepost {*}$args]
   }
   #_______________________
 
@@ -321,28 +321,28 @@ oo::class create ::apave::APaveInput {
     # See also:
     # [aplsimple.github.io](https://aplsimple.github.io/en/tcl/pave/index.html)
 
-    if {$fname eq ""} {
+    if {$fname eq {}} {
       return false
     }
     set newfile 0
-    if {[catch {set filetxt [::apave::readTextFile $fname "" yes]}]} {
+    if {[catch {set filetxt [::apave::readTextFile $fname {} yes]}]} {
       return false
     }
-    lassign [::apave::parseOptions $args -rotext "" -readonly 1 -ro 1] \
-      rotext readonly ro
-    set btns "Exit 0"  ;# by default 'view' mode
+    lassign [::apave::parseOptions $args -rotext {} -readonly 1 -ro 1] rotext readonly ro
+    lassign [::apave::extractOptions args -buttons {}] buttadd
+    set btns {Exit 0}  ;# by default 'view' mode
     set oper VIEW
-    if {$rotext eq "" || !$readonly || !$ro} {
-      set btns "Save 1 Cancel 0"
+    if {$rotext eq {} && (!$readonly || !$ro)} {
+      set btns {Save 1 Cancel 0}
       set oper EDIT
     }
-    if {$fg eq ""} {
-      set tclr ""
+    if {$fg eq {}} {
+      set tclr {}
     } else {
       set tclr "-fg $fg -bg $bg -cc $cc"
     }
-    if {$prepost eq ""} {set aa ""} {set aa [$prepost filetxt]}
-    set res [my misc "" "$oper: $fname" "$filetxt" $btns \
+    if {$prepost eq {}} {set aa {}} {set aa [$prepost filetxt]}
+    set res [my misc {} "$oper: $fname" "$filetxt" "$buttadd $btns" \
       TEXT -text 1 -w {100 80} -h 32 {*}$tclr \
       -post $prepost {*}$aa {*}$args]
     set data [string range $res 2 end]
@@ -360,4 +360,3 @@ oo::class create ::apave::APaveInput {
 
 }
 # ________________________ EOF _________________________ #
-#RUNF1: ~/PG/github/pave/tests/test_pavedialog.tcl

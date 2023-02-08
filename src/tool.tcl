@@ -657,6 +657,14 @@ proc tool::e_menu {args} {
   if {{EX=1} ni $args} {
     append args { AL=1}  ;# to read a current file only at "Run me"
   }
+  set wtxt [alited::main::CurrentWTXT]
+  lassign [::hl_tcl::hl_colors $wtxt] - - clrSTR clrVAR clrCMN clrPROC
+  if {$clrSTR eq {lightgreen}} {set clrSTR #90ee90}
+  if {![string match #* $clrSTR]} {set clrSTR $clrVAR}
+  if {[string match #* $clrSTR]} {
+    lassign [alited::edit::InvertBg $clrSTR] fg2
+    append args " HC=$clrPROC,$fg2,$clrSTR,$clrCMN"
+  }
   if {[set i [lsearch $args {SH=1}]]>-1} {
     set args [lreplace $args $i $i [SHarg]]
   }

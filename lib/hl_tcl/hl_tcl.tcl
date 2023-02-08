@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.47
+package provide hl_tcl 0.9.48
 
 # ______________________ Common data ____________________ #
 
@@ -86,19 +86,19 @@ namespace eval ::hl_tcl {
     #  COM     COMTK    STR      VAR     CMN     PROC    OPT    BRAC
     set data(SYNTAXCOLORS,0) {
       {#923B23 #7d1c00 #035103 #4A181B #4b5d50 #ca14ca #463e11 #FF0000}
-      {orange #ff7e00 lightgreen #f1b479 #76a396 #fe6efe #b9b96e #ff33ff}
+      {#ffa500 #ff7e00 #90ee90 #f1b479 #76a396 #fe6efe #b9b96e #ff33ff}
     }
     set data(SYNTAXCOLORS,1) {
       {#3a6797 #134070 #8b2a0e #1b1baa #4b5d50 #ca14ca #6c3e67 #FF0000}
       {#95c2f2 #73a0d0 #ffc27e #a9a9f7 #76a396 #fe6efe #e2b4dd #ff33ff}
     }
     set data(SYNTAXCOLORS,2) {
-      {#2b6b2b #0b4b0b #bd00bd #004080 #606060 #8a3407 #463e11 #FF0000}
+      {#2b6b2b #0b4b0b #8e0e8e #004080 #606060 #8a3407 #463e11 #FF0000}
       {#aad5ab #86c686 #ff86ff #96c5f8 #848484 #fab481 #b1a97c #ff33ff}
     }
     set data(SYNTAXCOLORS,3) {
       {#121212 #000000 #0c560c #4A181B #606060 #923B23 #463e11 #FF0000}
-      {#e9e9e9 #ffffff #84e284 #eebabf #848484 orange #a79f72 #ff33ff}
+      {#e9e9e9 #ffffff #84e284 #eebabf #848484 #ffa500 #a79f72 #ff33ff}
     }
   }
 }
@@ -130,7 +130,7 @@ proc ::hl_tcl::my::AuxEnding {kName lineName iName} {
   set k [expr {$k+$i+1}]
   return 1
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::NotEscaped {line i} {
   # Checks if a character escaped in a line.
@@ -147,7 +147,7 @@ proc ::hl_tcl::my::NotEscaped {line i} {
   }
   return [expr {($cntq%2)==0}]
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::RemoveTags {txt from to} {
   # Removes tags in text.
@@ -160,7 +160,7 @@ proc ::hl_tcl::my::RemoveTags {txt from to} {
   }
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
   # Highlights Tcl/Tk commands.
@@ -258,7 +258,7 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
   }
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::HighlightStr {txt p1 p2} {
   # Highlights strings.
@@ -285,7 +285,7 @@ proc ::hl_tcl::my::HighlightStr {txt p1 p2} {
   }
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::FirstQtd {lineName iName currQtd} {
   # Searches the quote characters in line.
@@ -325,7 +325,7 @@ proc ::hl_tcl::my::FirstQtd {lineName iName currQtd} {
     incr i
   }
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::HighlightComment {txt line ln k} {
   # Highlights comments.
@@ -343,7 +343,7 @@ proc ::hl_tcl::my::HighlightComment {txt line ln k} {
   }
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::HighlightLine {txt ln prevQtd} {
   # Highlightes a line in text.
@@ -402,7 +402,7 @@ proc ::hl_tcl::my::HighlightLine {txt ln prevQtd} {
   }
   return $currQtd
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::HighlightAll {txt} {
   # Highlights all of a text.
@@ -415,7 +415,7 @@ proc ::hl_tcl::my::HighlightAll {txt} {
   coroutine co_HlAll$coroNo ::hl_tcl::my::CoroHighlightAll $txt
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::CoroHighlightAll {txt} {
   # Highlights all of a text as a coroutine.
@@ -443,7 +443,7 @@ proc ::hl_tcl::my::CoroHighlightAll {txt} {
   set data(REG_TXT,$txt) {1}
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::BindToEvent {w event args} {
   # Binds an event on a widget to a command.
@@ -468,7 +468,7 @@ proc ::hl_tcl::my::CountQSH {txt ln} {
   set st [$txt get $ln.0 $ln.end]
   return [list [CountChar $st \"] [CountChar $st \\] [CountChar $st #]]
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::ShowCurrentLine {txt {doit no}} {
   # Shows the current line.
@@ -494,7 +494,7 @@ proc ::hl_tcl::my::ShowCurrentLine {txt {doit no}} {
   set data(CURPOS,$txt) $pos
   return $pos
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::MemPos1 {txt {donorm yes} {K ""} {s ""}} {
   # Checks and sets the cursor's width, depending on its position.
@@ -537,7 +537,7 @@ proc ::hl_tcl::my::MemPos1 {txt {donorm yes} {K ""} {s ""}} {
   }
   return $insLC
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::MemPos {txt {doit no}} {
   # Remembers the state of current line.
@@ -562,7 +562,7 @@ proc ::hl_tcl::my::MemPos {txt {doit no}} {
   }
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::RunCoroAfterIdle {txt pos1 pos2 wait args} {
   # Runs a "modified" corotine after idle.
@@ -580,7 +580,7 @@ proc ::hl_tcl::my::RunCoroAfterIdle {txt pos1 pos2 wait args} {
   set data(COROAFTER,$txt) [after idle "::hl_tcl::my::CoroRun $txt $pos1 $pos2 $args"]
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::Modified {txt oper pos1 args} {
   # Handles modifications of text.
@@ -607,7 +607,7 @@ proc ::hl_tcl::my::Modified {txt oper pos1 args} {
   RunCoroAfterIdle $txt $pos1 $pos2 no {*}$args
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::CoroRun {txt pos1 pos2 args} {
 
@@ -625,7 +625,7 @@ proc ::hl_tcl::my::CoroRun {txt pos1 pos2 args} {
   coroutine CoModified$coroNo ::hl_tcl::my::CoroModified $txt $i1 $i2 {*}$args
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::CoroModified {txt {i1 -1} {i2 -1} args} {
   # Handles modifications of text.
@@ -708,7 +708,7 @@ proc ::hl_tcl::my::CoroModified {txt {i1 -1} {i2 -1} args} {
   }
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::InRange {p1 p2 l {c -1}} {
   # Checks if a text position is in a range of text positions.
@@ -743,7 +743,7 @@ proc ::hl_tcl::my::InRange {p1 p2 l {c -1}} {
 #% ::hl_tcl::my::InRange 9.0 10.0 9 9999
 #> 1
 #% puts InRange:[time {::hl_tcl::my::InRange 9.0 9.20 8.20} 10000]
-#_____
+#_______________________
 
 proc ::hl_tcl::my::SearchTag {tagpos l1} {
   # Searches a position in tag ranges.
@@ -759,7 +759,7 @@ proc ::hl_tcl::my::SearchTag {tagpos l1} {
   }
   return -1
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::LineState {txt tSTR tCMN l1} {
   # Gets an initial state of line.
@@ -872,7 +872,7 @@ proc ::hl_tcl::my::MergePosList {none args} {
 #% ::hl_tcl::my::MergePosList -1 {1 5 8} {2 3 9 12} {0 6 10}
 #> {2 0} {0 1} {1 2} {1 3} {0 5} {2 6} {0 8} {1 9} {2 10} {1 12}
 #% puts MergePosList:[time {::hl_tcl::my::MergePosList -1 {11 12} 13} 10000]
-#_____
+#_______________________
 
 proc ::hl_tcl::my::CountChar {str ch {plistName ""} {escaped yes}} {
   # Counts a character in a string.
@@ -900,7 +900,7 @@ proc ::hl_tcl::my::CountChar {str ch {plistName ""} {escaped yes}} {
   }
   return $icnt
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::Escaped {line curpos} {
   # Checks if a character is escaped in a string.
@@ -912,7 +912,7 @@ proc ::hl_tcl::my::Escaped {line curpos} {
   set linetrim [string trimright $line \\]
   return [expr {([string length $line]-[string length $linetrim])%2}]
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::MatchedBrackets {w inplist curpos schar dchar dir} {
   # Finds a match of characters (dchar for schar).
@@ -972,7 +972,7 @@ proc ::hl_tcl::my::MatchedBrackets {w inplist curpos schar dchar dir} {
   }
   return $retpos
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::my::HighlightBrackets {w} {
   # Highlights matching brackets if any.
@@ -1047,7 +1047,7 @@ proc ::hl_tcl::hl_readonly {txt {ro -1} {com2 ""}} {
   }
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::hl_init {txt args} {
   # Initializes highlighting.
@@ -1118,7 +1118,7 @@ proc ::hl_tcl::hl_init {txt args} {
   my::MemPos $txt
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::hl_text {txt} {
   # Highlights Tcl code of a text widget.
@@ -1169,7 +1169,7 @@ proc ::hl_tcl::hl_text {txt} {
   hl_readonly $txt $ro $com2
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::hl_all {args} {
   # Updates ("rehighlights") all highlighted and existing text widgets.
@@ -1191,7 +1191,7 @@ proc ::hl_tcl::hl_all {args} {
   }
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::hl_colorNames {} {
   # Returns a list of color names for syntax highlighting.
@@ -1199,7 +1199,7 @@ proc ::hl_tcl::hl_colorNames {} {
   return [list clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT clrBRA]
 }
 
-#_____
+#_______________________
 
 proc ::hl_tcl::hl_colors {txt {dark ""} args} {
   # Gets/sets the main colors for highlighting (except for "curr.line").
@@ -1221,7 +1221,7 @@ proc ::hl_tcl::hl_colors {txt {dark ""} args} {
   if {$dark} {set dark 1} {set dark 0}
   return [lindex $::hl_tcl::my::data(SYNTAXCOLORS,$txt) $dark]
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::hl_line {txt} {
   # Updates a current line's highlighting.
@@ -1239,7 +1239,7 @@ proc ::hl_tcl::hl_line {txt} {
   $txt configure -insertwidth $::hl_tcl::my::data(INSERTWIDTH,$txt)
   return
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::addingColors {{dark ""} {txt ""} {cs ""}} {
   # Sets/gets colors for a text syntax highlighting.
@@ -1273,7 +1273,7 @@ proc ::hl_tcl::addingColors {{dark ""} {txt ""} {cs ""}} {
   }
   set my::data(COLORS,$txt) [list {*}[hl_colors $txt] $clrCURL $clrCMN2]
 }
-#_____
+#_______________________
 
 proc ::hl_tcl::hl_commands {} {
   # Lists all Tcl/Tk commands registered here.
@@ -1282,5 +1282,3 @@ proc ::hl_tcl::hl_commands {} {
   return [list {*}$my::data(PROC_TCL) {*}$my::data(CMD_TCL) {*}$my::data(CMD_TK)]
 }
 # _________________________________ EOF _________________________________ #
-#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 37 9 12

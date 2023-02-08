@@ -75,7 +75,7 @@ SW: Ruff! $::EMENUP2 ... SW: tclsh ~/UTILS/ruff.tcl "$::EMENUP2"
  S: Ruff! $::EMENUP2 ... S: %C  \
    if {$::EMENUMULSTER} { \
      set ::EMENUMULSTERDIR2 [file join $::EMENUMULSTERDIR tasks ruff src] ; \
-     if {![file exists $::EMENUP2html]} {set ::EMENUP2html [lindex [glob *.html] 0]} ; \
+     if {![file exists $::EMENUP2html]} {set ::EMENUP2html [lindex [glob -nocomplain *.html] 0]} ; \
      set ::EMTMP "mv -f $::EMENUP2html $::EMENUMULSTERDIR2 ; \
      cd $::EMENUMULSTERDIR ; tclsh mulster.tcl -b 0 tasks/mulster-ruff ; \
      cp -f ~/PG/github/mulster/tasks/ruff/mulstered/$::EMENUP2html $::EMENUMULSTRES2" ; \
@@ -107,7 +107,7 @@ SW: Ruff! all ... SW: %C \
      catch {exec tclsh $home/UTILS/ruff.tcl $prjtail} ; \
      set prjnamehtml $prjtail.html ; \
      if {$::EMENUMULSTER} { \
-       if {![file exists $prjnamehtml]} {set prjnamehtml [lindex [glob *.html] 0]} ; \
+       if {![file exists $prjnamehtml]} {set prjnamehtml [lindex [glob -nocomplain *.html] 0]} ; \
        exec [auto_execok mv] -f $prjnamehtml ../mulster/tasks/ruff/src ; \
        cd ../mulster ; exec tclsh mulster.tcl -b 0 tasks/mulster-ruff ; \
        exec [auto_execok cp] -f $home/PG/github/mulster/tasks/ruff/mulstered/$prjnamehtml $::EMENUMULSTRES3/$prjname/$prjnamehtml ; \

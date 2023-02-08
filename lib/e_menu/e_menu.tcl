@@ -27,7 +27,7 @@
 package require Tk
 
 namespace eval ::em {
-  variable em_version {e_menu 3.7.0a2}
+  variable em_version {e_menu 3.7.0}
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]])} ? 1 : 0]
   variable Argv0
@@ -1549,20 +1549,20 @@ proc ::em::check_macro {line} {
 #___ read menu file
 proc ::em::menuof {commands s1 domenu} {
   upvar $commands comms
-  set seltd [get_seltd $s1]
+  set mnuname [file rootname [get_seltd $s1]].mnu
   if {$domenu} {
     if {$::em::basedir eq {}} {
       set ::em::basedir [file join $::em::exedir menus]
     }
-    set seltd [file normalize [get_menuname $seltd]]
-    set fcont [::apave::textsplit [::apave::readTextFile $seltd]]
+    set mnuname [file normalize [get_menuname $mnuname]]
+    set fcont [::apave::textsplit [::apave::readTextFile $mnuname]]
     if {[llength $fcont]==0} {
-      set cr [::em::addon create_template $seltd]
+      set cr [::em::addon create_template $mnuname]
       if {!$::em::solo} {set ::em::reallyexit [expr {$cr ? 2 : 1}]}
       set ::em::start0 0  ;# no more messages
       return
     }
-    set ::em::menufilename "$seltd"
+    set ::em::menufilename "$mnuname"
     set ::em::menufile [list 0]
     set lcont [llength $fcont]
   }
@@ -1728,7 +1728,7 @@ proc ::em::menuof {commands s1 domenu} {
         set torun "$runp $s1 $amp"
       }
       if {$iline > $::em::maxitems} {
-        em_message "Too much items in\n\n$seltd\n\n$::em::maxitems is maximum. \
+        em_message "Too much items in\n\n$mnuname\n\n$::em::maxitems is maximum. \
                     Stopped at:\n\n$origline"
         on_exit
       }
@@ -2766,6 +2766,3 @@ if {$::em::solo} {
 }
 
 # _____________________________ EOF _____________________________________ #
-#RUNF: ~/PG/github/e_menu/e_menu.tcl PD=~/PG/github/e_menu/ d=~/PG/github/e_menu/  md=~/.tke/plugins/e_menu/menus m=menu.mnu fs=11 w=50 o=3 c=24 s=selected g=446x602+533+167
-#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#RUNF1: ../pave/tests/test2_pave.tcl 8 9 12 'small icons'

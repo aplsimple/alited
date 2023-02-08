@@ -894,4 +894,3 @@ proc ::em::IF {sel {callcommName ""}} {
   return true
 }
 # *****************************   EOF   *****************************
-#RUNF1: ../../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

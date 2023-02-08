@@ -267,7 +267,7 @@ proc edit::InvertBg {clr} {
   }
   scan $clr "#%02x%02x%02x" r g b
   set c [expr {$r<100 && $g<100 || $r<100 && $b<100 || $b<100 && $g<100 ||
-    ($r+$g+$b)<300 ? 210 : 0}]
+    ($r+$g+$b)<300 ? 255 : 0}]
   set res [string toupper [format "#%02x%02x%02x" $c $c $c]]
   return [list $res $clr]
 }

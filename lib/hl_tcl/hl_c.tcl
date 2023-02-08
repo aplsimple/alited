@@ -93,7 +93,7 @@ proc ::hl_c::my::HighlightCmd {txt line ln pri i} {
   }
   return
 }
-#_____
+#_______________________
 
 proc ::hl_c::my::HighlightLine {txt ln currQtd} {
   # Highlightes a line in text.
@@ -173,7 +173,7 @@ proc ::hl_c::my::HighlightLine {txt ln currQtd} {
   }
   return $currQtd
 }
-#_____
+#_______________________
 
 proc ::hl_c::my::HighlightAll {txt} {
   # Highlights all of a text.
@@ -185,7 +185,7 @@ proc ::hl_c::my::HighlightAll {txt} {
   set coroNo [expr {[incr ::hl_c::my::data(CORALL)] % 10000000}]
   coroutine co_HlAll$coroNo ::hl_c::my::CoroHighlightAll $txt
 }
-#_____
+#_______________________
 
 proc ::hl_c::my::CoroHighlightAll {txt} {
   # Highlights all of a text as a coroutine.
@@ -228,7 +228,7 @@ proc ::hl_c::my::RemoveTags {txt from to} {
   }
   return
 }
-#_____
+#_______________________
 
 proc ::hl_c::my::CountQSH {txt ln} {
   # Counts quotes, slashes, comments in a line
@@ -248,7 +248,7 @@ proc ::hl_c::my::CountQSH {txt ln} {
   }
   return [list $quotes $slashes $comments]
 }
-#_____
+#_______________________
 
 proc ::hl_c::my::MemPos1 {txt {donorm yes} {K ""} {s ""}} {
   # Checks and sets the cursor's width, depending on its position.
@@ -315,7 +315,7 @@ proc ::hl_c::my::MemPos {txt {doit no}} {
     set data(CMDATFER,$txt) [after idle $cmd]
   }
 }
-#_____
+#_______________________
 
 proc ::hl_c::my::Modified {txt oper pos1 args} {
   # Handles modifications of text.
@@ -341,7 +341,7 @@ proc ::hl_c::my::Modified {txt oper pos1 args} {
   }
   after idle "::hl_c::my::CoroRun $txt $pos1 $pos2 $args"
 }
-#_____
+#_______________________
 
 proc ::hl_c::my::CoroRun {txt pos1 pos2 args} {
 
@@ -356,7 +356,7 @@ proc ::hl_c::my::CoroRun {txt pos1 pos2 args} {
   set coroNo [expr {[incr ::hl_c::my::data(CORMOD)] % 10000000}]
   coroutine CoModified$coroNo ::hl_c::my::CoroModified $txt $i1 $i2 {*}$args
 }
-#_____
+#_______________________
 
 proc ::hl_c::my::CoroModified {txt {i1 -1} {i2 -1} args} {
   # Handles modifications of text.
@@ -434,7 +434,7 @@ proc ::hl_c::my::CoroModified {txt {i1 -1} {i2 -1} args} {
     return
   }
 }
-#_____
+#_______________________
 
 proc ::hl_c::my::LineState {txt tSTR tCMN l1} {
   # Gets an initial state of line.
@@ -460,7 +460,7 @@ proc ::hl_c::my::LineState {txt tSTR tCMN l1} {
   }
   return -1
 }
-#_____
+#_______________________
 
 proc ::hl_c::my::ShowCurrentLine {txt {doit no}} {
   # Shows the current line.
@@ -512,7 +512,7 @@ proc ::hl_c::hl_readonly {txt {ro -1} {com2 ""}} {
     return \$_res_"
   }
 }
-#_____
+#_______________________
 
 proc ::hl_c::hl_init {txt args} {
   # Initializes highlighting.
@@ -578,7 +578,7 @@ proc ::hl_c::hl_init {txt args} {
   set ::hl_c::my::data(_INSPOS_,$txt) {}
   my::MemPos $txt
 }
-#_____
+#_______________________
 
 proc ::hl_c::hl_text {txt} {
   # Highlights Tcl code of a text widget.
@@ -628,7 +628,7 @@ proc ::hl_c::hl_text {txt} {
   }
   hl_readonly $txt $ro $com2
 }
-#_____
+#_______________________
 
 proc ::hl_c::hl_all {args} {
   # Updates ("rehighlights") all highlighted and existing text widgets.
@@ -649,7 +649,7 @@ proc ::hl_c::hl_all {args} {
     }
   }
 }
-#_____
+#_______________________
 
 proc ::hl_c::hl_colors {txt {dark ""}} {
   # Gets the main colors for highlighting (except for "curr.line").
@@ -669,7 +669,7 @@ proc ::hl_c::hl_colors {txt {dark ""}} {
   set res [lreplace $res 6 6 [lindex $res 1]]
   return $res
 }
-#_____
+#_______________________
 
 proc ::hl_c::hl_line {txt} {
   # Updates a current line's highlighting.
@@ -688,5 +688,3 @@ proc ::hl_c::hl_line {txt} {
 }
 
 # _________________________________ EOF _________________________________ #
-#RUNF1: ../../src/alited.tcl DEBUG
-#RUNF1: ~/PG/github/pave/tests/test2_pave.tcl 37 9 12

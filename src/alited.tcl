@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.6b20  ;# for documentation (esp. for Ruff!)
+package provide alited 1.3.6  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 wm withdraw .
@@ -525,6 +525,14 @@ namespace eval alited {
       unset -nocomplain al(obDlg-BUSY)
     }
     return [lindex $res 0]
+  }
+  #_______________________
+
+  proc Msg {inf} {
+    # Shows a message in text box.
+    #   inf - the message
+
+    msg ok info $inf -text 1 -w 50
   }
   #_______________________
 
