@@ -1,8 +1,5 @@
-# test1.mnu
-
-# OPTIONS should go first because of "co=" (line continuator)
-
 [OPTIONS]
+
 
 co=;
 w=45
@@ -13,22 +10,46 @@ rt=2/5
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
 %C set ::FILETAIL {"$::EMENUFILETAIL"}
 
+in=1.0
+::EN1=%s
+::EN2====
+::V1=Glob
+::C1=0
+::C2=1
+::W1=in file
+::W1LIST={in file} {in directory} {in session}
+::OPT=opc widget example
+::LBX=Big Brother
+::TBL=ent ttk::entry 212 6
+::TEX=and	tabs	entered with copy-paste\n1234\n\nsome multi-line text			123
+pos=75.18
+
 [MENU]
- R: Doctest Safe: $::FILETAIL R: cd %d
- S: Doctest Safe: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -v 0 %f
 
- R: Doctest Safe verbose: $::FILETAIL R: cd %d
- S: Doctest Safe verbose: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -v 1 %f
+# test1.mnu
 
- R: Doctest: $::FILETAIL R: cd %d
- S: Doctest: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 0 %f
+# OPTIONS should go first because of "co=" (line continuator)
 
- R: Doctest verbose: $::FILETAIL R: cd %d
- S: Doctest verbose: $::FILETAIL S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 1 %f
+ITEM = Doctest Safe: $::FILETAIL
+R: cd %d
+S: tclsh %m/src/doctest_of_emenu.tcl -v 0 %f
 
- M:  M: 3
- R: Trace $::FILETAIL with {%s} excluded R: %C if {![info exist ::EMENUEXCL]} {set ::EMENUEXCL "%s"}
- R: Trace $::FILETAIL with {%s} excluded R: %I {} "TRACE" { \
+ITEM = Doctest Safe verbose: $::FILETAIL
+R: cd %d
+S: tclsh %m/src/doctest_of_emenu.tcl -v 1 %f
+
+ITEM = Doctest: $::FILETAIL
+R: cd %d
+S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 0 %f
+
+ITEM = Doctest verbose: $::FILETAIL
+R: cd %d
+S: tclsh %m/src/doctest_of_emenu.tcl -s 0 -v 1 %f
+
+SEP = 3
+ITEM = Trace $::FILETAIL with {%s} excluded
+R: %C if {![info exist ::EMENUEXCL]} {set ::EMENUEXCL "%s"}
+R: %I {} "TRACE" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{    File:} {} {-w 55}} {"$::EMENUFILE"} \
    ent1 {{Excluded:} {} {-w 55}} {"$::EMENUEXCL"} \
@@ -36,27 +57,30 @@ rt=2/5
    texc {{    Hint:} {} {-h 7 -w 55 -ro 1 -wrap word}} \
    {\n This utility inserts tracing puts to a Tcl script.\n\n The puts are set below the script's proc/method declarations.\n\n There may be set a list of excluded proc/methods.} \
    } -head {\n This will set tracing 'puts' into a file.} -weight bold == ::EMENUFILE
- S: Trace $::FILETAIL with {%s} excluded S: tclsh %m/src/atrace.tcl trace $::EMENUFILE $::EMENUEXCL
+S: tclsh %m/src/atrace.tcl trace $::EMENUFILE $::EMENUEXCL
 
- R: Untrace $::FILETAIL R: %I {} "UNTRACE" { \
+ITEM = Untrace $::FILETAIL
+R: %I {} "UNTRACE" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{    File:} {} {-w 55}} {"$::EMENUFILE"} \
    seh {{} {-pady 3} {}} {} \
    texc {{    Hint:} {} {-h 5 -w 55 -ro 1 -wrap word}} \
    {\n This utility removes tracing puts from a Tcl script.\n\n The puts are set below the script's proc/method declarations.} \
    } -head {\n This will remove tracing 'puts' from a file.} -weight bold == ::EMENUFILE
- S: Untrace $::FILETAIL S: tclsh %m/src/atrace.tcl untrace $::EMENUFILE
+S: tclsh %m/src/atrace.tcl untrace $::EMENUFILE
 
- M:  M: 3
+SEP = 3
 
- R: Run me (with %s) R: cd %d
- R: Run me (with %s) R: %IF "%x"==".htm" || "%x"==".html" %THEN %B %f
- R: Run me (with %s) R: %IF "%x"==".tcl" %THEN %T tclsh %f %s
- R: Run me (with %s) R: %IF "%x"==".py"  %THEN %t python3 %f %s
- R: Run me (with %s) R: ###########################################################
- R: Run me (with %s) R: %M "Edit this menu for file extention: %x"
+ITEM = Run me (with %s)
+R: cd %d
+R: %IF "%x"==".htm" || "%x"==".html" %THEN %B %f
+R: %IF "%x"==".tcl" %THEN %T tclsh %f %s
+R: %IF "%x"==".py"  %THEN %t python3 %f %s
+R: ###########################################################
+R: %M "Edit this menu for file extention: %x"
 
- S: Shell script S: ? \
+ITEM = Shell script
+S: ? \
     err=1 ;
     cd ~/FOSSIL ;
     while [ $err -eq 1 ];
@@ -72,10 +96,12 @@ rt=2/5
       fi;
     done
 
- S: Shell script (bash) S: %#s err=1; cd ~/FOSSIL
+ITEM = Shell script (bash)
+S: %#s err=1; cd ~/FOSSIL
 
- R: Input dialog R: cd %d
- R: Input dialog R: \
+ITEM = Input dialog
+R: cd %d
+R: \
   %I "" "TEST OF %I" { \
   ent1  {{   Find: }} {"$::EN1"} \
   ent2  {{Replace: }} {"$::EN2"} \
@@ -100,24 +126,25 @@ rt=2/5
       {"ent" "ttk::entry" 212 6}} \
   } \
   -head "Enter data:" -weight bold == ::EN1 ::EN2 ::V1 ::C1 ::C2 ::W1 ::TEX ::LBX ::OPT ::TBL
- R: Input dialog R: %M "> RESULTS:\n ::EN1= '$::EN1' \n ::EN2= '$::EN2' \n ::V1 = $::V1 \
+R: %M "> RESULTS:\n ::EN1= '$::EN1' \n ::EN2= '$::EN2' \n ::V1 = $::V1 \
 \n ::C1 = $::C1 \n ::C2 = $::C2\n ::W1 = $::W1 \
 \n ::TEX = $::TEX\n ::LBX = $::LBX\n ::OPT = $::OPT\n ::TBL = $::TBL\n"
- R: Input dialog R: %C ###################################################################
- R: Input dialog R: %C # save ::W1 to combobox values' list, restricting its size by 5
- R: Input dialog R: %C # 'catch' is necessary because of possible unmatched braces in ::W1
- R: Input dialog R: %C # also, we need to use separate %C's for saving results of commands
- R: Input dialog R: %C # ... and to test any %C with following '%M $::W1LIST'
- R: Input dialog R: %C catch {if {[set _ [lsearch -exact [list $::W1LIST] {$::W1}]]>=0} \
+R: %C ###################################################################
+R: %C # save ::W1 to combobox values' list, restricting its size by 5
+R: %C # 'catch' is necessary because of possible unmatched braces in ::W1
+R: %C # also, we need to use separate %C's for saving results of commands
+R: %C # ... and to test any %C with following '%M $::W1LIST'
+R: %C catch {if {[set _ [lsearch -exact [list $::W1LIST] {$::W1}]]>=0} \
      {set ::W1LIST [lreplace [list $::W1LIST] [set _] [set _]]}}
- R: Input dialog R: %C catch {set ::W1LIST [linsert [list $::W1LIST] 0 {$::W1}]}
- R: Input dialog R: %C catch {set ::W1LIST [lreplace [list $::W1LIST] 5 end]}
- R: Input dialog R: %C ###################################################################
+R: %C catch {set ::W1LIST [linsert [list $::W1LIST] 0 {$::W1}]}
+R: %C catch {set ::W1LIST [lreplace [list $::W1LIST] 5 end]}
+R: %C ###################################################################
 
- R: Input dialog: choosers R: cd %d
- R: Input dialog: choosers R: %C if {![info exists ::CHFIL]} { \
+ITEM = Input dialog: choosers
+R: cd %d
+R: %C if {![info exists ::CHFIL]} { \
    set ::CHFIL [set ::CHFIS [set ::CHDIR [set ::CHFON [set ::CHCLR [set ::CHDAT ""]]]]]}
- R: Input dialog: choosers R: \
+R: \
   %I "" "TEST OF %I" { \
   fil1  {{        File: } {} {-w 50}} {"$::CHFIL"} \
   fis1  {{File to save: }} {"$::CHFIS"} \
@@ -127,29 +154,20 @@ rt=2/5
   dat1  {{        Data: }} {"$::CHDAT"} \
   } \
   -head "Choose data\nwith clicking buttons or pressing F2:" -weight bold == ::CHFIL ::CHFIS ::CHDIR ::CHFON ::CHCLR ::CHDAT
- R: Input dialog: choosers R: %M "> RESULTS:\n ::CHFIL= $::CHFIL \n ::CHFIS= $::CHFIS\n ::CHDIR= $::CHDIR \n ::CHFON= $::CHFON\n ::CHCLR= $::CHCLR \n ::CHDAT= $::CHDAT\n"
+R: %M "> RESULTS:\n ::CHFIL= $::CHFIL \n ::CHFIS= $::CHFIS\n ::CHDIR= $::CHDIR \n ::CHFON= $::CHFON\n ::CHCLR= $::CHCLR \n ::CHDAT= $::CHDAT\n"
 
- S: Test utf-8 (Пусть всегда будет солнце) S: cd ~
- S: Test utf-8 (Пусть всегда будет солнце) S: echo "Пусть всегда будет солнце," ; echo "Пусть всегда будет мама"
+ITEM = Test utf-8 (Пусть всегда будет солнце)
+S: cd ~
+S: echo "Пусть всегда будет солнце," ; echo "Пусть всегда будет мама"
 
- M:  M: 3
+SEP = 3
 
- MW: Test2 menu MW: "m=test2.mnu" "a1=M {It's just a test}; if {![Q {DANGER!} {These commands are dangerous\nand can set the world on fire!\n\nContinue?} yesno]} EXIT"
+ITEM = Test2 menu
+MW: "m=test2.em" "a1=M {It's just a test}; if {![Q {DANGER!} {These commands are dangerous\nand can set the world on fire!\n\nContinue?} yesno]} EXIT"
 
- MW: Test3 menu MW: "m=test3.mnu"
+ITEM = Test3 menu
+MW: "m=test3.em"
 
-[OPTIONS]
-in=1.0
-::EN1=%s
-::EN2====
-::V1=Glob
-::C1=0
-::C2=1
-::W1=in file
-::W1LIST={in file} {in directory} {in session}
-::OPT=opc widget example
-::LBX=Big Brother
-::TBL=ent ttk::entry 212 6
-::TEX=and	tabs	entered with copy-paste\n1234\n\nsome multi-line text			123
-pos=75.18
+[DATA]
+
 %#s geo=969x487+295+250;pos=5.9 # this script is run with %#s wildcard in test1.mnu|!|# it does the same as the previous "Shell script"|!|# being a bash script as it is|!||!|echo ====|!|err=1|!|cd ~/FOSSIL|!|while [ $err -eq 1 ];|!|  do repo=$(find *.fossil 2>/dev/null )|!|  err=$?|!|  if [ $? -eq 1 ]; then|!|    if [ $(pwd) = '/' ]; then|!|      echo "repo non esistente" ; break|!|    fi|!|    cd ../|!|  else|!|    echo "$(pwd)/${repo}"|!|  fi|!|done

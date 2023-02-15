@@ -333,14 +333,14 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
   # if calendars are united, no display of tool bar
   if {$p(united$obj)} {
     lappend res \
-      "$ownname.laB.LabMonth$obj - - - - {pack -fill x -expand 1} {-anchor center -w 14}"
+      "$ownname.laB.LabMonth$obj - - - - {pack -fill x -expand 1} {-anchor center -w 18}"
   } else {
     lappend res \
     "$ownname.laB.tool - - - - {pack -side top} {-array { \
       IM_KLND_0 {{::klnd::my::SetCurrentDay2 $obj} -tip {$::klnd::my::p(tipF3$obj)@@-under 5}} sev 3 \
       IM_KLND_1 {{::klnd::my::GoYear2 $obj -1} -tip {$::klnd::my::prevY\n(Home)@@-under 5}} h_ 1 \
       IM_KLND_2 {{::klnd::my::GoMonth2 $obj -1} -tip {$::klnd::my::prevM\n(PageUp)@@-under 5}} h_ 2 \
-      LabMonth$obj {{} {-fill x -expand 1} {-anchor center -w 14}} h_ 1 \
+      LabMonth$obj {{} {-fill x -expand 1} {-anchor center -w 18}} h_ 1 \
       IM_KLND_3 {{::klnd::my::GoMonth2 $obj 1} -tip {$::klnd::my::nextM\n(PageDown)@@-under 5}} h_ 2 \
       IM_KLND_4 {{::klnd::my::GoYear2 $obj 1} -tip {$::klnd::my::nextY\n(End)@@-under 5}} \
     }}"
@@ -355,7 +355,7 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
         if {\$i<8} { \
           set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh) -background $::klnd::my::p(bg1)}\" \
         } else { \
-          set lwid \"\$cur \$pw \$p 1 1 {-st ew -pady 1} {-relief flat -overrelief raised -takefocus 0  -padx 8 -pady 0 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w 2 -background $::klnd::my::p(bg1)}\" \
+          set lwid \"\$cur \$pw \$p 1 1 {-st ew -pady 1} {-relief flat -overrelief raised -takefocus 0  -padx 8 -pady 0 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w $p(width) -background $::klnd::my::p(bg1)}\" \
         } ; \
         %C \$lwid ; \
         set pr \$cur \

@@ -2670,10 +2670,7 @@ oo::class create ::apave::APave {
       }
       foreach {lst vars} [array get ::apave::_AP_VARS "_TRACED_${wr}*"] {
         foreach v $vars {
-          foreach t [trace info variable $v] {
-            lassign $t o c
-            trace remove variable $v $o $c
-          }
+          ::apave::traceRemove $v
         }
         set ::apave::_AP_VARS($lst) [list]
       }

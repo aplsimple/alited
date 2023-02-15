@@ -1,6 +1,20 @@
 # LAST CHANGES:
 
 
+Version `v1.4.0b3 (14 Feb'23)`
+
+  - NEW   : menu files: .em instead of .mnu
+  - NEW   : "Run..." dialogue: Test button
+  - NEW   : "Run..." dialogue: a text box to view / edit commands
+  - NEW   : "Run..." dialogue: new wildcards: %s (selection) and %% (%)
+  - NEW   : update tabbar synonyms ("name (2)") after closing tabs
+  - NEW   : "indent a template" flag in Templates
+  - CHANGE: "Projects" : calendar's appearance, date locale (though not in tclkits)
+  - CHANGE: don't trim a current line at "Remove trailing spaces"
+  - CHANGE: Ctrl-R/M/X returned to available keys
+  - CHANGE: packages: apave/e_menu 4.0.0
+
+
 Version `v1.3.6 (8 Feb'23)`
 
   - BUGFIX: handling keys: Tab and Shift+Tab on texts, esp. in Windows

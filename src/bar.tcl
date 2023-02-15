@@ -569,5 +569,36 @@ proc bar::InsertTab {tab tip} {
   alited::ini::SaveCurrentIni $al(INI,save_onadd)
   return $TID
 }
+#_______________________
+
+proc bar::RenameTitles {TID} {
+  # After closing a tab, seeks and renames synonyms of tabs: "name (2)", "name (3)"
+  #   TID - closed tab's ID
+
+  set names [list]
+  foreach tab [BAR listTab] {
+    set TID2 [lindex $tab 0]
+    if {$TID2 ne $TID} {
+      set name [file tail [FileName $TID2]]
+      set icnt 1
+      if {[set i [lsearch -exact -index 1 $names $name]]>-1} {
+        lassign [lindex $names $i] tid name icnt
+        incr icnt
+        set names [lreplace $names $i $i [list $tid $name $icnt]]
+        set name "$name ($icnt)"
+      }
+      lappend names [list $TID2 $name $icnt]
+    }
+  }
+  set doupdate no
+  foreach name $names {
+    lassign $name TID2 name
+    if {[BAR $TID2 cget -text] ne $name} {
+      set doupdate yes
+      BAR $TID2 configure -text $name
+    }
+  }
+  if {$doupdate} {BAR draw no}
+}
 
 # _________________________________ EOF _________________________________ #

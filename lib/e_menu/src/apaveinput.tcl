@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide apave 3.7.0
+package provide apave 4.0.0b4
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -106,6 +106,7 @@ oo::class create ::apave::APaveInput {
         set ismeth yes  ;# overcomes the above setting
         set name [string tolower $name 0]
       }
+      set ismeth [string is true -strict $ismeth]
       set gopts "$pady $gopts"
       set typ [string tolower [string range $name 0 1]]
       if {$typ eq "v_" || $typ eq "se"} {
@@ -125,9 +126,10 @@ oo::class create ::apave::APaveInput {
       }
       set vv [my varName $name]
       set ff [my FieldName $name]
-      if {[string is true -strict $ismeth]} {
+      set Name [string toupper $name 0]
+      if {$ismeth && $typ ni {ra}} {
         # -method option forces making "WidgetName" method from "widgetName"
-        my MakeWidgetName $ff [string toupper $name 0] -
+        my MakeWidgetName $ff $Name -
       }
       if {$typ ne {la} && $toprev eq {}} {
         set takfoc [::apave::parseOptions $attrs -takefocus 1]
@@ -192,7 +194,11 @@ oo::class create ::apave::APaveInput {
           set padx 0
           foreach vo $vlist {
             set name $name
-            lappend inopts [list $ff[incr nnn] - - - - "pack -side left $gopts -padx $padx" "-var $vv -value \"$vo\" -t \"$vo\" $attrs"]
+            set FF $ff[incr nnn]
+            lappend inopts [list $FF - - - - "pack -side left $gopts -padx $padx" "-var $vv -value \"$vo\" -t \"$vo\" $attrs"]
+            if {$ismeth} {
+              my MakeWidgetName $FF $Name$nnn -
+            }
             set padx [expr {$padx ? 0 : 9}]
           }
         }

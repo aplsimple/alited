@@ -1,5 +1,17 @@
- S: GREP TEMPLATE (%%s=%s) ? S: cd %d
- S: GREP TEMPLATE (%%s=%s) ? S: %#t grep -H -n -I -s -i -d recurse * -e '%s'
+[OPTIONS]
+
+o=-1
+w=45
+in=1.0
+::EMENUFILES=--include=*.tcl --include=*.mnu --include=*.txt --include=*.htm* --include=*.md* --exclude-dir=.* --exclude-dir=*BAK* --exclude-dir=*TMP*
+::EMENUDIR=%d
+pos=41.4
+
+[MENU]
+
+ITEM = GREP TEMPLATE (%%s=%s) ?
+S: cd %d
+S: %#t grep -H -n -I -s -i -d recurse * -e '%s'
 
 %MA TITLE %MA GREPMODE
 %MA S: cd $::EMENUDIR
@@ -14,33 +26,38 @@
 %MA R: cd $::EMENUDIR
 %MA S: echo "$::EMENUDIR" \n\n grep $::EMENU_ $GREPMODE -e '$::EMENUFIND' %ls
 
- M:  M: 3
- S: GREP EXACT ? S: %MA GREP EXACT %MA -F -H -n -I -s -d skip *
- S: GREP REGEXP ? S: %MA GREP REGEXP %MA -E -H -n -I -s -d skip *
+SEP = 3
+ITEM = GREP EXACT ?
+S: %MA GREP EXACT %MA -F -H -n -I -s -d skip *
+ITEM = GREP REGEXP ?
+S: %MA GREP REGEXP %MA -E -H -n -I -s -d skip *
 
- M:  M: 3
- S: GREP EXACT  ignoring case ? S: %MA GREP EXACT ignoring case  %MA -F -H -n -I -s -i -d skip *
- S: GREP REGEXP ignoring case ? S: %MA GREP REGEXP ignoring case %MA -E -H -n -I -s -i -d skip *
+SEP = 3
+ITEM = GREP EXACT  ignoring case ?
+S: %MA GREP EXACT ignoring case  %MA -F -H -n -I -s -i -d skip *
+ITEM = GREP REGEXP ignoring case ?
+S: %MA GREP REGEXP ignoring case %MA -E -H -n -I -s -i -d skip *
 
- M:  M: 3
- S: GREP EXACT  recursive ? S: %MA GREP EXACT recursive  %MA -F -H -n -I -s -d recurse *
- S: GREP REGEXP recursive ? S: %MA GREP REGEXP recursive %MA -E -H -n -I -s -d recurse *
+SEP = 3
+ITEM = GREP EXACT  recursive ?
+S: %MA GREP EXACT recursive  %MA -F -H -n -I -s -d recurse *
+ITEM = GREP REGEXP recursive ?
+S: %MA GREP REGEXP recursive %MA -E -H -n -I -s -d recurse *
 
- M:  M: 3
- S: GREP EXACT  recursive ignoring case ? S: %MA GREP EXACT recursive ignoring case \
+SEP = 3
+ITEM = GREP EXACT  recursive ignoring case ?
+S: %MA GREP EXACT recursive ignoring case \
     %MA -F -H -n -I -s -i -d recurse *
- S: GREP REGEXP recursive ignoring case ? S: %MA GREP REGEXP recursive ignoring case \
+ITEM = GREP REGEXP recursive ignoring case ?
+S: %MA GREP REGEXP recursive ignoring case \
     %MA -E -H -n -I -s -i -d recurse *
 
- M:  M: 3
- S: GREP EXACT...  LS=%ls? S: %MA GREP EXACT %MA -F -H -n -I -s
- S: GREP REGEXP... LS=%ls? S: %MA GREP REGEXP %MA -E -H -n -I -s
+SEP = 3
+ITEM = GREP EXACT...  LS=%ls?
+S: %MA GREP EXACT %MA -F -H -n -I -s
+ITEM = GREP REGEXP... LS=%ls?
+S: %MA GREP REGEXP %MA -E -H -n -I -s
 
-[OPTIONS]
-o=-1
-w=45
-in=1.0
+[DATA]
+
 %#t geo=900x500+100+100;pos=3.78 cd %PD |!||!| grep -E -H -n -I -s -d recurse --include '*tcl' --include '*html' -e "%s" %ls|!|#grep -E -H -n -I -s -l -d recurse --include '*.tcl' -e "found"|!|#grep -E -H -n -I -s -d recurse --include '*tcl' --include '*html' -e "\{\}"|!||!|#cd %d|!|#grep -E -H -n -I -s -d recurse * -e "aplsimple"|!||!|# selected text of TKE:|!|#grep -E -H -n -I -s -i -d recurse * -e '%s'|!|#grep -E -H -n -I -s -d recurse --include '*tcl' --include '*html' -e "%s"|!||!|# year 1900-2099|!|# grep -E -H -n -I -s -i -d recurse * -e '(^|[^[:digit:]])(19|20)[[:digit:]]{2}([^[:digit:]]|$)'|!||!|# domain|!|# grep -E -H -n -I -s -i -d recurse * -e '([a-z][a-z0-9-]+(\\.|-*\\.))+[a-z]{2,6}'|!||!|# email|!|#grep -E -H -n -I -s -i -d recurse * -e '[_]*([a-z0-9]+(\\.|_*)?)+@([a-z][a-z0-9-]+(\\.|-*\\.))+[a-z]{2,6}'|!||!||!|echo \n################################################################################\n|!|echo "in: $PWD"
-::EMENUFILES=--include=*.tcl --include=*.mnu --include=*.txt --include=*.htm* --include=*.md* --exclude-dir=.* --exclude-dir=*BAK* --exclude-dir=*TMP*
-::EMENUDIR=%d
-pos=41.4

@@ -201,6 +201,8 @@ namespace eval ::alited {
     {Delete a template #%n ?} {Видалити шаблон #%n ?}
     "Import templates\nfrom external alited.ini" "Імпортувати шаблони\nз зовнiшнього alited.ini"
     {Number of imported templates: %n} {Кiлькiсть iмпортованих шаблонiв: %n}
+    "Indents a template at inserting,\nby a next line's indentation." "При вставцi шаблону створює\nвiдступи згiдно з рядком вставки."
+
   }
 
   ## ________________________ Projects ________________________ ##
@@ -267,6 +269,8 @@ namespace eval ::alited {
     {Commands} {Команди}
     {For project} {Для проекту}
     {%n commands will be executed!} {Буде виконано %n команд!}
+    {Maximum commands reached: %n, current: %i (see Project/Options)} {Досягнуто максимуму команд: %n, зараз: %i (див. Проекти/Опції)}
+    {Maximum Run commands} {Максимум команд "Запуск"}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -372,7 +376,7 @@ namespace eval ::alited {
     {Some things have been changed in alited %v.} {Дещо змінилося у alited %v.}
     {Updating alited} {Оновлення alited}
     " You are highly recommended to accept\n these changes in order to complete updating:" " Наполегливо рекомендовано прийняти\n ці зміни для завершення оновлення:"
-    {.mnu files for "Tools"} {.mnu файли для "Струментів"}
+    {.em files for "Tools"} {.em файли для "Струментів"}
     {.ini file for "Templates"} {.ini файл для "Шаблонів"}
     { Your previous files will be saved to:} { Ваші файли будуть збережені у:}
     {View Changes} {Огляд змін}

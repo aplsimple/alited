@@ -196,6 +196,7 @@ namespace eval ::alited {
     {Delete a template #%n ?} {Eine Vorlage #%n löschen ?}
     "Import templates\nfrom external alited.ini" "Importieren die Vorlagen\nvon extern alited.ini"
     {Number of imported templates: %n} {Anzahl der importierten Vorlagen: %n}
+    "Indents a template at inserting,\nby a next line's indentation." "Rückt eine Vorlage beim Einfügen ein,\ndurch den Einzug einer nächsten Zeile."
   }
 
   ## ________________________ Projects ________________________ ##
@@ -262,6 +263,8 @@ namespace eval ::alited {
     {Commands} {Befehle}
     {For project} {Für dem Project}
     {%n commands will be executed!} {%n Befehle werden ausgeführt!}
+    {Maximum commands reached: %n, current: %i (see Project/Options)} {Maximal Befehle erreicht: %n, aktuell: %i (siehe Projekt/Optionen)}
+    {Maximum Run commands} {Maximal Ausführen Befehle}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -368,7 +371,7 @@ namespace eval ::alited {
     {Some things have been changed in alited %v.} {Im alited %v hat sich etwas geändert.}
     {Updating alited} {Aktualisierung alited}
     " You are highly recommended to accept\n these changes in order to complete updating:" " Es wird dringend empfohlen, diese Änderungen zu akzeptieren,\n um die Aktualisierung abzuschließen:"
-    {.mnu files for "Tools"} {.mnu Dateien für "Werkzeugen"}
+    {.em files for "Tools"} {.em Dateien für "Werkzeugen"}
     {.ini file for "Templates"} {.ini Datei für "Vorlagen"}
     { Your previous files will be saved to:} { Ihre Dateien gesichert werden zu:}
     {View Changes} {Zeigen Änderungen}

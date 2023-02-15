@@ -82,7 +82,7 @@ proc tool::FormatDate {{date {}}} {
 
   namespace upvar ::alited al al
   if {$date eq {}} {set date [clock seconds]}
-  return [clock format $date -format $al(TPL,%d)]
+  return [clock format $date -format $al(TPL,%d) -locale $alited::al(LOCAL)]
 }
 #_______________________
 
@@ -203,7 +203,7 @@ proc tool::EM_Options {opts} {
   set f [alited::bar::FileName]
   set d [file dirname $f]
   # get a list of selected tabs (i.e. their file names):
-  # it's used as %ls wildcard in grep.mnu ("SEARCH EXACT LS=")
+  # it's used as %ls wildcard in grep.em ("SEARCH EXACT LS=")
   set tabs [alited::bar::BAR listFlag s]
   if {[llength $tabs]>1} {
     foreach tab $tabs {
@@ -213,7 +213,7 @@ proc tool::EM_Options {opts} {
   } else {
     set ls "ls="
   }
-  # get file names of left & right tabs (used in utils.mnu by diff items)
+  # get file names of left & right tabs (used in utils.em by diff items)
   set z6 {}
   set z7 {}
   set tabs [alited::bar::BAR listTab]
@@ -255,7 +255,7 @@ proc tool::EM_Options {opts} {
   set R [list "md=$al(EM,mnudir)" "m=$al(EM,mnu)" "f=$f" "d=$d" "l=$l" \
     "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
     o=-1 om=0 g=$al(EM,geometry) $z6 $z7 {*}$ls $df {*}$opts {*}$srcdir \
-    {*}$dirvar {*}$filvar th=$al(THEME) td=$tdir ed=$ed wt=$al(EM,wt=)]
+    {*}$dirvar {*}$filvar th=$al(THEME) td=$tdir ed=$ed wt=$al(EM,wt=) mp=1]
   set res {}
   foreach r $R {append res "\"$r\" "}
   return $res
@@ -287,42 +287,46 @@ proc tool::EM_Structure {mnu} {
   set prname {}
   set mmarks [list S: R: M: S/ R/ M/ SE: RE: ME: SE/ RE/ ME/ SW: RW: MW: SW/ RW/ MW/ I:]
   set ismenu yes
-  set ishidden [set isoptions no]
+  set isitem no
   foreach line [::apave::textsplit $fcont] {
     set line [string trimleft $line]
     switch $line {
       {[MENU]} {
         set ismenu yes
-        set ishidden [set isoptions no]
+        set isitem no
         continue
       }
-      {[HIDDEN]} {
-        set ishidden yes
-        set ismenu [set isoptions no]
+      {[HIDDEN]} - {[OPTIONS]} - {[DATA]} {
+        set ismenu [set isitem no]
         continue
-      }
-      {[OPTIONS]} {
-        set isoptions yes
-        set ismenu [set ishidden no]
       }
     }
-    if {$isoptions} continue
+    if {!$ismenu} continue
+    if {[regexp {^\s*SEP\s*=\s*} $line]} {
+      set isitem no
+      continue
+    }
+    if {[regexp {^\s*ITEM\s*=\s*} $line]} {
+      set isitem yes
+      set itemname [string range $line [string first = $line] end]
+      set itemname [string trim $itemname { =}]
+      continue
+    }
+    if {!$isitem} continue
     foreach mark $mmarks {
-      if {[string match "${mark}*${mark}*" $line]} {
-        set i1 [string length $mark]
-        set i2 [string first $mark $line 2]
+      if {[regexp "^\s*$mark" $line]} {
         set typ [string index $mark 0]
         if {$typ eq {M}} {
-          set line [string range $line $i2 end]
           lassign [regexp -inline {.+m=([^[:blank:]]+)} $line] -> itemname
-        } else {
-          set itemname [string trim [string range $line $i1 $i2-1]]
+          if {$itemname ne {} && [file extension $itemname] ne {.em}} {
+            set itemname [file rootname $itemname].em  ;# normalized menu filename
+          }
         }
         if {$itemname ni {{} -} && $itemname ne $prname} {
           set prname $itemname
-          if {$ishidden} {set h h} {set h {}}
-          lappend res [list $mnu "$typ-$itemname" $h]
+          lappend res [list $mnu "$typ-$itemname"]
         }
+        break
       }
     }
   }
@@ -346,14 +350,14 @@ proc tool::EM_AllStructure1 {mnu lev} {
 
   foreach mit [EM_Structure $mnu] {
     incr i
-    lassign $mit mnu item h
+    lassign $mit mnu item
     if {[string match {M-*} $item]} {
       if {[lsearch -exact -index end $alited::al(EM_STRUCTURE) $item]>-1} {
         continue ;# to avoid infinite cycle
       }
       set lev [EM_AllStructure1 [string range $item 2 end] [incr lev]]
     } else {
-      lappend alited::al(EM_STRUCTURE) [list $lev $mnu $h[EM_HotKey $i] $item]
+      lappend alited::al(EM_STRUCTURE) [list $lev $mnu [EM_HotKey $i] $item]
     }
   }
   return [incr lev -1]
@@ -399,6 +403,20 @@ proc tool::PopupBar {X Y} {
 }
 #_______________________
 
+proc tool::EM_menuhere {mnu menuargs} {
+  # Checks if m=$mnu is present in e_menu's arguments.
+  #   mnu - menu name
+  #   menuargs - e_menu's arguments
+
+  foreach m [list $mnu.em $mnu.mnu $mnu] {
+    if {[lsearch -exact $menuargs m=$m]>-1} {
+      return yes
+    }
+  }
+  return no
+}
+#_______________________
+
 proc tool::EM_command {im} {
   # Gets e_menu command.
   #   im - index of the command in em_inf array
@@ -431,7 +449,7 @@ proc tool::EM_optionTF {args} {
     append sel [$wtxt get $l1.0 $l2.end] \n
   }
   if {[string length [string trimright $sel]]<2 || \
-  (![is_mainmenu $args] && {m=tests.mnu} ni $args)} {
+  (![is_mainmenu $args] && ![EM_menuhere tests $args])} {
     set tmpname [alited::bar::FileName]
   } else {
     set tmpname [file join $al(EM,mnudir) SELECTION~]
@@ -576,21 +594,12 @@ proc tool::RunTcl {{runmode ""}} {
 proc tool::RunMode {} {
   # Runs Tcl source file with choosing the mode - in console or in tkcon.
 
-  namespace upvar ::alited al al
   if {![namespace exists ::alited::run]} {
     namespace eval ::alited {
       source [file join $alited::SRCDIR run.tcl]
     }
   }
-  if {![alited::run::RunDlg]} return
-  if {![alited::file::IsTcl [alited::bar::FileName]]} {
-    set in {}
-  } elseif {$al(prjincons)} {
-    set in terminal
-  } else {
-    set in tkcon
-  }
-  _run {} $in
+  if {[alited::run::RunDlg]} ::alited::run::Run
 }
 #_______________________
 
@@ -643,11 +652,11 @@ proc tool::e_menu {args} {
       }
       append args " g=$g"  ;# should be last, to override previous settings
     }
-    if {{m=grep.mnu} in $args} {
+    if {[EM_menuhere grep $args]} {
       append args { NE=1}  ;# let him search till closing the search dialogue
     }
   }
-  if {{m=menu.mnu} in $args && {ex=d} in $args && $al(BACKUP) ne {}} {
+  if {[EM_menuhere menu $args] && {ex=d} in $args && $al(BACKUP) ne {}} {
     # Differences of a file & its backup: get the backup's name
     set TID [alited::bar::CurrentTabID]
     lassign [alited::edit::BackupDirFileNames $TID] dir fname fname2
@@ -717,8 +726,23 @@ proc tool::e_menu3 {} {
 }
 #_______________________
 
+proc tool::PrepareRunCommand {com fname} {
+  # prepares a command to run. The command can include wildcards.
+  #   com - command
+  #   fname - current file name
+
+  namespace upvar ::alited al al
+  set idi Ns7!-=
+  set sel [alited::find::GetWordOfText select]
+  set com [string map [list %% $idi] $com]
+  set com [string map [list $alited::EOL \n %s $sel \
+    %f $fname %d [file dirname $fname] %pd $al(prjroot)] $com]
+  return [string map [list $idi %] $com]
+}
+#_______________________
+
 proc tool::_run {{what ""} {runmode ""}} {
-  # Runs e_menu's item of menu.mnu.
+  # Runs e_menu's item of menu.em.
   #   what - the item (by default, "Run me")
   #   runmode - mode of running (in console or in tkcon)
 
@@ -745,12 +769,12 @@ proc tool::_run {{what ""} {runmode ""}} {
       set ::alited::pID 0
     }
     set fnameCur [alited::bar::FileName]
-    set com [string map [list \
-      %f $fnameCur %d [file dirname $fnameCur] %pd $al(prjroot)] $al(prjbeforerun)]
+    set com [PrepareRunCommand $al(prjbeforerun) $fnameCur]
     Runs {} $com
     if {[alited::file::IsTcl $fnameCur]} CheckTcl
     if {[ComForced]} {
-      Run_in_e_menu $al(comForce) $fnameCur
+      set com [PrepareRunCommand $al(comForce) $fnameCur]
+      Run_in_e_menu $com $fnameCur
       return
     }
     if {[RunTcl $runmode]} return

@@ -135,6 +135,7 @@ namespace eval ::alited {
     set al(MC,tplaft2)     [msgcat::mc "Inserts a template\nbelow a current unit"]
     set al(MC,tplaft3)     [msgcat::mc "Inserts a template at the cursor\n(good for one-liners)"]
     set al(MC,tplaft4)     [msgcat::mc "Inserts a template after 1st line of a file\n(License, Introduction etc.)"]
+    set al(MC,tplinds)     [msgcat::mc "Indents a template at inserting,\nby a next line's indentation."]
     set al(MC,tplexists)   [msgcat::mc {A template with the attribute(s) already exists.}]
     set al(MC,tpldelq)     [msgcat::mc {Delete a template #%n ?}]
 
@@ -209,7 +210,7 @@ namespace eval ::alited {
     set al(MC,chini3)      [msgcat::mc {Choose a directory}]
     set al(MC,updateALE)   [msgcat::mc {Updating alited}]
     set al(MC,updLab1)     [msgcat::mc " You are highly recommended to accept\n these changes in order to complete updating:"]
-    set al(MC,updmnu)      [msgcat::mc {.mnu files for "Tools"}]
+    set al(MC,updmnu)      [msgcat::mc {.em files for "Tools"}]
     set al(MC,updini)      [msgcat::mc {.ini file for "Templates"}]
     set al(MC,updLab2)     [msgcat::mc { Your previous files will be saved to:}]
 

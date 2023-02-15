@@ -1,4 +1,5 @@
 [OPTIONS]
+
 o=-1
 w=25
 t4==%b-%Y/%U-week
@@ -27,23 +28,29 @@ pos=9.22
 %C set ::FILETAIL {"$::EMENUFILETAIL"}
 
 [MENU]
- S:fossil status %PD S: cd %PD
- S:fossil status %PD S: echo %PD\ndir\necho ------------\nfossil status
 
- S:fossil changes S: cd %PD
- S:fossil changes S: pwd\necho ------------\ndir\necho ------------\nfossil changes
+ITEM = fossil status %PD
+S: cd %PD
+S: echo %PD\ndir\necho ------------\nfossil status
 
- S:fossil extras S: cd %PD
- S:fossil extras S: pwd\necho ------------\ndir\necho ------------\nfossil extras
+ITEM = fossil changes
+S: cd %PD
+S: pwd\necho ------------\ndir\necho ------------\nfossil changes
 
- R:fossil ui R: cd %PD
- R:fossil ui R: fossil ui
+ITEM = fossil extras
+S: cd %PD
+S: pwd\necho ------------\ndir\necho ------------\nfossil extras
 
- R:  R: 2
+ITEM = fossil ui
+R: cd %PD
+R: fossil ui
 
- R:fossil gdiff $::FILETAIL ? R: cd %PD
-RW:fossil gdiff $::FILETAIL ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
- R:fossil gdiff $::FILETAIL ? R: %I {} "GDIFF" { \
+SEP = 2
+
+ITEM = fossil gdiff $::FILETAIL ?
+R: cd %PD
+RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
+R: %I {} "GDIFF" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{   File:} {} {}} {"$::EMENUFILE"}\
    fco1 {{Version:} {} {-h 10 -state readonly -inpval "$::EMENUCOMMIT"}}\
@@ -52,13 +59,14 @@ RW:fossil gdiff $::FILETAIL ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
    texc {{   Hint:} {} {-h 9 -w 60 -ro 1  -tabnext butOK}}\
    {\n Select a version from the combobox to be compared to tip.\n\n If it's blank, the current file is compared to tip.\n\n No response means no differences.\n\n (temp file: $::EMENUTMPFILE)}\
    } -head {\n This will compare a selected version of a file to its tip:} -weight bold == ::EMENUFILE ::EMENUCOMMIT
- R:fossil gdiff $::FILETAIL ? R: %C if {"$::EMENUCOMMIT" eq ""} \
+R: %C if {"$::EMENUCOMMIT" eq ""} \
    {set ::EMENUTMP ""} {set ::EMENUTMP "--from $::EMENUCOMMIT --to tip"}
- R:fossil gdiff $::FILETAIL ? R: fossil gdiff $::EMENUTMP "$::EMENUFILE"
+R: fossil gdiff $::EMENUTMP "$::EMENUFILE"
 
- S:fossil diff ? S: cd %PD
-RW:fossil diff ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
- R:fossil diff ? R: %I {} "DIFF" { \
+ITEM = fossil diff ?
+S: cd %PD
+RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
+R: %I {} "DIFF" { \
    v_ {{} {-pady 4} {}} {} \
    fco1  {{         From:} {} {-h 10 -state readonly -cbxsel "$::EMENUCOMMIT1"}} \
      {@@-div1 "\[" -div2 "\]" -ret 1 -list {"" tip} $::EMENUTMPFILE@@ \
@@ -78,18 +86,18 @@ RW:fossil diff ? RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
   \n\n temp file:\n $::EMENUTMPFILE} \
    } -head {\n This will compare selected versions of\n %PD} -focus butOK \
    -weight bold == ::EMENUCOMMIT1 ::EMENUCOMMIT2 ::EMENUGREP ::EMENUBRIEF
- R:fossil diff ? R: %C \
+R: %C \
    if {"$::EMENUCOMMIT1" eq ""} {set ::EMENUTMP1 ""} {set ::EMENUTMP1 "--from $::EMENUCOMMIT1"}; \
    if {"$::EMENUCOMMIT2" eq ""} {set ::EMENUTMP2 ""} {set ::EMENUTMP2 "--to $::EMENUCOMMIT2"}; \
    if {"$::EMENUCOMMIT1$::EMENUCOMMIT2" eq ""} \
      {set ::EMENUTMP1 "--from current"; set ::EMENUTMP2 "--to tip"}
- R:fossil diff ? R: %C if {$::EMENUBRIEF} {append ::EMENUTMP2 " -brief"}
- R:fossil diff ? R: %C set ::EMENUTMP "fossil diff $::EMENUTMP1 $::EMENUTMP2"
- R:fossil diff ? R: %IF {$::EMENUGREP} eq "" %THEN %T $::EMENUTMP
-RW:fossil diff ? RW: $::EMENUTMP | grep -n "$::EMENUGREP" > "$::EMENUTMPFILE"
-SW:fossil diff ? SW: cat "$::EMENUTMPFILE"
- R:fossil diff ? R: %C file delete "$::EMENUTMPFILE"
- R:fossil diff ? R: %IF !$::EMENUBRIEF %THEN %T $::EMENUTMP
+R: %C if {$::EMENUBRIEF} {append ::EMENUTMP2 " -brief"}
+R: %C set ::EMENUTMP "fossil diff $::EMENUTMP1 $::EMENUTMP2"
+R: %IF {$::EMENUGREP} eq "" %THEN %T $::EMENUTMP
+RW: $::EMENUTMP | grep -n "$::EMENUGREP" > "$::EMENUTMPFILE"
+SW: cat "$::EMENUTMPFILE"
+R: %C file delete "$::EMENUTMPFILE"
+R: %IF !$::EMENUBRIEF %THEN %T $::EMENUTMP
 
 %MC TITLE %MC COMMAND %MC COLOR %MC MSG1
 %MC S: cd %PD
@@ -100,20 +108,25 @@ SW:fossil diff ? SW: cat "$::EMENUTMPFILE"
    \n\n Use wildcards to $COMMAND a few.} $COLOR -weight bold == ::EMENUFILE
 %MC S: fossil $COMMAND $::EMENUFILE
 
- S:fossil add $::FILETAIL ? S: %MC ADD FILE %MC add %MC %MC
+ITEM = fossil add $::FILETAIL ?
+S: %MC ADD FILE %MC add %MC %MC
 
- S:fossil forget $::FILETAIL S: %MC FORGET FILE %MC forget %MC -hfg $::em::clrhotk %MC
+ITEM = fossil forget $::FILETAIL
+S: %MC FORGET FILE %MC forget %MC -hfg $::em::clrhotk %MC
 
- S:fossil revert $::FILETAIL S: %MC REVERT FILE %MC revert %MC -hfg $::em::clrhotk \
+ITEM = fossil revert $::FILETAIL
+S: %MC REVERT FILE %MC revert %MC -hfg $::em::clrhotk \
    %MC \n\n Thus, a last check-in of the file(s) would be restored. \
    \n You can undo this with "fossil undo".
 
- R:  R: 2
+SEP = 2
 
- S:fossil timeline S: cd %PD
- S:fossil timeline S: fossil timeline
+ITEM = fossil timeline
+S: cd %PD
+S: fossil timeline
 
- R:fossil timeline --showfiles ? R: %I {} "TIMELINE FOR FILE(S)" { \
+ITEM = fossil timeline --showfiles ?
+R: %I {} "TIMELINE FOR FILE(S)" { \
    v_ {{} {-pady 4} {}} {} \
    dir1 {{Directory:} {} {}} {"%PD"}\
    cbx1 {{   Filter:} {} {}} {"$::EMENUTF" $::EMENUTFLIST} \
@@ -122,18 +135,19 @@ SW:fossil diff ? SW: cat "$::EMENUTMPFILE"
    { To filter file(s), use "-e /dir -e file" pattern(s).\n\n For example:\n   -e /menus/ -e /src/\n   -e README\n   -e .\n\n Use -F option to search exactly (not by regexp):\n   -F -e .tcl -e .mnu} \
    } \
    -head {\n This will show a timeline for separate file(s):} -weight bold == ::EMENUTFDIR ::EMENUTF
- R:fossil timeline --showfiles ? R: cd $::EMENUTFDIR
- R:fossil timeline --showfiles ? R: %C catch {if {[set _ [lsearch -exact [list $::EMENUTFLIST] {$::EMENUTF}]]>=0} \
+R: cd $::EMENUTFDIR
+R: %C catch {if {[set _ [lsearch -exact [list $::EMENUTFLIST] {$::EMENUTF}]]>=0} \
      {set ::EMENUTFLIST [lreplace [list $::EMENUTFLIST] [set _] [set _]]}}
- R:fossil timeline --showfiles ? R: %C catch {set ::EMENUTFLIST [linsert [list $::EMENUTFLIST] 0 {$::EMENUTF}]}
- R:fossil timeline --showfiles ? R: %C catch {set ::EMENUTFLIST [lreplace [list $::EMENUTFLIST] 16 end]}
-RW:fossil timeline --showfiles ? RW: fossil timeline --showfiles -n 0 > "$::EMENUTMPFILE"
- S:fossil timeline --showfiles ? S: grep $::EMENUTF -e === "$::EMENUTMPFILE"
+R: %C catch {set ::EMENUTFLIST [linsert [list $::EMENUTFLIST] 0 {$::EMENUTF}]}
+R: %C catch {set ::EMENUTFLIST [lreplace [list $::EMENUTFLIST] 16 end]}
+RW: fossil timeline --showfiles -n 0 > "$::EMENUTMPFILE"
+S: grep $::EMENUTF -e === "$::EMENUTMPFILE"
 
- R:  R: 2
+SEP = 2
 
- S:fossil commit ? S: cd %PD
- R:fossil commit ? R: %I {} "TOUCH & COMMIT" { \
+ITEM = fossil commit ?
+S: cd %PD
+R: %I {} "TOUCH & COMMIT" { \
    lab1  {{} {} {-t {For TOUCH:} -font {-weight bold}}}  {} \
    fil1 {{   File(s):}} {"$::EM_T_FILE"} \
    opc1 {{Time stamp:} {-fill none -anchor w}} {{$::EM_T_TIME} {{none} {time --now --checkin --checkout}} {-width 10}} \
@@ -180,66 +194,78 @@ RW:fossil timeline --showfiles ? RW: fossil timeline --showfiles -n 0 > "$::EMEN
  --user-override USER   USER to use instead of the current default\
 } \
    } -head {\n This will TOUCH the file(s) of Fossil repository\n to have the file(s) time equal to the time stamp.\n\n Then this will run COMMIT on the repository:\n %PD\n} -weight bold == ::EM_T_FILE ::EM_T_TIME ::EM_T_VERBOSE ::EM_COMOPT
- S:fossil commit ? S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}
-SW:fossil commit ? SW: %IF "$::EM_T_TIME" ni {{} none} && "$::EM_T_FILE" ne "" %THEN fossil touch $::EM_T_v $::EM_T_TIME $::EM_T_FILE
- S:fossil commit ? S: fossil commit --allow-empty $::EM_COMOPT
+S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}
+SW: %IF "$::EM_T_TIME" ni {{} none} && "$::EM_T_FILE" ne "" %THEN fossil touch $::EM_T_v $::EM_T_TIME $::EM_T_FILE
+S: fossil commit --allow-empty $::EM_COMOPT
 
- S:fossil commit -f -tag ? S: cd %PD
- R:fossil commit -f -tag ? R: %C set ::COMTAG "%s"
- R:fossil commit -f -tag ? R:  %I warn "TAG COMMIT" { \
+ITEM = fossil commit -f -tag ?
+S: cd %PD
+R: %C set ::COMTAG "%s"
+R: %I warn "TAG COMMIT" { \
    ent1 {{Tag for the last commit:} {} {}} {"$::COMTAG"} \
    } -head {\n This will TAG the last commit:} -weight bold == ::COMTAG
- S:fossil commit -f -tag ? S: fossil commit -f -tag "$::COMTAG" -bgcolor '#F8A4F6'
+S: fossil commit -f -tag "$::COMTAG" -bgcolor '#F8A4F6'
 
- R:fossil commit -m ? --branch ? R: cd %PD
- R:fossil commit -m ? --branch ? R: %C if {"$::FSLBRANCH" eq ""} {set ::FSLBRANCH "%s"}
- R:fossil commit -m ? --branch ? R: %I warn "COMMIT & BRANCH" { \
+ITEM = fossil commit -m ? --branch ?
+R: cd %PD
+R: %C if {"$::FSLBRANCH" eq ""} {set ::FSLBRANCH "%s"}
+R: %I warn "COMMIT & BRANCH" { \
    ent {{Branch name  (1 word):}} {"$::FSLBRANCH"} \
    clr {{Branch color (1 word):\nor empty}} {"$::FSLBRANCHCOLOR"} \
    v_} -head {\n This will COMMIT and create a new BRANCH \
    \n from a current check-in.} -weight bold == ::FSLBRANCH ::FSLBRANCHCOLOR
- R:fossil commit -m ? --branch ? R: %C lassign {$::FSLBRANCH} ::FSLBRANCH; if {{$::FSLBRANCH} eq {}} EXIT
- R:fossil commit -m ? --branch ? R: %C lassign {$::FSLBRANCHCOLOR} ::FSLBRANCHCOLOR
- R:fossil commit -m ? --branch ? R: %C if {"$::FSLBRANCHCOLOR" eq {}} {set ::TMPBG ""} {set ::TMPBG "-bgcolor $::FSLBRANCHCOLOR"}
-SW:fossil commit -m ? --branch ? SW: fossil commit -m $::FSLBRANCH --branch $::FSLBRANCH $::TMPBG
+R: %C lassign {$::FSLBRANCH} ::FSLBRANCH; if {{$::FSLBRANCH} eq {}} EXIT
+R: %C lassign {$::FSLBRANCHCOLOR} ::FSLBRANCHCOLOR
+R: %C if {"$::FSLBRANCHCOLOR" eq {}} {set ::TMPBG ""} {set ::TMPBG "-bgcolor $::FSLBRANCHCOLOR"}
+SW: fossil commit -m $::FSLBRANCH --branch $::FSLBRANCH $::TMPBG
 
- R:  R: 2
+SEP = 2
 
- S:fossil stash S: cd %PD
- R:fossil stash R: %q "Stash" "Stash the current project?"
- R:fossil stash R: fossil stash
+ITEM = fossil stash
+S: cd %PD
+R: %q "Stash" " Stash the current project?"
+S: fossil stash
 
- S:fossil stash snapshot $::FILETAIL ? S: %MC STASH SNAPSHOT %MC stash snapshot \
+ITEM = fossil stash snapshot $::FILETAIL ?
+S: %MC STASH SNAPSHOT %MC stash snapshot \
    %MC -hfg $::em::clrhotk %MC
 
- S:fossil stash list -v S: cd %PD
- S:fossil stash list -v S: fossil stash list -v
+ITEM = fossil stash list -v
+S: cd %PD
+S: fossil stash list -v
 
- S:fossil stash show S: cd %PD
- S:fossil stash show S: fossil stash show
+ITEM = fossil stash show
+S: cd %PD
+S: fossil stash show
 
- S:fossil stash pop S: cd %PD
- R:fossil stash pop R: %q "Stash pop" "Stash pop the current project?\n\nThis saves the stashed changes and \n deletes a changeset from the stash."
- S:fossil stash pop S: fossil stash pop
+ITEM = fossil stash pop
+S: cd %PD
+R: %q "Stash pop" " Stash pop the current project?\n\n This saves the stashed changes and \n deletes a changeset from the stash."
+S: fossil stash pop
 
- S:fossil stash apply S: cd %PD
- R:fossil stash apply R: %q "Stash apply" "Stash apply the current project?\n\nThis saves the stashed changes and \n retains the changeset in the stash."
- S:fossil stash apply S: fossil stash apply
+ITEM = fossil stash apply
+S: cd %PD
+R: %q "Stash apply" " Stash apply the current project?\n\n This saves the stashed changes and \n retains the changeset in the stash."
+S: fossil stash apply
 
- S:fossil stash drop --all S: cd %PD
- R:fossil stash drop --all R: %q "Stash pop" "Stash drop the current project?\n\nThis forgets the whole stash."
- S:fossil stash drop --all S: fossil stash drop --all
+ITEM = fossil stash drop --all
+S: cd %PD
+R: %q "Stash pop" " Stash drop the current project?\n\n This forgets the whole stash."
+S: fossil stash drop --all
 
- S:fossil stash gdiff S: cd %PD
- S:fossil stash gdiff S: fossil stash gdiff
+ITEM = fossil stash gdiff
+S: cd %PD
+S: fossil stash gdiff
 
- R:  R: 2
-M:Next M:m=fossil2.mnu
+SEP = 2
+ITEM = Next
+M: m=fossil2.em
 
- R:  R: 2
+SEP = 2
 
- S:fossil touch ? S: cd %PD
- R:fossil touch ? R: %I {} "TOUCH" { \
+ITEM = fossil touch ?
+S: cd %PD
+R: %I {} "TOUCH" { \
    fil1 {{   File(s):}} {"$::EM_T_FILE"} \
    opc1 {{Time stamp:}} {{$::EM_T_TIME} {--now --checkin --checkout}} \
    v_ {{} {-pady 4}} {} \
@@ -256,6 +282,6 @@ M:Next M:m=fossil2.mnu
    \n to have the file(s) time equal to the time stamp. \n} \
    -hfg $::em::clrhotk -weight bold == \
    ::EM_T_FILE ::EM_T_TIME ::EM_T_DRY ::EM_T_VERBOSE
- S:fossil touch ? S: %C if $::EM_T_DRY {set ::EM_T_n -n} {set ::EM_T_n ""}
- S:fossil touch ? S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}
- S:fossil touch ? S: fossil touch $::EM_T_n $::EM_T_v $::EM_T_TIME $::EM_T_FILE
+S: %C if $::EM_T_DRY {set ::EM_T_n -n} {set ::EM_T_n ""}
+S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}
+S: fossil touch $::EM_T_n $::EM_T_v $::EM_T_TIME $::EM_T_FILE

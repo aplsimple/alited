@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.3.6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.0b3  ;# for documentation (esp. for Ruff!)
 
 set _ [package require Tk]
 wm withdraw .
@@ -106,7 +106,7 @@ namespace eval alited {
 
   # project options' names
   variable OPTS [list \
-    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite prjincons]
+    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite prjincons prjmaxcoms]
 
   # project options' values
   set al(prjname) {}      ;# current project's name
@@ -122,6 +122,7 @@ namespace eval alited {
   set al(prjtrailwhite) 0 ;# "remove trailing whitespaces" flag
   set al(prjincons) 1     ;# "run Tcl scripts in console" flag
   set al(prjdirign) {.git .bak} ;# ignored subdirectories of project
+  set al(prjmaxcoms) 20   ;# maximum of "Run..." commands
   foreach _ $OPTS {set al(DEFAULT,$_) $al($_)}
 
   set al(TITLE) {%f :: %d :: %p}               ;# alited title's template
@@ -259,7 +260,7 @@ if {[package versions alited] eq {}} {
     set ::argv [lrange $::argv 1 end]
   }
   if {[string index $::argv 0] eq {'} && [string index $::argv end] eq {'}} {
-    # when run from menu.mnu "Edit/create file"
+    # when run from menu.em "Edit/create file"
     set ::argv [list [string range $::argv 1 end-1]]
   } elseif {[file isfile $::argv]} {
     set ::argv [list $::argv]
@@ -420,7 +421,8 @@ namespace eval alited {
     variable al
     if {$cs eq {}} {set cs [::apave::obj csCurrent]}
     ::hl_${lng}::hl_init $wtxt -dark [::apave::obj csDark $cs] -colors $colors \
-      -multiline 1 -font $al(FONT,txt) -insertwidth $al(CURSORWIDTH) {*}$args
+      -multiline 1 -font $al(FONT,txt) -insertwidth $al(CURSORWIDTH) \
+      -cmdpos ::alited::None {*}$args
     ::hl_${lng}::hl_text $wtxt
   }
   #_______________________
@@ -471,6 +473,12 @@ namespace eval alited {
 
     variable obDl2
     return [list [$obDl2 ButOK] $wprev]
+  }
+  #_______________________
+
+  proc None {args} {
+    # Does nothing.
+
   }
 
   ## ________________________ Messages _________________________ ##
@@ -712,6 +720,9 @@ namespace eval alited {
       # -> create an independent one to be deleted afterwards
       set pobj alitedHelpObjToDel
       ::apave::APaveInput create $pobj
+    }
+    if {[llength [split $msg \n]]>30} {
+      set args [linsert $args 0 -h 30 -scroll 1]
     }
     set res [$pobj ok {} Help "\n$msg\n" -text 1 -centerme $win -scroll no \
       -tags ::alited::textTags -w [incr wmax] -modal no -ontop yes {*}$args]

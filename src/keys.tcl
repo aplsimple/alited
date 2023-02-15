@@ -125,14 +125,11 @@ proc keys::ReservedList {} {
     Control-A \
     Control-C \
     Control-F \
-    Control-M \
     Control-N \
     Control-O \
-    Control-R \
     Control-V \
     Control-W \
     Control-Alt-W \
-    Control-X \
     Control-Z \
     Control-Shift-Z \
     Control-Shift-F \

@@ -44,9 +44,6 @@ namespace eval project {
 
   # flag "projects changed"
   variable updateGUI no
-
-  # flag "dialogue open and ready to accept user's commands"
-  variable readyGUI no
 }
 
 # ________________________ Common _________________________ #
@@ -529,10 +526,6 @@ proc project::Select {{item ""}} {
   namespace upvar ::alited al al obDl2 obDl2 OPTS OPTS
   variable prjinfo
   variable klnddata
-  variable readyGUI
-  if {$readyGUI} {
-    alited::Message2 {}  ;# clears status messages
-  }
   if {$item eq {}} {set item [Selected item no]}
   if {$item ne {}} {
     lassign [SelectedPrj $item] tree item prj
@@ -1716,9 +1709,11 @@ proc project::MainFrame {} {
 proc project::Tab1 {} {
   # Creates a main tab of "Project".
 
+  namespace upvar ::alited al al
   variable klnddata
   set klnddata(SAVEDATE) [set klnddata(SAVEPRJ) {}]
-  set klnddata(toobar) "labKlndProm {on } LabKlndDate {} sev 6"
+  set monofont "[font actual apaveFontMono] -size $al(FONTSIZE,small)"
+  set klnddata(toobar) "LabKlndDate {{} {} {-font {$monofont}}} sev 6"
   foreach img {delete paste undo redo - previous2 previous next next2} {
     # -method option for possible disable/enable BuT_alimg_delete etc.
     if {$img eq {-}} {
@@ -1745,8 +1740,8 @@ proc project::Tab1 {} {
     {.sbv + L - - {pack -side left}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
-    {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate; alited::project::KlndBorderText} -dateformat $alited::project::klnddata(dateformat) -tip {alited::project::KlndText %D} -popup {alited::project::KlndPopup %W %y %m %d %X %Y}}}
-    {fra3.fra - - - - {pack -fill both -expand 1} {}}
+    {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate; alited::project::KlndBorderText} -dateformat "$alited::al(TPL,%d)" -tip {alited::project::KlndText %D} -popup {alited::project::KlndPopup %W %y %m %d %X %Y} -width 3}}
+    {fra3.fra - - - - {pack -fill both -expand 1}}
     {.seh2 - - - - {pack -side top -fill x}}
     {.too - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::project::klnddata(toobar)}}}
     {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext {alited::Tnext *.texPrj} -w 4 -h 8 -tip {-BALTIP {$alited::al(MC,prjTtext)} -MAXEXP 1}}}
@@ -1779,7 +1774,9 @@ proc project::Tab2 {} {
     {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
     {.swiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite) -tabnext alited::Tnext}}
-    {.labFlist .labTrWs T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
+    {.labmaxcom .labTrWs T 1 1 {-st w -pady 1 -padx 3} {-t {Maximum Run commands}}}
+    {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjmaxcoms) -from 4 -to 99}}
+    {.labFlist .labmaxcom T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
     {fraFlist + T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}
     {.sbvFlist + L - - {pack -side left}}
@@ -1864,8 +1861,6 @@ proc project::_create {} {
   variable oldTab
   variable ilast
   variable curinfo
-  variable readyGUI
-  set readyGUI no
   set curinfo(_NO2ENT) 0
   set tipson [baltip::cget -on]
   baltip::configure -on $al(TIPS,Projects)
@@ -1886,6 +1881,9 @@ proc project::_create {} {
   bind $tree <Delete> ::alited::project::Delete
   bind $tree <Double-Button-1> ::alited::project::ProjectEnter
   bind $tree <Return> ::alited::project::ProjectEnter
+  foreach ev {KeyPress ButtonPress} {
+    bind $tree <$ev> {+ alited::Message2 {}}
+  }
   bind $win <F1> "[$obDl2 ButHelp] invoke"
   bind [$obDl2 LabMess] <Button-1> ::alited::project::ProcMessage2
   set lbx [$obDl2 LbxFlist]
@@ -1900,14 +1898,15 @@ proc project::_create {} {
   set klndtex [$obDl2 TexKlnd]
   bind $prjtex <FocusOut> alited::project::SaveNotes
   ::hl_tcl::hl_init $prjtex -dark [$obDl2 csDark] -plaintext 1 \
+    -cmdpos ::alited::None \
     -font $al(FONT) -insertwidth $al(CURSORWIDTH)
   ::hl_tcl::hl_init $klndtex -dark [$obDl2 csDark] -plaintext 1 \
     -cmd ::alited::project::KlndTextModified \
+    -cmdpos ::alited::None \
     -font $al(FONT) -insertwidth $al(CURSORWIDTH)
   ::hl_tcl::hl_text $prjtex
   ::hl_tcl::hl_text $klndtex
   $obDl2 displayText [$obDl2 TexTemplate] $al(PTP,text)
-  set readyGUI yes
   set res [$obDl2 showModal $win -geometry $geo -minsize {600 400} -resizable 1 \
     -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
   set oldTab [$win.fra.fraR.nbk select]

@@ -1262,7 +1262,7 @@ proc pref::Emenu_Tab {} {
     {.labDir .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Directory of menus:"}}
     {.dirEM + L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,mnudir) -w 48}}
     {.labMenu .labDir T 1 1 {-st w -pady 1 -padx 3} {-t "Main menu:"}}
-    {.filMenu + L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,mnu) -w 48 -filetypes {{{Menus} .mnu} {{All files} .* }}}}
+    {.filMenu + L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,mnu) -w 48 -filetypes {{{Menus} .em} {{All files} .* }}}}
     {.labPD .labMenu T 1 1 {-st w -pady 1 -padx 3} {-t "Projects (%PD wildcard):"}}
     {.filPD + L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,PD=) -w 48}}
     {.seh .labPD T 1 3 {-st ew -pady 5}}
@@ -1282,7 +1282,7 @@ proc pref::Default_e_menu {} {
   set al(EM,geometry) {}
   set emdir [file join $::alited::USERDIR e_menu]
   set al(EM,mnudir) [file join $emdir menus]
-  set al(EM,mnu) [file join $al(EM,mnudir) menu.mnu]
+  set al(EM,mnu) [file join $al(EM,mnudir) menu.em]
   set al(EM,PD=) [file join $emdir em_projects]
 }
 #_______________________
@@ -1564,12 +1564,13 @@ proc pref::PickMenuItem {it} {
   set X [winfo rootx $w]
   set Y [winfo rooty $w]
   set res [::em::main -prior 1 -modal 1 -remain 0 -noCS 1 \
-    {*}[alited::tool::EM_Options "pk=yes dk=dock o=-1 t=1 g=+[incr X 5]+[incr Y 25]"]]
+    {*}[alited::tool::EM_Options \
+    "pk=yes dk=dock o=-1 t=1 g=+[incr X 5]+[incr Y 25] mp=1"]]
   lassign $res menu idx item
   if {$item ne {}} {
     set i [lindex [alited::tool::EM_Structure $menu] $idx-1 1]
     set item2 [string range $i [string first - $i]+1 end]
-    if {$item2 ne $item && [string match *.mnu $item2]} {
+    if {$item2 ne $item && [string match *.em $item2]} {
       append item2 ": $item"  ;# it's a menu call title
       set idx - ;# to open the whole menu
     }

@@ -1,67 +1,88 @@
+[OPTIONS]
 
- R: hg addremove R: %q "ADD" "This will ADD & REMOVE all changes in:\n\n  %PD"
- R: hg addremove R: cd %PD
-SW: hg addremove SW: hg addremove -S -v\nhg status
+::RGEO=568x537+0+55
+::RBIN=BIN
+::REV1=-3
+pos=4.37
+in=1.0
+w=40
 
- R: hg add "%F" file R: %q "ADD" "This will add\n\n  %f\n\nto hg history of\n\n  %PD"
- R: hg add "%F" file R: cd %PD
-SW: hg add "%F" file SW: hg add -v "%f"\nhg status
+[MENU]
 
- R: hg add "%D" directory R: %q "ADD" \
+
+ITEM = hg addremove
+R: %q "ADD" "This will ADD & REMOVE all changes in:\n\n  %PD"
+R: cd %PD
+SW: hg addremove -S -v\nhg status
+
+ITEM = hg add "%F" file
+R: %q "ADD" "This will add\n\n  %f\n\nto hg history of\n\n  %PD"
+R: cd %PD
+SW: hg add -v "%f"\nhg status
+
+ITEM = hg add "%D" directory
+R: %q "ADD" \
    "This will add ALL of directory\n\n  %d\n\nto hg history of\n\n  %PD"
- R: hg add "%D" directory R: cd %d
-SW: hg add "%D" directory SW: hg add -v *\nhg status
+R: cd %d
+SW: hg add -v *\nhg status
 
- R:  R: 3
+SEP = 3
 
- R: Forget "%F" file R: cd %d
- R: Forget "%F" file R: %q "FORGET FILE" "This will FORGET the file \
+ITEM = Forget "%F" file
+R: cd %d
+R: %q "FORGET FILE" "This will FORGET the file \
     \n\n  %f \n\nin hg history!"
-SW: Forget "%F" file SW: hg forget -v %f\nhg status
+SW: hg forget -v %f\nhg status
 
- R: Forget "%D" directory R: cd %d
- R: Forget "%D" directory R: %q "FORGET DIRECTORY" "This will FORGET the directory \
+ITEM = Forget "%D" directory
+R: cd %d
+R: %q "FORGET DIRECTORY" "This will FORGET the directory \
     \n\n  %d \n\nin hg history!"
-SW: Forget "%D" directory SW: hg forget -v *\nhg status
+SW: hg forget -v *\nhg status
 
- R: Forget newly-added binary files R: %q "FORGET ADDED BIN" " This will FORGET \
+ITEM = Forget newly-added binary files
+R: %q "FORGET ADDED BIN" " This will FORGET \
   \n newly-added binary files!"
-SW: Forget newly-added binary files SW: hg forget "set:added() and binary()"\nhg status
+SW: hg forget "set:added() and binary()"\nhg status
 
- R: Forget files excluded by .hgignore R: %q "FORGET BY .hgignore" " This will FORGET files \
+ITEM = Forget files excluded by .hgignore
+R: %q "FORGET BY .hgignore" " This will FORGET files \
   \n that are excluded by .hgignore!"
-SW: Forget files excluded by .hgignore SW: hg forget "set:hgignore()"\nhg status
+SW: hg forget "set:hgignore()"\nhg status
 
- R:  R: 3
+SEP = 3
 
- R: Remove "%F" file R: cd %d
- R: Remove "%F" file R: %C if {![info exist ::FREM]} {set ::FREM 0}
- R: Remove "%F" file R: %I warn "REMOVE FILE" {chb \
+ITEM = Remove "%F" file
+R: cd %d
+R: %C if {![info exist ::FREM]} {set ::FREM 0}
+R: %I warn "REMOVE FILE" {chb \
     {{Forget added files, delete modified files:} {} {}} \
     {$::FREM}} -head { This will REMOVE the file \
     \n\n   %f \n\n from hg history! \
     \n\n Note: \
     \n   'hg remove' never deletes files in Added \[A\] state from the working \
     \n   directory, not even if \"--force\" is specified.\n} -weight bold == ::FREM
- R: Remove "%F" file R:  %C if {$::FREM} {set ::FORCEDREM -f} {set ::FORCEDREM -Af}
-SW: Remove "%F" file SW: hg remove $::FORCEDREM -v %f\nhg status
+R: %C if {$::FREM} {set ::FORCEDREM -f} {set ::FORCEDREM -Af}
+SW: hg remove $::FORCEDREM -v %f\nhg status
 
- R: Remove "%D" directory R: cd %d
- R: Remove "%D" directory R: %C if {![info exist ::FREM]} {set ::FREM 0}
- R: Remove "%D" directory R: %I warn "REMOVE DIRECTORY" {chb \
+ITEM = Remove "%D" directory
+R: cd %d
+R: %C if {![info exist ::FREM]} {set ::FREM 0}
+R: %I warn "REMOVE DIRECTORY" {chb \
     {{Forget added files, delete modified files:} {} {}} \
     {$::FREM}} -head { This will REMOVE all files of directory \
     \n\n   %d \n\n from hg history! \
     \n\n Note: \
     \n   'hg remove' never deletes files in Added \[A\] state from the working \
     \n   directory, not even if \"--force\" is specified.\n} -weight bold == ::FREM
- R: Remove "%D" directory R:  %C if {$::FREM} {set ::FORCEDREM -f} {set ::FORCEDREM -Af}
-SW: Remove "%D" directory SW: hg remove $::FORCEDREM -v *\nhg status
+R: %C if {$::FREM} {set ::FORCEDREM -f} {set ::FORCEDREM -Af}
+SW: hg remove $::FORCEDREM -v *\nhg status
 
-R:  R: 3
+SEP = 3
 
-S: hg summary, status, heads S: cd %PD
-S: hg summary, status, heads S: \n \n \
+ITEM = hg summary, status, heads
+S: cd %PD
+S: \n \n \
   echo "\n------------------------------------------------\n" \n  \
   echo "HG SUMMARY: \t $PWD\n" \n \
        hg summary \n \
@@ -72,14 +93,15 @@ S: hg summary, status, heads S: \n \n \
   echo "HG HEADS: \t $PWD\n" \n \
        hg heads \n\n
 
-R: Push with BIN R: cd %PD
-R: Push with BIN R: %q "Push with BIN" " This will push your last commits + BIN \
+ITEM = Push with BIN
+R: cd %PD
+R: %q "Push with BIN" " This will push your last commits + BIN \
   \n so that: \
   \n     * a new development cycle would begin \
   \n     * you would go on committing in:\n            %PD \
   \n     * ... till a next 'Push with BIN' \
   \n\n Please, view the messages to follow..."
-SW: Push with BIN SW: \
+SW: \
   echo "\n------------------------------------------------\n" \n  \
   echo "HG SUMMARY: \t $PWD\n" \n \
        hg summary \n \
@@ -91,7 +113,7 @@ SW: Push with BIN SW: \
        hg heads \n \
   echo "\n------------------------------------------------\n" \n \
   echo "\nVerify the previous messages C A R E F U L L Y !\n" \n\n
-R: Push with BIN R: %I warn "Push with BIN" {entRev {{Tag of 'BIN' revision:} \
+R: %I warn "Push with BIN" {entRev {{Tag of 'BIN' revision:} \
   {} {-w 20}} {"$::RBIN"} lab} -ontop 1 -geometry $::RGEO -head \
   "\nThis will push your last commits + BIN of \n  %PD \
 \n\nSpecifically this means: \
@@ -106,8 +128,8 @@ R: Push with BIN R: %I warn "Push with BIN" {entRev {{Tag of 'BIN' revision:} \
 \n  3. Your essential development head is the tip. \
 \n  4. 'BIN' is stripped by Bitbucket/Settings/Strip commits. \n" \
   -weight bold == ::RGEO - ::RBIN
-R: Push with BIN R: %C set ::rbin [string tolower "$::RBIN"]
-SW: Push with BIN SW: \
+R: %C set ::rbin [string tolower "$::RBIN"]
+SW: \
   echo '###################### backup $::rbin to .$::rbin.bak' ; \
   rm -f -r $::rbin.bak/* ; \
   mkdir $::rbin.bak ; \
@@ -134,11 +156,11 @@ SW: Push with BIN SW: \
   echo '###################### REMEMBER the revision prior to $::RBIN' ; \
   hg log -l 7 ; \
   echo '###################### REMEMBER the revision prior to $::RBIN'
-R: Push with BIN R: %I ques "WORKING REVISION" {entRev {{Revision prior to $::RBIN:} {} \
+R: %I ques "WORKING REVISION" {entRev {{Revision prior to $::RBIN:} {} \
     {-w 20}} {"$::REV1"} lab} -head "\n Enter a revision prior to $::RBIN. \
     \n It is a main stream of development. \
     \n Most likely, it is -3 (2 level under the tip). \n" -weight bold == ::REV1
-SW: Push with BIN SW: \
+SW: \
   echo '\n\n###################### go to a revision prior to $::RBIN' ; \
   hg update -r $::REV1 ; \
   echo '\n\n###################### restore $::rbin from $::rbin.bak (possibly not-committed)' ; \
@@ -148,11 +170,3 @@ SW: Push with BIN SW: \
   hg status ; \
   hg summary ; \
   echo '###################### THE END'
-
-[OPTIONS]
-::RGEO=568x537+0+55
-::RBIN=BIN
-::REV1=-3
-pos=4.37
-in=1.0
-w=40

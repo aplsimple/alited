@@ -1,4 +1,5 @@
 [OPTIONS]
+
 o=-1
 b1=0
 b2=3
@@ -30,10 +31,13 @@ in=1.0
 ::EMENU_MULST2=~/TMP/em_mulst.txt
 ::EMENU_MULST5=regexp--
 pos=110.0
+
 [MENU]
 
- R: Trimmer *.tcl R: cd $::EMENUDIR1
- R: Trimmer *.tcl R: %I {} "TRIMMER" { \
+
+ITEM = Trimmer *.tcl
+R: cd $::EMENUDIR1
+R: %I {} "TRIMMER" { \
    v_ {{} {-pady 4}} {} \
    dir1 {{ Input directory:}} {"$::EMENUDIR1"} \
    dir2 {{Output directory:}} {"$::EMENUDIR2"} \
@@ -49,12 +53,13 @@ pos=110.0
    }} -head {\n This removes comments and spaces from Tcl code. \
     \n The trimmer does not touch the input Tcl files.} \
    -weight bold == ::EMENUDIR1 ::EMENUDIR2 ::EMENUOPTS
- R: Trimmer *.tcl R: cd $::EMENUDIR1
- S: Trimmer *.tcl S: tclsh ~/UTILS/trimmer/trim.tcl \
+R: cd $::EMENUDIR1
+S: tclsh ~/UTILS/trimmer/trim.tcl \
    -i "$::EMENUDIR1" -o "$::EMENUDIR2" $::EMENUOPTS
 
- R: Ruff! $::EMENUP2 ... R: cd $::EMENUDIR1
- R: Ruff! $::EMENUP2 ... R: %I {} "PROJECT NAME" { \
+ITEM = Ruff! $::EMENUP2 ...
+R: cd $::EMENUDIR1
+R: %I {} "PROJECT NAME" { \
    v_ {{} {-pady 4}} {} \
    dir1 {{ Project directory:} {} {-w 50 -validate all -validatecommand { \
      set ::EMENUP2 \[::em::get_PD {%P}\]; \
@@ -69,10 +74,10 @@ pos=110.0
    seh {{} {-pady 3} {}} {} \
    } -head {\n This creates Ruff! documentation of Tcl files. \
    \n Customize ruff.tcl at need. } -weight bold == ::EMENUDIR1 ::EMENUP2 ::EMENUMULSTER EMENUMULSTERDIR ::EMENUMULSTRES2
- S: Ruff! $::EMENUP2 ... S: cd $::EMENUDIR1
-SW: Ruff! $::EMENUP2 ... SW: tclsh ~/UTILS/ruff.tcl "$::EMENUP2"
- S: Ruff! $::EMENUP2 ... S: %C set ::EMENUP2html $::EMENUP2.html
- S: Ruff! $::EMENUP2 ... S: %C  \
+S: cd $::EMENUDIR1
+SW: tclsh ~/UTILS/ruff.tcl "$::EMENUP2"
+S: %C set ::EMENUP2html $::EMENUP2.html
+S: %C  \
    if {$::EMENUMULSTER} { \
      set ::EMENUMULSTERDIR2 [file join $::EMENUMULSTERDIR tasks ruff src] ; \
      if {![file exists $::EMENUP2html]} {set ::EMENUP2html [lindex [glob -nocomplain *.html] 0]} ; \
@@ -81,10 +86,11 @@ SW: Ruff! $::EMENUP2 ... SW: tclsh ~/UTILS/ruff.tcl "$::EMENUP2"
      cp -f ~/PG/github/mulster/tasks/ruff/mulstered/$::EMENUP2html $::EMENUMULSTRES2" ; \
      set ::EMENUP2html [file normalize [file join $::EMENUMULSTRES2 $::EMENUP2html]] \
    } else {set ::EMTMP ""}
-SW: Ruff! $::EMENUP2 ... SW: $::EMTMP ; tclsh ~/UTILS/highlight_tcl/tcl_html.tcl "$::EMENUP2html"
- R: Ruff! $::EMENUP2 ... R: %B $::EMENUP2html
+SW: $::EMTMP ; tclsh ~/UTILS/highlight_tcl/tcl_html.tcl "$::EMENUP2html"
+R: %B $::EMENUP2html
 
- R: Ruff! all ... R: %I {} "PROJECT NAME" { \
+ITEM = Ruff! all ...
+R: %I {} "PROJECT NAME" { \
    v_ {{} {-pady 4}} {} \
    tex1 {{ Projects to Ruff!:} {} {-h 8 -w 60 -tabnext chb1}} {$::EMENURUFFDIR} \
    chb1 {{Mulster afterwards:}} {$::EMENUMULSTER} \
@@ -93,7 +99,7 @@ SW: Ruff! $::EMENUP2 ... SW: $::EMTMP ; tclsh ~/UTILS/highlight_tcl/tcl_html.tcl
    tex2 {{   Ruff! the files:} {} {-h 8 -tabnext butOK}} {$::EMENURUFFIT} \
    } -head {\n This creates Ruff! documentation of Tcl files. \
    \n Customize ruff.tcl at need. } -focus butOK -weight bold == ::EMENURUFFDIR ::EMENUMULSTER ::EMENUMULSTRES3 ::EMENURUFFIT
-SW: Ruff! all ... SW: %C \
+SW: %C \
    set home [glob ~] ; \
    set plist [string map {\\n \n} $::EMENURUFFDIR] ; \
    foreach prj [split $plist \n] { ; \
@@ -122,23 +128,25 @@ SW: Ruff! all ... SW: %C \
        exec tclsh mulster.tcl -b 0 -infile $fit tasks/mulster-ruff2 \
      } \
    }
-SW: Ruff! all ... SW: %B file://$::EMENUMULSTRES3
+SW: %B file://$::EMENUMULSTRES3
 
- R: Freewrap Tcl R: cd ~/PG/github/mulster
- R: Freewrap Tcl R: %q FREEWRAP " Want to get freewrapped Tcl executables?"
-SW: Freewrap Tcl SW: tclsh mulster.tcl -b 0 tasks/mulster-freewrap
- R: Freewrap Tcl R: cd ~/PG/github/freewrap
- RW: Freewrap Tcl RW: ./linux64.672/freewrap ./screenshooter/screenshooter.tcl -w ./linux64.672/freewrap -forcewrap -o ./screenshooter/screenshooter
- RW: Freewrap Tcl RW: ./linux64.672/freewrap ./e_menu/s_menu.tcl -w ./linux64.672/freewrap -forcewrap -o ./e_menu/s_menu
- RW: Freewrap Tcl RW: cp -f ./e_menu/s_menu.tcl ./TEST-kit/e_menu.vfs/e_menu/
- RW: Freewrap Tcl RW: cd ~/PG/github/freewrap/TEST-kit
- RW: Freewrap Tcl RW: ./e_m-linux.sh
+ITEM = Freewrap Tcl
+R: cd ~/PG/github/mulster
+R: %q FREEWRAP " Want to get freewrapped Tcl executables?"
+SW: tclsh mulster.tcl -b 0 tasks/mulster-freewrap
+R: cd ~/PG/github/freewrap
+RW: ./linux64.672/freewrap ./screenshooter/screenshooter.tcl -w ./linux64.672/freewrap -forcewrap -o ./screenshooter/screenshooter
+RW: ./linux64.672/freewrap ./e_menu/s_menu.tcl -w ./linux64.672/freewrap -forcewrap -o ./e_menu/s_menu
+RW: cp -f ./e_menu/s_menu.tcl ./TEST-kit/e_menu.vfs/e_menu/
+RW: cd ~/PG/github/freewrap/TEST-kit
+RW: ./e_m-linux.sh
 
-R: R: 3
+SEP = 3
 
-SW: Save your stuff SW: cd %PD
- R: Save your stuff R: %C set ::EMENU7ZCNT [expr {($::EMENU7ZCNT+1)%8}]
- R: Save your stuff R: %I {} "BACKUP" { \
+ITEM = Save your stuff
+SW: cd %PD
+R: %C set ::EMENU7ZCNT [expr {($::EMENU7ZCNT+1)%8}]
+R: %I {} "BACKUP" { \
    v_ {{} {-pady 4}} {} \
    ent1 {{Archive command:}} {"$::EMENU7ZCOM"} \
    chb1 {{   Include .git:}} {"$::EMENU7ZGIT"} \
@@ -150,8 +158,8 @@ SW: Save your stuff SW: cd %PD
    seh2 {{} {-pady 7} {}} {} \
    dir3 {{        Save to:}} {"$::EMENU7ZBAK"} \
    } -head {\n This creates a backup of your directories. } -focus butOK -weight bold == ::EMENU7ZCOM ::EMENU7ZGIT ::EMENU7ZARC ::EMENU7ZSUFF ::EMENU7ZDIR ::EMENU7ZSKIP ::EMENU7ZBAK
- RW: Save your stuff RW: %C set ::EMENUTMP "$::EMENU7ZARC-$::EMENU7ZSUFF-$::EMENU7ZCNT-N.zip"
- RW: Save your stuff RW: %C \
+RW: %C set ::EMENUTMP "$::EMENU7ZARC-$::EMENU7ZSUFF-$::EMENU7ZCNT-N.zip"
+RW: %C \
   file delete "$::EMENUTMP" ; \
   set ::EMENU7ZDIR_LIST "" ; \
   set flist [string map {\\n \n} $::EMENU7ZDIR] ; \
@@ -167,17 +175,18 @@ SW: Save your stuff SW: cd %PD
       } \
     } \
   }
-SW: Save your stuff SW: $::EMENU7ZCOM $::EMENUTMP $::EMENU7ZDIR_LIST ; mplayer %ms/s1.wav
- R: Save your stuff R: %C if {"$::EMENU7ZBAK" ne ""} { \
+SW: $::EMENU7ZCOM $::EMENUTMP $::EMENU7ZDIR_LIST ; mplayer %ms/s1.wav
+R: %C if {"$::EMENU7ZBAK" ne ""} { \
   file copy -force {$::EMENUTMP} "[file join {$::EMENU7ZBAK} [file tail {$::EMENUTMP}]]" ; \
   if {$::EMENU7ZGIT} { \
     file delete -force "[file join {$::EMENU7ZBAK} FOSSIL]" ; \
     file copy -force [file normalize ~/FOSSIL] $::EMENU7ZBAK ; \
   }}
- R: Save your stuff R: mplayer %ms/s1.wav
+R: mplayer %ms/s1.wav
 
-SW: Mulster %F SW: cd %PD
- R: Mulster %F R: %I {} "MULSTER" { \
+ITEM = Mulster %F
+SW: cd %PD
+R: %I {} "MULSTER" { \
    v_ {{} {-pady 4}} {} \
    ent1 {{TEMP ini file   :}} {"$::EMENU_MULST1"} \
    ent2 {{TEMP result file:}} {"$::EMENU_MULST2"} \
@@ -186,7 +195,7 @@ SW: Mulster %F SW: cd %PD
    cbx1 {{Mode            :}} {"$::EMENU_MULST5" exact exact0 glob regexp regexp--} \
    } -head {\n This replaces multiple strings in your file.\n (exact0 means "without leading/trailing spaces")} -weight bold \
    == ::EMENU_MULST1 ::EMENU_MULST2 ::EMENU_MULST3 ::EMENU_MULST4 ::EMENU_MULST5
- R: Mulster %F R: %C set ch [open $::EMENU_MULST1 w] ; \
+R: %C set ch [open $::EMENU_MULST1 w] ; \
   puts $ch "IN=BEGIN" ; \
   puts $ch $::EMENU_MULST3 ; \
   puts $ch "IN=END" ; \
@@ -194,4 +203,4 @@ SW: Mulster %F SW: cd %PD
   puts $ch $::EMENU_MULST4 ; \
   puts $ch "OUT=END" ; \
   close $ch
- SW: Mulster %F SW: tclsh ~/PG/github/mulster/mulster.tcl -backup 0 -mode $::EMENU_MULST5 -infile "%f" -outfile "$::EMENU_MULST2" $::EMENU_MULST1
+SW: tclsh ~/PG/github/mulster/mulster.tcl -backup 0 -mode $::EMENU_MULST5 -infile "%f" -outfile "$::EMENU_MULST2" $::EMENU_MULST1

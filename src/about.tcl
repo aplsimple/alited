@@ -134,7 +134,7 @@ proc about::About {} {
     \u2022 <link-ale_themes>ale_themes</link-ale_themes>\n\n \
     \u2022 <link-tkcc>tkcc</link-tkcc>\n\n \
     \u2022 <link-repl>tcl-repl</link-repl>\n \
-    \n menus/.mnu v$al(MNUversion) \
+    \n menus/.em v$al(MNUversion) \
     \n alited.ini v$al(INIversion)"
 
   ### ________________________ "Acknowledgements" tab _________________________ ###

@@ -881,6 +881,7 @@ proc file::CloseFile {TID checknew args} {
   if {$al(closefunc) != 1} {  ;# close func = 1 means "close all"
     alited::file::AddRecent $fname
   }
+  after idle [list alited::bar::RenameTitles $TID]
   return $res
 }
 #_______________________

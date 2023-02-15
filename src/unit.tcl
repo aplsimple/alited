@@ -203,13 +203,13 @@ proc unit::TemplateData {wtxt l1 tpldata} {
   #   tpldata - template
 
   namespace upvar ::alited al al DIR DIR MNUDIR MNUDIR
-  lassign $tpldata tex pos place
+  lassign $tpldata tex pos place tplind
   set sec [clock seconds]
   set fname [alited::bar::FileName]
   # fill the common wildcards
   set tex [string map [list \
     %d [alited::tool::FormatDate $sec] \
-    %t [clock format $sec -format $al(TPL,%t)] \
+    %t [clock format $sec -format $al(TPL,%t) -locale $alited::al(LOCAL)] \
     %u $al(TPL,%u) \
     %U $al(TPL,%U) \
     %m $al(TPL,%m) \
@@ -260,7 +260,7 @@ proc unit::TemplateData {wtxt l1 tpldata} {
       set pos $r.[expr {$c+$ll}]
     }
   }
-  return [list $tex $pos $place]
+  return [list $tex $pos $place $tplind]
 }
 #_______________________
 
@@ -274,7 +274,7 @@ proc unit::InsertTemplate {tpldata} {
   }
   set wtxt [alited::main::CurrentWTXT]
   lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - - l1 l2
-  lassign [TemplateData $wtxt $l1 $tpldata] tex posc place
+  lassign [TemplateData $wtxt $l1 $tpldata] tex posc place tplind
   lassign [split $posc .] -> col0
   switch $place {
     0 { ;# returned by TemplateData: after a declaration
@@ -290,7 +290,7 @@ proc unit::InsertTemplate {tpldata} {
       if {$l2 ne ""} {
         set pos0 [$wtxt index "$l2.0 +1 line linestart"]
         if {[string index $tex end] ne "\n"} {append tex \n}
-        lassign [CorrectPos $wtxt $tex $posc $pos0] tex pos0 posc
+        lassign [CorrectPos $wtxt $tex $posc $pos0 {} $tplind] tex pos0 posc
         lassign [split $posc .] -> col0
       } else {
         set place 1
@@ -303,7 +303,7 @@ proc unit::InsertTemplate {tpldata} {
   if {$place == 1} {
     set pos0 [$wtxt index "insert +1 line linestart"]
     set posi [$wtxt index "insert linestart"]
-    lassign [CorrectPos $wtxt $tex $posc $pos0 $posi] tex pos0 posc
+    lassign [CorrectPos $wtxt $tex $posc $pos0 $posi $tplind] tex pos0 posc
     lassign [split $posc .] -> col0
     if {[string index $tex end] ne "\n"} {append tex \n}
   }
@@ -314,7 +314,7 @@ proc unit::InsertTemplate {tpldata} {
 }
 #_______________________
 
-proc unit::CorrectPos {wtxt tex posc pos0 {posi {}}} {
+proc unit::CorrectPos {wtxt tex posc pos0 posi tplind} {
   # Corrects an insert position at "after unit insert" specifically and only
   # for this type of underlining: #______. Also, corrects the indentation
   # of the template, counting the insertion point's indentation.
@@ -322,6 +322,7 @@ proc unit::CorrectPos {wtxt tex posc pos0 {posi {}}} {
   #   tex - template's text
   #   posc - relative position of cursor
   #   pos0 - position of insertion
+  #   tplind - "indent" flag of the template
   # If 1st line of the template is underlined, we place it under a previous
   # unit's closing brace. But if the insertion point is already underlined
   # or is a branch, we move 1st line of the template to its end.
@@ -365,7 +366,7 @@ proc unit::CorrectPos {wtxt tex posc pos0 {posi {}}} {
     }
   }
   # indent the template
-  if {$indent1<$indent2} {
+  if {$indent1<$indent2 && [alited::unit_tpl::IsIndented $tplind $tex]} {
     set indent [string repeat { } [incr indent2 -$indent1]]
     set tlist [split $tex \n]
     set tex {}

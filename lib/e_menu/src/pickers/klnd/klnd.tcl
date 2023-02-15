@@ -32,7 +32,8 @@ namespace eval ::klnd {
       be_by %u \
     ]
     array set p [list FINT %Y/%N/%e days {} months {} \
-      d 0 m 0 y 0 dvis 0 mvis 0 yvis 0 icurr 0 ienter 0 weekday {} d1st 1]
+      d 0 m 0 y 0 dvis 0 mvis 0 yvis 0 icurr 0 ienter 0 weekday {} \
+      d1st 1 width 2 loc en_uk]
   }
 }
 
@@ -92,7 +93,7 @@ proc ::klnd::my::ShowMonth {m y} {
   set sec [CurrentDate]
   set y [expr {max($y,1753)}]
   ::baltip::tip [$p(obj) BuT_IM_KLND_0] \
-    "[::msgcat::mc {Current date}]: [clock format $sec -format $p(dformat)]\n(F3)" -under 5
+    "[::msgcat::mc {Current date}]: [clock format $sec -format $p(dformat) -locale $p(loc)]\n(F3)" -under 5
   # display month & year
   [$p(obj) LabMonth] configure -text  "[lindex $p(months) [expr {$m-1}]] $y" \
     -font [::apave::obj boldDefFont [expr {[::apave::obj basicFontSize]+2}]]
@@ -253,13 +254,13 @@ proc ::klnd::my::InitCalendar {args} {
   variable p
   variable locales
   InitSettings
-  lassign [::apave::parseOptions $args \
-  -title {} -value {} -tvar {} -locale {} -parent {} -dateformat %D \
+  lassign [::apave::parseOptions $args -locale [::msgcat::mclocale] \
+  -title {} -value {} -tvar {} -parent {} -dateformat %D \
   -weekday {} -centerme {} -geometry {} -entry {} -com {} -command {} \
-  -currentmonth {} -united no -daylist {-} -hllist {} -popup {} -tip {}] \
-    title datevalue tvar loc parent p(dformat) \
+  -currentmonth {} -united no -daylist {-} -hllist {} -popup {} -tip {} -width 2] \
+    loc title datevalue tvar parent p(dformat) \
     p(weekday) centerme geo entry com1 com2 \
-    p(currentmonth) p(united) p(daylist) p(hllist) p(popup) p(tip)
+    p(currentmonth) p(united) p(daylist) p(hllist) p(popup) p(tip) p(width)
   if {$com2 eq {}} {set p(com) $com1} {set p(com) $com2}
   # get localized week day names
   lassign [::klnd::weekdays $loc] p(days) p(weekday)

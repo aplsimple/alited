@@ -1,6 +1,5 @@
-# options should go first because of "co=" (line continuator)
-
 [OPTIONS]
+
 in=5.0
 pos=4.6
 o=-1
@@ -17,26 +16,35 @@ rt=2/5
 %C set ::FILETMPTAIL {"$::EMENUFILETMPTAIL"}
 
 [MENU]
- R: Doctest Safe: $::FILETMPTAIL R: cd %d
- S: Doctest Safe: $::FILETMPTAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTv 0 %TF
 
- R: Doctest Safe verbose: $::FILETMPTAIL R: cd %d
- S: Doctest Safe verbose: $::FILETMPTAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTv 1 %TF
+# options should go first because of "co=" (line continuator)
 
- R: Doctest: $::FILETMPTAIL R: cd %d
- S: Doctest: $::FILETMPTAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 0 %TF
+ITEM = Doctest Safe: $::FILETMPTAIL
+R: cd %d
+S: tclsh %m/src/doctest_of_emenu.tcl -DTv 0 %TF
 
- R: Doctest verbose: $::FILETMPTAIL R: cd %d
- S: Doctest verbose: $::FILETMPTAIL S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 1 %TF
+ITEM = Doctest Safe verbose: $::FILETMPTAIL
+R: cd %d
+S: tclsh %m/src/doctest_of_emenu.tcl -DTv 1 %TF
 
- M:  M: 3
+ITEM = Doctest: $::FILETMPTAIL
+R: cd %d
+S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 0 %TF
 
- R: Help on doctest R: %b http://aplsimple.github.io/en/tcl/doctest/index.html
+ITEM = Doctest verbose: $::FILETMPTAIL
+R: cd %d
+S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 1 %TF
 
- M:  M: 3
+SEP = 3
+
+ITEM = Help on doctest
+R: %b http://aplsimple.github.io/en/tcl/doctest/index.html
+
+SEP = 3
  
- R: Trace $::FILETAIL with {%s} excluded R: %C if {![info exist ::EMENUEXCL]} {set ::EMENUEXCL "%s"}
- R: Trace $::FILETAIL with {%s} excluded R: %I {} "TRACE" { \
+ITEM = Trace $::FILETAIL with {%s} excluded
+R: %C if {![info exist ::EMENUEXCL]} {set ::EMENUEXCL "%s"}
+R: %I {} "TRACE" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{    File:} {} {-w 55}} {"$::EMENUFILE"} \
    ent1 {{Excluded:} {} {-w 55}} {"$::EMENUEXCL"} \
@@ -44,13 +52,14 @@ rt=2/5
    texc {{    Hint:} {} {-h 7 -w 55 -ro 1 -wrap word}} \
    {\n This utility inserts tracing puts to a Tcl script.\n\n The puts are set below the script's proc/method declarations.\n\n There may be set a list of excluded proc/methods.} \
    } -head {\n This will set tracing 'puts' into a file.} -weight bold == ::EMENUFILE ::EMENUEXCL
- S: Trace $::FILETAIL with {%s} excluded S: tclsh %m/src/atrace.tcl trace $::EMENUFILE $::EMENUEXCL
+S: tclsh %m/src/atrace.tcl trace $::EMENUFILE $::EMENUEXCL
 
- R: Untrace $::FILETAIL R: %I {} "UNTRACE" { \
+ITEM = Untrace $::FILETAIL
+R: %I {} "UNTRACE" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{    File:} {} {-w 55}} {"$::EMENUFILE"} \
    seh {{} {-pady 3} {}} {} \
    texc {{    Hint:} {} {-h 5 -w 55 -ro 1 -wrap word}} \
    {\n This utility removes tracing puts from a Tcl script.\n\n The puts are set below the script's proc/method declarations.} \
    } -head {\n This will remove tracing 'puts' from a file.} -weight bold == ::EMENUFILE
- S: Untrace $::FILETAIL S: tclsh %m/src/atrace.tcl untrace $::EMENUFILE
+S: tclsh %m/src/atrace.tcl untrace $::EMENUFILE

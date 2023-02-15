@@ -442,6 +442,17 @@ proc ::apave::repaintWindow {win {wfoc ""}} {
   }
   return no
 }
+#_______________________
+
+proc ::apave::traceRemove {v} {
+  # Removes tracing of a variable.
+  #   v - variable's name
+
+  foreach t [trace info variable $v] {
+    lassign $t o c
+    trace remove variable $v $o $c
+  }
+}
 
 ## ________________________ Inits _________________________ ##
 

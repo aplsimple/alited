@@ -475,13 +475,16 @@ proc edit::RemoveTrailWhites {{TID ""} {doit no} {skipGUI no}} {
   foreach tab [alited::bar::BAR listTab] {
     set tid [lindex $tab 0]
     if {$ans==11 || $tid eq $TID} {
+      if {[set curt [expr {$tid eq [alited::bar::CurrentTabID]}]]} {
+        set curl [expr {int([[alited::main::GetWTXT $tid ] index insert])}]
+      }
       lassign [alited::main::GetText $tid no no] -> wtxt
       set l1 1
       set l2 [expr {int([$wtxt index {end -1c}])}]
       set wasedit no
       for {set l $l1} {$l<=$l2} {incr l} {
         set line [$wtxt get $l.0 $l.end]
-        if {[set trimmed [string trimright $line]] ne $line} {
+        if {[set trimmed [string trimright $line]] ne $line && $curt && $l!=$curl} {
           if {!$wasedit} {::apave::undoIn $wtxt}
           set wasedit yes
           $wtxt replace $l.0 $l.end $trimmed

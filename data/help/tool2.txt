@@ -13,7 +13,9 @@
    <b>%f</b>  - current file's name
    <b>%d</b>  - current file's directory
    <b>%pd</b> - project's directory
- Use the popup menu to remove a command from the combobox.
+   <b>%s</b>  - text's selection / current word
+   <b>%%</b>  - %
+ The combobox's commands can be created and edited in the text box.
 
  <r>2.</r> For <b>By command #RUNF:</b> you write comments in a file, like:
    #RUNF: file.tcl arg1 arg2 arg3
