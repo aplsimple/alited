@@ -25,9 +25,10 @@
 #####################################################################
 
 package require Tk
+wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.0.0b6}
+  variable em_version {e_menu 4.0.0}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -62,11 +63,15 @@ if {[catch {source [file join $::em::srcdir e_help.tcl]} e]} {
 # *******************************************************************
 # customized block
 
-set ::em::lin_console [file join $::em::srcdir run_pause.sh]  ;# (for Linux)
-set ::em::win_console [file join $::em::srcdir run_pause.bat] ;# (for Windows)
-
 set ::em::ncolor -2  ;# default color scheme
 if {$::em::solo} {set ::em::ncolor 0}
+
+proc ::em::terminalPathes {} {
+  # Sets pathes to terminal scripts.
+  set ::em::lin_console [file join $::em::srcdir run_pause.sh]  ;# (for Linux)
+  set ::em::win_console [file join $::em::srcdir run_pause.bat] ;# (for Windows)
+}
+::em::terminalPathes
 
 # ________________________ internal trifles _________________________ #
 
@@ -82,14 +87,14 @@ proc ::M {cme args} {
     set msg {}
   } else {
     set msg "$cme "
-    set cme [centerme]
+    set cme [::em::centerme]
   }
   if {[set ontop [::apave::getOption -ontop {*}$args]] eq {}} {set ontop $::em::ontop}
   foreach a $args {append msg "$a "}
   ::em::em_message $msg ok Info -ontop $ontop {*}$cme
 }
 proc ::Q {ttl mes {typ okcancel} {icon warn} {defb OK} args} {
-  if {[lsearch -exact $args -centerme]<0} {lappend args {*}[centerme]}
+  if {[lsearch -exact $args -centerme]<0} {lappend args {*}[::em::centerme]}
   if {[set ontop [::apave::getOption -ontop {*}$args]] eq {}} {set ontop $::em::ontop}
   return [set ::em::Q [::em::em_question $ttl $mes $typ $icon $defb {*}$args -ontop $ontop]]
 }
@@ -121,7 +126,8 @@ namespace eval ::em {
 
   proc init_arrays {} {
     uplevel 1 {
-      foreach ar {pars itnames bgcolr saveddata ar_u09 ar_i09 arEM ar_macros} {
+      foreach ar {pars itnames bgcolr saveddata \
+      ar_s09 ar_u09 ar_i09 arEM ar_macros} {
         if {[array exists ::em::$ar]} {array unset ::em::$ar}
         variable $ar; array set ::em::$ar [list]
       }
@@ -214,7 +220,7 @@ proc ::em::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {
   # own dialog box
 
   return [::eh::dialog_box $ttl $mes $typ $icon $defb \
-    {*}[centerme] {*}$args] ;# {*}[::em::theming_pave]
+    {*}[::em::centerme] {*}$args] ;# {*}[::em::theming_pave]
 }
 #_______________________
 
@@ -654,7 +660,9 @@ proc ::em::update_buttons_dt {} {
 proc ::em::repeate_update_buttons {} {
   # update buttons with time/date
 
-  after [expr {$::em::timeafter * 1000}] ::em::update_buttons_dt
+  set aft ::em::aft_repeate_update_buttons
+  catch {after cancel $aft}
+  set $aft [after [expr {$::em::timeafter * 1000}] ::em::update_buttons_dt]
 }
 #_______________________
 
@@ -1376,7 +1384,7 @@ proc ::em::checkForWilds {rsel} {
         set cme {}
       } else {
         if {[string match {%q *} $sel]} {
-          set cme [centerme]
+          set cme [::em::centerme]
         } else {
           set cme {-centerme 1}
         }
@@ -1388,7 +1396,7 @@ proc ::em::checkForWilds {rsel} {
     }
     {%M *} {
       if {![regexp {^%M -centerme } $sel]} {
-        set cme [centerme]
+        set cme [::em::centerme]
       }
       catch {set sel [subst -nobackslashes -nocommands $sel]}
       set sel "M {$cme} [string range $sel 3 end]"
@@ -1657,6 +1665,7 @@ proc ::em::prepr_init {refpn} {
   prepr_1 pn qq $::em::qseltd ;# %qq is %s with quotes escaped
   prepr_1 pn dd $::em::dseltd ;# %dd is %s with special simbols deleted
   prepr_1 pn ss $::em::sseltd ;# %ss is %s trimmed
+  prepr_09 pn ::em::ar_s09 s  ;# s1-s9 params
   prepr_09 pn ::em::ar_u09 u  ;# u1-u9 params underscored
 }
 #_______________________
@@ -1741,7 +1750,11 @@ proc ::em::prepr_win {refprog typ} {
 
   upvar $refprog prog
   if {[string last / $typ] > 0} {
-    set prog [string map {"\\" "/"} $prog]
+    set foo1 w^Ve%`0I-=
+    set foo2 9s%xD#%P_*
+    set prog [string map [list \\n $foo1 \\t $foo2] $prog]
+    set prog [string map [list \\ /] $prog]
+    set prog [string map [list $foo1 \\n $foo2 \\t] $prog]
   }
 }
 #_______________________
@@ -2062,15 +2075,15 @@ proc ::em::fillMenu {commands s1 domenu} {
       continue
     }
     if {[regexp {^\s*(ITEM|SEP)\s*=\s*} $line]} {
-      set it [string range $line [string first = $line]+1 end]
-      if {[regexp {^\s*(\d|-)*\s*$} $it]} {
+      set it " [string trimleft [string range $line [string first = $line]+1 end]]"
+      if {[regexp {^ (\d|-)*\s*$} $it]} {
         set separ $it
       } else {
         set name $it
         set hot {}
         foreach s {F1 F2 F3 F4 F5 F6 F7 F8 F9} {  ;# F1-F9 hotkeys
           if {[string first $s $name]==1} {
-            set name [string range $name 4 end]
+            set name [string range $name 3 end]
             set hot $s
             break
           }
@@ -2094,40 +2107,54 @@ proc ::em::fillMenu {commands s1 domenu} {
         set runp "$prog"
       }
       R/ -
-      R:  {set prom {RUN         }
-        set runp "::em::run $typ";   set amp $::em::R_ampmute
+      R:  {
+        set prom {RUN         }
+        set runp "::em::run $typ"
+        set amp $::em::R_ampmute
       }
       RE/ -
-      RE: {set prom {RUN & EXIT  }
+      RE: {
+        set prom {RUN & EXIT  }
         set runp "::em::run $typ"
         set amp "$::em::R_ampmuteexit $line"
       }
       RW/ -
-      RW: {set prom {RUN & WAIT  }
-        set runp "::em::run $typ";   set amp $::em::R_mute
+      RW: {
+        set prom {RUN & WAIT  }
+        set runp "::em::run $typ"
+        set amp $::em::R_mute
       }
       S/ -
-      S:  {set prom {SHELL       }
-        set runp "::em::shell $typ"; set amp $::em::R_ampmute
+      S:  {
+        set prom {SHELL       }
+        set runp "::em::shell $typ"
+        set amp $::em::R_ampmute
       }
       SE/ -
-      SE: {set prom {SHELL & EXIT}
+      SE: {
+        set prom {SHELL & EXIT}
         set runp "::em::shell $typ"
         set amp $::em::R_ampmuteexit
       }
       SW/ -
-      SW: {set prom {SHELL & WAIT}
-        set runp "::em::shell $typ"; set amp $::em::R_mute
+      SW: {
+        set prom {SHELL & WAIT}
+        set runp "::em::shell $typ"
+        set amp $::em::R_mute
       }
       MW/ -
       MW: -
       M/ -
-      M:  {set prom {MENU        }
-        set runp "::em::callmenu $typ"; set amp &
+      M:  {
+        set prom {MENU        }
+        set runp "::em::callmenu $typ"
+        set amp &
       }
       ME/ -
-      ME: {set prom {MENU & EXIT }
-        set runp "::em::callmenu $typ"; set amp $::em::R_ampexit
+      ME: {
+        set prom {MENU & EXIT }
+        set runp "::em::callmenu $typ"
+        set amp $::em::R_ampexit
       }
       default {
         set prname ?
@@ -2139,13 +2166,8 @@ proc ::em::fillMenu {commands s1 domenu} {
       set prog "$prprog\n$torun\r$prog"
     } else {
       if {$separ ne {}} {    ;# is a separator?
-        if {[string trim $separ] eq {}} {
-          set separ ?4?    ;# yes, blank one
-        } else {           ;# ... or underlining
-          set n [::apave::getN [string trim $separ { -}] 1 1 33]
-          set separ ?-$n?
-        }
-        set name "$separ $name"  ;# insert separator into name
+        set n [::apave::getN [string trim $separ { -}] 1 1 33]
+        set name "?-$n? $name"  ;# insert separator into name
         set separ {}
       }
       set s1 [get_s1 [incr iline] $hidden]
@@ -2186,9 +2208,8 @@ proc ::em::fillCommands {lmc amc osm {domenu 0}} {
 
   set resetpercent2 0
   foreach s1 {tc= a0= P= N= PD= PN= F= o= ln= cn= s= u= w= \
-  qq= dd= ss= pa= ah= += b1= b2= b3= b4= dk= \
+  qq= dd= ss= pa= ah= += b1= b2= b3= b4= dk= t0= t1= t2= t3= \
   f1= f2= f3= fs= a1= a2= ed= tf= tg= md= wc= tt= wt= pk= TF= \
-  t0= t1= t2= t3= t4= t5= t6= t7= t8= t9= \
   s0= s1= s2= s3= s4= s5= s6= s7= s8= s9= \
   u0= u1= u2= u3= u4= u5= u6= u7= u8= u9= \
   i0= i1= i2= i3= i4= i5= i6= i7= i8= i9= \
@@ -2199,7 +2220,7 @@ proc ::em::fillCommands {lmc amc osm {domenu 0}} {
   fg= bg= fE= bE= fS= bS= fI= bI= fM= bM= \
   cc= gr= ht= hh= rt= DF= BF= pd= m= om= ts= \
   yn= in= ex= EX= ee= PI= NE= ls= SD= g1= g2= \
-  th= td= SH= HC= mp=} { ;# the processing order matters
+  th= td= SH= HC= mp= ms=} { ;# the processing order matters
     if {$s1 in {o= s= m=} && $s1 ni $osm} {
       continue
     }
@@ -2280,6 +2301,10 @@ proc ::em::fillCommands {lmc amc osm {domenu 0}} {
           set ::em::useltd [string map {{ } _} $seltd]
         }
         t= {set ::em::dotop [::apave::getN $seltd] }
+        s0= - s1= - s2= - s3= - s4= - s5= - s6= - s7= - s8= - s9=
+        {
+          set ::em::ar_s09($s1) $seltd
+        }
         u0= - u1= - u2= - u3= - u4= - u5= - u6= - u7= - u8= - u9=
         {
           set ::em::ar_u09($s1) [string map {{ } _} $seltd]
@@ -2368,6 +2393,10 @@ proc ::em::fillCommands {lmc amc osm {domenu 0}} {
           }
           set ::em::windowsconsole $seltd
         }
+        ms= {
+          set ::em::srcdir $seltd
+          ::em::terminalPathes
+        }
         default {
           if {$s1 in {TF=} || [string range $s1 0 0] in {x y z}} {
             ;# x* y* z* general substitutions
@@ -2381,6 +2410,12 @@ proc ::em::fillCommands {lmc amc osm {domenu 0}} {
   if {![info exists ::em::arEM(f)]} {
     set ::em::arEM(f) $::em::menufilename  ;# %f wildcard is a must
   }
+  if {[::iswindows]} {
+    set ::em::arEM(UF) [string map [list \\ /] [file nativename $::em::arEM(f)]]
+  } else {
+    set ::em::arEM(UF) $::em::arEM(f)
+  }
+  set ::em::arEM(UD) [file dirname $::em::arEM(UF)]
   prepare_main_wilds
   prepare_wilds $resetpercent2
   set ::em::ncmd [llength $::em::commands]
@@ -3032,7 +3067,7 @@ proc ::em::initend {} {
   bind .em <Control-t> {.em.fr.cb invoke}
   bind .em <Escape> {
     if {$::em::yn && ![::em::is_child] && ![Q $::em::menuttl "Quit e_menu?" \
-      yesno ques YES -t 0 -a {-padx 50} {*}[centerme]]} break
+      yesno ques YES -t 0 -a {-padx 50} {*}[::em::centerme]]} break
     ::em::on_exit
   }
   bind .em <Control-Left>  {::em::addon win_width -1}
@@ -3120,7 +3155,7 @@ proc ::em::main {args} {
     }
     if {!$::em::reallyexit} {  ;# may be set in autoruns
       ::apave::obj showWindow .em $modal $::em::ontop ::em::em_win_var \
-        "$::em::minwidth $::em::minheight"
+        "$::em::minwidth $::em::minheight" yes
       destroy .em
       if {![pool_pull]} break
     } elseif {$::em::reallyexit eq {2}} {

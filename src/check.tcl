@@ -240,23 +240,14 @@ proc check::Check {} {
 
 # ________________________ Button handlers _________________________ #
 
-proc check::Ok {args} {
-  # Handles hitting "OK" button.
-
-  namespace upvar ::alited obCHK obCHK
-  variable win
-  alited::CloseDlg
-  $obCHK res $win 1
-}
-#_______________________
-
 proc check::Cancel {args} {
   # Handles hitting "Cancel" button.
 
-  namespace upvar ::alited obCHK obCHK
+  namespace upvar ::alited al al
   variable win
+  set al(checkgeo) [wm geometry $win]
   alited::CloseDlg
-  $obCHK res $win 0
+  destroy $win
 }
 #_______________________
 
@@ -292,7 +283,7 @@ proc check::_create {} {
     {fra2 fra T 1 1 {-st nsew -pady 3 -padx 3} {-padding {5 5 5 5} -relief groove}}
     {.ButHelp - - - - {pack -side left} {-t {$alited::al(MC,help)} -tip F1 -command ::alited::check::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
-    {.ButOK - - - - {pack -side left -padx 2} {-t "Check" -command ::alited::check::Ok}}
+    {.ButOK - - - - {pack -side left -padx 2} {-t "Check" -command ::alited::check::Check}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::check::Cancel}}
   }
   bind $win <F1> "[$obCHK ButHelp] invoke"
@@ -300,11 +291,8 @@ proc check::_create {} {
     set geo [string range $geo [string first + $geo] end]
     set geo "-geometry $geo"
   }
-  set res [$obCHK showModal $win -focus [$obCHK ButOK] \
-    {*}$geo -modal no -ontop [::isKDE] -onclose alited::check::Cancel]
-  set al(checkgeo) [wm geometry $win]
-  if {!$res} {destroy $win}
-  return $res
+  $obCHK showModal $win -modal no -waitvar no -onclose alited::check::Cancel \
+    -focus [$obCHK ButOK] {*}$geo -ontop [::isKDE]
 }
 
 proc check::_run {} {
@@ -313,15 +301,12 @@ proc check::_run {} {
   namespace upvar ::alited al al obCHK obCHK
   variable win
   variable atopen
-  if {[::apave::repaintWindow $win "$obCHK ButOK"]} return
   set atopen yes
-  after idle alited::check::Check
-  while {1} {
-    if {[_create]} {
-      Check
-    } else {
-      break
-    }
+  if {[::apave::repaintWindow $win "$obCHK ButOK"]} {
+    wm deiconify $win
+  } else {
+    after idle alited::check::Check
+    _create
   }
 }
 # _________________________________ EOF _________________________________ #

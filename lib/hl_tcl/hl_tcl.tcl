@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.48
+package provide hl_tcl 0.9.49
 
 # ______________________ Common data ____________________ #
 
@@ -85,20 +85,20 @@ namespace eval ::hl_tcl {
     # default syntax colors arrays (for a light & black themes)
     #  COM     COMTK    STR      VAR     CMN     PROC    OPT    BRAC
     set data(SYNTAXCOLORS,0) {
+      {#121212 #000000 #0c560c #4A181B #606060 #923B23 #463e11 #FF0000}
+      {#e0e0e0 #efefef #84e284 #eebabf #888888 #ffa500 #c2ba8d #ff33ff}
+    }
+    set data(SYNTAXCOLORS,1) {
       {#923B23 #7d1c00 #035103 #4A181B #4b5d50 #ca14ca #463e11 #FF0000}
       {#ffa500 #ff7e00 #90ee90 #f1b479 #76a396 #fe6efe #b9b96e #ff33ff}
     }
-    set data(SYNTAXCOLORS,1) {
+    set data(SYNTAXCOLORS,2) {
       {#3a6797 #134070 #8b2a0e #1b1baa #4b5d50 #ca14ca #6c3e67 #FF0000}
       {#95c2f2 #73a0d0 #ffc27e #a9a9f7 #76a396 #fe6efe #e2b4dd #ff33ff}
     }
-    set data(SYNTAXCOLORS,2) {
-      {#2b6b2b #0b4b0b #8e0e8e #004080 #606060 #8a3407 #463e11 #FF0000}
-      {#aad5ab #86c686 #ff86ff #96c5f8 #848484 #fab481 #b1a97c #ff33ff}
-    }
     set data(SYNTAXCOLORS,3) {
-      {#121212 #000000 #0c560c #4A181B #606060 #923B23 #463e11 #FF0000}
-      {#e9e9e9 #ffffff #84e284 #eebabf #848484 #ffa500 #a79f72 #ff33ff}
+      {#2b6b2b #0b4b0b #8e0e8e #004080 #606060 #8a3407 #463e11 #FF0000}
+      {#aad5ab #86c686 #ff86ff #96c5f8 #888888 #fab481 #b1a97c #ff33ff}
     }
   }
 }

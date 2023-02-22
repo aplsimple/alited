@@ -196,7 +196,7 @@ namespace eval ::alited {
     {Delete a template #%n ?} {Eine Vorlage #%n löschen ?}
     "Import templates\nfrom external alited.ini" "Importieren die Vorlagen\nvon extern alited.ini"
     {Number of imported templates: %n} {Anzahl der importierten Vorlagen: %n}
-    "Indents a template at inserting,\nby a next line's indentation." "Rückt eine Vorlage beim Einfügen ein,\ndurch den Einzug einer nächsten Zeile."
+    "Indents a template at inserting,\nby an insertion line's indentation." "Rückt eine Vorlage beim Einfügen ein,\ndurch den Einzug einer Einfügenzeile."
   }
 
   ## ________________________ Projects ________________________ ##
@@ -353,7 +353,7 @@ namespace eval ::alited {
     {Focus a text after selecting in infobar} {Fokussiere den Text nach Auswahl in der Infoleiste}
     {Find by List} {Suche nach Liste}
     {List:} {Liste:}
-    {\n Enter a list of words divided by spaces: \n} {\n Eine Liste von durch Leerzeichen getrennten Wörter eingeben: \n}
+    { Enter a list of words divided by spaces:} { Eine Liste von durch Leerzeichen getrennten Wörter eingeben:}
     {FOUND:} {TREFFER:}
     {NOT FOUND:} {KEIN TREFFER:}
     "Use this geometry of the dialogue\nby default" "Standardmäßig diese Geometrie\ndes Dialogs verwenden"

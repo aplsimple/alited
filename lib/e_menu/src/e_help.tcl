@@ -16,7 +16,7 @@
 package require Tk
 
 # for better performance, try to 'source' directly, not 'package require apave'
-if {![namespace exists ::apave]} {source [file join [file normalize [file dirname [info script]]] apaveinput.tcl]}
+if {![namespace exists ::apave]} {source [file join [file normalize [file dirname [info script]]] apave.tcl]}
 
 namespace eval ::eh {
 

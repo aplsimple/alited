@@ -1256,9 +1256,9 @@ proc pref::Emenu_Tab {} {
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode x}}
     {.labCS - - 1 1 {-st w -pady 1 -padx 3} {-t "Color scheme:"}}
     {.SwiCS + L 1 1 {-st sw -pady 5} {-t {e_menu's own} -var alited::al(EM,ownCS) -com alited::pref::OwnCS -afteridle alited::pref::OwnCS}}
-    {.OpcCS + L 1 1 {-st sw -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 21 -compound left -image alimg_color} {alited::pref::opcToolPre %a}}}
+    {.OpcCS + L 1 1 {-st sew -pady 5} {::alited::pref::opcc2 alited::pref::opcColors {-width 21 -compound left -image alimg_color} {alited::pref::opcToolPre %a}}}
     {.labGeo .labCS T 1 1 {-st w -pady 1 -padx 3} {-t Geometry:}}
-    {.entGeo + L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,geometry) -w 22}}
+    {.entGeo + L 1 2 {-st sew -pady 5} {-tvar alited::al(EM,geometry)}}
     {.labDir .labGeo T 1 1 {-st w -pady 1 -padx 3} {-t "Directory of menus:"}}
     {.dirEM + L 1 2 {-st sw -pady 5} {-tvar alited::al(EM,mnudir) -w 48}}
     {.labMenu .labDir T 1 1 {-st w -pady 1 -padx 3} {-t "Main menu:"}}
@@ -1568,10 +1568,10 @@ proc pref::PickMenuItem {it} {
     "pk=yes dk=dock o=-1 t=1 g=+[incr X 5]+[incr Y 25] mp=1"]]
   lassign $res menu idx item
   if {$item ne {}} {
-    set i [lindex [alited::tool::EM_Structure $menu] $idx-1 1]
-    set item2 [string range $i [string first - $i]+1 end]
-    if {$item2 ne $item && [string match *.em $item2]} {
-      append item2 ": $item"  ;# it's a menu call title
+    set item1 [lindex [alited::tool::EM_Structure $menu] $idx-1 1]
+    lassign [split $item1 -\n] -> item2 item3
+    if {$item2 ne $item3 && [string match *.em $item2]} {
+      append item2 ": $item3"  ;# it's a menu call title
       set idx - ;# to open the whole menu
     }
     $w configure -text $item2

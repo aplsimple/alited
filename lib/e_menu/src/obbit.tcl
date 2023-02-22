@@ -138,7 +138,7 @@ namespace eval ::apave {
 
 {{28: SunValleyDark} "#ececec" #c7c7c7 #272727 #323232 #aae2ff #2a627f #fff #f4f49f grey #7cb4d1 #fff #245c79 - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
 
-{{29: DarkBrown}      "#bebebe" #bebebe #0a0a0a #232323 #de9e5e #765632 #fff #f4f49f #616161 #aa7d3d #000 #767676 - #303030 #000 #9d9d60 #131313 #ffc341 #76b2f1 #005 #006 #007}
+{{29: DarkBrown}      "#e0e0e0" #e0e0e0 #0a0a0a #232323 #de9e5e #765632 #fff #f4f49f #616161 #aa7d3d #dfdfdf #62421e - #303030 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
 
 {{30: Dark1}          "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #fff #f4f49f #606060 #ba8d4d #000 #767676 - #363636 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
 
@@ -189,8 +189,8 @@ proc ::iswindows {} {
   expr {$::tcl_platform(platform) eq {windows}}
 }
 
-proc ::islinux {} {
-  # Checks for "platform is Linux".
+proc ::isunix {} {
+  # Checks for "platform is Unix".
 
   expr {$::tcl_platform(platform) eq {unix}}
 }
@@ -445,7 +445,7 @@ proc ::apave::repaintWindow {win {wfoc ""}} {
 #_______________________
 
 proc ::apave::traceRemove {v} {
-  # Removes tracing of a variable.
+  # Cancels tracing of a variable.
   #   v - variable's name
 
   foreach t [trace info variable $v] {
@@ -459,7 +459,9 @@ proc ::apave::traceRemove {v} {
 proc ::apave::initWM {args} {
   # Initializes Tcl/Tk session. Used to be called at the beginning of it.
   #   args - options ("name value" pairs)
+  # If args eq "?", return a flag "need to call initWM"
 
+  if {$args eq {?}} {return $::apave::_CS_(initWM)}
   if {!$::apave::_CS_(initWM)} return
   lassign [parseOptions $args -cursorwidth $::apave::cursorwidth -theme default \
     -buttonwidth -8 -buttonborder 1 -labelborder 0 -padding 1 -cs -2 -isbaltip yes] \
@@ -508,24 +510,11 @@ proc ::apave::initWM {args} {
 
 proc ::apave::endWM {args} {
   # Finishes the window management by apave, closing and clearing all.
+  # Finishes the window management by apave, closing and clearing all.
   #   args - if any set, means "ask if apave's WM is finished"
 
-  variable _PU_opts
-  if {[llength $args]} {
-    return [expr {[info exists _PU_opts(_ENDWM_)]}]
-  }
-  # Check existing windows, except for the first one.
-  while {1} {
-    set i [expr {[llength $_PU_opts(_MODALWIN_)] - 1}]
-    if {$i>0} {
-      lassign [lindex $_PU_opts(_MODALWIN_) $i] w var
-      if {[winfo exists $w]} {set $var 0}
-      catch {set _PU_opts(_MODALWIN_) [lreplace $_PU_opts(_MODALWIN_) $i $i]}
-    } else {
-      break
-    }
-  }
-  set _PU_opts(_ENDWM_) yes
+  if {[llength $args]} {return [info exists ::apave::_CS_(endWM)]}
+  set ::apave::_CS_(endWM) yes
 }
 #_______________________
 
@@ -1207,16 +1196,15 @@ proc ::apave::InfoWindow {{val ""} {w .} {modal no} {var ""} {regist no}} {
   #   modal - yes, if the window is modal
   #   var - variable's name for tkwait
   #   regist - yes or no for registering/unregistering
-  # See also: APave::showWindow
+  # See also: APaveBase::showWindow
 
   variable _PU_opts
   if {$modal || $regist} {
     set info [list $w $var $modal]
     set i [lsearch -exact $_PU_opts(_MODALWIN_) $info]
+    catch {set _PU_opts(_MODALWIN_) [lreplace $_PU_opts(_MODALWIN_) $i $i]}
     if {$regist} {
       lappend _PU_opts(_MODALWIN_) $info
-    } else {
-      catch {set _PU_opts(_MODALWIN_) [lreplace $_PU_opts(_MODALWIN_) $i $i]}
     }
     set res [IntStatus . MODALS $val]
   } else {
@@ -1238,7 +1226,7 @@ proc ::apave::InfoFind {w modal} {
     incr i
     lassign $winfo w1 var1 modal1
     if {[winfo exists $w1]} {
-      if {[string first $w $w1]==0 && $modal==$modal1} {
+      if {$w eq $w1 && ($modal && $modal1 || !$modal && !$modal1)} {
         return $w1
       }
     } else {
@@ -1276,6 +1264,15 @@ proc ::apave::LbxSelect {w idx} {
     $w selection set $idx
     event generate $w <<ListboxSelect>>
   }
+}
+#_______________________
+
+proc ::apave::InsertChar {wt ch} {
+  # Inserts character(s) into a text at cursor's position.
+  #   wt - text's path
+  #   ch - character(s)
+
+  $wt insert [$wt index insert] $ch
 }
 
 # ________________________ ObjectProperty _________________________ #
@@ -1761,10 +1758,7 @@ oo::class create ::apave::ObjectTheming {
 
     return [expr {[::apave::cs_Max]+1}]
   }
-
-# ________________________ Theming _________________________ #
-
-## ________________________ Theme procs _________________________ ##
+  #_______________________
 
   method ColorScheme {{ncolor ""}} {
     # Gets a full record of color scheme from a list of available ones
@@ -1813,51 +1807,9 @@ oo::class create ::apave::ObjectTheming {
     return [lindex $::apave::_CS_(ALL) $ncolor]
   }
 
-# _______________________________________________________________________ #
+# ________________________ Theming _________________________ #
 
-  method UpdateSelectAttrs {w} {
-    # Updates attributes for selection.
-    #   w - window's name
-    # Some widgets (e.g. listbox) need a work-around to set
-    # attributes for selection in run-time, namely at focusing in/out.
-
-    set fD $::apave::_CS_(!FG)
-    set bD $::apave::_CS_(!BG)
-    set f -selectforeground
-    set b -selectbackground
-    lassign [::apave::parseOptions [ttk::style configure .] $f $fD $b $bD] fS bS
-    ::apave::bindToEvent $w <FocusIn>  $w configure $f $fS $b $bS
-    ::apave::bindToEvent $w <FocusOut> $w configure $f $fD $b $bD
-    return
-  }
-  #_______________________
-
-  method Ttk_style {oper ts opt val} {
-    # Sets a new style options.
-    #   oper - command of ttk::style ("map" or "configure")
-    #   ts - type of style to be configurated
-    #   opt - option's name
-    #   val - option's value
-
-    if {![catch {set oldval [ttk::style $oper $ts $opt]}]} {
-      catch {ttk::style $oper $ts $opt $val}
-      if {$oldval eq {} && $oper eq {configure}} {
-        switch -exact -- $opt {
-          -foreground - -background {
-            set oldval [ttk::style $oper . $opt]
-          }
-          -fieldbackground {
-            set oldval white
-          }
-          -insertcolor {
-            set oldval black
-          }
-        }
-      }
-    }
-    return
-  }
-  #_______________________
+## ________________________ Common _________________________ ##
 
   method apaveTheme {{theme {}}} {
     # Checks if apave color scheme is used (always for standard ttk themes).
@@ -1878,41 +1830,20 @@ oo::class create ::apave::ObjectTheming {
     ::baltip config {*}$args
     return
   }
+  #_______________________
+
+  method thDark {theme} {
+    # Checks if a theme is dark, light or neutral.
+    #   theme - theme's name
+    # Returns 1 for dark, 0 for light, -1 for neutral.
+
+    if {$theme in {alt classic default clam}} {
+      return -1
+    }
+    return [string match -nocase *dark* $theme]
+  }
 
 ## ________________________ Theme methods _________________________ ##
-
-  method Main_Style {tfg1 tbg1 tfg2 tbg2 tfgS tbgS bclr tc fA bA bD} {
-    # Sets main colors of application
-    #   tfg1 - main foreground
-    #   tbg1 - main background
-    #   tfg2 - not used
-    #   tbg2 - not used
-    #   tfgS - selectforeground
-    #   tbgS - selectbackground
-    #   bclr - bordercolor
-    #   tc - troughcolor
-    #   fA - foreground active
-    #   bA - background active
-    #   bD - background disabled
-    # The *foreground disabled* is set as `grey`.
-
-    my create_Fonts
-    ttk::style configure "." \
-      -background        $tbg1 \
-      -foreground        $tfg1 \
-      -bordercolor       $bclr \
-      -darkcolor         $tbg1 \
-      -lightcolor        $tbg1 \
-      -troughcolor       $tc \
-      -arrowcolor        $tfg1 \
-      -selectbackground  $tbgS \
-      -selectforeground  $tfgS \
-      ;#-selectborderwidth 0
-    ttk::style map "." \
-      -background       [list disabled $bD active $bA] \
-      -foreground       [list disabled grey active $fA]
-  }
-  #_______________________
 
   method themeWindow {win {clrs ""} {isCS true} args} {
     # Changes a Tk style (theming a bit)
@@ -2183,6 +2114,66 @@ oo::class create ::apave::ObjectTheming {
   }
   #_______________________
 
+  method Ttk_style {oper ts opt val} {
+    # Sets a new style options.
+    #   oper - command of ttk::style ("map" or "configure")
+    #   ts - type of style to be configurated
+    #   opt - option's name
+    #   val - option's value
+
+    if {![catch {set oldval [ttk::style $oper $ts $opt]}]} {
+      catch {ttk::style $oper $ts $opt $val}
+      if {$oldval eq {} && $oper eq {configure}} {
+        switch -exact -- $opt {
+          -foreground - -background {
+            set oldval [ttk::style $oper . $opt]
+          }
+          -fieldbackground {
+            set oldval white
+          }
+          -insertcolor {
+            set oldval black
+          }
+        }
+      }
+    }
+    return
+  }
+  #_______________________
+
+  method Main_Style {tfg1 tbg1 tfg2 tbg2 tfgS tbgS bclr tc fA bA bD} {
+    # Sets main colors of application
+    #   tfg1 - main foreground
+    #   tbg1 - main background
+    #   tfg2 - not used
+    #   tbg2 - not used
+    #   tfgS - selectforeground
+    #   tbgS - selectbackground
+    #   bclr - bordercolor
+    #   tc - troughcolor
+    #   fA - foreground active
+    #   bA - background active
+    #   bD - background disabled
+    # The *foreground disabled* is set as `grey`.
+
+    my create_Fonts
+    ttk::style configure "." \
+      -background        $tbg1 \
+      -foreground        $tfg1 \
+      -bordercolor       $bclr \
+      -darkcolor         $tbg1 \
+      -lightcolor        $tbg1 \
+      -troughcolor       $tc \
+      -arrowcolor        $tfg1 \
+      -selectbackground  $tbgS \
+      -selectforeground  $tfgS \
+      ;#-selectborderwidth 0
+    ttk::style map "." \
+      -background       [list disabled $bD active $bA] \
+      -foreground       [list disabled grey active $fA]
+  }
+  #_______________________
+
   method themeMandatory {win args} {
     # Themes all that must be themed.
     #   win - window's name
@@ -2366,9 +2357,9 @@ oo::class create ::apave::ObjectTheming {
 
   method NonTtkStyle {typ {dsbl 0}} {
     # Makes styling for non-ttk widgets.
-    #   typ - widget's type (the same as in "APave::widgetType" method)
+    #   typ - widget's type (the same as in "APaveBase::widgetType" method)
     #   dsbl - `1` for disabled; `2` for readonly; otherwise for all widgets
-    # See also: APave::widgetType
+    # See also: APaveBase::widgetType
 
     if {$dsbl} {
       set disopt {}
@@ -2446,6 +2437,23 @@ oo::class create ::apave::ObjectTheming {
       }
     }
     return $att
+  }
+  #_______________________
+
+  method UpdateSelectAttrs {w} {
+    # Updates attributes for selection.
+    #   w - window's name
+    # Some widgets (e.g. listbox) need a work-around to set
+    # attributes for selection in run-time, namely at focusing in/out.
+
+    set fD $::apave::_CS_(!FG)
+    set bD $::apave::_CS_(!BG)
+    set f -selectforeground
+    set b -selectbackground
+    lassign [::apave::parseOptions [ttk::style configure .] $f $fD $b $bD] fS bS
+    ::apave::bindToEvent $w <FocusIn>  $w configure $f $fS $b $bS
+    ::apave::bindToEvent $w <FocusOut> $w configure $f $fD $b $bD
+    return
   }
 
 ## ________________________ Popup menus _________________________ ##

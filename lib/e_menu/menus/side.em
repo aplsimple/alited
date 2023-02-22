@@ -14,7 +14,7 @@ pos=100.0
 ::EMENU7ZCOM=zip -r
 ::EMENU7ZSUFF=big
 ::EMENU7ZARC=~/PG/github/apl-github
-::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/pave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/klnd/*\n~/PG/github/ale_themes/*\n~/PG/github/wiki.tcl-lang.org/*
+::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/apave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/klnd/*\n~/PG/github/ale_themes/*\n~/PG/github/wiki.tcl-lang.org/*\n~/PG/github/drawscreen/*
 ::EMENU7ZSKIP=
 ::EMENU7ZBAK=/media/apl/KINGSTON/
 ::EMENU7ZGIT=1
@@ -245,7 +245,7 @@ R: caja -g +0+0 /home/apl/PG/github
 ITEM = 5. poApps
 R: tclsh /home/apl/PG/github/poApps/poApps.tcl --dirdiff
 RW: sleep 4
-R: tclsh /home/apl/PG/github/alited.release/src/alited.tcl LOG=~/TMP/alited.log /home/apl/.config/alited.release
+R: /home/apl/PG/alited/bin/tcltk-8.6.10 /home/apl/PG/github/alited.release/src/alited.tcl LOG=~/TMP/alited.log /home/apl/.config/alited.release
 ITEM = 6. FVords
 RW: sleep 4
 R: wine /media/apl/KINGSTON/APLinkee.Shk/APLinkee.exe

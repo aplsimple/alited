@@ -226,8 +226,11 @@ proc menu::FillMenu {} {
       if {$em_sep($i)} {
         $m.runs add separator
       } else {
-        set txt $em_mnu($i)
-        $m.runs add command -label $txt -command [alited::tool::EM_command $i]
+        set com [alited::tool::EM_command $i]
+        if {$com ne {}} {
+          set txt $em_mnu($i)
+          $m.runs add command -label $txt -command $com
+        }
       }
     }
   }

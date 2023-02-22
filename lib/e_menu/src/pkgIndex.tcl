@@ -1,4 +1,4 @@
-package ifneeded apave 4.0.0b4 [list source [file join $dir apaveinput.tcl]]
+package ifneeded apave 4.0.0 [list source [file join $dir apave.tcl]]
 
 # A short intro (for Ruff! docs generator:)
 
@@ -19,11 +19,11 @@ namespace eval apave {
    - centralizing things like icons or popup menus
    - theming both ttk and non-ttk widgets
 
-  The *apave* is implemented as *APave oo::class*, so that you can enhance it with your own inherited / mixin-ed class.
+  The *apave* is implemented as *APaveBase oo::class*, so that you can enhance it with your own inherited / mixin-ed class.
 
-  While *APave oo::class* allows to layout highly sophisticated windows, you can also employ its more 'earthy' descendants:
+  While *APaveBase oo::class* allows to layout highly sophisticated windows, you can also employ its more 'earthy' descendants:
 
-  *APaveDialog oo::class* and *APaveInput oo::class* that allow you:
+  *APaveDialog oo::class* and *APave oo::class* that allow you:
 
    - to call a variety of dialogs, optionally using a "Don't show again" checkbox and a tagged text
    - to use a variety of widgets in dialogs, with entry, text (incl. readonly and stand-alone), combobox (incl. file content), spinbox, listbox, file listbox, option cascade, tablelist, checkbutton, radiobutton and label (incl. title)

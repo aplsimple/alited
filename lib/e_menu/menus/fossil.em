@@ -31,7 +31,7 @@ pos=9.22
 
 ITEM = fossil status %PD
 S: cd %PD
-S: echo %PD\ndir\necho ------------\nfossil status
+S: echo %UD\ndir\necho ------------\nfossil status
 
 ITEM = fossil changes
 S: cd %PD
@@ -84,7 +84,7 @@ R: %I {} "DIFF" { \
   \n\n When 'regexp filter' set, an additional console shows \
   \n the filtered lines. \
   \n\n temp file:\n $::EMENUTMPFILE} \
-   } -head {\n This will compare selected versions of\n %PD} -focus butOK \
+   } -head {\n This will compare selected versions of\n %UD} -focus butOK \
    -weight bold == ::EMENUCOMMIT1 ::EMENUCOMMIT2 ::EMENUGREP ::EMENUBRIEF
 R: %C \
    if {"$::EMENUCOMMIT1" eq ""} {set ::EMENUTMP1 ""} {set ::EMENUTMP1 "--from $::EMENUCOMMIT1"}; \
@@ -104,7 +104,7 @@ R: %IF !$::EMENUBRIEF %THEN %T $::EMENUTMP
 %MC R: %I {} "$TITLE" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{   File:} {} {-w 60}} {"$::EMENUFILE"} \
-   } -head {\n This will \"$COMMAND\" file(s) in the Fossil repository:\n %PD $MSG1 \
+   } -head {\n This will \"$COMMAND\" file(s) in the Fossil repository:\n %UD $MSG1 \
    \n\n Use wildcards to $COMMAND a few.} $COLOR -weight bold == ::EMENUFILE
 %MC S: fossil $COMMAND $::EMENUFILE
 
@@ -128,7 +128,7 @@ S: fossil timeline
 ITEM = fossil timeline --showfiles ?
 R: %I {} "TIMELINE FOR FILE(S)" { \
    v_ {{} {-pady 4} {}} {} \
-   dir1 {{Directory:} {} {}} {"%PD"}\
+   dir1 {{Directory:} {} {}} {"%UD"}\
    cbx1 {{   Filter:} {} {}} {"$::EMENUTF" $::EMENUTFLIST} \
    seh {{} {-pady 3} {}} {}\
    texc {{     Hint:} {} {-h 9 -w 60 -ro 1  -tabnext butOK}}\
@@ -193,7 +193,7 @@ R: %I {} "TOUCH & COMMIT" { \
  --date-override DATE   DATE to use instead of 'now'\n\
  --user-override USER   USER to use instead of the current default\
 } \
-   } -head {\n This will TOUCH the file(s) of Fossil repository\n to have the file(s) time equal to the time stamp.\n\n Then this will run COMMIT on the repository:\n %PD\n} -weight bold == ::EM_T_FILE ::EM_T_TIME ::EM_T_VERBOSE ::EM_COMOPT
+   } -head {\n This will TOUCH the file(s) of Fossil repository\n to have the file(s) time equal to the time stamp.\n\n Then this will run COMMIT on the repository:\n %UD\n} -weight bold == ::EM_T_FILE ::EM_T_TIME ::EM_T_VERBOSE ::EM_COMOPT
 S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}
 SW: %IF "$::EM_T_TIME" ni {{} none} && "$::EM_T_FILE" ne "" %THEN fossil touch $::EM_T_v $::EM_T_TIME $::EM_T_FILE
 S: fossil commit --allow-empty $::EM_COMOPT

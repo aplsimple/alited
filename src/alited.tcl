@@ -7,7 +7,20 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.0b3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.0  ;# for documentation (esp. for Ruff!)
+
+namespace eval alited {
+
+  variable al; array set al [list]
+
+  # versions of mnu/ini to update to
+  set al(MNUversion) 1.4.0
+  set al(INIversion) 1.4.0b2
+
+  # previous version of alited to update from
+  set al(ALEversion) 0.0.1
+
+}
 
 set _ [package require Tk]
 wm withdraw .
@@ -38,7 +51,6 @@ namespace eval alited {
   set DEBUG no  ;# debug mode
   set LOG {}    ;# log file in develop mode
 
-  variable al; array set al [list]
   set al(WIN) .alwin    ;# main form's path
   set al(comm_port) 51807  ;# port to listen
   set al(comm_port_list) [list {} $al(comm_port) 51817 51827 51837] ;# ports to listen
@@ -195,7 +207,7 @@ namespace eval alited {
 lappend auto_path $alited::LIBDIR $::alited::PAVEDIR
 
 source [file join $::alited::BARSDIR bartabs.tcl]
-source [file join $::alited::PAVEDIR apaveinput.tcl]
+source [file join $::alited::PAVEDIR apave.tcl]
 source [file join $::alited::HLDIR  hl_tcl.tcl]
 source [file join $::alited::HLDIR  hl_c.tcl]
 
@@ -215,22 +227,20 @@ if {[package versions alited] eq {}} {
     wm attributes . -alpha 0.0
   }
   set ALITED_PORT yes
-  foreach _ {1 2 3} {  ;# for inverted order of these arguments
-    if {[lindex $::argv 0] eq {-NOPORT}} {
-      set ::argv [lreplace $::argv 0 0]
-      incr ::argc -1
-      set ALITED_PORT no
-    }
-    if {[string match LOG=* [lindex $::argv 0]]} {
-      set alited::LOG [string range [lindex $::argv 0] 4 end]
-      set ::argv [lreplace $::argv 0 0]
-      incr ::argc -1
-    }
-    if {[lindex $::argv 0] eq {DEBUG}} {
-      set alited::DEBUG yes
-      set ::argv [lreplace $::argv 0 0]
-      incr ::argc -1
-    }
+  if {[set _ [lsearch -exact $::argv -NOPORT]]>-1} {
+    set ::argv [lreplace $::argv $_ $_]
+    incr ::argc -1
+    set ALITED_PORT no
+  }
+  if {[set _ [lsearch -glob $::argv LOG=*]]>-1} {
+    set alited::LOG [string range [lindex $::argv $_] 4 end]
+    set ::argv [lreplace $::argv $_ $_]
+    incr ::argc -1
+  }
+  if {[set _ [lsearch -exact $::argv DEBUG]]>-1} {
+    set alited::DEBUG yes
+    set ::argv [lreplace $::argv $_ $_]
+    incr ::argc -1
   }
   if {[file isdirectory $::argv]} {
     # if alited run with "config dir containing spaces"
@@ -274,8 +284,8 @@ if {[package versions alited] eq {}} {
     # read configurations used
     set alited::CONFIGS [lindex [split [::apave::readTextFile $alited::USERLASTINI] \n] 2]
   }
-  unset readalitedCONFIGS
-  unset isalitedCONFIGS
+  unset -nocomplain readalitedCONFIGS
+  unset -nocomplain isalitedCONFIGS
 
   ## ____________________ Port to listen __________________ ##
 
@@ -291,7 +301,7 @@ if {[package versions alited] eq {}} {
       set alited::al(comm_port) 51837 ;# to be compatible with old style
     }
   }
-  unset _
+  unset -nocomplain _
 
   ## ____________________ Open an existing app __________________ ##
 
@@ -719,14 +729,15 @@ namespace eval alited {
       # at first start, there are no apave objects bound to the main window of alited
       # -> create an independent one to be deleted afterwards
       set pobj alitedHelpObjToDel
-      ::apave::APaveInput create $pobj
+      catch {::apave::APave create $pobj}
     }
     if {[llength [split $msg \n]]>30} {
       set args [linsert $args 0 -h 30 -scroll 1]
     }
-    set res [$pobj ok {} Help "\n$msg\n" -text 1 -centerme $win -scroll no \
-      -tags ::alited::textTags -w [incr wmax] -modal no -ontop yes {*}$args]
-    catch {alitedHelpObjToDel destroy}
+    set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no -onclose destroy \
+      -ontop yes -centerme $win -text 1 -scroll no -tags ::alited::textTags \
+      -w [incr wmax] {*}$args]
+
     return $res
   }
   #_______________________
@@ -848,8 +859,10 @@ namespace eval alited {
         alited::find::_close
         alited::tool::_close
         catch {alited::check::Cancel}
-        catch {$obFN2 res $::alited::al(FN2WINDOW) 0}
+        catch {destroy $::alited::al(FN2WINDOW)}
+        catch {destroy [$obFN2 dlgPath]}
         $obPav res $al(WIN) $res
+        ::apave::endWM
       }
     }
   }
@@ -895,22 +908,25 @@ if {$alited::LOG ne {}} {
 #   - so, without 'package require alited', it's a regular run of alited
 
 if {[info exists ALITED_PORT]} {
-  unset ALITED_PORT
+  unset -nocomplain ALITED_PORT
 #  catch #\{source ~/PG/github/DEMO/alited/demo.tcl#\} ;#------------- TO COMMENT OUT
   if {[llength $ALITED_ARGV]} {
     set ::argc 0
     set ::argv {}
     after 10 [list ::alited::open_files_and_raise 0 {*}$ALITED_ARGV]
   }
-  unset ALITED_ARGV
-  if {[catch {alited::ini::_init} _]} {
+  unset -nocomplain ALITED_ARGV
+  if {$alited::DEBUG} {
+    alited::ini::_init
+  } elseif {[catch {alited::ini::_init} _]} {
     # initialize GUI & data:
     # let a possible error of ini-file be shown, with attempt to continue
     alited::ini::GetUserDirs
     tk_messageBox -icon error -message \
       "Error of reading of alited's settings: \
       \n$_\n\nProbable reason in the file:\n$::alited::al(INI) \
-      \n\nTry to rename / move it.\nThen restart alited."
+      \n\nTry to rename/move it or take it from alited's source. \
+      \nThen restart alited."
   }
   unset -nocomplain _
   alited::main::_create  ;# create the main form

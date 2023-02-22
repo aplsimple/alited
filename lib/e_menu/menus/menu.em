@@ -2,7 +2,7 @@
 
 in=1.0
 w=25
-pos=34.30
+pos=122.77
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENU_FOSGIT]} {set ::EMENU_FOSGIT Fossil}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE [set ::EMENURUNFILE "%f"] ; if {[::iswindows]} {set ::EMENURUNFILE [string map [list \\ \\\\] "%f"]; set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
@@ -71,10 +71,12 @@ ME: m=grep.em o=-1
 
 ITEM = Backup of $::FILETAIL
 R: %C set ::EMENUBAKCNT [expr {($::EMENUBAKCNT+1)%4}]
-R: %C set ::EMENUBAK [file join "%PD" .bak "$::EMENUFILETAIL-$::EMENUBAKCNT.bak"]
-R: %q "BACKUP" "The backup of\n\n$::EMENUFILE\n\nwould be saved to\n\n$::EMENUBAK"
-R: %C file mkdir [file join "%PD" .bak]
-RE: %IF [::iswindows] %THEN copy /Y "$::EMENUFILE" "$::EMENUBAK" %ELSE cp -f "$::EMENUFILE" "$::EMENUBAK"
+R: %C set ::EMENUBAK [file join [string map [list \\ /] {%PD}] .bak "$::EMENUFILETAIL-$::EMENUBAKCNT.bak"]
+R/ %q "BACKUP" "The backup of\n\n%UF\n\nwould be saved to\n\n$::EMENUBAK"
+R: %C file mkdir [file dirname "$::EMENUBAK"]
+R: %C if [::iswindows] {set ::EMENUBAK [string map [list / \\] {$::EMENUBAK}]}
+R: %C if [::iswindows] {set ::EMENUFILE [string map [list \\ \\\\] {%f}]}
+S: %IF [::iswindows] %THEN copy /Y "$::EMENUFILE" "$::EMENUBAK" %ELSE cp -f "$::EMENUFILE" "$::EMENUBAK"
 
 ITEM = Commit "%s"
 R: %C if {![info exist ::EM_MSG]} {set ::EM_MSG "%s"}
@@ -117,8 +119,8 @@ R: %IF {$::EMENU_FOSGIT} eq {Fossil} %THEN \
  # call alited/Geany with all *.tcl of current file's directory
 ITEM = Edit *.tcl of $::DIRTAIL
 R: %q "EDIT ALL *.tcl" "This will edit all .tcl files of\n\n%d"
-R: %C set ::ALLFILES [glob -nocomplain "%d/*.tcl"]
-R: %IF [auto_execok alited]!={} %THEN alited $::ALLFILES %ELSE geany $::ALLFILES
+R: %C set ::ALLFILES [glob -nocomplain [file join [file normalize "%d"] *.tcl]]
+R: %E $::ALLFILES
 RE: %C unset ::ALLFILES
 
 SEP = 3

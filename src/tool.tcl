@@ -252,13 +252,14 @@ proc tool::EM_Options {opts} {
   }
   set ed [info nameofexecutable]\ $SCRIPTNORMAL\ $CONFIGDIR
 
-  set R [list "md=$al(EM,mnudir)" "m=$al(EM,mnu)" "f=$f" "d=$d" "l=$l" \
-    "PD=$al(EM,PD=)" "pd=$al(prjroot)" "h=$al(EM,h=)" "tt=$al(EM,tt=)" "s=$sel" \
-    o=-1 om=0 g=$al(EM,geometry) $z6 $z7 {*}$ls $df {*}$opts {*}$srcdir \
-    {*}$dirvar {*}$filvar th=$al(THEME) td=$tdir ed=$ed wt=$al(EM,wt=) mp=1]
+  set R [list md=$al(EM,mnudir) m=$al(EM,mnu) f=$f d=$d l=$l \
+    PD=$al(EM,PD=) pd=$al(prjroot) h=$al(EM,h=) tt=$al(EM,tt=) s=$sel \
+    o=-1 om=0 {*}g=$al(EM,geometry) $z6 $z7 {*}$ls $df {*}$opts {*}$srcdir \
+    {*}$dirvar {*}$filvar td=$tdir ed=$ed wt=$al(EM,wt=) mp=1]
+  if {[lsearch -glob $R th=*]<0} {lappend R th=$al(THEME)}
   set res {}
-  foreach r $R {append res "\"$r\" "}
-  return $res
+  foreach r $R {append res \"$r\" { }}
+  return [string trim $res]
 }
 #_______________________
 
@@ -313,6 +314,7 @@ proc tool::EM_Structure {mnu} {
       continue
     }
     if {!$isitem} continue
+    set origname $itemname
     foreach mark $mmarks {
       if {[regexp "^\s*$mark" $line]} {
         set typ [string index $mark 0]
@@ -324,7 +326,7 @@ proc tool::EM_Structure {mnu} {
         }
         if {$itemname ni {{} -} && $itemname ne $prname} {
           set prname $itemname
-          lappend res [list $mnu "$typ-$itemname"]
+          lappend res [list $mnu "$typ-$itemname\n$origname"]
         }
         break
       }
@@ -355,6 +357,7 @@ proc tool::EM_AllStructure1 {mnu lev} {
       if {[lsearch -exact -index end $alited::al(EM_STRUCTURE) $item]>-1} {
         continue ;# to avoid infinite cycle
       }
+      lassign [split $item \n] item
       set lev [EM_AllStructure1 [string range $item 2 end] [incr lev]]
     } else {
       lappend alited::al(EM_STRUCTURE) [list $lev $mnu [EM_HotKey $i] $item]
@@ -422,16 +425,22 @@ proc tool::EM_command {im} {
   #   im - index of the command in em_inf array
 
   namespace upvar ::alited::pref em_inf em_inf
-  lassign $em_inf($im) mnu idx item
-  if {$idx eq {-} || [regexp {^[^[:blank:].]+[.]mnu: } $item]} {
-    # open a menu
-    set mnu [string range $item 0 [string first : $item]-1]
-    set ex {ex= o=-1}
-  } else {
-    # call a command
-    set ex "ex=[alited::tool::EM_HotKey $idx] SH=1"
+  if {[catch {
+    lassign $em_inf($im) mnu idx item
+    if {$idx eq {-} || [regexp {^[^[:blank:].]+[.](mnu|em): } $item]} {
+      # open a menu
+      set mnu [string range $item 0 [string first : $item]-1]
+      set ex {ex= o=-1}
+    } else {
+      # call a command
+      set ex "ex=[alited::tool::EM_HotKey $idx] SH=1"
+    }
+    set res "alited::tool::e_menu \"m=$mnu\" $ex"
+  } err]} then {
+    puts stderr "\nalited error: $err"
+    set res {}
   }
-  return "alited::tool::e_menu \"m=$mnu\" $ex"
+  return $res
 }
 #_______________________
 
@@ -696,8 +705,20 @@ proc tool::e_menu1 {opts} {
   } else {
     set cs $al(INI,CS)  ;# without tinting: e_menu hasn't the tint option
   }
-  alited::Run [file join $::e_menu_dir e_menu.tcl] \
-    {*}[EM_Options $opts] c=$cs fs=$al(FONTSIZE,std)
+  set opts [EM_Options $opts]
+  set opts "c=$cs fs=$al(FONTSIZE,std) $opts"
+  set th $al(THEME)
+  # cs= and fs= can be reset in EM_Options
+  foreach o [list {*}$opts] {
+    if {[string match c=* $o]}  {set cs [string range $o 2 end]}
+    if {[string match th=* $o]} {set th [string range $o 3 end]}
+  }
+  set thdark [$obPav thDark $th]
+  set csdark [$obPav csDark $cs]
+  if {$thdark==1 && !$csdark || $thdark==0 && $csdark} {
+    set opts "th=default $opts th=default" ;# default theme fits any CS
+  }
+  alited::Run [file join $::e_menu_dir e_menu.tcl] {*}$opts
 }
 #_______________________
 

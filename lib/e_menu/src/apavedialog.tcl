@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-source [file join [file dirname [info script]] apave.tcl]
+source [file join [file dirname [info script]] apavebase.tcl]
 
 # ________________________ apave NS _________________________ #
 
@@ -30,7 +30,7 @@ namespace eval ::apave {
 
 oo::class create ::apave::APaveDialog {
 
-  superclass ::apave::APave
+  superclass ::apave::APaveBase
 
   variable _pdg
 
@@ -101,18 +101,28 @@ oo::class create ::apave::APaveDialog {
   #   msg    - message
   # Optional arguments:
   #   defb - default button (OK, YES, NO, CANCEL, RETRY, ABORT)
-  #   args:
-  #     -checkbox text (-ch text) - makes the checkbox's text visible
-  #     -geometry +x+y (-g +x+y)  - sets the geometry of dialog
-  #     -color cval    (-c cval)  - sets the color of message
-  #     -family... -size... etc. options of label widget
-  #     -text 1 - sets the text widget to show a message
+  #   args - options for Query
   #_______________________
 
   method PrepArgs {args} {
-    # Makes a list of arguments.
-    foreach a $args { lappend res $a }
-    return $res
+    # Prepares a list of arguments.
+    # Returns the list (wrapped in list) and a command for OK button.
+
+    lassign [::apave::parseOptions $args -modal {} -ch {} -comOK {} -onclose {}] \
+      modal ch comOK onclose
+    if {[string is true -strict $modal]} {
+      set com 1
+    } elseif {$ch ne {}} {
+      # some options are incompatible with -ch
+      if {$onclose eq {destroy}} {set onclose {}}
+      lappend args -modal 1 -onclose $onclose
+      set com 1
+    } elseif {$comOK eq {}} {
+      set com destroy  ;# non-modal without -ch option
+    } else {
+      set com $comOK
+    }
+    return [list [list $args] $com]
   }
   #_______________________
 
@@ -123,7 +133,8 @@ oo::class create ::apave::APaveDialog {
     #   msg - message
     #   args - options
 
-    return [my Query $icon $ttl $msg {ButOK OK 1} ButOK {} [my PrepArgs $args]]
+    lassign [my PrepArgs {*}$args] args comOK
+    return [my Query $icon $ttl $msg "ButOK OK $comOK" ButOK {} $args]
   }
   #_______________________
 
@@ -135,8 +146,9 @@ oo::class create ::apave::APaveDialog {
     #   defb - button to be selected
     #   args - options
 
+    lassign [my PrepArgs {*}$args] args
     return [my Query $icon $ttl $msg \
-      {ButOK OK 1 ButCANCEL Cancel 0} But$defb {} [my PrepArgs $args]]
+      {ButOK OK 1 ButCANCEL Cancel 0} But$defb {} $args]
   }
   #_______________________
 
@@ -148,8 +160,9 @@ oo::class create ::apave::APaveDialog {
     #   defb - button to be selected
     #   args - options
 
+    lassign [my PrepArgs {*}$args] args
     return [my Query $icon $ttl $msg \
-      {ButYES Yes 1 ButNO No 0} But$defb {} [my PrepArgs $args]]
+      {ButYES Yes 1 ButNO No 0} But$defb {} $args]
   }
   #_______________________
 
@@ -161,8 +174,9 @@ oo::class create ::apave::APaveDialog {
     #   defb - button to be selected
     #   args - options
 
+    lassign [my PrepArgs {*}$args] args
     return [my Query $icon $ttl $msg \
-      {ButYES Yes 1 ButNO No 2 ButCANCEL Cancel 0} But$defb {} [my PrepArgs $args]]
+      {ButYES Yes 1 ButNO No 2 ButCANCEL Cancel 0} But$defb {} $args]
   }
   #_______________________
 
@@ -174,8 +188,9 @@ oo::class create ::apave::APaveDialog {
     #   defb - button to be selected
     #   args - options
 
+    lassign [my PrepArgs {*}$args] args
     return [my Query $icon $ttl $msg \
-      {ButRETRY Retry 1 ButCANCEL Cancel 0} But$defb {} [my PrepArgs $args]]
+      {ButRETRY Retry 1 ButCANCEL Cancel 0} But$defb {} $args]
   }
   #_______________________
 
@@ -187,9 +202,10 @@ oo::class create ::apave::APaveDialog {
     #   defb - button to be selected
     #   args - options
 
+    lassign [my PrepArgs {*}$args] args
     return [my Query $icon $ttl $msg \
       {ButABORT Abort 1 ButRETRY Retry 2 ButCANCEL \
-      Cancel 0} But$defb {} [my PrepArgs $args]]
+      Cancel 0} But$defb {} $args]
   }
   #_______________________
 
@@ -211,7 +227,8 @@ oo::class create ::apave::APaveDialog {
         set defb $num
       }
     }
-    return [my Query $icon $ttl $msg $apave_msc_bttns But$defb {} [my PrepArgs $args]]
+    lassign [my PrepArgs {*}$args] args
+    return [my Query $icon $ttl $msg $apave_msc_bttns But$defb {} $args]
   }
 
   ## ________________________ Progress for splash _________________________ ##
@@ -229,7 +246,7 @@ oo::class create ::apave::APaveDialog {
     # If type={}, widgetType method participates too in progress_Go, and also
     # progress_End puts out a little statistics.
     #
-    # See also: APave::widgetType, progress_Go, progress_End
+    # See also: APaveBase::widgetType, progress_Go, progress_End
 
     set ::apave::_AP_VARS(win) .proSplashScreen
     set qdlg $::apave::_AP_VARS(win)
@@ -643,6 +660,7 @@ oo::class create ::apave::APaveDialog {
     if {![winfo exists $w]} return
     $w tag configure hilited -foreground #1f0000 -background #ffa073
     $w tag configure hilited2 -foreground #1f0000 -background #ff6b85
+    $w tag lower hilited sel
     bind $w <Double-ButtonPress-1> [list [self] highlight_matches $w]
     ::apave::bindToEvent $w <KeyRelease> [self] unhighlight_matches $w
     bind $w <Alt-Left> "[self] seek_highlight $w 0 ; break"
@@ -841,7 +859,33 @@ oo::class create ::apave::APaveDialog {
   }
   #_______________________
 
-  method AppendButtons {widlistName buttons neighbor pos defb timeout win} {
+  method GetLinePosition {txt ind} {
+    # Gets a line's position.
+    #   txt - text widget
+    #   ind - index of the line
+    # Returns a list containing a line start and a line end.
+
+    set linestart [$txt index "$ind linestart"]
+    set lineend   [expr {$linestart + 1.0}]
+    return [list $linestart $lineend]
+  }
+  #_______________________
+
+  method Pdg {name} {
+    # Gets a value of _pdg(name).
+
+    return $_pdg($name)
+  }
+  #_______________________
+
+  method dlgPath {} {
+    # Gets a path to a last APaveDialog window.
+
+    return [my Pdg dlg]
+  }
+  #_______________________
+
+  method AppendButtons {widlistName buttons neighbor pos defb timeout win modal} {
     # Adds buttons to the widget list from a position of neighbor widget.
     #   widlistName - variable name for widget list
     #   buttons - buttons to add
@@ -850,14 +894,20 @@ oo::class create ::apave::APaveDialog {
     #   defb - default button
     #   timeout  - timeout (to count down seconds and invoke a button)
     #   win - dialogue's path
+    #   modal - yes if the window is modal
     # Returns list of "Help" button's name and command.
 
     upvar $widlistName widlist
     set defb1 [set defb2 [set bhlist {}]]
     foreach {but txt res} $buttons {
+      set com "${_pdg(ns)}my res $_pdg(dlg)"
       if {[info commands $res] eq {}} {
-        set com "${_pdg(ns)}my res $_pdg(dlg) $res"
+        set com "$com $res"
       } else {
+        if {$res eq {destroy}} {
+          # for compatibility with old modal windows
+          if {$modal} {set res "$com 0"} {set res "destroy $win"}
+        }
         set com $res  ;# "res" is set as a command
       }
       if {$but eq {butHELP}} {
@@ -899,25 +949,6 @@ oo::class create ::apave::APaveDialog {
     lassign [my LowercaseWidgetName $_pdg(dlg).fra.$defb2] _pdg(defb2)
     return $bhlist
   }
-  #_______________________
-
-  method GetLinePosition {txt ind} {
-    # Gets a line's position.
-    #   txt - text widget
-    #   ind - index of the line
-    # Returns a list containing a line start and a line end.
-
-    set linestart [$txt index "$ind linestart"]
-    set lineend   [expr {$linestart + 1.0}]
-    return [list $linestart $lineend]
-  }
-  #_______________________
-
-  method Pdg {name} {
-    # Gets a value of _pdg(name).
-
-    return $_pdg($name)
-  }
 
   ## ________________________ Query the terrible _________________________ ##
 
@@ -956,9 +987,8 @@ oo::class create ::apave::APaveDialog {
     lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM optsHead \
       root rotext head hsz binds postcom onclose timeout tab2 \
       tags cc themecolors optsGrid addpopup
-    set modal yes
-    set wasgeo [set textmode [set stay 0]]
-    set readonly [set hidefind [set scroll 1]]
+    set wasgeo [set textmode [set stay [set waitvar 0]]]
+    set readonly [set hidefind [set scroll [set modal 1]]]
     set curpos {1.0}
     set ${_pdg(ns)}PD::ch 0
     foreach {opt val} {*}$argdia {
@@ -983,7 +1013,7 @@ oo::class create ::apave::APaveDialog {
         -c - -color {append optsLabel " -foreground {$val}"}
         -a { ;# additional grid options of message labels
           append optsGrid " $val" }
-        -centerme - -ontop - -themed - -resizable - -checkgeometry {
+        -centerme - -ontop - -themed - -resizable - -checkgeometry - -onclose - -comOK {
           lappend args $opt $val
         }
         -t - -text {set textmode $val}
@@ -1010,7 +1040,7 @@ oo::class create ::apave::APaveDialog {
         -theme {append themecolors " {$val}"}
         -post {set postcom $val}
         -popup {set addpopup [string map [list %w $qdlg.fra.texM] "$val"]}
-        -timeout - -focusback - -modal - -scroll - -tab2 - -stay {
+        -timeout - -focusback - -scroll - -tab2 - -stay - -modal - -waitvar {
           set [string range $opt 1 end] $val
         }
         default {
@@ -1029,7 +1059,6 @@ oo::class create ::apave::APaveDialog {
       }
       return 0
     }
-    set modal "-modal $modal"
     set optsFont [string trim $optsFont]
     set optsHeadFont $optsFont
     set fs [my basicFontSize]
@@ -1233,7 +1262,7 @@ oo::class create ::apave::APaveDialog {
              -label \"Save and Exit\" -command \"[self] res $qdlg 1\"
             "
         }
-        lappend args -onclose [namespace current]::exitEditor
+        set onclose [namespace current]::exitEditor
         oo::objdefine [self] export InitFindInText Pdg
       } else {
         lappend widlist [list h__ h_3 L 1 4 {-cw 1}]
@@ -1252,7 +1281,8 @@ oo::class create ::apave::APaveDialog {
       [[self] popupHighlightCommands \$pop $wt]"
     }
     # add the buttons
-    lassign [my AppendButtons widlist $buttons h__ L $defb $timeout $qdlg] bhelp bcomm
+    lassign [my AppendButtons widlist $buttons h__ L $defb $timeout $qdlg $modal] \
+      bhelp bcomm
     # make the dialog's window
     set wtop [my makeWindow $qdlg.fra $ttl]
     if {$bhelp ne {}} {
@@ -1345,8 +1375,12 @@ oo::class create ::apave::APaveDialog {
     catch "$binds"
     set args [::apave::removeOptions $args -focus]
     set ::apave::querydlg $qdlg
-    my showModal $qdlg -focus $focusnow -geometry $geometry {*}$root {*}$modal {*}$args
+    my showModal $qdlg -modal $modal -waitvar $waitvar -onclose $onclose \
+      -focus $focusnow -geometry $geometry {*}$root {*}$args
     oo::objdefine [self] unexport InitFindInText Pdg
+    if {![winfo exists $qdlg] || (!$modal && !$waitvar)} {
+      return 0
+    }
     set pdgeometry [wm geometry $qdlg]
     # the dialog's result is defined by "pave res" + checkbox's value
     set res [set result [my res $qdlg]]

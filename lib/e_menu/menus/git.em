@@ -2,7 +2,7 @@
 
 o=-1
 in=1.0
-pos=56.8
+pos=20.6
 w=35
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT ""}
@@ -17,8 +17,8 @@ w=35
  ; git menu for e_menu.tcl
 
 ITEM = git status
-R: cd %PD
-S: pwd\necho %PD\ngit status
+S: cd %PD
+S: echo %UD\ndir\necho ---\ngit status
 
 ITEM = git gui
 R: cd %PD
@@ -60,7 +60,7 @@ R: %I {} "DIFF" { \
 \n the filtered lines.\
 \n\n temp file:\n $::EMENUTMPFILE} \
    } -head {\n This will compare a selected version of \
-     \n %PD\n to its HEAD.} -focus butOK -weight bold == ::EMENUCOMMIT ::EMENUGREP
+     \n %UD\n to its HEAD.} -focus butOK -weight bold == ::EMENUCOMMIT ::EMENUGREP
 S: %C set ::EMENUTMP {git diff $::EMENUCOMMIT HEAD}
 R: %IF {$::EMENUGREP} eq "" %THEN %T $::EMENUTMP
 RW: $::EMENUTMP | grep -n "$::EMENUGREP" > "$::EMENUTMPFILE"
@@ -77,7 +77,7 @@ S: git add "$::EMENUFILE"
 
 ITEM = git add *
 S: cd %PD
-R: %q "Adding changes" " Add all changes in\n\n  %PD\n\n to a local repository ?"
+R: %q "Adding changes" " Add all changes in\n\n  %UD\n\n to a local repository ?"
 S: git add *\ngit status
 
 ITEM = git rm $::FILETAIL ?

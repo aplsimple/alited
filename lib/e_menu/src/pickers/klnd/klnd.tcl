@@ -448,7 +448,7 @@ proc ::klnd::calendar {args} {
   set win [set my::p(win) "$parent._apave_CALENDAR_"]
   catch {$my::p(obj) destroy}
   # create apave object and layout its window
-  set my::p(obj) [::apave::APaveInput create APAVE_CLND $win]
+  set my::p(obj) [::apave::APave create APAVE_CLND $win]
   $my::p(obj) makeWindow $win.fra $title
   $my::p(obj) paveWindow $win.fra [list \
     {*}[my::MainWidgets] \

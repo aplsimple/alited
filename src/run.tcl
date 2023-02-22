@@ -284,8 +284,8 @@ proc run::RunDialogue {} {
   res mode com - - - - befrun
   set mode [expr {$mode eq $al(MC,inconsole)}]
   set res [list $res $mode $com $al(TMPchb1) $befrun]
-  unset al(TMPchb2)
-  unset al(TMPchb1)
+  unset -nocomplain al(TMPchb2)
+  unset -nocomplain al(TMPchb1)
   return $res
 }
 #_______________________

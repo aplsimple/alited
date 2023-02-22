@@ -201,7 +201,7 @@ namespace eval ::alited {
     {Delete a template #%n ?} {Видалити шаблон #%n ?}
     "Import templates\nfrom external alited.ini" "Імпортувати шаблони\nз зовнiшнього alited.ini"
     {Number of imported templates: %n} {Кiлькiсть iмпортованих шаблонiв: %n}
-    "Indents a template at inserting,\nby a next line's indentation." "При вставцi шаблону створює\nвiдступи згiдно з рядком вставки."
+    "Indents a template at inserting,\nby an insertion line's indentation." "При вставцi шаблону створює\nвiдступи згiдно з рядком вставки."
 
   }
 
@@ -359,7 +359,7 @@ namespace eval ::alited {
     {Focus a text after selecting in infobar} {Переходити на текст при виборі у інфобарі}
     {Find by List} {Шукати по списку}
     {List:} {Список:}
-    {\n Enter a list of words divided by spaces: \n} {\n Введіть список слів, разділених пробілами: \n}
+    { Enter a list of words divided by spaces:} { Введіть список слів, разділених пробілами:}
     {FOUND:} {ЗНАЙДЕНІ:}
     {NOT FOUND:} {НЕ ЗНАЙДЕНІ:}
     "Use this geometry of the dialogue\nby default" "Використовувати цю геометрію діалогу\nза замовчуванням"

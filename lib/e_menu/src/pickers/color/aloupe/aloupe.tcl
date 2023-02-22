@@ -200,7 +200,7 @@ proc ::aloupe::my::Theme {} {
 
   variable data
   if {$data(-apavedir) eq {}} return
-  source [file join $data(-apavedir) apaveinput.tcl]
+  source [file join $data(-apavedir) apave.tcl]
   ::apave::initWM -cs $data(-cs) -theme alt
   if {$data(-fcgeom) ne {}} {
     ::apave::obj chooserGeomVars {} ::aloupe::my::data(-fcgeom)

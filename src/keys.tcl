@@ -127,6 +127,7 @@ proc keys::ReservedList {} {
     Control-F \
     Control-N \
     Control-O \
+    Control-T \
     Control-V \
     Control-W \
     Control-Alt-W \

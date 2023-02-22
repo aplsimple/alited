@@ -281,6 +281,9 @@ proc ::em::menuTextModified {w bfont} {
   # The `w` might be omitted because it's a `my TexM` of APaveDialog.
   # It's here only to provide a template for similar handlers.
 
+  bind $w <KeyPress> [list after idle "::em::LineView $w"]
+  bind $w <ButtonPress> [list after idle "::em::LineView $w"]
+  after idle [list ::em::LineView $w]
   set curpos [$w index insert]
   set text [$w get 1.0 end]
   lassign [split $::em::HC ,] fg1 fg2 bg2 fg3
@@ -327,6 +330,27 @@ proc ::em::menuTextModified {w bfont} {
       }
       $w tag add $tag $il.$p1 $il.$p2
     }
+  }
+}
+#_______________________
+
+proc ::em::LineView {{w ""}} {
+  # Highlights a current line at viewing a text.
+  #   w - text's path
+  # If *w* is omitted, initializes its own variable.
+
+  if {$w eq {} || ![winfo exists $w]} {
+    set ::em::lnTextView -1
+    return
+  }
+  set pos [$w index insert]
+  set ln [expr {int($pos)}]
+  if {![info exists ::em::lnTextView] || $ln!=$::em::lnTextView} {
+    set ::em::lnTextView $ln
+    $w tag config tagCURLINE -background [lindex [::apave::obj csGet] 16]
+    $w tag lower tagCURLINE
+    $w tag remove tagCURLINE 1.0 end
+    $w tag add tagCURLINE [list $pos linestart] [list $pos lineend]+1displayindices
   }
 }
 #_______________________
@@ -396,8 +420,9 @@ proc ::em::edit {fname {prepost ""} {istpl yes}} {
     set buttons {}
   }
   if {$::em::editor eq {} || $prepost ne {}} {
+    ::em::LineView
     set bfont [::apave::obj boldTextFont [::apave::obj basicFontSize]]
-    set dialog [::apave::APaveInput new]
+    set dialog [::apave::APave new]
     set res [$dialog editfile $fname {} {} {} \
       $prepost -w {80 100} -h {10 24} -ro 0 -centerme .em \
       -ontop $::em::ontop {*}$buttons \
@@ -516,7 +541,7 @@ proc ::em::destroy_emenus {} {
   # Destroys all e_menu apps.
 
   if {[em_question "Clearance - $::em::appname" \
-  "\n  Destroy all e_menu applications?  \n" yesno ques NO -text 0]} {
+  "\n  Destroy all e_menu applications?  \n" yesno ques NO -text 0 -ontop $::em::ontop]} {
     for {set i 0} {$i < 3} {incr i} {
       for {set nap 1} {$nap <= 64} {incr nap} {
         set app $::em::thisapp$nap
@@ -569,7 +594,7 @@ proc ::em::about {} {
     ]
   set width [expr {max(33,[string length $::em::Argv0])}]
   set doc https://aplsimple.github.io/en/tcl/e_menu
-  set dialog [::apave::APaveInput new]
+  set dialog [::apave::APave new]
   if {$::em::solo} {set mod solo} {set mod {}}
   set res [$dialog misc info {About e_menu} "\n\
     <red> $::em::em_version </red> $mod \n\n\
@@ -644,7 +669,7 @@ proc ::em::change_PD {} {
     -2 - -1 - 0 - 1 - 2 - 3 {set ornam [lindex $ornams [expr {$::em::ornament+2}]]}
     default {set ornam [lindex $ornams 3]}
   }
-  ::apave::APaveInput create ::em::dialog .em
+  ::apave::APave create ::em::dialog .em
   set r -1
   while {$r == -1} {
     after 0 {after idle ::em::change_PD_Spx}
@@ -745,6 +770,7 @@ proc ::em::change_PD {} {
       reread_menu $::em::lasti
       # this takes up e_menu's arguments e.g. fS=white bS=green (as part of CS)
       initcolorscheme
+      set ::em::HC {}  ;# turn to "standard" highlighting colors at editing menu
     }
   } else {
     set ::em::ncolor $ncolorsav
@@ -760,11 +786,11 @@ proc ::em::change_PD {} {
 proc ::em::input {cmd} {
   # Input dialog for getting data.
 
-  set dialog [::apave::APaveInput new]
+  set dialog [::apave::APave new]
   set dp [string last { == } $cmd]
   if {$dp < 0} {set dp 999999}
   set data [string range $cmd $dp+4 end]
-  set geo [centerme]
+  set geo [::em::centerme]
   set cmd "$dialog input [string range $cmd 2 $dp-1] $geo -ontop $::em::ontop"
   catch {set cmd [subst $cmd]}
   if {[set lb [countCh $cmd \{]] != [set rb [countCh $cmd \}]]} {
@@ -833,7 +859,7 @@ proc ::em::writeable_command {cmd} {
     set res true
     set cmd #\ $cmd ;# to fit a result returned by the dialog
   } else {
-    set dialog [::apave::APaveInput new]
+    set dialog [::apave::APave new]
     set res [$dialog misc {} "EDIT: $mark" "$cmd" {"Save & Run" yes Cancel 0} TEXT \
       -text 1 -ro 0 -w 70 -h 10 -pos $pos {*}[::em::theming_pave] -ontop $::em::ontop \
       -head "UNCOMMENT usable commands, COMMENT unusable ones.\nUse  \\\\\\\\ \

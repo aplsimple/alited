@@ -10,12 +10,6 @@
 
 namespace eval ::alited {
 
-  # versions of mnu/ini to update to
-  set al(MNUversion) 1.3.6b7
-  set al(INIversion) 1.3.6b8
-  # previous version of alited to update from
-  set al(ALEversion) 0.0.1
-
   set al(MAXFILES) 5000     ;# maximum size of file tree (max size of project)
   set al(ED,sp1) 1          ;# -spacing1 option of texts
   set al(ED,sp2) 0          ;# -spacing2 option of texts
@@ -31,10 +25,11 @@ namespace eval ::alited {
   set al(TREE,cw0) 200      ;# tree column #0 width
   set al(TREE,cw1) 70       ;# tree column #1 width
   set al(TREE,showinfo) 0   ;# flag "show info on a file in tips"
-  set al(FONT) {}           ;# default font
+  set al(FONT) {}           ;# default font's options
+  set al(FONT,txt)          TkFixedFont
+  set al(FONT,defsmall)     TkDefaultFont
   set al(FONTSIZE,small) 9  ;# small font size
   set al(FONTSIZE,std) 10   ;# middle font size
-  set al(FONT,txt) {}       ;# font for edited texts
   set al(THEME) default     ;# ttk theme
   set al(INI,CS) -1         ;# color scheme
   set al(INI,HUE) 0         ;# tint of color scheme
@@ -980,7 +975,7 @@ proc ini::CheckUpdates {doit} {
   set al(_updmnu_) [expr {$doit || [package vcompare $al(ALEversion) $al(MNUversion)]<0}]
   set al(_updini_) [expr {$doit || [package vcompare $al(ALEversion) $al(INIversion)]<0}]
   if {!$al(_updmnu_) && !$al(_updini_)} return
-  set head "\n [msgcat::mc {Some things have been changed in alited %v.}] \n"
+  set head "\n [msgcat::mc {Some things have been changed in alited %v.}] "
   set head [string map [list %v v[AlitedVersion]] $head]
   set date _[clock format [clock seconds] -format %Y-%m-%d]
   set al(_updDirMnu_) [file normalize $al(EM,mnudir)$date]
@@ -990,7 +985,7 @@ proc ini::CheckUpdates {doit} {
   set inifile [file rootname $inifile]
   set al(_updFileIni_) [file normalize [file join $inidir $inifile$date$iniext]]
   set pobj alitedObjToDel
-  ::apave::APaveInput create $pobj $al(WIN)
+  ::apave::APave create $pobj $al(WIN)
   set mnudo [expr {![file exists $al(_updDirMnu_)]}]
   set inido [expr {![file exists $al(_updFileIni_)]}]
   if {$doit} {
@@ -1043,7 +1038,7 @@ proc ini::CheckUpdates {doit} {
     alited::Exit - 1 no
   } else {
     if {$err ne {}} {
-      ::apave::APaveInput create $pobj $al(WIN)
+      ::apave::APave create $pobj $al(WIN)
       $pobj ok err Error $err -text 1 -w 50 -h {3 5}
       catch {$pobj destroy}
     } elseif {$mnudone || $inidone} {
@@ -1073,7 +1068,7 @@ proc ini::GetConfiguration {} {
     # at first start, there are no apave objects bound to the main window of alited
     # -> create an independent one to be deleted afterwards
     set pobj alitedObjToDel
-    ::apave::APaveInput create $pobj
+    ::apave::APave create $pobj
   }
   set res [$pobj input {} $al(MC,chini1) \
     [list \
@@ -1309,9 +1304,9 @@ proc ini::_init {} {
   alited::pref::KeyAccelerators
 
   # create main apave objects
-  ::apave::APaveInput create $obPav $al(WIN)
+  ::apave::APave create $obPav $al(WIN)
   foreach ob [::alited::ListPaved] {
-    ::apave::APaveInput create [set $ob] $al(WIN)
+    ::apave::APave create [set $ob] $al(WIN)
   }
 
   # here, the order of icons defines their order in the toolbar
@@ -1404,12 +1399,14 @@ proc ini::_init {} {
           after idle [list alited::Message $msg 4]
           continue
         }
-        lappend limgs $img
-        set tip $em_mnu($i)
-        append al(atools) " $img \{{} -tip {$tip@@ -under 4 \
-          -command {alited::ini::ToolbarTip $i}} $txt \
-          -popup {alited::tool::PopupBar %X %Y} \
-          -com {[alited::tool::EM_command $i]}\}"
+        set com [alited::tool::EM_command $i]
+        if {$com ne {}} {
+          lappend limgs $img
+          set tip $em_mnu($i)
+          append al(atools) " $img \{{} -tip {$tip@@ -under 4 \
+            -command {alited::ini::ToolbarTip $i}} $txt \
+            -popup {alited::tool::PopupBar %X %Y} -com {$com}\}"
+        }
       }
     }
   }

@@ -2,7 +2,7 @@
 
 o=-1
 in=1.0
-pos=140.0
+pos=69.64
 
 [MENU]
 
@@ -10,16 +10,16 @@ pos=140.0
 
 ITEM = hg summary -- hg status
 R: cd %PD
-S: echo %PD\nhg summary\necho ---------------\nhg status
+S: echo %UD\nhg summary\necho ---------------\nhg status
 
 ITEM = hg heads -- hg parents
 R: cd %PD
-S: echo %PD\nhg heads\necho ---------------\nhg parents
+S: echo %UD\nhg heads\necho ---------------\nhg parents
 
 ITEM = hg commit
 S: cd %PD
 SW: hg status
-R: %q "Committing changes" "This will COMMIT with input message in:\n\n%PD"
+R: %q "Committing changes" "This will COMMIT with input message in:\n\n%UD"
 S: hg commit
 
 SEP = 2
@@ -72,9 +72,9 @@ S: hg log -p -l 2 $::FIL1
 
 ITEM = hg revert
 R: cd %PD
-R: %q "REVERT ALL" "This will REVERT ALL changes in\n\n%PD" yesno warn NO
+R: %q "REVERT ALL" "This will REVERT ALL changes in\n\n%UD" yesno warn NO
 R: %I warn "REVERT ALL" {lab} \
-   -head "\n This will REVERT ALL changes in   \n\n %PD " -hfg ::em::clrhot -weight bold
+   -head "\n This will REVERT ALL changes in   \n\n %UD " -hfg ::em::clrhot -weight bold
 S: hg revert -a -C
 
 ITEM = hg revert %F
@@ -86,14 +86,14 @@ R: %I warn "REVERT $::FIL1" {lab} \
 S: hg revert $::FIL1
 
 ITEM = hg rollback
-R: %q "ROLLBACK" "This will ROLL BACK the last commit in\n\n%PD" yesno warn NO
+R: %q "ROLLBACK" "This will ROLL BACK the last commit in\n\n%UD" yesno warn NO
 R: %I warn "ROLLBACK" {lab} \
-   -head "\n This will ROLL BACK the last commit in   \n\n %PD " -hfg ::em::clrhot -weight bold
+   -head "\n This will ROLL BACK the last commit in   \n\n %UD " -hfg ::em::clrhot -weight bold
 R: cd %PD
 S: hg rollback
 
 ITEM = hg commit --amend
-R: %q "AMEND COMMIT" "This will AMEND the last commit in\n\n%PD"
+R: %q "AMEND COMMIT" "This will AMEND the last commit in\n\n%UD"
 R: cd %PD
 S: hg commit --amend
 
@@ -104,27 +104,27 @@ R: cd %PD
 S: hg incoming
 
 ITEM = hg fetch
-R: %q "FETCH" "This will PULL, MERGE and COMMIT changes into:\n\n%PD"
+R: %q "FETCH" "This will PULL, MERGE and COMMIT changes into:\n\n%UD"
 R: cd %PD
 S: hg fetch
 
 ITEM = hg pull
-R: %q "PULL" "This will PULL changes into:\n\n%PD"
+R: %q "PULL" "This will PULL changes into:\n\n%UD"
 R: cd %PD
 S: hg pull
 
 ITEM = hg update
-R: %q "UPDATE" "This will UPDATE to the tip changeset in:\n\n%PD"
+R: %q "UPDATE" "This will UPDATE to the tip changeset in:\n\n%UD"
 R: cd %PD
 S: hg update
 
 ITEM = hg merge -P
-R: %q "MERGE PREVIEW" "This will PREVIEW the merge in:\n\n%PD"
+R: %q "MERGE PREVIEW" "This will PREVIEW the merge in:\n\n%UD"
 R: cd %PD
 S: hg merge -P
 
 ITEM = hg merge
-R: %q "MERGE" "This will MERGE changes in:\n\n%PD"
+R: %q "MERGE" "This will MERGE changes in:\n\n%UD"
 R: cd %PD
 S: hg merge
 R: %q "COMMIT" "This will COMMIT with message:\n\nMerge on %t2"
@@ -139,7 +139,7 @@ S: hg outgoing
 ITEM = hg push
 S: cd %PD
 R: %C if {![info exist ::FPUSH]} {set ::FPUSH 0}
-R: %I warn "FORCED PUSH" {chb {{Forced push:} {} {}} {$::FPUSH}} -head "You can set the forced push from \n    %PD \
+R: %I warn "FORCED PUSH" {chb {{Forced push:} {} {}} {$::FPUSH}} -head "You can set the forced push from \n    %UD \
   \n\nNote: \
   \n     Extra care should be taken with the -f/--force option, which will push \
   \n     all new heads on all branches, an action which will almost always cause \
@@ -159,9 +159,9 @@ S: cd %PD
 S: %#t hg help
 
 ITEM = hg init (in %PD)
-R: %Q "MERCURIAL INIT" "Initialize the new Mercurial repository in\n\n%PD?"
+R: %Q "MERCURIAL INIT" "Initialize the new Mercurial repository in\n\n%UD?"
 R: cd %PD
-R: %P echo "syntax: glob\n.*\n*~\n*.swp\n*.tmp\n*.bak\n*.log\n*.zip\n*.rar\n*.tgz\n*.cur\n*.dll\n*.dylib\n*.ico\n*.gif\n*.bmp\n*.png\n*.jpg\n*.o" > %PD/.hgignore
+R: %P echo "syntax: glob\n.*\n*~\n*.swp\n*.tmp\n*.bak\n*.log\n*.zip\n*.rar\n*.tgz\n*.cur\n*.dll\n*.dylib\n*.ico\n*.gif\n*.bmp\n*.png\n*.jpg\n*.o" > %UD/.hgignore
 S: dir\necho ------------\nhg init\nhg status
 ITEM = edit ~/.hgrc
 R: %P %E $::env(HOME)/.hgrc

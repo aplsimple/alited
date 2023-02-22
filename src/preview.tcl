@@ -23,7 +23,7 @@ namespace eval preview {
   variable DIR [file dirname [file dirname $SCRIPT]]
   variable LIBDIR [file join $DIR lib]
   variable PAVEDIR [file join $LIBDIR e_menu src]
-  source [file join $preview::PAVEDIR apaveinput.tcl]
+  source [file join $preview::PAVEDIR apave.tcl]
 }
 
 # ________________________ Procedures _________________________ #
@@ -84,7 +84,7 @@ proc preview::Run {} {
   ::apave::obj csToned $CS $tint yes
   set obj previewobj
   set win .win
-  catch {::apave::APaveInput create $obj $win}
+  catch {::apave::APave create $obj $win}
   set ::en1 {Entry value}
   set ::en2 {Combo 1}
   set ::v1 [set ::v2 [set ::c1 [set ::c2 1]]]

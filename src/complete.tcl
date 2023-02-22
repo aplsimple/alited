@@ -219,7 +219,7 @@ proc complete::PickCommand {wtxt} {
   wm withdraw $win
   wm overrideredirect $win 1
   catch {$obj destroy}
-  ::apave::APaveInput create $obj $win
+  ::apave::APave create $obj $win
   set lwidgets [list \
     "LbxPick - - - - {pack -side left -expand 1 -fill both} {-h $lht -w $::alited::complete::maxwidth -lvar ::alited::complete::comms}"
   ]

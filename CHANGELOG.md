@@ -1,18 +1,25 @@
 # LAST CHANGES:
 
 
-Version `v1.4.0b3 (14 Feb'23)`
+Version `v1.4.0 (22 Feb'23)`
 
+  - BUGFIX: "Preferences": choose a menu for bar/menu tools with wildcards (%s etc.)
   - NEW   : menu files: .em instead of .mnu
   - NEW   : "Run..." dialogue: Test button
   - NEW   : "Run..." dialogue: a text box to view / edit commands
   - NEW   : "Run..." dialogue: new wildcards: %s (selection) and %% (%)
   - NEW   : update tabbar synonyms ("name (2)") after closing tabs
   - NEW   : "indent a template" flag in Templates
+  - NEW   : Ctrl+T to insert tab character in texts
+  - NEW   : Preferences: check if a CS fits a theme
+  - NEW   : Preferences: e_menu's geometry can include other options
+  - CHANGE: F3 key: if Find/Replace open, use its options ("-exact" etc.)
+  - CHANGE: selection fg/bg of found/highlighted strings
+  - CHANGE: "Find by List": resizable geometry, saved
   - CHANGE: "Projects" : calendar's appearance, date locale (though not in tclkits)
   - CHANGE: don't trim a current line at "Remove trailing spaces"
   - CHANGE: Ctrl-R/M/X returned to available keys
-  - CHANGE: packages: apave/e_menu 4.0.0
+  - CHANGE: packages: apave/e_menu 4.0.0, hl_tcl 0.9.49
 
 
 Version `v1.3.6 (8 Feb'23)`

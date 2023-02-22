@@ -339,6 +339,16 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi tplind} {
     set posi [expr {int($posi)}]
     set linei [$wtxt get $posi.0 $posi.end]
     set indent2 [::apave::obj leadingSpaces $linei]
+    if {!$indent2} {
+      foreach i {+1 +2 -1 -2} {
+        set i [expr $posi$i]
+        set ind [::apave::obj leadingSpaces [$wtxt get $i.0 $i.end]]
+        if {$ind} {
+          set indent2 $ind
+          break
+        }
+      }
+    }
   }
   lassign [split $posc .] pl pc
   set under {^\s*#\s?_+$}
