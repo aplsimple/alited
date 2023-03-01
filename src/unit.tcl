@@ -337,9 +337,9 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi tplind} {
     set indent2 [::apave::obj leadingSpaces $line2]  ;# indentation of the insert point
   } else {
     set posi [expr {int($posi)}]
-    set linei [$wtxt get $posi.0 $posi.end]
+    set linei [string trimright [$wtxt get $posi.0 $posi.end]]
     set indent2 [::apave::obj leadingSpaces $linei]
-    if {!$indent2} {
+    if {$linei eq {}} {
       foreach i {+1 +2 -1 -2} {
         set i [expr $posi$i]
         set ind [::apave::obj leadingSpaces [$wtxt get $i.0 $i.end]]

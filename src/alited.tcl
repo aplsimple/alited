@@ -655,7 +655,7 @@ namespace eval alited {
       set bg [lindex $cs 15]
     }
     lassign [split [winfo geometry $al(WIN)] x+] w h x y
-    set geo "+([expr {$w+$x}]-W-8)+$y-20"
+    set geo "+([expr {$w+$x}]-W)+$y-60"
     set msg [string map [list \n "  \n  "] $msg]
     ::baltip clear $al(WIN)
     after $timo [list ::baltip tip $al(WIN) $msg -fg $fg -bg $bg -alpha 0.9 \

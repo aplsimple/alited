@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.5.1
+package provide baltip 1.5.2
 
 # ________________________ Variables _________________________ #
 
@@ -37,6 +37,7 @@ namespace eval ::baltip {
     set ttdata(relief) {}
     set ttdata(shiftX) {}
     set ttdata(shiftY) {}
+    set ttdata(ontop) no
     variable GEOACTIVE {-}
   }
 }
@@ -66,7 +67,7 @@ proc ::baltip::configure {args} {
       -SPECTIP* -
       -per10 - -fade - -pause - -fg - -bg - -bd - -alpha - -text - -relief - \
       -on - -padx - -pady - -padding - -bell - -under - -font - -image - -compound - \
-      -shiftX - -shiftY {
+      -shiftX - -shiftY - -ontop {
         set my::ttdata($n1) $v
       }
       -force - -geometry - -index - -tag - -global - -ctag - -nbktab - -reset - \
@@ -124,7 +125,7 @@ proc ::baltip::optionlist {} {
 
   return [list -on -per10 -fade -pause -fg -bg -bd -padx -pady -padding \
       -font -alpha -text -index -tag -bell -under -image -compound -relief \
-      -ctag -nbktab -reset -command -maxexp -shiftX -shiftY]
+      -ctag -nbktab -reset -command -maxexp -shiftX -shiftY -ontop]
 }
 #_______________________
 
@@ -567,10 +568,12 @@ proc ::baltip::my::ShowWindow {win} {
     set y [expr [string map "H $height" $y]] ;# H to shift vertically
   }
   # check for edges of screen incl. decors
-  set scrw [winfo screenwidth .]
-  set scrh [winfo screenheight .]
+  set scrw [winfo vrootwidth .]
+  set scrh [winfo vrootheight .]
   if {($x + $width) > $scrw}  {set x [expr {$scrw - $width - 1}]}
   if {($y + $height) > $scrh} {set y [expr {$py - $height - 16}]}
+  set x [expr {max(0,$x)}]
+  set y [expr {max(0,$y)}]
   wm geometry $win [join  "$width x $height + $x + $y" {}]
   catch {wm deiconify $win ; raise $win}
 }
@@ -650,7 +653,9 @@ proc ::baltip::my::Show {w text force geo optvals} {
   toplevel $win -bg $data(-bg) -class Tooltip$w
   catch {wm withdraw $win}
   wm overrideredirect $win 1
-  wm attributes $win -topmost 1
+  if {[info exists data(-ontop)] && $data(-ontop)} {
+    wm attributes $win -topmost 1
+  }
   if {$data(-relief) eq {}} {set data(-relief) solid}
   if {[set imgoptions $data(-image)] ne {}} {
     set imgoptions "-image $imgoptions"
@@ -667,9 +672,13 @@ proc ::baltip::my::Show {w text force geo optvals} {
     -padx $data(-padding) -pady $data(-padding)
   # defeat rare artifact by passing mouse over a tip to destroy it
   bindtags $win "Tooltip$win"
-  bind $win <Any-Enter>  [list ::baltip::hide $w]
-  bind Tooltip$win <Any-Enter>  [list ::baltip::hide $w]
-  bind Tooltip$win <Any-Button> [list ::baltip::hide $w]
+  if {$geo eq {}} {
+    # balloons are hidden on click or time-out
+    bind $win <Any-Enter> "::baltip::hide $w"
+    bind Tooltip$win <Any-Enter>  "::baltip::hide $w"
+  }
+  bind $win <Any-Button> "::baltip::hide $w"
+  bind Tooltip$win <Any-Button> "::baltip::hide $w"
   set aint 20
   set fint [expr {int($data(-fade)/$aint)}]
   set icount [expr {int($data(-per10)/$aint*$icount/10.0)}]

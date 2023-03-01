@@ -1,10 +1,10 @@
 [OPTIONS]
 
 in=5.0
-pos=4.6
+pos=7.3
 o=-1
 co=;
-w=45
+w=40
 rt=2/5
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE "%f" ; if {[::iswindows]} {set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
 %C if {![info exist ::EMENUFILETMP]} {set ::EMENUFILETMP "%TF" ; if {[::iswindows]} {set ::EMENUFILETMP [string map [list \\ \\\\\\\\] "%TF"]}}

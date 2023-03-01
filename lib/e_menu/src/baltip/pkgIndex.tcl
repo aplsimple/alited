@@ -1,4 +1,4 @@
-package ifneeded baltip 1.5.1 [list source [file join $dir baltip.tcl]]
+package ifneeded baltip 1.5.2 [list source [file join $dir baltip.tcl]]
 
 namespace eval ::baltip {
   variable _ruff_preamble {

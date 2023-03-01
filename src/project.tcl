@@ -1107,7 +1107,7 @@ proc project::Ok {args} {
   if {[set N [llength [alited::bar::BAR listFlag m]]]} {
     set msg [msgcat::mc "All modified files (%n) will be saved.\n\nDo you agree?"]
     set msg [string map [list %n $N] $msg]
-    if {![alited::msg yesno ques $msg NO -centerme $win]} return
+    if {![alited::msg yesno ques $msg YES -centerme $win]} return
   }
   if {![alited::file::SaveAll]} {
     $obDl2 res $win 0
@@ -1116,7 +1116,7 @@ proc project::Ok {args} {
   if {[set N [llength [alited::bar::BAR cget -select]]]} {
     set msg [msgcat::mc "All selected files (%n) will remain open\nin the project you are switching to.\n\nDo you agree?"]
     set msg [string map [list %n $N] $msg]
-    if {![alited::msg yesno ques $msg NO -centerme $win]} return
+    if {![alited::msg yesno ques $msg YES -centerme $win]} return
   }
   ::apave::withdraw $win
   set curinfo(_NO2ENT) 1

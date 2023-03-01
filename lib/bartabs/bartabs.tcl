@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide bartabs 1.6.3
+package provide bartabs 1.6.4
 
 # ________________________ NS bartabs _________________________ #
 
@@ -1354,7 +1354,7 @@ method FillMenuList {BID popi {TID -1} {mnu ""} {mustBeSorted {}}} {
         set comm "[self] $tID show yes"
       } else {
         set tip [my $tID cget -tip]
-        set comm [string map [list %i $icom %t $tip] $comlist]
+        set comm [string map [list %ID $tID %i $icom %t $tip] $comlist]
       }
       if {[my Disabled $tID]} {set dsbl {-state disabled}}
     } else {

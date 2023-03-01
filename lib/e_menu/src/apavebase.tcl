@@ -582,8 +582,8 @@ oo::class create ::apave::APaveBase {
     # Returns new coordinates in +X+Y form.
 
     # check for left/right edge of screen (accounting decors)
-    set scrw [expr [winfo screenwidth .] - 12]
-    set scrh [expr {[winfo screenheight .] - 36}]
+    set scrw [expr {[winfo vrootwidth .] - 12}]
+    set scrh [expr {[winfo vrootheight .] - 36}]
     if {($x + $w) > $scrw } {
       set x [expr {$scrw - $w}]
     }

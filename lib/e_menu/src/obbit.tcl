@@ -463,6 +463,8 @@ proc ::apave::initWM {args} {
 
   if {$args eq {?}} {return $::apave::_CS_(initWM)}
   if {!$::apave::_CS_(initWM)} return
+  ::apave::withdraw .
+  ::apave::place . 0 0 center
   lassign [parseOptions $args -cursorwidth $::apave::cursorwidth -theme default \
     -buttonwidth -8 -buttonborder 1 -labelborder 0 -padding 1 -cs -2 -isbaltip yes] \
     cursorwidth theme buttonwidth buttonborder labelborder padding cs ::apave::ISBALTIP
@@ -472,7 +474,6 @@ proc ::apave::initWM {args} {
   set ::apave::_CS_(initWM) 0
   set ::apave::_CS_(CURSORWIDTH) $cursorwidth
   set ::apave::_CS_(LABELBORDER) $labelborder
-  ::apave::withdraw .
   # for default theme: only most common settings
   set tfg1 $::apave::_CS_(!FG)
   set tbg1 $::apave::_CS_(!BG)
@@ -1353,7 +1354,7 @@ oo::class create ::apave::ObjectTheming {
 
   mixin ::apave::ObjectProperty
 
-## ________________________ Obj theming Inits _________________________ ##
+  ## ________________________ Obj theming Inits _________________________ ##
 
   constructor {args} {
 
@@ -1381,7 +1382,7 @@ oo::class create ::apave::ObjectTheming {
     return
   }
 
-## ________________________ Fonts _________________________ ##
+  ## ________________________ Fonts _________________________ ##
 
   method create_FontsType {type args} {
     # Creates fonts used in apave, with additional options.
@@ -1493,7 +1494,7 @@ oo::class create ::apave::ObjectTheming {
     return [dict replace $bf -family [my basicTextFont] -weight bold -size $fs]
   }
 
-## ________________________ Color schemes _________________________ ##
+  ## ________________________ Color schemes _________________________ ##
 
   method csFont {fontname} {
     # Returns attributes of CS font.
@@ -1809,7 +1810,7 @@ oo::class create ::apave::ObjectTheming {
 
 # ________________________ Theming _________________________ #
 
-## ________________________ Common _________________________ ##
+  ## ________________________ Common _________________________ ##
 
   method apaveTheme {{theme {}}} {
     # Checks if apave color scheme is used (always for standard ttk themes).
@@ -1843,7 +1844,7 @@ oo::class create ::apave::ObjectTheming {
     return [string match -nocase *dark* $theme]
   }
 
-## ________________________ Theme methods _________________________ ##
+  ## ________________________ Theme methods _________________________ ##
 
   method themeWindow {win {clrs ""} {isCS true} args} {
     # Changes a Tk style (theming a bit)
@@ -2038,11 +2039,11 @@ oo::class create ::apave::ObjectTheming {
           if {[::iswindows]} {
             set ::apave::_C_($ts,0) 6
           } elseif {[my apaveTheme]} {
-              set ::apave::_C_($ts,7) {-borderwidth 2}
-              set ::apave::_C_($ts,8) {-relief raised}
+            set ::apave::_C_($ts,7) {-borderwidth 2}
+            set ::apave::_C_($ts,8) {-relief raised}
           } else {
-              set ::apave::_C_($ts,7) {-borderwidth 1}
-              set ::apave::_C_($ts,8) {-relief groove}
+            set ::apave::_C_($ts,7) {-borderwidth 1}
+            set ::apave::_C_($ts,8) {-relief groove}
           }
           if {$darkCS} {set c white} {set c black}
           set ::apave::_C_($ts,9) "-selectcolor $c"
@@ -2456,7 +2457,7 @@ oo::class create ::apave::ObjectTheming {
     return
   }
 
-## ________________________ Popup menus _________________________ ##
+  ## ________________________ Popup menus _________________________ ##
 
   method ThemePopup {mnu args} {
     # Recursively configures popup menus.
@@ -2495,7 +2496,7 @@ oo::class create ::apave::ObjectTheming {
     my themeNonThemed $mnu $mnu
   }
 
-## ________________________ Tk choosers _________________________ ##
+  ## ________________________ Tk choosers _________________________ ##
 
   method ThemeChoosers {} {
     # Configures file/dir choosers so that its colors accord with a current CS.
@@ -2544,6 +2545,189 @@ oo::class create ::apave::ObjectTheming {
 
   ## __________________ EONS ObjectTheming ___________________ ##
 
+}
+
+# ________________ Borrowed from BWidget's utils.tcl ______________ #
+
+# ----------------------------------------------------------------------------
+#  Command BWidget::place ----> apave::place
+# ----------------------------------------------------------------------------
+#
+# Notes:
+#  For Windows systems with more than one monitor the available screen area may
+#  have negative positions. Geometry settings with negative numbers are used
+#  under X to place wrt the right or bottom of the screen. On windows, Tk
+#  continues to do this. However, a geometry such as 100x100+-200-100 can be
+#  used to place a window onto a secondary monitor. Passing the + gets Tk
+#  to pass the remainder unchanged so the Windows manager then handles -200
+#  which is a position on the left hand monitor.
+#  I've tested this for left, right, above and below the primary monitor.
+#  Currently there is no way to ask Tk the extent of the Windows desktop in
+#  a multi monitor system. Nor what the legal co-ordinate range might be.
+#
+
+proc ::apave::place { path w h args } {
+
+  update idletasks
+
+  # If the window is not mapped, it may have any current size.
+  # Then use required size, but bound it to the screen width.
+  # This is mostly inexact, because any toolbars will still be removed
+  # which may reduce size.
+  if { $w == 0 && [winfo ismapped $path] } {
+    set w [winfo width $path]
+  } else {
+    if { $w == 0 } {
+      set w [winfo reqwidth $path]
+    }
+    set vsw [winfo vrootwidth  $path]
+    if { $w > $vsw } { set w $vsw }
+  }
+
+  if { $h == 0 && [winfo ismapped $path] } {
+    set h [winfo height $path]
+  } else {
+    if { $h == 0 } {
+      set h [winfo reqheight $path]
+    }
+    set vsh [winfo vrootheight $path]
+    if { $h > $vsh } { set h $vsh }
+  }
+
+  set arglen [llength $args]
+  if { $arglen > 3 } {
+    return -code error "apave::place: bad number of argument"
+  }
+
+  if { $arglen > 0 } {
+    set where [lindex $args 0]
+    set list  [list at center left right above below]
+    set idx   [lsearch $list $where]
+    if { $idx == -1 } {
+      return -code error "apave::place: bad position: $where $list"
+    }
+    if { $idx == 0 } {
+      set err [catch {
+        # purposely removed the {} around these expressions - [PT]
+        set x [expr int([lindex $args 1])]
+        set y [expr int([lindex $args 2])]
+      } e]
+      if { $err } {
+        return -code error "apave::place: bad position: $e"
+      }
+      if {$::tcl_platform(platform) eq {windows}} {
+        # handle windows multi-screen. -100 != +-100
+        if {[string index [lindex $args 1] 0] ne {-}} {
+          set x +$x
+        }
+        if {[string index [lindex $args 2] 0] ne {-}} {
+          set y +$y
+        }
+      } else {
+        if { $x >= 0 } {
+          set x +$x
+        }
+        if { $y >= 0 } {
+          set y +$y
+        }
+      }
+    } else {
+      if { $arglen == 2 } {
+        set widget [lindex $args 1]
+        if { ![winfo exists $widget] } {
+          return -code error "apave::place: \"$widget\" does not exist"
+        }
+      } else {
+        set widget .
+      }
+      set sw [winfo screenwidth  $path]
+      set sh [winfo screenheight $path]
+      if { $idx == 1 } {
+        if { $arglen == 2 } {
+          # center to widget
+          set x0 [expr {[winfo rootx $widget] + ([winfo width  $widget] - $w)/2}]
+          set y0 [expr {[winfo rooty $widget] + ([winfo height $widget] - $h)/2}]
+        } else {
+          # center to screen
+          set x0 [expr {($sw - $w)/2 - [winfo vrootx $path]}]
+          set y0 [expr {($sh - $h)/2 - [winfo vrooty $path]}]
+        }
+        set x +$x0
+        set y +$y0
+        if {$::tcl_platform(platform) ne {windows}} {
+          if { $x0+$w > $sw } {set x {-0}; set x0 [expr {$sw-$w}]}
+          if { $x0 < 0 }      {set x {+0}}
+          if { $y0+$h > $sh } {set y {-0}; set y0 [expr {$sh-$h}]}
+          if { $y0 < 0 }      {set y {+0}}
+        }
+      } else {
+        set x0 [winfo rootx $widget]
+        set y0 [winfo rooty $widget]
+        set x1 [expr {$x0 + [winfo width  $widget]}]
+        set y1 [expr {$y0 + [winfo height $widget]}]
+        if { $idx == 2 || $idx == 3 } {
+          set y +$y0
+          if {$::tcl_platform(platform) ne {windows}} {
+            if { $y0+$h > $sh } {set y {-0}; set y0 [expr {$sh-$h}]}
+            if { $y0 < 0 }      {set y {+0}}
+          }
+          if { $idx == 2 } {
+            # try left, then right if out, then 0 if out
+            if { $x0 >= $w } {
+              set x [expr {$x0-$w}]
+            } elseif { $x1+$w <= $sw } {
+              set x +$x1
+            } else {
+              set x {+0}
+            }
+          } else {
+            # try right, then left if out, then 0 if out
+            if { $x1+$w <= $sw } {
+              set x +$x1
+            } elseif { $x0 >= $w } {
+              set x [expr {$x0-$w}]
+            } else {
+              set x {-0}
+            }
+          }
+        } else {
+          set x +$x0
+          if {$::tcl_platform(platform) ne {windows}} {
+            if { $x0+$w > $sw } {set x {-0}; set x0 [expr {$sw-$w}]}
+            if { $x0 < 0 }      {set x {+0}}
+          }
+          if { $idx == 4 } {
+            # try top, then bottom, then 0
+            if { $h <= $y0 } {
+              set y [expr {$y0-$h}]
+            } elseif { $y1+$h <= $sh } {
+              set y +$y1
+            } else {
+              set y {+0}
+            }
+          } else {
+            # try bottom, then top, then 0
+            if { $y1+$h <= $sh } {
+              set y +$y1
+            } elseif { $h <= $y0 } {
+              set y [expr {$y0-$h}]
+            } else {
+              set y {-0}
+            }
+          }
+        }
+      }
+    }
+
+    ## If there's not a + or - in front of the number, we need to add one.
+    if {[string is integer [string index $x 0]]} { set x +$x }
+    if {[string is integer [string index $y 0]]} { set y +$y }
+
+    wm geometry $path "${w}x${h}${x}${y}"
+  } else {
+    wm geometry $path "${w}x${h}"
+  }
+  update idletasks
 }
 
 # __________________ EOF ___________________ #

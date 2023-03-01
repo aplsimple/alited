@@ -337,12 +337,15 @@ proc bar::Sort {by {ttl ""}} {
 }
 #_______________________
 
-proc bar::SelFile {tip} {
+proc bar::SelFile {TID tip} {
   # Open a file from the file list even when it's closed
   # (the file list may be open due to -tearoff option).
 
   lassign [split $tip \n] fname
-  alited::file::OpenFile $fname yes
+  if {[alited::file::OpenFile $fname yes] eq {}} {
+    BAR $TID show
+    after idle [list alited::Balloon1 $fname]
+  }
 }
 #_______________________
 
@@ -482,6 +485,9 @@ proc bar::OnTabSelection {TID} {
     ::alited::main::UpdateGutter
     ::alited::favor::SkipVisited no
   }
+  if {![alited::file::IsNoName $fname] && ![file exists $fname]} {
+    after idle [list alited::Balloon1 $fname]
+  }
 }
 #_______________________
 
@@ -552,7 +558,7 @@ proc bar::ColorBar {} {
   set cs [$obPav csCurrent]
   if {$cs>-1} {
     lassign [$obPav csGet $cs] cfg2 cfg1 cbg2 cbg1 cfhh - - - - - - - - - - - - fgmark
-    BAR configure -fgmark $fgmark -comlist {::alited::bar::SelFile "%t"}
+    BAR configure -fgmark $fgmark -comlist {::alited::bar::SelFile %ID "%t"}
   }
 }
 #_______________________

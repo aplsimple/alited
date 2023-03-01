@@ -154,7 +154,7 @@ proc pref::SavedOptions {} {
   # Returns a list of names of main settings.
 
   fetchVars
-  return [array name al]
+  return [array names al]
 }
 #_______________________
 
@@ -482,11 +482,13 @@ proc pref::General_Tab1 {} {
       3 {$alited::al(MC,fitcs): azure-light} \
       4 {$alited::al(MC,fitcs): forest-light} \
       5 {$alited::al(MC,fitcs): sun-valley-light} \
+      6 {$alited::al(MC,fitcs): lightbrown} \
       26 {$alited::al(MC,fitcs): sun-valley-dark} \
       27 {$alited::al(MC,fitcs): awdark} \
       28 {$alited::al(MC,fitcs): azure-dark} \
       29 {$alited::al(MC,fitcs): forest-dark} \
       30 {$alited::al(MC,fitcs): sun-valley-dark} \
+      31 {$alited::al(MC,fitcs): darkbrown} \
       }} {alited::pref::opcToolPre %a}}}
     {.labHue .labCS T 1 1 {-st w -pady 1 -padx 3} {-t "Tint:"}}
     {.SpxHue + L 1 1 {-st sw -pady 1} {-tvar alited::al(INI,HUE) -from -50 -to 50 -tip {$alited::al(MC,hue)}}}
