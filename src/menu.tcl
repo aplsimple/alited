@@ -12,6 +12,15 @@ namespace eval menu {
 
 # ________________________ procs _________________________ #
 
+proc menu::Configurations {} {
+  #
+
+  if {![alited::ini::GetConfiguration]} return
+  set alited::ARGV $::alited::CONFIGDIR
+  alited::Exit - 1 no
+}
+#_______________________
+
 proc menu::CheckMenuItems {} {
   # Disables/enables "File/Close All..." menu items.
 
@@ -105,12 +114,67 @@ proc menu::FillRunItems {fname} {
 }
 #_______________________
 
-proc menu::Configurations {} {
-  #
+proc menu::MacroOptions {ca am} {
+  # Gets play macro item's options.
+  #   ca - argument of command
+  #   am - label of macro
 
-  if {![alited::ini::GetConfiguration]} return
-  set alited::ARGV $::alited::CONFIGDIR
-  alited::Exit - 1 no
+  namespace upvar ::alited al al
+  if {$am eq $al(activemacro)} {
+    set fg [lindex [alited::FgFgBold] 1]
+    set opts "-accelerator $al(acc_16) -foreground $fg"
+  } else {
+    set opts {}
+  }
+  return [list -label $am -command [list alited::edit::DispatchMacro $ca] {*}$opts]
+}
+#_______________________
+
+proc menu::CompareFnames {n1 n2} {
+  # Comapares two names of files, by their rootnames.
+  #   n1 - 1st name
+  #   n2 - 2nd name
+
+  set n1 [file rootname [file tail $n1]]
+  set n2 [file rootname [file tail $n2]]
+  if {$n1 eq $n2} {return 0}
+  set ls [lsort -dictionary [list $n1 $n2]]
+  if {$n1 eq [lindex $ls 0]} {return -1}
+  return 1
+}
+#_______________________
+
+proc menu::FillMacroItems {} {
+  # Fills play macro items.
+
+  namespace upvar ::alited al al
+  set m $al(MENUEDIT).playtkl
+  set imax 102
+  set pmax 34
+  for {set i 0} {$i<$imax} {incr i} {
+    if {[catch {$m delete 1}]} break
+  }
+  set isaccel 0
+  set pattern [alited::edit::MacroFile *$al(macroext)]
+  set lmacro [lsort -command alited::menu::CompareFnames [glob -nocomplain $pattern]]
+  set imax [expr {min([llength $lmacro],$imax-2)}]
+  for {set i [set idx 0]} {$i<$imax} {incr i} {
+    set am [lindex $lmacro $i]
+    if {[alited::edit::MacroFile $am] ne [alited::edit::MacroFile $al(MC,quickmacro)]} {
+      set am [file rootname [file tail $am]]
+      set opts [MacroOptions item$idx $am]
+      if {[incr idx]%$pmax} {set cbr {}} {set cbr {-columnbreak 1}}
+      $m add command {*}$opts {*}$cbr
+      if {{-accelerator} in $opts} {set isaccel 1}
+    }
+  }
+  if {!$idx} {
+    catch {file mkdir [file dirname $pattern]}
+    $m add command {*}[MacroOptions item0 $al(MC,new)]
+  }
+  $m add separator
+  if {!$isaccel} {set al(activemacro) $al(MC,quickmacro)}
+  $m add command {*}[MacroOptions quickrec $al(MC,quickmacro)]
 }
 
 # ________________________ Fill Menu _________________________ #
@@ -174,9 +238,6 @@ proc menu::FillMenu {} {
   ## ________________________ Edit _________________________ ##
 
   set m [set al(MENUEDIT) $al(WIN).menu.edit]
-  $m add command -label $al(MC,moveupU) -command {alited::tree::MoveItem up yes} -accelerator $al(acc_15)
-  $m add command -label $al(MC,movedownU) -command {alited::tree::MoveItem down yes} -accelerator $al(acc_16)
-  $m add separator
   $m add command -label $al(MC,indent) -command alited::edit::Indent -accelerator $al(acc_6)
   $m add command -label $al(MC,unindent) -command alited::edit::UnIndent -accelerator $al(acc_7)
   $m add command -label $al(MC,corrindent) -command alited::edit::NormIndent
@@ -188,9 +249,16 @@ proc menu::FillMenu {} {
   $m add command -label [msgcat::mc {Remove Trailing Whitespaces}] -command alited::edit::RemoveTrailWhites
   $m add separator
   menu $m.hlcolors -tearoff 1 -title [msgcat::mc Colors]
-  $m add cascade -label [msgcat::mc {Color values #hhhhhh}] -menu $m.hlcolors
+  $m add cascade -label [msgcat::mc {Color Values #hhhhhh}] -menu $m.hlcolors
   $m.hlcolors add command -label $al(MC,hlcolors) -command alited::edit::ShowColorValues
-  $m.hlcolors add command -label [msgcat::mc {Hide colors}] -command alited::edit::HideColorValues
+  $m.hlcolors add command -label [msgcat::mc {Hide Colors}] -command alited::edit::HideColorValues
+
+  ### ________________________ Macro _________________________ ###
+
+  $m add separator
+  menu $m.playtkl -tearoff 1
+  $m add cascade -label $::alited::al(MC,playtkl) -menu $m.playtkl
+  FillMacroItems
 
   ## ________________________ Search _________________________ ##
 

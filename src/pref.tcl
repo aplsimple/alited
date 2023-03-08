@@ -94,8 +94,8 @@ namespace eval pref {
     12 [list {Find Next Match} F3] \
     13 [list $::alited::al(MC,lookdecl) Control-L] \
     14 [list $::alited::al(MC,lookword) Control-Shift-L] \
-    15 [list {Item up} F11] \
-    16 [list {Item down} F12] \
+    15 [list RESERVED F11] \
+    16 [list $::alited::al(MC,playtkl) F12] \
     17 [list $::alited::al(MC,toline) Control-G] \
     18 [list {Put New Line} Control-P] \
     19 [list {Complete Commands} Tab] \

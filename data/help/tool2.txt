@@ -1,7 +1,7 @@
  A current Tcl script (file.tcl) is run in <r>console</r> or <r>Tkcon</r>.
 
  <r>1.</r> You can set a command that is run independently on a type of
- current file. It can be OS command or executable file. It's run in console.
+ current file. It can be OS command or executable file to run in console.
 
  If a Tcl file has to be run, you can set the command with or without
  <b>tclsh</b>, <b>wish</b>, <b>tclkit</b> etc., for example:
@@ -15,7 +15,8 @@
    <b>%pd</b> - project's directory
    <b>%s</b>  - text's selection / current word
    <b>%%</b>  - %
- The combobox's commands can be created and edited in the text box.
+ The combobox's commands can be created and edited in the text box,
+ at that a current line is highlighted and displayed in the combobox.
 
  <r>2.</r> For <b>By command #RUNF:</b> you write comments in a file, like:
    #RUNF: file.tcl arg1 arg2 arg3
@@ -28,10 +29,10 @@
    - <b>heterogeneous</b>: a project contains a lot of files that need to
      be tested and debugged with their own commands
 
- Anyhow, "Run me" item of <b>e_menu</b> tool allows running a current file
- in its "normal" mode by an associated application. Press F4 twice for this.
+ <r>3.</r> "Run me" item of <b>e_menu</b> tool allows running a current file
+ in its "normal" mode by an associated application. Press F4 twice for it.
 
- <r>3.</r> You can enter commands to be run before running a current file.
+ <r>4.</r> You can enter commands to be run before running a current file.
  It can be necessary <b>for a specific project</b>, sort of initialization.
 
  These commands can be OS commands or executables, for example:

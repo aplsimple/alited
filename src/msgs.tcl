@@ -82,6 +82,7 @@ namespace eval ::alited {
     set al(MC,openofdir)   [msgcat::mc "Open All Tcl Files of \"%n\""]
     set al(MC,delitem)     [msgcat::mc "Remove \"%n\"\nfrom \"%f\"?"]
     set al(MC,delfile)     [msgcat::mc "Delete \"%f\"?"]
+    set al(MC,rewfile)     [msgcat::mc "Rewrite \"%f\"?"]
     set al(MC,nodelopen)   [msgcat::mc {An open file can not be deleted:}]
     set al(MC,modiffile)   [msgcat::mc "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?"]
     set al(MC,wasdelfile)  [msgcat::mc "File \"%f\" was deleted by some application.\n\nSave the file?"]
@@ -104,13 +105,16 @@ namespace eval ::alited {
     set al(MC,on)          [msgcat::mc on]
     set al(MC,test)        [msgcat::mc Test]
     set al(MC,restart)     [msgcat::mc "For the settings to be active,\nalited application should be restarted."]
+    set al(MC,incorrname)  [msgcat::mc {Incorrect name: "%n"}]
 
     ## _  menu items _ ##
     set al(MC,lookdecl)    [msgcat::mc {Look for Declaration}]
     set al(MC,lookword)    [msgcat::mc {Look for Word}]
     set al(MC,toline)      [msgcat::mc {Go to Line}]
     set al(MC,tomatched)   [msgcat::mc {To Matched Bracket}]
-    set al(MC,hlcolors)    [msgcat::mc {Display colors}]
+    set al(MC,hlcolors)    [msgcat::mc {Display Colors}]
+    set al(MC,playtkl)     [msgcat::mc {Play Macro}]
+    set al(MC,quickmacro)  {Quick macro}
 
     ## _  project options _ ##
     set al(MC,Ign:)        [msgcat::mc {Skip subdirectories:}]

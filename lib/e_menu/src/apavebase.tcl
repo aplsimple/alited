@@ -675,6 +675,11 @@ oo::class create ::apave::APaveBase {
     #   attrsName - name of variable containing attributes of the button
 
     upvar 1 $attrsName attrs
+    set com [::apave::getOption -com {*}$attrs]
+    if {[string is integer -strict $com]} {
+      ::apave::extractOptions attrs -com {}
+      append attrs " -com {[self] res {} $com}" ;# returned integer result
+    }
     if {[::apave::getOption -image {*}$attrs] ne {}} return
     set txt [::apave::getOption -t {*}$attrs]
     if {$txt eq {}} { set txt [::apave::getOption -text {*}$attrs] }
@@ -1635,7 +1640,7 @@ oo::class create ::apave::APaveBase {
     #
     # Returns a selected value.
 
-    set isfilename 0
+    set isfilename [set rootname 0]
     lassign [::apave::extractOptions args \
       -ftxvar {} -tname {} -bname {} -parent {}] ftxvar tname bname parent
     if {$parent ne {}} {
@@ -1662,6 +1667,10 @@ oo::class create ::apave::APaveBase {
         set fn [file tail $fn]
       }
       set dn [::apave::extractOptions args -initialdir $dn]
+      if {[string match -* $dn]} {
+        set rootname 1
+        set dn [string range $dn 1 end]
+      }
       set args "-initialfile \"$fn\" -initialdir $dn $parent $args"
       incr isfilename
     } elseif {$nchooser eq {tk_chooseDirectory}} {
@@ -1675,6 +1684,7 @@ oo::class create ::apave::APaveBase {
     }
     set res [{*}$nchooser {*}$args]
     if {"$res" ne {} && "$tvar" ne {}} {
+      if {$rootname} {set res [file rootname [file tail $res]]}
       if {$isfilename} {
         lassign [my SplitContentVariable $ftxvar] -> txtnam wid
         if {[info exist $ftxvar] && \
@@ -1708,7 +1718,7 @@ oo::class create ::apave::APaveBase {
         focus $bname
       }
       focus $tname
-      after idle [list $tname selection range 0 end]
+      after idle "$tname selection range 0 end ; $tname icursor end"
     }
     return $res
   }
@@ -2268,9 +2278,12 @@ oo::class create ::apave::APaveBase {
   #_______________________
 
   method dlgPath {} {
-    # Gets a window name of apavedialogue dialogue.
+    # Gets a window name of apave open dialogue.
 
-    return [set [namespace current]::_pdg(dlg)]
+    if {[catch {set res [set [namespace current]::_pdg(dlg)]}]} {
+      set res $::apave::MODALWINDOW
+    }
+    return $res
   }
   #_______________________
 

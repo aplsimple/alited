@@ -320,8 +320,6 @@ proc tree::CreateUnitsTree {TID wtree} {
   baltip::tip [$obPav BtTDelT] $al(MC,unitsdel)
   baltip::tip [$obPav BtTUp] $al(MC,moveupU)
   baltip::tip [$obPav BtTDown] $al(MC,movedownU)
-  $al(MENUEDIT) entryconfigure 0 -label $al(MC,moveupU)
-  $al(MENUEDIT) entryconfigure 1 -label $al(MC,movedownU)
   $wtree heading #0 -text [alited::bar::CurrentTab 1]
   $wtree heading #1 -text [msgcat::mc Row]
   set ctab [alited::bar::CurrentTabID]
@@ -391,8 +389,6 @@ proc tree::CreateFilesTree {wtree} {
   baltip::tip [$obPav BtTDelT] $al(MC,filesdel)\nDelete
   baltip::tip [$obPav BtTUp] $al(MC,moveupF)
   baltip::tip [$obPav BtTDown] $al(MC,movedownF)
-  $al(MENUEDIT) entryconfigure 0 -label $al(MC,moveupF)
-  $al(MENUEDIT) entryconfigure 1 -label $al(MC,movedownF)
   $wtree heading #0 -text ":: [file tail $al(prjroot)] ::"
   $wtree heading #1 -text $al(MC,files)
   bind $wtree <Return> {::alited::tree::OpenFile}
@@ -570,9 +566,9 @@ proc tree::ShowPopupMenu {ID X Y} {
     -command alited::tree::RecreateTree -image alimg_retry
   $popm add separator
   $popm add command {*}[$obPav iconA none] -label $moveup \
-    -accelerator F11 -command {::alited::tree::MoveItem up} -image alimg_up
+    -command {::alited::tree::MoveItem up} -image alimg_up
   $popm add command {*}[$obPav iconA none] -label $movedown \
-    -accelerator F12 -command {::alited::tree::MoveItem down} -image alimg_down
+    -command {::alited::tree::MoveItem down} -image alimg_down
   $popm add separator
   $popm add command {*}[$obPav iconA none] -label $m2 \
     -command "::alited::tree::AddItem $ID" {*}$accins -image alimg_add

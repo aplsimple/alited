@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide bartabs 1.6.4
+package provide bartabs 1.6.5
 
 # ________________________ NS bartabs _________________________ #
 
@@ -688,7 +688,7 @@ method OnButtonPress {TID wb1 x} {
 
   if {[my Disabled $TID]} return
   my [set BID [my ID]] configure -MOVX $x
-  set TID [my $BID tabID [$wb1 cget -text]]
+  if {$TID eq {}} {set TID [my $BID tabID [$wb1 cget -text]]}
   my $TID Tab_BeCurrent
 }
 #_______________________
@@ -1876,7 +1876,7 @@ method tabID {txt} {
 
   set BID [my ID]
   if {[catch {set ellipse [my $BID cget -ELLIPSE]}]} {return {}}
-  if {[string first $ellipse $txt]} {
+  if {[string first $ellipse $txt]>0} {
     set pattern [string map [list $ellipse "*"] $txt]
   } else {
     set pattern {}

@@ -133,9 +133,9 @@ namespace eval ::alited {
     {Reload with Encoding} {Öffne mit die Kodierung}
     "Saving and reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nSave the file:\n%F ?" "Das Speichern und erneute Laden von \"%f\"\nmit der Kodierung \"%e\" kann falsch sein.\n\nWerden Sie die Datei speichern:\n%F ?"
     "Reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nReload the file:\n%F ?" "Das erneute Laden von \"%f\"\nmit der Kodierung \"%e\" kann falsch sein.\n\nWerden Sie die Datei laden:\n%F ?"
-    {Color values #hhhhhh} {Farbwerte #hhhhhh}
-    {Display colors} {Farben hervorheben}
-    {Hide colors} {Farben ausblenden}
+    {Color Values #hhhhhh} {Farbwerte #hhhhhh}
+    {Display Colors} {Farben hervorheben}
+    {Hide Colors} {Farben ausblenden}
     {Display colors in the whole text?} {Farben im gesamten Text hervorheben?}
     {check RE in Find/Replace box} {aktivieren Sie RE im Suchen/Ersetzen}
   }
@@ -153,6 +153,7 @@ namespace eval ::alited {
     "Open All Tcl Files of \"%n\"" "Öffne alle Tcl-Dateien in \"%n\""
     "Remove \"%n\"\nfrom \"%f\"?" "Entferne \"%n\"\nvon \"%f\"?"
     "Delete \"%f\"?" "Lösche \"%f\"?"
+    "Rewrite \"%f\"?" "Überschreiben \"%f\"?"
     {An open file can not be deleted:} {Eine offene Datei kann nicht gelöscht werden:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Datei \"%f\" wurde durch eine Applikation geändert.\n\nBearbeitung beenden und Datei neu laden?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Datei \"%f\" wurde durch eine Applikation gelöscht.\n\nDatei speichern?"
@@ -253,7 +254,7 @@ namespace eval ::alited {
     {TODO next day} {TODO auf folgenden Tag}
     {TODO next week} {TODO auf folgende Woche}
     on zum
-    {Incorrect name: %n} {Inkorrekter Name: %n}
+    {Incorrect name: "%n"} {Inkorrekter Name: "%n"}
     {The project template is empty!} {Die Projektvorlage ist leer!}
     {Incorrect indentation in Project template: %n} {Inkorrekt Einrücken in der Projektvorlage: %n}
     "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project." "Geben Sie einen Verzeichnisbaum für die Projektvorlage ein.\nVersehen Sie ihn mit gleichem Einrücken, um Unterverzeichnisse zu bedeuten.\n\nDateien wie README*, CHANGELOG* werden leer erstellt.\nDateien wie LICENSE* werden aus dem aktuellen Projekt übernommen."
@@ -574,6 +575,17 @@ namespace eval ::alited {
     {Errors found in unit:} {Fehlern gefunden in Einheit:}
     {Duplicate units} {Dupliziere Einheit}
     {duplicate unit:} {Dupliziere Einheit:}
+  }
+
+  ## ________________________ Macros ________________________ ##
+  ::msgcat::mcmset de {
+    "The macro is updated at its recording.\nPress %s to play it." "Das Makro wird bei der Aufnahme aktualisiert.\nDrücken Sie %s, um es wiederzugeben."
+    {Playing:} {Wiedergabe:}
+    {Recording:} {Aufnahme:}
+    {Play Macro} {Makro wiedergeben}
+    {Record Macro} {Makro aufnehmen}
+    {Delete Macro} {Makro löschen}
+    {Directory of Macros} {Verzeichnis der Makros}
   }
 
   ## ________________________ Misc. ________________________ ##

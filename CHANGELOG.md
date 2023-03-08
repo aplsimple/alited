@@ -1,9 +1,11 @@
 # LAST CHANGES:
 
 
-Version `v1.4.0 (1 Mar'23)`
+Version `v1.4.1a4 (9 Mar'23)`
 
   - BUGFIX: "Preferences": choose a menu for bar/menu tools with wildcards (%s etc.)
+  - BUGFIX: show row/col in status bar for them too big
+  - NEW   : "Edit / Play Macro" menu
   - NEW   : menu files: .em instead of .mnu
   - NEW   : "Run..." dialogue: Test button
   - NEW   : "Run..." dialogue: a text box to view / edit commands
@@ -20,7 +22,7 @@ Version `v1.4.0 (1 Mar'23)`
   - CHANGE: "Projects" : calendar's appearance, date locale (though not in tclkits)
   - CHANGE: don't trim a current line at "Remove trailing spaces"
   - CHANGE: returns: Ctrl-R/M/X to available keys; "tests" menu to Tools
-  - CHANGE: packages: apave/e_menu 4.0.0, hl_tcl 0.9.49, bartabs 1.6.4, baltip 1.5.2
+  - CHANGE: packages: apave/e_menu 4.0.0, hl_tcl 0.9.49, bartabs 1.6.5, baltip 1.5.2
 
 
 Version `v1.3.6 (8 Feb'23)`

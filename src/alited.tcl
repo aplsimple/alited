@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.0  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.1a4  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -386,6 +386,7 @@ namespace eval alited {
     # Removes spec.characters from a file/dir name (sort of normalizing it).
     #   name - the name of file/dir
 
+    set name [string trim $name]
     return [string map [list \
       * _ ? _ ~ _ / _ \\ _ \{ _ \} _ \[ _ \] _ \t _ \n _ \r _ \
       | _ < _ > _ & _ , _ : _ \; _ \" _ ' _ ` _] $name]
@@ -486,6 +487,15 @@ namespace eval alited {
   }
   #_______________________
 
+  proc TmpFile {tname} {
+    # Gets a temporary file's name.
+    #   tname - tailing part of the name
+
+    variable al
+    return [file join $al(EM,mnudir) $tname]
+  }
+  #_______________________
+
   proc None {args} {
     # Does nothing.
 
@@ -546,11 +556,12 @@ namespace eval alited {
   }
   #_______________________
 
-  proc Msg {inf} {
+  proc Msg {inf {ic info}} {
     # Shows a message in text box.
     #   inf - the message
+    #   ic - icon
 
-    msg ok info $inf -text 1 -w 50
+    msg ok $ic $inf -text 1 -w 50
   }
   #_______________________
 
@@ -856,11 +867,11 @@ namespace eval alited {
     if {!$ask || !$al(INI,confirmexit) || \
     [msg okcancel info [msgcat::mc {Quitting alited.}] OK {*}$timo]} {
       if {[alited::file::AllSaved]} {
-        alited::find::_close
-        alited::tool::_close
-        catch {alited::check::Cancel}
-        catch {destroy $::alited::al(FN2WINDOW)}
-        catch {destroy [$obFN2 dlgPath]}
+        alited::tool::_close                     ;# close all of the
+        catch {alited::check::Cancel}            ;# possibly open
+        catch {destroy $::alited::find::win}     ;# non-modal
+        catch {destroy $::alited::find::win2}    ;# windows
+        catch {destroy $::alited::al(FN2WINDOW)} ;# (and its possible children)
         $obPav res $al(WIN) $res
         ::apave::endWM
       }
@@ -921,12 +932,13 @@ if {[info exists ALITED_PORT]} {
   } elseif {[catch {alited::ini::_init} _]} {
     # initialize GUI & data:
     # let a possible error of ini-file be shown, with attempt to continue
+    puts \n$::errorInfo\n
     alited::ini::GetUserDirs
-    tk_messageBox -icon error -message \
+    tk_messageBox -title alited -icon error -message \
       "Error of reading of alited's settings: \
       \n$_\n\nProbable reason in the file:\n$::alited::al(INI) \
       \n\nTry to rename/move it or take it from alited's source. \
-      \nThen restart alited."
+      \nThen restart alited.\n\nDetails are in stdout."
   }
   unset -nocomplain _
   alited::main::_create  ;# create the main form
@@ -935,7 +947,10 @@ if {[info exists ALITED_PORT]} {
 #  catch #\{source ~/PG/github/DEMO/alited/demo.tcl#\} ;#------------- TO COMMENT OUT
   if {[catch {set res [alited::main::_run]} err]} {
     set res 0
-    puts stderr "\n\n ERROR in alited:\n $err\n"
+    set msg "\nERROR in alited:"
+    puts \n$msg\n\n$::errorInfo\n
+    set msg "$msg\n\n$err\n\nPlease, inform authors.\nDetails are in stdout."
+    tk_messageBox -title alited -icon error -message $msg
   }
   if {$res} {     ;# run the main form
     # restarting

@@ -132,9 +132,9 @@ namespace eval ::alited {
     {Reload with Encoding} {Загрузить в кодировке}
     "Saving and reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nSave the file:\n%F ?" "Сохранение и открытие \"%f\"\nв кодировке \"%e\" может оказаться ошибочным.\n\nСохранить файл:\n%F ?"
     "Reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nReload the file:\n%F ?" "Загрузка \"%f\"\nв кодировке \"%e\" может оказаться ошибочной.\n\nЗагрузить файл:\n%F ?"
-    {Color values #hhhhhh} {Значения цветов #hhhhhh}
-    {Display colors} {Отобразить цвета}
-    {Hide colors} {Скрыть цвета}
+    {Color Values #hhhhhh} {Значения цветов #hhhhhh}
+    {Display Colors} {Отобразить цвета}
+    {Hide Colors} {Скрыть цвета}
     {Display colors in the whole text?} {Отобразить цвета во всем тексте?}
     {check RE in Find/Replace box} {включите RE в окошке Поиск/Замена}
   }
@@ -152,6 +152,7 @@ namespace eval ::alited {
     "Open All Tcl Files of \"%n\"" "Открыть все файлы Tcl из \"%n\""
     "Remove \"%n\"\nfrom \"%f\"?" "Удалить \"%n\"\nиз \"%f\"?"
     "Delete \"%f\"?" "Удалить \"%f\"?"
+    "Rewrite \"%f\"?" "Перезаписать \"%f\"?"
     {An open file can not be deleted:} {Невозможно удалить открытый файл:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" был изменен другим приложением.\n\nОтменить вашу редакцию и перезагрузить файл?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" был удален другим приложением.\n\nСохранить файл?"
@@ -252,7 +253,7 @@ namespace eval ::alited {
     {TODO next day} {TODO на день позже}
     {TODO next week} {TODO на неделю позже}
     on на
-    {Incorrect name: %n} {Некорректное имя: %n}
+    {Incorrect name: "%n"} {Некорректное имя: "%n"}
     {The project template is empty!} {Шаблон проекта пуст!}
     {Incorrect indentation in Project template: %n} {Некорректний отступ в шаблоне проекта: %n}
     "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project." "Укажите дерево директорий для шаблона проекта.\nДелайте одинаковые отступы для указания поддиректорий.\n\nФайлы типа README*, CHANGELOG* будут создаваться пустыми.\nФайлы типа LICENSE* будут браться из текущего проекта."
@@ -570,6 +571,17 @@ namespace eval ::alited {
     {Errors found in unit:} {Найдены ошибки в юните:}
     {Duplicate units} {Дубликатные юниты}
     {duplicate unit:} {дубликатный юнит:}
+  }
+
+  ## ________________________ Macros ________________________ ##
+  ::msgcat::mcmset ru {
+    "The macro is updated at its recording.\nPress %s to play it." "Макрос обновится по его записи.\nНажмите %s для его прокрутки."
+    {Playing:} {Прокрутка:}
+    {Recording:} {Запись:}
+    {Play Macro} {Прокрутить макрос}
+    {Record Macro} {Записать макрос}
+    {Delete Macro} {Удалить макрос}
+    {Directory of Macros} {Директория макросов}
   }
 
   ## ________________________ Misc. ________________________ ##

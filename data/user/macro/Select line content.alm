@@ -1,0 +1,8 @@
+KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8341748 %K=End %b=?? %x=-135 %y=220 %s=16 %d=??
+KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8341820 %K=End %b=?? %x=-135 %y=220 %s=16 %d=??
+KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8342484 %K=Home %b=?? %x=-135 %y=220 %s=16 %d=??
+KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8342548 %K=Home %b=?? %x=-135 %y=220 %s=16 %d=??
+KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8343620 %K=Shift_L %b=?? %x=-135 %y=220 %s=16 %d=??
+KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8343915 %K=End %b=?? %x=-135 %y=220 %s=17 %d=??
+KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8343971 %K=End %b=?? %x=-135 %y=220 %s=17 %d=??
+KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8344147 %K=ISO_Next_Group %b=?? %x=-135 %y=220 %s=17 %d=??

@@ -84,6 +84,7 @@
 <li class="level3"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
 <li class="level3"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
 </ul></li>
+<li class="level3"><div class="li"><a href="#macros">Macros</a></div></li>
 <li class="level2"><div class="li"><a href="#options">Options</a></div></li>
 <li class="level2"><div class="li"><a href="#links">Links</a></div></li>
 </div>
@@ -1411,8 +1412,11 @@ There is a template to enter a command, in order to run it immediately in an app
    <li><i>%f</i>  - current file's name</li>
    <li><i>%d</i>  - current file's directory</li>
    <li><i>%pd</i> - project's directory</li>
+   <li><i>%s</i> - text's selection / current word
+   <li><i>%%</i> - %</li>
  </ul>
- Use the popup menu to remove a command from the combobox.
+  The combobox's commands can be created and edited in the text box,
+ at that the text's current line is highlighted and displayed in the combobox.
 </p>
 
 <p>
@@ -1434,12 +1438,12 @@ There is a template to enter a command, in order to run it immediately in an app
 </p>
 
 <p>
-Anyhow, "Run me" item of <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tool allows running a current file
+<b>3.</b> Anyhow, "Run me" item of <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tool allows running a current file
  in its "normal" mode by an associated application. Press F4 twice for this.
 </p>
 
 <p>
- <b>3.</b> Also, you can enter commands to be run before running a current file.
+ <b>4.</b> Also, you can enter commands to be run before running a current file.
  It can be necessary <i>for a specific project</i>, sort of initialization.
 </p>
 
@@ -1762,12 +1766,6 @@ With right-clicking a text, you get a context menu containing:
 <p>
 The menu bar of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> provides <i>Edit</i> menu containing:
 <ul>
-<li><i>Move Unit Up</i> command (F11 key customized in "Setup / Preferences / Keys")
-applied to a current unit, moves it up
-<br><br></li>
-<li><i>Move Unit Down</i> command (F12 key customized in "Setup / Preferences / Keys")
-applied to a current unit, moves it down
-<br><br></li>
 <li><i>Indent</i> command (Ctrl+I keys customized in "Setup / Preferences / Keys")
 <br><br></li>
 <li><i>Unindent</i> command (Ctrl+U keys customized in "Setup / Preferences / Keys")
@@ -1865,6 +1863,8 @@ The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">
 <br><br></li>
 <li><i>Ctrl+K</i> clears a line's right part
 <br><br></li>
+<li><i>Ctrl+T</i> inserts a Tab character (its length is set by "Projects / Options / Indentation")
+<br><br></li>
 <li><i>Ctrl+Shift+U</i> allows to enter Unicode character, by its number (after entering it press <i>Enter</i> key)
 </li>
 </ul>
@@ -1872,6 +1872,52 @@ The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">
 <p><b>Note</b>: By default, <i>Tab</i> key is used in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> for "Command complete" tool. Refer to "Preferences/Keys" to redefine it.
 </p>
 <p><span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> promotes the idea of <a href=https://www.emacswiki.org/emacs/TabsAreEvil>Tabs Are Evil</a>. A typical case: you use 4-space Tabs and get an external code using 8-space Tabs and (unintentionally) Spaces to indent the code - then you get a mess of indentation as well.
+</p>
+
+<p>
+<br>
+
+</p>
+
+</div>
+
+<h2 id="macros">Macros</h2>
+<div class="level2">
+
+<p>
+The macros are available in "Edit / Play Macro" submenu.
+</p>
+
+<p>
+To create a temporary macro, choose "Edit / Play Macro / Quick macro" menu item. This allows recording a macro just to "run and forget". Another run of this menu item will rewrite a previous quick macro.
+</p>
+
+<p>
+The recorded macro is available through F12 key immediately after its recording done.
+</p>
+
+<p>
+To create a saved macro, choose "New" macro (or any other saved macro), change a name as you like and press "Record Macro" button. At recording, try to abide by the rules:
+<ul>
+<li>use only the keyboard, because though it isn't forbidden, the mouse moves are no good</li>
+<li>don't use keys mapped in "Preferences / Keys" (anyhow, they aren't available in macros)</li>
+<li>preferable are usual "typewriter" keys like these:
+<ul>
+<li>characters</li>
+<li>arrows, Home, End, PgUp, PgDown</li>
+<li>Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Arrow, Ctrl+K</li>
+<li>Shift+Home, Shift+End, Shift+Arrow</li>
+<li>Delete, BackSpace</li>
+</ul></li>
+</ul>
+</p>
+
+<p>
+If a macro is active, it's run through F12 hot key. Though the macros' maximum number is 100, only one macro may be active.
+</p>
+
+<p>
+If you need to use several macros one after another, fix "Edit / Play Macro" menu by its "-----" item which makes the menu tear-off.
 </p>
 
 <p>

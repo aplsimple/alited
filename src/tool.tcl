@@ -450,7 +450,6 @@ proc tool::EM_optionTF {args} {
   # TF= is a name of file that contains a current text's selection.
   # If there is no selection, TF= option is a current file's name.
 
-  namespace upvar ::alited al al
   set sels [alited::edit::SelectedLines {} yes]
   set wtxt [lindex $sels 0]
   set sel {}
@@ -461,7 +460,7 @@ proc tool::EM_optionTF {args} {
   (![is_mainmenu $args] && ![EM_menuhere tests $args])} {
     set tmpname [alited::bar::FileName]
   } else {
-    set tmpname [file join $al(EM,mnudir) SELECTION~]
+    set tmpname [alited::TmpFile SELECTION~]
     ::apave::writeTextFile $tmpname sel
   }
   return TF=$tmpname
@@ -774,7 +773,7 @@ proc tool::_run {{what ""} {runmode ""}} {
     #  it is 'Run me' e_menu item
     if {!$::alited::DEBUG} {
       if {$al(EM,exec)} {
-        set fpid [file join $al(EM,mnudir) .pid~]
+        set fpid [alited::TmpFile .pid~]
         set pid [::apave::readTextFile $fpid]
       } else {
         ::alited::source_e_menu ;# e_menu is "internal"

@@ -1016,7 +1016,7 @@ proc project::Template {} {
   foreach name [split [$wtpl get 1.0 end] \n] {
     if {[set name [string trimright $name]] eq {}} continue
     if {$name ne [alited::NormalizeFileName $name]} {
-      set errmess [string map [list %n $name] [msgcat::mc {Incorrect name: %n}]]
+      set errmess [string map [list %n $name] $al(MC,incorrname)]
       break
     }
     set sporig [$obDl2 leadingSpaces $name]
@@ -1694,7 +1694,7 @@ proc project::MainFrame {} {
     {.btTdel - - - - {pack -side left} {-com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big}}
     {.h_ - - - - {pack -side left -expand 1}}
     {.btTtpl - - - - {pack -side left} {-com ::alited::project::Template -tip {$alited::al(MC,CrTemplPrj)} -image alimg_plus-big}}
-    {.btTtview - - - - {pack -side left -padx 4} {-image alimg_OpenFile-big -com alited::project::ViewDir -tip {$alited::al(MC,ViewDir)}}}
+    {.btTtview - - - - {pack -side left -padx 4} {-image alimg_folder-big -com alited::project::ViewDir -tip {$alited::al(MC,ViewDir)}}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 + T 1 2 {-st nsew} {-padding {2 2}}}

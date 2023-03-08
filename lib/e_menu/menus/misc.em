@@ -17,12 +17,12 @@ in=1.0
 ::EMENUMULSTRES1=~/PG/github/aplsimple.github.io/en/tcl/
 ::EMENUMULSTRES2=~/PG/github/aplsimple.github.io/en/tcl/alited
 ::EMENUMULSTRES3=/home/apl/PG/github/aplsimple.github.io/en/tcl
-::EMENURUFFDIR=~/PG/github/apave pave\n~/PG/github/hl_tcl\n~/PG/github/klnd\n~/PG/github/bartabs\n~/PG/github/trimmer\n~/PG/github/mulster\n~/PG/github/transpops\n~/PG/github/screenshooter\n~/PG/github/baltip\n~/PG/github/aloupe
+::EMENURUFFDIR=~/PG/github/apave pave\n~/PG/github/hl_tcl\n~/PG/github/klnd\n~/PG/github/bartabs\n~/PG/github/trimmer\n~/PG/github/mulster\n~/PG/github/transpops\n~/PG/github/screenshooter\n~/PG/github/baltip\n~/PG/github/aloupe\n~/PG/github/playtkl
 ::EMENURUFFIT=~/PG/github/aplsimple.github.io/en/tcl/bartabs/index.html\n~/PG/github/aplsimple.github.io/en/tcl/booksum/index.html\n~/PG/github/aplsimple.github.io/en/tcl/doctest/index.html\n~/PG/github/aplsimple.github.io/en/tcl/pave/index.html\n~/PG/github/aplsimple.github.io/en/tcl/alited/index.html
 ::EMENU7ZCNT=0
 ::EMENU7ZCOM=zip -r
 ::EMENU7ZARC=~/PG/github/apl-github
-::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/apave/*\n~/PG/github/apave_tests/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/klnd/*\n~/PG/github/ale_themes/*\n~/PG/github/wiki.tcl-lang.org/*\n~/PG/github/tclbag/*\n~/PG/github/osetr/*
+::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/apave/*\n~/PG/github/apave_tests/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/klnd/*\n~/PG/github/ale_themes/*\n~/PG/github/wiki.tcl-lang.org/*\n~/PG/github/tclbag/*\n~/PG/github/osetr/*\n~/PG/github/playtkl/*
 ::EMENU7ZSKIP=
 ::EMENU7ZBAK=/media/apl/KINGSTON/
 ::EMENU7ZGIT=0
@@ -90,7 +90,7 @@ SW: $::EMTMP ; tclsh ~/UTILS/highlight_tcl/tcl_html.tcl "$::EMENUP2html"
 R: %B $::EMENUP2html
 
 ITEM = Ruff! all ...
-R: %I {} "PROJECT NAME" { \
+R: %I {} "PROJECT DIRECTORIES TO BE PROCESSED" { \
    v_ {{} {-pady 4}} {} \
    tex1 {{ Projects to Ruff!:} {} {-h 8 -w 60 -tabnext chb1}} {$::EMENURUFFDIR} \
    chb1 {{Mulster afterwards:}} {$::EMENUMULSTER} \

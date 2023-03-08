@@ -204,6 +204,10 @@ namespace eval ::alited {
 
   # mode "place tabs to the beginning of bar"
   set al(lifo) 1
+
+  # active macro's name & macro extension
+  set al(activemacro) {}
+  set al(macroext) {.alm}
 }
 
 # ________________________ Variables _________________________ #
@@ -520,7 +524,8 @@ proc ini::ReadIniMisc {nam val} {
     isfavor {set al(FAV,IsFavor) $val}
     showinfo {set al(TREE,showinfo) $val}
     TIPS,* {set al($nam) $val}
-    listSBL - HelpedMe - checkgeo - tonemoves - moveall - chosencolor - sortList {
+    listSBL - HelpedMe - checkgeo - tonemoves - moveall - chosencolor \
+    - sortList - activemacro {
       set al($nam) $val
     }
     tplilast {set ::alited::unit_tpl::ilast $val}
@@ -793,30 +798,7 @@ proc ini::SaveIni {{newproject no}} {
   foreach k [array names al tkcon,*] {
     puts $chan "[string range $k 6 end]=$al($k)"
   }
-  # save the geometry options
-  puts $chan {}
-  puts $chan {[Geometry]}
-  foreach v {Pan PanL PanR PanBM PanTop} {
-    if {[info exists al(width$v)]} {
-      set w $al(width$v)
-    } else {
-      set w [winfo geometry [$obPav $v]]
-    }
-    puts $chan $v=$w
-  }
-  puts $chan "GEOM=[wm geometry $al(WIN)]"
-  puts $chan "geomfind=$::alited::find::geo"
-  puts $chan "geomfind2=$::alited::find::geo2"
-  puts $chan "geomproject=$::alited::project::geo"
-  puts $chan "geompref=$::alited::pref::geo"
-  set wtree [$obPav Tree]
-  set al(TREE,cw0) [$wtree column #0 -width]
-  set al(TREE,cw1) [$wtree column #1 -width]
-  puts $chan "treecw0=$al(TREE,cw0)"
-  puts $chan "treecw1=$al(TREE,cw1)"
-  puts $chan "dirgeometry=$::alited::DirGeometry"
-  puts $chan "filgeometry=$::alited::FilGeometry"
-  # save other options
+  # save misc settings
   puts $chan {}
   puts $chan {[Misc]}
   puts $chan "isfavor=$al(FAV,IsFavor)"
@@ -835,6 +817,30 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "tplilast=$::alited::unit_tpl::ilast"
   puts $chan "incdec=$al(incdecName) $al(incdecDate) $al(incdecSize) $al(incdecExtn)"
   puts $chan "blifo=$al(lifo)"
+  puts $chan "activemacro=$al(activemacro)"
+  # save the geometry options
+  puts $chan {}
+  puts $chan {[Geometry]}
+  puts $chan "geomfind=$::alited::find::geo"
+  puts $chan "geomfind2=$::alited::find::geo2"
+  puts $chan "geomproject=$::alited::project::geo"
+  puts $chan "geompref=$::alited::pref::geo"
+  puts $chan "dirgeometry=$::alited::DirGeometry"
+  puts $chan "filgeometry=$::alited::FilGeometry"
+  set wtree [$obPav Tree]
+  set al(TREE,cw0) [$wtree column #0 -width]
+  set al(TREE,cw1) [$wtree column #1 -width]
+  puts $chan "treecw0=$al(TREE,cw0)"
+  puts $chan "treecw1=$al(TREE,cw1)"
+  foreach v {Pan PanL PanR PanBM PanTop} {
+    if {[info exists al(width$v)]} {
+      set w $al(width$v)
+    } else {
+      set w [winfo geometry [$obPav $v]]
+    }
+    puts $chan $v=$w
+  }
+  puts $chan "GEOM=[wm geometry $al(WIN)]"
   close $chan
   SaveIniPrj $newproject
   # save last directories entered
@@ -1012,6 +1018,7 @@ proc ini::CheckUpdates {doit} {
   catch {$pobj destroy}
   if {!$res} {if {$doit} return else exit}
   if {!$updmnu && !$updini} return
+  CreatePossibleNewDirs ;# it's good to do it here
   set err {}
   set mnudone 0
   set inidone 0
@@ -1159,6 +1166,21 @@ proc ini::CreateUserDirs {} {
     file mkdir $emdir
     file copy $MNUDIR $emdir
     file copy [file join [file dirname $MNUDIR] em_projects] $emdir
+  }
+  CreatePossibleNewDirs
+}
+#_______________________
+
+proc ini::CreatePossibleNewDirs {} {
+  # Creates a user directories, possibly new after v1.4.0 (e.g. macro).
+
+  namespace upvar ::alited al al DATAUSER DATAUSER
+  set macrodir [file dirname [alited::edit::MacroFile -]]
+  if {![file exists $macrodir]} {
+    file mkdir $macrodir
+    foreach f [glob -nocomplain [file join $DATAUSER macro *]] {
+      file copy $f $macrodir
+    }
   }
 }
 #_______________________

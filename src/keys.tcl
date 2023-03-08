@@ -226,8 +226,8 @@ proc keys::ReservedAdd {} {
   Add action find-next    [alited::pref::BindKey 12 - F3] alited::find::FindNext
   Add action look-declaration    [alited::pref::BindKey 13 - Control-L] "::alited::find::LookDecl ; break"
   Add action look-word    [alited::pref::BindKey 14 - Control-Shift-L] "::alited::find::SearchWordInSession ; break"
-  Add action item-up      [alited::pref::BindKey 15 - F11] {+ ::alited::tree::MoveItem up yes}
-  Add action item-down    [alited::pref::BindKey 16 - F12] {+ ::alited::tree::MoveItem down yes}
+  Add action RESERVED     [alited::pref::BindKey 15 - F11] {+ ::alited::None}
+  Add action play-macro   [alited::pref::BindKey 16 - F12] {+ ::alited::edit::DispatchMacro}
   Add action goto-line    [alited::pref::BindKey 17 - Control-G] {alited::main::GotoLine; break}
   Add action insert-line  [alited::pref::BindKey 18 - Control-P] {alited::main::InsertLine; break}
   if {$::alited::al(IsWindows)} {set i1 %s==0} {set i1 1}

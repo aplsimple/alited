@@ -401,8 +401,18 @@ proc main::CursorPos {wtxt args} {
   if {![winfo exists $wtxt]} return
   if {$args eq {}} {set args [$wtxt index {end -1 char}]}
   lassign [split [$wtxt index insert] .] r c
-  [$obPav Labstat1] configure -text "$r / [expr {int([lindex $args 0])}]"
-  [$obPav Labstat2] configure -text [incr c]
+  set R [expr {int([lindex $args 0])}]
+  set c [incr c]
+  set wrow [$obPav Labstat1]
+  set wcol [$obPav Labstat2]
+  set textrow "$r / $R"
+  set textcol "$c"
+  ::baltip tip $wrow $textrow
+  ::baltip tip $wcol $textcol
+  if {$R>999999} {set textrow "$r / ******"}
+  if {$c>9999} {set textcol ****}
+  $wrow configure -text $textrow
+  $wcol configure -text $textcol
   alited::tree::SaveCursorPos
 }
 #_______________________

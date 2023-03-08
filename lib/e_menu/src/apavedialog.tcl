@@ -879,9 +879,12 @@ oo::class create ::apave::APaveDialog {
   #_______________________
 
   method dlgPath {} {
-    # Gets a path to a last APaveDialog window.
+    # Gets a path to a last APaveDialog or modal window.
 
-    return [my Pdg dlg]
+    if {[catch {set res [my Pdg dlg]}]} {
+      set res $::apave::MODALWINDOW
+    }
+    return $res
   }
   #_______________________
 
@@ -1124,8 +1127,8 @@ oo::class create ::apave::APaveDialog {
     }
     # add the message lines
     set il [set maxw 0]
-    if {$readonly} {
-      # only for messaging (not for editing):
+    if {$readonly && $rotext eq {}} {
+      # only for messaging (not for editing/viewing texts):
       set msg [string map {\\\\n \\n \\n \n} $msg]
     }
     foreach m [split $msg \n] {

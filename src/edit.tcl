@@ -10,6 +10,7 @@
 namespace eval edit {
   variable hlcolors [list]
   variable ans_hlcolors 0
+  variable macrosmode init
 }
 # ________________________ Indent _________________________ #
 
@@ -506,6 +507,210 @@ proc edit::RemoveTrailWhites {{TID ""} {doit no} {skipGUI no}} {
       alited::main::UpdateIcons
     }
   }
+}
+
+# ________________________ Macros _________________________ #
+
+## ________________________ Preparing macros _________________________ ##
+
+proc edit::MacroInit {} {
+  # Initializes macro stuff.
+
+  if {[info command ::playtkl::play] eq {}} {
+    namespace eval :: {
+      source [file join $alited::LIBDIR playtkl playtkl.tcl]
+    }
+  }
+  ::playtkl::inform no
+}
+#_______________________
+
+proc edit::MacroFile {name} {
+  # Gets a file name for a macro.
+  #   name - macro's name
+
+  namespace upvar ::alited al al USERDIR USERDIR
+  if {[file extension $name] ne $al(macroext)} {
+    append name $al(macroext)
+  }
+  return [file join $USERDIR macro [file tail $name]]
+}
+#_______________________
+
+proc edit::MacroMenu {name doit} {
+  # Recreate macros' menu
+  #   name - current macro
+  #   doit - yes if update anyway
+
+  namespace upvar ::alited al al
+  if {$doit || $al(activemacro) ne $name} {
+    set al(activemacro) $name
+    alited::menu::FillMacroItems
+  }
+}
+
+## ________________________ Handling macros _________________________ ##
+
+proc edit::InputMacro {idx} {
+  # Enters/changes a macro.
+  #   idx - index in macro menu
+
+  namespace upvar ::alited al al obDl2 obDl2
+  variable macrosmode
+  set m $al(MENUEDIT).playtkl
+  incr idx ;# for -tearoff menu
+  set al(tmp) [$m entrycget $idx -label]
+  set dir [file dirname [MacroFile .]]
+  set win $al(WIN).macro
+  set head [msgcat::mc "The macro is updated at its recording.\nPress %s to play it."]
+  set head [string map [list %s $al(acc_16)] $head]
+  $obDl2 makeWindow $win.fra $al(MC,playtkl)
+  $obDl2 paveWindow $win.fra [list \
+    [list lab - - 1 7 {-padx 4} [list -t $head]] \
+    [list fil + T 1 7 {-pady 4 -padx 4 -st ew} \
+      "-tvar alited::al(tmp) -w 30 -initialdir {-$dir} -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"] \
+    {seh + T 1 7 {-pady 4}} \
+    {fra + T 1 3 {}} \
+    {.but1 - - - - {-padx 4} {-com 1 -tip "Play Macro" -image alimg_run}} \
+    {.but2 + L 1 1 {} {-com 2 -tip "Record Macro" -image alimg_change}} \
+    {.but3 + L 1 1 {-padx 4} {-com 3 -tip "Delete Macro" -image alimg_delete}} \
+    {h_ fra L 1 3 {-st ew}} \
+    {but + L 1 1 {-st e} {-com 0 -t Close}} \
+  ]
+  after idle [list bind $win <$al(acc_16)> "$win.fra.fra.but1 invoke"]
+  set res [$obDl2 showModal $win -resizable {0 0} -onclose destroy \
+    -geometry pointer+-22+-132 -focus $win.fra.entfil]
+  catch {destroy $win}
+  set name [alited::NormalizeFileName [file root [file tail $al(tmp)]]]
+  unset al(tmp)
+  if {!$res} {
+    set macrosmode "init"
+    return
+  }
+  if {[string length $name]>99 || $name eq {}} {
+    alited::Msg [string map [list %n $name] $al(MC,incorrname)] err
+    return
+  }
+  set fname [MacroFile $name]
+  switch $res {
+    1 {
+      if {[DoMacro play $name]} {
+        MacroMenu $name no
+        set macrosmode "play"
+      }
+    }
+    2 {
+      if {[file exists $fname]} {
+        if {![info exists al(macrotorew)] || $al(macrotorew)<10} {
+          set msg [string map [list %f [file tail $fname]] $al(MC,rewfile)]
+          set al(macrotorew) \
+            [alited::msg yesno warn $msg NO -ch $al(MC,noask) -geometry pointer]
+        }
+        if {!$al(macrotorew)} return
+      }
+      DoMacro record $name
+      }
+    3 {
+      if {![file exists $fname]} {
+        alited::Balloon1 $fname
+        return
+      }
+      if {![info exists al(macrotodel)] || $al(macrotodel)<10} {
+        set msg [string map [list %f [file tail $fname]] $al(MC,delfile)]
+        set al(macrotodel) \
+          [alited::msg yesno warn $msg NO -ch $al(MC,noask) -geometry pointer]
+      }
+      if {$al(macrotodel)} {
+        file delete $fname
+        if {$name eq $al(activemacro)} {
+          set al(activemacro) {}
+        }
+        set macrosmode "init"
+        after idle alited::menu::FillMacroItems
+      }
+    }
+  }
+}
+#_______________________
+
+proc edit::DispatchMacro {{mode ""}} {
+  # Dispatches macro actions.
+  #   mode - what to do
+
+  namespace upvar ::alited al al
+  variable macrosmode
+  alited::bar::SleepTreeTips
+  MacroInit
+  if {$mode ne {}} {set macrosmode $mode}
+  switch -glob $macrosmode {
+    "item*"    {InputMacro [string range $macrosmode 4 end]}
+    "record"   {::playtkl::end; set macrosmode "play"}
+    "play"     {DoMacro play}
+    "quickrec" {DoMacro record $al(MC,quickmacro)}
+    "init"     {DoMacro play $al(activemacro)}
+  }
+}
+#_______________________
+
+proc edit::WatchMacro {} {
+  # Watch the end of recording.
+
+  namespace upvar ::alited al al
+  variable macrosmode
+  if {[::playtkl::isend]} {
+    alited::Message {Recording: done} 5; bell
+    MacroMenu $al(activemacro) yes
+    set macrosmode "play"
+    bell
+  } else {
+    after 200 alited::edit::WatchMacro
+  }
+}
+#_______________________
+
+proc edit::DoMacro {mode {fname ""}} {
+  # Plays or records a macro.
+  #   mode - play / record
+  #   fname - name of recorded file
+
+  namespace upvar ::alited al al
+  variable macrosmode
+  MacroInit
+  if {$macrosmode eq "record"} {  ;# repeated recording?
+    ::playtkl::end
+    WatchMacro
+    return no
+  }
+  set name [file rootname [file tail $fname]]
+  if {$fname ne {}} {
+    set fname [MacroFile $fname]
+    if {$mode eq "play" && ![file exists $fname]} {
+      alited::Balloon1 $fname
+      return no
+    }
+  }
+  set wtxt [alited::main::CurrentWTXT]
+  after idle "focus $wtxt"
+  set macrosmode $mode
+  switch $mode {
+    "record" {
+      set al(activemacro) $name
+      after 100 [list ::playtkl::record $fname $al(acc_16)]
+      after 200 alited::edit::WatchMacro
+      alited::Message "[msgcat::mc Recording:] $name" 5; bell
+      bell
+    }
+    "play" {
+      if {$fname ne {}} {
+        alited::Message "[msgcat::mc Playing:] $name" 3
+      } else {
+        alited::Message {}
+      }
+      ::apave::undoIn $wtxt
+      ::playtkl::replay $fname "::apave::undoOut $wtxt" [list *frAText.text* $wtxt]
+    }
+  }
+  return yes
 }
 
 # _________________________________ EOF _________________________________ #

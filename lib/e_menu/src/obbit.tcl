@@ -88,7 +88,7 @@ namespace eval ::apave {
 
 {{ 3: SunValleyLight} "#050b0d" #050b0d #ffffff #e1e1e1 #1056af #74c9ff #000 #444 grey #1574cd #000 #84d9ff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #76b2f1 #005 #006 #007}
 
-{{ 4: LightBrown}     "#00002f" #00001a #f6f4f2 #f6f4f2 #7b3e30 #edc89b #000 #682800 grey #d59e6d #000000 #deb98c - #dfdddb #000 #ffff45 #e3e2e0 #a30000 #900000 #005 #006 #007}
+{{ 4: LightBrown}     "#00002f" #00001a #f6f4f2 #f6f4f2 #7b3e30 #edc89b #000 #682800 grey #d59e6d #000000 #deb98c - #dfdddb #000 #FBFB95 #e3e2e0 #a30000 #900000 #005 #006 #007}
 
 {{ 5: Grey1}          "#050b0d" #050b0d #F8F8F8 #dadad8 #933232 #b8b8b8 #000 #444 grey #843e3e #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #76b2f1 #005 #006 #007}
 
@@ -110,9 +110,9 @@ namespace eval ::apave {
 
 {{14: GreenPeace}     "#001000" #001000 #e1ffdd #cfe4cf #733f3f #a5c3a1 #000 #185818 grey #af4e4e #000 #9cb694 - #c1dbc1 #000 #FBFB96 #d2e1d2 #a20000 #76b2f1 #005 #006 #007}
 
-{{15: African}        "#000000" #000000 #ffffff #ffffe7 #8a4444 #ffd797 #000 #682800 #7e7e7e #a44a2d #000 #f7bf91 - #e7e7cf #000 #eded89 #ededd5 #a20000 #76b2f1 #005 #006 #007}
+{{15: African}        "#000000" #000000 #ffffff #ffffe7 #8a4444 #ffd797 #000 #682800 #7e7e7e #a44a2d #000 #f7bf91 - #e7e7cf #000 #fbfb74 #ededd5 #a20000 #76b2f1 #005 #006 #007}
 
-{{16: African1}       "#000000" #000000 #ffffff #ebebd3 #8a4444 #ebc383 #000 #682800 #7e7e7e #9d4326 #000 #f7bf91 - #dbdbc3 #000 #eded89 #ededd5 #a20000 #76b2f1 #005 #006 #007}
+{{16: African1}       "#000000" #000000 #ffffff #ebebd3 #8a4444 #ebc383 #000 #682800 #7e7e7e #9d4326 #000 #f7bf91 - #dbdbc3 #000 #fbfb74 #ededd5 #a20000 #76b2f1 #005 #006 #007}
 
 {{17: African2}       "#000000" #000000 #f7f7dc #dedbb4 #8e4848 #f2b482 #000 #682800 grey #9f4528 #000 #e6ae80 - #ccc9a2 #000 #fbfb74 #e7e7cb #a20000 #76b2f1 #005 #006 #007}
 
@@ -122,9 +122,9 @@ namespace eval ::apave {
 
 {{20: Notebook1}      "#000000" #000000 #dad2b9 #bfb9a5 #692323 #d59d6f #000 #682800 #707070 #92381b #000 #ba9671 - #c5bfab #000 #eded89 #ccc4ab #a20000 #76b2f1 #005 #006 #007}
 
-{{21: Notebook2}      "#000000" #000000 #d1c9b0 #b1ab97 #692323 #d59d6f #000 #682800 #606060 #92381b #000 #c38b5d - #bdb7a3 #000 #eded89 #c1b9a0 #980000 #76b2f1 #005 #006 #007}
+{{21: Notebook2}      "#000000" #000000 #d1c9b0 #b1ab97 #692323 #d59d6f #000 #682800 #606060 #92381b #000 #c38b5d - #bdb7a3 #000 #e3e37f #c1b9a0 #980000 #76b2f1 #005 #006 #007}
 
-{{22: Notebook3}      "#000000" #000000 #c2baa1 #a6a08c #793333 #cb9365 #000 #682800 #505050 #973d20 #000 #d59d6f - #b3ad99 #000 #eded89 #b2aa91 #7b1010 #76b2f1 #005 #006 #007}
+{{22: Notebook3}      "#000000" #000000 #c2baa1 #a6a08c #793333 #cb9365 #000 #682800 #505050 #973d20 #000 #d59d6f - #b3ad99 #000 #dada76 #b2aa91 #7b1010 #76b2f1 #005 #006 #007}
 
 {{23: Dusk}           "#ececec" #ececec #1a1f21 #262b2d #9fc99f #217346 #FFF #f4f49f #585d5f #99c399 #fff #225c3b - #363b3d #000 #9d9d60 #23282a #ffc341 #99dd99 #005 #006 #007}
 

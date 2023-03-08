@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.0.0
+package provide apave 4.0.1
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -294,7 +294,7 @@ oo::class create ::apave::APave {
         butOK $inopts $args {} {*}$centerme -input yes]} e]} {
       catch {destroy $_pdg(dlg)}  ;# Query's window
       ::apave::obj ok err "ERROR" "\n$e\n" \
-        -t 1 -head "\nAPaveInput returned an error: \n" -hfg red -weight bold
+        -t 1 -head "\nAPave returned an error: \n" -hfg red -weight bold
       return 0
     }
     if {![lindex $res 0]} {  ;# restore old values if OK not chosen

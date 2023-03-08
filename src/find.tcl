@@ -1159,15 +1159,6 @@ proc find::NextFoundByList {{focusDLG yes}} {
 
 # _____________________ Find/Replace dialogue ____________________ #
 
-proc find::_close {} {
-  # Closes Find/Replace dialogue.
-
-  namespace upvar ::alited obFND obFND
-  catch {destroy $::alited::find::win}
-  ClearTags
-}
-#_______________________
-
 proc find::_create {} {
   #$ Creates Find/Replace dialogue.
 
