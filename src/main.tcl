@@ -365,11 +365,18 @@ proc main::HighlightText {TID curfile wtxt} {
         -font $al(FONT,txt) -colors $Ccolors \
         -insertwidth $al(CURSORWIDTH)
     } else {
+      set pltext [expr {![alited::file::IsTcl $curfile]}]
+      if {$pltext} {
+        set plcom [alited::HighlightAddon $wtxt $curfile $colors]
+        if {$plcom ne {}} {set pltext 0}
+      } else {
+        set plcom {}
+      }
       ::hl_tcl::hl_init $wtxt -dark [$obPav csDark] \
         -multiline $al(prjmultiline) -keywords $al(ED,TclKeyWords) \
         -cmd "::alited::edit::Modified $TID" \
         -cmdpos ::alited::main::CursorPos \
-        -plaintext [expr {![alited::file::IsTcl $curfile]}] \
+        -plaintext $pltext -plaincom $plcom \
         -font $al(FONT,txt) -colors $colors \
         -insertwidth $al(CURSORWIDTH)
     }
@@ -409,7 +416,7 @@ proc main::CursorPos {wtxt args} {
   set textcol "$c"
   ::baltip tip $wrow $textrow
   ::baltip tip $wcol $textcol
-  if {$R>999999} {set textrow "$r / ******"}
+  if {$R>99999} {set textrow "$r / *****"}
   if {$c>9999} {set textcol ****}
   $wrow configure -text $textrow
   $wcol configure -text $textcol

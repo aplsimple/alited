@@ -97,7 +97,7 @@ namespace eval ::alited {
     {Create File} {Datei erzeugen}
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Einen Namen eingeben für eine Datei, die erzeugt wird in:\n%d\n\nWenn es ein Verzeichnis ist, wähle 'Verzeichnis'-Box aus. Das Verzeichnis kann Unterverzeichnisse enthalten (a/b/c)."
     {Delete File} {Datei löschen}
-    "File %f already exists in\n%d" "Datei %f existinert schon in\n%d"
+    "\nFile \"%f\" already exists in\n%d\n" "\nDatei \"%f\" existinert schon in\n%d\n"
     "\nFile\n  \"%f\"\ndoesn't exist.\n" "\nDatei\n  \"%f\"\nexistiert nicht.\n"
     {Delete Unit(s)} {Einheit(en) löschen}
     {No item selected.} {Kein Element ausgewählt}
@@ -153,7 +153,7 @@ namespace eval ::alited {
     "Open All Tcl Files of \"%n\"" "Öffne alle Tcl-Dateien in \"%n\""
     "Remove \"%n\"\nfrom \"%f\"?" "Entferne \"%n\"\nvon \"%f\"?"
     "Delete \"%f\"?" "Lösche \"%f\"?"
-    "Rewrite \"%f\"?" "Überschreiben \"%f\"?"
+    {Rewrite} {Überschreiben}
     {An open file can not be deleted:} {Eine offene Datei kann nicht gelöscht werden:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Datei \"%f\" wurde durch eine Applikation geändert.\n\nBearbeitung beenden und Datei neu laden?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Datei \"%f\" wurde durch eine Applikation gelöscht.\n\nDatei speichern?"
@@ -585,7 +585,6 @@ namespace eval ::alited {
     {Play Macro} {Makro wiedergeben}
     {Record Macro} {Makro aufnehmen}
     {Delete Macro} {Makro löschen}
-    {Directory of Macros} {Verzeichnis der Makros}
   }
 
   ## ________________________ Misc. ________________________ ##

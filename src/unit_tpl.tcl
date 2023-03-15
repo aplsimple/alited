@@ -163,8 +163,10 @@ proc unit_tpl::Select {{item ""}} {
       set cont [lindex $tplcont $isel]
       set indent [IsIndented [lindex $tplinds $isel] $cont]
       set wtxt [$obDl3 TexTpl]
+      ::hl_tcl::iscurline $wtxt no
       $wtxt delete 1.0 end
       $wtxt insert end $cont
+      InText $wtxt
       if {[$tree selection] ne $item} {
         $tree selection set $item
       }
@@ -224,7 +226,11 @@ proc unit_tpl::InText {wtxt} {
   namespace upvar ::alited obDl3 obDl3
   if {[set isel [Selected index no]] ne {}} {
     set pos [lindex $tplpos $isel]
-    ::tk::TextSetCursor $wtxt $pos
+    after idle " \
+      ::hl_tcl::iscurline $wtxt yes ; \
+      ::tk::TextSetCursor $wtxt $pos ; \
+      event generate $wtxt <Enter> ;# to force highlighting
+      "
   }
 }
 #_______________________
@@ -235,9 +241,9 @@ proc unit_tpl::SyntaxText {wtxt} {
 
   namespace upvar ::alited al al obDl3 obDl3
   set clrnams [::hl_tcl::hl_colorNames]
-  set clrCURL [lindex [$obDl3 csGet] 2]  ;# no line highlighting
   foreach nam $clrnams {lappend colors $al(ED,$nam)}
-  lappend colors $clrCURL
+  lassign [::hl_tcl::addingColors] clrCURL clrCMN2
+  lappend colors $clrCURL $clrCMN2
   alited::SyntaxHighlight tcl $wtxt $colors
 }
 #_______________________

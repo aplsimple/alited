@@ -1,8 +1,6 @@
-KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8341748 %K=End %b=?? %x=-135 %y=220 %s=16 %d=??
-KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8341820 %K=End %b=?? %x=-135 %y=220 %s=16 %d=??
-KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8342484 %K=Home %b=?? %x=-135 %y=220 %s=16 %d=??
-KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8342548 %K=Home %b=?? %x=-135 %y=220 %s=16 %d=??
-KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8343620 %K=Shift_L %b=?? %x=-135 %y=220 %s=16 %d=??
-KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8343915 %K=End %b=?? %x=-135 %y=220 %s=17 %d=??
-KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8343971 %K=End %b=?? %x=-135 %y=220 %s=17 %d=??
-KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text %t=8344147 %K=ISO_Next_Group %b=?? %x=-135 %y=220 %s=17 %d=??
+KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text_tab1 %t=2331312 %K=Home %b=?? %x=355 %y=394 %s=262144 %d=??
+KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text_tab1 %t=2331375 %K=Home %b=?? %x=355 %y=394 %s=262144 %d=??
+KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text_tab1 %t=2332281 %K=Shift_L %b=?? %x=355 %y=394 %s=0 %d=??
+KeyPress .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text_tab1 %t=2332656 %K=End %b=?? %x=355 %y=394 %s=262145 %d=??
+KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text_tab1 %t=2332734 %K=End %b=?? %x=355 %y=394 %s=262145 %d=??
+KeyRelease .alwin.fra.fra.pan.panR.fraTop.panTop.frAText.text_tab1 %t=2332906 %K=Shift_L %b=?? %x=355 %y=394 %s=1 %d=??

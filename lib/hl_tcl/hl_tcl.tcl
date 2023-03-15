@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 0.9.49
+package provide hl_tcl 1.0.0
 
 # ______________________ Common data ____________________ #
 
@@ -86,7 +86,7 @@ namespace eval ::hl_tcl {
     #  COM     COMTK    STR      VAR     CMN     PROC    OPT    BRAC
     set data(SYNTAXCOLORS,0) {
       {#121212 #000000 #0c560c #4A181B #606060 #923B23 #463e11 #FF0000}
-      {#e0e0e0 #efefef #84e284 #eebabf #888888 #ffa500 #c2ba8d #ff33ff}
+      {#e0e0e0 #efefef #b1fabd #eebabf #888888 #ffa500 #c2ba8d #ff33ff}
     }
     set data(SYNTAXCOLORS,1) {
       {#923B23 #7d1c00 #035103 #4A181B #4b5d50 #ca14ca #463e11 #FF0000}
@@ -346,12 +346,22 @@ proc ::hl_tcl::my::HighlightComment {txt line ln k} {
 #_______________________
 
 proc ::hl_tcl::my::HighlightLine {txt ln prevQtd} {
-  # Highlightes a line in text.
+  # Highlights a line in text.
   #   txt - text widget's path
   #   ln - line's number
   #   prevQtd - flag of "being quoted" from the previous line
 
   variable data
+  if {$data(ISPLAINCOM,$txt)} {
+    # plain highlighting: for the current line
+    set res [{*}$data(PLAINCOM,$txt) $txt $ln $prevQtd]
+    if {$res in {-1 0 1}} {
+      return $res ;# to be continued in a next line with prevQtd
+    }
+    # if the line was highlighted okay, skip the highlighting as Tcl code
+    if {$res} {return 0}
+    # otherwise highlight it below as Tcl code
+  }
   set line [$txt get $ln.0 $ln.end]
   if {$prevQtd==-1} {  ;# comments continued
     HighlightComment $txt $line $ln 0
@@ -429,9 +439,9 @@ proc ::hl_tcl::my::CoroHighlightAll {txt} {
       RemoveTags $txt 1.0 end
       set maxl [expr {min($data(SEEN,$txt),$tlen)}]
       set maxl [expr {min($data(SEEN,$txt),$tlen)}]
-      for {set currQtd [set ln [set lnseen 0]]} {$ln<=$tlen} {} {
-        set currQtd [HighlightLine $txt $ln $currQtd]
+      for {set currQtd [set ln [set lnseen 0]]} {$ln<$tlen} {} {
         incr ln
+        set currQtd [HighlightLine $txt $ln $currQtd]
         if {[incr lnseen]>$data(SEEN,$txt)} {
           set lnseen 0
           after idle after 1 [info coroutine]
@@ -470,6 +480,17 @@ proc ::hl_tcl::my::CountQSH {txt ln} {
 }
 #_______________________
 
+proc hl_tcl::my::IsCurline {txt {flag ""}} {
+  # Sets / gets "highlight a current line" flag for a text.
+  #   txt - the text's path
+  #   flag - the flag
+
+  variable data
+  if {$flag eq {}} {return $data(HL_CURLINE,$txt)}
+  set data(HL_CURLINE,$txt) $flag
+}
+#_______________________
+
 proc ::hl_tcl::my::ShowCurrentLine {txt {doit no}} {
   # Shows the current line.
   #   txt - text widget's path
@@ -485,10 +506,12 @@ proc ::hl_tcl::my::ShowCurrentLine {txt {doit no}} {
     set cn2 $cn
     set data(CURPOS,$txt) [set data(NLINES,$txt) 0]
   }
-  if {$doit || int($data(CURPOS,$txt))!=$ln || $data(NLINES,$txt)!=$nlines \
-  || $ln!=$ln2 || abs($cn-$cn2)>1 || $cn<2} {
-    $txt tag remove tagCURLINE 1.0 end
-    $txt tag add tagCURLINE [list $pos linestart] [list $pos lineend]+1displayindices
+  if {[IsCurline $txt]} {
+    if {$doit || int($data(CURPOS,$txt))!=$ln || $data(NLINES,$txt)!=$nlines \
+    || $ln!=$ln2 || abs($cn-$cn2)>1 || $cn<2} {
+      $txt tag remove tagCURLINE 1.0 end
+      $txt tag add tagCURLINE [list $pos linestart] [list $pos lineend]+1displayindices
+    }
   }
   set data(NLINES,$txt) $nlines
   set data(CURPOS,$txt) $pos
@@ -1065,16 +1088,19 @@ proc ::hl_tcl::hl_init {txt args} {
   #   -font - attributes of font
   #   -seen - lines seen at start
   #   -keywords - additional commands to highlight (as Tk ones)
+  #   -dobind - if yes, forces key bindings
   # This procedure has to be called before writing a text in the text widget.
   # See also: hl_colorNames
 
   if {[set setonly [expr {[lindex $args 0] eq {--}}]]} {
     set args [lrange $args 1 end]
   }
+  iscurline $txt 1
   set ::hl_tcl::my::data(REG_TXT,$txt) {}  ;# disables Modified at changing the text
   set ::hl_tcl::my::data(KEYWORDS,$txt) {}
-  foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 \
-  -multiline 1 -seen 500 -plaintext no -insertwidth 2 -keywords {}} {
+  set ::hl_tcl::my::data(DOBIND,$txt) 0
+  foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 -dobind 0 \
+  -multiline 1 -seen 500 -plaintext no -plaincom {} -insertwidth 2 -keywords {}} {
     if {[dict exists $args $opt]} {
       set val [dict get $args $opt]
     } elseif {$setonly} {
@@ -1107,6 +1133,7 @@ proc ::hl_tcl::hl_init {txt args} {
     } else {
       set ::hl_tcl::my::data(FONT,$txt) [font actual TkFixedFont]
     }
+    set ::hl_tcl::my::data(ISPLAINCOM,$txt) [expr {$::hl_tcl::my::data(PLAINCOM,$txt) ne {}}]
   }
   if {!$setonly || [dict exists $args -readonly]} {
     hl_readonly $txt $::hl_tcl::my::data(READONLY,$txt)
@@ -1147,7 +1174,8 @@ proc ::hl_tcl::hl_text {txt} {
   $txt tag raise tagBRACKETERR
   catch {$txt tag raise hilited;  $txt tag raise hilited2} ;# for apave package
   my::HighlightAll $txt
-  if {![info exists ::hl_tcl::my::data(BIND_TXT,$txt)]} {
+  if {![info exists ::hl_tcl::my::data(BIND_TXT,$txt)] ||
+  [info exists ::hl_tcl::my::data(DOBIND,$txt)] && $::hl_tcl::my::data(DOBIND,$txt)} {
     my::BindToEvent $txt <FocusIn> ::hl_tcl::my::MemPos $txt
     my::BindToEvent $txt <KeyPress> ::hl_tcl::my::MemPos1 $txt yes %K %s
     my::BindToEvent $txt <KeyRelease> ::hl_tcl::my::MemPos $txt
@@ -1280,5 +1308,14 @@ proc ::hl_tcl::hl_commands {} {
 
   variable my::data
   return [list {*}$my::data(PROC_TCL) {*}$my::data(CMD_TCL) {*}$my::data(CMD_TK)]
+}
+#_______________________
+
+proc hl_tcl::iscurline {txt {flag ""}} {
+  # Sets / gets "highlight a current line" flag for a text.
+  #   txt - the text's path
+  #   flag - the flag
+
+  return [my::IsCurline $txt $flag]
 }
 # _________________________________ EOF _________________________________ #

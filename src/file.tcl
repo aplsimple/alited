@@ -690,6 +690,7 @@ proc file::SaveFileAs {{TID ""}} {
   } elseif {[set res [SaveFileByName $TID $fname]]} {
     RenameFile $TID $fname
     alited::main::ShowHeader yes
+    alited::edit::MacroUpdate $fname
     if {$al(TREE,isunits)} {set fname {}}
     alited::tree::RecreateTree {} $fname
     alited::tree::SeeSelection
@@ -730,6 +731,7 @@ proc file::CloseAndDelete {} {
     if {[SaveAndClose]} {
       DeleteFile $fname
       if {!$al(TREE,isunits)} {alited::tree::RecreateTree {} {} yes}
+      alited::edit::MacroUpdate $fname
     }
   }
 }

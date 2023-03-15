@@ -18,7 +18,7 @@ pos=9.22
 ::EM_COMOPT=
 ::EMENUGREP=
 ::EMENUTF=-e .
-::EMENUTFLIST={} {-e /menus} {-F -e .msg -e .txt} {-F -e .png} {-e data/}
+::EMENUTFLIST={} {-e /menus -e alited.ini} {-F -e .msg -e .txt} {-F -e .png} {-e data/}
 %C if {![info exist ::EMENUCOMMIT]} {set ::EMENUCOMMIT ""}
 %C if {![info exist ::EMENUCOMMIT1]} {set ::EMENUCOMMIT1 tip}
 %C if {![info exist ::EMENUCOMMIT2]} {set ::EMENUCOMMIT2 ""}

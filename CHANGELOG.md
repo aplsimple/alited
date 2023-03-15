@@ -1,7 +1,19 @@
 # LAST CHANGES:
 
 
-Version `v1.4.1a4 (9 Mar'23)`
+Version `v1.4.2 (15 Mar'23)`
+
+  - BUGFIX: highlight a current line in texts of Preferences & Projects
+  - NEW   : highlight a current line in Templates' text
+  - NEW   : highlight syntax for .md, .htm*, .em, .alm files (all treated as texts)
+  - CHANGE: macros' procedures refactored
+  - CHANGE: *.alm files (macros), esp. for Windows
+  - CHANGE: undo/redo of (un)indenting: at one blow
+  - CHANGE: docs
+  - CHANGE: packages: apave/e_menu 4.0.2, hl_tcl 1.0.0
+
+
+Version `v1.4.1 (8 Mar'23)`
 
   - BUGFIX: "Preferences": choose a menu for bar/menu tools with wildcards (%s etc.)
   - BUGFIX: show row/col in status bar for them too big
@@ -47,7 +59,7 @@ Version `v1.3.6 (8 Feb'23)`
   - NEW   : 3 profilers, available via Templates
   - NEW   : "Sort by name/date/size/ext" in tab bar's popup menu
   - NEW   : "Files to Beginning" in tab bar's popup menu: if "no", no moving tabs;
-            if "yes", placing all open files' tabs to the beginning of bar
+            - if "yes", placing all open files' tabs to the beginning of bar
   - NEW   : length of Tab = "Indentation" option of a project if it > 1
   - NEW   : File menu: Close & Delete, for files a-la "try & drop"
   - NEW   : Find/Replace: a button to resize

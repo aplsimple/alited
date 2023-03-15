@@ -138,7 +138,7 @@ namespace eval ::apave {
 
 {{28: SunValleyDark} "#ececec" #c7c7c7 #272727 #323232 #aae2ff #2a627f #fff #f4f49f grey #7cb4d1 #fff #245c79 - #444444 #000 #aaaa6d #343434 #ffc341 #76b2f1 #005 #006 #007}
 
-{{29: DarkBrown}      "#e0e0e0" #e0e0e0 #0a0a0a #232323 #de9e5e #765632 #fff #f4f49f #616161 #aa7d3d #dfdfdf #62421e - #303030 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
+{{29: DarkBrown}      "#e0e0e0" #e0e0e0 #171717 #232323 #de9e5e #6d4d29 #fff #f4f49f #616161 #aa7d3d #dfdfdf #62421e - #303030 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
 
 {{30: Dark1}          "#E0D9D9" #C4C4C4 #212121 #292929 #de9e5e #6c6c6c #fff #f4f49f #606060 #ba8d4d #000 #767676 - #363636 #000 #9d9d60 #292929 #ffc341 #76b2f1 #005 #006 #007}
 

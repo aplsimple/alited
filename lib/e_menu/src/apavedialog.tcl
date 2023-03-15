@@ -1238,7 +1238,7 @@ oo::class create ::apave::APaveDialog {
               -command \"[self] findInText 1\"
              $addpopup
              \$pop add separator
-             \$pop add command [my iconA exit] -accelerator Esc -label \"Exit\" \\
+             \$pop add command [my iconA exit] -accelerator Esc -label \"Close\" \\
               -command \"\[[self] Pdg defb1\] invoke\"
             "
           } else {
@@ -1262,7 +1262,7 @@ oo::class create ::apave::APaveDialog {
              $addpopup
              \$pop add separator
              \$pop add command [my iconA SaveFile] -accelerator Ctrl+W \\
-             -label \"Save and Exit\" -command \"[self] res $qdlg 1\"
+             -label \"Save and Close\" -command \"[self] res $qdlg 1\"
             "
         }
         set onclose [namespace current]::exitEditor

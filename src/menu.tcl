@@ -169,7 +169,12 @@ proc menu::FillMacroItems {} {
     }
   }
   if {!$idx} {
-    catch {file mkdir [file dirname $pattern]}
+    if {[catch {set _ [$m entrycget 1 -label]}]} {
+      after idle {
+        alited::ini::CreateMacrosDir  ;# initialize macros
+        alited::menu::FillMacroItems  ;# and refill this menu
+      }
+    }
     $m add command {*}[MacroOptions item0 $al(MC,new)]
   }
   $m add separator

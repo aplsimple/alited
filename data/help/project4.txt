@@ -16,6 +16,7 @@
    <b>cd "a-project-root-dir"</b>
    rm log.txt
    echo ----------------
+   fossil status --changed
    fossil extras
 
  Check the checkbuttons <b>"Run it"</b> to activate

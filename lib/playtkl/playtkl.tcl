@@ -278,10 +278,10 @@ proc playtkl::end {} {
 #_______________________
 
 proc playtkl::isend {} {
-  # Checks if no recording is performed.
+  # Checks if the recording is done.
 
   variable dd
-  return [expr {$dd(endkey) in {- ""}}]
+  expr {!$dd(isrec)}
 }
 
 # _______________________ EOF _______________________ #

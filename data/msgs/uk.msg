@@ -102,7 +102,7 @@ namespace eval ::alited {
     {Create File} {Створити файл}
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Введіть ім'я файлу, створюваного в:\n%d\n\nЯкщо це каталог, включіть опцію 'Каталог'.\nКаталог може включати підкаталоги (a/b/c)."
     {Delete File} {Видалити файл}
-    "File %f already exists in\n%d" "Файл %f вже існує в\n%d"
+    "\nFile \"%f\" already exists in\n%d\n" "\nФайл \"%f\" вже існує в\n%d\n"
     "\nFile\n  \"%f\"\ndoesn't exist.\n" "\nФайл\n  \"%f\"\nне існує.\n"
     {Delete Unit(s)} {Видалити юніт(и)}
     {No item selected.} {Запис не выбраний.}
@@ -158,7 +158,7 @@ namespace eval ::alited {
     "Open All Tcl Files of \"%n\"" "Відкрити всі файли Tcl з \"%n\""
     "Remove \"%n\"\nfrom \"%f\"?" "Видалити \"%n\"\nз \"%f\"?"
     "Delete \"%f\"?" "Видалити \"%f\"?"
-    "Rewrite \"%f\"?" "Перезаписати \"%f\"?"
+    {Rewrite} {Перезаписати}
     {An open file can not be deleted:} {Неможливо видалити відкритий файл:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" був змінений іншою програмою.\n\nВідмінити вашу редакцію та завантажити файл знову?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" був видалений іншою програмою.\n\nЗберігти файл?"
@@ -589,7 +589,6 @@ namespace eval ::alited {
     {Play Macro} {Прокрутити макрос}
     {Record Macro} {Записати макрос}
     {Delete Macro} {Видалити макрос}
-    {Directory of Macros} {Директорія макросів}
   }
 
   ## ________________________ Misc. ________________________ ##

@@ -706,13 +706,14 @@ proc find::FindNext {} {
   # Performs "find next" (F3 key) for the current text.
 
   namespace upvar ::alited al al obPav obPav
+  variable win2
   set wtxt [alited::main::CurrentWTXT]
   if {[info exists al(findSearchByList)] && $al(findSearchByList) eq $wtxt} {
     NextFoundByList no
     return
   }
-  if {[$wtxt tag nextrange fndTag 1.0] ne {}} {
-    NextFoundByList no  ;# go to the next highlighted string
+  if {[$wtxt tag nextrange fndTag 1.0] ne {} && [winfo exists $win2]} {
+    NextFoundByList no  ;# go to the next highlighted (specific for "Find by list")
     return
   }
   alited::Message {}
@@ -803,7 +804,7 @@ proc find::ReplaceInText {} {
   set fname [file tail [alited::bar::FileName]]
   set msg [string map [list %f $fname %s [FindReplStr $data(en1)] \
     %r [FindReplStr $data(en2)]] $al(MC,frdoit1)]
-  if {![alited::msg yesno warn $msg NO]} {
+  if {![alited::msg yesno warn $msg YES]} {
     return {}
   }
   set wtxt [alited::main::CurrentWTXT]
@@ -827,7 +828,7 @@ proc find::ReplaceInSession {} {
   }
   set msg [string map [list %s [FindReplStr $data(en1)] \
     %r [FindReplStr $data(en2)] %S $S] $al(MC,frdoit2)]
-  if {![alited::msg yesno warn $msg NO]} {
+  if {![alited::msg yesno warn $msg YES]} {
     return {}
   }
   set rn 0

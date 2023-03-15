@@ -257,7 +257,7 @@ proc ::em::createpopup {} {
     -label About... -command ::em::about
   .em.emPopupMenu add separator
   .em.emPopupMenu add command {*}[iconA exit] -accelerator Esc \
-    -label Exit -command ::em::on_exit
+    -label Close -command ::em::on_exit
   .em.emPopupMenu configure -tearoff 0
 }
 #_______________________
@@ -886,7 +886,7 @@ proc ::em::writeable_command {cmd} {
       set cmd [string map {"\n" "\\n"} $cmd]
       prepr_name cmd
     } else {
-      set cmd {}  ;# saving only: after Ctrl+W or "Save & Exit" of popup menu
+      set cmd {}  ;# saving only: after Ctrl+W or "Save & Close" of popup menu
     }
   } else {
     set cmd {}

@@ -1892,21 +1892,21 @@ proc project::_create {} {
   }
   bind $lbx <Double-Button-1> {::alited::project::OpenFile %y}
   ::baltip tip $lbx {::alited::project::TipOnFile %i} -shiftX 10
-  if {$ilast>-1} {Select $ilast}
   after 500 ::alited::project::HelpMe ;# show an introduction after a short pause
   set prjtex [$obDl2 TexPrj]
   set klndtex [$obDl2 TexKlnd]
   bind $prjtex <FocusOut> alited::project::SaveNotes
+  if {$ilast>-1} {Select $ilast}
+  $obDl2 displayText [$obDl2 TexTemplate] $al(PTP,text)
   ::hl_tcl::hl_init $prjtex -dark [$obDl2 csDark] -plaintext 1 \
-    -cmdpos ::alited::None \
-    -font $al(FONT) -insertwidth $al(CURSORWIDTH)
-  ::hl_tcl::hl_init $klndtex -dark [$obDl2 csDark] -plaintext 1 \
-    -cmd ::alited::project::KlndTextModified \
-    -cmdpos ::alited::None \
+    -cmdpos ::alited::None -dobind yes \
     -font $al(FONT) -insertwidth $al(CURSORWIDTH)
   ::hl_tcl::hl_text $prjtex
+  ::hl_tcl::hl_init $klndtex -dark [$obDl2 csDark] -plaintext 1 \
+    -cmd ::alited::project::KlndTextModified \
+    -cmdpos ::alited::None -dobind yes \
+    -font $al(FONT) -insertwidth $al(CURSORWIDTH)
   ::hl_tcl::hl_text $klndtex
-  $obDl2 displayText [$obDl2 TexTemplate] $al(PTP,text)
   set res [$obDl2 showModal $win -geometry $geo -minsize {600 400} -resizable 1 \
     -onclose ::alited::project::Cancel -focus [$obDl2 TreePrj]]
   set oldTab [$win.fra.fraR.nbk select]

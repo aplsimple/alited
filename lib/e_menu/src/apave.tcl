@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.0.1
+package provide apave 4.0.2
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -342,10 +342,10 @@ oo::class create ::apave::APave {
     }
     lassign [::apave::parseOptions $args -rotext {} -readonly 1 -ro 1] rotext readonly ro
     lassign [::apave::extractOptions args -buttons {}] buttadd
-    set btns {Exit 0}  ;# by default 'view' mode
+    set btns {Close 0}  ;# by default 'view' mode
     set oper VIEW
     if {$rotext eq {} && (!$readonly || !$ro)} {
-      set btns {Save 1 Cancel 0}
+      set btns {Save 1 Close 0}
       set oper EDIT
     }
     if {$fg eq {}} {

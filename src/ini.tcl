@@ -1171,8 +1171,8 @@ proc ini::CreateUserDirs {} {
 }
 #_______________________
 
-proc ini::CreatePossibleNewDirs {} {
-  # Creates a user directories, possibly new after v1.4.0 (e.g. macro).
+proc ini::CreateMacrosDir {} {
+  # Creates macros' directory.
 
   namespace upvar ::alited al al DATAUSER DATAUSER
   set macrodir [file dirname [alited::edit::MacroFile -]]
@@ -1182,6 +1182,13 @@ proc ini::CreatePossibleNewDirs {} {
       file copy $f $macrodir
     }
   }
+}
+#_______________________
+
+proc ini::CreatePossibleNewDirs {} {
+  # Creates a user directories, possibly new after v1.4.0 (e.g. macro).
+
+  CreateMacrosDir
 }
 #_______________________
 

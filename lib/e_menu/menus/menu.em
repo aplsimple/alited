@@ -28,6 +28,7 @@ SE: %IF {%EE}!="" %THEN $::_EM_EE_
 RE: %IF "%x"==".tcl" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
 RE: %IF "%x"==".tcl" %THEN %T tclsh "$::EMENURUNFILE" $::_EM_AR_
 RE: %IF "%x"==".py"  %THEN %t python3 "$::EMENURUNFILE" %AR
+RE: %IF "%x"==".sh"  %THEN %t "$::EMENURUNFILE"
 SE: %IF {%RF}!="" %THEN %RF
 RE: %IF {%AR}=="" && ![::iswindows] %THEN %O "$::EMENURUNFILE"
 RE: "$::EMENURUNFILE" %AR

@@ -1,4 +1,4 @@
-package ifneeded alited 1.4.1a4 [list source [file join $dir alited.tcl]]
+package ifneeded alited 1.4.2 [list source [file join $dir alited.tcl]]
 
 namespace eval ::alited {
 
@@ -19,7 +19,7 @@ It satisfies most requirements of [Tcl Editors](https://wiki.tcl-lang.org/Tcl+Ed
 
 Edited by *alited* are [Tcl/Tk](https://wiki.tcl-lang.org/) files. The C/C++ code is another target of *alited*, still for *[Tcl/Tk](https://wiki.tcl-lang.org/) development only* all the same.
 
-The *alited* facilitates the development and the maintenance of [Tcl/Tk](https://wiki.tcl-lang.org/) code, particularly because of the [unit tree](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/2.Units_alited-1.3.5.mp4) being a sort of documentation.
+The *alited* facilitates the development and the maintenance of [Tcl/Tk](https://wiki.tcl-lang.org/) code, particularly because of the [unit tree](https://aplsimple.github.io/en/tcl/alited/index.html#units) being a sort of documentation.
 
 The *alited* is suspected of being very good with large [Tcl/Tk](https://wiki.tcl-lang.org/) projects, i.e. when, in one session, you deal with 30-40-50... [Tcl/Tk](https://wiki.tcl-lang.org/) scripts, to say nothing of others.
 
@@ -45,20 +45,15 @@ Briefly, *alited* is totally quick, being at that *a pure [Tcl/Tk](https://wiki.
 
 For a quick acquaintance of *alited*, a few of demo videos are available:
 
-   * [1. First start](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/1.Start_alited-1.3.5.mp4)
-   * [2. Units](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/2.Units_alited-1.3.5.mp4)
-   * [3. Projects](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/3.Projects_alited-1.3.5.mp4)
-   * [4. Find and replace](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/4.Find_alited-1.3.5.mp4)
-   * [5. Tools](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/5.Tools_alited-1.3.5.mp4)
-   * [6. Themes](https://github.com/aplsimple/alited/releases/download/Demos_of_alited-1.3.5/6.Themes_alited-1.3.5.mp4)
+   * [Demos of alited v1.4](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.4)
 
 ## Links
 
-   * [Description](https://aplsimple.github.io/en/tcl/alited)
+   * [Description](https://aplsimple.github.io/en/tcl/alited/index.html)
    * [Reference](https://aplsimple.github.io/en/tcl/alited/alited.html)
    * [Source #1](https://chiselapp.com/user/aplsimple/repository/alited/download)
    * [Source #2](https://github.com/aplsimple/alited)
-   * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.3)
+   * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4)
 
 ## Inevitable blah-blah
 

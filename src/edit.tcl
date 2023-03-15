@@ -52,6 +52,7 @@ proc edit::Indent {} {
   set len [string length $::apave::_AP_VARS(INDENT)]
   set sels [SelectedLines]
   set wtxt [lindex $sels 0]
+  ::apave::undoIn $wtxt
   foreach {l1 l2} [lrange $sels 1 end] {
     for {set l $l1} {$l<=$l2} {incr l} {
       set line [$wtxt get $l.0 $l.end]
@@ -70,6 +71,7 @@ proc edit::Indent {} {
       }
     }
   }
+  ::apave::undoOut $wtxt
   alited::main::HighlightLine
 }
 #_______________________
@@ -81,6 +83,7 @@ proc edit::UnIndent {} {
   set spaces [list { } \t]
   set sels [SelectedLines]
   set wtxt [lindex $sels 0]
+  ::apave::undoIn $wtxt
   foreach {l1 l2} [lrange $sels 1 end] {
     for {set l $l1} {$l<=$l2} {incr l} {
       set line [$wtxt get $l.0 $l.end]
@@ -95,6 +98,7 @@ proc edit::UnIndent {} {
       }
     }
   }
+  ::apave::undoOut $wtxt
 }
 #_______________________
 
@@ -525,20 +529,24 @@ proc edit::MacroInit {} {
 }
 #_______________________
 
-proc edit::MacroFile {name} {
+proc edit::MacroFile {name {dir ""}} {
   # Gets a file name for a macro.
   #   name - macro's name
+  #   dir - macro's directory
 
   namespace upvar ::alited al al USERDIR USERDIR
   if {[file extension $name] ne $al(macroext)} {
     append name $al(macroext)
   }
-  return [file join $USERDIR macro [file tail $name]]
+  if {$dir eq {}} {
+    set dir [file join $USERDIR macro]
+  }
+  return [file normalize [file join $dir [file tail $name]]]
 }
 #_______________________
 
 proc edit::MacroMenu {name doit} {
-  # Recreate macros' menu
+  # Recreate macros' menu.
   #   name - current macro
   #   doit - yes if update anyway
 
@@ -546,6 +554,28 @@ proc edit::MacroMenu {name doit} {
   if {$doit || $al(activemacro) ne $name} {
     set al(activemacro) $name
     alited::menu::FillMacroItems
+  }
+}
+#_______________________
+
+proc edit::MacroExists {fname} {
+  # Checks for existing macro.
+  #   fname - macro file name
+
+  if {[file exists $fname]} {return yes}
+  alited::Balloon1 $fname
+  after idle alited::menu::FillMacroItems
+  return no
+}
+#_______________________
+
+proc edit::MacroUpdate {fname} {
+  # If a file is a macro, updates macros' list.
+  #   fname - file name
+
+  namespace upvar ::alited al al
+  if {[file extension $fname] eq $al(macroext)} {
+    after idle alited::menu::FillMacroItems
   }
 }
 
@@ -560,6 +590,7 @@ proc edit::InputMacro {idx} {
   set m $al(MENUEDIT).playtkl
   incr idx ;# for -tearoff menu
   set al(tmp) [$m entrycget $idx -label]
+  set al(tmpdir) {}
   set dir [file dirname [MacroFile .]]
   set win $al(WIN).macro
   set head [msgcat::mc "The macro is updated at its recording.\nPress %s to play it."]
@@ -568,7 +599,7 @@ proc edit::InputMacro {idx} {
   $obDl2 paveWindow $win.fra [list \
     [list lab - - 1 7 {-padx 4} [list -t $head]] \
     [list fil + T 1 7 {-pady 4 -padx 4 -st ew} \
-      "-tvar alited::al(tmp) -w 30 -initialdir {-$dir} -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"] \
+      "-tvar alited::al(tmp) -validate focusin -validatecommand alited::edit::ValidMacro -w 30 -initialdir {$dir} -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"] \
     {seh + T 1 7 {-pady 4}} \
     {fra + T 1 3 {}} \
     {.but1 - - - - {-padx 4} {-com 1 -tip "Play Macro" -image alimg_run}} \
@@ -582,7 +613,18 @@ proc edit::InputMacro {idx} {
     -geometry pointer+-22+-132 -focus $win.fra.entfil]
   catch {destroy $win}
   set name [alited::NormalizeFileName [file root [file tail $al(tmp)]]]
+  set fname [MacroFile $name]
+  if {$al(tmpdir) ni {. ""}} {
+    set fchosen [MacroFile $name $al(tmpdir)]
+    if {$fchosen ne $fname && ![file exists $fname]} {
+      # if chosen macro doesn't exist in user's dir, copy it there
+      catch {file copy $fchosen $fname}
+      after idle alited::menu::FillMacroItems
+    }
+    set fname $fchosen
+  }
   unset al(tmp)
+  unset al(tmpdir)
   if {!$res} {
     set macrosmode "init"
     return
@@ -591,7 +633,6 @@ proc edit::InputMacro {idx} {
     alited::Msg [string map [list %n $name] $al(MC,incorrname)] err
     return
   }
-  set fname [MacroFile $name]
   switch $res {
     1 {
       if {[DoMacro play $name]} {
@@ -601,20 +642,25 @@ proc edit::InputMacro {idx} {
     }
     2 {
       if {[file exists $fname]} {
-        if {![info exists al(macrotorew)] || $al(macrotorew)<10} {
-          set msg [string map [list %f [file tail $fname]] $al(MC,rewfile)]
-          set al(macrotorew) \
-            [alited::msg yesno warn $msg NO -ch $al(MC,noask) -geometry pointer]
+        if {![info exists al(macrotorew)] || ![string match *10 $al(macrotorew)]} {
+          set msg [string map [list %f [file tail $fname] %d [file dirname $fname]] \
+            $al(MC,fileexist)]
+          set dlg [::apave::APave new]
+          set al(macrotorew) [$dlg misc warn \
+            $al(MC,playtkl) $msg {"Rewrite" File "Edit" Change "Cancel" 0} \
+            cancel -ch $al(MC,noask) -g pointer]
+          $dlg destroy
         }
-        if {!$al(macrotorew)} return
+        switch -glob $al(macrotorew) {
+          File* {}
+          Change* {alited::file::OpenFile $fname yes; return}
+          default {set al(macrotorew) {}; return}
+        }
       }
       DoMacro record $name
       }
     3 {
-      if {![file exists $fname]} {
-        alited::Balloon1 $fname
-        return
-      }
+      if {![MacroExists $fname]} return
       if {![info exists al(macrotodel)] || $al(macrotodel)<10} {
         set msg [string map [list %f [file tail $fname]] $al(MC,delfile)]
         set al(macrotodel) \
@@ -630,6 +676,17 @@ proc edit::InputMacro {idx} {
       }
     }
   }
+}
+#_______________________
+
+proc edit::ValidMacro {} {
+  # Gets "root tail" of the file name and saves its directory name.
+
+  namespace upvar ::alited al al
+  set tmpdir [file dirname $al(tmp)]
+  if {$tmpdir ni {. ""}} {set al(tmpdir) $tmpdir}
+  set al(tmp) [file rootname [file tail $al(tmp)]]
+  return yes
 }
 #_______________________
 
@@ -684,8 +741,7 @@ proc edit::DoMacro {mode {fname ""}} {
   set name [file rootname [file tail $fname]]
   if {$fname ne {}} {
     set fname [MacroFile $fname]
-    if {$mode eq "play" && ![file exists $fname]} {
-      alited::Balloon1 $fname
+    if {$mode eq "play" && ![MacroExists $fname]} {
       return no
     }
   }

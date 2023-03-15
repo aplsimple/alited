@@ -28,7 +28,7 @@ package require Tk
 wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.0.1}
+  variable em_version {e_menu 4.0.2}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -1543,11 +1543,6 @@ proc ::em::get_AR {} {
     ;# %s is preferrable for ARGS (ts= rules)
     return [list [string map {\n \\n \" \\\"} $::em::seltd]]
   }
-#!  set skipcheck 0
-#!  catch #\{
-#!    set skipcheck [expr #\{[lsearch -exact $::em::Argv AL=1]>-1#\}]
-#!  #\}
-#!  if #\{$skipcheck#\} #\{
   if {[lsearch -exact $::em::Argv AL=1]>-1} {
     # AL=1 option disables checking a current file for ARGS/RUNF/EXEC comments
     return {}

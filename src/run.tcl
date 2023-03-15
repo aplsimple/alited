@@ -69,7 +69,7 @@ proc run::Mode {} {
 #_______________________
 
 proc run::Run {} {
-  # Runs a command of "Run..." dialogue
+  # Runs a command of "Run..." dialogue.
 
   namespace upvar ::alited al al
   if {![alited::file::IsTcl [alited::bar::FileName]]} {
@@ -84,7 +84,7 @@ proc run::Run {} {
 #_______________________
 
 proc run::Test {} {
-  # Tests a command of "Run..." dialogue
+  # Tests a command of "Run..." dialogue.
 
   SetRunOptions
   Run
@@ -233,7 +233,7 @@ proc run::ChbForced {chb} {
 #_______________________
 
 proc run::RunDialogue {} {
-  # Dialogue to define a command for "Tools/Run"
+  # Dialogue to define a command for "Tools/Run".
 
   namespace upvar ::alited al al obDl2 obDl2
   set al(_startRunDialogue) yes

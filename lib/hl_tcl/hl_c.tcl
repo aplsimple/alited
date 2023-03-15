@@ -62,7 +62,7 @@ namespace eval ::hl_c {
 # _________________________ STATIC highlighting _________________________ #
 
 proc ::hl_c::my::HighlightCmd {txt line ln pri i} {
-  # Highlights Tcl/Tk commands.
+  # Highlights C commands.
   #   txt - text widget's path
   #   line - line to be highlighted
   #   ln - line number
@@ -470,9 +470,11 @@ proc ::hl_c::my::ShowCurrentLine {txt {doit no}} {
   variable data
   set pos [$txt index insert]
   lassign [split $pos .] ln cn
-  if {$doit || ![info exists data(CURPOS,$txt)] || int($data(CURPOS,$txt))!=$ln || $cn<2} {
-    $txt tag remove tagCURLINE 1.0 end
-    $txt tag add tagCURLINE [list $pos linestart] [list $pos lineend]+1displayindices
+  if {[::hl_tcl::my::IsCurline $txt]} {
+    if {$doit || ![info exists data(CURPOS,$txt)] || int($data(CURPOS,$txt))!=$ln || $cn<2} {
+      $txt tag remove tagCURLINE 1.0 end
+      $txt tag add tagCURLINE [list $pos linestart] [list $pos lineend]+1displayindices
+    }
   }
   return $pos
 }
@@ -529,14 +531,17 @@ proc ::hl_c::hl_init {txt args} {
   #   -colors - list of colors: clrCOM, clrCOMTK, clrSTR, clrVAR, clrCMN, clrPROC
   #   -font - attributes of font
   #   -seen - lines seen at start
+  #   -dobind - if yes, forces key bindings
   # This procedure has to be called before writing a text in the text widget.
 
   if {[set setonly [expr {[lindex $args 0] eq {--}}]]} {
     set args [lrange $args 1 end]
   }
+  ::hl_tcl::iscurline $txt 1
   set ::hl_c::my::data(REG_TXT,$txt) {}  ;# disables Modified at changing the text
   set ::hl_c::my::data(KEYWORDS,$txt) {}
-  foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 \
+  set ::hl_c::my::data(DOBIND,$txt) 0
+  foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 -dobind 0 \
   -multiline 1 -seen 500 -plaintext no -insertwidth 2 -keywords {}} {
     if {[dict exists $args $opt]} {
       set val [dict get $args $opt]
@@ -581,7 +586,7 @@ proc ::hl_c::hl_init {txt args} {
 #_______________________
 
 proc ::hl_c::hl_text {txt} {
-  # Highlights Tcl code of a text widget.
+  # Highlights C code of a text widget.
   #   txt - text widget's path
 
   set font0 $::hl_c::my::data(FONT,$txt)
@@ -607,7 +612,8 @@ proc ::hl_c::hl_text {txt} {
   $txt tag raise tagBRACKETERR
   catch {$txt tag raise hilited;  $txt tag raise hilited2} ;# for apave package
   my::HighlightAll $txt
-  if {![info exists ::hl_c::my::data(BIND_TXT,$txt)]} {
+  if {![info exists ::hl_c::my::data(BIND_TXT,$txt)] ||
+  [info exists ::hl_c::my::data(DOBIND,$txt)] && $::hl_c::my::data(DOBIND,$txt)} {
     ::hl_tcl::my::BindToEvent $txt <FocusIn> ::hl_c::my::MemPos $txt
     ::hl_tcl::my::BindToEvent $txt <KeyPress> ::hl_c::my::MemPos1 $txt yes %K %s
     ::hl_tcl::my::BindToEvent $txt <KeyRelease> ::hl_c::my::MemPos $txt
@@ -665,7 +671,7 @@ proc ::hl_c::hl_colors {txt {dark ""}} {
   if {![string is integer -strict $txt] || $txt<0 || $txt>3} {set txt 0}
   if {$dark} {set dark 1} {set dark 0}
   set res [lindex $::hl_tcl::my::data(SYNTAXCOLORS,$txt) $dark]
-  # user keywords' color = Tk color
+  # user keywords' color
   set res [lreplace $res 6 6 [lindex $res 1]]
   return $res
 }

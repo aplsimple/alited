@@ -7,15 +7,15 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.1a4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
   variable al; array set al [list]
 
   # versions of mnu/ini to update to
-  set al(MNUversion) 1.4.0
-  set al(INIversion) 1.4.0b2
+  set al(MNUversion) 1.4.2
+  set al(INIversion) 1.4.2
 
   # previous version of alited to update from
   set al(ALEversion) 0.0.1
@@ -140,7 +140,7 @@ namespace eval alited {
   set al(TITLE) {%f :: %d :: %p}               ;# alited title's template
   set al(TclExtensionsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
   set al(ClangExtensionsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
-  set al(TextExtensionsDef) {html htm css md txt sh bat ini} ;# extensions of plain texts
+  set al(TextExtensionsDef) {html htm css md txt sh bat ini alm em} ;# ... plain texts
   set al(TclExtensions) $al(TclExtensionsDef)
   set al(ClangExtensions) $al(ClangExtensionsDef)
   set al(TextExtensions) $al(TextExtensionsDef)
@@ -433,7 +433,7 @@ namespace eval alited {
     if {$cs eq {}} {set cs [::apave::obj csCurrent]}
     ::hl_${lng}::hl_init $wtxt -dark [::apave::obj csDark $cs] -colors $colors \
       -multiline 1 -font $al(FONT,txt) -insertwidth $al(CURSORWIDTH) \
-      -cmdpos ::alited::None {*}$args
+      -cmdpos ::alited::None -dobind yes {*}$args
     ::hl_${lng}::hl_text $wtxt
   }
   #_______________________
@@ -798,6 +798,35 @@ namespace eval alited {
   }
   #_______________________
 
+  proc HighlightAddon {wtxt fname colors} {
+    # Tries to highlight add-on extensions.
+    #   wtxt - text's path
+    #   fname - current file's name
+    #   colors - colors of highlighting
+
+    namespace upvar ::alited al al LIBDIR LIBDIR
+    if {[catch {
+      set addon hl_[string trimleft [file extension $fname] .]
+      lassign [glob -nocomplain [file join $LIBDIR addon $addon*.tcl]] fname
+      set addon [file rootname [file tail $fname]]
+      if {![namespace exists ::alited::$addon]} {
+        source $fname
+      }
+      lappend colors [FgFgBold]
+      if {[dict exists $al(FONT,txt) -size]} {
+        set fsz [dict get $al(FONT,txt) -size]
+      } else {
+        set fsz $al(FONTSIZE,std)
+      }
+      set res [alited::${addon}::init $wtxt $al(FONT,txt) $fsz {*}$colors]
+      foreach tag {sel hilited hilited2} {after idle "$wtxt tag raise $tag"}
+    }]} then {
+      set res {}
+    }
+    return $res
+  }
+  #_______________________
+
   proc Tclexe {} {
     # Gets Tcl's executable file.
 
@@ -983,6 +1012,11 @@ if {[info exists ALITED_PORT]} {
     source [file join $alited::SRCDIR about.tcl]
     source [file join $alited::SRCDIR check.tcl]
     source [file join $alited::SRCDIR indent.tcl]
+    source [file join $alited::SRCDIR run.tcl]
+    source [file join $alited::LIBDIR addon hl_md.tcl]
+    source [file join $alited::LIBDIR addon hl_html.tcl]
+    source [file join $alited::LIBDIR addon hl_em.tcl]
+    source [file join $alited::LIBDIR addon hl_alm.tcl]
   }
 }
 # _________________________________ EOF _________________________________ #
