@@ -1,6 +1,11 @@
 # LAST CHANGES:
 
 
+Version `v1.4.2.1 (16 Mar'23)`
+
+  - BUGFIX: new file ("No name") syntax highlighted as .alm
+
+
 Version `v1.4.2 (15 Mar'23)`
 
   - BUGFIX: highlight a current line in texts of Preferences & Projects

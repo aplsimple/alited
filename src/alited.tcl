@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.2.1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -805,23 +805,26 @@ namespace eval alited {
     #   colors - colors of highlighting
 
     namespace upvar ::alited al al LIBDIR LIBDIR
-    if {[catch {
-      set addon hl_[string trimleft [file extension $fname] .]
-      lassign [glob -nocomplain [file join $LIBDIR addon $addon*.tcl]] fname
-      set addon [file rootname [file tail $fname]]
-      if {![namespace exists ::alited::$addon]} {
-        source $fname
+    set res {}
+    set ext [string trimleft [file extension $fname] .]
+    if {$ext ne {}} {
+      catch {
+        if {$ext eq {htm}} {set ext html}
+        set addon hl_$ext
+        lassign [glob -nocomplain [file join $LIBDIR addon $addon.tcl]] fname
+        set addon [file rootname [file tail $fname]]
+        if {![namespace exists ::alited::$addon]} {
+          source $fname
+        }
+        lappend colors [FgFgBold]
+        if {[dict exists $al(FONT,txt) -size]} {
+          set fsz [dict get $al(FONT,txt) -size]
+        } else {
+          set fsz $al(FONTSIZE,std)
+        }
+        set res [alited::${addon}::init $wtxt $al(FONT,txt) $fsz {*}$colors]
+        foreach tag {sel hilited hilited2} {after idle "$wtxt tag raise $tag"}
       }
-      lappend colors [FgFgBold]
-      if {[dict exists $al(FONT,txt) -size]} {
-        set fsz [dict get $al(FONT,txt) -size]
-      } else {
-        set fsz $al(FONTSIZE,std)
-      }
-      set res [alited::${addon}::init $wtxt $al(FONT,txt) $fsz {*}$colors]
-      foreach tag {sel hilited hilited2} {after idle "$wtxt tag raise $tag"}
-    }]} then {
-      set res {}
     }
     return $res
   }
