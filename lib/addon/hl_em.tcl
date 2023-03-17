@@ -20,20 +20,22 @@ proc hl_em::init {w font szfont args} {
   #   szfont - font's size
   #   args - highlighting colors
 
-  lassign $args clrCOM fg1 clrSTR clrVAR fg3 bg2
+  lassign $args clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC
   if {[::apave::obj csDark]} {
     set fg2 black
   } else {
     set fg2 white
   }
   dict set font -weight bold
-  $w tag config tagRSIM -font $font -foreground $fg1
-  $w tag config tagMARK -font $font -foreground $bg2
-  $w tag config tagSECT -font $font -foreground $fg2 -background $bg2
+  $w tag config emRSIM -font $font -foreground $clrCOMTK
+  $w tag config emMARK -font $font -foreground $clrPROC
+  $w tag config emSECT -font $font -foreground $fg2 -background $clrPROC
   dict set font -weight normal
+  $w tag config emVAR -font $font -foreground $clrVAR
+  $w tag config emVAL -font $font -foreground $clrSTR
   dict set font -slant italic
-  $w tag config tagCMNT -font $font -foreground $fg3
-  foreach t {tagRSIM tagMARK tagSECT tagCMNT} {after idle $w tag raise $t}
+  $w tag config emCMNT -font $font -foreground $clrCMN
+  foreach t {RSIM MARK SECT CMNT VAR VAL} {after idle $w tag raise em$t}
   return [namespace current]::line
 }
 
@@ -48,20 +50,26 @@ proc hl_em::line {w {pos ""} {prevQtd 0}} {
   if {$pos eq {}} {set pos [$w index insert]}
   set il [expr {int($pos)}]
   set line [$w get $il.0 $il.end]
-  foreach t {RSIM MARK SECT CMNT} {$w tag remove tag$t $il.0 $il.end}
+  foreach t {RSIM MARK SECT CMNT VAR VAL} {$w tag remove em$t $il.0 $il.end}
   set res no
-  lassign [getRSIM $line {ITEM\s*=|SEP\s*=|%M[^ ] |%C |\[MENU\]\s*$|\[OPTIONS\]\s*$|\[HIDDEN\]\s*$|\[DATA\]\s*$|^\s*#}] marker pg ln
+  lassign [getRSIM $line {ITEM\s*=|SEP\s*=|%M[^ ] |%C |\[MENU\]\s*$|\[OPTIONS\]\s*$|\[HIDDEN\]\s*$|\[DATA\]\s*$|^\s*#|^::\w+=}] marker pg ln
   if {$marker ne {}} {
     set p1 [string first $marker $line]
     set p2 [expr {$p1+[string length $marker]}]
     if {$pg ne {-}} {
-      set tag tagRSIM
+      set tag emRSIM
     } else {
       switch -- [string index $ln 0] {
-        \[ {set tag tagSECT}
-        \# {set tag tagCMNT; set p2 end}
+        \[ {set tag emSECT}
+        \# {set tag emCMNT; set p2 end}
+        : {
+          $w tag add emVAR $il.$p1 $il.[incr p2 -1]
+          set tag emVAL
+          set p1 [incr p2]
+          set p2 end
+        }
         default {
-          set tag tagMARK
+          set tag emMARK
           if {[string first = $marker]>0} {set p2 end}
         }
       }

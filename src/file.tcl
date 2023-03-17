@@ -123,6 +123,9 @@ proc file::OutwardChange {TID {docheck yes}} {
   if {[winfo exists .em] || [info exists al(_NO_OUTWARD_)]} {
     return  ;# no actions if "internal" e_menu is open
   }
+  if {$docheck && $TID ne [alited::bar::CurrentTabID]} {
+    return  ;# not a current tab: no questions
+  }
   lassign [FileAttrs $TID] fname isfile mtime mtimefile curtime
   if {$docheck && $mtime ne {} && $curtime ne $mtime && $fname eq $mtimefile} {
     if {$isfile} {

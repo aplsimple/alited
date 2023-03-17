@@ -10,6 +10,7 @@
 
 namespace eval complete {
   variable comms [list]   ;# list of available commands
+  variable commsorig [list]
   variable maxwidth 20    ;# maximum width of command
   variable tclcoms [list] ;# list of Tcl/Tk commands with arguments
 }
@@ -88,13 +89,16 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
           set v [string trim $v ()]
         }
       }
-      if {$v ni {{} : ::} && [lsearch -exact $res $v]==-1} {lappend res \$$v}
+      if {$v ni {{} : ::} && [lsearch -exact $res $v]==-1} {
+        if {![string match \$* $v]} {set v \$$v}
+        lappend res $v
+      }
     }
   }
   set idx1 [expr {int([$wtxt index insert])}].$idx1
-  set isdol [expr {[$wtxt get "$idx1 -1 c"] eq "\$"}]
-  set isdol1 [expr {[$wtxt get "$idx1 -2 c" $idx1] eq "\$:"}]
-  set isdol2 [expr {[$wtxt get "$idx1 -3 c" $idx1] eq "\$::"}]
+  set isdol [expr {[$wtxt get "$idx1 -1 c"] eq {$}}]
+  set isdol1 [expr {[$wtxt get "$idx1 -2 c" $idx1] eq {$:}}]
+  set isdol2 [expr {[$wtxt get "$idx1 -3 c" $idx1] eq {$::}}]
   if {$isdol1 || $isdol2} {
     foreach v [info vars ::*] {
       if {[llength $v]==1} {lappend res \$$v}
@@ -136,6 +140,7 @@ proc complete::MatchedCommands {} {
   # Returns list of current word, begin and end of it.
 
   variable comms
+  variable commsorig
   variable maxwidth
   lassign [alited::find::GetWordOfText noselect2 yes] curword idx1 idx2
   if {![namespace exists ::alited::repl]} {
@@ -159,11 +164,13 @@ proc complete::MatchedCommands {} {
       }
     }
     if {$incl && ([string match ${curword}* $com] || \
+    [string match ${curword}* [namespace tail $com]] || \
     [regexp "^\[\$\]?${curword}" $com])} {
       lappend comms $com
       set maxwidth [expr {max($maxwidth,[string length $com])}]
     }
   }
+  set commsorig $comms
   set comms [lsort -dictionary -unique $comms]
   return [list $curword $idx1 $idx2]
 }
@@ -196,13 +203,30 @@ proc complete::WinGeometry {win lht} {
 }
 #_______________________
 
-proc complete::PickCommand {wtxt} {
+proc complete::PickCommand {wtxt curword} {
   # Shows a frame of commands for auto completion,
   # allowing a user to select from it.
   #   wtxt - text's path
+  #   curword - word to be completed
 
   variable comms
+  variable commsorig
   if {[set llen [llength $comms]]==0} {return {}}
+  # check for variables if any exist
+  for {set il 0; set icv -1} {$il<$llen}  {incr il} {
+    set cv [lindex $comms $il]
+    if {[string first \$ $cv]<0} break
+    if {$cv eq "\$$curword"} {set icv $il}
+  }
+  if {$icv>=0 && $il>1 && [string length $curword]==1} {
+    set i 0
+    foreach c $commsorig {if {$c eq "\$curword"} {incr i}}
+    if {$i<2} { ;# 1 occurence of 1 letter => remove it
+      set comms [lreplace $comms $icv $icv]
+      incr llen -1
+      incr il -1
+    }
+  }
   set mlen 16
   set lht [expr {max(min($llen,$mlen),1)}]
   set win .pickcommand
@@ -232,12 +256,9 @@ proc complete::PickCommand {wtxt} {
   foreach ev {ButtonPress-1 Return KP_Enter KeyPress-space} {
     catch {bind $lbx <$ev> "after idle {::alited::complete::SelectCommand $win $obj $lbx}"}
   }
-  # highlights variables if any exist
-  lassign [::hl_tcl::hl_colors {} [::apave::obj csDark]] fgcom - - fgvar
-  for {set i 0} {$i<$llen}  {incr i} {
-    if {[string first \$ [lindex $comms $i]]<0} {
-      $lbx itemconfigure $i -foreground $fgcom
-    }
+  lassign [::hl_tcl::hl_colors $wtxt] fgcom - - fgvar
+  for {} {$il<$llen} {incr il} {
+    $lbx itemconfigure $il -foreground $fgcom  ;# color commands
   }
   $lbx selection set 0
   lassign [TextCursorCoordinates $wtxt] X Y
@@ -275,7 +296,7 @@ proc complete::AutoCompleteCommand {} {
   }
   lassign [MatchedCommands] curword idx1 idx2
   set wtxt [alited::main::CurrentWTXT]
-  if {[set com [PickCommand $wtxt]] ne {}} {
+  if {[set com [PickCommand $wtxt $curword]] ne {}} {
     set row [expr {int([$wtxt index insert])}]
     set isvar [string match \$* $com]
     if {[$wtxt get "$row.$idx1 -1 c"] eq "\$"} {

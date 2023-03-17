@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.2.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.2.2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -140,7 +140,7 @@ namespace eval alited {
   set al(TITLE) {%f :: %d :: %p}               ;# alited title's template
   set al(TclExtensionsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
   set al(ClangExtensionsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
-  set al(TextExtensionsDef) {html htm css md txt sh bat ini alm em} ;# ... plain texts
+  set al(TextExtensionsDef) {html htm css md txt sh bat ini alm em ale} ;# ... plain texts
   set al(TclExtensions) $al(TclExtensionsDef)
   set al(ClangExtensions) $al(ClangExtensionsDef)
   set al(TextExtensions) $al(TextExtensionsDef)
@@ -809,7 +809,10 @@ namespace eval alited {
     set ext [string trimleft [file extension $fname] .]
     if {$ext ne {}} {
       catch {
-        if {$ext eq {htm}} {set ext html}
+        switch $ext {
+          htm {set ext html}
+          ale {set ext ini}
+        }
         set addon hl_$ext
         lassign [glob -nocomplain [file join $LIBDIR addon $addon.tcl]] fname
         set addon [file rootname [file tail $fname]]

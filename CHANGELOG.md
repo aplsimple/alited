@@ -1,9 +1,11 @@
 # LAST CHANGES:
 
 
-Version `v1.4.2.1 (16 Mar'23)`
+Version `v1.4.2.2 (17 Mar'23)`
 
   - BUGFIX: new file ("No name") syntax highlighted as .alm
+  - CHANGE: file::OutwardChange - check for a current tab
+  - CHANGE: completion - excl. 1-letter var, incl. com by tail name
 
 
 Version `v1.4.2 (15 Mar'23)`

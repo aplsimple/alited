@@ -19,14 +19,14 @@ proc hl_html::init {w font szfont args} {
 
   lassign $args clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT
   dict set font -size $szfont
-  $w tag config tagVAL -font $font -foreground $clrSTR
-  $w tag config tagARG -font $font -foreground $clrOPT
+  $w tag config htmVAL -font $font -foreground $clrSTR
+  $w tag config htmARG -font $font -foreground $clrOPT
   dict set font -weight bold
-  $w tag config tagTAG -font $font -foreground $clrCOM
+  $w tag config htmTAG -font $font -foreground $clrCOM
   dict set font -weight normal
   dict set font -slant italic
-  $w tag config tagCMN -font $font -foreground $clrCMN
-  foreach t {TAG VAL ARG CMN} {after idle $w tag raise tag$t}
+  $w tag config htmCMN -font $font -foreground $clrCMN
+  foreach t {TAG VAL ARG CMN} {after idle $w tag raise htm$t}
   return [namespace current]::line
 }
 #_______________________
@@ -40,31 +40,31 @@ proc hl_html::line {w {pos ""} {prevQtd 0}} {
   if {$pos eq {}} {set pos [$w index insert]}
   set il [expr {int($pos)}]
   set line [$w get $il.0 $il.end]
-  foreach t {TAG VAL ARG CMN} {$w tag remove tag$t $il.0 $il.end}
+  foreach t {TAG VAL ARG CMN} {$w tag remove htm$t $il.0 $il.end}
   if {$prevQtd==-1} {
     # comments continued (would work with 1 continued line)
     set i [string first --> $line]
     if {$i<0} {
-      $w tag add tagCMN $il.0 $il.end
+      $w tag add htmCMN $il.0 $il.end
       return -1
     }
     set line [string repeat { } [incr i 2]][string range $line [incr i] end]
-    $w tag add tagCMN $il.0 $il.$i
+    $w tag add htmCMN $il.0 $il.$i
   }
   set specs [regexp -inline -all -indices {&[a-zA-Z]+;} $line]
   foreach l2 $specs {
     lassign $l2 p1 p2
     if {$p1<$p2} {
-      $w tag add tagTAG $il.$p1 $il.[incr p2]
+      $w tag add htmTAG $il.$p1 $il.[incr p2]
     }
   }
-  set tags [regexp -inline -all -indices {(<{1}/?\w+)([^>]*>{1})} $line]
-  foreach {l1 l2 -} $tags {
+  set htms [regexp -inline -all -indices {(<{1}/?\w+)([^>]*>{1})} $line]
+  foreach {l1 l2 -} $htms {
     lassign $l1 p1 p2
     if {$p1<$p2} {
       lassign $l2 r1 r2
-      $w tag add tagTAG $il.$r1 $il.[incr r2]
-      $w tag add tagTAG $il.$p2 $il.[incr p2]
+      $w tag add htmTAG $il.$r1 $il.[incr r2]
+      $w tag add htmTAG $il.$p2 $il.[incr p2]
       set subline [$w get $il.$r2 $il.[incr p2 -1]]
       # inside a tag: options may be quoted and not
       while 1 {
@@ -91,10 +91,10 @@ proc hl_html::line {w {pos ""} {prevQtd 0}} {
         # highlight name & value
         incr p1 $r2
         incr p2 $r2
-        $w tag add tagARG $il.$p1 $il.$p2
+        $w tag add htmARG $il.$p1 $il.$p2
         incr s1 $r2
         incr s2 $r2
-        $w tag add tagVAL $il.$s1 $il.$s2
+        $w tag add htmVAL $il.$s1 $il.$s2
       }
     }
   }
@@ -102,14 +102,14 @@ proc hl_html::line {w {pos ""} {prevQtd 0}} {
   foreach l2 $cmns {
     lassign $l2 p1 p2
     if {$p1<$p2} {
-      $w tag add tagCMN $il.$p1 $il.[incr p2]
+      $w tag add htmCMN $il.$p1 $il.[incr p2]
     }
   }
   set cmns [regexp -inline -all -indices {<{1}!--[^>]*$} $line]
   foreach l2 $cmns {
     lassign $l2 p1 p2
     if {$p1<$p2} {
-      $w tag add tagCMN $il.$p1 $il.end
+      $w tag add htmCMN $il.$p1 $il.end
       return -1 ;# comments to be continued
     }
   }
