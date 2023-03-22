@@ -765,8 +765,22 @@ proc main::InitActions {} {
   }
   # forcedly: fill Preferences/Tools/tclsh if it's empty
   if {$al(EM,Tcl) eq {}} {
-    # important: refer to tclsh (not wish), to run it in Windows console
-    set al(EM,Tcl) [::apave::autoexec tclsh .exe]
+    set tclexe1 [info nameofexecutable]
+    if {[string first \t$tclexe1\t \t$al(EM,TclList)\t]<0} {
+      append al(EM,TclList) \t $tclexe1
+    }
+    set tclexe2 [::apave::autoexec tclsh .exe]
+    if {[string first \t$tclexe2\t \t$al(EM,TclList)\t]<0} {
+      append al(EM,TclList) \t $tclexe2
+    }
+    set al(EM,TclList) [string trim $al(EM,TclList)]
+    if {$al(IsWindows)} {
+      # important: refer to tclsh (not wish), to run it in Windows console
+      # though not good for deployed Tcl/Tk 8.6-
+      set al(EM,Tcl) $tclexe2
+    } else {
+      set al(EM,Tcl) $tclexe1
+    }
   }
   after idle {alited::main::UpdateGutter; alited::main::FocusText}  ;# get it for sure
 }

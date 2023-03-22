@@ -3,7 +3,7 @@
 # Name:    hl_ini.tcl
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
 # Date:    Mar 16, 2023
-# Brief:   Handles highlighting .em files (of e_menu).
+# Brief:   Handles highlighting .ini files (of e_menu).
 # License: MIT.
 ###########################################################
 

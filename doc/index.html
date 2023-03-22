@@ -175,7 +175,11 @@ Below is a screenshot of <span class="curid"><a href="#" class="wikilink1" title
 <div class="level2">
 
 <p>
-The installation of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is straightforward:
+If, for some reasons, you have not (or want not) Tcl/Tk fully deployed on your machine, then you might use one of <a href="https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4" rel="nofollow">alited's installers</a>. With the installed <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> you get also vanilla Tcl/Tk 8.6.10 (in "bin" subdirectory of the installation directory).
+</p>
+
+<p>
+When you have Tcl/Tk deployed on your machine, you need only to unpack the alited's source to a directory and run it with "tclsh src/alited.tcl" command. Thus, in this case the installation of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is straightforward as well:
 </p>
 <p>
 <ul>
@@ -202,7 +206,7 @@ Being written in pure <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a>, <span cla
 </p>
 
 <p>
-If you are a novice to <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> 8.6.10+, try and install it. Then try and install the  <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> and its dependencies, noticing the messages of CLI at <a href="#start">running alited</a>. Let the installations be a sort of exercise in <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a>.
+If you are a novice to <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> 8.6.10+, you might try to install it. Then install the <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> and its dependencies, noticing the messages of CLI at <a href="#start">running alited</a>. Let the installations be a sort of exercise in <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a>.
 </p>
 
 <p>
@@ -1218,13 +1222,13 @@ Other "grep" facilities are available in <a href="https://aplsimple.github.io/en
 </p><b>~~~</b>
 
 <p>
-To complete a command / variable, press Tab key while the cursor is on initial characters of it - this will offer you to select from a list of variables / commands available in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session's files.
+To complete a command / variable, press Tab key while the cursor is on initial characters of it - this will offer you to select from a list of variables / commands available in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session's files. The completed word can be modified in its entry, Enter key will replace a text's word with a current selection of the list.
 </p>
 <p>If Tab key is pressed at $ (or $: or $::), the completion list would include only the variables of current proc/method and (if $: or $::) Tcl global variables.
 </p>
 
 <p>
-The Tab key of this option is customizeable (like many other keys) in "Setup / Preferences / Keys".
+The Tab key to do the completion is customizeable (like many other keys) in "Setup / Preferences / Keys".
 </p>
 
 <p>
@@ -1371,68 +1375,82 @@ There is a template to enter a command, in order to run it immediately in an app
 <h3 id=runme><i>"Tools / Run..." menu item</i></h3>
 </p>
 <p>
- A current Tcl script (file.tcl) is run in <i>console</i> or <i>Tkcon</i>.
+In this dialogue, <i>Run</i> button runs a selected command. Sort of "run it on fly".
+The command is active all the time when "Run" dialogue is open. It's also run with F5 key.
+</p>
+<p>
+The dialogue isn't closed with <i>Run</i> button, so that you can customize commands before saving them. Also, <i>while "Run" dialogue is open</i>, you can modify your scripts (the dialogue is non-modal).
+</p>
+<p>
+After customizing all commands, press <i>Save</i> button: it saves the dialogue's current settings and closes it.
+</p>
+<p>
+<i>Cancel</i> button dismisses all changes made in the dialogue.
+</p>
+<p>
+A current Tcl script (file.tcl) can be run in <i>console</i> or <i>Tkcon</i>.
 </p>
 
 <p>
- <b>1.</b> You can set a command that is run independently on a type of
- current file. It can be OS command or executable file. It's run in console.
+<b>1.</b> You can set a command that is run independently on a type of
+current file. It can be OS command or executable file. It's run in console.
 </p>
 
 <p>
- If a Tcl file has to be run, you can set the command with or without
- <i>tclsh</i>, <i>wish</i>, <i>tclkit</i> etc., for example:
+If a Tcl file has to be run, you can set the command with or without
+<i>tclsh</i>, <i>wish</i>, <i>tclkit</i> etc., for example:
 <pre class="code">/usr/bin/tclsh /home/me/myPG/src/file.tcl LOG=~/TMP/log.txt
 /home/me/myPG/src/file.tcl LOG=~/TMP/log.txt
 </pre>
 </p>
 
 <p>
- The command can include wildcards:
- <ul>
-   <li><i>%f</i>  - current file's name</li>
-   <li><i>%d</i>  - current file's directory</li>
-   <li><i>%pd</i> - project's directory</li>
-   <li><i>%s</i> - text's selection / current word
-   <li><i>%%</i> - %</li>
- </ul>
-  The combobox's commands can be created and edited in the text box,
- at that the text's current line is highlighted and displayed in the combobox.
+The command can include wildcards:
+<ul>
+  <li><i>%f</i>  - current file's name</li>
+  <li><i>%d</i>  - current file's directory</li>
+  <li><i>%pd</i> - project's directory</li>
+  <li><i>%s</i> - text's selection / current word
+  <li><i>%%</i> - %</li>
+</ul>
+The combobox's commands can be created and edited in the text box,
+at that the text's current line is highlighted and displayed in the combobox.
 </p>
 
 <p>
- <b>2.</b> For <i>"By command #RUNF:"</i> you write comments in a file, like:
+<b>2.</b> For <i>"By command #RUNF:"</i> you write comments in a file, like:
 <pre class="code"><i><font color=#4b5d50>#RUNF: file.tcl arg1 arg2 arg3</font></i>
 </pre>
- meaning that <i>tclsh file.tcl arg1 arg2 arg3</i> will be run on the file.
+meaning that <i>tclsh file.tcl arg1 arg2 arg3</i> will be run on the file.
 </p>
 
 <p>
- These two ways of running Tcl are selected with <i>"Use it"</i> switches and
- are useful for two different type of projects:
- <ul>
-   <li> <i>monolith</i>: you have a lot of files that need few commands to test
-     and debug the whole application (<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is an example)</li>
-   <li> <i>heterogeneous</i>: a project contains a lot of files that need to
-     be tested and debugged with their own commands</li>
- </ul>
+These two ways are useful for two different type of projects:
+<ul>
+  <li> <i>monolith</i>: you have a lot of files that need few commands to test
+    and debug the whole application (<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is an example)</li>
+  <li> <i>heterogeneous</i>: a project contains a lot of files that need to
+    be tested and debugged with their own commands</li>
+</ul>
 </p>
 
 <p>
 <b>3.</b> Anyhow, "Run me" item of <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tool allows running a current file
- in its "normal" mode by an associated application. Press F4 twice for this.
+ in "normal" manner by an associated application. Press F4 twice for it.
 </p>
 
 <p>
- <b>4.</b> Also, you can enter commands to be run before running a current file.
- It can be necessary <i>for a specific project</i>, sort of initialization.
+<b>4.</b> Also, you can enter commands to be run before running a current file.
+It can be necessary <i>for a specific project</i>, sort of initialization.
 </p>
 
 <p>
- These commands can be OS commands or executables, for example:
+These commands can be OS commands or executables, for example:
 <pre class="code"><b><font color=#3a6797>cd</font></b> ~/TMP
 rm log.txt
 </pre>
+</p>
+<p>All of the "Run" settings are per project.
 </p>
 
 

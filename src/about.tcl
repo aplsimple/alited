@@ -172,7 +172,7 @@ proc about::About {} {
     \u2022 <linkMH>Matthias Hoffmann</linkMH>\n \
     \u2022 <linkAG>Andy Goth</linkAG>\n \
     \u2022 <linkDA>Danilo Chang</linkDA>\n \
-    \u2022 <linkET>Enrico Tröger</linkET>\n \
+    \u2022 <linkET>Enrico Troeger</linkET>\n \
     \n <link_>Excuse my memory if I omitted someone's name.</link_>\n"
 
   ### ________________________ Combining tabs _________________________ ###

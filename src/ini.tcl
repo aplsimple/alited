@@ -182,8 +182,9 @@ namespace eval ::alited {
 
   # preferrable command to run
   set al(comForce) {}
-  set al(comForceCh) -1
+  set al(comForceCh) 1
   set al(comForceLs) {}
+  set al(runGeometry) {}
 
   # flags of tip show
   set al(TIPS,Tree) 1
@@ -331,6 +332,7 @@ proc ini::ReadIniGeometry {nam val} {
     filgeometry    {set ::alited::FilGeometry $val}
     treecw0        {set al(TREE,cw0) $val}
     treecw1        {set al(TREE,cw1) $val}
+    runGeometry    {set al(runGeometry) $val}
   }
 }
 #_______________________
@@ -373,9 +375,9 @@ proc ini::ReadIniOptions {nam val} {
     CKeyWords     {set al(ED,CKeyWords) $val}
     clrDark       {set al(ED,Dark) $val}
     save_onadd - save_onclose - save_onsave {set al(INI,$nam) $val}
-    TclExts       {set al(TclExtensions) $val}
-    ClangExts     {set al(ClangExtensions) $val}
-    TextExts      {set al(TextExtensions) $val}
+    TclExts       {set al(TclExts) $val}
+    ClangExts     {set al(ClangExts) $val}
+    TextExts      {set al(TextExts) $val}
     REbranch      {set al(RE,branch) $val}
     REproc        {set al(RE,proc) $val}
     REproc2       {set al(RE,proc2) $val}
@@ -654,10 +656,7 @@ proc ini::ReadPrjMisc {nam val} {
         set ::alited::find::data(vals2) $data(vals2)
       }
     }
-    comforce {
-      set al(comForce) $val
-      if {$al(comForceCh)==-1} {set al(comForceCh) [expr {$val ne {}}]}
-    }
+    comforce   {set al(comForce) $val}
     comforcech {set al(comForceCh) $val}
     comforcels {set al(comForceLs) $val}
   }
@@ -725,9 +724,9 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "save_onadd=$al(INI,save_onadd)"
   puts $chan "save_onclose=$al(INI,save_onclose)"
   puts $chan "save_onsave=$al(INI,save_onsave)"
-  puts $chan "TclExts=$al(TclExtensions)"
-  puts $chan "ClangExts=$al(ClangExtensions)"
-  puts $chan "TextExts=$al(TextExtensions)"
+  puts $chan "TclExts=$al(TclExts)"
+  puts $chan "ClangExts=$al(ClangExts)"
+  puts $chan "TextExts=$al(TextExts)"
   puts $chan "REbranch=$al(RE,branch)"
   puts $chan "REproc=$al(RE,proc)"
   puts $chan "REproc2=$al(RE,proc2)"
@@ -821,6 +820,7 @@ proc ini::SaveIni {{newproject no}} {
   # save the geometry options
   puts $chan {}
   puts $chan {[Geometry]}
+  puts $chan "runGeometry=$al(runGeometry)"
   puts $chan "geomfind=$::alited::find::geo"
   puts $chan "geomfind2=$::alited::find::geo2"
   puts $chan "geomproject=$::alited::project::geo"
@@ -1308,8 +1308,8 @@ proc ini::TipToolHotkeys {} {
 proc ini::_init {} {
   # Initializes alited app.
 
-  namespace upvar ::alited al al \
-    obPav obPav obDlg obDlg obDl2 obDl2 obDl3 obDl3 obFND obFND obFN2 obFN2 obCHK obCHK
+  namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2 obDl3 obDl3 \
+    obFND obFND obFN2 obFN2 obCHK obCHK obRun obRun
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
@@ -1343,8 +1343,8 @@ proc ini::_init {} {
   # the below icons' order defines their order in the toolbar
   TipToolHotkeys
   foreach {icon} {none gulls heart add change delete up down paste plus minus retry \
-  misc previous previous2 next next2 folder file OpenFile SaveFile saveall categories \
-  undo redo replace ok color date help run e_menu other trash actions paste} {
+  misc previous previous2 next next2 folder file OpenFile SaveFile saveall undo redo \
+  categories replace ok color date help run e_menu other trash actions paste} {
     set img [CreateIcon $icon]
     if {$icon in {file OpenFile SaveFile saveall categories undo redo replace \
     ok color date help run e_menu other}} {
@@ -1368,14 +1368,14 @@ proc ini::_init {} {
         saveall {
           append al(atools) "-com alited::file::SaveAll -state disabled\} sev 6"
         }
-        categories {
-          append al(atools) "-com alited::project::_run\} sev 6"
-        }
         undo {
           append al(atools) "-com alited::tool::Undo -state disabled\}"
         }
         redo {
           append al(atools) "-com alited::tool::Redo -state disabled\} sev 6"
+        }
+        categories {
+          append al(atools) "-com alited::project::_run\} sev 6"
         }
         replace {
           append al(atools) "-com alited::find::_run\}"

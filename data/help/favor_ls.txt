@@ -6,7 +6,7 @@
  favorites with the current ones.
 
  The current list of favorites is displayed in the bottom listbox.
- Enter a name for the list and click <b>Add</b> button to use it aftewards.
+ Enter a name for the list and click <b>Add</b> button to use it afterwards.
 
  This way you can keep a kind of "projects inside a project", choosing
  a list of favorites for appropriate tasks inside a current project.

@@ -9,8 +9,12 @@
 # _________________________ Variables ________________________ #
 
 namespace eval complete {
+  variable win .pickcommand
   variable comms [list]   ;# list of available commands
   variable commsorig [list]
+  variable word {}
+  variable wordorig {}
+  variable obj {}
   variable maxwidth 20    ;# maximum width of command
   variable tclcoms [list] ;# list of Tcl/Tk commands with arguments
 }
@@ -135,14 +139,31 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
 }
 #_______________________
 
-proc complete::MatchedCommands {} {
+proc complete::IsMatch {curword com} {
+  # Check matching a word to a command.
+  #   curword - the word
+  #   com - the command
+
+  return [expr {[string match ${curword}* $com] || \
+    [string match ${curword}* [namespace tail $com]] || \
+    [regexp "^\[\$\]?${curword}" $com]}]
+}
+#_______________________
+
+proc complete::MatchedCommands {{curword ""} args} {
   # Gets commands that are matched to a current (under cursor) word.
+  #   curword - current word to match
+  #   args - contains idx1, idx2 indices
   # Returns list of current word, begin and end of it.
 
   variable comms
   variable commsorig
   variable maxwidth
-  lassign [alited::find::GetWordOfText noselect2 yes] curword idx1 idx2
+  if {$curword eq {}} {
+    lassign [alited::find::GetWordOfText noselect2 yes] curword idx1 idx2
+  } else {
+    lassign $args idx1 idx2
+  }
   if {![namespace exists ::alited::repl]} {
     namespace eval ::alited {
       source [file join $::alited::LIBDIR repl repl.tcl]
@@ -163,9 +184,7 @@ proc complete::MatchedCommands {} {
         break
       }
     }
-    if {$incl && ([string match ${curword}* $com] || \
-    [string match ${curword}* [namespace tail $com]] || \
-    [regexp "^\[\$\]?${curword}" $com])} {
+    if {$incl && [IsMatch $curword $com]} {
       lappend comms $com
       set maxwidth [expr {max($maxwidth,[string length $com])}]
     }
@@ -177,21 +196,21 @@ proc complete::MatchedCommands {} {
 
 # ________________________ GUI _________________________ #
 
-proc complete::SelectCommand {win obj lbx} {
+proc complete::SelectCommand {obj lbx} {
   # Handles a selection of command for auto completion.
-  #   win - window of command list
   #   obj - apave object
   #   lbx - listbox's path
 
+  variable win
   $obj res $win [lindex $alited::complete::comms [$lbx curselection]]
 }
 #_______________________
 
-proc complete::WinGeometry {win lht} {
+proc complete::WinGeometry {lht} {
   # Checks and corrects the completion window's geometry (esp. for KDE).
-  #   win - window's path
   #   lht - height of completion list
 
+  variable win
   update
   lassign [split [wm geometry $win] x+] w h x y
   set h2 [winfo reqheight $win]
@@ -203,33 +222,37 @@ proc complete::WinGeometry {win lht} {
 }
 #_______________________
 
-proc complete::PickCommand {wtxt curword} {
+proc complete::PickCommand {wtxt} {
   # Shows a frame of commands for auto completion,
   # allowing a user to select from it.
   #   wtxt - text's path
-  #   curword - word to be completed
 
+  variable win
+  variable obj
+  variable word
   variable comms
   variable commsorig
+  variable wordorig
   if {[set llen [llength $comms]]==0} {return {}}
+  set word $wordorig
   # check for variables if any exist
   for {set il 0; set icv -1} {$il<$llen}  {incr il} {
     set cv [lindex $comms $il]
     if {[string first \$ $cv]<0} break
-    if {$cv eq "\$$curword"} {set icv $il}
+    if {$cv eq "\$$wordorig"} {set icv $il}
   }
-  if {$icv>=0 && $il>1 && [string length $curword]==1} {
+  if {$icv>=0 && $il>1 && [string length $wordorig]==1} {
     set i 0
-    foreach c $commsorig {if {$c eq "\$curword"} {incr i}}
+    foreach c $commsorig {if {$c eq "\$wordorig"} {incr i}}
     if {$i<2} { ;# 1 occurence of 1 letter => remove it
       set comms [lreplace $comms $icv $icv]
       incr llen -1
       incr il -1
     }
   }
+  set commsorig $comms
   set mlen 16
   set lht [expr {max(min($llen,$mlen),1)}]
-  set win .pickcommand
   set obj ::alited::pavedPickCommand
   catch {destroy $win}
   if {$::alited::al(IsWindows)} {
@@ -238,28 +261,28 @@ proc complete::PickCommand {wtxt curword} {
     frame $win
     wm manage $win
     # the line below is of an issue in kubuntu (KDE?): small sizes of the popup window
-    after idle [list ::alited::complete::WinGeometry $win $lht]
+    after idle [list ::alited::complete::WinGeometry $lht]
   }
   wm withdraw $win
   wm overrideredirect $win 1
   catch {$obj destroy}
   ::apave::APave create $obj $win
   set lwidgets [list \
-    "LbxPick - - - - {pack -side left -expand 1 -fill both} {-h $lht -w $::alited::complete::maxwidth -lvar ::alited::complete::comms}"
+    "Ent - - - - {pack -expand 1 -fill x} {-w $::alited::complete::maxwidth -tvar ::alited::complete::word -validate all -validatecommand {alited::complete::PickValid $wtxt %V %d %i %s %S}}" \
+    "fra - - - - {pack -expand 1 -fill both}" \
+    ".Lbx - - - - {pack -side left -expand 1 -fill both} {-h $lht -w $::alited::complete::maxwidth -lvar ::alited::complete::comms -exportselection 0}"
   ]
   if {$llen>$mlen} {
     # add vertical scrollbar if number of items exceeds max.height
-    lappend lwidgets {sbvPick + L - - {pack -side left -fill both} {}}
+    lappend lwidgets {.sbvPick + L - - {pack -side left -fill both} {}}
   }
   $obj paveWindow $win $lwidgets
-  set lbx [$obj LbxPick]
+  set ent [$obj Ent]
+  set lbx [$obj Lbx]
   foreach ev {ButtonPress-1 Return KP_Enter KeyPress-space} {
-    catch {bind $lbx <$ev> "after idle {::alited::complete::SelectCommand $win $obj $lbx}"}
+    catch {bind $lbx <$ev> "after idle {::alited::complete::SelectCommand $obj $lbx}"}
   }
-  lassign [::hl_tcl::hl_colors $wtxt] fgcom - - fgvar
-  for {} {$il<$llen} {incr il} {
-    $lbx itemconfigure $il -foreground $fgcom  ;# color commands
-  }
+  ColorPick $wtxt
   $lbx selection set 0
   lassign [TextCursorCoordinates $wtxt] X Y
   if {$X==-1} {
@@ -270,12 +293,118 @@ proc complete::PickCommand {wtxt curword} {
     incr Y 40
     after 100 "wm deiconify $win"
   }
-  bind $win <FocusOut> "$obj res $win 0"
-  set res [$obj showModal $win -focus $lbx -modal no -geometry +$X+$Y]
+  after idle "alited::CursorAtEnd $ent"
+  bind $ent <Return> {+ alited::complete::EntReturn}
+  bind $win <FocusOut> {alited::complete::PickFocusOut %W}
+  set res [$obj showModal $win -focus $ent -modal no -geometry +$X+$Y]
   destroy $win
   $obj destroy
   if {$res ne "0"} {return $res}
   return {}
+}
+#_______________________
+
+proc complete::ColorPick {wtxt} {
+  # Sets colors for pick list.
+  #   wtxt - text's path
+
+  variable obj
+  variable comms
+  set lbx [$obj Lbx]
+  set llen [llength $comms]
+  lassign [::hl_tcl::hl_colors $wtxt] fgcom - - fgvar
+  set i 0
+  foreach com $comms {
+    if {[string index $com 0] eq {$}} {
+      $lbx itemconfigure $i -foreground $fgvar  ;# variable
+    } else {
+      $lbx itemconfigure $i -foreground $fgcom  ;# command
+    }
+    incr i
+  }
+}
+#_______________________
+
+proc complete::EntReturn {} {
+  # Handles pressing Return on entry.
+
+  variable win
+  variable obj
+  variable word
+  set lbx [$obj Lbx]
+  set idx [$lbx curselection]
+  if {$idx eq {} || [set com [$lbx get $idx]] eq {}} {
+    set com $word
+  }
+  if {$com ne {}} {$obj res $win $com}
+}
+#_______________________
+
+proc complete::PickValid {wtxt V d i s S} {
+  # Validates the word picker's input.
+  #   wtxt - text's path
+  #   V - %V of -validatecommand: validation condition
+  #   d - %d of -validatecommand: 1 for insert, 0 for delete
+  #   i - %i of -validatecommand: index of character
+  #   s - %s of -validatecommand: current value of entry
+  #   S - %S of -validatecommand: string being inserted/deleted
+
+  variable win
+  variable obj
+  variable comms
+  variable commsorig
+  variable wordorig
+  if {$V eq {focusin}} {
+    alited::CursorAtEnd [$obj Ent]
+  }
+  switch $d {
+    0 {
+      set curword [string replace $s $i $i]
+      set lc [string length $curword]
+      if {$lc && $lc<[string length $wordorig]} {
+        $obj res $win [list _alited_ $curword] ;# to remake the list
+      }
+    }
+    1 {
+      set curword [string range $s 0 $i]$S[string range $s $i end]
+      if {[string length $curword]==1 && $curword ne $wordorig} {
+        $obj res $win [list _alited_ $curword] ;# to remake the list
+      }
+    }
+  }
+  if {$d != -1} {
+    set fltcomms [list]
+    foreach com $commsorig {
+      if {[IsMatch $curword $com]} {
+        lappend fltcomms $com
+      }
+    }
+    set comms $fltcomms
+    ColorPick $wtxt
+    update
+  }
+  catch {
+    set lbx [$obj Lbx]
+    $lbx selection clear 0 end
+    $lbx selection set 0
+    $lbx activate 0
+    $lbx see 0
+    lassign [$obj csGet] - - - - - bg fg
+    $lbx itemconfigure 0 -selectbackground $bg -selectforeground $fg
+  }
+  return 1
+}
+#_______________________
+
+proc complete::PickFocusOut {w} {
+  # Closes the word picker at "focus out" event.
+  #   w - a current widget
+
+  variable win
+  variable obj
+  if {[focus] ni [list [$obj Ent] [$obj Lbx]]} {
+    $obj res $win 0
+  }
 }
 
 # ________________________ Main _________________________ #
@@ -285,6 +414,7 @@ proc complete::AutoCompleteCommand {} {
 
   namespace upvar ::alited al al
   variable tclcoms
+  variable wordorig
   if {![llength $tclcoms]} {
     set tclcoms [::hl_tcl::hl_commands]
     foreach cmd {exit break continue pwd pid} {
@@ -294,9 +424,18 @@ proc complete::AutoCompleteCommand {} {
       }
     }
   }
-  lassign [MatchedCommands] curword idx1 idx2
+  lassign [MatchedCommands] wordorig idx1 idx2
   set wtxt [alited::main::CurrentWTXT]
-  if {[set com [PickCommand $wtxt $curword]] ne {}} {
+  while 1 {
+    set com [PickCommand $wtxt]
+    if {[llength $com]==2 && [lindex $com 0] eq {_alited_}} {
+      set wordorig [lindex $com 1]
+      MatchedCommands $wordorig $idx1 $idx2
+    } else {
+      break
+    }
+  }
+  if {$com ne {}} {
     set row [expr {int([$wtxt index insert])}]
     set isvar [string match \$* $com]
     if {[$wtxt get "$row.$idx1 -1 c"] eq "\$"} {

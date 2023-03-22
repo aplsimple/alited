@@ -6,7 +6,10 @@
 # License: MIT.
 ###########################################################
 
-namespace eval run {}
+namespace eval run {
+  variable win .alwin.rundlg
+  variable vent {}
+}
 
 # ________________________ Options _________________________ #
 
@@ -29,49 +32,32 @@ proc run::RestoreRunOptions {} {
 }
 #_______________________
 
-proc run::SetRunOptions {{mode ""} {com ""} {ch1 ""} {befrun ""}} {
+proc run::RunOptions {args} {
   # Sets options of "Run..." dialogue.
-  #   mode - selected mode (forced command / RUNF)
-  #   com - forced command
-  #   ch1 - check of 1st checkbox
-  #   befrun - commands run before
 
-  namespace upvar ::alited al al obDl2 obDl2
-  if {$mode eq {}} {
-    set cbx [$obDl2 CbxfiL]
-    set mode [Mode]
-    set com [$cbx get]
-    set befrun [[$obDl2 Tex2] get 1.0 end]
-    set al(comForceLs) [$cbx cget -values]
-    set ch1 $al(TMPchb1)
-  }
-  set al(prjincons) $mode
+  namespace upvar ::alited al al obRun obRun
+  set cbx [$obRun CbxfiL]
+  set com [$cbx get]
+  set al(comForceLs) [$cbx cget -values]
+  set befrun [[$obRun Tex2] get 1.0 end]
   set al(comForce) [string trim $com]
   set i [lsearch -exact $al(comForceLs) $com]
   set al(comForceLs) [lreplace $al(comForceLs) $i $i]
   if {[llength $al(comForceLs)]<2} {set al(comForceLs) [list {}]}
   set al(comForceLs) [linsert $al(comForceLs) 1 $com]
   set al(comForceLs) [lrange $al(comForceLs) 0 $al(prjmaxcoms)]
-  set al(comForceCh) $ch1
   set al(prjbeforerun) [string map [list \n $alited::EOL] [string trim $befrun]]
 }
 
-# ________________________ Run, test _________________________ #
-
-proc run::Mode {} {
-  # Gets a mode of run (in console or in Tkcon).
-  # Returns 1 if it's in console.
-
-  namespace upvar ::alited al al obDl2 obDl2
-  set mode [set [[$obDl2 Rad1] cget -variable]]
-  return [expr {$mode eq $al(MC,inconsole)}]
-}
-#_______________________
+# ________________________ Button commands _________________________ #
 
 proc run::Run {} {
   # Runs a command of "Run..." dialogue.
 
   namespace upvar ::alited al al
+  variable win
+  wm attributes $win -topmost 0  ;# let Run dialogue be hidden
+  RunOptions
   if {![alited::file::IsTcl [alited::bar::FileName]]} {
     set in {}
   } elseif {$al(prjincons)} {
@@ -83,11 +69,39 @@ proc run::Run {} {
 }
 #_______________________
 
-proc run::Test {} {
-  # Tests a command of "Run..." dialogue.
+proc run::Save {} {
+  # Saves settings of "Run..." dialogue.
 
-  SetRunOptions
-  Run
+  namespace upvar ::alited al al obRun obRun
+  variable win
+  set al(runGeometry) [wm geometry $win]
+  RunOptions
+  SaveRunOptions
+  alited::ini::SaveIniPrj
+  alited::main::UpdateProjectInfo
+  catch {$obRun res $win 1}
+}
+#_______________________
+
+proc run::Cancel {args} {
+  # Handles hitting "Cancel" button.
+
+  namespace upvar ::alited al al obRun obRun
+  variable win
+  RestoreRunOptions
+  catch {
+    set al(runGeometry) [wm geometry $win]
+    $obRun res $win 0
+  }
+}
+#_______________________
+
+proc run::Help {} {
+  # Shows Run's help.
+
+  variable win
+  wm attributes $win -topmost 1  ;# let Run dialogue be not hidden
+  alited::tool::HelpTool %w 2
 }
 
 # ________________________ GUI _________________________ #
@@ -99,35 +113,35 @@ proc run::InitTex12 {tex1 tex2 cbx} {
   #   tex2 - 2nd text's path
   #   cbx - compobox's path
 
-  namespace upvar ::alited al al obDl2 obDl2
-  ::hl_tcl::hl_init $tex1 -dark [$obDl2 csDark] -plaintext 1 \
+  namespace upvar ::alited al al obRun obRun
+  ::hl_tcl::hl_init $tex1 -dark [$obRun csDark] -plaintext 1 \
     -cmd ::alited::run::FillCbx -cmdpos ::alited::run::FillCbx \
-    -font $al(FONT) -insertwidth $al(CURSORWIDTH)
+    -font $al(FONT) -insertwidth $al(CURSORWIDTH) -dobind yes
   ::hl_tcl::hl_text $tex1
-  ::hl_tcl::hl_init $tex2 -dark [$obDl2 csDark] -plaintext 1 \
+  ::hl_tcl::hl_init $tex2 -dark [$obRun csDark] -plaintext 1 \
     -font $al(FONT) -insertwidth $al(CURSORWIDTH) \
-    -cmdpos ::alited::None
+    -cmdpos ::alited::None -dobind yes
   ::hl_tcl::hl_text $tex2
   bind $tex1 <FocusIn> {set alited::al(run_checkmaxcomms) 1}
   bind $cbx <FocusOut> alited::run::FillTex1
   bind $cbx <<ComboboxSelected>> alited::run::FillTex1
-  ChbForced 0
+  ChbForced
 }
 #_______________________
 
 proc run::FillTex1 {args} {
   # Fills command content text.
 
-  namespace upvar ::alited al al obDl2 obDl2
-  set tex1 [$::alited::obDl2 Tex1]
-  set tex2 [$::alited::obDl2 Tex2]
-  set cbx [$obDl2 CbxfiL]
+  namespace upvar ::alited al al obRun obRun
+  set tex1 [$::alited::obRun Tex1]
+  set tex2 [$::alited::obRun Tex2]
+  set cbx [$obRun CbxfiL]
   if {$al(_startRunDialogue)} {
     set al(_startRunDialogue) no
     InitTex12 $tex1 $tex2 $cbx
   }
-  if {!$al(TMPchb1)} {
-    $obDl2 displayText $tex1 [[$::alited::obDl2 Ent] get]
+  if {!$al(comForceCh)} {
+    $obRun displayText $tex1 [[$::alited::obRun Ent] get]
     return
   }
   if {[focus] eq $tex1} return
@@ -147,18 +161,18 @@ proc run::FillTex1 {args} {
   } else {
     set coms $com\n\n$coms
   }
-  $obDl2 displayText $tex1 $coms
+  $obRun displayText $tex1 $coms
 }
 #_______________________
 
 proc run::FillCbx {args} {
   # Fill the command combobox.
 
-  namespace upvar ::alited al al obDl2 obDl2
-  if {!$al(TMPchb1)} return
-  set tex1 [$::alited::obDl2 Tex1]
-  if {!$al(TMPchb1) || [focus] ne $tex1} return
-  set cbx [$obDl2 CbxfiL]
+  namespace upvar ::alited al al obRun obRun
+  if {!$al(comForceCh)} return
+  set tex1 [$::alited::obRun Tex1]
+  if {!$al(comForceCh) || [focus] ne $tex1} return
+  set cbx [$obRun CbxfiL]
   set lst [list]
   set curline {}
   set l1 [expr {int([$tex1 index insert])}]
@@ -189,16 +203,18 @@ proc run::FillCbx {args} {
   set curline [string trim $curline]
   if {$curline ne {}} {
     $cbx set $curline
+    selection clear -displayof $cbx
+    $cbx selection range 0 end
   }
-  SetRunOptions
+  RunOptions
 }
 #_______________________
 
 proc run::DeleteForcedRun {} {
   # Clears current combobox' value.
 
-  namespace upvar ::alited al al obDl2 obDl2
-  set cbx [$obDl2 CbxfiL]
+  namespace upvar ::alited al al obRun obRun
+  set cbx [$obRun CbxfiL]
   if {[set val [string trim [$cbx get]]] eq {}} return
   set values [$cbx cget -values]
   if {[set i [lsearch -exact $values $val]]>-1} {
@@ -209,23 +225,19 @@ proc run::DeleteForcedRun {} {
 }
 #_______________________
 
-proc run::ChbForced {chb} {
-  # Sets checkbuttons' value for RunDialogue.
-  #   chb - number of checkbutton (1 or 2)
-  # See also: RunDialogue
+proc run::ChbForced {} {
+  # Check buttons' value for RunDialogue.
 
-  namespace upvar ::alited al al obDl2 obDl2
-  if {$chb==1} {
-    set al(TMPchb2) [expr {!$al(TMPchb1)}]
-  } elseif {$chb==2} {
-    set al(TMPchb1) [expr {!$al(TMPchb2)}]
-  }
-  set cbx [$obDl2 CbxfiL]
-  set tex [$obDl2 Tex1]
-  if {$al(TMPchb1)} {
+  namespace upvar ::alited al al obRun obRun
+  set cbx [$obRun CbxfiL]
+  set tex [$obRun Tex1]
+  set ent [$obRun Ent]
+  if {$al(comForceCh)} {
     $cbx configure -state normal
+    $ent configure -state disabled
   } else {
     $cbx configure -state disabled
+    $ent configure -state normal
   }
   $tex configure -state [$cbx cget -state]
   FillTex1
@@ -235,14 +247,11 @@ proc run::ChbForced {chb} {
 proc run::RunDialogue {} {
   # Dialogue to define a command for "Tools/Run".
 
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al obRun obRun
+  variable win
+  variable vent
+  SaveRunOptions
   set al(_startRunDialogue) yes
-  set lr 20
-  set filler [string repeat { } $lr]
-  set head \n\ [alited::bar::FileName]
-  set prompt0 [string range $al(MC,run):$filler 0 $lr]
-  set prompt1 [string range [msgcat::mc {By command:}]$filler 0 $lr]
-  set prompt2 [string range [msgcat::mc {By command #RUNF:}]$filler 0 $lr]
   if {[catch {
     if {[lindex $al(comForceLs) 0] eq {-}} {
       set al(comForceLs) [lreplace $al(comForceLs) 0 0]  ;# legacy
@@ -255,54 +264,59 @@ proc run::RunDialogue {} {
   }]} {
     set al(comForceLs) [list]
   }
-  if {$al(prjincons)} {
-    set vrad $al(MC,inconsole)
-  } else {
-    set vrad $al(MC,intkcon)
-  }
   set fname [alited::bar::FileName]
   if {![llength $al(comForceLs)] && $fname ne $al(MC,nofile)} {
     set al(comForceLs) [list {} $fname]
   }
-  set al(TMPchb1) $al(comForceCh)
-  set al(TMPchb2) [expr {!$al(TMPchb1)}]
   lassign [alited::tool::RunArgs] ar rf
   set vent "$ar$rf"
   set run [string map [list $alited::EOL \n] $al(prjbeforerun)]
-  lassign [$obDl2 input {} $al(MC,run) [list \
-    Rad [list $prompt0 {}] [list $vrad $al(MC,inconsole) $al(MC,intkcon)] \
-    seh1 {{} {-pady 5}} {} \
-    FiL [list $prompt1 {-fill x} [list -h 12 -cbxsel $::alited::al(comForce) -clearcom alited::run::DeleteForcedRun -tip {-BALTIP ! -COMMAND {[$::alited::obDl2 CbxfiL] get} -UNDER 2 -PER10 0}]] [list $al(comForce) {*}$al(comForceLs)] \
-    chb1 [list {} {-padx 5} {-toprev 1 -t {Run it} -var alited::al(TMPchb1) -com {alited::run::ChbForced 1}}] $al(TMPchb1) \
-    Ent [list $prompt2 {-fill x -pady 5} [list -state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obDl2 Ent] get} -UNDER 2 -PER10 0}]] "{$vent}" \
-    chb2 [list {} {-padx 5} {-toprev 1 -t {Run it} -var alited::al(TMPchb2) -com {alited::run::ChbForced 2}}] $al(TMPchb2) \
-    Tex1 "{} {} {-w 80 -h 9 -tabnext *Tex2 -afteridle alited::run::FillTex1}" {} \
-    seh3 {{} {-pady 5}} {} \
-    lab {{} {} {-t { OS or Tcl commands to be run before running a current file:}}} {} \
-    Tex2 "{} {} {-w 80 -h 9 -tabnext *OK}" $run \
-  ] -head $head -weight bold -help {alited::tool::HelpTool %w 2} -buttons {butTest Test ::alited::run::Test}] \
-  res mode com - - - - befrun
-  set mode [expr {$mode eq $al(MC,inconsole)}]
-  set res [list $res $mode $com $al(TMPchb1) $befrun]
-  unset -nocomplain al(TMPchb2)
-  unset -nocomplain al(TMPchb1)
-  return $res
+  $obRun makeWindow $win.fra $al(MC,run)
+  $obRun paveWindow $win.fra {
+    {h_ - - 1 5} \
+    {lab T + 1 1 {-st e -pady 5} {-t Run:}} \
+    {Rad1 + L 1 1 {} {-tvar alited::al(MC,inconsole) -value 1 -var alited::al(prjincons)}} \
+    {rad2 + L 1 1 {} {-tvar alited::al(MC,intkcon) -value 0 -var alited::al(prjincons)}} \
+    {seh1 lab T 1 5 {-pady 5}} \
+    {rad3 + T 1 1 {-st w -padx 4} {-t {By command:} -value 1 -var alited::al(comForceCh) -com alited::run::ChbForced}} \
+    {FiL + L 1 4 {-st ew} {-h 12 -cbxsel "$alited::al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$alited::al(comForceLs)"}} \
+    {rad4 rad3 T 1 1 {-st w -padx 4} {-t {By command #RUNF:} -value 0 -var alited::al(comForceCh) -com alited::run::ChbForced}} \
+    {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar alited::run::vent}} \
+    {fra1 rad4 T 1 5 {-st nsew -cw 1 -rw 1}} \
+    {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 64 -h 9 -tabnext *Tex2 -afteridle alited::run::FillTex1 -tabnext *tex2}} \
+    {.sbv + L - - {pack -side left}} \
+    {seh3 fra1 T 1 5 {-pady 5}} \
+    {lab2 + T 1 5 {} {-t { OS or Tcl commands to be run before running a current file:}}} \
+    {fra2 + T 1 5 {-st nsew}} \
+    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 64 -h 9 -tabnext *OK}} \
+    {.sbv + L - - {pack -side left}} \
+    {seh2 fra2 T 1 5 {-pady 5}} \
+    {butHelp + T 1 1 {-st w -padx 2} {-t Help -com alited::run::Help}} \
+    {h_2 + L 1 2 {-st ew}} \
+    {fra3 + L 1 2 {-st e}} \
+    {.butRun - - 1 1 {-padx 2} {-t Run -com alited::run::Run}} \
+    {.butSave + L 1 1 {} {-t Save -com alited::run::Save}} \
+    {.butCancel + L 1 1 {-padx 2} {-t Cancel -com alited::run::Cancel}} \
+  }
+  bind $win <F1> alited::run::Help
+  bind $win <F5> alited::run::Run
+  set geo $al(runGeometry)
+  if {$geo ne {}} {set geo "-geometry $geo"}
+  $obRun showModal $win -modal no -waitvar yes -onclose alited::run::Cancel -resizable 1 -focus [$obRun Rad1] -decor 1 -minsize {300 200} {*}$geo
+  catch {destroy $win}
+  ::apave::deiconify $al(WIN)
 }
 #_______________________
 
 proc run::RunDlg {} {
-  # Runs "Before Run" dialogue and does its chosen action.
 
-  SaveRunOptions
-  lassign [RunDialogue] res mode com ch1 befrun
-  if {$res} {
-    SetRunOptions $mode $com $ch1 $befrun
-    alited::ini::SaveIniPrj
-    alited::main::UpdateProjectInfo
+  variable win
+  if {[winfo exists $win]} {
+    ::apave::withdraw $win
+    ::apave::deiconify $win
   } else {
-    RestoreRunOptions
+    RunDialogue
   }
-  return $res
 }
 
 # ________________________ EOF _________________________ #
@@ -311,13 +325,13 @@ proc run::RunDlg {} {
 #proc run::TraceComForce {name1 name2 op} {
 #  # Traces al(comForce) to enable/disable the text field in "Before Run" dialogue.
 #
-#  namespace upvar ::alited obDl2 obDl2
+#  namespace upvar ::alited obRun obRun
 #  catch {
-#    set txt [$obDl2 Tex2]
+#    set txt [$obRun Tex2]
 #    if {[set $name1] eq {}} {set st normal} {set st disabled}
 #    $txt configure -state $st
-#    $obDl2 makePopup $txt no yes
-#    set cbx [$obDl2 CbxfiL]
+#    $obRun makePopup $txt no yes
+#    set cbx [$obRun CbxfiL]
 #    if {[focus] ne $cbx && $st eq {disabled}} {
 #      after 300 "focus $cbx"
 #    }
@@ -327,7 +341,7 @@ proc run::RunDlg {} {
 
 #! let this commented stuff be a code snippet for tracing apave variables, huh:
 #  after idle [list after 0 " \
-#    set tvar \[$obDl2 varName cbx\] ;\
+#    set tvar \[$obRun varName cbx\] ;\
 #    trace add variable \$tvar write ::alited::run::TraceComForce ;\
 #    set \$tvar \[set \$tvar\]
 #  "]

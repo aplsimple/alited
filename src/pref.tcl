@@ -769,7 +769,7 @@ proc pref::Edit_Tab2 {} {
     {FraTab2 v_ T 1 1 {-st nsew -cw 1 -rw 1}}
     {fraTab2.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "Tcl files' extensions:"}}
-    {.entExt + L 1 1 {-st swe -pady 3} {-tvar alited::al(TclExtensions) -w 40}}
+    {.entExt + L 1 1 {-st swe -pady 3} {-tvar alited::al(TclExts) -w 40}}
     {.labCOM .labExt T 1 1 {-st w -pady 3 -padx 3} {-t "Color of Tcl commands:"}}
     {.clrCOM + L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,clrCOM) -w 20}}
     {.labCOMTK .labCOM T 1 1 {-st w -pady 3 -padx 3} {-t "Color of Tk commands:"}}
@@ -814,7 +814,7 @@ proc pref::Edit_Tab3 {} {
     {FraTab3 + T 1 1 {-st nsew -cw 1 -rw 1}}
     {fraTab3.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "C/C++ files' extensions:"}}
-    {.entExt + L 1 1 {-st swe -pady 3} {-tvar alited::al(ClangExtensions) -w 40}}
+    {.entExt + L 1 1 {-st swe -pady 3} {-tvar alited::al(ClangExts) -w 40}}
     {.labCOM2 .labExt T 1 1 {-st w -pady 3 -padx 3} {-t "Color of C key words:"}}
     {.clrCOM2 + L 1 1 {-st sw -pady 3} {-tvar alited::al(ED,CclrCOM) -w 20}}
     {.labCOMTK2 .labCOM2 T 1 1 {-st w -pady 3 -padx 3} {-t "Color of C++ key words:"}}
@@ -859,7 +859,7 @@ proc pref::Edit_Tab4 {} {
     {FraTab4 + T 1 1 {-st nsew -cw 1 -rw 1}}
     {fraTab4.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t "Plain texts' extensions:"}}
-    {.entExt + L 1 1 {-st swe -pady 3} {-tvar alited::al(TextExtensions) -w 54}}
+    {.entExt + L 1 1 {-st swe -pady 3} {-tvar alited::al(TextExts) -w 44}}
     {.seh .labExt T 1 2 {-pady 3}}
     {.but + T 1 1 {-st w} {-t Default -com alited::pref::Text_Default -tabnext alited::Tnext}}
   }
@@ -872,7 +872,7 @@ proc pref::Tcl_Default {isyn {init no}} {
   #   init - yes, if only variables should be initialized
 
   fetchVars
-  set al(TclExtensions) $al(TclExtensionsDef)
+  set al(TclExts) $al(TclExtsDef)
   set Dark [CsDark]
   set clrnams [::hl_tcl::hl_colorNames]
   set clrvals [::hl_tcl::hl_colors $isyn $Dark]
@@ -891,7 +891,7 @@ proc pref::C_Default {isyn {init no}} {
   #   init - yes, if only variables should be initialized
 
   fetchVars
-  set al(ClangExtensions) $al(ClangExtensionsDef)
+  set al(ClangExts) $al(ClangExtsDef)
   set Dark [CsDark]
   set clrnams [::hl_tcl::hl_colorNames]
   set clrvals [::hl_c::hl_colors $isyn $Dark]
@@ -907,7 +907,7 @@ proc pref::Text_Default {} {
   # Sets defaults for plain text.
 
   fetchVars
-  set al(TextExtensions) $al(TextExtensionsDef)
+  set al(TextExts) $al(TextExtsDef)
   update
 }
 #_______________________

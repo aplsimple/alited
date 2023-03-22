@@ -3638,7 +3638,8 @@ oo::class create ::apave::APaveBase {
         set root $centerme
       }
     }
-    foreach {o v} [list -focus {} -onclose {} -geometry {} -decor 1 \
+    set opt(-decor) [expr {[winfo parent $win] in {{} .}}]
+    foreach {o v} [list -focus {} -onclose {} -geometry {} \
     -root $root -resizable {} -ontop 0 -escape 1 -checkgeometry 1] {
       lappend defargs $o [my getShowOption $o $v]
     }
@@ -3669,9 +3670,6 @@ oo::class create ::apave::APaveBase {
     }
     if {$rooted} {
       lassign [::apave::splitGeometry [wm geometry [winfo toplevel $root]]] rw rh rx ry
-    }
-    if {[winfo parent $win] ni {{} .}} {
-      set opt(-decor) 0
     }
     if {!$opt(-decor)} {
       wm transient $win $root

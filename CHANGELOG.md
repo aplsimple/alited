@@ -1,11 +1,17 @@
 # LAST CHANGES:
 
 
-Version `v1.4.2.2 (17 Mar'23)`
+Version `v1.4.3 (22 Mar'23)`
 
   - BUGFIX: new file ("No name") syntax highlighted as .alm
+  - BUGFIX: e_menu & its tools, if installed by installer & there is deployed Tcl/Tk 8.6-
+  - NEW   : highlight syntax for .ini, .conf, .ale files
+  - CHANGE: refactored run.tcl (non-modal, buttons, saved geometry etc.)
+  - CHANGE: completion: entry field to enter, color vars & coms
+  - CHANGE: the only instance of Help window
   - CHANGE: file::OutwardChange - check for a current tab
-  - CHANGE: completion - excl. 1-letter var, incl. com by tail name
+  - CHANGE: Projects icon moved right
+  - CHANGE: packages: apave/e_menu 4.0.3
 
 
 Version `v1.4.2 (15 Mar'23)`

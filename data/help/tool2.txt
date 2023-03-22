@@ -1,7 +1,20 @@
- A current Tcl script (file.tcl) is run in <r>console</r> or <r>Tkcon</r>.
+ <r>Run</r> button runs a selected command. Sort of "run it on fly".
+ The command is active all the time when "Run" dialogue is open.
+ It's also run with F5 key.
+
+ The dialogue isn't closed with <r>Run</r> button, so that you can
+ customize commands before saving them. Also, while "Run" dialogue
+ is open, you can modify your scripts (the dialogue is non-modal).
+
+ After customizing all commands, press <r>Save</r> button: it saves
+ the dialogue's current settings and closes it.
+
+ <r>Cancel</r> button dismisses all changes made in the dialogue.
+
+ A Tcl script (file.tcl) can be run in <r>console</r> or <r>Tkcon</r>.
 
  <r>1.</r> You can set a command that is run independently on a type of
- current file. It can be OS command or executable file to run in console.
+ current file. It can be OS command or an executable to run in console.
 
  If a Tcl file has to be run, you can set the command with or without
  <b>tclsh</b>, <b>wish</b>, <b>tclkit</b> etc., for example:
@@ -15,6 +28,7 @@
    <b>%pd</b> - project's directory
    <b>%s</b>  - text's selection / current word
    <b>%%</b>  - %
+
  The combobox's commands can be created and edited in the text box,
  at that a current line is highlighted and displayed in the combobox.
 
@@ -22,15 +36,14 @@
    #RUNF: file.tcl arg1 arg2 arg3
  meaning that <b>tclsh file.tcl arg1 arg2 arg3</b> will be run on the file.
 
- These two ways of running Tcl are selected with <r>Run it</r> switches and
- are useful for two different type of projects:
+ These two ways are useful for two different type of projects:
    - <b>monolith</b>: you have a lot of files that need few commands to test
      and debug the whole application (<b>alited</b> is an example)
    - <b>heterogeneous</b>: a project contains a lot of files that need to
      be tested and debugged with their own commands
 
  <r>3.</r> "Run me" item of <b>e_menu</b> tool allows running a current file
- in its "normal" mode by an associated application. Press F4 twice for it.
+ in "normal" manner by an associated application. Press F4 twice for it.
 
  <r>4.</r> You can enter commands to be run before running a current file.
  It can be necessary <b>for a specific project</b>, sort of initialization.

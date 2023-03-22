@@ -506,13 +506,14 @@ proc favor::Rename {{undermouse yes}} {
 }
 #_______________________
 
-proc favor::CurrentName {} {
+proc favor::CurrentName {{dobell no}} {
   # Gets data of a current favorite.
+  #   dobell - if yes, bells at empty unit tree
   # Returns a list of the favorite's data: ID, title, 1st line, last line.
 
   lassign [alited::tree::CurrentItemByLine {} 1] itemID - - - name l1 l2
   set name [string trim $name]
-  if {$name eq {}} bell
+  if {$name eq {} && $dobell} bell
   return [list $itemID $name $l1 $l2]
 }
 #_______________________
@@ -525,7 +526,7 @@ proc favor::CurrentID {undermouse} {
   set favID [set fname {}]
   set treelist [alited::tree::GetTree {} TreeFavor]
   if {$undermouse} {
-    set name [lindex [CurrentName] 1]
+    set name [lindex [CurrentName yes] 1]
     foreach it $treelist {
       lassign $it - - ID2 - values
       lassign $values name2 fname header

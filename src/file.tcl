@@ -168,7 +168,7 @@ proc file::IsTcl {fname} {
   # Checks if a file is of Tcl.
   #   fname - file name
 
-  if {[string tolower [file extension $fname]] in $alited::al(TclExtensions)} {
+  if {[string tolower [file extension $fname]] in $alited::al(TclExts)} {
     return yes
   }
   return no
@@ -179,7 +179,7 @@ proc file::IsClang {fname} {
   # Checks if a file is of C/C++.
   #   fname - file name
 
-  if {[string tolower [file extension $fname]] in $alited::al(ClangExtensions)} {
+  if {[string tolower [file extension $fname]] in $alited::al(ClangExts)} {
     return yes
   }
   return no
@@ -556,10 +556,10 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
   set many [expr {$llen>1}]
   foreach fname $fnames {
     if {[file exists $fname]} {
-      set exts $al(TclExtensions)
-      append exts { } $al(ClangExtensions)
-      append exts { } $al(TextExtensions)
-      set sexts "  $al(TclExtensions)\n  $al(ClangExtensions)\n  $al(TextExtensions)"
+      set exts $al(TclExts)
+      append exts { } $al(ClangExts)
+      append exts { } $al(TextExts)
+      set sexts [string map {. {}} "  $al(TclExts)\n  $al(ClangExts)\n  $al(TextExts)"]
       set exts [string trim [string map {{ } {, } . {}} $exts]]
       set ext [string tolower [string trim [file extension $fname] .]]
       set esp [split [string map [list { } {} \n ,] $exts] ,]

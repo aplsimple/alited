@@ -607,7 +607,7 @@ proc tool::RunMode {} {
       source [file join $alited::SRCDIR run.tcl]
     }
   }
-  if {[alited::run::RunDlg]} ::alited::run::Run
+  alited::run::RunDlg
 }
 #_______________________
 
@@ -684,6 +684,17 @@ proc tool::e_menu {args} {
   }
   if {[set i [lsearch $args {SH=1}]]>-1} {
     set args [lreplace $args $i $i [SHarg]]
+  }
+  # check options for compatibility
+  set itc [lsearch -glob $args tc=*]
+  set iee [lsearch -glob $args ee=*]
+  if {$itc>-1 && $iee>-1 && $al(prjincons)} {
+    set ee [string range [lindex $args $iee] 3 end]
+    if {![alited::file::IsTcl $ee]} {
+      set args [lreplace $args $itc $itc] ;# not a Tcl file - can't be run with tclsh
+    }
+  } elseif {$itc==-1 && $iee==-1 && $al(prjincons)} {
+    lappend args tc=[alited::Tclexe]  ;# for console - set "path to tclsh" argument
   }
   if {$alited::al(EM,exec)} {
     e_menu1 $args

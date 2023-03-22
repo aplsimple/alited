@@ -303,7 +303,7 @@ proc ::klnd::my::ButtonTip {obj tipcom w} {
     set y $p(yvis$obj)
     set m $p(mvis$obj)
     set d [TrimN [$w cget -text]]
-    set d [::klnd::my::FormatDay2 $obj $y $m $d]
+    set d [clock format [clock scan $m/$d/$y -format %D] -format %Y/%m/%d]
     set tipcom [string map [list %W $w %D $d] $tipcom]
     set res [eval {*}$tipcom]
   }

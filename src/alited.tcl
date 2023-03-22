@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.2.2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.3  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -106,6 +106,7 @@ namespace eval alited {
   variable obCHK ::alited::alitedCHK  ;# dialog of "Check Tcl"
   variable obFND ::alited::alitedFND  ;# dialog of "Find/Replace"
   variable obFN2 ::alited::alitedFN2  ;# dialog of "Find by list"
+  variable obRun ::alited::alitedRun  ;# dialog of "Run..."
 
   # misc. vars
   variable DirGeometry {}  ;# saved geometry of "Choose Directory" dialogue (for Linux)
@@ -137,13 +138,13 @@ namespace eval alited {
   set al(prjmaxcoms) 20   ;# maximum of "Run..." commands
   foreach _ $OPTS {set al(DEFAULT,$_) $al($_)}
 
-  set al(TITLE) {%f :: %d :: %p}               ;# alited title's template
-  set al(TclExtensionsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
-  set al(ClangExtensionsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
-  set al(TextExtensionsDef) {html htm css md txt sh bat ini alm em ale} ;# ... plain texts
-  set al(TclExtensions) $al(TclExtensionsDef)
-  set al(ClangExtensions) $al(ClangExtensionsDef)
-  set al(TextExtensions) $al(TextExtensionsDef)
+  set al(TITLE) {%f :: %d :: %p}         ;# alited title's template
+  set al(TclExtsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
+  set al(ClangExtsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
+  set al(TextExtsDef) {html htm css md txt sh bat ini alm em ale conf} ;# ... plain texts
+  set al(TclExts) $al(TclExtsDef)
+  set al(ClangExts) $al(ClangExtsDef)
+  set al(TextExts) $al(TextExtsDef)
 
 
   ## __________________ Procs to raise the alited app ___________________ ##
@@ -407,7 +408,7 @@ namespace eval alited {
   proc ListPaved {} {
     # Return a list of apave objects for dialogues.
 
-    return [list obDlg obDl2 obDl3 obFND obFN2 obCHK]
+    return [list obDlg obDl2 obDl3 obFND obFN2 obCHK obRun]
   }
   #_______________________
 
@@ -710,6 +711,7 @@ namespace eval alited {
     #   args - option of msg
 
     variable obDlg
+    if {[HelpOnce 1 $fname]} return
     set fS [lindex [::hl_tcl::hl_colors {} [::apave::obj csDark]] 1]
     set ::alited::textTags [list \
       [list "r" "-font {-weight bold} -foreground $fS"] \
@@ -745,11 +747,30 @@ namespace eval alited {
     if {[llength [split $msg \n]]>30} {
       set args [linsert $args 0 -h 30 -scroll 1]
     }
+    after 200 [list alited::HelpOnce 0 $fname]
     set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no -onclose destroy \
       -ontop yes -centerme $win -text 1 -scroll no -tags ::alited::textTags \
       -w [incr wmax] {*}$args]
-
     return $res
+  }
+  #_______________________
+
+  proc HelpOnce {mode fname} {
+    # Handles "Help" window to have the only instance of it.
+    #   mode - 1 to check for existance the help; 0 to register it
+    #   fname - file of help
+
+    variable al
+    variable obDlg
+    set key _help_$fname
+    if {$mode} {
+      if {[info exists al($key)] && [winfo exists $al($key)]} {
+        ::apave::deiconify $al($key)
+        return 1
+      }
+      return 0
+    }
+    set al($key) [$obDlg dlgPath]
   }
   #_______________________
 
@@ -811,7 +832,7 @@ namespace eval alited {
       catch {
         switch $ext {
           htm {set ext html}
-          ale {set ext ini}
+          ale - conf {set ext ini}
         }
         set addon hl_$ext
         lassign [glob -nocomplain [file join $LIBDIR addon $addon.tcl]] fname
@@ -893,7 +914,6 @@ namespace eval alited {
 
     variable al
     variable obPav
-    variable obFN2
     if {$al(INI,confirmexit)>1} {
       set timo "-timeout {$al(INI,confirmexit) ButOK}"
     } else {
@@ -903,9 +923,10 @@ namespace eval alited {
     [msg okcancel info [msgcat::mc {Quitting alited.}] OK {*}$timo]} {
       if {[alited::file::AllSaved]} {
         alited::tool::_close                     ;# close all of the
-        catch {alited::check::Cancel}            ;# possibly open
-        catch {destroy $::alited::find::win}     ;# non-modal
-        catch {destroy $::alited::find::win2}    ;# windows
+        catch {alited::run::Cancel}              ;# possibly open
+        catch {alited::check::Cancel}            ;# non-modal
+        catch {destroy $::alited::find::win}     ;# windows
+        catch {destroy $::alited::find::win2}    ;#
         catch {destroy $::alited::al(FN2WINDOW)} ;# (and its possible children)
         $obPav res $al(WIN) $res
         ::apave::endWM
@@ -1023,6 +1044,7 @@ if {[info exists ALITED_PORT]} {
     source [file join $alited::LIBDIR addon hl_html.tcl]
     source [file join $alited::LIBDIR addon hl_em.tcl]
     source [file join $alited::LIBDIR addon hl_alm.tcl]
+    source [file join $alited::LIBDIR addon hl_ini.tcl]
   }
 }
 # _________________________________ EOF _________________________________ #
