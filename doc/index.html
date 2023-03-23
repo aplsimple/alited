@@ -1392,8 +1392,18 @@ A current Tcl script (file.tcl) can be run in <i>console</i> or <i>Tkcon</i>.
 </p>
 
 <p>
-<b>1.</b> You can set a command that is run independently on a type of
-current file. It can be OS command or executable file. It's run in console.
+With <i>"By command #RUNF:"</i> you write comments in a file, like:
+<pre class="code"><i><font color=#4b5d50>#RUNF: file.tcl arg1 arg2 arg3</font></i>
+</pre>
+or
+<pre class="code"><i><font color=#4b5d50>#EXEC: tclsh file.tcl arg1 arg2 arg3</font></i>
+</pre>
+meaning that "<i>tclsh file.tcl arg1 arg2 arg3</i>" will be run on the file. If there isn't this command, a current file is run by an associated application.
+</p>
+
+<p>
+With <i>"By command"</i> you can set a list of arbitrary commands
+ to be selected and run independently on a type of current file. It can be OS commands or executables to be run in console.
 </p>
 
 <p>
@@ -1418,34 +1428,24 @@ at that the text's current line is highlighted and displayed in the combobox.
 </p>
 
 <p>
-<b>2.</b> For <i>"By command #RUNF:"</i> you write comments in a file, like:
-<pre class="code"><i><font color=#4b5d50>#RUNF: file.tcl arg1 arg2 arg3</font></i>
-</pre>
-meaning that <i>tclsh file.tcl arg1 arg2 arg3</i> will be run on the file.
-</p>
-
-<p>
-These two ways are useful for two different type of projects:
+These two ways of "Run" are useful for two different type of projects:
 <ul>
-  <li> <i>monolith</i>: you have a lot of files that need few commands to test
-    and debug the whole application (<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is an example)</li>
   <li> <i>heterogeneous</i>: a project contains a lot of files that need to
     be tested and debugged with their own commands</li>
+  <li> <i>monolith</i>: you have a lot of files that need a list of commands to test
+    and debug the whole application (<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is an example)</li>
 </ul>
 </p>
 
 <p>
-<b>3.</b> Anyhow, "Run me" item of <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tool allows running a current file
+Anyhow, "Run me" item of <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tool allows running a current file
  in "normal" manner by an associated application. Press F4 twice for it.
 </p>
 
 <p>
-<b>4.</b> Also, you can enter commands to be run before running a current file.
+Also, you can enter commands to be run before running a current file.
 It can be necessary <i>for a specific project</i>, sort of initialization.
-</p>
-
-<p>
-These commands can be OS commands or executables, for example:
+<br>These commands can be OS commands or executables, for example:
 <pre class="code"><b><font color=#3a6797>cd</font></b> ~/TMP
 rm log.txt
 </pre>

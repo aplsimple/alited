@@ -322,18 +322,10 @@ proc tree::CreateUnitsTree {TID wtree} {
   baltip::tip [$obPav BtTDown] $al(MC,movedownU)
   $wtree heading #0 -text [alited::bar::CurrentTab 1]
   $wtree heading #1 -text [msgcat::mc Row]
-  set ctab [alited::bar::CurrentTabID]
   set parents [list {}]
   set parent {}
   set levprev -1
   set wtxt [alited::main::GetWTXT $TID]
-  set todolist [list]
-  foreach {tr1 tr2} [$wtxt tag ranges tagCMN2] {
-    lappend todolist [expr {int($tr1)}]
-  }
-  $wtree tag remove tagTODO
-  $wtree tag remove tagBranch
-  $wtree tag remove tagSel
   foreach item $al(_unittree,$TID) {
     if {[llength $item]<3} continue
     set itemID  [alited::tree::NewItemID [incr iit]]
@@ -348,6 +340,56 @@ proc tree::CreateUnitsTree {TID wtree} {
     } else {
       set imgopt "-image alimg_gulls"
     }
+    $wtree insert $parent end -id $itemID -text "$title" \
+      -values [list $l1 $l2 {} $itemID $lev $leaf $fl1] -open yes {*}$imgopt
+    $wtree tag add tagNorm $itemID
+    if {!$leaf} {
+      set parent $itemID
+      catch {set parents [lreplace $parents $lev end $parent]}
+    }
+    set levprev $lev
+  }
+  after idle [list alited::tree::ColorUnitsTree $TID $wtxt $wtree -1]  ;# color without todos
+  after idle [list after 10 [list alited::tree::ColorUnitsTree $TID $wtxt $wtree 50]]
+}
+#_______________________
+
+proc tree::ColorUnitsTree {TID wtxt wtree wait} {
+  # Color units of the tree.
+  #   TID - a current tab's ID
+  #   wtxt - text's path
+  #   wtree - tree's path
+  #   wait - waiting mode: -1 no wait, >0 wait for highlighting done, 0 waiting done
+
+  namespace upvar ::alited al al
+  if {$TID ne [alited::bar::FileTID [alited::bar::FileName]]} return
+  # colorizing should wait for the highlighting done
+  if {$wait>0} {
+    if {[alited::file::IsClang [alited::bar::FileName $TID]]} {
+      set dowait [expr {![::hl_c::isdone $wtxt]}]
+    } else {
+      set dowait [expr {![::hl_tcl::isdone $wtxt]}]
+    }
+    if {$dowait} {
+      incr wait -1
+      after 100 [list alited::tree::ColorUnitsTree $TID $wtxt $wtree $wait]
+      return
+    }
+  }
+  set ctab [alited::bar::CurrentTabID]
+  set todolist [list]
+  foreach {tr1 tr2} [$wtxt tag ranges tagCMN2] {
+    lappend todolist [expr {int($tr1)}]
+  }
+  $wtree tag remove tagTODO
+  if {$wait==-1} {
+    $wtree tag remove tagBranch
+    $wtree tag remove tagSel
+  }
+  foreach item $al(_unittree,$TID) {
+    if {[llength $item]<3} continue
+    set itemID  [alited::tree::NewItemID [incr iit]]
+    lassign $item lev leaf fl1 title l1 l2
     set tag tagNorm
     foreach tr $todolist {
       if {$tr>=$l1 && $tr<=$l2} {
@@ -355,9 +397,6 @@ proc tree::CreateUnitsTree {TID wtree} {
         break
       }
     }
-    $wtree insert $parent end -id $itemID -text "$title" \
-      -values [list $l1 $l2 {} $itemID $lev $leaf $fl1] -open yes {*}$imgopt
-    $wtree tag add tagNorm $itemID
     catch {
       if {$leaf && \
       [info exists al(CPOS,$ctab,[alited::unit::GetHeader $wtree $itemID])]} {
@@ -366,13 +405,10 @@ proc tree::CreateUnitsTree {TID wtree} {
     }
     if {!$leaf} {
       if {$tag ne {tagTODO}} {set tag tagBranch}
-      set parent $itemID
-      catch {set parents [lreplace $parents $lev end $parent]}
     }
-    if {$tag ne {tagNorm}} {
-      $wtree tag add $tag $itemID
+    if {$tag ne {tagNorm} && ($wait==-1 || $tag eq {tagTODO})} {
+      if {[catch {$wtree tag add $tag $itemID}]} break
     }
-    set levprev $lev
   }
 }
 #_______________________

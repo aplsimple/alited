@@ -275,20 +275,20 @@ proc run::RunDialogue {} {
   $obRun paveWindow $win.fra {
     {h_ - - 1 5} \
     {lab T + 1 1 {-st e -pady 5} {-t Run:}} \
-    {Rad1 + L 1 1 {} {-tvar alited::al(MC,inconsole) -value 1 -var alited::al(prjincons)}} \
+    {Rad1 + L 1 2 {} {-tvar alited::al(MC,inconsole) -value 1 -var alited::al(prjincons)}} \
     {rad2 + L 1 1 {} {-tvar alited::al(MC,intkcon) -value 0 -var alited::al(prjincons)}} \
     {seh1 lab T 1 5 {-pady 5}} \
-    {rad3 + T 1 1 {-st w -padx 4} {-t {By command:} -value 1 -var alited::al(comForceCh) -com alited::run::ChbForced}} \
-    {FiL + L 1 4 {-st ew} {-h 12 -cbxsel "$alited::al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$alited::al(comForceLs)"}} \
-    {rad4 rad3 T 1 1 {-st w -padx 4} {-t {By command #RUNF:} -value 0 -var alited::al(comForceCh) -com alited::run::ChbForced}} \
+    {rad3 + T 1 1 {-st w -padx 4} {-t {By command #RUNF:} -value 0 -var alited::al(comForceCh) -com alited::run::ChbForced}} \
     {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar alited::run::vent}} \
+    {rad4 rad3 T 1 1 {-st w -padx 4} {-t {By command:} -value 1 -var alited::al(comForceCh) -com alited::run::ChbForced}} \
+    {FiL + L 1 4 {-st ew} {-h 12 -cbxsel "$alited::al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$alited::al(comForceLs)"}} \
     {fra1 rad4 T 1 5 {-st nsew -cw 1 -rw 1}} \
-    {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 64 -h 9 -tabnext *Tex2 -afteridle alited::run::FillTex1 -tabnext *tex2}} \
+    {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 9 -tabnext *Tex2 -afteridle alited::run::FillTex1 -tabnext *tex2}} \
     {.sbv + L - - {pack -side left}} \
     {seh3 fra1 T 1 5 {-pady 5}} \
     {lab2 + T 1 5 {} {-t { OS or Tcl commands to be run before running a current file:}}} \
     {fra2 + T 1 5 {-st nsew}} \
-    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 64 -h 9 -tabnext *OK}} \
+    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 4 -tabnext *OK}} \
     {.sbv + L - - {pack -side left}} \
     {seh2 fra2 T 1 5 {-pady 5}} \
     {butHelp + T 1 1 {-st w -padx 2} {-t Help -com alited::run::Help}} \

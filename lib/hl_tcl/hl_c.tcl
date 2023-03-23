@@ -692,5 +692,14 @@ proc ::hl_c::hl_line {txt} {
   ::hl_c::my::MemPos $txt yes
   $txt configure -insertwidth $::hl_c::my::data(INSERTWIDTH,$txt)
 }
+#_______________________
+
+proc ::hl_c::isdone {txt} {
+  # Checks if the highlighting of the text is done.
+  #   txt - text's path
+
+  variable my::data
+  return [expr {[info exist my::data(REG_TXT,$txt)] && $my::data(REG_TXT,$txt) ne {}}]
+}
 
 # _________________________________ EOF _________________________________ #

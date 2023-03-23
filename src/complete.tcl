@@ -126,7 +126,7 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
           lappend res $ttl
           # save arguments of proc/method
           set h [alited::unit::GetHeader {} {} 0 $wtxt $ttl $l1 $l2]
-          dict set al(_SessionCommands) $ttl [lindex [split $h \n] 0 2]
+          catch {dict set al(_SessionCommands) $ttl [lindex [split $h \n] 0 2]}
         }
       }
     }

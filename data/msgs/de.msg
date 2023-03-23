@@ -550,6 +550,7 @@ namespace eval ::alited {
     " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Geben Sie Befehle ein, die nach dem Starten von alited ausgeführt werden sollen,\n das heißt Tcl Befehle oder ausführbare Dateien:"
     {By command:} {Durch Befehl:}
     {By command #RUNF:} {Durch Befehl #RUNF:}
+    {Run:} {Ausführe:}
     {Run it} {Ausführe}
     { OS or Tcl commands to be run before running a current file:} {OS oder Tcl Befehle, die ausgeführt werde bevor die aktuelle Datei ausgeführt wird:}
     { Also, you can set "forced command" to be run by "Run" tool:} { Ebenfalls, können Sie festlegen "erzwungener Befehl" für Ausführen:}

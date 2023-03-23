@@ -1,6 +1,13 @@
 # LAST CHANGES:
 
 
+Version `v1.4.3.1 (23 Mar'23)`
+
+  - BUGFIX: units of tree with todo comments (detection in big files)
+  - CHANGE: Run dialogue's appearance
+  - CHANGE: hl_tcl 1.0.1
+
+
 Version `v1.4.3 (22 Mar'23)`
 
   - BUGFIX: new file ("No name") syntax highlighted as .alm

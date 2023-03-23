@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.0.0
+package provide hl_tcl 1.0.1
 
 # ______________________ Common data ____________________ #
 
@@ -1318,4 +1318,14 @@ proc hl_tcl::iscurline {txt {flag ""}} {
 
   return [my::IsCurline $txt $flag]
 }
+#_______________________
+
+proc ::hl_tcl::isdone {txt} {
+  # Checks if the highlighting of the text is done.
+  #   txt - text's path
+
+  variable my::data
+  return [expr {[info exist my::data(REG_TXT,$txt)] && $my::data(REG_TXT,$txt) ne {}}]
+}
+
 # _________________________________ EOF _________________________________ #

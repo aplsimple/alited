@@ -546,6 +546,7 @@ namespace eval ::alited {
     " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Введите команды, выполняемые после старта alited,\n т.е. команды Tcl или внешние команды:"
     {By command:} {Командой:}
     {By command #RUNF:} {Командой #RUNF:}
+    {Run:} {Запуск:}
     {Run it} {Пуск}
     { OS or Tcl commands to be run before running a current file:} { Команды OS или Tcl, выполняемые перед запуском текущего файла:}
     { Also, you can set "forced command" to be run by "Run" tool:} { Также вы можете ввести "принудительную команду" для Запуска:}

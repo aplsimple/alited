@@ -13,8 +13,16 @@
 
  A Tcl script (file.tcl) can be run in <r>console</r> or <r>Tkcon</r>.
 
- <r>1.</r> You can set a command that is run independently on a type of
- current file. It can be OS command or an executable to run in console.
+ With <r>By command #RUNF</r> you can write comments in a file
+   #RUNF: file.tcl arg1 arg2 arg3
+ or
+   #EXEC: tclsh file.tcl arg1 arg2 arg3
+ meaning that "tclsh file.tcl arg1 arg2 arg3" will be run on the file.
+ If there isn't this command, a current file is run by an associated app.
+
+ With <r>By command</r> you can set a list of arbitrary commands
+ to be selected and run independently on a type of current file.
+ It can be OS commands or executables to be run in console.
 
  If a Tcl file has to be run, you can set the command with or without
  <b>tclsh</b>, <b>wish</b>, <b>tclkit</b> etc., for example:
@@ -32,20 +40,18 @@
  The combobox's commands can be created and edited in the text box,
  at that a current line is highlighted and displayed in the combobox.
 
- <r>2.</r> For <b>By command #RUNF:</b> you write comments in a file, like:
-   #RUNF: file.tcl arg1 arg2 arg3
- meaning that <b>tclsh file.tcl arg1 arg2 arg3</b> will be run on the file.
+ These two ways of "Run" are useful for two different type of projects:
 
- These two ways are useful for two different type of projects:
-   - <b>monolith</b>: you have a lot of files that need few commands to test
-     and debug the whole application (<b>alited</b> is an example)
    - <b>heterogeneous</b>: a project contains a lot of files that need to
      be tested and debugged with their own commands
 
- <r>3.</r> "Run me" item of <b>e_menu</b> tool allows running a current file
+   - <b>monolith</b>: you have a lot of files that need a list of commands
+     to test and debug the whole application (<b>alited</b> is an example)
+
+ Anyhow, "Run me" item of <b>e_menu</b> tool allows running a current file
  in "normal" manner by an associated application. Press F4 twice for it.
 
- <r>4.</r> You can enter commands to be run before running a current file.
+ Also, you can enter commands to be run <r>before</r> running a file.
  It can be necessary <b>for a specific project</b>, sort of initialization.
 
  These commands can be OS commands or executables, for example:
