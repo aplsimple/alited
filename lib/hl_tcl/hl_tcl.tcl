@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.0.1
+package provide hl_tcl 1.0.2
 
 # ______________________ Common data ____________________ #
 
@@ -1326,6 +1326,17 @@ proc ::hl_tcl::isdone {txt} {
 
   variable my::data
   return [expr {[info exist my::data(REG_TXT,$txt)] && $my::data(REG_TXT,$txt) ne {}}]
+}
+#_______________________
+
+proc ::hl_tcl::clearup {txt} {
+  # Clears data related to text (esp. at deleting it).
+  #   txt - text's path
+
+  variable my::data
+  foreach key [array names my::data *,$txt] {
+    unset my::data($key)
+  }
 }
 
 # _________________________________ EOF _________________________________ #

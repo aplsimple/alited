@@ -875,10 +875,12 @@ proc file::CloseFile {TID checknew args} {
       }
     }
     if {$wtxt ne [$obPav Text]} {
-      # [$obPav Text] was made by main::_open, let it be alive
-      destroy $wtxt
-      destroy $wsbv
+      # let [$obPav Text] be alive (made by main::_open), as needed by 'pack'
+      destroy $wtxt $wsbv
+      $obPav fillGutter $wtxt
     }
+    if {[IsClang $fname]} {::hl_c::clearup $wtxt} {::hl_tcl::clearup $wtxt}
+    unset -nocomplain al(_unittree,$TID)
     if {$checknew} CheckForNew
     alited::ini::SaveCurrentIni $al(INI,save_onclose)
   }

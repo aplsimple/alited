@@ -1,11 +1,12 @@
 # LAST CHANGES:
 
 
-Version `v1.4.3.1 (23 Mar'23)`
+Version `v1.4.3.2 (24 Mar'23)`
 
   - BUGFIX: units of tree with todo comments (detection in big files)
+  - BUGFIX: pending e_menu app after running tools
   - CHANGE: Run dialogue's appearance
-  - CHANGE: hl_tcl 1.0.1
+  - CHANGE: apave/e_menu 4.0.4, hl_tcl 1.0.2, bartabs 1.6.6
 
 
 Version `v1.4.3 (22 Mar'23)`

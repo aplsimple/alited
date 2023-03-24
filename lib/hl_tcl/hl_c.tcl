@@ -701,5 +701,16 @@ proc ::hl_c::isdone {txt} {
   variable my::data
   return [expr {[info exist my::data(REG_TXT,$txt)] && $my::data(REG_TXT,$txt) ne {}}]
 }
+#_______________________
+
+proc ::hl_c::clearup {txt} {
+  # Clears data related to text (esp. at deleting it).
+  #   txt - text's path
+
+  variable my::data
+  foreach key [array names my::data *,$txt] {
+    unset my::data($key)
+  }
+}
 
 # _________________________________ EOF _________________________________ #

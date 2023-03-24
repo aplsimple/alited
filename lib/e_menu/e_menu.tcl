@@ -28,7 +28,7 @@ package require Tk
 wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.0.3}
+  variable em_version {e_menu 4.0.4}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -2560,6 +2560,7 @@ proc ::em::initcomm {} {
     }
     catch {cd $cpwd}  ;# may be deleted by commands
     set ::em::reallyexit yes
+    on_exit
   }
   if {![llength [array names ::em::ar_macros]] && !$::em::isbaltip} {
     return [expr {!$::em::reallyexit}]

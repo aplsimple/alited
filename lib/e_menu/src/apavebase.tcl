@@ -1506,7 +1506,11 @@ oo::class create ::apave::APaveBase {
     #  args - additional arguments for tracing
     # The code is borrowed from open source tedit project.
 
-    if {![winfo exists $txt] || ![winfo ismapped $txt]} return
+    set savedcont [namespace current]::gc$txt
+    if {![winfo exists $txt] || ![winfo ismapped $txt]} {
+      unset -nocomplain $savedcont
+      return
+    }
     if {$canvas eq {}} {
       event generate $txt <Configure> ;# repaints the gutter
       return
@@ -1536,7 +1540,6 @@ oo::class create ::apave::APaveBase {
         [font measure apaveFontMono -displayof $txt [string repeat 0 $width]]}]
       set newbg [expr {$bg ne [$canvas cget -background]}]
       set newwidth [expr {$cwidth ne [$canvas cget -width]}]
-      set savedcont [namespace current]::gc$txt
       if {![llength $args] || $newbg || $newwidth || ![info exists $savedcont] || \
       $gcont ne [set $savedcont]} {
         if {$newbg} {$canvas config -background $bg}

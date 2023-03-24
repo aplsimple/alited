@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide bartabs 1.6.5
+package provide bartabs 1.6.6
 
 # ________________________ NS bartabs _________________________ #
 
@@ -956,7 +956,7 @@ method close {{redraw yes} args} {
 #   args - additional argumens of the -cdel command
 # Returns "1" if the deletion was successful, otherwise 0 (no) or -1 (cancel).
 
-  lassign [my Tab_BID [set TID [my ID]]] BID icurr
+  lassign [my Tab_BID [set TID [my ID]]] BID icurr tabcurr
   if {[my Disabled $TID]} {
     set ttl [msgcat::mc Closing]
     set t [my $TID cget -text]
@@ -979,6 +979,7 @@ method close {{redraw yes} args} {
   my Tab_RemoveLinks $BID $TID
   destroy [my $TID cget -wb]
   set tabs [lreplace $tabs $icurr $icurr]
+  oo::objdefine [self] [list deletemethod [lindex $tabcurr 0]]
   my $BID configure -TABS $tabs
   if {$redraw} {
     if {$icurr>=$tleft && $icurr<[llength $tabs]} {
