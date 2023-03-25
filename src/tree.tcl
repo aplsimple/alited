@@ -349,7 +349,7 @@ proc tree::CreateUnitsTree {TID wtree} {
     }
     set levprev $lev
   }
-  after idle [list alited::tree::ColorUnitsTree $TID $wtxt $wtree -1]  ;# color without todos
+  alited::tree::ColorUnitsTree $TID $wtxt $wtree -1  ;# color without todos, then with
   after idle [list after 10 [list alited::tree::ColorUnitsTree $TID $wtxt $wtree 50]]
 }
 #_______________________
@@ -406,7 +406,7 @@ proc tree::ColorUnitsTree {TID wtxt wtree wait} {
     if {!$leaf} {
       if {$tag ne {tagTODO}} {set tag tagBranch}
     }
-    if {$tag ne {tagNorm} && ($wait==-1 || $tag eq {tagTODO})} {
+    if {$tag ne {tagNorm} && ($wait==-1 && $tag ne {tagTODO} || $tag eq {tagTODO})} {
       if {[catch {$wtree tag add $tag $itemID}]} break
     }
   }

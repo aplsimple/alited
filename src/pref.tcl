@@ -1561,7 +1561,7 @@ proc pref::PickMenuItem {it} {
   #   it - index of "bar-menu" item
 
   fetchVars
-  ::alited::source_e_menu
+  ::alited::Source_e_menu
   set w [$obDl2 ButMnu$it]
   set X [winfo rootx $w]
   set Y [winfo rooty $w]

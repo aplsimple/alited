@@ -24,6 +24,11 @@ proc bar::BAR {args} {
     if {[llength $args] eq 1} {lappend args {} {}}
     lappend args $al(sortList)
   }
+  if {[lindex $args 1] eq {cget}} {
+    if {![al(bts) isTab [lindex $args 0]]} {
+      return {} ;# at closing tabs: cget must return "" to "after" proc
+    }
+  }
   return [al(bts) $al(BID) {*}$args]
 }
 #_______________________

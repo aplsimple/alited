@@ -737,7 +737,7 @@ proc tool::e_menu2 {opts} {
   #   opts - options of e_menu
   # The e_menu is run as an internal procedure.
 
-  ::alited::source_e_menu
+  ::alited::Source_e_menu
   ::apave::cs_Active no ;# no CS changes by e_menu
   if {[is_emenu]} return
   set options [EM_Options $opts]
@@ -787,7 +787,7 @@ proc tool::_run {{what ""} {runmode ""}} {
         set fpid [alited::TmpFile .pid~]
         set pid [::apave::readTextFile $fpid]
       } else {
-        ::alited::source_e_menu ;# e_menu is "internal"
+        ::alited::Source_e_menu ;# e_menu is "internal"
         set pid [::em::pID]
         ::em::pID 0
       }

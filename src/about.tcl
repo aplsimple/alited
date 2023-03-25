@@ -33,7 +33,7 @@ proc about::About {} {
 
   ## ________________________ Preparing tabs _________________________ ##
 
-  ::alited::source_e_menu
+  ::alited::Source_e_menu
   lassign [::apave::obj csGet] fg - bg - - bS fS
   ::apave::InitAwThemesPath $::alited::LIBDIR
   foreach _ {alited apave bartabs baltip hl_tcl awthemes} {

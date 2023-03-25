@@ -1015,7 +1015,7 @@ proc project::Template {} {
   set margin [set indent [set spprev -1]]
   foreach name [split [$wtpl get 1.0 end] \n] {
     if {[set name [string trimright $name]] eq {}} continue
-    if {$name ne [alited::NormalizeFileName $name]} {
+    if {[string trim $name] ne [alited::NormalizeFileName $name]} {
       set errmess [string map [list %n $name] $al(MC,incorrname)]
       break
     }
@@ -1121,6 +1121,7 @@ proc project::Ok {args} {
   ::apave::withdraw $win
   set curinfo(_NO2ENT) 1
   set fname [ProjectFileName $pname]
+  catch {alited::run::Cancel}  ;# possibly open Run dialogue: discard its settings
   RestoreSettings
   alited::ini::SaveIni
   # setting al(project::Ok) to skip "No name" & SaveCurrentIni at closing all

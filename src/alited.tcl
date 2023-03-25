@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.3.2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.3.3  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -810,7 +810,25 @@ namespace eval alited {
 
   ## ________________________ Runs & exits _________________________ ##
 
-  proc source_e_menu {} {
+  proc SaveRunOptions {} {
+    # Saves options of "Run..." dialogue.
+
+    variable al
+    set al(_SavedRunOptions_) [list \
+      $al(prjincons) $al(comForce) $al(comForceLs) $al(comForceCh) $al(prjbeforerun)]
+  }
+  #_______________________
+
+  proc RestoreRunOptions {} {
+    # Restores options of "Run..." dialogue.
+
+    variable al
+    lassign $al(_SavedRunOptions_) \
+      al(prjincons) al(comForce) al(comForceLs) al(comForceCh) al(prjbeforerun)
+  }
+  #_______________________
+
+  proc Source_e_menu {} {
     # Sources e_menu.tcl at need.
 
     if {![info exists ::em::geometry]} {

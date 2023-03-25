@@ -981,6 +981,15 @@ proc find::FocusCbx1 {{aft idle} {deico ""}} {
 }
 #_______________________
 
+proc find::FocusCbx {} {
+  # Forces focusing on "Find" field.
+
+  variable win
+  if {[winfo ismapped $win]} {set t 1} {set t 100}
+  after idle [list after $t [list alited::find::FocusCbx1 $t "wm deiconify $win"]]
+}
+#_______________________
+
 proc find::CloseFind {args} {
   # Closes Find/Replace dialogue.
 
@@ -1209,7 +1218,7 @@ proc find::_create {} {
   bind $w.cbx2 <Return> "$w.but4 invoke"
   foreach k {f F} {bind $win <Control-$k> {::alited::find::LastInvoke; break}}
   foreach k {r R} {bind $win <Control-$k> {::alited::find::btTPaste; break}}
-  after idle [list after 100 [list alited::find::FocusCbx1 100 "wm deiconify $win"]]
+  FocusCbx
   set but [$obFND But1]
   lassign [split [winfo geometry $but] x+] w h
   set minw [expr {([winfo reqwidth $but]+2)*3}]
@@ -1227,9 +1236,8 @@ proc find::_run {} {
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   GetFindEntry
   if {[::apave::repaintWindow $win]} {
-    wm deiconify $win
     SessionButtons
-    FocusCbx1
+    FocusCbx
   } else {
     _create
   }

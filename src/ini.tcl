@@ -591,6 +591,7 @@ proc ini::ReadIniPrj {} {
     set al(curtab) 0
   }
   ::apave::textEOL $al(prjEOL)
+  alited::SaveRunOptions
 }
 #_______________________
 

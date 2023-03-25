@@ -13,25 +13,6 @@ namespace eval run {
 
 # ________________________ Options _________________________ #
 
-
-proc run::SaveRunOptions {} {
-  # Saves options of "Run..." dialogue.
-
-  namespace upvar ::alited al al
-  set al(_SavedRunOptions_) [list \
-    $al(prjincons) $al(comForce) $al(comForceLs) $al(comForceCh) $al(prjbeforerun)]
-}
-#_______________________
-
-proc run::RestoreRunOptions {} {
-  # Restores options of "Run..." dialogue.
-
-  namespace upvar ::alited al al
-  lassign $al(_SavedRunOptions_) \
-    al(prjincons) al(comForce) al(comForceLs) al(comForceCh) al(prjbeforerun)
-}
-#_______________________
-
 proc run::RunOptions {args} {
   # Sets options of "Run..." dialogue.
 
@@ -76,7 +57,7 @@ proc run::Save {} {
   variable win
   set al(runGeometry) [wm geometry $win]
   RunOptions
-  SaveRunOptions
+  alited::SaveRunOptions
   alited::ini::SaveIniPrj
   alited::main::UpdateProjectInfo
   catch {$obRun res $win 1}
@@ -88,7 +69,7 @@ proc run::Cancel {args} {
 
   namespace upvar ::alited al al obRun obRun
   variable win
-  RestoreRunOptions
+  alited::RestoreRunOptions
   catch {
     set al(runGeometry) [wm geometry $win]
     $obRun res $win 0
@@ -250,7 +231,7 @@ proc run::RunDialogue {} {
   namespace upvar ::alited al al obRun obRun
   variable win
   variable vent
-  SaveRunOptions
+  alited::SaveRunOptions
   set al(_startRunDialogue) yes
   if {[catch {
     if {[lindex $al(comForceLs) 0] eq {-}} {
@@ -320,28 +301,3 @@ proc run::RunDlg {} {
 }
 
 # ________________________ EOF _________________________ #
-
-#! let this commented stuff be a code snippet for tracing apave variables, huh:
-#proc run::TraceComForce {name1 name2 op} {
-#  # Traces al(comForce) to enable/disable the text field in "Before Run" dialogue.
-#
-#  namespace upvar ::alited obRun obRun
-#  catch {
-#    set txt [$obRun Tex2]
-#    if {[set $name1] eq {}} {set st normal} {set st disabled}
-#    $txt configure -state $st
-#    $obRun makePopup $txt no yes
-#    set cbx [$obRun CbxfiL]
-#    if {[focus] ne $cbx && $st eq {disabled}} {
-#      after 300 "focus $cbx"
-#    }
-#  }
-#  return {}
-#}
-
-#! let this commented stuff be a code snippet for tracing apave variables, huh:
-#  after idle [list after 0 " \
-#    set tvar \[$obRun varName cbx\] ;\
-#    trace add variable \$tvar write ::alited::run::TraceComForce ;\
-#    set \$tvar \[set \$tvar\]
-#  "]
