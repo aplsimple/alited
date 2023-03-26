@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.3.3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.3.4  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -497,6 +497,16 @@ namespace eval alited {
   }
   #_______________________
 
+  proc UnixPath {path} {
+    # Makes a path "unix-like" to be good for Tcl.
+    #   path - the path
+
+    set path [string trim $path "\{\}"]  ;# possibly braced if contains spaces
+    set path [string map [list \\ /] $path]
+    return $path
+  }
+  #_______________________
+
   proc None {args} {
     # Does nothing.
 
@@ -770,7 +780,7 @@ namespace eval alited {
       }
       return 0
     }
-    set al($key) [$obDlg dlgPath]
+    if {[catch {set al($key) [$obDlg dlgPath]}]} {set al($key) 0}
   }
   #_______________________
 
@@ -894,7 +904,7 @@ namespace eval alited {
       set com [string map [list { TEST_ALITED} {}] $com]
       puts [Tclexe]\ $com
     }
-    return [pid [open "|\"[Tclexe]\" $com"]]
+    return [pid [open |[list [Tclexe] {*}$com]]]
   }
   #_______________________
 

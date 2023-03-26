@@ -235,21 +235,22 @@ proc ini::ReadIni {{projectfile ""}} {
   set al(FONT,txt) "-family {[::apave::obj basicTextFont]} -size $fontsize"
   lassign "" ::alited::Pan_wh ::alited::PanL_wh ::alited::PanR_wh \
     ::alited::PanBM_wh ::alited::PanTop_wh ::alited::al(GEOM)
-  catch {
-    puts "alited pwd    : [pwd]"
-    puts "alited reading: $al(INI)"
-    if {$al(ini_file) eq {}} {
-      # al(ini_file) may be already filled (see alited.tcl)
-      set al(ini_file) [split [::apave::readTextFile $::alited::al(INI)] \n]
-    }
-    set mode ""
-    foreach stini $al(ini_file) {
-      switch -exact $stini {
-        {[Geometry]} - {[Options]} - {[Projects]} - {[Templates]} - {[Keys]} - {[EM]} - {[Tkcon]} - {[Misc]} {
-          set mode $stini
-          continue
-        }
+  puts "alited pwd    : [pwd]"
+  puts "alited reading: $al(INI)"
+  if {$al(ini_file) eq {}} {
+    # al(ini_file) may be already filled (see alited.tcl)
+    set al(ini_file) [split [::apave::readTextFile $::alited::al(INI)] \n]
+  }
+  set mode ""
+  foreach stini $al(ini_file) {
+    switch -exact $stini {
+      {[Geometry]} - {[Options]} - {[Projects]} - {[Templates]} - {[Keys]} - {[EM]} - {[Tkcon]} - {[Misc]} {
+        set mode $stini
+        continue
       }
+    }
+    # any line may be potentially bad formed => catch errors
+    catch {
       if {[set i [string first = $stini]]>0} {
         set nam [string range $stini 0 $i-1]
         set val [string range $stini $i+1 end]
@@ -354,7 +355,7 @@ proc ini::ReadIniOptions {nam val} {
   switch -glob -- $nam {
     comm_port_list {set al(comm_port_list) $val}
     project {
-      set al(prjfile) $val
+      set al(prjfile) [alited::UnixPath $val]
       set al(prjname) [file tail [file rootname $val]]
     }
     theme         {set al(THEME) $val}
@@ -477,9 +478,21 @@ proc ini::ReadIniEM {nam val emiName} {
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
   upvar $emiName em_i
   switch -exact $nam {
-    emPD       {set al(EM,PD=) $val}
-    emTcl      {set al(EM,Tcl) $val}
-    emTclList  {set al(EM,TclList) $val}
+    emPD       {set al(EM,PD=) [alited::UnixPath $val]}
+    emTcl      {
+      set val [alited::UnixPath $val]
+      if {[string first { } $val]>0} {
+        tk_messageBox -title Warning -icon warning -message "The path to Tcl executable\n\n\"$val\"\n\ncontains spaces.\n\nThis use case doesn't fit alited.\nOnly 'non-space' paths do."
+      } else {
+        set al(EM,Tcl) $val
+      }
+    }
+    emTclList  {
+      set al(EM,TclList) {}
+      foreach t [split [string trim $val] \t] {
+        append al(EM,TclList) \t [alited::UnixPath $t]
+      }
+    }
     em_run {
       if {$em_i < $em_Num} {
         lassign [split $val \t] em_sep($em_i) em_ico($em_i) em_inf($em_i)
@@ -495,12 +508,15 @@ proc ini::ReadIniEM {nam val emiName} {
     emtt       {set al(EM,tt=) $val}
     emttList   {set al(EM,tt=List) $val}
     emwt       {set al(EM,wt=) $val}
-    emmenu     {if {[file exists $val]} {set al(EM,mnu) $val}}
-    emmenudir  {if {[file exists $val]} {set al(EM,mnudir) $val}}
+    emmenu     {set al(EM,mnu) [alited::UnixPath $val]}
+    emmenudir  {
+      set val [alited::UnixPath $val]
+      if {[file exists $val]} {set al(EM,mnudir) $val}
+    }
     emcs       {set al(EM,CS) $val}
     emowncs    {set al(EM,ownCS) $val}
     emdiff     {set al(EM,DiffTool) $val}
-    emh        {set al(EM,h=) $val}
+    emh        {set al(EM,h=) [alited::UnixPath $val]}
   }
 #    emexec     #\{set al(EM,exec) $val#\}
 }
@@ -554,8 +570,8 @@ proc ini::ReadIniPrj {} {
     set al(prjfile) [file join $alited::PRJDIR default$PRJEXT]
   }
   set al(prjname) [file tail [file rootname $al(prjfile)]]
+  puts "alited project: $al(prjfile)"
   if {[catch {
-    puts "alited project: $al(prjfile)"
     set chan [open $::alited::al(prjfile) r]
     set mode ""
     while {![eof $chan]} {
@@ -569,15 +585,18 @@ proc ini::ReadIniPrj {} {
       set i [string first = $stini]
       set nam [string range $stini 0 $i-1]
       set val [string range $stini $i+1 end]
-      switch -exact $mode {
-        {[Tabs]} {ReadPrjTabs $nam $val}
-        {[Options]} {ReadPrjOptions $nam $val}
-        {[Favorites]} {ReadPrjFavorites $nam $val}
-        {[Misc]} {ReadPrjMisc $nam $val}
+      # any line may be potentially bad formed => catch errors
+      catch {
+        switch -exact $mode {
+          {[Tabs]} {ReadPrjTabs $nam $val}
+          {[Options]} {ReadPrjOptions $nam $val}
+          {[Favorites]} {ReadPrjFavorites $nam $val}
+          {[Misc]} {ReadPrjMisc $nam $val}
+        }
       }
     }
-  }]} then {
-    puts "Not open: $al(prjfile)"
+  } e]} then {
+    puts "Not open: $al(prjfile)\n$e"
     set al(prjname) {}
     set al(prjfile) {}
     set al(prjroot) {}
@@ -1345,9 +1364,9 @@ proc ini::_init {} {
   TipToolHotkeys
   foreach {icon} {none gulls heart add change delete up down paste plus minus retry \
   misc previous previous2 next next2 folder file OpenFile SaveFile saveall undo redo \
-  categories replace ok color date help run e_menu other trash actions paste} {
+  box replace ok color date help run e_menu other trash actions paste} {
     set img [CreateIcon $icon]
-    if {$icon in {file OpenFile SaveFile saveall categories undo redo replace \
+    if {$icon in {file OpenFile SaveFile saveall box undo redo replace \
     ok color date help run e_menu other}} {
       if {$icon eq {run}} {
         set com "-command alited::tool::TooltipRun"
@@ -1375,7 +1394,7 @@ proc ini::_init {} {
         redo {
           append al(atools) "-com alited::tool::Redo -state disabled\} sev 6"
         }
-        categories {
+        box {
           append al(atools) "-com alited::project::_run\} sev 6"
         }
         replace {

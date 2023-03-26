@@ -981,7 +981,7 @@ proc ::em::Tclexe {{tclok "tclsh"}} {
 proc ::em::execWithPID {com} {
   # exec with getting process ID
 
-  set ::eh::pID [pid [open "|$com"]]
+  set ::eh::pID [pid [open |[list {*}$com]]]
   if {$::em::solo} {
     ::apave::writeTextFile "$::em::menudir/.pid~" ::eh::pID
   }

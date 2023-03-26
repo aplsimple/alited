@@ -879,8 +879,7 @@ proc file::CloseFile {TID checknew args} {
       destroy $wtxt $wsbv
       $obPav fillGutter $wtxt
     }
-    if {[IsClang $fname]} {::hl_c::clearup $wtxt} {::hl_tcl::clearup $wtxt}
-    unset -nocomplain al(_unittree,$TID)
+    after idle [list after 3000 [list alited::file::ClearupOnClose $TID $wtxt $fname]]
     if {$checknew} CheckForNew
     alited::ini::SaveCurrentIni $al(INI,save_onclose)
   }
@@ -890,6 +889,20 @@ proc file::CloseFile {TID checknew args} {
   }
   after idle [list alited::bar::RenameTitles $TID]
   return $res
+}
+#_______________________
+
+proc file::ClearupOnClose {TID wtxt fname} {
+  # Clearance after closing a file.
+  #   TID - tab's ID
+  #   wtxt - text's path
+  #   fname - file name
+
+  namespace upvar ::alited al al
+  catch {
+    if {[IsClang $fname]} {::hl_c::clearup $wtxt} {::hl_tcl::clearup $wtxt}
+    unset -nocomplain al(_unittree,$TID)
+  }
 }
 #_______________________
 

@@ -241,7 +241,7 @@ namespace eval ::alited {
     set al(MC,icoe_menu)   [msgcat::mc {Run e_menu}]
     set al(MC,icoundo)     [msgcat::mc "Undo changes\nCtrl+Z"]
     set al(MC,icoredo)     [msgcat::mc "Redo changes\nCtrl+Shift+Z"]
-    set al(MC,icocategories) [msgcat::mc Projects]
+    set al(MC,icobox)      [msgcat::mc Projects]
 
     ## _ find units _ ##
     set al(MC,findunit)    [msgcat::mc "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored."]
