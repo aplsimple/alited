@@ -1045,11 +1045,27 @@ proc tree::ExpandContractTree {Tree {isexp yes}} {
 
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav $Tree]
+  set pos [[alited::main::CurrentWTXT] index insert]
+  if {$al(TREE,isunits)} {
+    lassign [CurrentItemByLine $pos 1] itemID
+  } else {
+    set itemID [CurrentItem]
+  }
+  set branch [set selbranch {}]
   foreach item [GetTree {} $Tree] {
     lassign $item lev cnt ID
     if {[llength [$wtree children $ID]]} {
+      set branch $ID
       $wtree item $ID -open $isexp
     }
+    if {$ID eq $itemID} {set selbranch $branch}
+  }
+  if {$isexp} {
+    if {$itemID ne {}} {$wtree selection set $itemID}
+    SeeSelection
+  } elseif {$selbranch ne {}} {
+    $wtree selection set $selbranch
+    SeeSelection
   }
 }
 #_______________________

@@ -1093,7 +1093,6 @@ proc find::SearchByList {} {
   variable win2
   variable geo2
   set head [msgcat::mc { Enter a list of words divided by spaces:}]
-  after 300 {catch {bind [apave::dlgPath] <F3> alited::find::NextFoundByList}}
   set text [string map [list $alited::EOL \n] $al(listSBL)]
   if {$al(matchSBL) eq {}} {set al(matchSBL) $al(MC,frExact)}
   after idle [list catch {set ::alited::al(FN2WINDOW) $::apave::MODALWINDOW}]
@@ -1119,11 +1118,12 @@ proc find::SearchByList {} {
     {seh3 lab3 T 1 5} \
     {butHelp + T 1 1 {-st w} {-t Help -com {alited::find::HelpFind 2}}} \
     {h_ + L 1 1 {-st ew -cw 1}} \
-    {ButNxt + L 1 1 {} {-t {Find Next} -com ::alited::find::NextFoundByList}} \
-    {butOK + L 1 1 {} {-t OK -com ::alited::find::SearchByList_Do}} \
+    {butFind + L 1 1 {} {-t Find -com ::alited::find::SearchByList_Do}} \
+    {ButDown + L 1 1 {} {-t {Find Next} -com ::alited::find::NextFoundByList}} \
     [list butCancel + L 1 1 {} [list -t Cancel -com alited::find::CloseFind2]] \
     ]
   after idle [list $obFN2 displayText [$obFN2 Text] $text]
+  bind $win2 <F3> "[$obFN2 ButDown] invoke"
   $obFN2 showModal $win2 -modal no -waitvar no -onclose alited::find::CloseFind2 \
     -geometry $geo2 -ontop [::isKDE] -resizable 1 -minsize {200 200}
 }
@@ -1162,7 +1162,7 @@ proc find::NextFoundByList {{focusDLG yes}} {
     if {$nextpos eq {}} {
       focus [$obFN2 Text]
     } else {
-      focus [$obFN2 ButNxt]
+      focus [$obFN2 ButDown]
     }
   }
 }

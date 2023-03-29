@@ -35,6 +35,8 @@
 <li class="level2"><div class="li"><a href="#intro">What is this</a></div></li>
 <li class="level2"><div class="li"><a href="#installation">Installation</a></div></li>
 <ul>
+<li class="level3"><div class="li"><a href="#1stway">1st way</a></div></li>
+<li class="level3"><div class="li"><a href="#2ndway">2nd way</a></div></li>
 <li class="level3"><div class="li"><a href="#tclkit">Using tclkits</a></div></li>
 <li class="level3"><div class="li"><a href="#start">First start</a></div></li>
 <li class="level3"><div class="li"><a href="#nextstart">Using configurations</a></div></li>
@@ -175,11 +177,54 @@ Below is a screenshot of <span class="curid"><a href="#" class="wikilink1" title
 <div class="level2">
 
 <p>
-If, for some reasons, you have not (or want not) Tcl/Tk fully deployed on your machine, then you might use one of <a href="https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4" rel="nofollow">alited's installers</a>. With the installed <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> you get also vanilla Tcl/Tk 8.6.10 (in "bin" subdirectory of the installation directory).
+At installing and using <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, please, avoid directory paths with spaces. For example, MS Windows' usage like <i>"C:\Program Files\alited"</i> is no good, as well as a similar path to your deployed  <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> (<i>"C:\Program Files\Tcl8.6"</i>).
 </p>
 
 <p>
-When you have Tcl/Tk deployed on your machine, you need only to unpack the alited's source to a directory and run it with "tclsh src/alited.tcl" command. Thus, in this case the installation of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is straightforward as well:
+The cause is that <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s tools may run external commands (e.g. the deployed <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a>) which is troublesome when the command names contain spaces.
+</p>
+
+<p>
+If the requirement seems to you too brute, impertinent, silly etc., just throw <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> in trash can.
+</p>
+
+<p>
+<br>
+
+</p>
+
+</div>
+
+<h3 id="1stway"><i>1st way of installation</i></h3>
+<div class="level2">
+
+<p>The simplest way of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> installation is using <a href="https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4" rel="nofollow">alited's installers</a>.
+</p>
+
+<p>
+The use of <a href="https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4" rel="nofollow">alited's installers</a> is strictly recommended if you have deployed <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> in a path with spaces, e.g. in <i>"C:\Program Files\TclTk"</i>, for reasons <a href=#installation>mentioned above</a>.
+</p>
+
+<p>
+Also, if you have not (or want not) <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> fully deployed on your machine, you use just one of <a href="https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4" rel="nofollow">alited's installers</a>. Along with the installed <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> you'll get also vanilla <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> 8.6.10 (in "bin" subdirectory of the installation directory).
+</p>
+
+<p>
+You may prefer the use of <a href="https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4" rel="nofollow">alited's installers</a> if you dislike the mess with <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s source and its possible dependencies.
+</p>
+
+<p>
+<br>
+
+</p>
+
+</div>
+
+<h3 id="2ndway"><i>2nd way of installation</i></h3>
+<div class="level2">
+
+<p>
+When you have <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> deployed on your machine and like to install and run <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> from its source, you need only to unpack  <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s source to a directory and run it with "tclsh src/alited.tcl" command. Thus, in this case the installation of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is straightforward as well:
 </p>
 <p>
 <ul>
@@ -229,6 +274,10 @@ In Linux, possibly you need to install the packages:
 </ul>
 </p>
 <p>
+That said, these packages are probably a minimum list to make Tcl/Tk vital.
+</p>
+
+<p>
 <br>
 
 </p>
@@ -258,7 +307,7 @@ If you use a stand-alone <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkit<
 </p>
 
 <p>
-While <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> works fine under <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkits</a> based on Tcl/Tk 8.6.10+ (as it uses core <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> packages only), you may develop programs requiring non-core packages. In such cases, these programs should append to <code>auto_path</code> the appropriate pathes to the non-core packages. Preferably these pathes should be subdirectories of your project, so that you make your project independent on the availability of packages at other machines.
+While <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> works fine under <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkits</a> based on Tcl/Tk 8.6.10+ (as it uses core <a href="https://wiki.tcl-lang.org/">Tcl/Tk</a> packages only), you may develop programs requiring non-core packages. In such cases, these programs should append to <code>auto_path</code> the appropriate paths to the non-core packages. Preferably these paths should be subdirectories of your project, so that you make your project independent on the availability of packages at other machines.
 </p>
 
 <p>Another way to have <a href="https://wiki.tcl-lang.org/page/Tclkit">tclkits</a> be friendly with the non-core packages is setting <code>TCLLIBPATH</code> environment variable before running <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>:
@@ -1319,7 +1368,7 @@ big importance (a matter of taste, mainly).
 </p>
 
 <p>
-So, it's possible to run a main Tcl script at editing any Tcl script of an application. Or test a specific script in many applications, while editing it.
+So, it's possible to run any command at editing any file of an application. Or test a specific script in various modes while editing it.
 </p>
 
 <p>
@@ -1332,43 +1381,25 @@ If you want to run a script "as is" disregarding those #RUNF1: / #EXEC1:, just c
 <li>running a file inside a console</li>
 <li>running a file inside Tkcon application</li>
 </ul>
-
-This is customized in <a href=#runme>"Tools / Run..."</a> menu item.
-</p>
 <p>
 You might prefer to run applications inside Tkcon. In this case you get a profit of introspecting your code in Tkcon.
 </p>
-<p>
-Also, Tkcon window would display puts' debug messages in MS Windows even when you use "vanilla wish" or "tclkit" instead of fully deployed Tcl/Tk. The MS Windows console doesn't display the <i>puts</i> messages with tclkits and vanilla wish, on my humble machine at least.
+
+This is customized in <a href=#runme>"Tools / Run..."</a> menu item. See also "Setup / Preferences / Tools".
 </p>
 <p>
 On MS Windows, if you have a fully deployed Tcl/Tk 8.6.10+, the default path to its <i>tclsh.exe</i> is highly recommended. And, on the contrary, <i>wish.exe</i> and
-<i>tclkit.exe</i> aren't recommended, for the reason mentioned above. To install Tcl/Tk 8.6.10+ on MS Windows, use <a href="http://www.bawt.tcl3d.org/download.html#tclbi">Bawt</a> or <a href="https://www.magicsplat.com/tcl-installer">Magicsplat</a> distribution.
-
+<i>tclkit.exe</i> aren't recommended. To install Tcl/Tk 8.6.10+ on MS Windows, use <a href="http://www.bawt.tcl3d.org/download.html#tclbi">Bawt</a> or <a href="https://www.magicsplat.com/tcl-installer">Magicsplat</a> distribution.
 </p>
 
 <p>
-In <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, <i>Tkcon</i> tool is customizable in "Setup / Preferences / Tools / tkcon" tab. Use <i>Test</i> button to preview <i>Tkcon</i> and <i>Default</i> button to restore <i>Tkcon</i>'s defaults.
+<b>Anyhow, the path to Tcl executable should not contain spaces, otherwise <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s Run tool becomes unusable!
+</b>
 </p>
 
 <p>
-"Setup / Templates" dialogue allows to insert in a code
-debugging messages (with tk_messageBox or puts).
+<a href=#templates>"Setup / Templates"</a> dialogue allows to insert debugging messages in a code (with tk_messageBox or puts).
 </p>
-
-<p>
-There are templates to introspect variables:
-<ul>
-<li>local</li>
-<li>global</li>
-<li>current namespace's</li>
-</ul>
-</p>
-
-<p>
-There is a template to enter a command, in order to run it immediately in an appropriate place of your application! For example, you can change a local variable to see how your app will behave with the new value.
-</p>
-
 
 <br>
 <p>
@@ -1652,6 +1683,35 @@ After entering a template's text, set the cursor where it should be at inserting
 The "Import" button allows to fetch new templates from an external <i>alited.ini</i>, for example from the default <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s.
 </p>
 
+<p>
+A few of templates support <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s unit tree:
+<ul>
+<li><i>proc</i> and <i>method</i> - to insert a proc/method declaration</li>
+<li><i>underline proc/method</i> - to underline a proc/method (and anything else)</li>
+<li><i>args</i> - to insert comments of proc/method arguments</li>
+<li><i>1/2/3 level</i> - to insert a branch of 1/2/3 level</li>
+<li><i>header</i> - to insert a script header</li>
+<li><i>namespace</i> - to insert a namespace declaration</li>
+</ul>
+</p>
+
+<p>
+There are templates to introspect variables:
+<ul>
+<li>local</li>
+<li>global</li>
+<li>current namespace's</li>
+</ul>
+</p>
+
+<p>
+There is a template to enter a command, in order to run it immediately in an appropriate place of your application! For example, you can change a local variable to see how your app will behave with the new value.
+</p>
+<p>The <i>doctest</i> template allows to use <a href="https://aplsimple.github.io/en/tcl/doctest/index.html" title="Description of doctest" rel="nofollow">doctest facilities</a> available in <b>T</b> tool of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> (its name is "tests.em: Tests", its full path is "Main menu" -> "Utils" -> "Tests"). Briefly, the <a href="https://aplsimple.github.io/en/tcl/doctest/index.html" title="Description of doctest" rel="nofollow">doctest</a> means specific comments used to test a script's algorithms.
+</p>
+
+<p>There are also three templates of <a href=#profiling>profilers</a>.</p>
+
 <br>
 <p>
 <h3 id="profiling"><i>Profiling Tcl</i></h3>
@@ -1672,7 +1732,7 @@ Three templates allow to use a bit modified <a href=https://wiki.tcl-lang.org/pr
   <br>to start and stop the profiling. List the <i>glob patterns</i> of command names after <code>::PR start</code>.
 </li>
 <br>
-<li><b>cp_profiler</b> template allows to set a checkpoints (any unique ID):
+<li><b>cp_profiler</b> template allows to set a checkpoints (any unique ID) where the profiler would collect the profiling data:
   <br><code>::PR start</code>
   <br><code>...</code>
   <br><code>::PR start cp1</code>
@@ -1687,7 +1747,7 @@ Three templates allow to use a bit modified <a href=https://wiki.tcl-lang.org/pr
 </p>
 
 <p>
-And don't forget to remove the profiler's lines after the profiling done!
+And don't forget to remove the profiler's lines after the profiling done! They are marked with <i>;# TODEL</i> comments.
 </p>
 
 <p>
@@ -2057,16 +2117,17 @@ The links below are related to <span class="curid"><a href="#" class="wikilink1"
 <p>
 <ul>
 
-<li>
-<A href="https://chiselapp.com/user/aplsimple/repository/alited/download">Download #1</A>
-</li>
-
-<li class="level1"><div class="li">
-<a href="https://github.com/aplsimple/alited" rel="nofollow">Download #2</a>
-</li>
-
 <li class="level1"><div class="li">
 <a href="https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4" rel="nofollow">Installers</a>
+</li>
+<br>
+
+<li>
+<A href="https://chiselapp.com/user/aplsimple/repository/alited/download">Source #1</A>
+</li>
+
+<li class="level1"><div class="li">
+<a href="https://github.com/aplsimple/alited" rel="nofollow">Source #2</a>
 </li>
 <br>
 

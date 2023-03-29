@@ -680,14 +680,14 @@ proc file::SaveFileAs {{TID ""}} {
   set alited::al(filename) [file tail $fname]
   if {[IsNoName $alited::al(filename)]} {
     set alited::al(filename) {}
-    set defext {-defaultextension .tcl}
+    set defext .tcl
     set inidir $al(prjroot)
   } else {
-    set defext {}
+    set defext [file extension $fname]
     set inidir [file dirname $fname]
   }
-  set fname [$obPav chooser tk_getSaveFile alited::al(filename) -title \
-    [msgcat::mc {Save as}] -initialdir $inidir -parent $al(WIN) {*}$defext]
+  set fname [$obPav chooser tk_getSaveFile alited::al(filename) -initialdir $inidir \
+    -defaultextension $defext -title [msgcat::mc {Save as}] -parent $al(WIN)]
   if {[IsNoName $fname]} {
     set res 0
   } elseif {[set res [SaveFileByName $TID $fname]]} {

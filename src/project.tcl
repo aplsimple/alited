@@ -44,6 +44,9 @@ namespace eval project {
 
   # flag "projects changed"
   variable updateGUI no
+
+  # total of project files
+  variable totalfiles 0
 }
 
 # ________________________ Common _________________________ #
@@ -660,6 +663,7 @@ proc project::ValidProject {} {
   # Checks if a project's options are valid.
 
   namespace upvar ::alited al al obDl2 obDl2
+  variable totalfiles
   set al(prjname) [string trim $al(prjname)]
   if {$al(prjname) eq {} || ![CheckProjectName]} {
     bell
@@ -677,7 +681,8 @@ proc project::ValidProject {} {
   if {$al(prjredunit)<$al(minredunit) || $al(prjredunit)>100} {set al(prjredunit) 20}
   set msg [string map [list %d $al(prjroot)] $al(checkroot)]
   alited::Message2 $msg 5
-  if {[llength [alited::tree::GetDirectoryContents $al(prjroot)]] >= $al(MAXFILES)} {
+  set totalfiles [llength [alited::tree::GetDirectoryContents $al(prjroot)]]
+  if {$totalfiles >= $al(MAXFILES)} {
     set msg [string map [list %n $al(MAXFILES)] $al(badroot)]
     alited::Message2 $msg 4
     set res no
@@ -921,7 +926,7 @@ proc project::Add {} {
   GetProjects
   UpdateTree
   Select $prjinfo($pname,ID)
-  alited::Message2 [string map [list %n $pname] $al(MC,prjnew)] 3
+  UpdateMsg [string map [list %n $pname] $al(MC,prjnew)]
   return yes
 }
 #_______________________
@@ -962,7 +967,7 @@ proc project::Change {} {
   UpdateTree
   Select $prjinfo($newprj,ID)
   set updateGUI yes
-  alited::Message2 [string map [list %n [lindex $prjlist $isel]] $al(MC,prjupd)] 3
+  UpdateMsg [string map [list %n [lindex $prjlist $isel]] $al(MC,prjupd)]
 }
 #_______________________
 
@@ -1079,6 +1084,17 @@ proc project::Template {} {
     alited::Message2 $errmess 4
   }
   UpdateTplLists
+}
+#_______________________
+
+proc project::UpdateMsg {msg} {
+  # Displays a message on project updating.
+  #   msg - message of action (add/change)
+
+  namespace upvar ::alited al al
+  variable totalfiles
+  append msg " ($al(MC,files) : $totalfiles) "
+  alited::Message2 $msg 3
 }
 
 # ________________________ Buttons _________________________ #

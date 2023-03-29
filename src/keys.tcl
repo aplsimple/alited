@@ -144,7 +144,7 @@ proc keys::ReservedList {} {
 #_______________________
 
 proc keys::UserList {} {
-  # Returns a list of keys avalable to a user.
+  # Returns a list of keys available to a user.
 
   set reserved [ReservedList]
   foreach mod {"" Control- Alt- Shift- Control-Shift- Control-Alt-} {

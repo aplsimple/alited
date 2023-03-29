@@ -1,14 +1,19 @@
 # LAST CHANGES:
 
 
-Version `v1.4.3.4 (26 Mar'23)`
+Version `v1.4.3.6 (28 Mar'23)`
 
   - BUGFIX: units of tree with todo comments (detection in big files)
   - BUGFIX: pending e_menu app after running tools
+  - NEW   : Projects dialogue: show number of files at project add/change
+  - NEW   : after contracting/expanding the tree: tree selection set
   - CHANGE: Projects icon
   - CHANGE: add checks and catchs to ini::ReadIni & ini::ReadIniPrj
+  - CHANGE: -defaultextension in Save as
   - CHANGE: Run dialogue's appearance
+  - CHANGE: Find by List dialogue's buttons
   - CHANGE: clearance & tiny-up
+  - CHANGE: docs
   - CHANGE: apave/e_menu 4.0.4, hl_tcl 1.0.2, bartabs 1.6.6
 
 

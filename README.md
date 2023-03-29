@@ -64,19 +64,19 @@ You'll just become more productive with alited at developing Tcl code. Just so s
 
 # Typical story
 
-One day I decided to change *e_menu*'s data format because the old .mnu files seemed to be too complex. The *e_menu* project had started long ago, when I was an active user of Geany. As a result, its main scripts (*e_menu.tcl* and *e_addon.tcl*) were seen as chaotic mixtures of procedures - no structure, no consistency, no order.
+One day I decided to change [e_menu](https://aplsimple.github.io/en/tcl/e_menu/index.html)'s data format because the old .mnu files seemed to be too complex. The *e_menu* project had started in 2018, when I was an active user of Geany. As a result, its main scripts (*e_menu.tcl* and *e_addon.tcl*) were seen as chaotic mixtures of procedures - no structure, no consistency, no order.
 
 I tried and tried to implement the format change, getting in the real trouble with the task that seemed to be so hard...
 
 Finally, in one moment, I decided to rearrange my scripts by **alited's means**, i.e. to make a proper unit tree and to place the code units in their proper branches.
 
-It was only after this radical rearrangement of *e_menu.tcl* and *e_addon.tcl* that I felt the format change can be easily implemented. I did it in two days instead of two weeks as it seemed to be at first.
+It was only after this radical rearrangement of *e_menu.tcl* and *e_addon.tcl* that I felt the format change can be easily implemented. I did it in two days instead of two weeks as it threatened to be at first.
 
 Along the way, I got two nice unit trees of code. Being two nice pieces of documentation too.
 
 In other words, **alited is a sort of code architect and documentation generator** that organizes and documents Tcl code "on fly" along with the coding.
 
-The alited's unit tree is so good that it by itself can drastically improve Tcl code and enhance a Tcler's productivity. Not to say about other sweets of alited.
+The alited's unit tree is so good that it by itself can drastically improve Tcl code and enhance a Tcler's productivity. Not to mention other sweets of alited.
 
 # Screenshots
 
