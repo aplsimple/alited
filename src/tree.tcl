@@ -830,8 +830,10 @@ proc tree::GetTooltip {ID NC} {
 
   namespace upvar ::alited al al obPav obPav
   if {[info exists al(movWin)] && $al(movWin) ne {}} {
-    # no tips while drag-n-dropping
-    return {}
+    return {}  ;# no tips while drag-n-dropping
+  }
+  if {[string match *tearoff* [focus]]} {
+    return {}  ;# no tips while focusing on a tearoff menu
   }
   set wtree [$obPav Tree]
   if {$al(TREE,isunits)} {

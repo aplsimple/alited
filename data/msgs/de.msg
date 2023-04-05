@@ -634,7 +634,37 @@ namespace eval ::alited {
     "If it's checked, open files would be placed\nonto the beginning page of the bar." "Wenn das ist aktiviert, geöffnete Dateien\nauf der Anfangsseite der Leiste platziert werden."
   }
 
+  ## ________________________ Paver _________________________ ##
+
+  ::msgcat::mcmset de {
+    {For paveWindow's widget list to be recognized, set the cursor inside it.} {Damit die Widget-Liste von paveWindow erkannt wird, setzen Sie den Cursor hinein.}
+    {To get a widget list, run "Paver" first.} {Um eine Widget-Liste zu erhalten, führen Sie zuerst "Paver" aus.}
+    {Auto Update} {Automatische Aktualisierung}
+    {View Widget List} {Widget-Liste anzeigen}
+  }
+
+  ## ____________________ Rectangular selection ___________________ ##
+
+  ::msgcat::mcmset de {
+    {Rectangular Selection} {Rechteckige Auswahl}
+    {Start} {Beginnen}
+    {Cut} {Schneiden}
+    {Copy} {Kopieren}
+    {Paste} {Einfügen}
+    {Move the cursor to select a rectangle.} {Bewegen Sie den Cursor, um ein Rechteck auszuwählen.}
+  }
+
   ## ________________________ EONS alited _________________________ ##
+}
+
+# _ apave NS _ #
+
+namespace eval ::apave {
+  ::msgcat::mcmset de {
+    {Save text} {Text speichern}
+    {Don't save} {Nicht speichern}
+    {Save changes made to the text?} {Änderungen am Text speichern?}
+  }
 }
 
 # _ bartabs NS _ #
@@ -651,8 +681,6 @@ namespace eval ::bartabs {
     {... All at Left} {... alles links}
     {... All at Right} {... alles rechts}
   }
-
-  ## ________________________ EONS bartabs _________________________ ##
 }
 
 # _________________________________ EOF _________________________________ #

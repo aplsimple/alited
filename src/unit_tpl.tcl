@@ -464,9 +464,10 @@ proc unit_tpl::Import {} {
   variable place
   variable indent
   variable win
-  set al(filename) alited.ini
-  set fname [$obDl3 chooser tk_getOpenFile alited::al(filename) \
+  set al(TMPfname) alited.ini
+  set fname [$obDl3 chooser tk_getOpenFile alited::al(TMPfname) \
     -initialdir $DATAUSERINI -parent $win]
+  unset al(TMPfname)
   if {$fname eq {}} return
   set imported 0
   set wtxt [$obDl3 TexTpl]

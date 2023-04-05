@@ -1,20 +1,27 @@
 # LAST CHANGES:
 
 
-Version `v1.4.3.6 (28 Mar'23)`
+Version `v1.4.4b5 (5 Apr'23)`
 
   - BUGFIX: units of tree with todo comments (detection in big files)
   - BUGFIX: pending e_menu app after running tools
-  - NEW   : Projects dialogue: show number of files at project add/change
+  - BUGFIX: find "in session": highlighting for current text
+  - BUGFIX: updating the tab bar at choosing favorites with "closed"
+  - NEW   : "Edit / Rectangular Selection"
+  - NEW   : "Tools / Paver" (visualize widget list of paveWindow)
   - NEW   : after contracting/expanding the tree: tree selection set
+  - NEW   : Projects dialogue: show number of files at project add/change
+  - DELETE: bar::SleepTreeTips
+  - CHANGE: handling F3 key (at opening "Find/Find by list" & highlighting)
   - CHANGE: Projects icon
   - CHANGE: add checks and catchs to ini::ReadIni & ini::ReadIniPrj
-  - CHANGE: -defaultextension in Save as
+  - CHANGE: -defaultextension in "File / Save as"
   - CHANGE: Run dialogue's appearance
   - CHANGE: Find by List dialogue's buttons
   - CHANGE: clearance & tiny-up
+  - CHANGE: demos (paver incl.)
   - CHANGE: docs
-  - CHANGE: apave/e_menu 4.0.4, hl_tcl 1.0.2, bartabs 1.6.6
+  - CHANGE: apave/e_menu 4.0.6, hl_tcl 1.0.3, bartabs 1.6.6
 
 
 Version `v1.4.3 (22 Mar'23)`

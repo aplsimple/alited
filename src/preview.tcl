@@ -102,7 +102,7 @@ proc preview::Run {} {
     }}
     {seh3 - - - - {pack -fill x}}
     {h_ - - - - {pack}}
-    {but5 - - - - {pack -side right -after .win.fra.h_} {-t "Close" -com exit}}
+    {but5 - - - - {pack -side right} {-t "Close" -com exit}}
   }
   $obj paveWindow $win.fra.nbk.f1 {
     {lab1 - - 1 1    {-st wsn}  {-t "Entry: "}}

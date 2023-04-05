@@ -696,7 +696,6 @@ proc edit::DispatchMacro {{mode ""}} {
 
   namespace upvar ::alited al al
   variable macrosmode
-  alited::bar::SleepTreeTips
   MacroInit
   if {$mode ne {}} {set macrosmode $mode}
   switch -glob $macrosmode {
@@ -767,6 +766,109 @@ proc edit::DoMacro {mode {fname ""}} {
     }
   }
   return yes
+}
+
+# ________________________ Rectangular selection _________________________ #
+
+proc edit::RectSelection {mode} {
+  # Starts, ends, does, cuts, copies and pastes a rectangular selection.
+  #   mode: 0 for start/end, 1 do, 2 cut, 3 copy, 4 paste
+
+  namespace upvar ::alited al al
+  if {$mode==1 && !$al(rectSel)} return
+  set TID [alited::bar::CurrentTabID]
+  set wtxt [alited::main::CurrentWTXT]
+  lassign [split [$wtxt index insert] .] nl nc
+  if {$mode==0} {
+    if {$al(rectSel)} {
+      set al(rectSel,TID) $TID  ;# starts selecting
+      set al(rectSel,nl) $nl
+      set al(rectSel,nc) $nc
+      set al(rectSel,text) [list]
+      set mode 1
+      alited::Message [msgcat::mc {Move the cursor to select a rectangle.}] 3
+    } else {
+      set al(rectSel,TID) {}    ;# ends selecting
+    }
+  }
+  switch $mode {
+    1 {
+      if {$al(rectSel) && $al(rectSel,TID) eq $TID} {
+        makeRect $wtxt $al(rectSel,nl) $al(rectSel,nc) $nl $nc
+      } else {
+        set al(rectSel,TID) {}  ;# at switching tabs
+        set al(rectSel) 0
+      }
+    }
+    2 - 3 {saveRect $mode $wtxt}
+    4     {pasteRect $wtxt $nl $nc}
+  }
+  if {$al(rectSel)} {set ico none} {set ico run}
+  $al(MENUEDIT).rectsel entryconfigure 1 -image alimg_$ico
+  focus $wtxt
+}
+#_______________________
+
+proc edit::makeRect {wtxt alnl alnc nl nc} {
+  # Selects a rectangle.
+  #   wtxt - the current text's path
+  #   alnl - starting row
+  #   alnc - starting column
+  #   nl - current row
+  #   nc - current column
+
+  set l1 [expr {min($alnl,$nl)}]
+  set l2 [expr {max($alnl,$nl)}]
+  set c1 [expr {min($alnc,$nc)}]
+  set c2 [expr {max($alnc,$nc)}]
+  for {set l $l1} {$l<=$l2} {incr l} {
+    $wtxt tag add sel $l.$c1 $l.$c2
+  }
+}
+#_______________________
+
+proc edit::saveRect {mode wtxt} {
+  # Cuts & copies a rectangle.
+  #   mode - 2 cut, 3 copy
+  #   wtxt - the current text's path
+
+  namespace upvar ::alited al al
+  set selection [$wtxt tag ranges sel]
+  if {[llength $selection]} {
+    set al(rectSel,text) [list]
+    foreach {from to} $selection {
+      lappend al(rectSel,text) [$wtxt get $from $to]
+      if {$mode==2} {$wtxt delete $from $to}
+    }
+    if {$mode==2} {
+      catch {::tk::TextSetCursor $wtxt [lindex $selection 0 0]}
+    }
+  }
+  set al(rectSel) 0
+}
+#_______________________
+
+proc edit::pasteRect {wtxt nl nc} {
+  # Pastes a rectangle.
+  #   wtxt - the current text's path
+  #   nl - current row
+  #   nc - current column
+
+  namespace upvar ::alited al al
+  if {[llength $al(rectSel,text)]} {
+    $wtxt tag remove sel 1.0 end
+    set sels [list]
+    foreach line $al(rectSel,text) {
+      if {$line ne {}} {
+        $wtxt insert $nl.$nc $line
+        set pos2 $nl.[expr {$nc+[string length $line]}]
+        lappend sels $nl.$nc $pos2
+      }
+      incr nl
+    }
+    catch {::tk::TextSetCursor $wtxt $pos2}
+    catch {$wtxt tag add sel {*}$sels}
+  }
 }
 
 # _________________________________ EOF _________________________________ #

@@ -73,6 +73,7 @@
 <li class="level3"><div class="li"><a href="#runme">"Tools / Run..."</a></div></li>
 <li class="level3"><div class="li"><a href="#helptool">Tcl/Tk help tool</a></div></li>
 <li class="level3"><div class="li"><a href="#checktool">Check Tcl tool</a></div></li>
+<li class="level3"><div class="li"><a href="#paver">Paver</a></div></li>
 <li class="level3"><div class="li"><a href="#custtool">Customizing tools</a></div></li>
 </ul></li>
 <li class="level3"><div class="li"><a href="#templates">Templates</a></div>
@@ -83,6 +84,7 @@
 <ul>
 <li class="level3"><div class="li"><a href="#contextmenu">Context menu</a></div></li>
 <li class="level3"><div class="li"><a href="#editmenu">Edit menu</a></div></li>
+<li class="level3"><div class="li"><a href="#rectsel">Rectangular selection</a></div></li>
 <li class="level3"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
 <li class="level3"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
 </ul></li>
@@ -1596,6 +1598,115 @@ It's very good to eliminate <b>all</b> inconsistencies in a project - this would
 
 <br>
 <p>
+<h3 id=paver><i>Paver</i></h3>
+</p>
+
+<p>
+</p>
+
+<p>
+ The <i>paver</i> is a convenient tool for developing GUI with <i>apave</i> package
+ the <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is based upon.
+</p>
+
+<p>
+ It allows you to view and possibly change "on fly" a <i>widget list</i> passed as
+ an argument to <i>paveWindow</i> method.
+</p>
+
+<p>
+ For this, place the cursor on some line inside a <i>widget list</i> and run <i>paver</i>
+ so that you "visualize" the list to see how it will be shown in a real app.
+</p>
+
+<p>
+ If <i>paver</i> cannot recognize your widget list's beginning with <i>paveWindow</i>
+ call, you can set <i># paver...</i> comment before it, for example:
+</p>
+
+<p>
+<pre class="code">   <i><font color=#4b5d50># paver</font></i>
+   <b><font color=#3a6797>set</font></b> widlist {
+     {h_ - - 1 5}
+     {lab T + 1 1 {<font color=#6c3e67>-st</font> e <font color=#6c3e67>-pady</font> 5} {<font color=#6c3e67>-t</font> Run:}}
+     ...
+   }
+   <i><font color=#4b5d50># PAVER end</font></i>
+</pre>
+</p>
+
+<p>
+ The same <i># paver</i> comment may (though need not to) be placed behind the
+ list's last line.
+</p>
+
+<p>
+ The <i># paver</i> comments are case insensitive and may be added with any info,
+ as shown above with <i># PAVER end</i>.
+</p>
+
+<p>
+ The <b>Auto Update</b> menu item allows updating a tested <i>widget list</i> every time
+ when its file is saved.
+</p>
+
+<p>
+ The <b>View Widget List</b> menu item allows viewing and possibly changing the
+ tested <i>widget list</i> "on fly", without touching a currently edited script.
+</p>
+
+<p>
+ The <i>paver</i> eliminates all references to variables and commands used in a
+ <i>widget list</i>, thus leaving only a layout of GUI to show. So, if a <i>widget
+ list</i> needs some variables/commands to make it working, <i>paver</i> would fail.
+</p>
+
+<p>
+ For example, the following <i>widget list</i> is not visualized by <i>paver</i>:
+</p>
+
+<p>
+<pre class="code">   <b><font color=#3a6797>set</font></b> widgetlist {
+     {fra + T 1 1 {<font color=#6c3e67>-st</font> nsew <font color=#6c3e67>-cw</font> 1 <font color=#6c3e67>-rw</font> 1}}
+     {fra.ScfRuns - - 1 1  {<b><font color=#134070>pack</font></b> <font color=#6c3e67>-fill</font> both <font color=#6c3e67>-expand</font> 1}}
+     {tcl {
+         <b><font color=#3a6797>set</font></b> prt <font color=#8b2a0e>&quot;- -&quot;</font>
+         <b><font color=#3a6797>for</font></b> {<b><font color=#3a6797>set</font></b> i 0} {<font color=#1b1baa>$i</font><<font color=#1b1baa>$::maxCom</font>} {<b><font color=#3a6797>incr</font></b> i} {
+           <b><font color=#3a6797>set</font></b> lwid <font color=#8b2a0e>&quot;.btT<font color=#1b1baa>$</font>i <font color=#1b1baa>$</font>prt 1 1 <font color=#1b1baa>{}</font> <font color=#1b1baa>{</font>-com <font color=#1b1baa>{</font>::mycom <font color=#1b1baa>$</font>i<font color=#1b1baa>}</font> -image myimg<font color=#1b1baa>$</font>i<font color=#1b1baa>}</font>&quot;</font>
+           %C <font color=#1b1baa>$lwid</font>
+           <b><font color=#3a6797>set</font></b> prt <font color=#8b2a0e>&quot;.btT<font color=#1b1baa>$</font>i T&quot;</font>
+         }
+       }
+     }
+   }
+</pre>
+</p>
+
+<p>
+ This <i>widget list</i> has <i>tcl</i> code to make a list of buttons depending on their
+ maximum number.
+</p>
+
+<p>
+ On <i>paver</i> eliminating variables, this <i>widget list</i> isn't visualized by it.
+ However, these layouts are rather rare and tricky, using most dark sides of
+ <i>apave</i> package.
+ They should be in fact tested in a real application. In <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s code there
+ are only one or two of the "not pavered" lists among tens of them.
+</p>
+
+<p>
+ See demo of <i>paver</i> usage in <a href=https://github.com/aplsimple/alited/releases//tag/Demos_of_alited-1.4>alited's demo
+</a>.
+</p>
+
+<p>
+ See also  <a href="https://aplsimple.github.io/en/tcl/pave/index.html" rel="nofollow">Description of apave package</a>.
+</p>
+
+
+<br>
+<p>
 <h3 id=custtool><i>Customizing tools</i></h3>
 </p>
 <p>
@@ -1894,11 +2005,66 @@ foo
 
 <br>
 <p>
+<h3 id="rectsel"><i>Rectangular selection</i></h3>
+</p>
+
+<p>
+The "Rectangular Selection" submenu allows you:
+<ul>
+<li>to select a rectangle of text</li>
+<li>to cut the selected rectangle</li>
+<li>to copy the selected rectangle</li>
+<li>to paste the cut/copied rectangle</li>
+</ul>
+</p>
+
+<p>
+First, you select a rectangle: place the cursor to a first position, choose "Rectangular selection / Start" and move the cursor to a second position. At that, "Rectangular selection / Start" menu item becomes checked.
+</p>
+
+<p>
+Then, the selected rectangle can be cut or copied, with choosing "Rectangular selection / Cut (Copy)". At that, the "Rectangular selection / Start" menu item becomes unchecked.
+</p>
+
+<p>
+At last, place the cursor to a position to paste and choose "Rectangular selection / Paste". The cut (copied) rectangle will be inserted in the text at this cursor position.
+</p>
+
+<br>
+<p>
 <h3 id="keyssetup"><i>Keys setup</i></h3>
 </p>
 
 <p>
 A few of keys are customized with "Setup / Preferences / Keys" menu item.
+</p>
+
+<p>
+To select a key that is already mapped to some action, the usual programming practice is used to exchange things, e.g. variables "a" and "b" (<code>temp=b; b=a; a=temp</code>).
+</p>
+
+<p>
+For example, you need the key mappings:
+<ul>
+<li><i>Complete Commands</i> - F11 (by default, Tab)</li>
+<li><i>Double Selection</i> - Control-Y (by default, Control-D)</li>
+<li><i>Delete Line</i> - Control-D (by default, Control-Y)</li>
+</ul>
+</p>
+
+<p>
+You act this way:
+<ul>
+<li>map <i>RESERVED</i> action (F11 by default) to a free key, say, Control-0</li>
+<li>map <i>Complete Commands</i> action to F11</li>
+<li>map <i>Double Selection</i> action to Tab</li>
+<li>map <i>Delete Line</i> action to Control-D</li>
+<li>map <i>Double Selection</i> action to Control-Y</li>
+</ul>
+</p>
+
+<p>
+This way, you will use Tab key to indent. As you like it.
 </p>
 
 <br>

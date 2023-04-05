@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.3.6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.4b5  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -399,8 +399,14 @@ namespace eval alited {
     # and red color of TODOs.
 
     variable obPav
-    lassign [$obPav csGet] - fg - bg fgbold
     lassign [::hl_tcl::addingColors] -> fgred
+    if {[catch {set lst [$obPav csGet]}]} {
+      set fg [ttk::style lookup "." -foreground]
+      set bg [ttk::style lookup "." -background]
+      set fgbold $fgred
+    } else {
+      lassign $lst - fg - bg fgbold
+    }
     return [list $fg $fgbold $fgred $bg]
   }
   #_______________________
@@ -722,7 +728,7 @@ namespace eval alited {
 
     variable obDlg
     if {[HelpOnce 1 $fname]} return
-    set fS [lindex [::hl_tcl::hl_colors {} [::apave::obj csDark]] 1]
+    lassign [FgFgBold] -> fS
     set ::alited::textTags [list \
       [list "r" "-font {-weight bold} -foreground $fS"] \
       [list "b" "-foreground $fS"] \
@@ -810,12 +816,13 @@ namespace eval alited {
   }
   #_______________________
 
-  proc Help {win {suff ""}} {
+  proc Help {win {suff ""} args} {
     # Shows a help file for a procedure.
     #   win - currently active window
     #   suff - suffix for a help file's name
+    #   args - option of HelpFile
 
-    HelpFile $win [HelpFname $win $suff]
+    HelpFile $win [HelpFname $win $suff] {*}$args
   }
 
   ## ________________________ Runs & exits _________________________ ##
@@ -956,6 +963,7 @@ namespace eval alited {
         catch {destroy $::alited::find::win}     ;# windows
         catch {destroy $::alited::find::win2}    ;#
         catch {destroy $::alited::al(FN2WINDOW)} ;# (and its possible children)
+        catch {::alited::paver::Destroy}
         $obPav res $al(WIN) $res
         ::apave::endWM
       }
@@ -1068,6 +1076,7 @@ if {[info exists ALITED_PORT]} {
     source [file join $alited::SRCDIR check.tcl]
     source [file join $alited::SRCDIR indent.tcl]
     source [file join $alited::SRCDIR run.tcl]
+    source [file join $alited::SRCDIR paver.tcl]
     source [file join $alited::LIBDIR addon hl_md.tcl]
     source [file join $alited::LIBDIR addon hl_html.tcl]
     source [file join $alited::LIBDIR addon hl_em.tcl]

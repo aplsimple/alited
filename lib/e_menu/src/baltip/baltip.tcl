@@ -590,7 +590,7 @@ proc ::baltip::my::Show {w text force geo optvals} {
 
   variable ttdata
   variable GEOACTIVE
-  if {$w ne {} && ![winfo exists $w]} return
+  if {![winfo exists $w]} return
   if {$geo eq {} && $GEOACTIVE ne {-}} return  ;# tips locked at a balloon message
   set win [::baltip::tippath $w]
   # keep the label's colors untouched (for apave package)

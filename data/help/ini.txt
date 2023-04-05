@@ -20,5 +20,5 @@
  scheme and a funny font for editing. Or hobby projects with other
  settings. At last, work projects with "tough-stuff" settings:)
 
- Anyhow, <b>alited</b> shows you where it will store its settings,
+ Anyhow, alited shows you where it will store its settings,
  so that you can backup them along with other programs' ones.

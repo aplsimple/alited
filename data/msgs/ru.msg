@@ -630,7 +630,37 @@ namespace eval ::alited {
     "If it's checked, open files would be placed\nonto the beginning page of the bar." "Если эта опция включена, открываемые файлы\nразмещаются на первой странице списка."
   }
 
+  ## ________________________ Paver _________________________ ##
+
+  ::msgcat::mcmset ru {
+    {For paveWindow's widget list to be recognized, set the cursor inside it.} {Поставьте курсор внутри списка виджетов paveWindow, чтоб список был опознан.}
+    {To get a widget list, run "Paver" first.} {Для просмотра списка виджетов выполните сначала "Paver".}
+    {Auto Update} {Обновлять автоматически}
+    {View Widget List} {Просмотр списка виджетов}
+  }
+
+  ## ____________________ Rectangular selection ___________________ ##
+
+  ::msgcat::mcmset ru {
+    {Rectangular Selection} {Прямоугольное выделение}
+    {Start} {Начать}
+    {Cut} {Вырезать}
+    {Copy} {Копировать}
+    {Paste} {Вставить}
+    {Move the cursor to select a rectangle.} {Переместите курсор для выделения прямоугольника.}
+  }
+
   ## ________________________ EONS alited _________________________ ##
+}
+
+# _ apave NS _ #
+
+namespace eval ::apave {
+  ::msgcat::mcmset ru {
+    {Save text} {Сохранить текст}
+    {Don't save} {Не сохранять}
+    {Save changes made to the text?} {Сохранить измененный текст?}
+  }
 }
 
 # _ bartabs NS _ #
@@ -647,8 +677,6 @@ namespace eval ::bartabs {
     {... All at Left} {... все слева}
     {... All at Right} {... все справа}
   }
-
-  ## ________________________ EONS bartabs _________________________ ##
 }
 
 # _________________________________ EOF _________________________________ #

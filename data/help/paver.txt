@@ -1,0 +1,73 @@
+ The <r>paver</r> is a convenient tool for developing GUI with <r>apave</r> package
+ the <b>alited</b> is based upon.
+
+ It allows you to view and possibly change "on fly" a <b>widget list</b> passed as
+ an argument to <r>paveWindow</r> method.
+
+ For this, place the cursor on some line inside a <b>widget list</b> and run <r>paver</r>
+ so that you "visualize" the list to see how it will be shown in a real app.
+
+ If <r>paver</r> cannot recognize your widget list's beginning with <r>paveWindow</r>
+ call, you can set <b># paver...</b> comment before it, for example:
+
+   <b># paver</b>
+   set widlist {
+     {h_ - - 1 5}
+     {lab T + 1 1 {-st e -pady 5} {-t Run:}}
+     ...
+   }
+   <b># PAVER end</b>
+
+ The same <b># paver</b> comment may (though need not to) be placed behind the
+ list's last line.
+
+ The <b># paver</b> comments are case insensitive and may be added with any info,
+ as shown above with <b># PAVER end</b>.
+ ______________________________________________________________________________
+
+ The <r>Auto Update</r> menu item allows updating a tested <b>widget list</b> every time
+ when its file is saved.
+
+ The <r>View Widget List</r> menu item allows viewing and possibly changing the
+ tested <b>widget list</b> "on fly", without touching a currently edited script.
+ ______________________________________________________________________________
+
+ The <r>paver</r> eliminates all references to variables and commands used in a
+ <b>widget list</b>, thus leaving only a layout of GUI to show. So, if a <b>widget
+ list</b> needs some variables/commands to make it working, <r>paver</r> would fail.
+
+ For example, the following <b>widget list</b> is not visualized by <r>paver</r>:
+
+   set widgetlist {
+     {fra + T 1 1 {-st nsew -cw 1 -rw 1}}
+     {fra.ScfRuns - - 1 1  {pack -fill both -expand 1}}
+     {<b>tcl</b> {
+         set prt "- -"
+         for {set i 0} {$i<$::maxCom} {incr i} {
+           set lwid ".btT$i $prt 1 1 {} {-com {::mycom $i} -image myimg$i}"
+           %C $lwid
+           set prt ".btT$i T"
+         }
+       }
+     }
+   }
+
+ This <b>widget list</b> has <b>tcl</b> code to make a list of buttons depending on their
+ maximum number.
+
+ On <r>paver</r> eliminating variables, this <b>widget list</b> isn't visualized by it.
+
+ However, these layouts are rather rare and tricky, using most dark sides of
+ <r>apave</r> package.
+
+ They should be in fact tested in a real application. In <b>alited</b>'s code there
+ are only one or two of the "not pavered" lists among tens of them.
+ ______________________________________________________________________________
+
+ See instances of <b>paveWindow</b> and <b>Tab</b> procs in <b>alited</b>'s code to try <r>paver</r>.
+
+ See demo of <r>paver</r> usage in <b>alited</b>'s demo:
+   <link>https://github.com/aplsimple/alited/releases//tag/Demos_of_alited-1.4</link>
+
+ See also <r>apave</r> package's description:
+   <link>https://aplsimple.github.io/en/tcl/pave</link>

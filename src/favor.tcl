@@ -209,6 +209,8 @@ proc favor::SetAndClose {cont} {
 
   SetFavorites $cont
   set fnamecont {}
+  set fnamecurr [alited::bar::FileName]
+  set iscurr yes
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
     set fname [alited::bar::FileName $TID]
@@ -223,6 +225,7 @@ proc favor::SetAndClose {cont} {
     if {!$found} {
       if {![alited::file::CloseFile $TID no]} break
       alited::bar::BAR $TID close no
+      if {$fname eq $fnamecurr} {set iscurr no}
     }
   }
   if {![llength [alited::bar::BAR listTab]]} {
@@ -232,6 +235,11 @@ proc favor::SetAndClose {cont} {
     } else {
       alited::file::CheckForNew  ;# ... or create "no name" tab
     }
+  }
+  alited::bar::BAR update
+  if {!$iscurr} {
+    # if a current file was closed, open 1st of the open
+    catch {alited::bar::BAR [lindex [alited::bar::BAR listTab] 0 0] show}
   }
 }
 #_______________________

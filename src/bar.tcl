@@ -611,17 +611,5 @@ proc bar::RenameTitles {TID} {
   }
   if {$doupdate} {BAR draw no}
 }
-#_______________________
-
-proc bar::SleepTreeTips {} {
-  # Hides and switches the tree's tips temporarily off.
-  # Cause: hovering over the tree may show its tips when they are unnecessary.
-
-  namespace upvar ::alited al al obPav obPav
-  set _ $al(TIPS,Tree)
-  set al(TIPS,Tree) 0
-  ::baltip hide [$obPav Tree]
-  after 1000 "set ::alited::al(TIPS,Tree) $_"
-}
 
 # _________________________________ EOF _________________________________ #

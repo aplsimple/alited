@@ -13,6 +13,11 @@ source [file join [file dirname [info script]] apavebase.tcl]
 namespace eval ::apave {
 
   variable querydlg {}
+  variable msgarray; array set msgarray [list]
+  set msgarray(savenot)  {Don't save}
+  set msgarray(savetext) {Save text}
+  set msgarray(saveask)  {Save changes made to the text?}
+  set msgarray(find)     {Find: }
 
   proc dlgPath {}  {
     # Gets a current dialogue's path.
@@ -20,6 +25,16 @@ namespace eval ::apave {
     # called outside of apave dialogue object (useful sometimes).
 
     return $::apave::querydlg
+  }
+  #_______________________
+
+  proc msgcatDialogs {} {
+    # Prepares localized messages used in dialogues.
+
+    variable msgarray
+    foreach n [array names msgarray] {
+      set msgarray($n) [msgcat::mc $msgarray($n)]
+    }
   }
 
   ## ________________________ EONS apave _________________________ ##
@@ -52,11 +67,11 @@ oo::class create ::apave::APaveDialog {
   ; proc exitEditor {resExit} {
       upvar $resExit res
       if {[[my TexM] edit modified]} {
-        set w [set [namespace current]::_pdg(dlg)]
+        set w [my dlgPath]
         set pdlg [::apave::APaveDialog new $w]
-        set r [$pdlg misc warn "Save text?" \
-          "\n Save changes made to the text? \n" \
-          {Save 1 "Don't save " Close Cancel 0} \
+        set r [$pdlg misc warn $::apave::msgarray(savetext) \
+          "\n $::apave::msgarray(saveask) \n" \
+          [list Save 1 $::apave::msgarray(savenot) Close Cancel 0] \
           1 -focusback [my TexM] -centerme $w]
         if {$r==1} {
           set res 1
@@ -989,7 +1004,7 @@ oo::class create ::apave::APaveDialog {
     # options of dialog
     lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM optsHead \
       root rotext head hsz binds postcom onclose timeout tab2 \
-      tags cc themecolors optsGrid addpopup
+      tags cc themecolors optsGrid addpopup minsize
     set wasgeo [set textmode [set stay [set waitvar 0]]]
     set readonly [set hidefind [set scroll [set modal 1]]]
     set curpos {1.0}
@@ -1039,6 +1054,7 @@ oo::class create ::apave::APaveDialog {
         -hfg {append optsHead " -foreground {$val}"}
         -hbg {append optsHead " -background {$val}"}
         -hsz {append hsz " -size $val"}
+        -minsize {set minsize "-minsize {$val}"}
         -focus {set focusmatch "$val"}
         -theme {append themecolors " {$val}"}
         -post {set postcom $val}
@@ -1215,7 +1231,7 @@ oo::class create ::apave::APaveDialog {
         if {$hidefind} {
           lappend widlist [list h__ h_3 L 1 4 {-cw 1}]
         } else {
-          lappend widlist [list labfnd h_3 L 1 1 "-st e" "-t {[msgcat::mc {Find: }]}"]
+          lappend widlist [list labfnd h_3 L 1 1 "-st e" "-t {$::apave::msgarray(find)}"]
           lappend widlist [list Entfind labfnd L 1 1 \
             {-st ew -cw 1} "-tvar ${_pdg(ns)}PD::fnd -w 10"]
           lappend widlist [list labfnd2 Entfind L 1 1 "-cw 2" "-t {}"]
@@ -1379,7 +1395,7 @@ oo::class create ::apave::APaveDialog {
     set args [::apave::removeOptions $args -focus]
     set ::apave::querydlg $qdlg
     my showModal $qdlg -modal $modal -waitvar $waitvar -onclose $onclose \
-      -focus $focusnow -geometry $geometry {*}$root {*}$args
+      -focus $focusnow -geometry $geometry {*}$root {*}$minsize {*}$args
     oo::objdefine [self] unexport InitFindInText Pdg
     if {![winfo exists $qdlg] || (!$modal && !$waitvar)} {
       return 0

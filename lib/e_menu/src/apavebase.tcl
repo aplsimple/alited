@@ -1139,15 +1139,18 @@ oo::class create ::apave::APaveBase {
       sev {set widget ttk::separator}
       siz {set widget ttk::sizegrip}
       spx - spX {
-         if {$nam3 eq {spx}} {set widget ttk::spinbox} {set widget spinbox}
-         lassign [::apave::parseOptions $attrs \
-           -command {} -com {} -from {} -to {}] cmd cmd2 from to
-         append cmd $cmd2
-         lassign [::apave::extractOptions attrs -tip {} -tooltip {}] t1 t2
-         set t2 "$t1$t2"
-         if {$t2 ne {}} {set t2 "\n $t2"}
-         set t2 " $from .. $to $t2"
-         append attrs " -onReturn {$::apave::UFF{$cmd} {$from} {$to}$::apave::UFF} -tip {$t2}"
+        if {$nam3 eq {spx}} {set widget ttk::spinbox} {set widget spinbox}
+        lassign [::apave::parseOptions $attrs \
+          -command {} -com {} -from {} -to {}] cmd cmd2 from to
+        append cmd $cmd2
+        lassign [::apave::extractOptions attrs -tip {} -tooltip {}] t1 t2
+        set t2 "$t1$t2"
+        if {$from ne {} || $to ne {}} {
+          if {$t2 ne {}} {set t2 "\n $t2"}
+          set t2 " $from .. $to $t2"
+        }
+        if {$t2 ne {}} {set t2 "-tip {$t2}"}
+        append attrs " -onReturn {$::apave::UFF{$cmd} {$from} {$to}$::apave::UFF} $t2"
       }
       tbl { ;# tablelist
         package require tablelist
@@ -3026,10 +3029,17 @@ oo::class create ::apave::APaveBase {
         }
       }
     braceright {
-        # right brace pressed: if no other chars in the line, shift the brace
-        set idx1 [$w index "insert"]
+        # right brace pressed: shift the brace to left
+        set idx1 [$w index insert]
         set st [$w get "$idx1 linestart" "$idx1 lineend"]
-        if {[string trim $st] eq {} && [string length $st]>=$lindt} {
+        set idx2 [$w index "$idx1 -1 line"]
+        set st2 [$w get "$idx2 linestart" "$idx2 lineend"]
+        set nchars [my leadingSpaces $st]
+        set nchars2 [my leadingSpaces $st2]
+        set st2 [string index $st2 end]
+        if {($st2 ne "\{" && $nchars2<=$nchars || $st2 eq "\{" && $nchars2<$nchars) \
+        && [string trimright $st] eq {} && [string length $st]>=$lindt} {
+          if {$nchars>$nchars2} {set lindt [expr {$nchars-$nchars2}]}
           $w delete "$idx1 lineend -$lindt char" "$idx1 lineend"
         }
       }
@@ -3382,7 +3392,7 @@ oo::class create ::apave::APaveBase {
     set lwidgets [list]
     # comments be skipped
     foreach lst $inplists {
-      if {[string index [string index $lst 0] 0] ne {#}} {
+      if {[string index $lst 0] ne {#}} {
         lappend lwidgets $lst
       }
     }

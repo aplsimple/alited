@@ -155,6 +155,19 @@ method Tab_Create {BID TID w text} {
 }
 #_______________________
 
+method Tab_create {tabCom label} {
+  # Creates tab method and registers it. Defined by "My".
+
+  set BID [my ID]
+  if {[set TID [my $BID tabID $label]] eq {}} {
+    return -code error "No label {$label} in $BID"
+  }
+; proc $tabCom {args} "return \[[self] $TID {*}\$args\]"
+  set lObj [my $BID cget -TABCOM]
+  my $BID configure -TABCOM [lappend lObj [list $TID $tabCom]]
+}
+#_______________________
+
 method Tab_ExpandOption {BID expand} {
   # Gets a real -expand option, counting that it may be set as a number>1
   # meaning "starting from this number do expanding, otherwise not"

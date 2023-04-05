@@ -181,6 +181,24 @@ proc menu::FillMacroItems {} {
   if {!$isaccel} {set al(activemacro) $al(MC,quickmacro)}
   $m add command {*}[MacroOptions quickrec $al(MC,quickmacro)]
 }
+#_______________________
+
+proc menu::Paver {mode} {
+  # Loads and calls Paver tool.
+  #   mode - 0 run paver; 1 auto update flag; 2 view code; 3 help
+
+  if {![namespace exists ::alited::paver]} {
+    namespace eval ::alited {
+      source [file join $alited::SRCDIR paver.tcl]
+    }
+  }
+  switch $mode {
+    0 ::alited::paver::_run
+    1 ::alited::paver::AutoUpdate
+    2 ::alited::paver::ViewList
+    3 ::alited::paver::Help
+  }
+}
 
 # ________________________ Fill Menu _________________________ #
 
@@ -188,6 +206,8 @@ proc menu::FillMenu {} {
   # Populates alited's main menu.
 
   # alited_checked
+
+  ::apave::msgcatDialogs
 
   namespace upvar ::alited al al
   namespace upvar ::alited::pref em_Num em_Num \
@@ -253,6 +273,20 @@ proc menu::FillMenu {} {
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
   $m add command -label [msgcat::mc {Remove Trailing Whitespaces}] -command alited::edit::RemoveTrailWhites
   $m add separator
+
+  ### ________________________ Rectangular Selection _________________________ ###
+
+  set ttl [msgcat::mc {Rectangular Selection}]
+  menu $m.rectsel -tearoff 1 -title $ttl
+  $m add cascade -label $ttl -menu $m.rectsel
+  $m.rectsel add checkbutton -label [msgcat::mc Start] -command {alited::edit::RectSelection 0} -variable alited::al(rectSel) -compound left -image alimg_run
+  $m.rectsel add separator
+  $m.rectsel add command -label [msgcat::mc Cut] -command {alited::edit::RectSelection 2}
+  $m.rectsel add command -label [msgcat::mc Copy] -command {alited::edit::RectSelection 3}
+  $m.rectsel add command -label [msgcat::mc Paste] -command {alited::edit::RectSelection 4}
+
+  ### ________________________ Color Values _________________________ ###
+
   menu $m.hlcolors -tearoff 1 -title [msgcat::mc Colors]
   $m add cascade -label [msgcat::mc {Color Values #hhhhhh}] -menu $m.hlcolors
   $m.hlcolors add command -label $al(MC,hlcolors) -command alited::edit::ShowColorValues
@@ -260,7 +294,6 @@ proc menu::FillMenu {} {
 
   ### ________________________ Macro _________________________ ###
 
-  $m add separator
   menu $m.playtkl -tearoff 1
   $m add cascade -label $::alited::al(MC,playtkl) -menu $m.playtkl
   FillMacroItems
@@ -288,7 +321,7 @@ proc menu::FillMenu {} {
   $m add command -label e_menu -command {alited::tool::e_menu o=0} -accelerator $al(acc_2)
   $m add command -label Tkcon -command alited::tool::tkcon
 
-    ### ________________________ Runs _________________________ ###
+  ### ________________________ Runs _________________________ ###
 
   for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
     if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
@@ -308,7 +341,7 @@ proc menu::FillMenu {} {
     }
   }
 
-    ### ________________________ Other tools _________________________ ###
+  ### ___________________ Check, File list __________________ ###
 
   $m add separator
   $m add command -label $al(MC,checktcl) -command alited::CheckRun
@@ -316,10 +349,25 @@ proc menu::FillMenu {} {
   $m add cascade -label $al(MC,filelist) -menu $m.filelist
   $m.filelist add command -label $al(MC,filelist) -command {alited::bar::BAR popList} -accelerator $al(acc_21)
   $m.filelist add checkbutton -label [msgcat::mc {Sorted}] -variable alited::al(sortList)
+
+  ### ________________________ Paver _________________________ ###
+
   $m add separator
-  $m add command -label $al(MC,colorpicker) -command alited::tool::ColorPicker
+  menu $m.paver -tearoff 1
+  $m add cascade -label Paver -menu $m.paver
+  $m.paver add command -label {Paver} -command {alited::menu::Paver 0}
+  $m.paver add separator
+  $m.paver add checkbutton -label [msgcat::mc {Auto Update}] \
+    -variable ::alited::al(paverauto) -command {alited::menu::Paver 1}
+  $m.paver add command -label [msgcat::mc {View Widget List}] -command {alited::menu::Paver 2}
+  $m.paver add separator
+  $m.paver add command -label [msgcat::mc {Help}] -command {alited::menu::Paver 3}
+
+  ### ________________________ Pickers _________________________ ###
+
+  $m add separator
   $m add command -label $al(MC,datepicker) -command alited::tool::DatePicker
-  $m add separator
+  $m add command -label $al(MC,colorpicker) -command alited::tool::ColorPicker
   $m add command -label [msgcat::mc {Screen Loupe}] -command alited::tool::Loupe
 
   ## ________________________ Setup _________________________ ##

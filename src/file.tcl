@@ -541,13 +541,14 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
 
   namespace upvar ::alited al al obPav obPav
   variable ansOpen
-  set al(filename) {}
   set chosen no
   if {$fnames eq {}} {
+    set al(TMPfname) {}
     set chosen yes
-    set fnames [$obPav chooser tk_getOpenFile alited::al(filename) -multiple 1 \
+    set fnames [$obPav chooser tk_getOpenFile alited::al(TMPfname) -multiple 1 \
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
     if {$al(lifo)} {set fnames [lsort -decreasing $fnames]}
+    unset al(TMPfname)
   } elseif {!$islist} {
     set fnames [list $fnames]
   }
@@ -677,17 +678,18 @@ proc file::SaveFileAs {{TID ""}} {
   namespace upvar ::alited al al obPav obPav
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
-  set alited::al(filename) [file tail $fname]
-  if {[IsNoName $alited::al(filename)]} {
-    set alited::al(filename) {}
+  set alited::al(TMPfname) [file tail $fname]
+  if {[IsNoName $fname]} {
+    set alited::al(TMPfname) {}
     set defext .tcl
     set inidir $al(prjroot)
   } else {
     set defext [file extension $fname]
     set inidir [file dirname $fname]
   }
-  set fname [$obPav chooser tk_getSaveFile alited::al(filename) -initialdir $inidir \
+  set fname [$obPav chooser tk_getSaveFile alited::al(TMPfname) -initialdir $inidir \
     -defaultextension $defext -title [msgcat::mc {Save as}] -parent $al(WIN)]
+  unset al(TMPfname)
   if {[IsNoName $fname]} {
     set res 0
   } elseif {[set res [SaveFileByName $TID $fname]]} {
@@ -900,7 +902,7 @@ proc file::ClearupOnClose {TID wtxt fname} {
 
   namespace upvar ::alited al al
   catch {
-    if {[IsClang $fname]} {::hl_c::clearup $wtxt} {::hl_tcl::clearup $wtxt}
+#!    if #\{[IsClang $fname]#\} #\{::hl_c::clearup $wtxt#\} #\{::hl_tcl::clearup $wtxt#\}
     unset -nocomplain al(_unittree,$TID)
   }
 }

@@ -404,7 +404,7 @@ proc find::FindOptions {wtxt} {
   #   wtxt - text widget's path
 
   variable data
-  UnsetTags
+  UnsetTags $wtxt
   set options [set stopidx {}]
   set findstr $data(en1)
   if {!$data(c2)} {append options {-nocase }}
@@ -508,10 +508,11 @@ proc find::SetTags {wtxt} {
 }
 #_______________________
 
-proc find::UnsetTags {} {
+proc find::UnsetTags {{wtxt ""}} {
   # Clears the text of the find tag.
+  #   wtxt - text's path
 
-  set wtxt [alited::main::CurrentWTXT]
+  if {$wtxt eq {}} {set wtxt [alited::main::CurrentWTXT]}
   $wtxt tag remove fndTag 1.0 end
 }
 #_______________________
@@ -559,9 +560,7 @@ proc find::Search {wtxt} {
   #   wtxt - text widget's path
 
   namespace upvar ::alited obPav obPav
-  variable data
   variable counts
-  variable win
   set idx [$wtxt index insert]
   lassign [FindOptions $wtxt] findstr options
   if {![CheckData find]} {return {}}
@@ -586,6 +585,7 @@ proc find::Search {wtxt} {
 proc find::Find {{inv -1}} {
   # Searches one string in a current text.
   #   inv - index of a button that was hit (1 means "Find" button)
+  # Returns yes, if a string is found.
 
   namespace upvar ::alited obFND obFND
   variable data
@@ -594,10 +594,11 @@ proc find::Find {{inv -1}} {
   $wtxt tag remove sel 1.0 end
   set fndlist [Search $wtxt]
   if {![llength $fndlist]} {
-    bell
     focus [$obFND Cbx1]
-    return
+    NotFoundMessage $data(en1)
+    return no
   }
+  set res no
   set indexprev [set indexnext 0]
   set index [$wtxt index insert]
   foreach idx12 $fndlist {
@@ -616,6 +617,7 @@ proc find::Find {{inv -1}} {
     if {!$indexprev} {lassign [lindex $fndlist end] indexprev indp2}
     ::tk::TextSetCursor $wtxt $indexprev
     $wtxt tag add sel $indexprev $indp2
+    set res yes
 
   } elseif {$data(c4) && $data(v2)==2}  {  ;# search forward & wrap around
     if {!$indexnext || ([lindex $fndlist end 0]==$indexnext && [$wtxt compare $indexnext == $index])} {
@@ -623,25 +625,25 @@ proc find::Find {{inv -1}} {
     }
     ::tk::TextSetCursor $wtxt $indexnext
     $wtxt tag add sel $indexnext $indn2
+    set res yes
 
   } elseif {!$data(c4) &&$data(v2)==1}  {  ;# search backward & not wrap around
     if {$indexprev} {
       ::tk::TextSetCursor $wtxt $indexprev
       $wtxt tag add sel $indexprev $indp2
-    } else {
-      bell
+      set res yes
     }
 
   } elseif {!$data(c4) && $data(v2)==2} {  ;# search forward & not wrap around
     if {$indexnext} {
       ::tk::TextSetCursor $wtxt $indexnext
       $wtxt tag add sel $indexnext $indn2
-    } else {
-      bell
+      set res yes
     }
   }
   ::alited::main::CursorPos $wtxt
   if {$inv>-1} alited::main::HighlightLine
+  return $res
 }
 #_______________________
 
@@ -706,22 +708,25 @@ proc find::FindNext {} {
   # Performs "find next" (F3 key) for the current text.
 
   namespace upvar ::alited al al obPav obPav
-  variable win2
+  variable data
+  variable win
   set wtxt [alited::main::CurrentWTXT]
-  if {[info exists al(findSearchByList)] && $al(findSearchByList) eq $wtxt} {
-    NextFoundByList no
-    return
-  }
-  if {[$wtxt tag nextrange fndTag 1.0] ne {} && [winfo exists $win2]} {
-    NextFoundByList no  ;# go to the next highlighted (specific for "Find by list")
-    return
-  }
   alited::Message {}
   lassign [$obPav findInText 1 $wtxt] res what
-  if {!$res} {
-    set msg [msgcat::mc {Not found: %s}]
-    alited::Message [string map [list %s $what] $msg] 3
+  if {!$res && [winfo exists $win]} {
+    set res [Find]  ;# go to the next by "Find"
+    set what $data(en1)
   }
+  if {!$res} {NotFoundMessage $what}
+}
+#_______________________
+
+proc find::NotFoundMessage {what} {
+  # Displays "not found" message.
+  #   what - what's not found
+
+  set msg [msgcat::mc {Not found: %s}]
+  alited::Message [string map [list %s $what] $msg] 4
 }
 
 # _______________________ "Replace" buttons _______________________ #
@@ -1053,7 +1058,7 @@ proc find::SearchByList_Do {{show yes}} {
   set list [string map {\n { }} $al(listSBL)]
   set al(findSearchByList) $wtxt
   SetTags $wtxt
-  UnsetTags
+  UnsetTags $wtxt
   foreach findword [split $list] {
     lassign [SearchByList_Options $findword] findstr options
     if {[catch {set fnd [$wtxt search {*}$options -count alited::find::counts -all -- $findstr 1.0]} err]} {
@@ -1170,7 +1175,7 @@ proc find::NextFoundByList {{focusDLG yes}} {
 # _____________________ Find/Replace dialogue ____________________ #
 
 proc find::_create {} {
-  #$ Creates Find/Replace dialogue.
+  # Creates Find/Replace dialogue.
 
   namespace upvar ::alited al al obFND obFND
   variable win

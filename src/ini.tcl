@@ -209,6 +209,14 @@ namespace eval ::alited {
   # active macro's name & macro extension
   set al(activemacro) {}
   set al(macroext) {.alm}
+
+  # flag "Paver tool is auto-updated"
+  set al(paverauto) 0
+
+  # rectangular selection
+  set al(rectSel) 0           ;# flag "it was started"
+  set al(rectSel,TID) {}      ;# tab ID where it was started
+  set al(rectSel,text) [list] ;# selected rectangle
 }
 
 # ________________________ Variables _________________________ #
@@ -490,7 +498,9 @@ proc ini::ReadIniEM {nam val emiName} {
     emTclList  {
       set al(EM,TclList) {}
       foreach t [split [string trim $val] \t] {
-        append al(EM,TclList) \t [alited::UnixPath $t]
+        if {[string trim $t] ne {}} {
+          append al(EM,TclList) \t [alited::UnixPath $t]
+        }
       }
     }
     em_run {

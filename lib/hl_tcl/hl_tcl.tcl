@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.0.2
+package provide hl_tcl 1.0.3
 
 # ______________________ Common data ____________________ #
 
@@ -30,7 +30,7 @@ namespace eval ::hl_tcl {
       msgcat gets rename glob fconfigure fblocked fcopy cd pwd mathfunc then \
       mathop apply fileevent unset join next exec refchan package source \
       exit vwait binary lreverse registry auto_execok subst encoding load \
-      auto_load tell auto_mkindex memory trace time clock auto_qualify \
+      auto_load tell auto_mkindex memory trace time clock timerate auto_qualify \
       auto_reset socket bgerror oo::copy unload history tailcall \
       interp parray pid transchan nextto unknown dde pkg_mkIndex zlib auto_import \
       pkg::create tcl::prefix \

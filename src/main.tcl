@@ -421,6 +421,7 @@ proc main::CursorPos {wtxt args} {
   $wrow configure -text $textrow
   $wcol configure -text $textcol
   alited::tree::SaveCursorPos
+  alited::edit::RectSelection 1
 }
 #_______________________
 
