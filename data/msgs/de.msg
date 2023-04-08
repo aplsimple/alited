@@ -638,9 +638,8 @@ namespace eval ::alited {
 
   ::msgcat::mcmset de {
     {For paveWindow's widget list to be recognized, set the cursor inside it.} {Damit die Widget-Liste von paveWindow erkannt wird, setzen Sie den Cursor hinein.}
-    {To get a widget list, run "Paver" first.} {Um eine Widget-Liste zu erhalten, führen Sie zuerst "Paver" aus.}
     {Auto Update} {Automatische Aktualisierung}
-    {View Widget List} {Widget-Liste anzeigen}
+    {Widget List} {Widget-Liste}
   }
 
   ## ____________________ Rectangular selection ___________________ ##

@@ -13,7 +13,8 @@ namespace eval paver {
   variable win $::alited::al(WIN).paverwin
   variable win2 {}
   variable pobj ::alited::paver::pavedobj
-  variable widgetlist {} paverttl {} paverTID {} geometry {} code {} modtime {} viewgeo {}
+  variable widgetlist {} paverttl {} paverTID {} geometry {}
+  variable code {} savedcode {} modtime {} viewgeo {}
   variable viewpos 1.0
 }
 #_______________________
@@ -27,8 +28,9 @@ proc paver::Close {args} {
   catch {
     set geometry [wm geometry $win]
     set geometry [string range $geometry [string first + $geometry] end]
-    $pobj res $win 0
   }
+  catch {$pobj res $win 0}
+  catch {destroy $win}
 }
 #_______________________
 
@@ -38,7 +40,6 @@ proc paver::Destroy {args} {
   variable pobj
   variable win
   Close
-  catch {destroy $win}
   catch {$pobj destroy}
 }
 #_______________________
@@ -78,61 +79,74 @@ proc paver::AutoUpdate {{dorun 0}} {
 }
 #_______________________
 
-proc paver::ViewList {} {
+proc paver::Viewer {} {
   # Shows the widget list.
 
   namespace upvar ::alited al al obDl2 obDl2
   variable paverttl
   variable code
+  variable savedcode
   variable geometry
   variable viewgeo
   variable viewpos
+  variable win2
+  if {$code eq {}} WidgetList
   if {$code eq {}} {
-    alited::Message [msgcat::mc {To get a widget list, run "Paver" first.}] 4
+    MessageNotList
+    return
+  }
+  catch {destroy $win2}
+  if {$viewgeo ne {}} {
+    set geo "-geometry $viewgeo"
   } else {
-    if {$viewgeo ne {}} {
-      set geo "-geometry $viewgeo"
+    set geo -geometry\ +[winfo vrootx $al(WIN)]+[winfo vrooty $al(WIN)]
+  }
+  after idle "catch { \
+    set txt \[$obDl2 TexM\] ; \
+    ::hl_tcl::hl_init \$txt -dark [$obDl2 csDark] \
+      -cmdpos ::alited::None -font {$al(FONT,txt)} ; \
+    ::hl_tcl::hl_text \$txt}"
+  after idle "set ::alited::paver::win2 \[$obDl2 dlgPath\]"
+  set savedcode $code
+  $obDl2 misc info $paverttl $code \
+    {Save ::alited::paver::HandleViewer Close ::alited::paver::ExitViewer} TEXT \
+    -modal no -waitvar 1 -onclose ::alited::paver::ExitViewer \
+    -text 1 -ro 0 -rotext ::alited::paver::code -minsize {300 200} \
+    -w {40 80} -h {5 20} -resizable 1 -pos $viewpos {*}$geo
+}
+#_______________________
+
+proc paver::HandleViewer {{act 1} args} {
+  # Handles viewer's save/close actions.
+  #   act - if 1, saves a code and updates the paver's window; if 0 closes the viewer
+
+  namespace upvar ::alited obDl2 obDl2
+  variable win2
+  variable viewpos
+  variable code
+  variable savedcode
+  variable viewgeo
+  catch {
+    set viewgeo [wm geometry $win2]
+    if {$act} {
+      set tex [$obDl2 TexM]
+      set savedcode [string trim [$tex get 1.0 end]]\n
+      set viewpos [$tex index insert]
+      after idle [list alited::paver::_create $savedcode]
+      after idle [list after 99 [list after 99 [list after 99 [list focus $tex]]]]
     } else {
-      set geo -geometry\ +[winfo vrootx $al(WIN)]+[winfo vrooty $al(WIN)]
+      $obDl2 res $win2 0
+      destroy $win2
     }
-    after idle "catch { \
-      set txt \[$obDl2 TexM\] ; \
-      ::hl_tcl::hl_init \$txt -dark [$obDl2 csDark] \
-        -cmdpos ::alited::None -font {$al(FONT,txt)} ; \
-      ::hl_tcl::hl_text \$txt}"
-    set savedcode $code
-    after idle "set ::alited::paver::win2 \[$obDl2 dlgPath\]"
-    lassign [$obDl2 misc info $paverttl $code \
-      {Paver ::alited::paver::ApplyCode Save ::alited::paver::SaveCode} TEXT \
-      -onclose destroy -text 1 -ro 0 -rotext ::alited::paver::code -minsize {300 200} \
-      -w {40 80} -h {5 20} -resizable 1 -pos $viewpos {*}$geo] res viewgeo pos
-    if {$res} {
-      set viewpos [lindex $pos 0]
-      _create $code
-    } else {
-      set code $savedcode
-    }
+    set code $savedcode
   }
 }
 #_______________________
 
-proc paver::ApplyCode {} {
-  # Runs the paver with currently edited list.
+proc paver::ExitViewer {args} {
+  # Closes the viewer.
 
-  namespace upvar ::alited obDl2 obDl2
-  variable win
-  catch {destroy $win}
-  _create [[$obDl2 TexM] get 1.0 end]
-}
-#_______________________
-
-proc paver::SaveCode {} {
-  # Saves a widget list editor.
-
-  namespace upvar ::alited obDl2 obDl2
-  variable win2
-  catch {destroy $win}
-  $obDl2 res $win2 1
+  HandleViewer 0
 }
 #_______________________
 
@@ -285,6 +299,14 @@ proc paver::CheckCommentedOptions {gridpack attrs} {
   }
   return [list $gridpack $attrs]
 }
+#_______________________
+
+proc paver::MessageNotList {} {
+  # Show a message about absent widget list.
+
+  set msg {For paveWindow's widget list to be recognized, set the cursor inside it.}
+  alited::Message [msgcat::mc $msg] 4
+}
 
 # ________________________ GUI _________________________ #
 
@@ -324,8 +346,7 @@ proc paver::_run {} {
   variable viewpos
   WidgetList
   if {$widgetlist eq {}} {
-    set msg {For paveWindow's widget list to be recognized, set the cursor inside it.}
-    alited::Message [msgcat::mc $msg] 4
+    MessageNotList
   } else {
     set viewpos 1.0
     _create

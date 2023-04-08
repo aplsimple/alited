@@ -829,11 +829,8 @@ proc tree::GetTooltip {ID NC} {
   #   NC - column of treeview item
 
   namespace upvar ::alited al al obPav obPav
-  if {[info exists al(movWin)] && $al(movWin) ne {}} {
-    return {}  ;# no tips while drag-n-dropping
-  }
-  if {[string match *tearoff* [focus]]} {
-    return {}  ;# no tips while focusing on a tearoff menu
+  if {[info exists al(movWin)] && $al(movWin) ne {} || ![::alited::IsTipable]} {
+    return {}  ;# no tips while drag-n-dropping or focusing somewhere else
   }
   set wtree [$obPav Tree]
   if {$al(TREE,isunits)} {

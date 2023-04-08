@@ -637,7 +637,7 @@ proc favor::GetTooltip {ID} {
   #   ID - ID of treeview item
 
   namespace upvar ::alited al al obPav obPav
-  if {!$al(TIPS,TreeFavor) && $al(FAV,IsFavor)} {
+  if {!$al(TIPS,TreeFavor) && $al(FAV,IsFavor) || ![::alited::IsTipable]} {
     # no tips while switched off
     return {}
   }

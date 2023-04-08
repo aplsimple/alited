@@ -28,7 +28,7 @@
  The <r>Auto Update</r> menu item allows updating a tested <b>widget list</b> every time
  when its file is saved.
 
- The <r>View Widget List</r> menu item allows viewing and possibly changing the
+ The <r>Widget List</r> menu item allows viewing and possibly changing the
  tested <b>widget list</b> "on fly", without touching a currently edited script.
  ______________________________________________________________________________
 

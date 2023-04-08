@@ -195,7 +195,7 @@ proc menu::Paver {mode} {
   switch $mode {
     0 ::alited::paver::_run
     1 ::alited::paver::AutoUpdate
-    2 ::alited::paver::ViewList
+    2 ::alited::paver::Viewer
     3 ::alited::paver::Help
   }
 }
@@ -359,7 +359,7 @@ proc menu::FillMenu {} {
   $m.paver add separator
   $m.paver add checkbutton -label [msgcat::mc {Auto Update}] \
     -variable ::alited::al(paverauto) -command {alited::menu::Paver 1}
-  $m.paver add command -label [msgcat::mc {View Widget List}] -command {alited::menu::Paver 2}
+  $m.paver add command -label [msgcat::mc {Widget List}] -command {alited::menu::Paver 2}
   $m.paver add separator
   $m.paver add command -label [msgcat::mc {Help}] -command {alited::menu::Paver 3}
 

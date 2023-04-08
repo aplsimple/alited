@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.4b5  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.4b6  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -699,6 +699,21 @@ namespace eval alited {
     variable al
     Balloon [string map [list %f $fname] $al(MC,filenoexist)]
   }
+  #_______________________
+
+  proc IsTipable {} {
+    # Checks if a tip on the tree/favorites can be shown.
+
+    variable al
+    set foc [focus]
+    if {[string match *tearoff* $foc]} {
+      return no  ;# no tips while focusing on a tearoff menu
+    }
+    if {[winfo toplevel $foc] ne $al(WIN)} {
+      return no  ;# no tips while focusing on a toplevel other than alited's main
+    }
+    return yes
+  }
 
   ## ________________________ Helps _________________________ ##
 
@@ -965,6 +980,8 @@ namespace eval alited {
         catch {destroy $::alited::al(FN2WINDOW)} ;# (and its possible children)
         catch {::alited::paver::Destroy}
         $obPav res $al(WIN) $res
+        after 1000 [list after idle \
+          "catch {::alited::ini::SaveIni}; catch {destroy $al(WIN)}; exit"]
         ::apave::endWM
       }
     }

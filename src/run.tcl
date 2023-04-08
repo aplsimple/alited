@@ -146,6 +146,15 @@ proc run::FillTex1 {args} {
 }
 #_______________________
 
+proc run::FillTex2 {args} {
+  # Fills "commands before running" text.
+
+  namespace upvar ::alited al al obRun obRun
+  set tex2 [$::alited::obRun Tex2]
+  $obRun displayText $tex2 [string map [list $alited::EOL \n] [string trim $al(prjbeforerun)]]
+}
+#_______________________
+
 proc run::FillCbx {args} {
   # Fill the command combobox.
 
@@ -269,7 +278,7 @@ proc run::RunDialogue {} {
     {seh3 fra1 T 1 5 {-pady 5}} \
     {lab2 + T 1 5 {} {-t { OS or Tcl commands to be run before running a current file:}}} \
     {fra2 + T 1 5 {-st nsew}} \
-    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 4 -tabnext *OK}} \
+    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 4 -afteridle alited::run::FillTex2 -tabnext *OK}} \
     {.sbv + L - - {pack -side left}} \
     {seh2 fra2 T 1 5 {-pady 5}} \
     {butHelp + T 1 1 {-st w -padx 2} {-t Help -com alited::run::Help}} \

@@ -1396,7 +1396,6 @@ oo::class create ::apave::APaveDialog {
     set ::apave::querydlg $qdlg
     my showModal $qdlg -modal $modal -waitvar $waitvar -onclose $onclose \
       -focus $focusnow -geometry $geometry {*}$root {*}$minsize {*}$args
-    oo::objdefine [self] unexport InitFindInText Pdg
     if {![winfo exists $qdlg] || (!$modal && !$waitvar)} {
       return 0
     }

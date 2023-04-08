@@ -642,9 +642,8 @@ namespace eval ::alited {
 
   ::msgcat::mcmset uk {
     {For paveWindow's widget list to be recognized, set the cursor inside it.} {Встановіть курсор усередині списку виджетів paveWindow, щоб список був упізнаним.}
-    {To get a widget list, run "Paver" first.} {Для перегляду списку виджетів виконайте спочатку "Paver".}
     {Auto Update} {Оновляти автоматично}
-    {View Widget List} {Просмотр списку виджетів}
+    {Widget List} {Список виджетів}
   }
 
   ## ____________________ Rectangular selection ___________________ ##

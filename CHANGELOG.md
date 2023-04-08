@@ -1,12 +1,13 @@
 # LAST CHANGES:
 
 
-Version `v1.4.4b5 (5 Apr'23)`
+Version `v1.4.4b6 (8 Apr'23)`
 
   - BUGFIX: units of tree with todo comments (detection in big files)
   - BUGFIX: pending e_menu app after running tools
   - BUGFIX: find "in session": highlighting for current text
   - BUGFIX: updating the tab bar at choosing favorites with "closed"
+  - BUGFIX: filling "run before" text of Run dialogue
   - NEW   : "Edit / Rectangular Selection"
   - NEW   : "Tools / Paver" (visualize widget list of paveWindow)
   - NEW   : after contracting/expanding the tree: tree selection set
