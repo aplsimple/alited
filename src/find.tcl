@@ -712,7 +712,7 @@ proc find::FindNext {} {
   variable win
   set wtxt [alited::main::CurrentWTXT]
   alited::Message {}
-  lassign [$obPav findInText 1 $wtxt] res what
+  lassign [$obPav findInText 1 $wtxt {} no] res what
   if {!$res && [winfo exists $win]} {
     set res [Find]  ;# go to the next by "Find"
     set what $data(en1)

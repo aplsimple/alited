@@ -34,7 +34,7 @@ proc about::About {} {
   ## ________________________ Preparing tabs _________________________ ##
 
   ::alited::Source_e_menu
-  lassign [::apave::obj csGet] fg - bg - - bS fS
+  lassign [::apave::obj csGet] fg fg2 bg bg2 - bS fS
   ::apave::InitAwThemesPath $::alited::LIBDIR
   foreach _ {alited apave bartabs baltip hl_tcl awthemes} {
     if {[set v$_ v[package versions $_]] eq {v} \
@@ -42,11 +42,14 @@ proc about::About {} {
       set v$_ {}
     }
   }
+  set font [::apave::obj csFontDef]
+  ::apave::obj initLinkFont {*}$font -underline 1 -foreground $fg2 -background $bg2
+  append font " -weight bold"
 
   ### ________________________ Tags and links _________________________ ###
 
   set textTags [list \
-    [list "red" "-font {[::apave::obj csFontDef] -weight bold} -foreground $fS -background $bS"] \
+    [list "red" "-font {$font} -foreground $fS -background $bS"] \
     [list "link1" "::apave::openDoc %t@@https://%l@@"] \
     [list "link2" "::apave::openDoc %t@@https://wiki.tcl-lang.org/recent@@"] \
     [list "linkapl" "::apave::openDoc %t@@https://github.com/aplsimple/@@"] \

@@ -233,6 +233,8 @@ proc ini::ReadIni {{projectfile ""}} {
   #   projectfile - project file's name
 
   namespace upvar ::alited al al
+  namespace upvar ::alited::pref em_Num em_Num \
+    em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
   namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo
   alited::pref::Tkcon_Default
   set prjlist [list]
@@ -281,6 +283,11 @@ proc ini::ReadIni {{projectfile ""}} {
   set al(PTP,name) [lindex $al(PTP,list) 0]
   set al(PTP,names) [list]
   foreach {n c} $al(PTP,list) {lappend al(PTP,names) $n}
+  while {$em_i < $em_Num} {
+    set em_sep($em_i) 0
+    set em_ico($em_i) [set em_inf($em_i) [set em_mnu($em_i) {}]]
+    incr em_i
+  }
   if {$projectfile eq {} && $al(prjfile) eq {}} {
     # some options may be active outside of any project; fill them with defaults
     foreach opt {multiline indent indentAuto EOL trailwhite} {
@@ -506,9 +513,12 @@ proc ini::ReadIniEM {nam val emiName} {
     em_run {
       if {$em_i < $em_Num} {
         lassign [split $val \t] em_sep($em_i) em_ico($em_i) em_inf($em_i)
-        set em_mnu($em_i) [alited::NormalizeName [lindex $em_inf($em_i) end]]
+        if {[string is true -strict $em_sep($em_i)] ||
+        $em_ico($em_i) ne {} || $em_inf($em_i) ne {}} {
+          set em_mnu($em_i) [alited::NormalizeName [lindex $em_inf($em_i) end]]
+          incr em_i
+        }
       }
-      incr em_i
     }
   }
   if {[string trim $val] eq {}} return  ;# options below should be non-empty

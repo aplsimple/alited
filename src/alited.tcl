@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.4b6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.4b11  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -141,7 +141,7 @@ namespace eval alited {
   set al(TITLE) {%f :: %d :: %p}         ;# alited title's template
   set al(TclExtsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
   set al(ClangExtsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
-  set al(TextExtsDef) {html htm css md txt sh bat ini alm em ale conf} ;# ... plain texts
+  set al(TextExtsDef) {html htm css md txt sh bat ini alm em ale conf wiki} ;# ... plain texts
   set al(TclExts) $al(TclExtsDef)
   set al(ClangExts) $al(ClangExtsDef)
   set al(TextExts) $al(TextExtsDef)
@@ -425,6 +425,17 @@ namespace eval alited {
     focus $w
     $w selection clear
     $w icursor end
+  }
+  #_______________________
+
+  proc SyntaxColors {} {
+    # Gets colors for syntax highlighting.
+
+    variable al
+    foreach nam [::hl_tcl::hl_colorNames] {lappend colors $al(ED,$nam)}
+    lassign [::hl_tcl::addingColors] clrCURL clrCMN2
+    lappend colors $clrCURL $clrCMN2
+    return $colors
   }
   #_______________________
 
@@ -1099,6 +1110,7 @@ if {[info exists ALITED_PORT]} {
     source [file join $alited::LIBDIR addon hl_em.tcl]
     source [file join $alited::LIBDIR addon hl_alm.tcl]
     source [file join $alited::LIBDIR addon hl_ini.tcl]
+    source [file join $alited::LIBDIR addon hl_wiki.tcl]
   }
 }
 # _________________________________ EOF _________________________________ #

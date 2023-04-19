@@ -103,7 +103,7 @@ proc menu::FillRunItems {fname} {
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
   set m $al(TOOLS)
   set maplist [MapRunItems $fname]
-  for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
+  for {set i 0} {$i<$em_Num} {incr i} {
     if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
       if {!$em_sep($i)} {
         set txt [string map $maplist $em_mnu($i)]

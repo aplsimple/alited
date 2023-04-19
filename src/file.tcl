@@ -603,6 +603,9 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
     alited::bar::BAR $TID show $many $many
   }
   RecreateFileTree
+  if {$chosen} {
+    after idle {focus -force [alited::main::CurrentWTXT]}
+  }
   return $TID
 }
 #_______________________

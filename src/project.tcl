@@ -894,8 +894,9 @@ proc project::PopupMenu {x y X Y} {
 
 # ________________________ Buttons for project list _________________________ #
 
-proc project::Add {} {
+proc project::Add {{showtotals yes}} {
   # "Add project" button's handler.
+  #   showtotals - if yes, shows total number of files
   # Returns yes, if the project is successfully added.
 
   namespace upvar ::alited al al obDl2 obDl2 OPTS OPTS
@@ -926,7 +927,7 @@ proc project::Add {} {
   GetProjects
   UpdateTree
   Select $prjinfo($pname,ID)
-  UpdateMsg [string map [list %n $pname] $al(MC,prjnew)]
+  UpdateMsg [string map [list %n $pname] $al(MC,prjnew)] $showtotals
   return yes
 }
 #_______________________
@@ -1014,7 +1015,9 @@ proc project::Template {} {
 
   namespace upvar ::alited al al obDl2 obDl2
   variable curinfo
-  # first, check the template for correctness
+  # first, update the template list independently on errors
+  UpdateTplLists
+  # then check the template for correctness
   set wtpl [$obDl2 TexTemplate]
   set namelist [set errmess {}]
   set margin [set indent [set spprev -1]]
@@ -1053,7 +1056,7 @@ proc project::Template {} {
   }
   if {$errmess ne {}} {
     set namelist {}  ;# skip the following foreach
-  } elseif {![Add]} {
+  } elseif {![Add no]} {
     return
   }
   # the template is OK -> create its dir/file tree
@@ -1083,17 +1086,17 @@ proc project::Template {} {
     FocusInTab f3 $wtpl
     alited::Message2 $errmess 4
   }
-  UpdateTplLists
 }
 #_______________________
 
-proc project::UpdateMsg {msg} {
+proc project::UpdateMsg {msg {showtotals yes}} {
   # Displays a message on project updating.
   #   msg - message of action (add/change)
+  #   showtotals - if yes, shows total number of files
 
   namespace upvar ::alited al al
   variable totalfiles
-  append msg " ($al(MC,files) : $totalfiles) "
+  if {$showtotals} {append msg " ($al(MC,files) : $totalfiles) "}
   alited::Message2 $msg 3
 }
 
@@ -1402,11 +1405,9 @@ proc project::KlndPopup {w y m d X Y} {
 
 proc project::ViewDir {} {
   # Shows file chooser just to view the project's dir
-  namespace upvar ::alited al al obDl2 obDl2
-  set ::alited::TMP {}
-  set res [$obDl2 chooser tk_getOpenFile ::alited::TMP -initialdir $al(prjroot) -title $al(MC,ViewDir)]
-  if {$res ne {}} {::apave::openDoc $res}
-  unset ::alited::TMP
+
+  namespace upvar ::alited al al
+  alited::tool::e_menu EX=4 d=$al(prjroot)
 }
 #_______________________
 

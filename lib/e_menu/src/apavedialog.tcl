@@ -525,11 +525,12 @@ oo::class create ::apave::APaveDialog {
   }
   #_______________________
 
-  method findInText {{donext 0} {txt ""} {varFind ""}} {
+  method findInText {{donext 0} {txt ""} {varFind ""} {dobell yes}} {
     # Finds a string in text widget.
     #   donext - "1" means 'from a current position'
     #   txt - path to the text widget
     #   varFind - variable
+    #   dobell - if yes, bells
     # Returns yes, if found (or nothing to find), otherwise returns "no";
     # also, if there was a real search, the search string is added.
 
@@ -564,7 +565,7 @@ oo::class create ::apave::APaveDialog {
       focus $txt
       set res yes
     } else {
-      bell -nice
+      if {$dobell} bell
       set res no
     }
     return [list $res $sel]

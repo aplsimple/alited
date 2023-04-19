@@ -1,18 +1,23 @@
 # LAST CHANGES:
 
 
-Version `v1.4.4b6 (8 Apr'23)`
+Version `v1.4.4b10 (15 Apr'23)`
 
   - BUGFIX: units of tree with todo comments (detection in big files)
   - BUGFIX: pending e_menu app after running tools
   - BUGFIX: find "in session": highlighting for current text
-  - BUGFIX: updating the tab bar at choosing favorites with "closed"
-  - BUGFIX: filling "run before" text of Run dialogue
+  - BUGFIX: update the tab bar at choosing favorites with "closed"
+  - BUGFIX: fill "run before" text of Run dialogue
+  - BUGFIX: ignore intermediate empty items of Preferences/Tools/bar-menu
+  - NEW   : highlight syntax for .wiki files (of wiki.tcl-lang.org)
   - NEW   : "Edit / Rectangular Selection"
   - NEW   : "Tools / Paver" (visualize widget list of paveWindow)
   - NEW   : after contracting/expanding the tree: tree selection set
-  - NEW   : Projects dialogue: show number of files at project add/change
+  - NEW   : Projects: show number of files at Add/Change (not at Template)
   - DELETE: bar::SleepTreeTips
+  - CHANGE: Projects: "Template" updates the template list independently on errors
+  - CHANGE: Projects: "View Dir" opens a file manager instead of Tcl file chooser
+  - CHANGE: "Contract all" for unit tree: current branch remains expanded
   - CHANGE: handling F3 key (at opening "Find/Find by list" & highlighting)
   - CHANGE: Projects icon
   - CHANGE: add checks and catchs to ini::ReadIni & ini::ReadIniPrj
@@ -22,7 +27,7 @@ Version `v1.4.4b6 (8 Apr'23)`
   - CHANGE: clearance & tiny-up
   - CHANGE: demos (paver incl.)
   - CHANGE: docs
-  - CHANGE: apave/e_menu 4.0.6, hl_tcl 1.0.3, bartabs 1.6.6
+  - CHANGE: apave/e_menu 4.0.7, hl_tcl 1.0.4, bartabs 1.6.6
 
 
 Version `v1.4.3 (22 Mar'23)`

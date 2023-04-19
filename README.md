@@ -2,13 +2,13 @@
 
 The *alited* stands for "a lite editor".
 
+It satisfies most requirements of [Tcl Editors](https://wiki.tcl-lang.org/Tcl+Editors), adding its own features. It pretends to be the best of the [Tcl Editors](https://wiki.tcl-lang.org/Tcl+Editors).
+
 The main features of *alited* are:
 
   * structured code
   * easy access to the code
   * born for [Tcl/Tk](https://wiki.tcl-lang.org/) development only
-
-It satisfies most requirements of [Tcl Editors](https://wiki.tcl-lang.org/Tcl+Editors), adding its own features.
 
 Edited by *alited* are [Tcl/Tk](https://wiki.tcl-lang.org/) files. The C/C++ code is another target of *alited*, still for *[Tcl/Tk](https://wiki.tcl-lang.org/) development only* all the same.
 
@@ -40,13 +40,17 @@ For a quick acquaintance of *alited*, a few of demo videos are available:
 
    * [Demos of alited v1.4](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.4)
 
+For a quick installation, run [an installer of alited](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4). After the installation, run its desktop shortcut.
+
 # Links
+
+   * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4)
 
    * [Description](https://aplsimple.github.io/en/tcl/alited/index.html)
    * [Reference](https://aplsimple.github.io/en/tcl/alited/alited.html)
+
    * [Source #1](https://chiselapp.com/user/aplsimple/repository/alited/download)
    * [Source #2](https://github.com/aplsimple/alited)
-   * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4)
 
 # Inevitable blah-blah
 

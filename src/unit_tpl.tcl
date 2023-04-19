@@ -239,12 +239,7 @@ proc unit_tpl::SyntaxText {wtxt} {
   # Prepares syntax highlighting of template's text
   #   wtxt - the text's path
 
-  namespace upvar ::alited al al obDl3 obDl3
-  set clrnams [::hl_tcl::hl_colorNames]
-  foreach nam $clrnams {lappend colors $al(ED,$nam)}
-  lassign [::hl_tcl::addingColors] clrCURL clrCMN2
-  lappend colors $clrCURL $clrCMN2
-  alited::SyntaxHighlight tcl $wtxt $colors
+  alited::SyntaxHighlight tcl $wtxt [alited::SyntaxColors]
 }
 #_______________________
 

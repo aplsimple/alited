@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.0.3
+package provide hl_tcl 1.0.4
 
 # ______________________ Common data ____________________ #
 
@@ -93,7 +93,7 @@ namespace eval ::hl_tcl {
       {#ffa500 #ff7e00 #90ee90 #f1b479 #76a396 #fe6efe #b9b96e #ff33ff}
     }
     set data(SYNTAXCOLORS,2) {
-      {#3a6797 #134070 #8b2a0e #1b1baa #4b5d50 #ca14ca #6c3e67 #FF0000}
+      {#3a6797 #134070 #8b2a0e #1b1baa #4b5d50 #ca14ca #653760 #FF0000}
       {#95c2f2 #73a0d0 #ffc27e #a9a9f7 #76a396 #fe6efe #e2b4dd #ff33ff}
     }
     set data(SYNTAXCOLORS,3) {
@@ -1053,6 +1053,7 @@ proc ::hl_tcl::hl_readonly {txt {ro -1} {com2 ""}} {
   set com "[namespace current]::my::Modified $txt"
   #if {$com2 ne ""} {append com " ; $com2"}
   if {$ro} {proc ::$txt {args} " \
+    if {!\[winfo exists $txt\]} {return 0} ; \
     switch -exact -- \[lindex \$args 0\] \{ \
       insert \{$com2\} \
       delete \{$com2\} \
@@ -1060,6 +1061,7 @@ proc ::hl_tcl::hl_readonly {txt {ro -1} {com2 ""}} {
       default \{ return \[eval $newcom \$args\] \} \
     \}"
   } else {proc ::$txt {args} " \
+    if {!\[winfo exists $txt\]} {return 0} ; \
     switch -exact -- \[lindex \$args 0\] \{ \
       delete \{$com {*}\$args\} \
       insert \{$com {*}\$args\} \

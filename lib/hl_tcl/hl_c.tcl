@@ -498,6 +498,7 @@ proc ::hl_c::hl_readonly {txt {ro -1} {com2 ""}} {
   set com "[namespace current]::my::Modified $txt"
   #if {$com2 ne ""} {append com " ; $com2"}
   if {$ro} {proc ::$txt {args} "
+    if {!\[winfo exists $txt\]} {return 0}
     switch -exact -- \[lindex \$args 0\] \{
       insert \{$com2\}
       delete \{$com2\}
@@ -505,6 +506,7 @@ proc ::hl_c::hl_readonly {txt {ro -1} {com2 ""}} {
       default \{ return \[eval $newcom \$args\] \}
     \}"
   } else {proc ::$txt {args} "
+    if {!\[winfo exists $txt\]} {return 0}
     switch -exact -- \[lindex \$args 0\] \{
       delete \{$com {*}\$args\}
       insert \{$com {*}\$args\}

@@ -1055,7 +1055,7 @@ oo::class create ::apave::APaveBase {
       gut {set widget canvas}
       lab {
         set widget ttk::label
-        if {[::apave::extractOptions attrs -state normal] eq "disabled"} {
+        if {$disabled} {
           set grey [lindex [my csGet] 8]
           set attrs "-foreground $grey $attrs"
         }
@@ -2453,7 +2453,7 @@ oo::class create ::apave::APaveBase {
     # See also: Post
 
     upvar 1 $refattrs attrs
-    set attrs_ret [set _pav(prepost) {}]
+    set attrs_ret [set _pav(prepost) [list]]
     foreach {a v} $attrs {
       switch -exact -- $a {
         -disabledtext - -rotext - -lbxsel - -cbxsel - -notebazook - \
@@ -2462,12 +2462,17 @@ oo::class create ::apave::APaveBase {
         -afteridle - -gutter - -propagate - -columnoptions - -selborderwidth -
         -selected - -popup - -bindEC - -tags - -debug - -clearcom {
           # attributes specific to apave, processed below in "Post"
-          set v2 [string trimleft $v "\{"]
+          set v2 [string trimleft $v \{]
           set v2 [string range $v2 0 end-[expr {[string length $v]-[string length $v2]}]]
           lappend _pav(prepost) [list $a $v2]
         }
         -myown {
           lappend _pav(prepost) [list $a [subst $v]]
+        }
+        -labelwidget { ;# widget path as a method
+          set v [string trim $v \{\}]
+          catch {set v [my $v]}
+          lappend attrs_ret $a $v
         }
         default {
           lappend attrs_ret $a $v
@@ -2726,6 +2731,8 @@ oo::class create ::apave::APaveBase {
       if {$ll%2} {   ;# clear the attributes, if called with ""
         set ::apave::_AP_VARS(LINKFONT) [list]
       } else {
+        lassign [::apave::extractOptions args -foreground {} -background {}] \
+          ::apave::_AP_VARS(LINKFG) ::apave::_AP_VARS(LINKBG)
         set ::apave::_AP_VARS(LINKFONT) $args
       }
     }
@@ -2817,6 +2824,10 @@ oo::class create ::apave::APaveBase {
 
     set styl [ttk::style configure TLabel]
     if {$fg eq {}} {lassign [my csGet] - fg - bg}
+    if {[info exists ::apave::_AP_VARS(LINKFG)]} {
+      if {$::apave::_AP_VARS(LINKFG) ne {}} {set fg $::apave::_AP_VARS(LINKFG)}
+      if {$::apave::_AP_VARS(LINKBG) ne {}} {set bg $::apave::_AP_VARS(LINKBG)}
+    }
     set vst [string map {{ } _} $cmd]
     if {$on eq {}} {
       set on [expr {[info exists ::apave::_AP_VISITED($vst)]}]
@@ -2840,7 +2851,6 @@ oo::class create ::apave::APaveBase {
       catch {set font [font actual $font]}
     }
     foreach {o v} [my initLinkFont] {dict set font $o $v}
-    set font [dict set font -size [my basicFontSize]]
     $w configure -font $font
   }
   #_______________________

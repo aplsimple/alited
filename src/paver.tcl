@@ -103,7 +103,7 @@ proc paver::Viewer {} {
   }
   after idle "catch { \
     set txt \[$obDl2 TexM\] ; \
-    ::hl_tcl::hl_init \$txt -dark [$obDl2 csDark] \
+    ::hl_tcl::hl_init \$txt -dark [$obDl2 csDark] -colors {[alited::SyntaxColors]} \
       -cmdpos ::alited::None -font {$al(FONT,txt)} ; \
     ::hl_tcl::hl_text \$txt}"
   after idle "set ::alited::paver::win2 \[$obDl2 dlgPath\]"
@@ -230,7 +230,8 @@ proc paver::WidgetList {} {
       lappend gridpack {*}$opts
     }
     foreach opt {-font -validate -validatecommand -foreground -background -fg -bg -from -to \
-    -variable -textvariable -listvariable -command -var -tvar -lvar -com -array -afteridle} {
+    -variable -textvariable -listvariable -command -var -tvar -lvar -com -array -afteridle \
+    -ALL} {
       ::apave::extractOptions attrs $opt {}
     }
     set attrs [RemoveVarOptions $attrs]

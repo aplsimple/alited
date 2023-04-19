@@ -135,7 +135,7 @@ proc favor::GoToUnit {TID name header {forfavor no} {it1 {}} {values {}}} {
       LastVisited [list -text $name] $header
       set pos [lindex $it 7]  ;# saved cursor position
       if {$pos ne {}} {set pos "$pos yes"}
-      after idle "alited::tree::NewSelection $treeID $pos"
+      after idle "alited::tree::NewSelection $treeID $pos; alited::main::HighlightLine"
       return yes
     }
   }
