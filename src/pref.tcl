@@ -10,6 +10,9 @@
 
 namespace eval pref {
 
+  # apave object of Preferences
+  variable obPrf pavedPrefs
+
   # "Preferences" dialogue's path
   variable win $::alited::al(WIN).diaPref
 
@@ -29,7 +32,7 @@ namespace eval pref {
   variable savekeys; array set savekeys [list]
 
   # saved tabs
-  variable arrayTab; array set arrayTab [list]
+  variable arrayTab; array set arrayTab [list nbk $win.fra.fraR.nbk.f1]
 
   # current tab
   variable curTab nbk
@@ -50,23 +53,13 @@ namespace eval pref {
   # current CS of e_menu
   variable opcc2 {}
 
-  # number of bar-menu items
-  variable em_Num 32
-
-  # bar/e_menu action
-  variable em_mnu; array set em_mnu [list]
-
-  # bar/e_menu icon
-  variable em_ico; array set em_ico [list]
-
-  # bar/e_menu separator flag
-  variable em_sep; array set em_sep [list]
-
-  # bar/e_menu full info
-  variable em_inf; array set em_inf [list]
-
-  # list of e_menu icons
-  variable em_Icons [list]
+  # bar/e_menu data:
+  variable em_Num 32 ;# number of bar-menu items
+  variable em_mnu; array set em_mnu [list] ;# actions
+  variable em_ico; array set em_ico [list] ;# icons
+  variable em_sep; array set em_sep [list] ;# separator flags
+  variable em_inf; array set em_inf [list] ;# full info
+  variable em_Icons [list] ;# list of e_menu icons
 
   # list of alited icons
   variable listIcons [list]
@@ -74,11 +67,8 @@ namespace eval pref {
   # list of e_menu menus
   variable listMenus [list]
 
-  # dictionary of standard keys' data
-  variable stdkeys
-
   # standard keys' data
-  set stdkeys [dict create \
+  variable stdkeys [dict create \
      0 [list {Save File} F2] \
      1 [list {Save File as} Control-S] \
      2 [list {Run e_menu} F4] \
@@ -104,7 +94,7 @@ namespace eval pref {
   ]
 
   # size of standard keys' data
-  variable stdkeysSize [dict size $stdkeys]
+  variable StdkeysSize [dict size $stdkeys]
 
   # locales
   variable locales [list]
@@ -119,7 +109,8 @@ proc pref::fetchVars {} {
   # Delivers namespace variables to a caller.
 
   uplevel 1 {
-    namespace upvar ::alited al al obDl2 obDl2
+    namespace upvar ::alited al al
+    variable obPrf
     variable win
     variable geo
     variable data
@@ -143,7 +134,7 @@ proc pref::fetchVars {} {
     variable listIcons
     variable listMenus
     variable stdkeys
-    variable stdkeysSize
+    variable StdkeysSize
     variable locales
     variable preview
   }
@@ -213,6 +204,16 @@ proc pref::ReservedIcons {} {
 
   return [list file OpenFile box SaveFile saveall undo redo help replace run other ok color]
 }
+#_______________________
+
+proc pref::Message {msg {mode 1}} {
+  # Displays a message in statusbar of preferences dialogue.
+  #   msg - message
+  #   mode - mode of Message
+
+  fetchVars
+  alited::Message $msg $mode [$obPrf LabMess]
+}
 
 # ________________________ Main Frame _________________________ #
 
@@ -220,7 +221,7 @@ proc pref::MainFrame {} {
   # Creates a main frame of the dialogue.
 
   fetchVars
-  $obDl2 untouchWidgets *.cannbk*
+  $obPrf untouchWidgets *.cannbk*
   return {
     {fraL - - 1 1 {-st nws -rw 2}}
     {.ButHome - - 1 1 {-st we -pady 0} {-t "General" -com "alited::pref::Tab nbk" -style TButtonWest}}
@@ -304,9 +305,9 @@ proc pref::Ok {args} {
     if {![string is integer -strict $al(INI,CS)]} {set al(INI,CS) -1}
     set al(EM,CS)  [GetCS 2]
     if {![string is integer -strict $al(EM,CS)]} {set al(EM,CS) -1}
-    set al(ED,TclKeyWords) [[$obDl2 TexTclKeys] get 1.0 {end -1c}]
+    set al(ED,TclKeyWords) [[$obPrf TexTclKeys] get 1.0 {end -1c}]
     set al(ED,TclKeyWords) [string map [list \n { }] $al(ED,TclKeyWords)]
-    set al(ED,CKeyWords) [[$obDl2 TexCKeys] get 1.0 {end -1c}]
+    set al(ED,CKeyWords) [[$obPrf TexCKeys] get 1.0 {end -1c}]
     set al(ED,CKeyWords) [string map [list \n { }] $al(ED,CKeyWords)]
     set al(BACKUP) [string trim $al(BACKUP)]
     catch {set al(TCLLIST) [lreplace $al(TCLLIST) 32 end]}
@@ -338,7 +339,7 @@ proc pref::Ok {args} {
       if {[llength $al(comm_port_list)]>32} break
     }
     set al(EM,DiffTool) [file join {*}[file split $al(EM,DiffTool)]]
-    $obDl2 res $win 1
+    $obPrf res $win 1
     alited::Exit - 1 no
   }
 }
@@ -351,7 +352,7 @@ proc pref::Cancel {args} {
   RestoreSettings
   GetEmSave out
   alited::CloseDlg
-  $obDl2 res $win 0
+  $obPrf res $win 0
 }
 #_______________________
 
@@ -363,9 +364,9 @@ proc pref::Tab {tab {nt ""} {doit no}} {
   # At changing the current notebook: we need to save the old selection
   # in order to restore the selection at returning to the notebook.
   fetchVars
-  foreach nbk {nbk nbk2 nbk3 nbk4 nbk5 nbk6} {fillCan [$obDl2 Can$nbk]}
+  foreach nbk {nbk nbk2 nbk3 nbk4 nbk5 nbk6} {fillCan [$obPrf Can$nbk]}
   foreach but {Home Change Categories Actions Keys Tools} {
-    [$obDl2 But$but] configure -style TButtonWest
+    [$obPrf But$but] configure -style TButtonWest
   }
   switch $tab {
     nbk  {set but Home}
@@ -377,8 +378,8 @@ proc pref::Tab {tab {nt ""} {doit no}} {
   }
   ShowUpDownArrows [expr {$tab ne "nbk6"}]
   CheckTheming no
-  [$obDl2 But$but] configure -style TButtonWestHL
-  fillCan [$obDl2 Can$tab] yes
+  [$obPrf But$but] configure -style TButtonWestHL
+  fillCan [$obPrf Can$tab] yes
   if {$tab ne $curTab || $doit} {
     if {$curTab ne {}} {
       set arrayTab($curTab) [$win.fra.fraR.$curTab select]
@@ -400,10 +401,10 @@ proc pref::Tab {tab {nt ""} {doit no}} {
       UpdateSyntaxTab
       UpdateSyntaxTab 2
     }
-    lassign [$obDl2 csGet $cs] fg - bg - - sbg sfg ibg
-    [$obDl2 TexSample] configure -fg $fg -bg $bg \
+    lassign [$obPrf csGet $cs] fg - bg - - sbg sfg ibg
+    [$obPrf TexSample] configure -fg $fg -bg $bg \
       -selectbackground $sbg -selectforeground $sfg -insertbackground $ibg
-    [$obDl2 TexCSample] configure -fg $fg -bg $bg \
+    [$obPrf TexCSample] configure -fg $fg -bg $bg \
       -selectbackground $sbg -selectforeground $sfg -insertbackground $ibg
     set data(INI,CSsaved) $cs
   }
@@ -431,10 +432,13 @@ proc pref::Help {} {
 #_______________________
 
 proc pref::fillCan {w {selected no}} {
+  # Sets a bg color of tab canvas.
+  #   w - canvas' path
+  #   selected - yes for selected tab
 
   fetchVars
   catch {$w delete $data(CANVAS,$w)}
-  lassign [$obDl2 csGet] - - - bg selbg - - - - hotbg
+  lassign [$obPrf csGet] - - - bg selbg - - - - hotbg
   if {$selected} {
     set bg $hotbg
     $w configure -highlightbackground $hotbg
@@ -453,7 +457,7 @@ proc pref::General_Tab1 {} {
   set opcColors [list "{$opcc}"]
   for {set i -1; set n [apave::cs_MaxBasic]} {$i<=$n} {incr i} {
     if {(($i+2) % ($n/2+2)) == 0} {lappend opcColors |}
-    set csname [$obDl2 csGetName $i]
+    set csname [$obPrf csGetName $i]
     lappend opcColors [list $csname]
     if {$i == $al(INI,CS)} {set opcc $csname}
     if {$i == $al(EM,CS)} {set opcc2 $csname}
@@ -602,8 +606,8 @@ proc pref::CbxBackup {} {
 
   fetchVars
   if {$alited::al(BACKUP) eq {}} {set state disabled} {set state normal}
-  [$obDl2 SpxMaxBak] configure -state $state
-  [$obDl2 LabMaxBak] configure -state $state
+  [$obPrf SpxMaxBak] configure -state $state
+  [$obPrf LabMaxBak] configure -state $state
 }
 #_______________________
 
@@ -634,13 +638,13 @@ proc pref::CheckUseDef {} {
   fetchVars
   if {$al(PRJDEFAULT)} {
     set state normal
-    [$obDl2 CbxEOL] configure -state readonly
+    [$obPrf CbxEOL] configure -state readonly
   } else {
     set state disabled
-    [$obDl2 CbxEOL] configure -state $state
+    [$obPrf CbxEOL] configure -state $state
   }
   foreach w {EntIgn SpxIndent SpxRedunit SwiMult ChbIndAuto SwiTrWs} {
-    [$obDl2 $w] configure -state $state
+    [$obPrf $w] configure -state $state
   }
 }
 #_______________________
@@ -666,7 +670,7 @@ proc pref::CsDark {{cs ""}} {
 proc pref::GetLocaleImage {} {
 
   fetchVars
-  [$obDl2 LabLocales] configure -image alited::pref::LOC$alited::al(LOCAL)
+  [$obPrf LabLocales] configure -image alited::pref::LOC$alited::al(LOCAL)
 }
 #_______________________
 
@@ -918,7 +922,7 @@ proc pref::InitSyntax {lng} {
 
   fetchVars
   foreach nam {COM COMTK STR VAR CMN PROC OPT BRA} {
-    set ent [$obDl2 Entclr$nam$lng] ;# method's name, shown by -debug attribute
+    set ent [$obPrf Entclr$nam$lng] ;# method's name, shown by -debug attribute
     set lab [string map [list .entclr .labclr] $ent]  ;# colored label
     $lab configure -background [$ent get]
     ::apave::bindToEvent $ent <FocusIn> alited::pref::UpdateSyntaxTab $lng
@@ -932,20 +936,20 @@ proc pref::InitSyntaxTcl {colors} {
   #    colors - highlighting colors
 
   fetchVars
-  set tex [$obDl2 TexSample]
-  lassign [$obDl2 csGet] - - - - - - - - tfgD bclr
+  set tex [$obPrf TexSample]
+  lassign [$obPrf csGet] - - - - - - - - tfgD bclr
   $tex configure -highlightbackground $tfgD -highlightcolor $bclr
-  set texC [$obDl2 TexCSample]
+  set texC [$obPrf TexCSample]
   $texC configure -highlightbackground $tfgD -highlightcolor $bclr
   if {[string trim [$tex get 1.0 end]] eq {}} {
-  $obDl2 displayText $tex {proc foo {args} {
+  $obPrf displayText $tex {proc foo {args} {
   # Tcl code to test colors.
   set var "(Multiline string)
     Args=$args"
   winfo interps -displayof [lindex $args 0]
   return $var ;#! text of TODO
 }}}
-  set wk [$obDl2 TexTclKeys]
+  set wk [$obPrf TexTclKeys]
   ::apave::bindToEvent $wk <FocusOut> alited::pref::UpdateSyntaxTab
   set keywords [string trim [$wk get 1.0 end]]
   alited::SyntaxHighlight tcl $tex $colors [GetCS] -keywords $keywords
@@ -957,9 +961,9 @@ proc pref::InitSyntaxC {colors} {
   #    colors - highlighting colors
 
   fetchVars
-  set tex [$obDl2 TexCSample]
+  set tex [$obPrf TexCSample]
   if {[string trim [$tex get 1.0 end]] eq {}} {
-    $obDl2 displayText $tex {static sample(const char *ptr) {
+    $obPrf displayText $tex {static sample(const char *ptr) {
   /*   C/C++ code to test colors.   */
   char *text, *st;
   text = read_text();
@@ -969,7 +973,7 @@ proc pref::InitSyntaxC {colors} {
   ptr = strstr(text + 1, "My string"); // error
   return TRUE
 }}}
-  set wk [$obDl2 TexCKeys]
+  set wk [$obPrf TexCKeys]
   ::apave::bindToEvent $wk <FocusOut> alited::pref::UpdateSyntaxTab 2
   set keywords [string trim [$wk get 1.0 end]]
   alited::SyntaxHighlight c $tex $colors [GetCS] -keywords $keywords
@@ -1033,13 +1037,13 @@ proc pref::Keys_Tab1 {} {
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
     {tcl {
         set pr -
-        for {set i 0} {$i<$alited::pref::stdkeysSize} {incr i} {
+        for {set i 0} {$i<$alited::pref::StdkeysSize} {incr i} {
           set lab "lab$i"
           set cbx "CbxKey$i"
           lassign [dict get $alited::pref::stdkeys $i] text key
           set lwid ".$lab $pr T 1 1 {-st w -pady 1 -padx 3} {-t \"$text\"}"
           %C $lwid
-          if {($i+1)==$alited::pref::stdkeysSize} {
+          if {($i+1)==$alited::pref::StdkeysSize} {
             set pr {-tabnext alited::Tnext}
           } else {
             set pr {}
@@ -1058,7 +1062,7 @@ proc pref::RegisterKeys {} {
 
   fetchVars
   alited::keys::Delete preference
-  for {set k 0} {$k<$stdkeysSize} {incr k} {
+  for {set k 0} {$k<$StdkeysSize} {incr k} {
     alited::keys::Add preference $k [set keys($k)] "alited::pref::BindKey $k {%k}"
   }
 }
@@ -1070,7 +1074,7 @@ proc pref::GetKeyList {nk} {
 
   fetchVars
   RegisterKeys
-  [$obDl2 CbxKey$nk] configure -values [alited::keys::VacantList]
+  [$obPrf CbxKey$nk] configure -values [alited::keys::VacantList]
 }
 #_______________________
 
@@ -1207,7 +1211,7 @@ proc pref::CheckUseLeaf {} {
 
   fetchVars
   if {$al(INI,LEAF)} {set state normal} {set state disabled}
-  [$obDl2 EntLf] configure -state $state
+  [$obPrf EntLf] configure -state $state
 }
 
 # ________________________ Tab "Tools" _________________________ #
@@ -1344,7 +1348,7 @@ proc pref::UpdateTkconTab {} {
   # Updates color labels for "Tools/Tkcon" tab.
 
   fetchVars
-  set lab1 [$obDl2 Labbg]
+  set lab1 [$obPrf Labbg]
   foreach nam {bg blink cursor disabled proc var prompt stdin stdout stderr} {
     set lab [string map [list labbg labclr$nam] $lab1]
     set ent [string map [list labbg entclr$nam] $lab1]
@@ -1510,8 +1514,8 @@ proc pref::Em_ShowAll {{upd yes}} {
     }
     if {$upd} {
       if {$em_sep($i)} {set state disabled} {set state normal}
-      [$obDl2 ButMnu$i] configure -text $em_mnu($i) -state $state
-      set ico [$obDl2 OpcIco$i]
+      [$obPrf ButMnu$i] configure -text $em_mnu($i) -state $state
+      set ico [$obPrf OpcIco$i]
       if {[set k [lsearch $listIcons [$ico cget -text]]]>-1} {
         set img [::apave::iconImage [lindex $listIcons $k]]
         set cmpd left
@@ -1562,7 +1566,7 @@ proc pref::PickMenuItem {it} {
 
   fetchVars
   ::alited::Source_e_menu
-  set w [$obDl2 ButMnu$it]
+  set w [$obPrf ButMnu$it]
   set X [winfo rootx $w]
   set Y [winfo rooty $w]
   set res [::em::main -prior 1 -modal 1 -remain 0 -noCS 1 \
@@ -1590,7 +1594,7 @@ proc pref::ScrollRuns {} {
 
   fetchVars
   update
-  ::apave::sframe resize [$obDl2 ScfRuns]
+  ::apave::sframe resize [$obPrf ScfRuns]
 }
 #_______________________
 
@@ -1611,13 +1615,13 @@ proc pref::opcIcoPre {args} {
 #_______________________
 
 proc pref::OwnCS {} {
-  # Looks for onwCS option.
+  # Looks for ownCS option.
 
   fetchVars
   if {$al(EM,exec)} {set st normal} {set st disabled; set al(EM,ownCS) no}
-  [$obDl2 SwiCS] configure -state $st
+  [$obPrf SwiCS] configure -state $st
   if {$al(EM,ownCS)} {set st normal} {set st disabled}
-  [$obDl2 OpcCS] configure -state $st
+  [$obPrf OpcCS] configure -state $st
 }
 
 ### ________________________ Up/Down buttons _________________________ ###
@@ -1629,9 +1633,9 @@ proc pref::ShowUpDownArrows {{hide no}} {
   fetchVars
   CheckTheming no
   set nt [$win.fra.fraR.nbk6 select]
-  set bh [$obDl2 ButHelp]
-  set bu [$obDl2 BtTUp]
-  set bd [$obDl2 BtTDown]
+  set bh [$obPrf ButHelp]
+  set bu [$obPrf BtTUp]
+  set bd [$obPrf BtTDown]
   if {$hide || $nt ne "$win.fra.fraR.nbk6.f3"} {
     pack forget $bu
     pack forget $bd
@@ -1649,14 +1653,12 @@ proc pref::FocusedRun {} {
   set fr -1
   for {set i 0} {$i<$::alited::pref::em_Num} {incr i} {
     set foc [focus]
-    if {$foc in [list [$obDl2 ChbMT$i] [$obDl2 OpcIco$i] [$obDl2 ButMnu$i]]} {
+    if {$foc in [list [$obPrf ChbMT$i] [$obPrf OpcIco$i] [$obPrf ButMnu$i]]} {
       set fr $i
       break
     }
   }
-  if {$fr<0} {
-    alited::Message2 [msgcat::mc {Select any of run item}] 3
-  }
+  if {$fr<0} {Message [msgcat::mc {Select any of run item}] 3}
   return $fr
 }
 #_______________________
@@ -1681,9 +1683,9 @@ proc pref::ExchangeRuns {f1 f2} {
   set em_inf($f1) $inf1
   Em_ShowAll
   set foc [focus]
-  if       {$foc eq [$obDl2 OpcIco$f1]} {focus [$obDl2 OpcIco$f2]
-  } elseif {$foc eq [$obDl2 ButMnu$f1]} {focus [$obDl2 ButMnu$f2]
-  } else                                {focus [$obDl2 ChbMT$f2]}
+  if       {$foc eq [$obPrf OpcIco$f1]} {focus [$obPrf OpcIco$f2]
+  } elseif {$foc eq [$obPrf ButMnu$f1]} {focus [$obPrf ButMnu$f2]
+  } else                                {focus [$obPrf ChbMT$f2]}
 }
 #_______________________
 
@@ -1716,15 +1718,16 @@ proc pref::DownRun {} {
 
 proc pref::_create {tab} {
   # Creates "Preferences" dialogue.
-  #   tab - a tab to open (saved at previous session) or {}
+  #   tab - previous open tab
 
   fetchVars
   InitLocales
   set tipson [baltip::cget -on]
   set preview 0
   baltip::configure -on $al(TIPS,Preferences)
-  $obDl2 makeWindow $win.fra "$al(MC,pref) :: $::alited::USERDIR"
-  $obDl2 paveWindow \
+  ::apave::APave create $obPrf $win
+  $obPrf makeWindow $win.fra "$al(MC,pref) :: $::alited::USERDIR"
+  $obPrf paveWindow \
     $win.fra [MainFrame] \
     $win.fra.fraR.nbk.f1 [General_Tab1] \
     $win.fra.fraR.nbk.f2 [General_Tab2] \
@@ -1740,14 +1743,15 @@ proc pref::_create {tab} {
     $win.fra.fraR.nbk6.f2 [Emenu_Tab] \
     $win.fra.fraR.nbk6.f3 [Runs_Tab $tab] \
     $win.fra.fraR.nbk6.f4 [Tkcon_Tab]
-  set wtxt [$obDl2 TexNotes]
+  set wtxt [$obPrf TexNotes]
   set fnotes [file join $::alited::USERDIR notes.txt]
   if {[file exists $fnotes]} {
     $wtxt insert end [::apave::readTextFile $fnotes]
   }
   $wtxt edit reset; $wtxt edit modified no
-  [$obDl2 TexTclKeys] insert end $al(ED,TclKeyWords)
-  [$obDl2 TexCKeys] insert end $al(ED,CKeyWords)
+  [$obPrf TexTclKeys] insert end $al(ED,TclKeyWords)
+  [$obPrf TexCKeys] insert end $al(ED,CKeyWords)
+  set 1st "$win.fra.fraR.nbk select $arrayTab(nbk)" ;# to restore 1st nbk's tab
   if {$tab ne {}} {
     switch -exact $tab {
       Emenu_Tab {
@@ -1755,31 +1759,30 @@ proc pref::_create {tab} {
         set nt $win.fra.fraR.nbk6.f3
       }
     }
-    after idle "::alited::pref::Tab $nbk $nt yes"
+    after idle "$1st ; ::alited::pref::Tab $nbk $nt yes"
   } elseif {$oldTab ne {}} {
-    after idle "::alited::pref::Tab $oldTab $arrayTab($oldTab) yes"
+    after idle "$1st ; ::alited::pref::Tab $oldTab"
   } else {
     after idle "::alited::pref::Tab nbk" ;# first entering
   }
   bind $win.fra.fraR.nbk6 <<NotebookTabChanged>> alited::pref::ShowUpDownArrows
   bind $win.fra.fraR.nbk <<NotebookTabChanged>> {alited::pref::CheckTheming no}
   bind $win <Control-o> alited::ini::EditSettings
-  bind $win <F1> "[$obDl2 ButHelp] invoke"
-  $obDl2 untouchWidgets *.texSample *.texCSample
-
-  # open Preferences dialogue
-  set res [$obDl2 showModal $win -geometry $geo -minsize {800 600} -resizable 1 \
+  bind $win <F1> "[$obPrf ButHelp] invoke"
+  $obPrf untouchWidgets *.texSample *.texCSample
+  set res [$obPrf showModal $win -geometry $geo -minsize {800 600} -resizable 1 \
     -onclose ::alited::pref::Cancel]
-
   set fcont [$wtxt get 1.0 {end -1c}]
   ::apave::writeTextFile $fnotes fcont
   if {[llength $res] < 2} {set res ""}
   set geo [wm geometry $win] ;# save the new geometry of the dialogue
   set oldTab $curTab
   set arrayTab($curTab) [$win.fra.fraR.$curTab select]
-  destroy $win
   CheckTheming no
   baltip::configure {*}$tipson
+  foreach arr {data keys prevkeys savekeys} {array unset $arr *}
+  catch {destroy $win}
+  $obPrf destroy
   return $res
 }
 #_______________________
@@ -1796,7 +1799,8 @@ proc pref::_init {} {
 
 proc pref::_run {{tab {}}} {
   # Runs "Preferences" dialogue.
-  # Returns "true", if settings were saved.
+  #   tab - previous open tab
+  # Returns yes, if settings were saved.
 
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   _init

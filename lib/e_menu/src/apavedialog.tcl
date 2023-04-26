@@ -47,21 +47,19 @@ oo::class create ::apave::APaveDialog {
 
   superclass ::apave::APaveBase
 
-  variable _pdg
+  variable HLstring Winpath CheckNomore Foundstr Dlgpath Defb1 Defb2 Indexdlg
+
+  #_______________________
 
   constructor {{win ""} args} {
-
     # Creates APaveDialog object.
     #   win - window's name (path)
     #   args - additional arguments
 
-    # keep the 'important' data of APaveDialog object in array
-    array set _pdg {}
-    # dialogs are bound to "$win" window e.g. ".mywin.fra", default "" means .
-    set _pdg(win) $win
-    set _pdg(ns) [namespace current]::
-    # namespace in object namespace for safety of its 'most important' data
-    namespace eval ${_pdg(ns)}PD {}
+    set Winpath $win  ;# dialogs are bound to $win, default "" means .
+    set Dlgpath {}    ;# current dialog's path
+    set Foundstr {}   ;# current found string
+    set HLstring {}   ;# current selected string
 
     # Actions on closing the editor
   ; proc exitEditor {resExit} {
@@ -87,13 +85,11 @@ oo::class create ::apave::APaveDialog {
     # end of APaveDialog constructor
     if {[llength [self next]]} { next {*}$args }
   }
+  #_______________________
 
   destructor {
-
     # Clears variables used in the object.
 
-    catch {namespace delete ${_pdg(ns)}PD}
-    array unset _pdg
     if {[llength [self next]]} next
   }
 
@@ -519,7 +515,7 @@ oo::class create ::apave::APaveDialog {
       ::tk::TextSetCursor $txt [$txt index "insert -1 char"]
     }
     if {[set seltxt [my selectedWordText $txt]] ne {}} {
-      set ${_pdg(ns)}PD::fnd $seltxt
+      set Foundstr $seltxt
     }
     return
   }
@@ -535,14 +531,12 @@ oo::class create ::apave::APaveDialog {
     # also, if there was a real search, the search string is added.
 
     if {$txt eq {}} {
-      if {![info exists ${_pdg(ns)}PD::fnd]} {return yes}
       set txt [my TexM]
-      set sel [set ${_pdg(ns)}PD::fnd]
+      set sel $Foundstr
     } elseif {$donext && [set sel [my get_HighlightedString]] ne {}} {
       # find a string got with alt+left/right
     } elseif {$varFind eq {}} {
-      if {![info exists ${_pdg(ns)}PD::fnd]} {return yes}
-      set sel [set ${_pdg(ns)}PD::fnd]
+      set sel $Foundstr
     } else {
       set sel [set $varFind]
     }
@@ -652,18 +646,16 @@ oo::class create ::apave::APaveDialog {
     # Saves a string got from highlighting by Alt+left/right/q/w.
     #   sel - the string to be saved
 
-    set _pdg(hlstring) $sel
-    if {[info exist ${_pdg(ns)}PD::fnd] && $sel ne {}} {
-      set ${_pdg(ns)}PD::fnd $sel
-    }
+    set HLstring $sel
+    if {$sel ne {}} {set Foundstr $sel}
   }
   #_______________________
 
   method get_HighlightedString {} {
     # Returns a string got from highlighting by Alt+left/right/q/w.
 
-    if {[info exists _pdg(hlstring)]} {
-      return $_pdg(hlstring)
+    if {[info exists HLstring]} {
+      return $HLstring
     }
     return {}
   }
@@ -887,23 +879,6 @@ oo::class create ::apave::APaveDialog {
   }
   #_______________________
 
-  method Pdg {name} {
-    # Gets a value of _pdg(name).
-
-    return $_pdg($name)
-  }
-  #_______________________
-
-  method dlgPath {} {
-    # Gets a path to a last APaveDialog or modal window.
-
-    if {[catch {set res [my Pdg dlg]}]} {
-      set res $::apave::MODALWINDOW
-    }
-    return $res
-  }
-  #_______________________
-
   method AppendButtons {widlistName buttons neighbor pos defb timeout win modal} {
     # Adds buttons to the widget list from a position of neighbor widget.
     #   widlistName - variable name for widget list
@@ -917,9 +892,9 @@ oo::class create ::apave::APaveDialog {
     # Returns list of "Help" button's name and command.
 
     upvar $widlistName widlist
-    set defb1 [set defb2 [set bhlist {}]]
+    set Defb1 [set Defb2 [set bhlist {}]]
     foreach {but txt res} $buttons {
-      set com "${_pdg(ns)}my res $_pdg(dlg)"
+      set com "[self] res $Dlgpath"
       if {[info commands $res] eq {}} {
         set com "$com $res"
       } else {
@@ -933,10 +908,10 @@ oo::class create ::apave::APaveDialog {
         # Help button contains the command in "res"
         set com [string map "%w $win" $res]
         set bhlist [list $but $com]
-      } elseif {$defb1 eq {}} {
-        set defb1 $but
-      } elseif {$defb2 eq {}} {
-        set defb2 $but
+      } elseif {$Defb1 eq {}} {
+        set Defb1 $but
+      } elseif {$Defb2 eq {}} {
+        set Defb2 $but
       }
       if {[set _ [string first "::" $txt]]>-1} {
         set tt " -tip {[string range $txt $_+2 end]}"
@@ -964,8 +939,8 @@ oo::class create ::apave::APaveDialog {
       }
       set pos L
     }
-    lassign [my LowercaseWidgetName $_pdg(dlg).fra.$defb1] _pdg(defb1)
-    lassign [my LowercaseWidgetName $_pdg(dlg).fra.$defb2] _pdg(defb2)
+    lassign [my LowercaseWidgetName $Dlgpath.fra.$Defb1] Defb1
+    lassign [my LowercaseWidgetName $Dlgpath.fra.$Defb2] Defb2
     return $bhlist
   }
 
@@ -996,9 +971,9 @@ oo::class create ::apave::APaveDialog {
     # See also:
     # [aplsimple.github.io](https://aplsimple.github.io/en/tcl/pave/index.html)
 
-    set wdia $_pdg(win).dia
+    set wdia $Winpath.dia
     append wdia [lindex [split [self] :] end] ;# be unique per apave object
-    set qdlg [set _pdg(dlg) $wdia[incr _pdg(idxdlg)]]
+    set qdlg [set Dlgpath $wdia[incr Indexdlg]]
     # remember the focus (to restore it after closing the dialog)
     set focusback [focus]
     set focusmatch {}
@@ -1009,7 +984,7 @@ oo::class create ::apave::APaveDialog {
     set wasgeo [set textmode [set stay [set waitvar 0]]]
     set readonly [set hidefind [set scroll [set modal 1]]]
     set curpos {1.0}
-    set ${_pdg(ns)}PD::ch 0
+    set CheckNomore 0
     foreach {opt val} {*}$argdia {
       if {$opt in {-c -color -fg -bg -fgS -bgS -cc -hfg -hbg}} {
         # take colors by their variables
@@ -1225,16 +1200,13 @@ oo::class create ::apave::APaveDialog {
     set appendHL no
     if {$chmsg eq {}} {
       if {$textmode} {
-        if {![info exists ${_pdg(ns)}PD::fnd]} {
-          set ${_pdg(ns)}PD::fnd {}
-        }
         set noIMG "[my iconA none]"
         if {$hidefind} {
           lappend widlist [list h__ h_3 L 1 4 {-cw 1}]
         } else {
           lappend widlist [list labfnd h_3 L 1 1 "-st e" "-t {$::apave::msgarray(find)}"]
           lappend widlist [list Entfind labfnd L 1 1 \
-            {-st ew -cw 1} "-tvar ${_pdg(ns)}PD::fnd -w 10"]
+            {-st ew -cw 1} "-tvar [namespace current]::Foundstr -w 10"]
           lappend widlist [list labfnd2 Entfind L 1 1 "-cw 2" "-t {}"]
           lappend widlist [list h__ labfnd2 L 1 1]
           append binds "
@@ -1256,7 +1228,7 @@ oo::class create ::apave::APaveDialog {
              $addpopup
              \$pop add separator
              \$pop add command [my iconA exit] -accelerator Esc -label \"Close\" \\
-              -command \"\[[self] Pdg defb1\] invoke\"
+              -command \"\[[self] paveoptionValue Defb1\] invoke\"
             "
           } else {
             set appendHL yes
@@ -1283,13 +1255,13 @@ oo::class create ::apave::APaveDialog {
             "
         }
         set onclose [namespace current]::exitEditor
-        oo::objdefine [self] export InitFindInText Pdg
+        oo::objdefine [self] export InitFindInText
       } else {
         lappend widlist [list h__ h_3 L 1 4 {-cw 1}]
       }
     } else {
       lappend widlist [list chb h_3 L 1 1 \
-        {-st w} "-t {$chmsg} -var ${_pdg(ns)}PD::ch"]
+        {-st w} "-t {$chmsg} -var [namespace current]::CheckNomore"]
       lappend widlist [list h_ chb L 1 1]
       lappend widlist [list sev h_ L 1 1 {-st nse -cw 1}]
       lappend widlist [list h__ sev L 1 1]
@@ -1370,7 +1342,7 @@ oo::class create ::apave::APaveDialog {
       my displayTaggedText [my TexM] msg $tags
       if {$defb eq "ButTEXT"} {
         if {$readonly} {
-          lassign [my LowercaseWidgetName [my Pdg defb1]] focusnow
+          lassign [my LowercaseWidgetName $Defb1] focusnow
         } else {
           set focusnow [my TexM]
           catch "::tk::TextSetCursor $focusnow $curpos"
@@ -1403,7 +1375,7 @@ oo::class create ::apave::APaveDialog {
     set pdgeometry [wm geometry $qdlg]
     # the dialog's result is defined by "pave res" + checkbox's value
     set res [set result [my res $qdlg]]
-    set chv [set ${_pdg(ns)}PD::ch]
+    set chv $CheckNomore
     if { [string is integer $res] } {
       if {$res && $chv} { incr result 10 }
     } else {

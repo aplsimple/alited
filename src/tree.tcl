@@ -262,7 +262,9 @@ proc tree::Create {} {
   if {$al(TREE,isunits) && $al(TREE,units) \
   || !$al(TREE,isunits) && $al(TREE,files)} return  ;# no need
   set wtree [$obPav Tree]
-  if {!$al(TREE,isunits)} {
+  if {$al(TREE,isunits)} {
+    pack forget [$obPav BtTRenT] ;# hide 'Rename' button for unit tree
+  } else {
     pack [$obPav BtTRenT] -side left -after [$obPav BtTAddT]  ;# display 'Rename' button
     # for file tree: get its current "open branch" flags
     # in order to check them in CreateFilesTree
@@ -274,8 +276,6 @@ proc tree::Create {} {
         lappend al(SAVED_FILE_TREE) [list $fname [$wtree item $ID -open]]
       }
     }
-  } else {
-    pack forget [$obPav BtTRenT] ;# hide 'Rename' button
   }
   set TID [alited::bar::CurrentTabID]
   Delete $wtree {} $TID
@@ -292,6 +292,7 @@ proc tree::Create {} {
     CreateUnitsTree $TID $wtree
   } else {
     CreateFilesTree $wtree
+    unset al(SAVED_FILE_TREE)
   }
 }
 #_______________________
@@ -842,7 +843,7 @@ proc tree::GetTooltip {ID NC} {
       set wtxt [alited::main::CurrentWTXT]
       foreach {p1 p2} [$wtxt tag ranges tagCMN2] {
         if {[$wtxt compare $l1.0 <= $p1] && [$wtxt compare $p2 <= $l2.end]} {
-          set todo [string trimleft [$wtxt get $p1 $p2] {#!}]
+          set todo [string trimleft [$wtxt get $p1 $p2] #!]
           switch [incr tiplines] {
             1  {append tip \n_______________________\n}
             13 {break}
@@ -878,8 +879,8 @@ proc tree::GetDirectoryContents {dirname} {
   # See also:
   #   DirContents
 
-  namespace upvar ::alited al al
-  set al(_dirtree) [set al(_dirignore) [list]]
+  namespace upvar ::alited al al _dirtree _dirtree
+  set _dirtree [set al(_dirignore) [list]]
   catch {    ;# there might be an incorrect list -> catch it
     foreach d $al(prjdirign) {
       lappend al(_dirignore) [string toupper [string trim $d \"]]
@@ -887,7 +888,7 @@ proc tree::GetDirectoryContents {dirname} {
   }
   lappend al(_dirignore) [string toupper [file tail [alited::Tclexe]]]
   DirContents $dirname
-  return $al(_dirtree)
+  return $_dirtree
 }
 #_______________________
 
@@ -901,7 +902,7 @@ proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
   #   GetDirectoryContents
   #   AddToDirContents
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al _dirtree _dirtree
   incr lev
   if {[catch {set dcont [lsort -dictionary [glob [file join $dirname *]]]}]} {
     set dcont [list]
@@ -920,7 +921,7 @@ proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
     if {[file isdirectory $fname]} {
       set dcont [lreplace $dcont $i $i [list $fname "y"]]
       set nroot [AddToDirContents $lev 0 $fname $iroot]
-      if {[llength $al(_dirtree)] < $al(MAXFILES)} {
+      if {[llength $_dirtree] < $al(MAXFILES)} {
         DirContents $fname $lev $nroot $globs
       } else {
         break
@@ -931,7 +932,7 @@ proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
     incr i
   }
   # then files
-  if {[llength $al(_dirtree)] < $al(MAXFILES)} {
+  if {[llength $_dirtree] < $al(MAXFILES)} {
     foreach fname $dcont {
       lassign $fname fname d
       if {$d ne "y"} {
@@ -954,13 +955,13 @@ proc tree::AddToDirContents {lev isfile fname iroot} {
   #   fname - a file name to be added
   #   iroot - index of the directory's parent or -1
 
-  namespace upvar ::alited al al
-  set dllen [llength $al(_dirtree)]
+  namespace upvar ::alited al al _dirtree _dirtree
+  set dllen [llength $_dirtree]
   if {$dllen < $al(MAXFILES)} {
-    lappend al(_dirtree) [list $lev $isfile $fname 0 $iroot]
+    lappend _dirtree [list $lev $isfile $fname 0 $iroot]
     if {$iroot>-1} {
-      lassign [lindex $al(_dirtree) $iroot] lev isfile fname fcount sroot
-      set al(_dirtree) [lreplace $al(_dirtree) $iroot $iroot \
+      lassign [lindex $_dirtree $iroot] lev isfile fname fcount sroot
+      set _dirtree [lreplace $_dirtree $iroot $iroot \
         [list $lev $isfile $fname [incr fcount] $sroot]]
     }
   }

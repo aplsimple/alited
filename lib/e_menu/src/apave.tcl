@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.0.8
+package provide apave 4.1.0
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -20,8 +20,6 @@ oo::class create ::apave::APave {
 
   superclass ::apave::APaveDialog
 
-  variable _pav
-  variable _pdg
   variable _savedvv
 
   constructor {args} {
@@ -49,7 +47,7 @@ oo::class create ::apave::APave {
       catch {unset $vn}
     }
     set _savedvv [list]
-    set _pav(widgetopts) [list]
+    set Widgetopts [list]
     return
   }
   #_______________________
@@ -292,7 +290,7 @@ oo::class create ::apave::APave {
         set res [my Query $icon $ttl {} \
         "$butHelp $buttons butOK $titleOK $comOK $butCancel" \
         butOK $inopts $args {} {*}$centerme -input yes]} e]} {
-      catch {destroy $_pdg(dlg)}  ;# Query's window
+      catch {destroy $Dlgpath}  ;# Query's window
       ::apave::obj ok err "ERROR" "\n$e\n" \
         -t 1 -head "\nAPave returned an error: \n" -hfg red -weight bold
       return 0
@@ -307,25 +305,25 @@ oo::class create ::apave::APave {
   }
   #_______________________
 
-  method vieweditFile {fname {prepost ""} args} {
+  method vieweditFile {fname {prepcom ""} args} {
     # Views or edits a file.
     #   fname - name of file
-    #   prepost - a command performing before and after creating a dialog
+    #   prepcom - a command performing before and after creating a dialog
     #   args - additional options
     # It's a sort of stub for calling *editfile* method.
     # See also: editfile
 
-    return [my editfile $fname {} {} {} $prepost {*}$args]
+    return [my editfile $fname {} {} {} $prepcom {*}$args]
   }
   #_______________________
 
-  method editfile {fname fg bg cc {prepost ""} args} {
+  method editfile {fname fg bg cc {prepcom ""} args} {
     # Edits or views a file with a set of main colors
     #   fname - name of file
     #   fg - foreground color of text widget
     #   bg - background color of text widget
     #   cc - caret's color of text widget
-    #   prepost - a command performing before and after creating a dialog
+    #   prepcom - a command performing before and after creating a dialog
     #   args - additional options (`-readonly 1` for viewing the file).
     #
     # If *fg* isn't empty, all three colors are used to color a text.
@@ -353,10 +351,10 @@ oo::class create ::apave::APave {
     } else {
       set tclr "-fg $fg -bg $bg -cc $cc"
     }
-    if {$prepost eq {}} {set aa {}} {set aa [$prepost filetxt]}
+    if {$prepcom eq {}} {set aa {}} {set aa [$prepcom filetxt]}
     set res [my misc {} "$oper: $fname" "$filetxt" "$buttadd $btns" \
       TEXT -text 1 -w {100 80} -h 32 {*}$tclr \
-      -post $prepost {*}$aa {*}$args]
+      -post $prepcom {*}$aa {*}$args]
     set data [string range $res 2 end]
     if {[set res [string index $res 0]] eq "1"} {
       set data [string range $data [string first " " $data]+1 end]

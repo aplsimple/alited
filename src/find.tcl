@@ -1127,7 +1127,9 @@ proc find::SearchByList {} {
     {ButDown + L 1 1 {} {-t {Find Next} -com ::alited::find::NextFoundByList}} \
     [list butCancel + L 1 1 {} [list -t Cancel -com alited::find::CloseFind2]] \
     ]
-  after idle [list $obFN2 displayText [$obFN2 Text] $text]
+  set wtxt [$obFN2 Text]
+  after idle [list $obFN2 displayText $wtxt $text]
+  after 100 [list focus $wtxt]
   bind $win2 <F3> "[$obFN2 ButDown] invoke"
   $obFN2 showModal $win2 -modal no -waitvar no -onclose alited::find::CloseFind2 \
     -geometry $geo2 -ontop [::isKDE] -resizable 1 -minsize {200 200}

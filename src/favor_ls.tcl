@@ -9,6 +9,7 @@
 # _________________________ Variables ________________________ #
 
 namespace eval ::alited::favor_ls {
+  variable obFav pavedFavs
   variable win $::alited::al(WIN).fraFavs  ;# "Favorites' list" dialogue's path
   variable favlist [list]      ;# list of favorites' lists
   variable favlistsaved [list] ;# saved list of favorites' lists
@@ -45,14 +46,14 @@ proc favor_ls::Ok {{res 0}} {
   # Handles hitting OK button.
   #   res - if 0, sets the dialogue's result from a current favorites item.
 
-  namespace upvar ::alited obDl2 obDl2
+  variable obFav
   variable win
   variable favcont
   variable favpla
   alited::CloseDlg
   if {!$res} {
     if {[set isel [Selected]] eq {}} {
-      focus [$obDl2 LbxFav]
+      focus [$obFav LbxFav]
       return
     }
     set pla [lindex $favpla $isel]
@@ -60,18 +61,18 @@ proc favor_ls::Ok {{res 0}} {
     set res [list $pla [Split $cont]]
   }
   Save_favlist
-  $obDl2 res $win $res
+  $obFav res $win $res
 }
 #_______________________
 
 proc favor_ls::Cancel {args} {
   # Handles hitting Cancel button.
 
-  namespace upvar ::alited obDl2 obDl2
+  variable obFav
   variable win
   alited::CloseDlg
   Save_favlist
-  $obDl2 res $win 0
+  $obFav res $win 0
 }
 #_______________________
 
@@ -96,7 +97,7 @@ proc favor_ls::GetCurrentList {args} {
   #   args - a list of favorites
   # If args is omitted, the current favorites tree's contents will be the list.
 
-  namespace upvar ::alited obDl2 obDl2
+  variable obFav
   variable currents
   set text [set currents {}]
   if {![llength $args]} {set args [alited::tree::GetTree {} TreeFavor]}
@@ -108,20 +109,19 @@ proc favor_ls::GetCurrentList {args} {
     append text [lindex $it 4 0]
     append currents $it
   }
-  set w [$obDl2 TexFav]
-  $obDl2 readonlyWidget $w no
-  $obDl2 displayText $w $text
-  $obDl2 readonlyWidget $w yes
+  set w [$obFav TexFav]
+  $obFav readonlyWidget $w no
+  $obFav displayText $w $text
+  $obFav readonlyWidget $w yes
 }
 #_______________________
 
 proc favor_ls::Selected {} {
   # Gets a selected item of favorites list.
 
-  namespace upvar ::alited al al obDl2 obDl2
-  variable favlist
-  if {[set isel [[$obDl2 LbxFav] curselection]] eq {}} {
-    alited::Message2 $al(MC,favsel) 4
+  variable obFav
+  if {[set isel [[$obFav LbxFav] curselection]] eq {}} {
+    Message $alited::al(MC,favsel) 4
   }
   return $isel
 }
@@ -130,8 +130,8 @@ proc favor_ls::Selected {} {
 proc favor_ls::Text {} {
   # Gets a text with a list of favorites.
 
-  namespace upvar ::alited obDl2 obDl2
-  return [[$obDl2 TexFav] get 1.0 {end -1 char}]
+  variable obFav
+  return [[$obFav TexFav] get 1.0 {end -1 char}]
 }
 #_______________________
 
@@ -139,13 +139,13 @@ proc favor_ls::Select {{isel ""}} {
   # Handles a selection in the list of favorites' lists.
   #   isel - a selected item of the list
 
-  namespace upvar ::alited obDl2 obDl2
+  variable obFav
   variable favlist
   variable favcont
   variable favpla
   variable fav
   variable place
-  set lbx [$obDl2 LbxFav]
+  set lbx [$obFav LbxFav]
   if {$isel eq {}} {set isel [$lbx curselection]}
   if {$isel eq {} && [llength $favlist]} {set isel 0}
   if {$isel ne {}} {
@@ -162,8 +162,8 @@ proc favor_ls::Focus {isel} {
   # Focuses on an item of the list.
   #   isel - the item to focus on
 
-  namespace upvar ::alited obDl2 obDl2
-  set lbx [$obDl2 LbxFav]
+  variable obFav
+  set lbx [$obFav LbxFav]
   $lbx selection clear 0 end
   $lbx selection set $isel $isel
   $lbx see $isel
@@ -174,7 +174,8 @@ proc favor_ls::Focus {isel} {
 proc favor_ls::Add {} {
   # Handles hitting "Add favorites' list" button.
 
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al
+  variable obFav
   variable favlist
   variable favcont
   variable favpla
@@ -193,15 +194,15 @@ proc favor_ls::Add {} {
   }
   set fav [string trim $fav]
   if {$fav ne "" && $cont ne "" && $found} {
-    alited::Message2 $al(MC,favexists) 4
+    Message $al(MC,favexists) 4
     Select $isel
     return
   } elseif {$fav eq ""} {
-    focus [$obDl2 EntFav]
-    alited::Message2 $al(MC,favent1) 4
+    focus [$obFav EntFav]
+    Message $al(MC,favent1) 4
     return
   } elseif {[string trim $cont] eq ""} {
-    alited::Message2 $al(MC,favent3) 4
+    Message $al(MC,favent3) 4
     return
   } else {
     set isel end
@@ -209,7 +210,7 @@ proc favor_ls::Add {} {
     lappend favcont $cont
     lappend favpla $place
     set msg [string map [list %n [llength $favlist]] $al(MC,favnew)]
-    alited::Message2 $msg 3
+    Message $msg 3
   }
   Save_favlist
   Focus $isel
@@ -219,7 +220,7 @@ proc favor_ls::Add {} {
 proc favor_ls::Change {} {
   # Handles hitting "Change favorites' list" button.
 
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al
   variable favlist
   variable favpla
   variable favcont
@@ -228,14 +229,14 @@ proc favor_ls::Change {} {
   variable currents
   if {[set isel [Selected]] eq {}} return
   if {[set isl1 [lsearch -exact $favlist $fav]]!=$isel && $isl1!=-1} {
-    alited::Message2 $al(MC,favexists) 4
+    Message $al(MC,favexists) 4
     Select $isl1
   } else {
     set favlist [lreplace $favlist $isel $isel $fav]
     set favpla [lreplace $favpla $isel $isel $place]
     set favcont [lreplace $favcont $isel $isel $currents]
     set msg [string map [list %n [incr isel]] $al(MC,favupd)]
-    alited::Message2 $msg 3
+    Message $msg 3
     Save_favlist
   }
 }
@@ -261,8 +262,18 @@ proc favor_ls::Delete {} {
   if {$isel>$llen} {set isel $llen}
   if {$llen>=0} {Select $isel}
   set msg [string map [list %n $nsel] $al(MC,favrem)]
-  alited::Message2 $msg 3
+  Message $msg 3
   Save_favlist
+}
+#_______________________
+
+proc favor_ls::Message {msg {mode 1}} {
+  # Displays a message in statusbar of favorites dialogue.
+  #   msg - message
+  #   mode - mode of Message
+
+  variable obFav
+  alited::Message $msg $mode [$obFav LabMess]
 }
 
 # ________________________ Ini data _________________________ #
@@ -334,14 +345,16 @@ proc favor_ls::PutIni {} {
 proc favor_ls::_create {} {
   # Creates "Favorites lists" dialogue.
 
-  namespace upvar ::alited al al obDl2 obDl2
+  namespace upvar ::alited al al
+  variable obFav
   variable win
   variable favlist
   variable fav
   set tipson [baltip::cget -on]
   baltip::configure -on $al(TIPS,SavedFavorites)
-  $obDl2 makeWindow $win $al(MC,FavLists)
-  $obDl2 paveWindow $win {
+  ::apave::APave create $obFav $win
+  $obFav makeWindow $win $al(MC,FavLists)
+  $obFav paveWindow $win {
     {fraLbxFav - - 1 2 {-st nswe -pady 4} {}}
     {.fra - - - - {pack -side right -fill both} {}}
     {.fra.btTAd - - - - {pack -side top -anchor n} {-com ::alited::favor_ls::Add -tip "Add a list of favorites" -image alimg_add-big}}
@@ -373,8 +386,8 @@ proc favor_ls::_create {} {
   }
 
   set fav {}
-  set lbx [$obDl2 LbxFav]
-  set wtxt [$obDl2 TexFav]
+  set lbx [$obFav LbxFav]
+  set wtxt [$obFav TexFav]
   GetCurrentList
   Restore_favlist
   bind $lbx <<ListboxSelect>> ::alited::favor_ls::Select
@@ -382,10 +395,12 @@ proc favor_ls::_create {} {
   bind $lbx <Delete> ::alited::favor_ls::Delete
   bind $lbx <Double-Button-1> ::alited::favor_ls::Ok
   bind $lbx <Return> ::alited::favor_ls::Ok
-  bind $win <F1> "[$obDl2 ButHelp] invoke"
+  bind $win <F1> "[$obFav ButHelp] invoke"
   after 500 ::alited::favor_ls::HelpMe ;# show an introduction after a short pause
-  set res [$obDl2 showModal $win -onclose ::alited::favor_ls::Cancel -focus [$obDl2 EntFav]]
+  set res [$obFav showModal $win -onclose ::alited::favor_ls::Cancel -focus [$obFav EntFav]]
   baltip::configure {*}$tipson
+  catch {destroy $win}
+  $obFav destroy
   return $res
 }
 #_______________________
@@ -396,7 +411,6 @@ proc favor_ls::_run {} {
   variable win
   if {[winfo exists $win]} {return 0}
   set res [_create]
-  destroy $win
   return $res
 }
 

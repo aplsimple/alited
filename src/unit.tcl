@@ -311,6 +311,8 @@ proc unit::InsertTemplate {tpldata} {
   set posc [alited::p+ $pos0 $posc]
   $wtxt insert $pos0 $tex
   ::tk::TextSetCursor $wtxt $posc
+  alited::main::UpdateAll
+  after idle alited::main::FocusText
 }
 #_______________________
 
@@ -397,9 +399,7 @@ proc unit::Add {} {
   # Runs a dialog "Add Template" and adds a chosen template to a text.
 
   set res [::alited::unit_tpl::_run]
-  if {$res ne ""} {
-    InsertTemplate $res
-  }
+  if {$res ne {}} {InsertTemplate $res}
   alited::keys::BindKeys [alited::main::CurrentWTXT] template
 }
 #_______________________

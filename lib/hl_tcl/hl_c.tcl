@@ -713,6 +713,9 @@ proc ::hl_c::clearup {txt} {
   foreach key [array names my::data *,$txt] {
     unset my::data($key)
   }
+  foreach i [lsearch -all -exact -index 0 $my::data(LIST_TXT) $txt] {
+    set my::data(LIST_TXT) [lreplace $my::data(LIST_TXT) $i $i]
+  }
 }
 
 # _________________________________ EOF _________________________________ #

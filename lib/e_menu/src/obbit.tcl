@@ -1308,7 +1308,7 @@ oo::class create ::apave::ObjectProperty {
   }
 
   destructor {
-    array unset _OP_Properties
+    array unset _OP_Properties *
     if {[llength [self next]]} next
   }
 
@@ -1351,8 +1351,6 @@ oo::class create ::apave::ObjectProperty {
 # ________________________ ObjectTheming _________________________ #
 
 oo::class create ::apave::ObjectTheming {
-
-  mixin ::apave::ObjectProperty
 
   ## ________________________ Obj theming Inits _________________________ ##
 
@@ -2207,14 +2205,25 @@ oo::class create ::apave::ObjectTheming {
     #   - widget glob
     #   - list of option+value pairs, e.g. "*.textWidget {-fg white -bg black}"
     # 2nd component defines additional attributes that override the defaults.
+    # If 1st item of *args* is "clear", removes all items set with glob patterns
+    # (e.g.: my untouchWidgets clear *BALTIP* - clears all baltip's references).
     # See also:
     #   touchWidgets
     #   themeNonThemed
 
     if {[llength $args]==0} {return $::apave::_CS_(untouch)}
-    foreach u $args {
-      if {[lsearch -exact $::apave::_CS_(untouch) $u]==-1} {
-        lappend ::apave::_CS_(untouch) $u
+    if {[lindex $args 0] eq {clear}} {
+      foreach u [lrange $args 1 end] {
+        set ii [lsearch -all -glob $::apave::_CS_(untouch) $u]
+        foreach i [lsort -decreasing -integer $ii] {
+          set ::apave::_CS_(untouch) [lreplace $::apave::_CS_(untouch) $i $i]
+        }
+      }
+    } else {
+      foreach u $args {
+        if {[lsearch -exact $::apave::_CS_(untouch) $u]==-1} {
+          lappend ::apave::_CS_(untouch) $u
+        }
       }
     }
   }

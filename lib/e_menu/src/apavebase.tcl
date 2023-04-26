@@ -432,7 +432,7 @@ oo::class create ::apave::APaveBase {
 
   mixin ::apave::ObjectTheming
 
-  variable _pav
+  variable PV Moveall Tonemoves Initialcolor Modalwin Fgbut Bgbut Fgtxt Bgtxt Prepost Widgetopts Edge
 
   constructor {{cs -2} args} {
     # Creates APaveBase object.
@@ -440,8 +440,6 @@ oo::class create ::apave::APaveBase {
     #   args - additional arguments
     #
     # If cs>-2, the appropriate CS is set for the created APaveBase object.
-    #
-    # Fills *_pav* array with initial values.
     #
     # Makes few procedures in the object's namespace to access from
     # event handlers:
@@ -452,27 +450,22 @@ oo::class create ::apave::APaveBase {
     #   [proc-in-tcl-ooclass](https://stackoverflow.com/questions/54804964/proc-in-tcl-ooclass)
 
     # keep the 'important' data of Pave object in array
-    array set _pav [list]
-    set _pav(ns) [namespace current]::
-    set _pav(lwidgets) [list]
-    set _pav(moveall) 0
-    set _pav(tonemoves) 1
-    set _pav(initialcolor) {}
-    set _pav(modalwin) {.}
-    set _pav(fgbut) [ttk::style lookup TButton -foreground]
-    set _pav(bgbut) [ttk::style lookup TButton -background]
-    set _pav(fgtxt) [ttk::style lookup TEntry -foreground]
-    set _pav(prepost) [list]
-    set _pav(widgetopts) [list]
-    set _pav(edge) {@@}
-    if {$_pav(fgtxt) in {black #000000}} {
-      set _pav(bgtxt) white
+    array set PV [list]
+    set Moveall 1
+    set Tonemoves 1
+    set Initialcolor {}
+    set Modalwin .
+    set Fgbut [ttk::style lookup TButton -foreground]
+    set Bgbut [ttk::style lookup TButton -background]
+    set Fgtxt [ttk::style lookup TEntry -foreground]
+    set Prepost [list]
+    set Widgetopts [list]
+    set Edge @@
+    if {$Fgtxt in {black #000000}} {
+      set Bgtxt white
     } else {
-      set _pav(bgtxt) [ttk::style lookup TEntry -background]
+      set Bgtxt [ttk::style lookup TEntry -background]
     }
-    # namespace in object namespace for safety of its 'most important' data
-    namespace eval ${_pav(ns)}PN {}
-    array set ${_pav(ns)}PN::AR {}
     # set/reset a color scheme if it is/was requested
     if {$cs>=-1} {my csSet $cs} {my initTooltip}
 
@@ -528,9 +521,7 @@ oo::class create ::apave::APaveBase {
   destructor {
     # Clears variables used in the object.
 
-    array unset ${_pav(ns)}PN::AR
-    namespace delete ${_pav(ns)}PN
-    array unset _pav
+    array unset PV *
     if {[llength [self next]]} next
   }
 
@@ -561,13 +552,14 @@ oo::class create ::apave::APaveBase {
 
   ## _______________________ Helpers for APaveBase ________________________ ##
 
-  method paveoptionValue {option} {
+  method paveoptionValue {opt} {
     # Gets an option's value.
-    #   option - option's name
-    # Returns a value from _pav array (for options like "moveall", "tonemoves").
+    #   opt - option's name
+    # Returns a value for options like "Moveall", "Tonemoves".
 
-    if {[info exists _pav($option)]} {
-      return [set _pav($option)]
+    if {$opt in [info object vars [self]]} {
+      variable $opt
+      return [set $opt]
     }
     return {}
   }
@@ -640,12 +632,12 @@ oo::class create ::apave::APaveBase {
   #_______________________
 
   method configure {args} {
-    # Configures the apave object (all of *_pav* array may be changed).
+    # Configures the apave object (all of options may be changed).
     #   args - list of pairs name/value of options
     # Example:
     #     pobj configure edge "@@"
 
-    foreach {optnam optval} $args { set _pav($optnam) $optval }
+    foreach {optnam optval} $args {set $optnam $optval}
     return
   }
   #_______________________
@@ -775,11 +767,11 @@ oo::class create ::apave::APaveBase {
       if {$varopt eq {-lvar}} {
         lassign [::apave::extractOptions attrs -values {} -ALL 0] iv a
         if {[string is boolean -strict $a] && $a} {set all ALL}
-        lappend _pav(widgetopts) "-lbxname$all $wnamefull $vn"
+        lappend Widgetopts "-lbxname$all $wnamefull $vn"
       }
       if {$rp ne {}} {
         if {$all ne {}} {set rp 0:end}
-        lappend _pav(widgetopts) "-retpos $wnamefull $vn $rp"
+        lappend Widgetopts "-retpos $wnamefull $vn $rp"
       }
     }
     if {$iv ne {}} { set $vn $iv }
@@ -850,7 +842,7 @@ oo::class create ::apave::APaveBase {
       return [list $retval $ret]
     }
 
-    set edge $_pav(edge)
+    set edge $Edge
     set ldv1 [string length $edge]
     set filecontents {}
     set optionlists {}
@@ -892,7 +884,7 @@ oo::class create ::apave::APaveBase {
             lassign $opts - list1  ;# -list option goes first
             if {[llength $list1]} {
               foreach l1 $list1 {append newvalues "\{$l1\} "}
-              lappend _pav(widgetopts) "-list $wnamefull [list $list1]"
+              lappend Widgetopts "-list $wnamefull [list $list1]"
             }
           }
           set i1 [string first $edge $tplline]
@@ -1494,8 +1486,8 @@ oo::class create ::apave::APaveBase {
     # Gets *-parent* option for choosers.
     #   w - parent window's name (path)
 
-    if {$_pav(modalwin) eq "."} {set wpar $w} {set wpar $_pav(modalwin)}
-    return "-parent $wpar"
+    if {$Modalwin ne {.}} {set w $Modalwin}
+    return "-parent $w"
   }
 
   ## ________________________ Mega-widgets _________________________ ##
@@ -1740,7 +1732,7 @@ oo::class create ::apave::APaveBase {
     #
     # Returns a selected color.
 
-    if {$_pav(initialcolor) eq {} && [::isunix]} {
+    if {$Initialcolor eq {} && [::isunix]} {
       source [file join $::apave::apaveDir pickers color clrpick.tcl]
     }
     lassign [::apave::extractOptions args -entry {}] ent
@@ -1757,19 +1749,19 @@ oo::class create ::apave::APaveBase {
         set ic "#$ic"
         if {[catch {. configure -background $ic}]} {set ic black}
       }
-      set _pav(initialcolor) $ic
+      set Initialcolor $ic
       . configure -background $_
     } else {
-      set _pav(initialcolor) black
+      set Initialcolor black
     }
-    if {[catch {lassign [tk_chooseColor -moveall $_pav(moveall) \
-    -tonemoves $_pav(tonemoves) -initialcolor $_pav(initialcolor) {*}$args] \
-    res _pav(moveall) _pav(tonemoves)}]} {
+    if {[catch {lassign [tk_chooseColor -moveall $Moveall \
+    -tonemoves $Tonemoves -initialcolor $Initialcolor {*}$args] \
+    res Moveall Tonemoves}]} {
       set args [::apave::removeOptions $args -moveall -tonemoves -geometry]
-      set res [tk_chooseColor -initialcolor $_pav(initialcolor) {*}$args]
+      set res [tk_chooseColor -initialcolor $Initialcolor {*}$args]
     }
     if {$res ne {}} {
-      set _pav(initialcolor) [set $tvar $res]
+      set Initialcolor [set $tvar $res]
     }
     return $res
   }
@@ -1979,7 +1971,7 @@ oo::class create ::apave::APaveBase {
     }
     set com "[self] chooser $chooser \{$vv\} $addopt $wpar $addattrs2 $entname"
     if {$view ne {}} {set anc n} {set anc center}
-    set butf [list $btTname - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $_pav(fgbut) -bg $_pav(bgbut) $takefocus"]
+    set butf [list $btTname - - - - "pack -side right -anchor $anc -in $inname -padx 2" "-com \{$com\} -compound none -image [::apave::iconImage $icon small] -font \{-weight bold -size 5\} -fg $Fgbut -bg $Bgbut $takefocus"]
     if {$view ne {}} {
       set scrolv [list [my Transname sbv $name] $txtnam L - - "pack -in $inname -side bottom -after [my WidgetNameFull $w $btTname]" {}]
       set lwidgets [linsert $lwidgets [expr {$i+1}] $butf]
@@ -2286,7 +2278,7 @@ oo::class create ::apave::APaveBase {
   method dlgPath {} {
     # Gets a window name of apave open dialogue.
 
-    if {[catch {set res [set [namespace current]::_pdg(dlg)]}]} {
+    if {[catch {set res $Dlgpath}] || $Dlgpath eq {}} {
       set res $::apave::MODALWINDOW
     }
     return $res
@@ -2303,7 +2295,7 @@ oo::class create ::apave::APaveBase {
     # See also: MakeWidgetName, input
 
     if {[string index $w 0] eq {.}} {return $w}
-    return [set [namespace current]::_pdg(dlg)].fra.$w
+    return $Dlgpath.fra.$w
   }
   #_______________________
 
@@ -2331,7 +2323,7 @@ oo::class create ::apave::APaveBase {
       oo::objdefine [self] "method $method {} {return $wnamefull} ; \
         export $method"
     }
-    return $wnamefull  ;# first try: [set ${_pav(ns)}PN::wn $wnamefull]
+    return $wnamefull
   }
   #_______________________
 
@@ -2453,7 +2445,7 @@ oo::class create ::apave::APaveBase {
     # See also: Post
 
     upvar 1 $refattrs attrs
-    set attrs_ret [set _pav(prepost) [list]]
+    set attrs_ret [set Prepost [list]]
     foreach {a v} $attrs {
       switch -exact -- $a {
         -disabledtext - -rotext - -lbxsel - -cbxsel - -notebazook - \
@@ -2464,10 +2456,10 @@ oo::class create ::apave::APaveBase {
           # attributes specific to apave, processed below in "Post"
           set v2 [string trimleft $v \{]
           set v2 [string range $v2 0 end-[expr {[string length $v]-[string length $v2]}]]
-          lappend _pav(prepost) [list $a $v2]
+          lappend Prepost [list $a $v2]
         }
         -myown {
-          lappend _pav(prepost) [list $a [subst $v]]
+          lappend Prepost [list $a [subst $v]]
         }
         -labelwidget { ;# widget path as a method
           set v [string trim $v \{\}]
@@ -2491,13 +2483,13 @@ oo::class create ::apave::APaveBase {
     # Processes the same *apave* options that are processed in Pre method.
     # See also: Pre
 
-    if {[set i [lsearch -exact -index 0 $_pav(prepost) -tags]]>-1} {
-      set v [lindex $_pav(prepost) $i 1]
+    if {[set i [lsearch -exact -index 0 $Prepost -tags]]>-1} {
+      set v [lindex $Prepost $i 1]
       set tags [set $v]
     } else {
       set tags {}
     }
-    foreach pp $_pav(prepost) {
+    foreach pp $Prepost {
       lassign $pp a v
       set v [string trim $v $::apave::UFF]
       switch -exact -- $a {
@@ -2897,7 +2889,7 @@ oo::class create ::apave::APaveBase {
     #   inv - flag "invert the meaning of colors"
 
     set txt [$lab cget -text]
-    lassign [split [string map [list $_pav(edge) $::apave::UFF] $v] $::apave::UFF] v tt vz
+    lassign [split [string map [list $Edge $::apave::UFF] $v] $::apave::UFF] v tt vz
     set tt [string map [list %l $txt] $tt]
     set v [string map [list %l $txt %t $tt] $v]
     if {$tt ne {}} {
@@ -2939,7 +2931,7 @@ oo::class create ::apave::APaveBase {
     # The tricky thing is for further access to all of the text.
     # See also: GetContentVariable
 
-    return [set _pav(textcont,$tvar) $tvar*$txtnam*$name]
+    return [set PV(textcont,$tvar) $tvar*$txtnam*$name]
   }
   #_______________________
 
@@ -2947,7 +2939,7 @@ oo::class create ::apave::APaveBase {
     # Gets an internal text variable.
     # See also: SetContentVariable
 
-    return $_pav(textcont,$tvar)
+    return $PV(textcont,$tvar)
   }
   #_______________________
 
@@ -3149,7 +3141,7 @@ oo::class create ::apave::APaveBase {
     # Makes output values for some widgets (lbx, fco).
     # Some i/o widgets need a special method to get their returned values.
 
-    foreach aop $_pav(widgetopts) {
+    foreach aop $Widgetopts {
       lassign $aop optnam vn v1 v2
       switch -glob -- $optnam {
         -lbxname* {
@@ -3175,7 +3167,7 @@ oo::class create ::apave::APaveBase {
           set val1 [set $v1]
           # there may be -list option for this widget
           # then if the value is from the list, it's fully returned
-          foreach aop2 $_pav(widgetopts) {
+          foreach aop2 $Widgetopts {
             lassign $aop2 optnam2 vn2 lst2
             if {$optnam2 eq {-list} && $vn eq $vn2} {
               foreach val2 $lst2 {
@@ -3241,16 +3233,15 @@ oo::class create ::apave::APaveBase {
     if {[set tooltip [::apave::getOption -tooltip {*}$attrs]] ne {} ||
     [set tooltip [::apave::getOption -tip {*}$attrs]] ne {}} {
       ::apave::initBaltip
-      if {[set i [string first $_pav(edge) $tooltip]]>=0} {
+      if {[set i [string first $Edge $tooltip]]>=0} {
         set tooltip [string range $tooltip 1 end-1]
-        set tattrs [string range $tooltip [incr i -1]+[string length $_pav(edge)] end]
+        set tattrs [string range $tooltip [incr i -1]+[string length $Edge] end]
         set tooltip "{[string range $tooltip 0 $i-1]}"
       } else {
         set tattrs {}
       }
       set tooltip [my MC $tooltip]
       lappend addcomms [list ::baltip::tip $wdg $tooltip {*}$tattrs]
-      lappend ::apave::_AP_VARS(TIMW) $wdg
       set attrs [::apave::removeOptions $attrs -tooltip -tip]
     }
     if {[::apave::getOption -ro {*}$attrs] ne {} || \
@@ -3570,7 +3561,6 @@ oo::class create ::apave::APaveBase {
         continue
       }
       lappend res {*}[my Window $w $lwidgets]
-      lappend _pav(lwidgets) $lwidgets ;# possibly useful
       if {[set ifnd [regexp -indices -inline {[.]dia\d+} $w]] ne {}} {
         set wdia [string range $w 0 [lindex $ifnd 0 1]]
       } else {
@@ -3596,7 +3586,7 @@ oo::class create ::apave::APaveBase {
     # Gets a unique varname for a window.
     #   win - window's path
 
-    return ${_pav(ns)}PN::AR($win)
+    return [namespace current]::PV(_WIN_,$win)
   }
   #_______________________
 
@@ -3642,7 +3632,7 @@ oo::class create ::apave::APaveBase {
     #   win - window's name
     #   args - attributes of window ("-name value" pairs)
 
-    set ::apave::MODALWINDOW [set _pav(modalwin) $win]
+    set ::apave::MODALWINDOW [set Modalwin $win]
     ::apave::setAppIcon $win
     set root [winfo parent $win]
     lassign [::apave::extractOptions args -centerme {} -ontop 0 -modal yes \

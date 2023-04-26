@@ -68,8 +68,8 @@ proc tool::ColorPicker {} {
     -moveall $al(moveall) -tonemoves $al(tonemoves) -parent $al(WIN) \
     -geometry pointer+10+10]
   if {$res ne {}} {
-    set al(moveall) [::apave::obj paveoptionValue moveall]
-    set al(tonemoves) [::apave::obj paveoptionValue tonemoves]
+    set al(moveall) [::apave::obj paveoptionValue Moveall]
+    set al(tonemoves) [::apave::obj paveoptionValue Tonemoves]
     set al(chosencolor) $res
     InsertInText $res $pos1 $pos2
   }

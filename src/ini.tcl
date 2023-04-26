@@ -1348,7 +1348,7 @@ proc ini::TipToolHotkeys {} {
 proc ini::_init {} {
   # Initializes alited app.
 
-  namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2 obDl3 obDl3 \
+  namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2 \
     obFND obFND obFN2 obFN2 obCHK obCHK obRun obRun
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu

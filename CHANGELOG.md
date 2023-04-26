@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `v1.4.4b10 (15 Apr'23)`
+Version `v1.4.4 (26 Apr'23)`
 
   - BUGFIX: units of tree with todo comments (detection in big files)
   - BUGFIX: pending e_menu app after running tools
@@ -9,12 +9,15 @@ Version `v1.4.4b10 (15 Apr'23)`
   - BUGFIX: update the tab bar at choosing favorites with "closed"
   - BUGFIX: fill "run before" text of Run dialogue
   - BUGFIX: ignore intermediate empty items of Preferences/Tools/bar-menu
+  - BUGFIX: "Edit / Color Values / Hide Colors" for several files
+  - BUGFIX: restore 1st nbk's tab of Preferences
   - NEW   : highlight syntax for .wiki files (of wiki.tcl-lang.org)
   - NEW   : "Edit / Rectangular Selection"
   - NEW   : "Tools / Paver" (visualize widget list of paveWindow)
   - NEW   : after contracting/expanding the tree: tree selection set
   - NEW   : Projects: show number of files at Add/Change (not at Template)
   - DELETE: bar::SleepTreeTips
+  - CHANGE: massive clearances to fight memory leaks
   - CHANGE: Projects: "Template" updates the template list independently on errors
   - CHANGE: Projects: "View Dir" opens a file manager instead of Tcl file chooser
   - CHANGE: "Contract all" for unit tree: current branch remains expanded
@@ -27,7 +30,7 @@ Version `v1.4.4b10 (15 Apr'23)`
   - CHANGE: clearance & tiny-up
   - CHANGE: demos (paver incl.)
   - CHANGE: docs
-  - CHANGE: apave/e_menu 4.0.7, hl_tcl 1.0.4, bartabs 1.6.6
+  - CHANGE: apave/e_menu 4.0.8, hl_tcl 1.0.4, bartabs 1.6.6
 
 
 Version `v1.4.3 (22 Mar'23)`

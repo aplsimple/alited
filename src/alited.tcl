@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.4b11  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.4  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -102,7 +102,6 @@ namespace eval alited {
   variable obPav ::alited::alitedpav
   variable obDlg ::alited::aliteddlg  ;# dialog of 1st level
   variable obDl2 ::alited::aliteddl2  ;# dialog of 2nd level
-  variable obDl3 ::alited::aliteddl3  ;# dialog of 3rd level
   variable obCHK ::alited::alitedCHK  ;# dialog of "Check Tcl"
   variable obFND ::alited::alitedFND  ;# dialog of "Find/Replace"
   variable obFN2 ::alited::alitedFN2  ;# dialog of "Find by list"
@@ -120,6 +119,9 @@ namespace eval alited {
   # project options' names
   variable OPTS [list \
     prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite prjincons prjmaxcoms]
+
+  # directory tree's content
+  variable _dirtree [list]
 
   # project options' values
   set al(prjname) {}      ;# current project's name
@@ -414,7 +416,7 @@ namespace eval alited {
   proc ListPaved {} {
     # Return a list of apave objects for dialogues.
 
-    return [list obDlg obDl2 obDl3 obFND obFN2 obCHK obRun]
+    return [list obDlg obDl2 obFND obFN2 obCHK obRun]
   }
   #_______________________
 
@@ -584,12 +586,12 @@ namespace eval alited {
   }
   #_______________________
 
-  proc Msg {inf {ic info}} {
+  proc Msg {inf {ic info} args} {
     # Shows a message in text box.
     #   inf - the message
     #   ic - icon
 
-    msg ok $ic $inf -text 1 -w 50
+    msg ok $ic $inf -text 1 -w 50 {*}$args
   }
   #_______________________
 
@@ -655,28 +657,6 @@ namespace eval alited {
   }
   #_______________________
 
-  proc Message2 {msg {mode 1}} {
-    # Displays a message in statusbar of secondary dialogue ($obDl2).
-    #   msg - message
-    #   mode - mode of Message
-    # See also: Message
-
-    variable obDl2
-    Message $msg $mode [$obDl2 LabMess]
-  }
-  #_______________________
-
-  proc Message3 {msg {mode 1}} {
-    # Displays a message in statusbar of tertiary dialogue ($obDl3).
-    #   msg - message
-    #   mode - mode of Message
-    # See also: Message
-
-    variable obDl3
-    Message $msg $mode [$obDl3 LabMess]
-  }
-  #_______________________
-
   proc Balloon {msg {red no} {timo 100}} {
     # Displays a message in a balloon window.
     #   msg - message
@@ -716,8 +696,7 @@ namespace eval alited {
     # Checks if a tip on the tree/favorites can be shown.
 
     variable al
-    set foc [focus]
-    if {[string match *tearoff* $foc]} {
+    if {[set foc [focus]] eq {} || [string match *tearoff* $foc]} {
       return no  ;# no tips while focusing on a tearoff menu
     }
     if {[winfo toplevel $foc] ne $al(WIN)} {

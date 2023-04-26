@@ -879,14 +879,12 @@ proc file::CloseFile {TID checknew args} {
         set res [SaveFile $TID]
       }
     }
-    if {$wtxt ne [$obPav Text]} {
-      # let [$obPav Text] be alive (made by main::_open), as needed by 'pack'
+    if {$wtxt ne [$obPav Text]} { ;# let [$obPav Text] be alive, as needed by 'pack'
       destroy $wtxt $wsbv
-      $obPav fillGutter $wtxt
     }
-    after idle [list after 3000 [list alited::file::ClearupOnClose $TID $wtxt $fname]]
     if {$checknew} CheckForNew
     alited::ini::SaveCurrentIni $al(INI,save_onclose)
+    after 9999 [list alited::file::ClearupOnClose $TID $wtxt $fname]
   }
   alited::tree::UpdateFileTree
   if {$al(closefunc) != 1} {  ;# close func = 1 means "close all"
@@ -897,17 +895,29 @@ proc file::CloseFile {TID checknew args} {
 }
 #_______________________
 
+proc file::ClearupAlTag {tag tab} {
+  # Clears *al* array of *tag,tab* data.
+  #   tag - the tag
+  #   tab - the tab's pattern
+
+  namespace upvar ::alited al al
+  foreach n [array names al $tag,$tab] {unset al($n)}
+}
+#_______________________
+
 proc file::ClearupOnClose {TID wtxt fname} {
   # Clearance after closing a file.
   #   TID - tab's ID
   #   wtxt - text's path
   #   fname - file name
 
-  namespace upvar ::alited al al
-  catch {
-#!    if #\{[IsClang $fname]#\} #\{::hl_c::clearup $wtxt#\} #\{::hl_tcl::clearup $wtxt#\}
-    unset -nocomplain al(_unittree,$TID)
-  }
+  namespace upvar ::alited al al obPav obPav
+  $obPav fillGutter $wtxt
+  catch {if {[IsClang $fname]} {::hl_c::clearup $wtxt} {::hl_tcl::clearup $wtxt}}
+  unset -nocomplain al(_unittree,$TID)
+  ClearupAlTag HL *_$TID
+  ClearupAlTag _INDENT_ *_$TID
+  ClearupAlTag CPOS *$TID,*
 }
 #_______________________
 

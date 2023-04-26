@@ -31,9 +31,6 @@ namespace eval ::klnd {
       by %u \
       be_by %u \
     ]
-    array set p [list FINT %Y/%N/%e days {} months {} \
-      d 0 m 0 y 0 dvis 0 mvis 0 yvis 0 icurr 0 ienter 0 weekday {} \
-      d1st 1 width 2 loc en_uk]
   }
 }
 
@@ -233,6 +230,9 @@ proc ::klnd::my::InitSettings {} {
 
   variable p
   variable msgdir
+  array set p [list FINT %Y/%N/%e days {} months {} \
+    d 0 m 0 y 0 dvis 0 mvis 0 yvis 0 icurr 0 ienter 0 weekday {} \
+    d1st 1 width 2 loc en_uk]
   if {![info exists :klnd::my::prevY]} {
     foreach {i icon} {0 date 1 previous2 2 previous 3 next 4 next2} {
       image create photo IM_KLND_$i -data [::apave::iconData $icon small]
@@ -409,6 +409,14 @@ proc ::klnd::weekdays {{loc ""}} {
       -format %D -locale $loc] -format %a -locale $loc]
   }
   return [list $days $wformat]
+}
+#_______________________
+
+proc ::klnd::clearup {} {
+  # Clearance for klnd data (variable my::p).
+
+  variable my::p
+  array unset my::p *
 }
 #_______________________
 

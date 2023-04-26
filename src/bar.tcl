@@ -102,6 +102,7 @@ proc bar::FillBar {wframe {newproject no}} {
     "chb {$ttl} alited::bar::Lifo {} {} {$tip} ::alited::al(lifo)" \
     ]
   set curname [lindex $tabs $al(curtab)]
+  catch {BAR removeAll}
   catch {::bartabs::Bars create al(bts)}   ;# al(bts) is Bars object
   if {$newproject || [catch {set al(BID) [al(bts) create al(bt) $bar1Opts $curname]}]} {
     foreach tab $tabs {BAR insertTab $tab}

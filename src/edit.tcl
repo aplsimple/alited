@@ -200,25 +200,18 @@ proc edit::UnComment {} {
 
 # ________________________ Color values _________________________ #
 
-proc edit::ShowColorValues {} {
-  # Highlights color values.
+proc edit::FindColorValues {mode} {
+  # Finds color values.
+  #   mode - 1 for "find in all text", 2 for "find in current page", 3 "return RF"
 
-  namespace upvar ::alited al al obPav obPav obFND obFND
-  variable hlcolors
-  variable ans_hlcolors
-  set RE {#([0-9a-f]{3}([^0-9a-z]|$)|[0-9a-f]{6}([^0-9a-z]|$))}
+  namespace upvar ::alited obPav obPav
   set RF {#([0-9a-fA-F]{3,6})}
+  if {$mode==3} {return $RF}
+  set RE {#([0-9a-f]{3}([^0-9a-z]|$)|[0-9a-f]{6}([^0-9a-z]|$))}
   set txt [alited::main::CurrentWTXT]
-  if {$ans_hlcolors<10} {
-    set ans_hlcolors [alited::msg yesnocancel ques \
-      [msgcat::mc {Display colors in the whole text?}] YES \
-      -title $al(MC,hlcolors) -ch $al(MC,noask)]
-  }
-  if {!$ans_hlcolors} return
-  HideColorValues
   set l1 1.0
   set l2 end
-  if {$ans_hlcolors in {2 12} && \
+  if {$mode in {2 12} && \
   ![catch {set gcon [$obPav gutterContents $txt]}] && [llength $gcon]} {
     set l1 [string trim [lindex $gcon 0 1]].0
     set l2 [string trim [lindex $gcon end 1]].end
@@ -239,6 +232,24 @@ proc edit::ShowColorValues {} {
       lappend hlcolors $hlc
     }
   }
+  return [list [llength $hlcolors] $RF]
+}
+#_______________________
+
+proc edit::ShowColorValues {} {
+  # Highlights color values.
+
+  namespace upvar ::alited al al obFND obFND
+  variable hlcolors
+  variable ans_hlcolors
+  if {$ans_hlcolors<10} {
+    set ans_hlcolors [alited::msg yesnocancel ques \
+      [msgcat::mc {Display colors in the whole text?}] YES \
+      -title $al(MC,hlcolors) -ch $al(MC,noask)]
+  }
+  if {!$ans_hlcolors} return
+  HideColorValues
+  lassign [FindColorValues $ans_hlcolors] llen RF
   if {[winfo exists $alited::find::win] && [winfo ismapped $alited::find::win]} {
     set alited::find::data(en1) $RF  ;# if "Find/Replace" is shown, set Find = RE
     [$obFND Cbx1] selection clear
@@ -248,16 +259,20 @@ proc edit::ShowColorValues {} {
     set msg {}
     set mode 1
   }
-  alited::Message $al(MC,hlcolors):\ [llength $hlcolors]\ $msg $mode
+  alited::Message $al(MC,hlcolors):\ $llen\ $msg $mode
 }
 #_______________________
 
 proc edit::HideColorValues {} {
   # Unhighlights color values.
 
-  variable hlcolors
+  set RF [FindColorValues 3]
   set txt [alited::main::CurrentWTXT]
-  foreach hlc $hlcolors {$txt tag remove $hlc 1.0 end}
+  foreach hlc [$txt tag names] {
+    if {[regexp $RF $hlc]} {
+      $txt tag remove $hlc 1.0 end
+    }
+  }
 }
 #_______________________
 
