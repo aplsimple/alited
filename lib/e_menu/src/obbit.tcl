@@ -1623,12 +1623,14 @@ oo::class create ::apave::ObjectTheming {
       set ::apave::_CS_(index) $ncolor
     }
     # colors can be passed in args as -clrtitf "color" -clrinaf "color" ...
-    foreach nclr {clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk tfgI tbgI fM bM tfgW tbgW tHL2 tbHL chkHL} {
-      incr ic
-      if {[set i [lsearch $args -$nclr]]>-1} {
-        set $nclr [lindex $args $i+1]
-        set chcs [lreplace [lindex $::apave::_CS_(ALL) $ncolor] $ic $ic [set $nclr]]
-        set ::apave::_CS_(ALL) [lreplace $::apave::_CS_(ALL) $ncolor $ncolor $chcs]
+    if {$ncolor>=0} {
+      foreach nclr {clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk tfgI tbgI fM bM tfgW tbgW tHL2 tbHL chkHL} {
+        incr ic
+        if {[set i [lsearch $args -$nclr]]>-1} {
+          set $nclr [lindex $args $i+1]
+          set chcs [lreplace [lindex $::apave::_CS_(ALL) $ncolor] $ic $ic [set $nclr]]
+          set ::apave::_CS_(ALL) [lreplace $::apave::_CS_(ALL) $ncolor $ncolor $chcs]
+        }
       }
     }
     set fg $clrinaf  ;# main foreground

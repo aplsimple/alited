@@ -499,7 +499,7 @@ proc pref::General_Tab1 {} {
     {.labCurw .labHue T 1 1 {-st w -pady 1 -padx 3} {-t {Cursor width:}}}
     {.spxCurw + L 1 1 {-st sw -pady 1 -padx 3} {-tvar alited::al(CURSORWIDTH) -from 1 -to 8}}
     {.labCC + L 1 1 {-st we -pady 1 -padx 3} {-t {Color of cursor:}}}
-    {.clrCC + L 1 1 {-st sw -pady 1} {-tvar alited::al(CURSORCOLOR) -w 20}}
+    {.clrCC + L 1 1 {-st sw -pady 1} {-tvar alited::al(CURSORCOLOR) -w 14}}
     {seh_ fra1 T 1 2 {-pady 4}}
     {fra2 + T 1 2 {-st nsew -cw 1}}
     {.labLocal - - 1 1 {-st w -pady 1 -padx 3} {-t {Preferable locale:} -tip {$alited::al(MC,locale)}}}
@@ -703,12 +703,15 @@ proc pref::CheckIndent {{pre "DEFAULT,"}} {
 #_______________________
 
 proc pref::CheckCS {} {
-  # Checks if the color scheme is changed and, if so, clears "Color of cursor" field.
+  # Checks if the color scheme is changed and, if so, sets "Color of cursor" field.
 
   fetchVars
   set cs [GetCS]
   if {[info exists al(CheckCS)] && $al(CheckCS)!=$cs} {
-    set al(CURSORCOLOR) {}
+    set al(CURSORCOLOR) [lindex [::apave::obj csGet $cs] 7]
+    catch {
+      .alwin.diaPref.fra.fraR.nbk.f1.fra1.labclrCC configure -background $al(CURSORCOLOR)
+    }
   }
   set al(CheckCS) $cs
   return $cs
