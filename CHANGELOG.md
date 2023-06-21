@@ -1,6 +1,16 @@
 # LAST CHANGES:
 
 
+Version `v1.4.4.1 (21 Jun'23)`
+
+  - BUGFIX: Tab key order in Preferences & Projects dialogues
+  - NEW   : Preferences/General: "Color of cursor" setting
+  - NEW   : Preferences/Editor: "Blinking cursor" setting
+  - NEW   : Preferences/General: "Preview" includes the cursor settings
+  - CHANGE: Preferences: little clearances
+  - CHANGE: apave/e_menu 4.1.0
+
+
 Version `v1.4.4 (26 Apr'23)`
 
   - BUGFIX: units of tree with todo comments (detection in big files)
@@ -30,7 +40,7 @@ Version `v1.4.4 (26 Apr'23)`
   - CHANGE: clearance & tiny-up
   - CHANGE: demos (paver incl.)
   - CHANGE: docs
-  - CHANGE: apave/e_menu 4.0.8, hl_tcl 1.0.4, bartabs 1.6.6
+  - CHANGE: apave/e_menu 4.1.0, hl_tcl 1.0.5, bartabs 1.6.6
 
 
 Version `v1.4.3 (22 Mar'23)`

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.4.1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -500,10 +500,9 @@ namespace eval alited {
   proc Tnext {{wprev ""}} {
     # Returns "next & prev widgets" for Tab & Shift/Tab keys, just to skip "Help".
     #   wprev - widget for Shift/Tab
-    # Used by obDl2 objects.
+    # Used by obPrf & obPrj objects.
 
-    variable obDl2
-    return [list [$obDl2 ButOK] $wprev]
+    return [list *.ButOK $wprev]
   }
   #_______________________
 
@@ -1084,6 +1083,7 @@ if {[info exists ALITED_PORT]} {
     source [file join $alited::SRCDIR indent.tcl]
     source [file join $alited::SRCDIR run.tcl]
     source [file join $alited::SRCDIR paver.tcl]
+    source [file join $alited::SRCDIR preview.tcl]
     source [file join $alited::LIBDIR addon hl_md.tcl]
     source [file join $alited::LIBDIR addon hl_html.tcl]
     source [file join $alited::LIBDIR addon hl_em.tcl]

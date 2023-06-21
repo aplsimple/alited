@@ -3,9 +3,10 @@
 
  Set at need the following options for the texts:
 
-   <b>Space above lines</b> is an additional space above each text line
-   <b>Space below lines</b> is an additional space below each text line
-   <b>Space between wraps</b> is a space between lines that are wrapped
+   <b>Space above lines</b> - an additional space above each text line
+   <b>Space below lines</b> - an additional space below each text line
+   <b>Space between wraps</b> - a space between lines that are wrapped
+   <b>Blinking cursor</b> - if OFF, set the cursor blinking off
 
  For the gutter of line numbers, you can set:
 

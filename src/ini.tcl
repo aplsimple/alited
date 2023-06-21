@@ -19,6 +19,7 @@ namespace eval ::alited {
   set al(ED,gutterwidth) 5  ;# gutter's windth in chars
   set al(ED,guttershift) 3  ;# space between gutter and text
   set al(ED,btsbd) 0        ;# borderwidth for bartabs
+  set al(ED,BlinkCurs) 1    ;# blinking cursor
   set al(TREE,isunits) yes  ;# current mode of tree: units/files
   set al(TREE,units) no     ;# flag "is a unit tree created"
   set al(TREE,files) no     ;# flag "is a file tree created"
@@ -147,8 +148,9 @@ namespace eval ::alited {
   # current text's wrap words mode
   set al(wrapwords) 1
 
-  # cursor's width
+  # cursor's width & color
   set al(CURSORWIDTH) 2
+  set al(CURSORCOLOR) {}
 
   # defaults for projects
   foreach _ $::alited::OPTS {set prjinfo(DEFAULT,$_) $::alited::al($_)}
@@ -415,6 +417,8 @@ proc ini::ReadIniOptions {nam val} {
     gutterwidth   {set al(ED,gutterwidth) $val}
     guttershift   {set al(ED,guttershift) $val}
     btsbd         {set al(ED,btsbd) $val}
+    BlinkCurs     {set al(ED,BlinkCurs) $val}
+    ClrCurs       {set al(CURSORCOLOR) $val}
     cursorwidth   {set al(CURSORWIDTH) $val}
     prjdefault    {set al(PRJDEFAULT) $val}
     DEFAULT,*     {set al($nam) $val}
@@ -785,6 +789,8 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "gutterwidth=$al(ED,gutterwidth)"
   puts $chan "guttershift=$al(ED,guttershift)"
   puts $chan "btsbd=$al(ED,btsbd)"
+  puts $chan "BlinkCurs=$al(ED,BlinkCurs)"
+  puts $chan "ClrCurs=$al(CURSORCOLOR)"
   puts $chan "prjdefault=$al(PRJDEFAULT)"
   foreach k [array names al DEFAULT,*] {
     puts $chan "$k=$al($k)"
@@ -1258,7 +1264,10 @@ proc ini::InitGUI {} {
   namespace upvar ::alited al al
   ::apave::obj basicFontSize $al(FONTSIZE,std)
   if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE)}
-  ::apave::obj csSet $al(INI,CS) . -doit
+  if {$al(CURSORCOLOR) eq {}} {
+    set al(CURSORCOLOR) [lindex [::apave::obj csGet $al(INI,CS)] 7]
+  }
+  ::apave::obj csSet $al(INI,CS) . -doit -clrcurs $al(CURSORCOLOR)
   if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE) yes}
   set Dark [::apave::obj csDark]
   if {![info exists al(ED,clrCOM)] || ![info exists al(ED,CclrCOM)] || \
@@ -1275,6 +1284,10 @@ proc ini::InitGUI {} {
   }
   if {[llength $clrvals]==[llength $clrnams]} {
     ::hl_tcl::hl_colors {-AddTags} $Dark {*}$clrvals
+  }
+  if {!$al(ED,BlinkCurs)} {
+    lassign [::apave::obj defaultATTRS tex] texopts texattrs
+    ::apave::obj defaultATTRS tex $texopts [dict set texattrs -insertofftime 0]
   }
   ::apave::obj setShowOption -resizable 0
   if {[::isKDE]} {  ;# esp. for KDE:

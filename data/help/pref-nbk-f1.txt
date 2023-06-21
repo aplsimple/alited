@@ -13,6 +13,8 @@
 
  You can tint the colors with <b>Tint</b> option. The negative values mean
  "darker", the positive values mean "lighter".
+
+ To preview the theming settings, switch the "Preview" checkbox on.
  ______________________________________________________________________________
 
  The <b>Preferable locale</b> is a language code: de, en, ru, uk etc.
@@ -22,6 +24,11 @@
  Additionally, you can set font sizes that will touch the following widgets:
  - <b>small font</b> : trees, tabs, tooltips, info/status bar, find/replace box
  - <b>middle font</b>: labels, menus, buttons, entries
+
+ The cursor's attributes can be set also:
+ - <b>cursor width</b>
+ - <b>color of cursor</b>
+ - <b>blinking cursor</b> (on "Editor" tab, as it touches the text fields only)
  ______________________________________________________________________________
 
  The <b>Notes</b> field includes arbitrary ideas, todos etc. for all projects.

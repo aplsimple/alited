@@ -1823,9 +1823,9 @@ proc project::Tab2 {} {
     {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
-    {.swiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite) -tabnext alited::Tnext}}
+    {.swiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite)}}
     {.labmaxcom .labTrWs T 1 1 {-st w -pady 1 -padx 3} {-t {Maximum Run commands}}}
-    {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjmaxcoms) -from 4 -to 99}}
+    {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjmaxcoms) -from 4 -to 99 -tabnext alited::Tnext}}
     {.labFlist .labmaxcom T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
     {fraFlist + T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}

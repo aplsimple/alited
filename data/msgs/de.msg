@@ -419,6 +419,7 @@ namespace eval ::alited {
     {Small font size:} {Schmaler Zeichensatz:}
     {Middle font size:} {Mittlerer Zeichensatz:}
     {Cursor width:} {Kursorbreite:}
+    {Color of cursor:} {Kursorfarbe:}
     {Notes:} {Notizen:}
     "Sort of diary.\nList of TODOs etc." "Eine Art Tagebuch.\nListe offener Punkte usw."
     {Light / Dark} {Hell / Dunkel}
@@ -440,6 +441,7 @@ namespace eval ::alited {
     {Tab bar tip's length:} {Tab-Leiste Tiplänge:}
     {Border for bar tabs:} {Borte für Tab-Leiste:}
     {Code snippet:} {Codeausschnitt:}
+    {Blinking cursor:} {Blinkender Cursor:}
   }
 
   ### ________________________ Saving _________________________ ###

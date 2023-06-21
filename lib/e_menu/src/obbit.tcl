@@ -1622,6 +1622,15 @@ oo::class create ::apave::ObjectTheming {
       }
       set ::apave::_CS_(index) $ncolor
     }
+    # colors can be passed in args as -clrtitf "color" -clrinaf "color" ...
+    foreach nclr {clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk tfgI tbgI fM bM tfgW tbgW tHL2 tbHL chkHL} {
+      incr ic
+      if {[set i [lsearch $args -$nclr]]>-1} {
+        set $nclr [lindex $args $i+1]
+        set chcs [lreplace [lindex $::apave::_CS_(ALL) $ncolor] $ic $ic [set $nclr]]
+        set ::apave::_CS_(ALL) [lreplace $::apave::_CS_(ALL) $ncolor $ncolor $chcs]
+      }
+    }
     set fg $clrinaf  ;# main foreground
     set bg $clrinab  ;# main background
     set fE $clrtitf  ;# fieldforeground foreground
@@ -1633,7 +1642,7 @@ oo::class create ::apave::ObjectTheming {
     set cc $clrcurs  ;# caret's color
     set ht $clrhotk  ;# hotkey color
     set grey $gr ;# #808080
-    if {$::apave::_CS_(old) != $ncolor || $args eq "-doit"} {
+    if {$::apave::_CS_(old) != $ncolor || "-doit" in $args} {
       set ::apave::_CS_(old) $ncolor
       my themeWindow $win [list $fg $bg $fE $bE $fS $bS $grey $bg $cc $ht $hh $tfgI $tbgI $fM $bM $tfgW $tbgW $tHL2 $tbHL $chkHL $res5 $res6 $res7]
       my UpdateColors

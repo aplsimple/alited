@@ -416,6 +416,7 @@ namespace eval ::alited {
     {Small font size:} {Размер малого шрифта:}
     {Middle font size:} {Размер среднего шрифта:}
     {Cursor width:} {Ширина курсора:}
+    {Color of cursor:} {Цвет курсора:}
     {Notes:} {Заметки:}
     "Sort of diary.\nList of TODOs etc." "Типа дневника.\nСписок TODO и пр."
     {Light / Dark} {Светлые / Темные}
@@ -437,6 +438,7 @@ namespace eval ::alited {
     {Tab bar tip's length:} {Длина подсказок панели файлов:}
     {Border for bar tabs:} {Кайма для панели файлов:}
     {Code snippet:} {Фрагмент кода:}
+    {Blinking cursor:} {Мигание курсора:}
   }
 
   ### ________________________ Saving _________________________ ###

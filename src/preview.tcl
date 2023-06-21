@@ -8,22 +8,20 @@
 ###########################################################
 
 package require Tk
-wm withdraw .
-if {$::argc != 1} {
-  puts "\nUsed by alited as follows:\n  [info nameofexecutable] [info script] argfile\n"
-  exit
-}
 
 # _________________________ NS preview ________________________ #
 
 namespace eval preview {
+  variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq \
+    [file normalize [info script]]} ? 1 : 0]
   variable argfile [lindex $::argv 0]
   variable theme alt CS -2 tint 0 algeom +1+1 title Test
+  variable curswidth 2 cursclr {} cursblink 0
   variable SCRIPT [file normalize [info script]]
   variable DIR [file dirname [file dirname $SCRIPT]]
   variable LIBDIR [file join $DIR lib]
   variable PAVEDIR [file join $LIBDIR e_menu src]
-  source [file join $preview::PAVEDIR apave.tcl]
+  if {$solo} {source [file join $PAVEDIR apave.tcl]}
 }
 
 # ________________________ Procedures _________________________ #
@@ -42,11 +40,14 @@ proc preview::InitArgs {} {
   variable tint
   variable algeom
   variable title
+  variable curswidth
+  variable cursclr
+  variable cursblink
   if {![file exists $argfile]} exit
   set ch [open $argfile]
   set line [gets $ch]
   close $ch
-  lassign $line algeom theme CS tint title
+  lassign $line algeom theme CS tint curswidth cursblink cursclr title
 }
 #_______________________
 
@@ -79,9 +80,20 @@ proc preview::Run {} {
   variable algeom
   variable SCRIPT
   variable title
+  variable curswidth
+  variable cursclr
+  variable cursblink
   ::apave::InitTheme $theme $LIBDIR
-  ::apave::initWM -theme $theme -cs $CS
+  if {$cursclr eq {}} {
+    set cursclr [lindex [::apave::obj csGet $CS] 7]
+  }
+  ::apave::initWM -theme $theme -cs $CS -cursorwidth $curswidth
+  ::apave::obj csSet $CS . -clrcurs $cursclr
   ::apave::obj csToned $CS $tint yes
+  if {!$cursblink} {
+    lassign [::apave::obj defaultATTRS tex] texopts texattrs
+    ::apave::obj defaultATTRS tex $texopts [dict set texattrs -insertofftime 0]
+  }
   set obj previewobj
   set win .win
   catch {::apave::APave create $obj $win}
@@ -143,8 +155,15 @@ proc preview::Run {} {
 
 # ________________________ Run me _________________________ #
 
-  preview::InitArgs
-  preview::Run
-  exit
+  if {$preview::solo} {
+    wm withdraw .
+    if {$::argc != 1} {
+      puts "\nUsed by alited as follows:\n  [info nameofexecutable] [info script] argfile\n"
+    } else {
+      preview::InitArgs
+      preview::Run
+    }
+    exit
+  }
 
 # ________________________ EOF _________________________ #
