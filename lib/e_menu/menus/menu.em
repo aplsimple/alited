@@ -2,7 +2,7 @@
 
 in=1.0
 w=25
-pos=122.77
+pos=32.35
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENU_FOSGIT]} {set ::EMENU_FOSGIT Fossil}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE [set ::EMENURUNFILE "%f"] ; if {[::iswindows]} {set ::EMENURUNFILE [string map [list \\ \\\\] "%f"]; set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
@@ -24,13 +24,14 @@ RE: cd %d
 R: %C set ::_EM_AR_ [string map {\\$ \$} {%AR}]
 R: %C set ::_EM_RF_ [string map {\\$ \$} {%RF}]
 R: %C set ::_EM_EE_ [string map {\\$ \$} {%EE}]
-SE: %IF {%EE}!="" %THEN $::_EM_EE_
-RE: %IF "%x"==".tcl" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
-RE: %IF "%x"==".tcl" %THEN %T tclsh "$::EMENURUNFILE" $::_EM_AR_
-RE: %IF "%x"==".py"  %THEN %t python3 "$::EMENURUNFILE" %AR
-RE: %IF "%x"==".sh"  %THEN %t "$::EMENURUNFILE"
-SE: %IF {%RF}!="" %THEN %RF
-RE: %IF {%AR}=="" && ![::iswindows] %THEN %O "$::EMENURUNFILE"
+SE: %IF {%EE} ne "" %THEN $::_EM_EE_
+RE: %IF "%x" eq ".tcl" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
+RE: %IF "%x" eq ".tcl" %THEN %T tclsh "$::EMENURUNFILE" $::_EM_AR_
+RE: %IF "%x" eq ".py"  %THEN %t python3 "$::EMENURUNFILE" %AR
+RE: %IF "%x" eq ".sh"  %THEN %t "$::EMENURUNFILE"
+RE: %IF "%x" in {.htm .html} %THEN %b "$::EMENURUNFILE"
+SE: %IF {%RF} ne "" %THEN %RF
+RE: %IF {%AR} eq "" && ![::iswindows] %THEN %O "$::EMENURUNFILE"
 RE: "$::EMENURUNFILE" %AR
 
 ITEM = Run Tcl {all selection}
@@ -94,7 +95,7 @@ S: %IF [Q "FOSSIL COMMIT" " Add all changes and GIT COMMIT\n\n with message\n\n 
 
 ITEM = Differences of $::FILETAIL (fossil/git) ...
 R: cd %PD
-RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
+R: %C if {{$::EMENU_FOSGIT} eq {Fossil}} {exec fossil tim -t ci -n 99 > $::EMENUTMPFILE} {exec git log --format=oneline -99 > $::EMENUTMPFILE}
 R: %C set ::EMENUBAKFILE [file join "%pd" .bak $::EMENUFILETAIL]
 R: %C if {"%BF" ne {}} {set ::EMENUBAKFILE "%BF"}
 R: %C if {[file exists "$::EMENUBAKFILE"]} {set ::EMENUCHBSTATE normal} {set ::EMENUCHBSTATE disabled}

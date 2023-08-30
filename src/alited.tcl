@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.4.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.4.2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -1024,7 +1024,6 @@ if {[info exists ALITED_PORT]} {
     set ::argv {}
     after 10 [list ::alited::open_files_and_raise 0 {*}$ALITED_ARGV]
   }
-  unset -nocomplain ALITED_ARGV
   if {$alited::DEBUG} {
     alited::ini::_init
   } elseif {[catch {alited::ini::_init} _]} {
@@ -1038,10 +1037,11 @@ if {[info exists ALITED_PORT]} {
       \n\nTry to rename/move it or take it from alited's source. \
       \nThen restart alited.\n\nDetails are in stdout."
   }
-  unset -nocomplain _
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
   alited::tool::AfterStart
+  unset -nocomplain _
+  unset -nocomplain ALITED_ARGV
 #  catch #\{source ~/PG/github/DEMO/alited/demo.tcl#\} ;#------------- TO COMMENT OUT
   if {[catch {set res [alited::main::_run]} err]} {
     set res 0

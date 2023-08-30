@@ -64,6 +64,9 @@ proc tool::ColorPicker {} {
   if {$color ne {}} {
     set al(chosencolor) $color
   }
+  foreach o {moveall tonemoves} {
+    if {![string is boolean -strict $al($o)]} {set al($o) 0}
+  }
   set res [::apave::obj chooser colorChooser alited::al(chosencolor) \
     -moveall $al(moveall) -tonemoves $al(tonemoves) -parent $al(WIN) \
     -geometry pointer+10+10]
@@ -488,7 +491,8 @@ proc tool::Runs {mc runs} {
   foreach run [split $runs \n] {
     if {[set run [string trim $run]] ne {} && [string first # $run]!=0} {
       if {[catch {eval $run} e]} {
-        catch {exec -- {*}$run} e
+        catch {exec -- {*}$run} e2
+        append e " / $e2"
       }
       alited::info::Put "$mc\"$run\" -> $e"
       update
@@ -499,19 +503,27 @@ proc tool::Runs {mc runs} {
 ## ________________________ after start _________________________ ##
 
 proc tool::AfterStartDlg {} {
-  # Dialogue to enter a command before running "Tools/Run"
+  # Dialogue "Setup/For Start".
 
   namespace upvar ::alited al al obDl2 obDl2
   set lab [msgcat::mc " Enter commands to be run after starting alited.\n They can be Tcl or executables:"]
   set run [string map [list $alited::EOL \n] $al(afterstart)]
   lassign [$obDl2 input {} $al(MC,afterstart) [list \
     lab [list {} {-pady 8} [list -t $lab]] {} \
-    tex "{} {} {-w 80 -h 16 -tabnext {butOK butCANCEL}}" "$run" ] \
+    tex "{} {} {-w 80 -h 16 -tabnext {butOK butCANCEL} -afteridle {alited::tool::AfterStartSyntax %w}}" "$run" ] \
     -help {alited::tool::HelpTool %w 1}] res run
   if {$res} {
     set al(afterstart) [string map [list \n $alited::EOL] [string trim $run]]
     alited::ini::SaveIni
   }
+}
+#_______________________
+
+proc tool::AfterStartSyntax {w} {
+  # Highlight "Setup/For Start" text's syntax, at least Tcl part of it.
+  #   w - the text's path
+
+  alited::SyntaxHighlight tcl $w [alited::SyntaxColors]
 }
 #_______________________
 

@@ -518,7 +518,8 @@ proc main::GotoLine {} {
     }
     after 200 " \
       alited::main::FocusText $TID $ln.0 ; \
-      alited::tree::NewSelection {} $ln.0 yes"
+      alited::tree::NewSelection {} $ln.0 yes; \
+      alited::main::HighlightLine"
   }
 }
 

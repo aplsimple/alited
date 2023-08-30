@@ -28,7 +28,7 @@ package require Tk
 wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.1.1}
+  variable em_version {e_menu 4.1.2}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -1368,8 +1368,8 @@ proc ::em::checkForWilds {rsel} {
   upvar $rsel sel
   switch -glob -nocase -- $sel {
     {%B *} {
-      set sel "::eh::browse [list [string range $sel 3 end]]"
-      if {![catch {{*}$sel} e]} {
+      set sel [string trim [string range $sel 3 end] {" }]
+      if {![catch {::eh::browse $sel} e]} {
         return [list true true]
       }
     }

@@ -10,19 +10,26 @@
  the dialogue's current settings and closes it.
 
  <r>Cancel</r> button dismisses all changes made in the dialogue.
+ _______________________________________________________________________
 
- A Tcl script (file.tcl) can be run in <r>console</r> or <r>Tkcon</r>.
+ Any Tcl script (file.tcl) can be run <r>in console</r> or <r>in Tkcon</r>.
+ Both modes have their pros and contras - mostly pros, if properly used.
+ _______________________________________________________________________
 
- With <r>By command #RUNF</r> you can write comments in a file
+ With <r>By command #RUNF</r> you can write comments in a file like this:
    #RUNF: file.tcl arg1 arg2 arg3
  or
    #EXEC: tclsh file.tcl arg1 arg2 arg3
  meaning that "tclsh file.tcl arg1 arg2 arg3" will be run on the file.
- If there isn't this command, a current file is run by an associated app.
 
  With <r>By command</r> you can set a list of arbitrary commands
  to be selected and run independently on a type of current file.
- It can be OS commands or executables to be run in console.
+ It can be an OS command or an executable to be run <r>in console</r>.
+ _______________________________________________________________________
+
+ If there isn't <b>#RUNF:</b> nor <b>#EXEC:</b> comment nor <r>By command
+ </r>option, a current file is run by an associated application.
+ _______________________________________________________________________
 
  If a Tcl file has to be run, you can set the command with or without
  <b>tclsh</b>, <b>wish</b>, <b>tclkit</b> etc., for example:
@@ -36,20 +43,31 @@
    <b>%pd</b> - project's directory
    <b>%s</b>  - text's selection / current word
    <b>%%</b>  - %
+ _______________________________________________________________________
 
- The combobox's commands can be created and edited in the text box,
- at that a current line is highlighted and displayed in the combobox.
+ <b>The combobox's commands can be created and edited in the text box,
+ at that a current line is highlighted and displayed in the combobox.</b>
+ _______________________________________________________________________
 
- These two ways of "Run" are useful for two different type of projects:
+ These two ways of "Run" (<r>By command #RUNF</r> and
+ <r>By command</r>) are useful for two different type of projects:
 
-   - <b>heterogeneous</b>: a project contains a lot of files that need to
-     be tested and debugged with their own commands
+   <r>By command #RUNF</r> - for <b>heterogeneous projects</b>:
 
-   - <b>monolith</b>: you have a lot of files that need a list of commands
-     to test and debug the whole application (<b>alited</b> is an example)
+     when a project contains a lot of files that need to
+     be tested and debugged with their own commands - then you use
+     <r>#RUNF / #EXEC</r> comments in the project's files to test/debug
+     them with their appropriate commands
+
+   <r>By command</r> - for <b>monolith projects</b>:
+
+     when you have a list of commands to test and debug the whole of
+     your application (<b>alited</b> is an example) - then you use
+     <r>By command</r> option to test/debug it with the list
 
  Anyhow, "Run me" item of <b>e_menu</b> tool allows running a current file
  in "normal" manner by an associated application. Press F4 twice for it.
+ _______________________________________________________________________
 
  Also, you can enter commands to be run <r>before</r> running a file.
  It can be necessary <b>for a specific project</b>, sort of initialization.

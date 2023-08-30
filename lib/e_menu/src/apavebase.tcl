@@ -1576,11 +1576,12 @@ oo::class create ::apave::APaveBase {
       # no saved geometry with *vargeo*, so get it with *vargeo2*
       catch {lassign [set $vargeo2] -> geom}
     }
-    catch {
-      if {[string match *x*+*+* $geom] && [::isunix]} {
-        after idle "catch {wm withdraw $wchooser; wm geometry $wchooser 1x1}"
-        after 0 [list after idle "catch {wm geometry $wchooser $geom; wm deiconify $wchooser}"]
-      }
+    if {![package vsatisfies [package require Tk] 9.0-] && \
+    [string match *x*+*+* $geom] && [::isunix]} {
+      # the below equilibristics provides the smooth display of old Tk choosers
+      after idle "catch {wm withdraw $wchooser; wm geometry $wchooser 1x1}"
+      after 0 [list after idle \
+        "catch {wm withdraw $wchooser; wm geometry $wchooser $geom; wm deiconify $wchooser}; wm geometry $wchooser $geom"]
     }
     return $wchooser
   }
@@ -3590,6 +3591,20 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
+  method waitWinVar {win var} {
+    # Tk waiting for variable's change.
+    #   win - the window's path
+    #   var - variable's name to receive a result (tkwait's variable)
+
+    if {$var ne {}} {
+      if {![winfo viewable $win]} {
+        tkwait visibility $win  ;# waits till the window be visible
+      }
+      tkwait variable $var  ;# waits till the window associated variable be changed
+    }
+  }
+  #_______________________
+
   method showWindow {win modal ontop {var ""} {minsize ""} {waitvar 1}} {
     # Displays a windows and goes in tkwait cycle to interact with a user.
     #   win - the window's path
@@ -3610,7 +3625,7 @@ oo::class create ::apave::APaveBase {
     if {$modal} {
       # modal window:
       grab set $win
-      if {$var ne {}} {tkwait variable $var}
+      my waitWinVar $win $var
       grab release $win
       ::apave::InfoWindow [expr {[::apave::InfoWindow] - 1}] $win $modal $var
     } else {
@@ -3619,9 +3634,9 @@ oo::class create ::apave::APaveBase {
         grab release $wgr
       }
       if {$waitvar && $var ne {}} {
-        tkwait variable $var  ;# show and wait for closing the window
+        my waitWinVar $win $var ;# show and wait for closing the window
       } else {
-        wm deiconify $win     ;# show only
+        wm deiconify $win      ;# show only
       }
     }
   }
@@ -3651,8 +3666,8 @@ oo::class create ::apave::APaveBase {
         set root $centerme
       }
     }
-    set opt(-decor) [expr {[winfo parent $win] in {{} .}}]
-    foreach {o v} [list -focus {} -onclose {} -geometry {} \
+    set decor [expr {$root in {{} .}}]
+    foreach {o v} [list -decor $decor -focus {} -onclose {} -geometry {} \
     -root $root -resizable {} -ontop 0 -escape 1 -checkgeometry 1] {
       lappend defargs $o [my getShowOption $o $v]
     }
