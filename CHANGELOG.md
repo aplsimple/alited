@@ -1,25 +1,21 @@
 # LAST CHANGES:
 
 
-Version `v1.4.4.2 (30 Aug'23)`
+Version `v1.4.4.3 (6 Sep'23)`
 
+  - BUGFIX: pass a file name with spaces to alited
   - BUGFIX: highlight a line after "Search / Go to Line"
   - BUGFIX: initial moveall & tonemoves options for color picker
-  - NEW   : highlight "Setup / For Start" commands (Tcl part at least)
-  - CHANGE: alited.tcl: unset ::ALITED_ARGV (list of file names) after init.actions
-  - CHANGE: menu.em
-  - CHANGE: tool2.txt
-  - CHANGE: e_menu/apave 4.1.2
-
-
-Version `v1.4.4.1 (21 Jun'23)`
-
   - BUGFIX: Tab key order in Preferences & Projects dialogues
+  - NEW   : highlight "Setup / For Start" commands (Tcl part at least)
   - NEW   : Preferences/General: "Color of cursor" setting
   - NEW   : Preferences/Editor: "Blinking cursor" setting
   - NEW   : Preferences/General: "Preview" includes the cursor settings
+  - CHANGE: alited.tcl: unset ::ALITED_ARGV (list of file names) after init.actions
+  - CHANGE: menu.em
+  - CHANGE: tool2.txt
   - CHANGE: Preferences: little clearances
-  - CHANGE: apave 4.1.1
+  - CHANGE: e_menu/apave 4.1.3
 
 
 Version `v1.4.4 (26 Apr'23)`

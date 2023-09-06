@@ -7,14 +7,14 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.4.2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.4.3  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
   variable al; array set al [list]
 
   # versions of mnu/ini to update to
-  set al(MNUversion) 1.4.2
+  set al(MNUversion) 1.4.4.3
   set al(INIversion) 1.4.2
 
   # previous version of alited to update from
@@ -174,6 +174,7 @@ namespace eval alited {
         return
       }
       foreach fname [lreverse $args] {
+        set fname [string trim $fname "\"\{\}"]
         if {[file isfile $fname]} {
           file::OpenFile $fname yes
         } else {

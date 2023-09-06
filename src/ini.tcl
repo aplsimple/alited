@@ -1050,7 +1050,7 @@ proc ini::CheckUpdates {doit} {
       lab5  {{} {-padx 5} {-t {$::alited::al(MC,restart)}}} {} \
     ]
   }
-  lassign [$pobj input {} $al(MC,updateALE) [list \
+  lassign [$pobj input {} $al(MC,updateALE)\ v$al(ALEversion) [list \
     lab1  {{} {} {-t {$::alited::al(MC,updLab1)}}}  {} \
     chb1  {{} {-padx 10} {-t {$::alited::al(MC,updmnu)}}} {$::alited::al(_updmnu_)} \
     chb2  {{} {-padx 10} {-t {$::alited::al(MC,updini)}}} {$::alited::al(_updini_)} \

@@ -3591,16 +3591,34 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
-  method waitWinVar {win var} {
+  method waitWinVar {win var modal} {
     # Tk waiting for variable's change.
     #   win - the window's path
     #   var - variable's name to receive a result (tkwait's variable)
+    #   modal - yes at showing the window as modal
 
-    if {$var ne {}} {
-      if {![winfo viewable $win]} {
-        tkwait visibility $win  ;# waits till the window be visible
+    # first of all, wait till the window be visible
+    if {![winfo viewable $win]} {
+      tkwait visibility $win
+    }
+    if {$modal} {      ;# for modal, grab the window
+      set wgr [grab current]
+      if {[catch {grab set $win}]} {
+        catch {tkwait visibility $win}  ;# 2nd attempt to get the window visible, by force
+        catch {grab set $win}           ;# (not sure, where it can fire, still let it be)
+        puts stderr "\napave::waitWinVar - please send a note to apave developers on this catch."
+        catch {puts stderr "apave::waitWinVar - [info level -1]\n"}
       }
-      tkwait variable $var  ;# waits till the window associated variable be changed
+    }
+    # at need, wait till the window associated variable be changed
+    if {$var ne {}} {
+      tkwait variable $var
+    }
+    if {$modal} {      ;# for modal, release the grab
+      catch {grab release $win}
+      if {$wgr ne {}} {
+        catch {grab set $wgr}  ;# restore the old grab
+      }
     }
   }
   #_______________________
@@ -3624,9 +3642,7 @@ oo::class create ::apave::APaveBase {
     if {$ontop} {wm attributes $win -topmost 1}
     if {$modal} {
       # modal window:
-      grab set $win
-      my waitWinVar $win $var
-      grab release $win
+      my waitWinVar $win $var $modal
       ::apave::InfoWindow [expr {[::apave::InfoWindow] - 1}] $win $modal $var
     } else {
       # non-modal window:
@@ -3634,7 +3650,7 @@ oo::class create ::apave::APaveBase {
         grab release $wgr
       }
       if {$waitvar && $var ne {}} {
-        my waitWinVar $win $var ;# show and wait for closing the window
+        my waitWinVar $win $var $modal ;# show and wait for closing the window
       } else {
         wm deiconify $win      ;# show only
       }
