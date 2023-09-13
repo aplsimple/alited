@@ -1,7 +1,7 @@
 # LAST CHANGES:
 
 
-Version `v1.4.4.3 (6 Sep'23)`
+Version `v1.4.4.4 (7 Sep'23)`
 
   - BUGFIX: pass a file name with spaces to alited
   - BUGFIX: highlight a line after "Search / Go to Line"
@@ -15,7 +15,7 @@ Version `v1.4.4.3 (6 Sep'23)`
   - CHANGE: menu.em
   - CHANGE: tool2.txt
   - CHANGE: Preferences: little clearances
-  - CHANGE: e_menu/apave 4.1.3
+  - CHANGE: e_menu/apave 4.1.4
 
 
 Version `v1.4.4 (26 Apr'23)`

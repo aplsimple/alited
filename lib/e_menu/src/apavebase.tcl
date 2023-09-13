@@ -3646,9 +3646,6 @@ oo::class create ::apave::APaveBase {
       ::apave::InfoWindow [expr {[::apave::InfoWindow] - 1}] $win $modal $var
     } else {
       # non-modal window:
-      if {[set wgr [grab current]] ne {}} {
-        grab release $wgr
-      }
       if {$waitvar && $var ne {}} {
         my waitWinVar $win $var $modal ;# show and wait for closing the window
       } else {
