@@ -28,7 +28,7 @@ package require Tk
 wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.1.3}
+  variable em_version {e_menu 4.1.5}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -3150,9 +3150,13 @@ proc ::em::main {args} {
       return 1
     }
     if {!$::em::reallyexit} {  ;# may be set in autoruns
+      if {[set wgr [grab current]] ne {}} {
+        grab release $wgr  ;# in Windows there are some issues with the grabbing
+      }
       ::apave::obj showWindow .em $modal $::em::ontop ::em::em_win_var \
         "$::em::minwidth $::em::minheight" yes
       destroy .em
+      if {$wgr ne {}} {grab set $wgr}
       if {![pool_pull]} break
     } elseif {$::em::reallyexit eq {2}} {
       set ::em::empool [list]

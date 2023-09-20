@@ -182,6 +182,15 @@ namespace eval ::apave {
   }
   #_______________________
 
+  proc mainWindowOfApp {{win ""}} {
+    # Sets/gets a main window of application.
+    #   win - window's path
+    # This should be run at application start, before opening any window.
+
+    return [WindowStatus . MAIN_WINDOW_OF_APP $win]
+  }
+  #_______________________
+
   proc IntStatus {w {name "status"} {val ""}} {
     # Sets/gets a status of window. The status is an integer assigned to a name.
     #   w - window's path
@@ -1572,6 +1581,7 @@ oo::class create ::apave::APaveBase {
     # Returns a path to the chooser to be open.
 
     set wchooser [lindex $parent 1].$widname
+    set geom {}
     if {[catch {lassign [set $vargeo] -> geom}] || $geom eq {}} {
       # no saved geometry with *vargeo*, so get it with *vargeo2*
       catch {lassign [set $vargeo2] -> geom}
@@ -3601,24 +3611,31 @@ oo::class create ::apave::APaveBase {
     if {![winfo viewable $win]} {
       tkwait visibility $win
     }
+    set wmain [::apave::mainWindowOfApp]
     if {$modal} {      ;# for modal, grab the window
       set wgr [grab current]
-      if {[catch {grab set $win}]} {
-        catch {tkwait visibility $win}  ;# 2nd attempt to get the window visible, by force
-        catch {grab set $win}           ;# (not sure, where it can fire, still let it be)
-        puts stderr "\napave::waitWinVar - please send a note to apave developers on this catch."
-        catch {puts stderr "apave::waitWinVar - [info level -1]\n"}
+      if {$wmain ne {} && $wmain ne $win} {
+        if {[catch {grab set $win}]} {
+          catch {tkwait visibility $win}  ;# 2nd attempt to get the window visible, by force
+          catch {grab set $win}           ;# (not sure, where it can fire, still let it be)
+          puts stderr "\napave::waitWinVar - please send a note to apave developers on this catch."
+          catch {puts stderr "apave::waitWinVar - [info level -1]\n"}
+        }
       }
     }
     # at need, wait till the window associated variable be changed
     if {$var ne {}} {
       tkwait variable $var
     }
-    if {$modal} {      ;# for modal, release the grab
+    if {$modal} {      ;# for modal, release the grab and restore the old one
       catch {grab release $win}
       if {$wgr ne {}} {
-        catch {grab set $wgr}  ;# restore the old grab
+        catch {grab set $wgr}
       }
+    }
+    if {$wmain eq {}} {
+      # if not set beforehand, let the main window of application be the current one
+      ::apave::mainWindowOfApp $win
     }
   }
   #_______________________
@@ -3646,6 +3663,10 @@ oo::class create ::apave::APaveBase {
       ::apave::InfoWindow [expr {[::apave::InfoWindow] - 1}] $win $modal $var
     } else {
       # non-modal window:
+      if {[set wgr [grab current]] ne {}} {
+        # otherwise the non-modal window is irresponsive (in Windows even at WM level):
+        grab release $wgr
+      }
       if {$waitvar && $var ne {}} {
         my waitWinVar $win $var $modal ;# show and wait for closing the window
       } else {
@@ -3664,8 +3685,8 @@ oo::class create ::apave::APaveBase {
     ::apave::setAppIcon $win
     set root [winfo parent $win]
     lassign [::apave::extractOptions args -centerme {} -ontop 0 -modal yes \
-      -minsize {} -themed {} -input 0 -variable {} -waitvar {}] \
-      centerme ontop modal minsize themed input varname waitvar
+      -minsize {} -themed {} -input 0 -variable {} -waitvar {} -container -] \
+      centerme ontop modal minsize themed input varname waitvar container
     $win configure -bg [lindex [my csGet] 3]  ;# removes blinking by default bg
     if {$themed in {{} {0}} && [my csCurrent] != [apave::cs_Non]} {
       my colorWindow $win
@@ -3712,7 +3733,9 @@ oo::class create ::apave::APaveBase {
     if {$rooted} {
       lassign [::apave::splitGeometry [wm geometry [winfo toplevel $root]]] rw rh rx ry
     }
-    if {!$opt(-decor)} {
+    if {$container ne {-}} {
+      wm transient $win $container
+    } elseif {!$opt(-decor)} {
       wm transient $win $root
     }
     if {[set destroy [expr {$opt(-onclose) eq {destroy}}]]} {

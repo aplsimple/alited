@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.4.4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.4.5  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -214,6 +214,8 @@ source [file join $::alited::BARSDIR bartabs.tcl]
 source [file join $::alited::PAVEDIR apave.tcl]
 source [file join $::alited::HLDIR  hl_tcl.tcl]
 source [file join $::alited::HLDIR  hl_c.tcl]
+
+::apave::mainWindowOfApp $alited::al(WIN)
 
 # ________________________ ::argv, ::argc _________________________ #
 
@@ -770,7 +772,7 @@ namespace eval alited {
     }
     after 200 [list alited::HelpOnce 0 $fname]
     set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no -onclose destroy \
-      -ontop yes -centerme $win -text 1 -scroll no -tags ::alited::textTags \
+      -centerme $win -text 1 -scroll no -tags ::alited::textTags \
       -w [incr wmax] {*}$args]
     return $res
   }
@@ -962,6 +964,7 @@ namespace eval alited {
     if {!$ask || !$al(INI,confirmexit) || \
     [msg okcancel info [msgcat::mc {Quitting alited.}] OK {*}$timo]} {
       if {[alited::file::AllSaved]} {
+        catch {::alited::ini::SaveIni}
         alited::tool::_close                     ;# close all of the
         catch {alited::run::Cancel}              ;# possibly open
         catch {alited::check::Cancel}            ;# non-modal
@@ -970,9 +973,9 @@ namespace eval alited {
         catch {destroy $::alited::al(FN2WINDOW)} ;# (and its possible children)
         catch {::alited::paver::Destroy}
         $obPav res $al(WIN) $res
-        after 1000 [list after idle \
-          "catch {::alited::ini::SaveIni}; catch {destroy $al(WIN)}; exit"]
+        after 1000 [list after idle "catch {destroy $al(WIN)}; exit $res"]
         ::apave::endWM
+        set al(EXIT_DONE) 1
       }
     }
   }
@@ -1075,7 +1078,7 @@ if {[info exists ALITED_PORT]} {
   } elseif {$alited::LOG ne {}} {
     ::apave::logMessage {QUIT ------------}
   }
-  exit $res
+  if {![info exists alited::al(EXIT_DONE)]} {exit $res}
 } else {
   # these scripts are sourced to include them in Ruff!'s generated docs
   namespace eval alited {

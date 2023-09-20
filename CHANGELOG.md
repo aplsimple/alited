@@ -1,8 +1,9 @@
 # LAST CHANGES:
 
 
-Version `v1.4.4.4 (7 Sep'23)`
+Version `v1.4.4.5 (16 Sep'23)`
 
+  - BUGFIX: (esp. for Windows) issues with grabbing windows
   - BUGFIX: pass a file name with spaces to alited
   - BUGFIX: highlight a line after "Search / Go to Line"
   - BUGFIX: initial moveall & tonemoves options for color picker
@@ -11,11 +12,12 @@ Version `v1.4.4.4 (7 Sep'23)`
   - NEW   : Preferences/General: "Color of cursor" setting
   - NEW   : Preferences/Editor: "Blinking cursor" setting
   - NEW   : Preferences/General: "Preview" includes the cursor settings
+  - DELETE: help window's -topmost attribute
   - CHANGE: alited.tcl: unset ::ALITED_ARGV (list of file names) after init.actions
   - CHANGE: menu.em
   - CHANGE: tool2.txt
   - CHANGE: Preferences: little clearances
-  - CHANGE: e_menu/apave 4.1.4
+  - CHANGE: e_menu/apave 4.1.5
 
 
 Version `v1.4.4 (26 Apr'23)`

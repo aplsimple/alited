@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.0.5
+package provide hl_tcl 1.0.6
 
 # ______________________ Common data ____________________ #
 
@@ -700,9 +700,8 @@ proc ::hl_tcl::my::CoroModified {txt {i1 -1} {i2 -1} args} {
     } else {
       set currQtd [LineState $txt $tSTR $tCMN "$ln1.0 -1 chars"]
     }
-    if {$data(PLAINTEXT,$txt)} {
-      $txt tag add tagSTD $ln1.0 $ln2.end
-    } else {
+    $txt tag add tagSTD $ln1.0 $ln2.end
+    if {!$data(PLAINTEXT,$txt)} {
       set lnseen 0
       while {$ln1<=$ln2} {
         if {$ln1==$ln2} {
