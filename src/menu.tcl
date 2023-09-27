@@ -209,7 +209,7 @@ proc menu::FillMenu {} {
 
   ::apave::msgcatDialogs
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al DATADIR DATADIR
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
@@ -344,7 +344,7 @@ proc menu::FillMenu {} {
   ### ___________________ Check, File list __________________ ###
 
   $m add separator
-  $m add command -label $al(MC,checktcl) -command alited::CheckRun
+  $m add command -label $al(MC,checktcl...) -command alited::CheckRun
   menu $m.filelist -tearoff 0
   $m add cascade -label $al(MC,filelist) -menu $m.filelist
   $m.filelist add command -label $al(MC,filelist) -command {alited::bar::BAR popList} -accelerator $al(acc_21)
@@ -420,12 +420,70 @@ proc menu::FillMenu {} {
 
   set m [set al(MENUHELP) $al(WIN).menu.help]
   $m add command -label Tcl/Tk -command alited::tool::Help -accelerator F1
+  $m add separator
   $m add command -label alited -command alited::HelpAlited
+  menu $m.helps -tearoff 1
+  $m add cascade -label [msgcat::mc Context] -menu $m.helps
+  foreach {hlp lab} [HelpFiles] {
+    if {$hlp eq {-}} {
+      $m.helps add separator
+    } else {
+      if {[set i [string first \\ $lab]]<0} {
+        set lab [msgcat::mc $lab]
+      } else {
+        set lab1 [msgcat::mc [string range $lab 0 $i-1]]
+        set lab2 [msgcat::mc [string range $lab $i+1 end]]
+        set lab "$lab1 / $lab2"
+      }
+      $m.helps add command -label $lab -command [list alited::HelpFile . [file join $DATADIR help $hlp] -head $lab -weight bold -ale1Help yes]
+    }
+  }
   $m add separator
   $m add command -label $al(MC,updateALE) -command {alited::ini::CheckUpdates yes}
   $m add separator
   $m add command -label [msgcat::mc "About..."] -command alited::HelpAbout
   alited::file::FillRecent
+}
+#_______________________
+
+proc menu::HelpFiles {} {
+  # Gets a list of Help/Context (file names and labels).
+
+  return [list \
+    pref-nbk-f1.txt {Preferences\General} \
+    pref-nbk-f2.txt {Preferences\Saving} \
+    pref-nbk-f3.txt {Preferences\Projects} \
+    pref-nbk2-f1.txt {Preferences\Editor} \
+    pref-nbk2-f2.txt {Preferences\Tcl syntax} \
+    pref-nbk2-f3.txt {Preferences\C/C++ syntax} \
+    pref-nbk2-f4.txt {Preferences\Plain text} \
+    pref-nbk3-f1.txt {Preferences\Units} \
+    pref-nbk4-f1.txt {Preferences\Templates} \
+    pref-nbk5-f1.txt {Preferences\Keys} \
+    pref-nbk6-f1.txt {Preferences\Tools} \
+    pref-nbk6-f2.txt {Preferences\e_menu} \
+    pref-nbk6-f3.txt {Preferences\bar-menu} \
+    pref-nbk6-f4.txt {Preferences\Tkcon} \
+    - - \
+    project.txt {Projects\Information} \
+    project2.txt {Projects\Options} \
+    project3.txt {Projects\Templates} \
+    project4.txt {Projects\Commands} \
+    - - \
+    find2.txt {Search\Find by List} \
+    - - \
+    tool2.txt {Tools\Run...} \
+    check.txt {Tools\Check Tcl...} \
+    paver.txt {Tools\Paver} \
+    - - \
+    unit_tpl.txt {Setup\Templates...} \
+    favor_ls.txt {Setup\Favorites Lists...} \
+    tool1.txt {Setup\For Start...} \
+    ini.txt {Setup\Configurations...} \
+    - - \
+    alited-trans.txt Translation \
+  ]
+
 }
 
 # _________________________________ EOF _________________________________ #

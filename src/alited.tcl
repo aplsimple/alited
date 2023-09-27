@@ -7,14 +7,14 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.4.5  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.5  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
   variable al; array set al [list]
 
   # versions of mnu/ini to update to
-  set al(MNUversion) 1.4.4.3
+  set al(MNUversion) 1.4.5
   set al(INIversion) 1.4.2
 
   # previous version of alited to update from
@@ -147,6 +147,8 @@ namespace eval alited {
   set al(TclExts) $al(TclExtsDef)
   set al(ClangExts) $al(ClangExtsDef)
   set al(TextExts) $al(TextExtsDef)
+  set al(MOVEFG) black
+  set al(MOVEBG) #7eeeee
 
 
   ## __________________ Procs to raise the alited app ___________________ ##
@@ -606,7 +608,7 @@ namespace eval alited {
 
     variable al
     variable obPav
-    if {[catch {lassign [FgFgBold] fg fgbold fgred bg}]} {
+    if {[info commands $obPav] eq {} || [catch {lassign [FgFgBold] fg fgbold fgred bg}]} {
       return  ;# at exiting app
     }
     if {$lab eq {}} {set lab [$obPav Labstat3]}
@@ -734,7 +736,9 @@ namespace eval alited {
     #   args - option of msg
 
     variable obDlg
+    variable al
     if {[HelpOnce 1 $fname]} return
+    set ale1Help [::apave::extractOptions args -ale1Help no]
     lassign [FgFgBold] -> fS
     set ::alited::textTags [list \
       [list "r" "-font {-weight bold} -foreground $fS"] \
@@ -771,6 +775,9 @@ namespace eval alited {
       set args [linsert $args 0 -h 30 -scroll 1]
     }
     after 200 [list alited::HelpOnce 0 $fname]
+    if {$ale1Help && [set dlg [$pobj dlgPath]] ne $al(WIN)} {
+      destroy $dlg  ;# -ale1Help option permits the only Help window
+    }
     set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no -onclose destroy \
       -centerme $win -text 1 -scroll no -tags ::alited::textTags \
       -w [incr wmax] {*}$args]
@@ -861,6 +868,23 @@ namespace eval alited {
   }
   #_______________________
 
+  proc ExtTrans {fname} {
+    # Gets a file's extention and translation attributes (istrans, from, to).
+    #   fname - the file name
+
+    set ext [string trimleft [file extension $fname] .]
+    lassign [split $ext -] from to
+    set ismsg [expr {[string tolower $ext] eq {msg}}]
+    if {$ismsg} {
+      set from en  ;# e.g. ru.msg is from English to Russian
+      set to [file rootname [file tail $fname]]
+    }
+    set istrans [regexp {^[[:alpha:]][[:alpha:]]-[[:alpha:]][[:alpha:]]$} $ext]
+    set istrans [expr {$istrans || $ismsg}]
+    return [list $ext $istrans $from $to]
+  }
+  #_______________________
+
   proc HighlightAddon {wtxt fname colors} {
     # Tries to highlight add-on extensions.
     #   wtxt - text's path
@@ -869,18 +893,24 @@ namespace eval alited {
 
     namespace upvar ::alited al al LIBDIR LIBDIR
     set res {}
-    set ext [string trimleft [file extension $fname] .]
+    lassign [ExtTrans $fname] ext istrans from to
     if {$ext ne {}} {
       catch {
+        if {$istrans} {
+          # it's a file to translate from language to language
+          set ext trans
+          alited::HelpMe $ext -trans
+          after idle alited::main::FocusText
+        }
         switch $ext {
           htm {set ext html}
           ale - conf {set ext ini}
         }
         set addon hl_$ext
-        lassign [glob -nocomplain [file join $LIBDIR addon $addon.tcl]] fname
-        set addon [file rootname [file tail $fname]]
+        lassign [glob -nocomplain [file join $LIBDIR addon $addon.tcl]] fhl
+        set addon [file rootname [file tail $fhl]]
         if {![namespace exists ::alited::$addon]} {
-          source $fname
+          source $fhl
         }
         lappend colors [FgFgBold]
         if {[dict exists $al(FONT,txt) -size]} {
@@ -888,7 +918,8 @@ namespace eval alited {
         } else {
           set fsz $al(FONTSIZE,std)
         }
-        set res [alited::${addon}::init $wtxt $al(FONT,txt) $fsz {*}$colors]
+        set res [alited::${addon}::init $wtxt $al(FONT,txt) $fsz \
+          {*}$colors $from $to]
         foreach tag {sel hilited hilited2} {after idle "$wtxt tag raise $tag"}
       }
     }
@@ -973,9 +1004,7 @@ namespace eval alited {
         catch {destroy $::alited::al(FN2WINDOW)} ;# (and its possible children)
         catch {::alited::paver::Destroy}
         $obPav res $al(WIN) $res
-        after 1000 [list after idle "catch {destroy $al(WIN)}; exit $res"]
         ::apave::endWM
-        set al(EXIT_DONE) 1
       }
     }
   }
@@ -1054,9 +1083,9 @@ if {[info exists ALITED_PORT]} {
     set msg "$msg\n\n$err\n\nPlease, inform authors.\nDetails are in stdout."
     tk_messageBox -title alited -icon error -message $msg
   }
+  catch {destroy $al(WIN)}
   if {$res} {     ;# run the main form
     # restarting
-    update
     if {[file tail [file dirname $alited::DIR]] eq {alited.kit}} {
       set alited::DIR [file dirname [file dirname $alited::DIR]]
     } else {
@@ -1065,8 +1094,6 @@ if {[info exists ALITED_PORT]} {
     if {$alited::LOG ne {}} {
       ::apave::logMessage "QUIT :: $alited::DIR :: $alited::SCRIPT PORT $alited::ARGV"
     }
-    catch {wm attributes . -alpha 0.0}
-    catch {wm withdraw $alited::al(WIN)}
     cd $alited::DIR
     for {set i [llength $alited::ARGV]} {$i} {} {
       incr i -1
@@ -1078,7 +1105,7 @@ if {[info exists ALITED_PORT]} {
   } elseif {$alited::LOG ne {}} {
     ::apave::logMessage {QUIT ------------}
   }
-  if {![info exists alited::al(EXIT_DONE)]} {exit $res}
+  exit $res
 } else {
   # these scripts are sourced to include them in Ruff!'s generated docs
   namespace eval alited {

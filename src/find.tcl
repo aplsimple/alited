@@ -1052,7 +1052,11 @@ proc find::SearchByList_Do {{show yes}} {
   namespace upvar ::alited al al obFN2 obFN2
   variable counts
   set list [[$obFN2 Text] get 1.0 end]
-  set al(listSBL) [string trim $list]
+  if {[set al(listSBL) [string trim $list]] eq {}} {
+    bell
+    focus [$obFN2 Text]
+    return
+  }
   set found [set notfound [list]]
   set wtxt [alited::main::CurrentWTXT]
   set list [string map {\n { }} $al(listSBL)]

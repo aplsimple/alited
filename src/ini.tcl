@@ -20,6 +20,13 @@ namespace eval ::alited {
   set al(ED,guttershift) 3  ;# space between gutter and text
   set al(ED,btsbd) 0        ;# borderwidth for bartabs
   set al(ED,BlinkCurs) 1    ;# blinking cursor
+  set al(ED,TRAN) https://libretranslate.de/translate
+  set al(ED,TRANS) [list $al(ED,TRAN) \
+    https://translate.argosopentech.com/translate \
+    https://translate.terraprint.co/translate]
+  set al(ED,tran) $al(ED,TRAN)   ;# translation site
+  set al(ED,trans) $al(ED,TRANS) ;# list of translation sites
+  set al(ED,transadd) 1     ;# if 0, replaces the translated text
   set al(TREE,isunits) yes  ;# current mode of tree: units/files
   set al(TREE,units) no     ;# flag "is a unit tree created"
   set al(TREE,files) no     ;# flag "is a file tree created"
@@ -418,6 +425,9 @@ proc ini::ReadIniOptions {nam val} {
     guttershift   {set al(ED,guttershift) $val}
     btsbd         {set al(ED,btsbd) $val}
     BlinkCurs     {set al(ED,BlinkCurs) $val}
+    EDtran        {set al(ED,tran) $val}
+    EDtrans       {set al(ED,trans) $val}
+    EDtransadd    {set al(ED,transadd) $val}
     ClrCurs       {set al(CURSORCOLOR) $val}
     cursorwidth   {set al(CURSORWIDTH) $val}
     prjdefault    {set al(PRJDEFAULT) $val}
@@ -790,6 +800,9 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "guttershift=$al(ED,guttershift)"
   puts $chan "btsbd=$al(ED,btsbd)"
   puts $chan "BlinkCurs=$al(ED,BlinkCurs)"
+  puts $chan "EDtran=$al(ED,tran)"
+  puts $chan "EDtrans=$al(ED,trans)"
+  puts $chan "EDtransadd=$al(ED,transadd)"
   puts $chan "ClrCurs=$al(CURSORCOLOR)"
   puts $chan "prjdefault=$al(PRJDEFAULT)"
   foreach k [array names al DEFAULT,*] {
@@ -1446,7 +1459,7 @@ proc ini::_init {} {
           append al(atools) "-com alited::tool::Help\} sev 6"
         }
         run {
-          append al(atools) "-com alited::tool::_run\}"
+          append al(atools) "-com {alited::tool::_run {} {} -doit yes}\}"
         }
         e_menu {
           image create photo $img-big -data $alited::img::_AL_IMG(e_menu)

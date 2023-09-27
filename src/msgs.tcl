@@ -220,6 +220,7 @@ namespace eval ::alited {
     ## _ misc _ ##
     set al(MC,notes)       [msgcat::mc "Sort of diary.\nList of TODOs etc."]
     set al(MC,checktcl)    [msgcat::mc {Check Tcl}]
+    set al(MC,checktcl...) [msgcat::mc {Check Tcl...}]
     set al(MC,colorpicker) [msgcat::mc {Color Picker}]
     set al(MC,datepicker)  [msgcat::mc {Date Picker}]
     set al(checkroot)      [msgcat::mc {Checking %d. Wait a little...}]

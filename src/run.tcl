@@ -46,7 +46,7 @@ proc run::Run {} {
   } else {
     set in tkcon
   }
-  alited::tool::_run {} $in
+  alited::tool::_run {} $in -doit yes
 }
 #_______________________
 

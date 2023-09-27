@@ -562,9 +562,10 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
       append exts { } $al(TextExts)
       set sexts [string map {. {}} "  $al(TclExts)\n  $al(ClangExts)\n  $al(TextExts)"]
       set exts [string trim [string map {{ } {, } . {}} $exts]]
-      set ext [string tolower [string trim [file extension $fname] .]]
+      lassign [alited::ExtTrans $fname] ext istrans
+      set ext [string tolower [string trim $ext .]]
       set esp [split [string map [list { } {} \n ,] $exts] ,]
-      if {!$reload && $ext ni $esp && $ansOpen<11} {
+      if {!$reload && $ext ni $esp && !$istrans && $ansOpen<11} {
         set msg [string map [list %f [file tail $fname] %s $sexts] $al(MC,nottoopen)]
         set ansOpen [alited::msg yesnocancel warn $msg YES -ch $al(MC,noask)]
         if {!$ansOpen || $ansOpen==12} break

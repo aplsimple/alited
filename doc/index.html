@@ -88,8 +88,11 @@
 <li class="level3"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
 <li class="level3"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
 </ul></li>
-<li class="level3"><div class="li"><a href="#macros">Macros</a></div></li>
-<li class="level3"><div class="li"><a href="#usersynt">User syntax</a></div></li>
+<li class="level2"><div class="li"><a href="#macros">Macros</a></div></li>
+<li class="level2"><div class="li"><a href="#usersynt">User syntax</a></div>
+<ul>
+<li class="level3"><div class="li"><a href="#transl">Language translation</a></div></li>
+</ul></li>
 <li class="level2"><div class="li"><a href="#options">Options</a></div></li>
 <li class="level2"><div class="li"><a href="#links">Links</a></div></li>
 </div>
@@ -2195,6 +2198,86 @@ First, the <i>init</i> makes initial settings, then it returns a full name of th
 
 <p>
 The <i>lib/addon/hl_*.tcl</i> files are easy to implement. Any of existing ones can serve as a sample.
+</p>
+
+<br>
+<p>
+<h3 id="transl"><i>Language translation</i></h3>
+</p>
+
+<p>
+<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is a multilingual program and as such it provides a translation facility (for example, to add new .msg files to <em>alited/data/msgs</em> of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s source :)
+</p>
+<p>
+The translation is available for a specific type of files, i.e. having the extension <i>.l1-l2</i> which means translating from <i>l1</i> language to <i>l2</i> language.
+</p>
+
+<p>
+Also <i>l2.msg</i> files can be translated from English to <i>l2</i>.
+</p>
+
+<p>
+For example:
+<br><i>*.en-de</i> files are for English-Deutsch translations
+<br><i>ru.msg</i> files are for English-Russian translations
+</p>
+
+<p>
+You need an access to <b>Internet</b> to translate the files.
+</p>
+
+<p>
+How it works? When you open/create this type of file, you run the line
+by line translation with just pressing F5 key (of <i>Tools/Run</i>)
+while the caret is set on the appropriate lines. You can get the translation together with or instead of the original line.
+</p>
+
+<p>
+Say, you open <i>trans.en-ru</i> with "Hello, world!" line and press F5 on the line - and you get "Привет, мир!".
+</p>
+
+<p>
+So, after entering a line, press F5 key and after a pause you'll get
+the translation of the line. The response time doesn't depend greatly
+on the length of the line, so that you can compose a rather lengthy
+line and then press F5 on it.
+</p>
+
+<p>
+Though, there is a limit of translation length. On September 2023 it is
+1000 characters. The current line's length is seen in the "Col:" field
+of alited's status bar. If a line is too long, split it with Enter key
+and translate its parts.
+</p>
+
+<p>
+The slowness of the translation is a cost of its "freedomness". After
+acquiring API key of LibreTranslate, you'll get the quick translation
+as well. At that <i>lib/addon/hl_trans.tcl</i> should be modified.
+The alited's author will be grateful to you for this modification.
+</p>
+
+<p>
+The translation options can be customized in "Preferences":
+<i>Preferences / Editor / Plain text</i>.
+</p>
+
+<p>
+Note that <i>l1</i> and <i>l2</i> are the language (not country) codes.
+E.g. <i>uk</i> means Ukrainian language, not United Kingdom country.
+</p>
+
+<p>
+See details at:
+ <ul>
+ <li><a href=https://github.com/LibreTranslate/LibreTranslate>github.com/LibreTranslate/LibreTranslate</a></li>
+ <li><a href=https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>en.wikipedia.org/wiki/List_of_ISO_639-1_codes</a></li>
+ </ul>
+</p>
+
+<p>
+How to run other stuff and overcome F5 key translating the files?
+Click <i>Run</i> toolbar icon or run <i>"Tools/Run..."</i> menu item.
 </p>
 
 <p>

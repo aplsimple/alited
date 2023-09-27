@@ -1,4 +1,4 @@
- In the <b>Tcl files</b> extensions" field, you can set additional extensions
+ In the <b>Tcl files' extensions</b> field, you can set additional extensions
  for the Tcl files you use (for example, .bawt).
 
  Enter the extensions separated by spaces.

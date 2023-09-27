@@ -21,18 +21,25 @@ namespace eval complete {
 
 # ________________________ Common _________________________ #
 
-proc complete::TextCursorCoordinates {wtxt} {
-  # Gets screen coordinates (X, Y) under cursor in a text.
+proc complete::CursorCoordsChar {wtxt shift} {
+  # Gets cursor's screen coordinates and a character under cursor in a text.
   #   wtxt - text's path
-  # Returns a list of X and Y coordinates.
+  #   shift - shift from the cursor where to get non-empty char
+  # Returns a list of X, Y coordinates and a character under the cursor.
 
   set poi [$wtxt index insert]
   set ch [$wtxt get $poi [$wtxt index {insert +1c}]]
-  if {[string trim $ch] eq {}} {set pos {insert -1c}} {set pos insert}
-  set pos [$wtxt index $pos]
-  if {int($pos)!=int($poi)} {return -1}
-  lassign [$wtxt bbox $pos] X Y w h
-  if {$w eq {}} {return -1}
+  set nl [expr {int($poi)}]
+  if {[$wtxt get $nl.0 $nl.end] eq {}} {
+    lassign [$wtxt bbox insert] X Y - h
+    set w 0
+    set ch -
+  } else {
+    if {[string trim $ch] eq {}} {set pos "insert $shift"} {set pos insert}
+    set pos [$wtxt index $pos]
+    lassign [$wtxt bbox $pos] X Y w h
+  }
+  if {$h eq {}} {set X [set Y [set w [set h 0]]]}
   incr X $w
   incr Y $h
   set p [winfo parent $wtxt]
@@ -42,7 +49,24 @@ proc complete::TextCursorCoordinates {wtxt} {
     incr Y $y
     if {[catch {set p [winfo parent $p]}] || $p in {{} {.}}} break
   }
-  return [list $X $Y]
+  return [list $X $Y $ch]
+}
+#_______________________
+
+proc complete::TextCursorCoordinates {wtxt} {
+  # Gets cursor's screen coordinates under cursor in a text.
+  # Also, sets the focus on the text (to make this task be possible at all).
+  #   wtxt - text's path
+  # Returns a list of X and Y coordinates.
+
+  focus $wtxt
+  set res [CursorCoordsChar $wtxt {}]
+  lassign $res X Y ch
+  if {$ch eq {} || $ch eq "\n"} {
+    # EOL => get a previous char's coordinates
+    set res [CursorCoordsChar $wtxt -1c]
+  }
+  return $res
 }
 #_______________________
 
@@ -285,9 +309,6 @@ proc complete::PickCommand {wtxt} {
   ColorPick $wtxt
   $lbx selection set 0
   lassign [TextCursorCoordinates $wtxt] X Y
-  if {$X==-1} {
-    lassign [winfo pointerxy $wtxt] X Y  ;# popup at mouse pointer (not at caret)
-  }
   if {$::alited::al(IsWindows)} {
     incr X 10
     incr Y 40

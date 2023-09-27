@@ -143,6 +143,7 @@ namespace eval ::alited {
     {Hide Colors} {Сховати кольори}
     {Display colors in the whole text?} {Відобразити кольори в усьому тексті?}
     {check RE in Find/Replace box} {включіть RE у віконці Пошук/Заміна}
+    {Context} {Контекстна}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -447,6 +448,10 @@ namespace eval ::alited {
     {Border for bar tabs:} {Окравка для панелі файлів:}
     {Code snippet:} {Фрагмент коду:}
     {Blinking cursor:} {Мигання курсору:}
+    {Translation} {Переклад}
+    {Translation link:} {Лінк перекладів:}
+    {Adding translations:} {Додавання перекладів:}
+    {If OFF, replaces the original text.} {Якщо вимкнено, замінює оригінальний текст.}
   }
 
   ### ________________________ Saving _________________________ ###
@@ -568,6 +573,7 @@ namespace eval ::alited {
   ## ________________________ Checks ________________________ ##
   ::msgcat::mcmset uk {
     {Check Tcl} {Перевірка Tcl}
+    {Check Tcl...} {Перевірка Tcl...}
     {Check} {Перевірка}
     {Check:} {Перевірити:}
     {Checks available:} {Можливі перевірки:}

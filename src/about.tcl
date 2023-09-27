@@ -95,6 +95,7 @@ proc about::About {} {
     [list "linkBL" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/bll@@"] \
     [list "linkFF" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/FF@@"] \
     [list "linkSS" "::apave::openDoc %t@@https://github.com/antirez@@"] \
+    [list "linkML" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Martin+Lemburg@@"] \
     ]
 
   ### ________________________ "General" tab _________________________ ###
@@ -160,6 +161,7 @@ proc about::About {} {
     \u2022 <linkTZ>Thanos Zygouris</linkTZ>\n \
     \u2022 <linkFF>Federico Ferri</linkFF>\n \
     \u2022 <linkSS>Salvatore Sanfilippo</linkSS>\n \
+    \u2022 <linkML>Martin Lemburg</linkML>\n \
     \u2022 Alexis Martin\n \
     \n $spec\n\n \
     \u2022 <linkTW>Trevor Williams</linkTW>\n \

@@ -801,7 +801,8 @@ proc tree::ButtonMotion {but s x y X Y} {
     } else {
       set text [$wtree item $al(movID) -text]
     }
-    label $al(movWin).label -text $text -relief solid -foreground black -background #7eeeee
+    label $al(movWin).label -text $text -relief solid \
+      -foreground $al(MOVEFG) -background $al(MOVEBG)
     pack $al(movWin).label -expand 1 -fill both -ipadx 1
   }
   set ID [$wtree identify item $x $y]

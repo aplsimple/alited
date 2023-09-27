@@ -365,7 +365,8 @@ proc main::HighlightText {TID curfile wtxt} {
         -font $al(FONT,txt) -colors $Ccolors \
         -insertwidth $al(CURSORWIDTH)
     } else {
-      set pltext [expr {![alited::file::IsTcl $curfile]}]
+      lassign [alited::ExtTrans $curfile] -> istrans
+      set pltext [expr {$istrans || ![alited::file::IsTcl $curfile]}]
       if {$pltext} {
         set plcom [alited::HighlightAddon $wtxt $curfile $colors]
         if {$plcom ne {}} {set pltext 0}

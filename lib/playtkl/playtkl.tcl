@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide playtkl 1.0.1
+package provide playtkl 1.0.2
 
 # _________________________ playtkl ________________________ #
 
@@ -86,6 +86,7 @@ proc playtkl::Playing {} {
   }
   set line [lindex $dd(fcont) $dd(idx)]
   if {[regexp {^\s*#+} $line#]} { ;# skip empty or commented
+    puts $line
     after idle ::playtkl::Playing
     return
   }

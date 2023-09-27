@@ -2,7 +2,7 @@
 
 w=40
 in=1.0
-pos=3.4
+pos=142.0
 ::FSLUSER=aplsimple
 ::FSLBRANCH=tip
 ::FSLBRANCHCOLOR=#004000
@@ -60,6 +60,10 @@ R: \
 SW: fossil push \
    https://$::FSLUSER:$::FSLPASS@chiselapp.com/user/$::FSLUSER/repository/$::FSLREPO
 
+ITEM = fossil ui
+R: cd %PD
+R: fossil ui
+
 SEP = 2
 
 ITEM = fossil uv sync
@@ -105,6 +109,7 @@ R: %I {} "CHECKOUT" { \
    fco1 {{Version / branch / tag :} {} {-h 10 -state readonly -cbxsel "$::FSLBRANCH"}} \
      {@@-div1 "\[" -div2 "\]" -ret 1 -list {"" tip} $::EMENUTMPFILE@@ \
      INFO: @@-div1 "\] " $::EMENUTMPFILE@@} \
+   butF {{Run 'fossil ui'        :} {} {-w 10 -com {exec fossil ui &}}} {{Fossil UI}} \
    v_ {{} {-pady 7} {}} {} seh {{} {} {}} {} \
    texc {{Hint:} {} {-h 10 -w 70 -ro 1 -wrap word}} \
    {\n The VERSION can be the name of a branch or tag or any abbreviation\n to the 40-character artifact ID for a check-in. \
@@ -120,6 +125,7 @@ R: %I warn "MERGE" { \
    fco1 {{Version / branch / tag :} {} {-h 10 -w 45 -state readonly -cbxsel "$::FSLBRANCH"}} \
      {@@-div1 "\[" -div2 "\]" -ret 1 -list {"" tip} $::EMENUTMPFILE@@ \
      INFO: @@-div1 "\] " $::EMENUTMPFILE@@} \
+   butF {{Run 'fossil ui'        :} {} {-w 10 -com {exec fossil ui &}}} {{Fossil UI}} \
    v_} -head {\n This will MERGE changes from a branch in "$::EMENUPRJ" repository, \
    \n then commits (you may undo the commit afterwards). \n} -weight bold == ::FSLBRANCH
 S: fossil merge "$::FSLBRANCH"\nfossil commit
@@ -132,6 +138,7 @@ R: %I {} "UPDATE" { \
    fco1 {{Version / branch / tag :} {} {-h 10 -state readonly -cbxsel "$::FSLUPD"}} \
      {@@-div1 "\[" -div2 "\]" -ret 1 -list {"" tip} $::EMENUTMPFILE@@ \
      INFO: @@-div1 "\] " $::EMENUTMPFILE@@} \
+   butF {{Run 'fossil ui'        :} {} {-w 10 -com {exec fossil ui &}}} {{Fossil UI}} \
    v_ {{} {-pady 7} {}} {} seh {{} {} {}} {} \
    texc {{Hint:} {} {-h 10 -w 70 -ro 1 -wrap word}} \
    {\n VERSION can be 'trunk' to move to the trunk branch. \

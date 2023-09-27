@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.5.2
+package provide baltip 1.5.4
 
 # ________________________ Variables _________________________ #
 
@@ -280,8 +280,14 @@ proc ::baltip::repaint {w args} {
     set optvals $my::ttdata(optvals,$w)
     lappend optvals {*}$args
     catch {after cancel $my::ttdata(after)}
+    set win [tippath $w] ;# the tip's window
+    if {[info exists my::ttdata(winGEO,$win)]} {
+      set geo $my::ttdata(winGEO,$win)
+    } else {
+      set geo {}
+    }
     set my::ttdata(after) [after idle [list ::baltip::my::Show $w \
-      [dict get $my::ttdata(optvals,$w) -text] yes {} $optvals]]
+      [dict get $my::ttdata(optvals,$w) -text] yes $geo $optvals]]
   }
 }
 #_______________________
@@ -329,16 +335,27 @@ proc ::baltip::sleep {msec} {
 #_______________________
 
 proc ::baltip::showBalloon {tip args} {
-  # Shows a balloon under the pointer.
+  # Shows a balloon under the pointer or according to -geometry option.
   #   tip - text of tip
   #   args - miscellaneous options of baltip
   # Can be used to show tips on clicking, timeout, processing etc.
+  # If there is -geometry in args, shows the balloon
+  # with this geometry and a minimal pause.
 
   variable my::ttdata
   set w .
-  lassign [winfo pointerxy $w] x y
-  set geo +[expr {$x-int($my::ttdata(under)/2)}]+[expr {$y-$my::ttdata(under)}]
-  tip $w $tip -geometry $geo -pause 100 -fade 100 {*}$args
+  if {[set isgeo [dict exists $args -geometry]]} {
+    lappend args -pause 10
+  } else {
+    lassign [winfo pointerxy $w] x y
+    lappend args -geometry \
+      +[expr {$x-int($my::ttdata(under)/2)}]+[expr {$y-$my::ttdata(under)}]
+  }
+  tip $w $tip -pause 100 -fade 100 {*}$args
+  if {$isgeo} {
+    after 20
+    ::update
+  }
 }
 #_______________________
 

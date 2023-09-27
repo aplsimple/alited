@@ -138,6 +138,7 @@ namespace eval ::alited {
     {Hide Colors} {Farben ausblenden}
     {Display colors in the whole text?} {Farben im gesamten Text hervorheben?}
     {check RE in Find/Replace box} {aktivieren Sie RE im Suchen/Ersetzen}
+    {Context} {Kontext}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -442,6 +443,10 @@ namespace eval ::alited {
     {Border for bar tabs:} {Borte für Tab-Leiste:}
     {Code snippet:} {Codeausschnitt:}
     {Blinking cursor:} {Blinkender Cursor:}
+    {Translation} {Übersetzung}
+    {Translation link:} {Übersetzungslink:}
+    {Adding translations:} {Übersetzungen hinzufügen:}
+    {If OFF, replaces the original text.} {Wenn AUS, ersetzt den Originaltext.}
   }
 
   ### ________________________ Saving _________________________ ###
@@ -564,6 +569,7 @@ namespace eval ::alited {
   ## ________________________ Checks ________________________ ##
   ::msgcat::mcmset de {
     {Check Tcl} {Überprüfe Tcl}
+    {Check Tcl...} {Überprüfe Tcl...}
     {Check} {Überprüfung}
     {Check:} {Überprüfung:}
     {Checks available:} {Vorhandene Überprüfungen:}

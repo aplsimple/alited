@@ -1,23 +1,27 @@
 # LAST CHANGES:
 
 
-Version `v1.4.4.5 (16 Sep'23)`
+Version `v1.4.5 (27 Sep'23)`
 
   - BUGFIX: (esp. for Windows) issues with grabbing windows
   - BUGFIX: pass a file name with spaces to alited
   - BUGFIX: highlight a line after "Search / Go to Line"
   - BUGFIX: initial moveall & tonemoves options for color picker
   - BUGFIX: Tab key order in Preferences & Projects dialogues
+  - NEW   : Help/Context
+  - NEW   : translation from l1 to l2 language for *.l1-l2 and l2.msg files
   - NEW   : highlight "Setup / For Start" commands (Tcl part at least)
   - NEW   : Preferences/General: "Color of cursor" setting
   - NEW   : Preferences/Editor: "Blinking cursor" setting
   - NEW   : Preferences/General: "Preview" includes the cursor settings
   - DELETE: help window's -topmost attribute
+  - CHANGE: corrected code for restart of alited
+  - CHANGE: complete::TextCursorCoordinates (X,Y for the cursor)
   - CHANGE: alited.tcl: unset ::ALITED_ARGV (list of file names) after init.actions
-  - CHANGE: menu.em
+  - CHANGE: menu.em, fossil2.em
   - CHANGE: tool2.txt
   - CHANGE: Preferences: little clearances
-  - CHANGE: e_menu/apave 4.1.5
+  - CHANGE: e_menu/apave 4.1.6, baltip 1.5.4
 
 
 Version `v1.4.4 (26 Apr'23)`
