@@ -1,5 +1,11 @@
 # LAST CHANGES:
 
+Version `v1.4.5.1 (4 Oct'23)`
+
+  - NEW   : Help/Changelog
+  - CHANGE: translation for .msg files (lines translated and not)
+  - CHANGE: e_menu/apave 4.1.7
+
 
 Version `v1.4.5 (27 Sep'23)`
 

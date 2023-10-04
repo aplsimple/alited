@@ -1007,8 +1007,11 @@ oo::class create ::apave::APaveDialog {
         -c - -color {append optsLabel " -foreground {$val}"}
         -a { ;# additional grid options of message labels
           append optsGrid " $val" }
-        -centerme - -ontop - -themed - -resizable - -checkgeometry - -onclose - -comOK {
-          lappend args $opt $val
+        -centerme - -ontop - -themed - -resizable - -checkgeometry - -onclose - -comOK - -transient {
+          lappend args $opt $val ;# options delegated to showModal method
+        }
+        -parent - -root { ;# obsolete, used for compatibility
+          lappend args -centerme $val
         }
         -t - -text {set textmode $val}
         -tags {
@@ -1025,7 +1028,6 @@ oo::class create ::apave::APaveDialog {
         -bgS {append optsMisc " -selectbackground {$val}"}
         -cc {append optsMisc " -insertbackground {$val}"}
         -my - -myown {append optsMisc " -myown {$val}"}
-        -root - -parent {set root " -root $val"}
         -pos {set curpos "$val"}
         -hfg {append optsHead " -foreground {$val}"}
         -hbg {append optsHead " -background {$val}"}
@@ -1368,7 +1370,7 @@ oo::class create ::apave::APaveDialog {
     set args [::apave::removeOptions $args -focus]
     set ::apave::querydlg $qdlg
     my showModal $qdlg -modal $modal -waitvar $waitvar -onclose $onclose \
-      -focus $focusnow -geometry $geometry {*}$root {*}$minsize {*}$args
+      -focus $focusnow -geometry $geometry {*}$minsize {*}$args
     if {![winfo exists $qdlg] || (!$modal && !$waitvar)} {
       return 0
     }

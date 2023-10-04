@@ -3683,14 +3683,18 @@ oo::class create ::apave::APaveBase {
 
     set ::apave::MODALWINDOW [set Modalwin $win]
     ::apave::setAppIcon $win
-    set root [winfo parent $win]
-    lassign [::apave::extractOptions args -centerme {} -ontop 0 -modal yes \
-      -minsize {} -themed {} -input 0 -variable {} -waitvar {} -container -] \
-      centerme ontop modal minsize themed input varname waitvar container
+    lassign [::apave::extractOptions args -centerme {} -ontop 0 -modal yes -minsize {} \
+      -themed {} -input 0 -variable {} -waitvar {} -transient {-} -root {} -parent {}] \
+      centerme ontop modal minsize themed input varname waitvar transient root parent
     $win configure -bg [lindex [my csGet] 3]  ;# removes blinking by default bg
     if {$themed in {{} {0}} && [my csCurrent] != [apave::cs_Non]} {
       my colorWindow $win
     }
+    if {$centerme eq {}} {
+      # obsolete options: -root, -parent
+      if {$root ne {}} {set centerme $root} {set centerme $parent}
+    }
+    set root [winfo parent $win]
     set rooted 1
     if {$centerme ne {}} {
       ;# forced centering relative to a caller's window
@@ -3702,7 +3706,7 @@ oo::class create ::apave::APaveBase {
     }
     set decor [expr {$root in {{} .}}]
     foreach {o v} [list -decor $decor -focus {} -onclose {} -geometry {} \
-    -root $root -resizable {} -ontop 0 -escape 1 -checkgeometry 1] {
+    -resizable {} -ontop 0 -escape 1 -checkgeometry 1] {
       lappend defargs $o [my getShowOption $o $v]
     }
     if {$varname ne {}} {
@@ -3733,8 +3737,8 @@ oo::class create ::apave::APaveBase {
     if {$rooted} {
       lassign [::apave::splitGeometry [wm geometry [winfo toplevel $root]]] rw rh rx ry
     }
-    if {$container ne {-}} {
-      wm transient $win $container
+    if {$transient ne {-}} {
+      wm transient $win $transient
     } elseif {!$opt(-decor)} {
       wm transient $win $root
     }

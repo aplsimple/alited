@@ -795,7 +795,7 @@ proc tool::_run {{what ""} {runmode ""} args} {
   if {$what eq {}} {
     #  it is 'Run me' e_menu item
     set doit [::apave::extractOptions args -doit 0]
-    lassign [alited::ExtTrans [alited::bar::FileName]] ext istrans from to
+    lassign [alited::ExtTrans] ext istrans from to
     if {!$doit && $istrans} {
       alited::hl_trans::translateLine
       return

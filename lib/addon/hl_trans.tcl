@@ -35,6 +35,7 @@ http::config -accept text/*
 
 namespace eval hl_trans {
   variable postUrl https://libretranslate.de/translate
+  variable ext; array set ext [list]
   variable from; array set from [list]
   variable to; array set to [list]
 }
@@ -50,14 +51,15 @@ proc hl_trans::init {w font szfont args} {
 
   namespace upvar ::alited al al
   variable postUrl $al(ED,tran)
+  variable ext
   variable from
   variable to
   lassign $args clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC
-  $w tag config iniVAR -font $font -foreground $clrVAR
+  $w tag config iniPROC -font $font -foreground $clrPROC
   dict set font -slant italic
   $w tag config iniCMNT -font $font -foreground $clrCMN
-  foreach t {VAR CMNT} {after idle $w tag raise ini$t}
-  lassign [lrange $args end-1 end] from($w) to($w)
+  foreach t {PROC CMNT} {after idle $w tag raise ini$t}
+  lassign [alited::ExtTrans] ext($w) istrans from($w) to($w)
   return [namespace current]::line
 }
 #_______________________
@@ -68,19 +70,23 @@ proc hl_trans::line {w {pos ""} {prevQtd 0}} {
   #   pos - position in the line
   #   prevQtd - mode of processing a current line (0, 1, -1)
 
+  variable ext
   if {$pos eq {}} {set pos [$w index insert]}
   set il [expr {int($pos)}]
   set line [$w get $il.0 $il.end]
   if {[string trim $line] eq {}} {return yes}
-  set tr [::hl_tcl::my::SearchTag [$w tag ranges iniVAR] $il.1]
-  foreach t {VAR CMNT} {$w tag remove ini$t $il.0 $il.end}
+  set tr [::hl_tcl::my::SearchTag [$w tag ranges iniPROC] $il.1]
+  foreach t {PROC CMNT} {$w tag remove ini$t $il.0 $il.end}
   if {$tr!=-1} {
-    $w tag add iniVAR $il.0 $il.end
+    $w tag add iniPROC $il.0 $il.end
+    return yes
   } else {
     if {[string first # [string trim $line]]==0} {
       $w tag add iniCMNT $il.0 $il.end
+      return yes
     }
   }
+  if {[string tolower $ext($w)] eq {msg}} {return no}
   return yes
 }
 #_______________________
@@ -141,7 +147,7 @@ proc hl_trans::translateLine {} {
       $wtxt replace $nl.0 $nl.end $translation
     }
     update
-    after idle [list $wtxt tag add iniVAR $nl.0 $nl.end]
+    after idle [list $wtxt tag add iniPROC $nl.0 $nl.end]
     for {incr nl} {$nl<=[$wtxt index end]} {incr nl} {
       set line [string trim [$wtxt get $nl.0 $nl.end]]
       if {$line ne {}} {

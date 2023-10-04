@@ -209,7 +209,7 @@ proc menu::FillMenu {} {
 
   ::apave::msgcatDialogs
 
-  namespace upvar ::alited al al DATADIR DATADIR
+  namespace upvar ::alited al al DATADIR DATADIR DIR DIR
   namespace upvar ::alited::pref em_Num em_Num \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
 
@@ -439,6 +439,8 @@ proc menu::FillMenu {} {
     }
   }
   $m add separator
+  $m add command -label Changelog -command \
+    [list alited::file::OpenFile [file join $DIR CHANGELOG.md]]
   $m add command -label $al(MC,updateALE) -command {alited::ini::CheckUpdates yes}
   $m add separator
   $m add command -label [msgcat::mc "About..."] -command alited::HelpAbout

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.5  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.5.1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -351,7 +351,7 @@ if {[package versions alited] eq {}} {
 
 }
 
-# __________________________ alited:: Common ________________________ #
+# __________________________ alited:: ________________________ #
 
 namespace eval alited {
 
@@ -868,10 +868,11 @@ namespace eval alited {
   }
   #_______________________
 
-  proc ExtTrans {fname} {
+  proc ExtTrans {{fname ""}} {
     # Gets a file's extention and translation attributes (istrans, from, to).
     #   fname - the file name
 
+    if {$fname eq {}} {set fname [bar::FileName]}
     set ext [string trimleft [file extension $fname] .]
     lassign [split $ext -] from to
     set ismsg [expr {[string tolower $ext] eq {msg}}]
@@ -893,13 +894,13 @@ namespace eval alited {
 
     namespace upvar ::alited al al LIBDIR LIBDIR
     set res {}
-    lassign [ExtTrans $fname] ext istrans from to
+    lassign [ExtTrans $fname] ext istrans
     if {$ext ne {}} {
       catch {
         if {$istrans} {
           # it's a file to translate from language to language
           set ext trans
-          alited::HelpMe $ext -trans
+          HelpMe $ext -trans
           after idle alited::main::FocusText
         }
         switch $ext {
@@ -918,8 +919,7 @@ namespace eval alited {
         } else {
           set fsz $al(FONTSIZE,std)
         }
-        set res [alited::${addon}::init $wtxt $al(FONT,txt) $fsz \
-          {*}$colors $from $to]
+        set res [${addon}::init $wtxt $al(FONT,txt) $fsz {*}$colors]
         foreach tag {sel hilited hilited2} {after idle "$wtxt tag raise $tag"}
       }
     }
@@ -994,15 +994,15 @@ namespace eval alited {
     }
     if {!$ask || !$al(INI,confirmexit) || \
     [msg okcancel info [msgcat::mc {Quitting alited.}] OK {*}$timo]} {
-      if {[alited::file::AllSaved]} {
-        catch {::alited::ini::SaveIni}
-        alited::tool::_close                     ;# close all of the
-        catch {alited::run::Cancel}              ;# possibly open
-        catch {alited::check::Cancel}            ;# non-modal
+      if {[file::AllSaved]} {
+        catch {ini::SaveIni}
+        tool::_close                     ;# close all of the
+        catch {run::Cancel}              ;# possibly open
+        catch {check::Cancel}            ;# non-modal
         catch {destroy $::alited::find::win}     ;# windows
         catch {destroy $::alited::find::win2}    ;#
         catch {destroy $::alited::al(FN2WINDOW)} ;# (and its possible children)
-        catch {::alited::paver::Destroy}
+        catch {paver::Destroy}
         $obPav res $al(WIN) $res
         ::apave::endWM
       }
@@ -1033,7 +1033,7 @@ namespace eval alited {
   source [file join $SRCDIR complete.tcl]
   source [file join $SRCDIR edit.tcl]
 
-  ## _ EONS: Common _ ##
+  ## _ EONS alited _ ##
 
 }
 
