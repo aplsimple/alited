@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.5.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.5.2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -118,7 +118,7 @@ namespace eval alited {
 
   # project options' names
   variable OPTS [list \
-    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite prjincons prjmaxcoms]
+    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite prjincons prjmaxcoms prjtran prjtrans prjtransadd]
 
   # directory tree's content
   variable _dirtree [list]
@@ -138,6 +138,14 @@ namespace eval alited {
   set al(prjincons) 1     ;# "run Tcl scripts in console" flag
   set al(prjdirign) {.git .bak} ;# ignored subdirectories of project
   set al(prjmaxcoms) 20   ;# maximum of "Run..." commands
+  set al(ED,TRAN) https://libretranslate.de/translate
+  set al(ED,TRANS) [list $al(ED,TRAN) \
+    https://translate.argosopentech.com/translate \
+    https://translate.terraprint.co/translate]
+  set al(ED,TRANSADD) 1
+  set al(prjtran) $al(ED,TRAN)   ;# current translation site
+  set al(prjtrans) $al(ED,TRANS) ;# list of translation sites
+  set al(prjtransadd) $al(ED,TRANSADD)   ;#
   foreach _ $OPTS {set al(DEFAULT,$_) $al($_)}
 
   set al(TITLE) {%f :: %d :: %p}         ;# alited title's template
@@ -534,6 +542,22 @@ namespace eval alited {
     # Does nothing.
 
   }
+  #_______________________
+
+  proc PushInList {listName item {pos 0} {max 16}} {
+    # Pushes an item in a list: deletes an old instance, inserts a new one.
+    #   listName - the list's variable name
+    #   item - item to push
+    #   pos - position in the list to push in
+    #   max - maximum length of the list
+
+    upvar $listName ln
+    if {[set i [lsearch -exact $ln $item]]>-1} {
+      set ln [lreplace $ln $i $i]
+    }
+    set ln [linsert $ln $pos $item]
+    catch {set ln [lreplace $ln $max end]}
+  }
 
   ## ________________________ Messages _________________________ ##
 
@@ -741,7 +765,7 @@ namespace eval alited {
     set ale1Help [::apave::extractOptions args -ale1Help no]
     lassign [FgFgBold] -> fS
     set ::alited::textTags [list \
-      [list "r" "-font {-weight bold} -foreground $fS"] \
+      [list "r" "-font {$::apave::FONTMAINBOLD} -foreground $fS"] \
       [list "b" "-foreground $fS"] \
       [list "link" "::apave::openDoc %t@@https://%l@@"] \
       ]
@@ -753,16 +777,16 @@ namespace eval alited {
     if {$alited::DEBUG} {puts "help file: $fname"}
     set wmax 1
     foreach ln [split $msg \n] {
-      set occ 0
-      foreach tag {red bold link} {
+      set oc 0
+      foreach tag {r b link} {
         foreach yn {{} /} {
           set ln2 $ln
           set t <$yn$tag>
           set ln [string map [list $t {}] $ln]
-          incr occ [expr {([string length $ln2]-[string length $ln])/[string length $t]}]
+          incr oc [expr {([string length $ln2]-[string length $ln])/([string length $t]+1)}]
         }
       }
-      set wmax [expr {max($wmax,[string length $ln]+$occ)}]
+      set wmax [expr {max($wmax,[string length $ln]+$oc)}]
     }
     set pobj $obDlg
     if {[info commands $pobj] eq {}} {

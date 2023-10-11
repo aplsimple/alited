@@ -471,6 +471,7 @@ proc menu::HelpFiles {} {
     project2.txt {Projects\Options} \
     project3.txt {Projects\Templates} \
     project4.txt {Projects\Commands} \
+    project5.txt {Projects\Files} \
     - - \
     find2.txt {Search\Find by List} \
     - - \

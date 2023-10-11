@@ -1,8 +1,12 @@
 # LAST CHANGES:
 
-Version `v1.4.5.1 (4 Oct'23)`
+Version `v1.4.5.2 (11 Oct'23)`
 
+  - BUGFIX: Projects: alited title's project at open/close files from file list
   - NEW   : Help/Changelog
+  - NEW   : Projects/Files tab (file list of selected project)
+  - CHANGE: Help viewer polished a bit about the max width
+  - CHANGE: translation settings moved to Preferences/Projects & Projects/Options
   - CHANGE: translation for .msg files (lines translated and not)
   - CHANGE: e_menu/apave 4.1.7
 

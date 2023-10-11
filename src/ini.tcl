@@ -20,13 +20,9 @@ namespace eval ::alited {
   set al(ED,guttershift) 3  ;# space between gutter and text
   set al(ED,btsbd) 0        ;# borderwidth for bartabs
   set al(ED,BlinkCurs) 1    ;# blinking cursor
-  set al(ED,TRAN) https://libretranslate.de/translate
-  set al(ED,TRANS) [list $al(ED,TRAN) \
-    https://translate.argosopentech.com/translate \
-    https://translate.terraprint.co/translate]
   set al(ED,tran) $al(ED,TRAN)   ;# translation site
   set al(ED,trans) $al(ED,TRANS) ;# list of translation sites
-  set al(ED,transadd) 1     ;# if 0, replaces the translated text
+  set al(ED,transadd) $al(ED,TRANSADD) ;# if 0, replaces the translated text
   set al(TREE,isunits) yes  ;# current mode of tree: units/files
   set al(TREE,units) no     ;# flag "is a unit tree created"
   set al(TREE,files) no     ;# flag "is a file tree created"

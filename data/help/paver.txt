@@ -23,14 +23,14 @@
 
  The <b># paver</b> comments are case insensitive and may be added with any info,
  as shown above with <b># PAVER end</b>.
- ______________________________________________________________________________
+ ___________________________________________________________________________
 
  The <r>Auto Update</r> menu item allows updating a tested <b>widget list</b> every time
  when its file is saved.
 
  The <r>Widget List</r> menu item allows viewing and possibly changing the
  tested <b>widget list</b> "on fly", without touching a currently edited script.
- ______________________________________________________________________________
+ ___________________________________________________________________________
 
  The <r>paver</r> eliminates all references to variables and commands used in a
  <b>widget list</b>, thus leaving only a layout of GUI to show. So, if a <b>widget
@@ -62,7 +62,7 @@
 
  They should be in fact tested in a real application. In <b>alited</b>'s code there
  are only one or two of the "not pavered" lists among tens of them.
- ______________________________________________________________________________
+ ___________________________________________________________________________
 
  See instances of <b>paveWindow</b> and <b>Tab</b> procs in <b>alited</b>'s code to try <r>paver</r>.
 

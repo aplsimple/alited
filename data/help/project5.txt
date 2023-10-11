@@ -1,0 +1,7 @@
+ In the list of files, you can select file(s) with left-click, then use
+ right-click to invoke the context menu and open/close the files in the
+ current session.
+
+ Double clicking a file will open it in the current project.
+
+ While navigating the list of projects you can open any of their files.

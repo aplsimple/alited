@@ -515,14 +515,7 @@ proc bar::CurrentControlTab {{fname ""}} {
   if {[set ret [expr {$fname eq {}}]]} {
     set fname [FileName]
   }
-  if {[set i [lsearch -exact $ctrltablist $fname]]>-1} {
-    set ctrltablist [lreplace $ctrltablist $i $i]
-  }
-  if {$ret} {
-    set ctrltablist [linsert $ctrltablist 1 $fname]
-  } else {
-    set ctrltablist [linsert $ctrltablist 0 $fname]
-  }
+  ::alited::PushInList ctrltablist $fname $ret
   return $fname
 }
 #_______________________

@@ -339,11 +339,8 @@ proc pref::Ok {args} {
       if {[llength $al(comm_port_list)]>32} break
     }
     set al(EM,DiffTool) [file join {*}[file split $al(EM,DiffTool)]]
-    if {[set i [lsearch -exact $al(ED,trans) $al(ED,tran)]]>-1} {
-      set al(ED,trans) [lreplace $al(ED,trans) $i $i]
-    }
-    set al(ED,trans) [linsert $al(ED,trans) 0 $al(ED,tran)]
-    catch {set al(ED,trans) [lreplace $al(ED,trans) 16 end]}
+    set al(ED,trans) [[$obPrf CbxTrans] cget -values]
+    ::alited::PushInList al(ED,trans) $al(ED,tran)
     $obPrf res $win 1
     alited::Exit - 1 no
   }
@@ -587,6 +584,10 @@ proc pref::General_Tab3 {} {
     {.SwiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(DEFAULT,prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
     {.SwiTrWs + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(DEFAULT,prjtrailwhite) -tabnext alited::Tnext}}
+    {.labTrans .labTrWs T 1 1 {-st ew -pady 5 -padx 3} {-t {Translation link:}}}
+    {.CbxTrans + L 1 9 {-st ew -pady 5} {-h 12 -cbxsel {$::alited::al(ED,tran)} -tvar alited::al(ED,tran) -values {$alited::al(ED,trans)} -clearcom {alited::main::ClearCbx %w ::alited::al(ED,tran)}}}
+    {.labSwTrans .labTrans T 1 1 {-st ew -pady 5 -padx 3} {-t {Adding translations:}}}
+    {.swiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(ED,transadd) -tip {If OFF, replaces the original text.}}}
   }
 }
 #_______________________
@@ -887,11 +888,6 @@ proc pref::Edit_Tab4 {} {
     {.labExt - - 1 1 {-st w -pady 3 -padx 3} {-t {Plain texts' extensions:}}}
     {.entExt + L 1 1 {-st swe -pady 3} {-tvar alited::al(TextExts) -w 50}}
     {.seh .labExt T 1 10 {-pady 3}}
-    {.labTrans + T 1 1 {-st ew -pady 5 -padx 3} {-t {Translation link:}}}
-    {.CbxTrans + L 1 3 {-st ew -pady 5} {-w 40 -h 12 -cbxsel {$::alited::al(ED,tran)} -tvar alited::al(ED,tran) -values {$alited::al(ED,trans)} -clearcom {alited::main::ClearCbx %w ::alited::al(ED,tran)}}}
-    {.labSwTrans .labTrans T 1 1 {-st ew -pady 5 -padx 3} {-t {Adding translations:}}}
-    {.swiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(ED,transadd) -tip {If OFF, replaces the original text.}}}
-    {.seh2 .labSwTrans T 1 10 {-pady 3}}
     {.but + T 1 1 {-st w} {-t Default -com alited::pref::Text_Default -tabnext alited::Tnext}}
   }
 }
@@ -939,10 +935,10 @@ proc pref::Text_Default {} {
 
   fetchVars
   set al(TextExts) $al(TextExtsDef)
-  set al(ED,tran) $al(ED,TRAN)
-  set al(ED,trans) $al(ED,TRANS)
-  [$obPrf CbxTrans] configure -values $al(ED,trans)
-  set al(ED,transadd) 1
+#!  set al(ED,tran) $al(ED,TRAN)
+#!  set al(ED,trans) $al(ED,TRANS)
+#!  [$obPrf CbxTrans] configure -values $al(ED,trans)
+#!  set al(ED,transadd) $al(ED,TRANSADD)
   update
 }
 #_______________________

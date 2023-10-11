@@ -567,6 +567,7 @@ proc project::Select {{item ""}} {
     [$obPrj Labprj] configure -text [msgcat::mc {For project}]\ $al(prjname)
     set tip [string map [list %f "$al(MC,prjName) $al(prjname)"] $al(MC,alloffile)]
     ::baltip tip [$obPrj ChbClearRun] $tip
+    [$obPrj CbxTrans] configure -values $al(prjtrans)
   }
 }
 #_______________________
@@ -780,7 +781,7 @@ proc project::OpenSelFiles {{showmsg yes}} {
     }
     alited::file::OpenFile $fnames yes yes alited::info::Put
   }
-  set al(prjname) $prj
+  set al(prjname) $cprj
 }
 #_______________________
 
@@ -812,6 +813,7 @@ proc project::CloseSelFiles {} {
         set prjinfo($cprj,tablist) [lreplace $prjinfo($cprj,tablist) $i $i]
       }
     }
+    set al(prjname) $cprj
     if {$closecurr && [set TID [alited::bar::FileTID $fnamecurr]] ne {}} {
       alited::bar::BAR $TID close ;# this should be last to check for "No name" tab
     }
@@ -956,6 +958,7 @@ proc project::Change {} {
   # "Change project" button's handler.
 
   namespace upvar ::alited al al
+  variable obPrj
   variable curinfo
   variable prjlist
   variable prjinfo
@@ -983,6 +986,8 @@ proc project::Change {} {
     set curinfo(prjfile) $fname
   }
   set prjinfo($newprj,prjrem) $prjinfo($oldprj,prjrem) ;# reminders
+  set al(prjtrans) [[$obPrj CbxTrans] cget -values]
+  ::alited::PushInList al(prjtrans) $al(prjtran)
   PutProjectOpts $fname $oldname yes
   GetProjects
   UpdateTree
@@ -1236,13 +1241,12 @@ proc project::Help {} {
   # 'Help' button handler.
 
   variable win
-  switch -glob [$win.fra.fraR.nbk select] {
-    *f2 {set curTab 2}
-    *f3 {set curTab 3}
-    *f4 {set curTab 4}
-    default {set curTab {}}
+  set th {}
+  set ts [string range [$win.fra.fraR.nbk select] end-1 end]
+  switch $ts {
+    f2 - f3 - f4 - f5 {set th [string index $ts end]}
   }
-  alited::Help $win $curTab
+  alited::Help $win $th
 }
 #_______________________
 
@@ -1736,6 +1740,7 @@ proc project::MainFrame {} {
       f2 {-text {$al(MC,prjOptions)}}
       f3 {-text Templates}
       f4 {-text Commands}
+      f5 {-text Files}
       -traverse yes -select f1
     }}
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
@@ -1780,7 +1785,7 @@ proc project::Tab1 {} {
   return {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
-    {.labName - - 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,prjName)}}}
+    {.labName - - 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,prjName)} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {.EntName + L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 50}}
     {.labDir .labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
     {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 50 -validate all -validatecommand alited::project::ValidateDir}}
@@ -1826,21 +1831,21 @@ proc project::Tab2 {} {
     {.swiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite)}}
     {.labmaxcom .labTrWs T 1 1 {-st w -pady 1 -padx 3} {-t {Maximum Run commands}}}
     {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjmaxcoms) -from 4 -to 99 -tabnext alited::Tnext}}
-    {.labFlist .labmaxcom T 1 1 {-pady 3 -padx 3} {-t "List of files:"}}
-    {fraFlist + T 1 2 {-st nswe -padx 3 -cw 1 -rw 1}}
-    {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}
-    {.sbvFlist + L - - {pack -side left}}
+    {.labTrans .labmaxcom T 1 1 {-st ew -pady 5 -padx 3} {-t {Translation link:}}}
+    {.CbxTrans + L 1 9 {-st ew -pady 5} {-h 12 -cbxsel {$::alited::al(prjtran)} -tvar alited::al(prjtran) -values {$alited::al(prjtrans)} -clearcom {alited::main::ClearCbx %w ::alited::al(prjtran)}}}
+    {.labSwTrans .labTrans T 1 1 {-st ew -pady 5 -padx 3} {-t {Adding translations:}}}
+    {.swiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(prjtransadd) -tip {If OFF, replaces the original text.}}}
   }
 }
 #_______________________
 
 proc project::Tab3 {} {
-  # Creates Template tab of "Project".
+  # Creates Templates tab of "Project".
 
   return {
     {v_ - - 1 9}
     {lab1 + T 1 9 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,TemplPrj)}}}
-    {lab2 + T 1 1 {-st ew -pady 5 -padx 3} {-t Template:}}
+    {lab2 + T 1 1 {-st ew -pady 5 -padx 3} {-t Template: -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {CbxTpl + L 1 3 {-st ew -pady 5} {-w 40 -h 12 -cbxsel {$::alited::al(PTP,name)} -tvar alited::al(PTP,name) -values {$alited::al(PTP,names)} -clearcom alited::project::DeleteFromTplList -selcombobox alited::project::UpdateTplText}}
     {fraTlist + T 1 8 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.TexTemplate - - - - {pack -side left -fill both -expand 1} {-h 20 -w 40 -tabnext "*.butTplDef *.cbxTpl" -wrap none}}
@@ -1897,6 +1902,19 @@ proc project::Tab4 {} {
     {butRun h_ L 1 2 {-st ew} {-t Run -com alited::project::RunComs -tip {$alited::al(MC,saving) & $alited::al(MC,run)} -tabnext alited::Tnext}}
   }
 }
+#_______________________
+
+proc project::Tab5 {} {
+  # Creates Files tab of "Project".
+
+  return {
+    {v_ - - 1 9}
+    {labFlist + T 1 1 {-pady 3 -padx 3} {-t {List of files:} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {fraFlist + T 1 9 {-st nswe -padx 3 -cw 1 -rw 1}}
+    {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}
+    {.sbvFlist + L - - {pack -side left}}
+  }
+}
 
 # ________________________ Main _________________________ #
 
@@ -1921,7 +1939,8 @@ proc project::_create {} {
     $win.fra.fraR.nbk.f1 [Tab1] \
     $win.fra.fraR.nbk.f2 [Tab2] \
     $win.fra.fraR.nbk.f3 [Tab3] \
-    $win.fra.fraR.nbk.f4 [Tab4]
+    $win.fra.fraR.nbk.f4 [Tab4] \
+    $win.fra.fraR.nbk.f5 [Tab5]
   set tree [$obPrj TreePrj]
   $tree heading C1 -text $al(MC,projects)
   if {$oldTab ne {}} {

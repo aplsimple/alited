@@ -1380,13 +1380,7 @@ proc file::FillRecent {{delit ""}} {
 proc file::InsertRecent {fname pos} {
   namespace upvar ::alited al al
   if {![IsNoName $fname]} {
-    if {[set i [lsearch -exact $al(RECENTFILES) $fname]]>-1} {
-      set al(RECENTFILES) [lreplace $al(RECENTFILES) $i $i]
-    }
-    set al(RECENTFILES) [linsert $al(RECENTFILES) $pos $fname]
-    catch {
-      set al(RECENTFILES) [lreplace $al(RECENTFILES) $al(INI,RECENTFILES) end]
-    }
+    ::alited::PushInList al(RECENTFILES) $fname $pos $al(INI,RECENTFILES)
   }
 }
 
