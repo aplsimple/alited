@@ -1,6 +1,6 @@
 # LAST CHANGES:
 
-Version `v1.4.5.2 (11 Oct'23)`
+Version `v1.4.5.3 (12 Oct'23)`
 
   - BUGFIX: Projects: alited title's project at open/close files from file list
   - NEW   : Help/Changelog

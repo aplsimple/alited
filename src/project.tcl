@@ -781,7 +781,7 @@ proc project::OpenSelFiles {{showmsg yes}} {
     }
     alited::file::OpenFile $fnames yes yes alited::info::Put
   }
-  set al(prjname) $cprj
+  set al(prjname) $prj
 }
 #_______________________
 
@@ -822,6 +822,7 @@ proc project::CloseSelFiles {} {
       set al(tablist) $prjinfo($cprj,tablist)
       TabFileInfo
     }
+    set al(prjname) $prj
   }
 }
 #_______________________
