@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.5.3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.4.6  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -1145,6 +1145,7 @@ if {[info exists ALITED_PORT]} {
     source [file join $alited::LIBDIR addon hl_alm.tcl]
     source [file join $alited::LIBDIR addon hl_ini.tcl]
     source [file join $alited::LIBDIR addon hl_wiki.tcl]
+    source [file join $alited::LIBDIR addon hl_trans.tcl]
   }
 }
 # _________________________________ EOF _________________________________ #

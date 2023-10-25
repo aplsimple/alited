@@ -1170,6 +1170,7 @@ proc ini::CheckIni {} {
   if {[file exists $::alited::INIDIR] && [file exists $::alited::PRJDIR]} {
     return
   }
+  ::apave::initWM
   InitGUI
   catch {destroy .tex}
   if {![GetConfiguration]} exit

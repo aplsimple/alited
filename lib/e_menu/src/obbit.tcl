@@ -50,24 +50,24 @@ namespace eval ::apave {
   variable _CS_
   array set _CS_ [list]
   # - current color scheme data
-  set ::apave::_CS_(initall) 1
-  set ::apave::_CS_(initWM) 1
-  set ::apave::_CS_(isActive) 1
-  set ::apave::_CS_(!FG) #000000
-  set ::apave::_CS_(!BG) #b7b7b7 ;#a8bcd2 #c3c3c3 #9cb0c6 #4a6984
-  set ::apave::_CS_(expo,tfg1) "-"
-  set ::apave::_CS_(defFont) [font actual TkDefaultFont -family]
-  set ::apave::_CS_(textFont) [font actual TkFixedFont -family]
-  set ::apave::_CS_(smallFont) [font actual TkSmallCaptionFont]
-  set ::apave::_CS_(fs) [font actual TkDefaultFont -size]
-  set ::apave::_CS_(untouch) [list]
-  set ::apave::_CS_(NONCS) -2
-  set ::apave::_CS_(MINCS) -1
-  set ::apave::_CS_(old) -3
-  set ::apave::_CS_(TONED) [list -2 no]
-  set ::apave::_CS_(HUE) 0
-  set ::apave::_CS_(LABELBORDER) 0
-  set ::apave::_CS_(CURSORWIDTH) 2
+  set _CS_(initall) 1
+  set _CS_(initWM) 1
+  set _CS_(isActive) 1
+  set _CS_(!FG) #000000
+  set _CS_(!BG) #b7b7b7 ;#a8bcd2 #c3c3c3 #9cb0c6 #4a6984
+  set _CS_(expo,tfg1) "-"
+  set _CS_(defFont) [font actual TkDefaultFont -family]
+  set _CS_(textFont) [font actual TkFixedFont -family]
+  set _CS_(smallFont) [font actual TkSmallCaptionFont]
+  set _CS_(fs) [font actual TkDefaultFont -size]
+  set _CS_(untouch) [list]
+  set _CS_(NONCS) -2
+  set _CS_(MINCS) -1
+  set _CS_(old) -3
+  set _CS_(TONED) [list -2 no]
+  set _CS_(HUE) 0
+  set _CS_(LABELBORDER) 0
+  set _CS_(CURSORWIDTH) 2
 
   ## ________________________ CS list _________________________ ##
 

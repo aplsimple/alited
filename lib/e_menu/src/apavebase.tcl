@@ -1572,7 +1572,7 @@ oo::class create ::apave::APaveBase {
   #_______________________
 
   method AuxSetChooserGeometry {vargeo vargeo2 parent widname} {
-    # Auxiliary method to set some Linux choosers' geometry.
+    # Auxiliary method to set some Tk choosers' geometry.
     #   vargeo - variable for geometry value
     #   vargeo2 - variable for geometry value with second type of dialogue
     #   parent - list containing a parent's path
@@ -1580,15 +1580,21 @@ oo::class create ::apave::APaveBase {
     # If there is no saved geometry with *vargeo*, tries to get it with *vargeo2*.
     # Returns a path to the chooser to be open.
 
-    set wchooser [lindex $parent 1].$widname
+    set wp [lindex $parent 1]
+    set wchooser $wp.$widname
     set geom {}
     if {[catch {lassign [set $vargeo] -> geom}] || $geom eq {}} {
       # no saved geometry with *vargeo*, so get it with *vargeo2*
       catch {lassign [set $vargeo2] -> geom}
     }
-    if {![package vsatisfies [package require Tk] 9.0-] && \
-    [string match *x*+*+* $geom] && [::isunix]} {
-      # the below equilibristics provides the smooth display of old Tk choosers
+    if {![string match *x*+*+* $geom]} {
+      # chooser's default geometry centered in parent
+      if {![winfo exists $wp]} {set wp .}
+      set geom [set W 640]x[set H 470]
+      append geom [my CenteredXY {*}[split [wm geometry $wp] x+] $W $H]
+    }
+    if {[::isunix] && ![package vsatisfies [package require Tk] 9.0-]} {
+      # the below equilibristics provides the smooth display
       after idle "catch {wm withdraw $wchooser; wm geometry $wchooser 1x1}"
       after 0 [list after idle \
         "catch {wm withdraw $wchooser; wm geometry $wchooser $geom; wm deiconify $wchooser}; wm geometry $wchooser $geom"]
@@ -1622,12 +1628,15 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
-  method chooserGeomVars {dirvar filevar} {
-    # Sets variables to save/restore geometry of Tcl/Tk dir/file choosers (in Linux).
+  method chooserGeomVars {{dirvar ""} {filevar ""}} {
+    # Sets/gets variables to save/restore geometry of Tcl/Tk dir/file choosers (in Linux).
     #   dirvar - variable's name for geometry of directory chooser
     #   filevar - variable's name for geometry of file chooser
     # See also: chooser
 
+    if {$dirvar eq {}} {
+      return [::apave::getProperty DirFilGeoVars]
+    }
     ::apave::setProperty DirFilGeoVars [list $dirvar $filevar]
   }
   #_______________________
@@ -1657,7 +1666,12 @@ oo::class create ::apave::APaveBase {
     } else {
       set parent [my ParentOpt]
     }
-    lassign [::apave::getProperty DirFilGeoVars] dirvar filvar
+    lassign [my chooserGeomVars] dirvar filvar
+    if {$dirvar eq {}} {
+      set [set dirvar ::apave::APaveDirVar] {}
+      set [set filvar ::apave::APaveFilVar] {}
+      my chooserGeomVars $dirvar $filvar
+    }
     set vargeo {}
     if {$nchooser eq {ftx_OpenFile}} {
       set nchooser tk_getOpenFile
