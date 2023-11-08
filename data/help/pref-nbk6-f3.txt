@@ -2,7 +2,9 @@
 
  The item lines contain the following:
 
-   <b>[+]</b> and <b>[x]</b> buttons to insert or delete a line
+   <b>up</b> and <b>down</b> to move items up/down
+
+   <b>[x]</b> button to delete a line
 
    <b>separator</b> checkbox for a separator of toolbar/menu
 
@@ -20,9 +22,10 @@
  While choosing a command from e_menu, use Escape key or popup menu's "Exit"
  to quit e_menu.
 
- To move items up/down, use <b>arrow buttons</b> in the list's bottom.
-
  Clicking a separator checkbutton, you can save/restore its item.
+
+ To make a new item, choose one of 3 empty items at the bottom (there are
+ only 3 of them for a session, but the total is 32).
 
  Use a scrollbar at the right edge of the dialogue to scroll to the bottom
  of the list. Or resize the dialogue's window for this.

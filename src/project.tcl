@@ -464,6 +464,9 @@ proc project::TabFileInfo {} {
     set fname [lindex [split $tab \t] 0]
     $lbx insert end $fname
   }
+  set txt [msgcat::mc {List of files (%n):}]
+  set txt [string map [list %n [llength $alited::al(tablist)]] $txt]
+  [$obPrj LabFlist] configure -text $txt
 }
 #_______________________
 
@@ -801,6 +804,7 @@ proc project::CloseSelFiles {} {
     set fnamecurr [alited::bar::FileName]
     foreach idx $selidx {
       set fname [$lbx get $idx]
+      if {[alited::file::IsNoName $fname]} continue
       if {[set TID [alited::bar::FileTID $fname]] ne {}} {
         if {$fname eq $fnamecurr} {
           set closecurr yes
@@ -1786,9 +1790,9 @@ proc project::Tab1 {} {
   return {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
-    {.labName - - 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,prjName)} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {.labName - - 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,prjName)} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {.EntName + L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 50}}
-    {.labDir .labName T 1 1 {-st w -pady 8 -padx 3} {-t "Root directory:"}}
+    {.labDir .labName T 1 1 {-st e -pady 8 -padx 3} {-t "Root directory:"}}
     {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 50 -validate all -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 + T 2 1 {-st nsew -rw 1 -cw 99}}
@@ -1817,24 +1821,24 @@ proc project::Tab2 {} {
     {v_ - - 1 10}
     {lab1 + T 1 2 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,DEFopts)} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fra2 + T 1 2 {-st nsew -cw 1}}
-    {.labIgn - - 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,Ign:)}}}
+    {.labIgn - - 1 1 {-st e -pady 1 -padx 3} {-t {$alited::al(MC,Ign:)}}}
     {.entIgn + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 40}}
-    {.labEOL .labIgn T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,EOL:)}}}
+    {.labEOL .labIgn T 1 1 {-st e -pady 1 -padx 3} {-t {$alited::al(MC,EOL:)}}}
     {.cbxEOL + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
-    {.labIndent .labEOL T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,indent:)}}}
+    {.labIndent .labEOL T 1 1 {-st e -pady 1 -padx 3} {-t {$alited::al(MC,indent:)}}}
     {.spxIndent + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -from 0 -to 8 -com {::alited::pref::CheckIndent ""}}}
     {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjindentAuto) -t {$alited::al(MC,indentAuto)}}}
-    {.labRedunit .labIndent T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
+    {.labRedunit .labIndent T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
     {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -from $alited::al(minredunit) -to 100}}
-    {.labMult .labRedunit T 1 1 {-st w -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
+    {.labMult .labRedunit T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
     {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
-    {.labTrWs .labMult T 1 1 {-st w -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
+    {.labTrWs .labMult T 1 1 {-st e -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
     {.swiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite)}}
-    {.labmaxcom .labTrWs T 1 1 {-st w -pady 1 -padx 3} {-t {Maximum Run commands}}}
+    {.labmaxcom .labTrWs T 1 1 {-st e -pady 1 -padx 3} {-t {Maximum Run commands}}}
     {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjmaxcoms) -from 4 -to 99 -tabnext alited::Tnext}}
-    {.labTrans .labmaxcom T 1 1 {-st ew -pady 5 -padx 3} {-t {Translation link:}}}
+    {.labTrans .labmaxcom T 1 1 {-st e -pady 5 -padx 3} {-t {Translation link:}}}
     {.CbxTrans + L 1 9 {-st ew -pady 5} {-h 12 -cbxsel {$::alited::al(prjtran)} -tvar alited::al(prjtran) -values {$alited::al(prjtrans)} -clearcom {alited::main::ClearCbx %w ::alited::al(prjtran)}}}
-    {.labSwTrans .labTrans T 1 1 {-st ew -pady 5 -padx 3} {-t {Adding translations:}}}
+    {.labSwTrans .labTrans T 1 1 {-st e -pady 5 -padx 3} {-t {Adding translations:}}}
     {.swiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(prjtransadd) -tip {If OFF, replaces the original text.}}}
   }
 }
@@ -1851,7 +1855,7 @@ proc project::Tab3 {} {
     {fraTlist + T 1 8 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.TexTemplate - - - - {pack -side left -fill both -expand 1} {-h 20 -w 40 -tabnext "*.butTplDef *.cbxTpl" -wrap none}}
     {.sbv + L - - {pack -side left}}
-    {butTplDef fraTlist T 1 1 {-st w -padx 4 -pady 4} {-t Default -com alited::project::TplDefault -tabnext alited::Tnext}}
+    {butTplDef fraTlist T 1 1 {-st w -padx 4 -pady 4} {-t Standard -com alited::project::TplDefault -tabnext alited::Tnext}}
   }
 }
 #_______________________
@@ -1910,7 +1914,7 @@ proc project::Tab5 {} {
 
   return {
     {v_ - - 1 9}
-    {labFlist + T 1 1 {-pady 3 -padx 3} {-t {List of files:} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {LabFlist + T 1 1 {-pady 3 -padx 3} {-foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fraFlist + T 1 9 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}
     {.sbvFlist + L - - {pack -side left}}

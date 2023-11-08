@@ -35,7 +35,7 @@ proc ::klnd::my::GoYear2 {obj i {dobreak no}} {
   #   dobreak - yes when called from 'bind'
 
   variable p
-  ShowMonth2 $obj $p(mvis$obj) [expr {$p(yvis$obj)+($i)}]
+  ShowMonth2 $obj $p(mvis$obj) [expr {$p(yvis$obj)+($i)}] yes yes
   if {$dobreak} {return -code break}
 }
 #_______________________
@@ -50,15 +50,8 @@ proc ::klnd::my::GoMonth2 {obj i {dobreak no}} {
   set m [expr {$p(mvis$obj)+($i)}]
   if {$m>12} {set m 1; incr p(yvis$obj)}
   if {$m<1} {set m 12; incr p(yvis$obj) -1}
-  ShowMonth2 $obj $m $p(yvis$obj)
+  ShowMonth2 $obj $m $p(yvis$obj) yes yes
   if {$dobreak} {return -code break}
-}
-#_______________________
-
-proc ::klnd::my::MapYMD {script y m d} {
-  # Gets a script with %y, %m, %d wildcards.
-
-  return [string map [list %y $y %m $m %d $d] $script]
 }
 #_______________________
 
@@ -213,7 +206,7 @@ proc ::klnd::my::Enter2 {obj i {focusin 0}} {
 
   variable p
   if {[catch {set isday [IsDay2 $obj $i]}]} {set isday no}
-  if {!$isday} return
+  if {!$isday} {return -code break}
   set w [$p($obj) BuT$obj-${i}KLND]
   set p(dvis$obj) [$w cget -text]
   set date [FormatDay2 $obj $p(yvis$obj) $p(mvis$obj) $p(dvis$obj)]
@@ -231,6 +224,7 @@ proc ::klnd::my::Enter2 {obj i {focusin 0}} {
   }
   ShowMonth2 $obj $p(mvis$obj) $p(yvis$obj) no
   if {$focusin} {
+    catch {set $p(tvar$obj) $date}
     set p(olddate$obj) $date
     if {$p(united$obj)} {
       # if calendars are linked with united, unselect previously selected COMMON day
@@ -281,7 +275,7 @@ proc ::klnd::my::BindButtons2 {obj} {
   #   obj - index of calendar
 
   variable p
-  for {set i 1} {$i<38} {incr i} {
+  for {set i 1} {$i<43} {incr i} {
     set but [$::klnd::my::p($obj) BuT$obj-${i}KLND]
     bind $but <Button-1> "::klnd::my::Enter2 $obj $i 1"
   }

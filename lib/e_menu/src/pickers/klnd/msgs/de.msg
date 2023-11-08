@@ -6,5 +6,6 @@ namespace eval ::klnd::my {
     {Previous month} {Vorheriger Monat}
     {Next year} {Nächstes Jahr}
     {Next month} {Nächster Monat}
+    Close Schließen
   }
 }

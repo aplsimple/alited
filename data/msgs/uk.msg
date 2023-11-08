@@ -29,7 +29,6 @@ namespace eval ::alited {
     {File} {Файл}
     {Edit} {Правка}
     {Search} {Пошук}
-    {Conversions} {Перетворення}
     {Tools} {Струменти}
     {Setup} {Опції}
     {Help} {Допомога}
@@ -70,10 +69,10 @@ namespace eval ::alited {
     {Screen Loupe} {Екранна лупа}
     {Quitting alited.} {Виходимо з alited.}
     {Wait a little ...} {Почекайте ...}
-    {Default} {За замовчуванням}
-    {Default 2} {За замовчуванням 2}
-    {Default 3} {За замовчуванням 3}
-    {Default 4} {За замовчуванням 4}
+    {Standard} {Стандарт}
+    {Standard 2} {Стандарт 2}
+    {Standard 3} {Стандарт 3}
+    {Standard 4} {Стандарт 4}
     {Test} {Перевірка}
     {Correct Indentation} {Правити відступи}
     "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Правити відступи \"%f\",\nпо %i на кожний?"
@@ -144,6 +143,7 @@ namespace eval ::alited {
     {Display colors in the whole text?} {Відобразити кольори в усьому тексті?}
     {check RE in Find/Replace box} {включіть RE у віконці Пошук/Заміна}
     {Context} {Контекстна}
+    {Changes will be lost!} {Зміни будуть втрачені!}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -229,8 +229,7 @@ namespace eval ::alited {
     {End of line:} {Кінці рядків:}
     {Multi-line strings:} {Багаторядкові string:}
     {Unit lines per 1 red bar:} {Рядків юніта на 1 червону смужку:}
-    {List of files:} {Список файлів:}
-    "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n" "Ви можете\n  - додати поточний список файлів до\n  - замінити поточним списком\n  - видалити\n  - не змінювати\nсписок файлів у проекті.\n"
+    {List of files (%n):} {Список файлів (%n):}
     {Add} {Додати}
     {Substitute} {Змінити}
     {Delete} {Видалити}
@@ -553,8 +552,9 @@ namespace eval ::alited {
     {tclsh, wish or tclkit:} {tclsh, wish або tclkit:}
     {Geometry:} {Геометрія:}
     {Run as external app:} {Як окрему програму:}
-    {Inserts a new line.} {Додає рядок.}
-    {Deletes a line.} {Видаляє рядок.}
+    {Delete an item} {Видалити елемент}
+    {Move an item up} {Підняти елемент}
+    {Move an item down} {Опустити елемент}
     {separator} {роздільник}
     {If 'yes', means a separator of the toolbar/menu.} {Якщо включено, значить роздільник у тулбарі/меню.}
     {For Start...} {Для старту...}

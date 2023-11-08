@@ -141,10 +141,8 @@ namespace eval ::apave {
     # Calls a method of APave class.
     #   com - a method
     #   args - arguments of the method
-    #
     # It can (and must) be used only for temporary tasks.
     # For persistent tasks, use a "normal" apave object.
-    #
     # Returns the command's result.
 
     variable _OBJ_
@@ -447,9 +445,7 @@ oo::class create ::apave::APaveBase {
     # Creates APaveBase object.
     #   cs - color scheme (CS)
     #   args - additional arguments
-    #
     # If cs>-2, the appropriate CS is set for the created APaveBase object.
-    #
     # Makes few procedures in the object's namespace to access from
     # event handlers:
     #   - ListboxHandle
@@ -711,7 +707,6 @@ oo::class create ::apave::APaveBase {
 
   method ListboxesAttrs {w attrs} {
     # Appends selection attributes to listboxes.
-    #
     # Details:
     #   1. https://wiki.tcl-lang.org/page/listbox+selection
     #   2. https://stackoverflow.com, the question:
@@ -761,12 +756,10 @@ oo::class create ::apave::APaveBase {
     #   wnamefull - a widget name
     #   attrs - a list of all attributes
     #   varopt - a variable option
-    #
     # The *varopt* refers to a variable part such as tvar, lvar:
     #  * -inpval option means an initial value of the field
     #  * -retpos option has p1:p2 format (e.g. 0:10) to cut a substring \
     from a returned value
-    #
     # Returns *attrs* without -inpval and -retpos options.
 
     lassign [::apave::parseOptions $attrs $varopt {} -retpos {} -inpval {}] \
@@ -984,8 +977,7 @@ oo::class create ::apave::APaveBase {
     #   wnamefull - path to the widget
     #   options - grid/pack options of the widget
     #   attrs - attribute of the widget
-    #
-    # The *widgetType* method returns a list of items:
+    # Returns a list of items:
     #   widget - Tk/Ttk widget name
     #   options - grid/pack options of the widget
     #   attrs - attribute of the widget
@@ -1220,18 +1212,14 @@ oo::class create ::apave::APaveBase {
     #   opts - new default grid/pack options
     #   atrs - new default attributes
     #   widget - Tcl/Tk command for the new registered widget type
-    #
     # The *type* should be a three letter unique string.
-    #
     # If the *type* is absent in the registered types and *opts* and/or *atrs*
     # is not set to "", defaultATTRS registers the new *type* with its grid/pack
     # options and attributes. At that *widget* is a command for the new widget
     # type. For example, to register "toolbutton" widget:
     #   my defaultATTRS tbt {} {-style Toolbutton -compound top} ttk::button
-    #
     # Options and attributes may contain data (variables and commands)
     # to be processed by [subst].
-    #
     # Returns:
     #   - if not set *type*: a full list of options and attributes of all types
     #   - if set *type* only: a list of options, attributes and *widget*
@@ -1399,12 +1387,9 @@ oo::class create ::apave::APaveBase {
   method optionCascadeText {it} {
     # Rids a tk_optionCascade item of braces.
     #   it - an item to be trimmed
-    #
     # Reason: tk_optionCascade items shimmer between 'list' and 'string'
     # so a multiline item is displayed with braces, if not got rid of them.
-    #
     # Returns the item trimmed.
-    #
     # See also: tk_optionCascade
 
     if {[string match "\{*\}" $it]} {
@@ -1422,9 +1407,7 @@ oo::class create ::apave::APaveBase {
     #   mbopts - ttk::menubutton options (e.g. "-width -4")
     #   precom - command to get entry's options (%a presents its label)
     #   args   - additional options of entries
-    #
     # Returns a path to the widget.
-    #
     # See also:
     #   optionCascadeText
     #   [wiki.tcl-lang.org](https://wiki.tcl-lang.org/page/tk_optionCascade)
@@ -1603,26 +1586,32 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
-  method validateColorChoice {lab ent} {
+  method validateColorChoice {lab {ent ""}} {
     # Displays a current color of color chooser's entry.
-    #   lab - label to display
+    #   lab - color chooser's label (or apave name's clr1 / Clr1)
     #   ent - color chooser's entry
+    # Can be called as "validateColorChoice clr1 / Clr1".
 
-    set ent [my ownWName $ent]
+    if {[string match -nocase clr* $lab]} {
+      set lab [string tolower [string index $lab 0]][string range $lab 1 end]
+      set ent Ent$lab
+      set lab Lab$lab
+    }
+    set ent [my [my ownWName $ent]]
     set lab [my [my ownWName $lab]]
-    set val [[my $ent] get]
-    set tvar [[my $ent] cget -textvariable]
+    set val [$ent get]
     catch {$lab configure -background $val}
+    catch {$ent selection clear}
     return yes
   }
   #_______________________
 
   method scrolledFrame {w args} {
+    # Retrieves the path where the scrollable contents of frame go.
+    #   w - frame's path
 
     lassign [::apave::extractOptions args -toplevel no -anchor center -mode both] tl anc mode
     ::apave::sframe new $w -toplevel $tl -anchor $anc -mode $mode
-
-    # Retrieve the path where the scrollable contents go.
     set path [::apave::sframe content $w]
     return $path
   }
@@ -1646,7 +1635,6 @@ oo::class create ::apave::APaveBase {
     #   nchooser - name of chooser
     #   tvar - name of variable containing an input/output value
     #   args - options of the chooser
-    #
     # The chooser names are:
     #   tk_getOpenFile - choose a file to open
     #   tk_getSaveFile - choose a file to save
@@ -1655,7 +1643,6 @@ oo::class create ::apave::APaveBase {
     #   dateChooser - choose a date
     #   colorChooser - choose a color
     #   ftx_OpenFile - (internal) choose a file for ftx widget
-    #
     # Returns a selected value.
 
     set isfilename [set rootname 0]
@@ -1751,10 +1738,8 @@ oo::class create ::apave::APaveBase {
     # Color chooser.
     #   tvar - name of variable containing a color
     #   args - options of *tk_chooseColor*
-    #
     # The *tvar* sets the value of *-initialcolor* option. Also
     # it gets a color selected in the chooser.
-    #
     # Returns a selected color.
 
     if {$Initialcolor eq {} && [::isunix]} {
@@ -1792,7 +1777,7 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
-  method SourceKlnd {num} {
+  method sourceKlnd {{num ""}} {
     # Loads klnd package at need.
     #   num - defines which name of package file to be used
 
@@ -1807,10 +1792,9 @@ oo::class create ::apave::APaveBase {
     # Date chooser (calendar widget).
     #   tvar - name of variable containing a date
     #   args - options of *::klnd::calendar*
-    #
     # Returns a selected date.
 
-    my SourceKlnd {}
+    my sourceKlnd {}
     if {![catch {set ent [my [my ownWName [::apave::getOption -entry {*}$args]]]}]} {
       dict set args -entry $ent
       set res [::klnd::calendar {*}$args -tvar $tvar -parent [winfo toplevel $ent]]
@@ -1827,18 +1811,15 @@ oo::class create ::apave::APaveBase {
     #   r2 - variable name for a length of *lwidgets* list
     #   r3 - variable name for *lwidgets* list
     #   args - "tcl" and "tcl code" for "tcl" type of widget
-    #
     # The code should use the wildcard that goes first at a line:
     #   %C - a command for inserting an item into lwidgets list.
-    #
     # The "tcl" widget type can be useful to automate the inserting
     # a list of similar widgets to the list of widgets.
-    #
     # See tests/test2_pave.tcl where the "tcl" fills "Color schemes" tab.
 
-    upvar 1 $r1 _ii $r2 _lwlen $r3 _lwidgets
     lassign $args _name _code
     if {[my ownWName $_name] ne {tcl}} {return $args}
+    upvar 1 $r1 _ii $r2 _lwlen $r3 _lwidgets
   ; proc lwins {lwName i w} {
       upvar 2 $lwName lw
       set lw [linsert $lw $i $w]
@@ -1857,7 +1838,6 @@ oo::class create ::apave::APaveBase {
     #   r2 - variable name for a length of *lwidgets* list
     #   r3 - variable name for *lwidgets* list
     #   args - the widget item of *lwidgets* list
-    #
     # Choosers should contain 2 fields: entry + button.
     # Here every chooser is replaced with these two widgets.
 
@@ -1865,9 +1845,11 @@ oo::class create ::apave::APaveBase {
     lassign $args name neighbor posofnei rowspan colspan options1 attrs1
     lassign {} wpar view addattrs addattrs2
     set tvar [::apave::getOption -tvar {*}$attrs1]
-    lassign [::apave::extractOptions attrs1 -takefocus 0 -showcolor {} \
-      -filetypes {} -initialdir {} -initialfile {} -defaultextension {} -multiple {}] \
-      takefocus showcolor filetypes initialdir initialfile defaultextension multiple
+    lassign [::apave::extractOptions attrs1 \
+      -takefocus 0 -showcolor {} -filetypes {} -initialdir {} -initialfile {} \
+      -defaultextension {} -multiple {} -validatecommand {}] \
+      takefocus showcolor filetypes initialdir initialfile \
+      defaultextension multiple validatecommand
     lassign [::apave::extractOptions options1 -padx 0 -pady 0] padx pady
     set takefocus "-takefocus $takefocus"
     foreach atr {filetypes initialdir initialfile defaultextension multiple} {
@@ -1881,23 +1863,22 @@ oo::class create ::apave::APaveBase {
     lassign [my LowercaseWidgetName $name] n
     set ownname [my ownWName $n]
     set wtyp [string range $ownname 0 2]
-    if {$wtyp eq {daT}} {
-      # embed calendar widgets into $ownname frame
-      my SourceKlnd {}
-      my SourceKlnd 2
-      set attrs1 [subst $attrs1]
-      set lwidgets2 [::klnd::calendar2 [self] $w $n {*}$attrs1]
-      set lwlen2 [llength $lwidgets2]
-      for {set i2 0} {$i2 < $lwlen2} {} {
-        set lst2 [lindex $lwidgets2 $i2]
-        if {[my Replace_Tcl i2 lwlen2 lwidgets2 {*}$lst2] ne {}} {incr i2}
-      }
-      incr lwlen [llength $lwidgets2]
-      set lwidgets [linsert $lwidgets [expr {$i+1}] {*}$lwidgets2]
-      lset args 6 [::klnd::clearArgs {*}$attrs1]
-      return $args
-    }
     switch -exact $wtyp {
+      daT { ;# embed calendar widgets into $ownname frame
+        my sourceKlnd
+        my sourceKlnd 2
+        set attrs1 [subst $attrs1]
+        set lwidgets2 [::klnd::calendar2 [self] $w $n {*}$attrs1]
+        set lwlen2 [llength $lwidgets2]
+        for {set i2 0} {$i2 < $lwlen2} {} {
+          set lst2 [lindex $lwidgets2 $i2]
+          if {[my Replace_Tcl i2 lwlen2 lwidgets2 {*}$lst2] ne {}} {incr i2}
+        }
+        incr lwlen [llength $lwidgets2]
+        set lwidgets [linsert $lwidgets [expr {$i+1}] {*}$lwidgets2]
+        lset args 6 [::klnd::clearArgs {*}$attrs1]
+        return $args
+      }
       fil - fiL {set chooser tk_getOpenFile}
       fis - fiS {set chooser tk_getSaveFile}
       dir - diR {set chooser tk_chooseDirectory}
@@ -2017,7 +1998,7 @@ oo::class create ::apave::APaveBase {
         lassign $entf f1 - - - - f2 f3
         set com "[self] validateColorChoice $f0 $f1"
         append f3 " -afteridle \"$com; bind \[string map \{.entclr .labclr\} %w\] <ButtonPress> \{eval \[string map \{.entclr .btTclr\} %w\] invoke\}\""
-        append f3 " -validate all -validatecommand \{$com\}"
+        append f3 " -validate all -validatecommand \{$com ; $validatecommand\}"
         set entf [list $f1 - - - - $f2 $f3]
         set lwidgets [linsert $lwidgets [expr {$i+1}] $entf $butf $labf]
         incr lwlen 3
@@ -2037,7 +2018,6 @@ oo::class create ::apave::APaveBase {
     #   r2 - variable name for a length of *lwidgets* list
     #   r3 - variable name for *lwidgets* list
     #   args - the widget item of *lwidgets* list
-    #
     # Bar widgets should contain N fields of appropriate type
 
     upvar 1 $r0 w $r1 i $r2 lwlen $r3 lwidgets
@@ -2191,10 +2171,8 @@ oo::class create ::apave::APaveBase {
     # Font chooser.
     #   tvar - name of variable containing a font
     #   args - options of *tk fontchooser*
-    #
     # The *tvar* sets the value of *-font* option. Also
     # it gets a font selected in the chooser.
-    #
     # Returns a selected font.
 
     set parw [::apave::parseOptions $args -parent [::apave::rootModalWindow .]]
@@ -3399,7 +3377,6 @@ oo::class create ::apave::APaveBase {
     # Paves the window with widgets.
     #   w - window's name (path)
     #   inplists - list of widget items (lists of widget data)
-    #
     # Contents of a widget's item:
     #   name - widget's name (first 3 characters define its type)
     #   neighbor - top (T) or left (L) neighbor of the widget
@@ -3409,9 +3386,7 @@ oo::class create ::apave::APaveBase {
     #   options - grid/pack options
     #   attrs - attributes of widget
     # First 3 items are mandatory, others are set at need.
-    #
     # Called by *paveWindow* method to process a portion of widgets.
-    #
     # The "portion" refers to a separate block of widgets such as
     # notebook's tabs or frames.
 
@@ -3555,10 +3530,7 @@ oo::class create ::apave::APaveBase {
   method paveWindow {args} {
     # Processes "win / list_of_widgets" pairs.
     #   args - list of pairs "win / lwidgets"
-    #
-    # The *win* is a window's path. The *lwidgets* is a list of
-    # widget items.
-    #
+    # The *win* is a window's path. The *lwidgets* is a list of widget items.
     # Each widget item contains:
     #   name - widget's name (first 3 characters define its type)
     #   neighbor - top or left neighbor of the widget
@@ -3568,9 +3540,7 @@ oo::class create ::apave::APaveBase {
     #   options - grid/pack options
     #   attrs - attributes of widget
     # First 3 items are mandatory, others are set at need.
-    #
-    # This method calls *paveWindow* in a cycle, to process a current
-    # "win / lwidgets" pair.
+    # This method calls *paveWindow* in a cycle, to process a current "win/lwidgets" pair.
 
     set res [list]
     set wmain [set wdia {}]
@@ -3622,6 +3592,7 @@ oo::class create ::apave::APaveBase {
     #   modal - yes at showing the window as modal
 
     # first of all, wait till the window be visible
+    after 1 ;# solves an issue with doubleclicking buttons
     if {![winfo viewable $win]} {
       tkwait visibility $win
     }
@@ -3629,10 +3600,10 @@ oo::class create ::apave::APaveBase {
     if {$modal} {      ;# for modal, grab the window
       set wgr [grab current]
       if {$wmain ne {} && $wmain ne $win} {
-        if {[catch {grab set $win}]} {
+        if {[catch {grab set $win} e]} {
           catch {tkwait visibility $win}  ;# 2nd attempt to get the window visible, by force
           catch {grab set $win}           ;# (not sure, where it can fire, still let it be)
-          puts stderr "\napave::waitWinVar - please send a note to apave developers on this catch."
+          puts stderr "\napave::waitWinVar - please send a note to apave developers on this catch. Error: $e"
           catch {puts stderr "apave::waitWinVar - [info level -1]\n"}
         }
       }
@@ -3646,10 +3617,6 @@ oo::class create ::apave::APaveBase {
       if {$wgr ne {}} {
         catch {grab set $wgr}
       }
-    }
-    if {$wmain eq {}} {
-      # if not set beforehand, let the main window of application be the current one
-      ::apave::mainWindowOfApp $win
     }
   }
   #_______________________
@@ -3771,7 +3738,9 @@ oo::class create ::apave::APaveBase {
       }
       wm resizable $win {*}$opt(-resizable)
     }
-    set opt(-onclose) "::apave::obj EXPORT CleanUps $win; $opt(-onclose)"
+    if {!($modal || $waitvar)} {
+      append opt(-onclose) "; ::apave::obj EXPORT CleanUps $win"
+    }
     wm protocol $win WM_DELETE_WINDOW $opt(-onclose)
     # get the window's geometry from its requested sizes
     set inpgeom $opt(-geometry)
@@ -3788,8 +3757,8 @@ oo::class create ::apave::APaveBase {
       set opt(-geometry) [set inpgeom {}]
     }
     if {$opt(-geometry) ne {}} {
-      lassign [::apave::splitGeometry $opt(-geometry)] - - x y
-      wm geometry $win $x$y
+      lassign [::apave::splitGeometry $opt(-geometry) {} {}] - - x y
+      if {$x ne {}} {wm geometry $win $x$y}
     }
     if {$opt(-focus) eq {}} {
       set opt(-focus) $win
@@ -3797,6 +3766,9 @@ oo::class create ::apave::APaveBase {
     set $varname {-}
     if {$opt(-escape)} {bind $win <Escape> $opt(-onclose)}
     update
+    if {![winfo exists $win]} {
+      return 0 ;# looks idiotic, yet possible at sporadic calls
+    }
     set w [winfo reqwidth $win]
     set h [winfo reqheight $win]
     if {$inpgeom eq {}} {  ;# final geometrizing with actual sizes
@@ -3810,9 +3782,13 @@ oo::class create ::apave::APaveBase {
         ::tk::PlaceWindow $win widget $root
       }
     } else {
-      lassign [::apave::splitGeometry $inpgeom] - - x y
+      lassign [::apave::splitGeometry $inpgeom {} {}] - - x y
       if {$x ne {} && $y ne {} && [string first x $inpgeom]<0 && $opt(-checkgeometry)} {
         set inpgeom [my checkXY $w $h $x $y]
+      } elseif {$x eq {} && $y eq {} && $centerme ne {} && $opt(-geometry) ne {}} {
+        lassign [split $opt(-geometry) x+] w h
+        lassign [split [my CenteredXY $rw $rh $rx $ry $w $h] +] -> x y
+        set inpgeom ${w}x$h+$x+$y
       }
       wm geometry $win $inpgeom
     }
@@ -3823,12 +3799,11 @@ oo::class create ::apave::APaveBase {
     }
     my showWindow $win $modal $ontop $varname $minsize $waitvar
     set res 0
-    if {[winfo exists $win]} {
-      if {[catch {
+    catch {
+      if {$modal || $waitvar} {my CleanUps $win}
+      if {[winfo exists $win]} {
         if {$input} {my GetOutputValues}
         set res [set [set _ $varname]]
-      } err]} {
-        puts stderr $err
       }
     }
     return $res
@@ -3839,16 +3814,12 @@ oo::class create ::apave::APaveBase {
     # Gets/sets a variable for *vwait* command.
     #   win - window's path
     #   result - value of variable
-    #
     # This method is used when
     #  - an event cycle should be stopped with changing a variable's value
     #  - a result of event cycle (the variable's value) should be got
-    #
     # In the first case, *result* is set to an integer. In *apave* dialogs
     # the integer is corresponding a pressed button's index.
-    #
     # In the second case, *result* is omitted or equal to "get".
-    #
     # Returns a value of variable that controls an event cycle.
 
     if {$win eq {}} {set win [my dlgPath]}
@@ -3930,7 +3901,6 @@ oo::class create ::apave::APaveBase {
     #   w - text widget's name
     #   contsName - variable name for contents to be set in the widget
     #   tags - list of tags to be applied to the text
-    #
     # The lines in *text contents* are divided by \n and can include
     # *tags* like in a html layout, e.g. <red>RED ARMY</red>.
     # The *tags* is a list of "name/value" pairs. 1st is a tag's name, 2nd

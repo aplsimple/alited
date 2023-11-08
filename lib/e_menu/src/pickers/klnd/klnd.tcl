@@ -62,7 +62,7 @@ proc ::klnd::my::GoYear {i {dobreak no}} {
   #   dobreak - yes when called from 'bind'
 
   variable p
-  ShowMonth $p(mvis) [expr {$p(yvis)+($i)}]
+  ShowMonth $p(mvis) [expr {$p(yvis)+($i)}] yes
   if {$dobreak} {return -code break}
 }
 #_______________________
@@ -76,15 +76,16 @@ proc ::klnd::my::GoMonth {i {dobreak no}} {
   set m [expr {$p(mvis)+($i)}]
   if {$m>12} {set m 1; incr p(yvis)}
   if {$m<1} {set m 12; incr p(yvis) -1}
-  ShowMonth $m $p(yvis)
+  ShowMonth $m $p(yvis) yes
   if {$dobreak} {return -code break}
 }
 #_______________________
 
-proc ::klnd::my::ShowMonth {m y} {
+proc ::klnd::my::ShowMonth {m y {dopopup no}} {
   # Displays a month's days.
   #   m - month
   #   y -year
+  #   dopopup - yes, if bind a popup menu
 
   variable p
   set sec [CurrentDate]
@@ -108,6 +109,7 @@ proc ::klnd::my::ShowMonth {m y} {
   for {set i 1} {$i<43} {incr i} {
     if {$i<=$i0 || $iday>=$lday} {
       set att "-takefocus 0 -text {    } -activebackground $p(bg1) -overrelief flat"
+      set script {}
     } else {
       set att "-takefocus 1 -text {[incr iday]} -activeforeground $p(fg0) -activebackground $p(bg0) -overrelief raised"
       if {$iday==$p(dvis) || ($iday==$lday && $iday<$p(dvis))} {
@@ -119,11 +121,26 @@ proc ::klnd::my::ShowMonth {m y} {
       if {$y==$p(y) && $m==$p(m) && $iday==$p(d)} {
         set p(icurr) $i  ;# button's index of the current date
       }
+      if {$dopopup} {
+        set script [MapYMD $p(popup) $y $m $iday]
+      }
     }
-    [$p(obj) BuT_KLNDSTD$i] configure {*}$att -fg $p(fg1) -bg $p(bg1) -relief flat
+    set wbut [$p(obj) BuT_KLNDSTD$i]
+    $wbut configure {*}$att -fg $p(fg1) -bg $p(bg1) -relief flat
+    if {$dopopup && $p(popup) ne {}} {
+      bind $wbut <Button-3> $script
+    }
   }
   set p(mvis) $m  ;# month & year currently visible
   set p(yvis) $y
+}
+
+#_______________________
+
+proc ::klnd::my::MapYMD {script y m d} {
+  # Gets a script with %y, %m, %d wildcards.
+
+  return [string map [list %y $y %m $m %d $d] $script]
 }
 
 ## ________________________ Current day _________________________ ##
@@ -158,13 +175,15 @@ proc ::klnd::my::HighlightCurrentDay {} {
 
 ## ________________________ Event handlers _________________________ ##
 
-proc ::klnd::my::DoubleClick {win i} {
+proc ::klnd::my::DoubleClick {win i {ret ""}} {
   # Processes double-clicking a button (to choose or ignore).
   #   win - window's path
   #   i - button index
+  #   ret - "return -code"
 
   variable p
   if {[IsDay $i]} {$p(obj) res $win 1}
+  return {*}$ret
 }
 #_______________________
 
@@ -181,7 +200,7 @@ proc ::klnd::my::KeyPress {i K} {
     Up {set n [expr {$i-7}]}
     Down {set n [expr {$i+7}]}
     Enter - Return - space {$p(obj) res $p(win) 1; return -code break}
-    *Tab* {Leave; focus [$p(obj) But_KLNDCLOSE]; return -code break}
+    *Tab* {Leave; focus [$p(obj) ButClose]; return -code break}
     default {Enter $i; return}
   }
   if {[IsDay $n]} {
@@ -194,20 +213,23 @@ proc ::klnd::my::KeyPress {i K} {
 }
 #_______________________
 
-proc ::klnd::my::Enter {i {focusin 0}} {
+proc ::klnd::my::Enter {i {focusin 0} {ret ""}} {
   # Highlights a button and makes it current.
   #   i - button index
   #   focusin - yes, if the button is clicked and focused
+  #   ret - "return -code"
 
   variable p
-  if {![IsDay $i]} return
+  if {![IsDay $i]} {return {*}$ret}
   Leave
   [set w [$p(obj) BuT_KLNDSTD$i]] configure -fg $p(fgsel) -bg $p(bgsel)
   set p(ienter) $i
   set p(dvis) [$w cget -text]
   catch {after cancel $p(after2)}
   set p(after2) [after 10 "if \[winfo exists $w\] {focus -force $w}"]
-  if {$focusin && $p(com) ne {}} {eval $p(com)}
+  if {$focusin && $p(com) ne {}} {
+    eval [MapYMD $p(com) $p(yvis) $p(mvis) $p(dvis)]
+  }
 }
 #_______________________
 
@@ -244,6 +266,7 @@ proc ::klnd::my::InitSettings {} {
     set ::klnd::my::prevM [::msgcat::mc {Previous month}]
     set ::klnd::my::nextY [::msgcat::mc {Next year}]
     set ::klnd::my::nextM [::msgcat::mc {Next month}]
+    set ::klnd::my::Close [::msgcat::mc Close]
   }
 }
 #_______________________
@@ -463,24 +486,25 @@ proc ::klnd::calendar {args} {
     {seh fra T 1 7 {-pady 0}} \
     {fraBottom seh T 1 7 {-st ew -pady 1}} \
     {fraBottom.h_ - - - - {pack -fill both -expand 1 -side left} {}} \
-    {fraBottom.But_KLNDCLOSE - - - - {pack -side left} {-t "Close" -com "$::klnd::my::p(obj) res $win 0"}} \
+    {fraBottom.ButClose - - - - {pack -side left} {-t "$::klnd::my::Close" -com "$::klnd::my::p(obj) res $win 0"}} \
   ]
   # binds for day buttons and 'Close'
   foreach {ev prc} { <Home> "::klnd::my::GoYear -1 yes" <End> "::klnd::my::GoYear 1 yes" \
   <Prior> "::klnd::my::GoMonth -1 yes" <Next> "::klnd::my::GoMonth 1 yes"} {
-    for {set i 1} {$i<38} {incr i} {
+    for {set i 1} {$i<43} {incr i} {
       set but [$my::p(obj) BuT_KLNDSTD$i]
       bind $but $ev $prc
       bind $but <FocusIn> "::klnd::my::Enter $i"
+      bind $but <Button-1> "::klnd::my::Enter $i 0 {-code break}"
       bind $but <KeyPress> "::klnd::my::KeyPress $i %K"
-      bind $but <Double-1> "::klnd::my::DoubleClick $win $i"
+      bind $but <Double-1> "::klnd::my::DoubleClick $win $i {-code break}"
     }
-    catch {bind [$my::p(obj) But_KLNDCLOSE] $ev $prc}
+    catch {bind [$my::p(obj) ButClose] $ev $prc}
   }
   bind $win <F3> ::klnd::my::SetCurrentDay
   bind $win <KeyPress> "::klnd::my::Leave"
   # show and work with the calendar
-  after idle "::klnd::my::ShowMonth $my::p(m) $my::p(y)"
+  after idle "::klnd::my::ShowMonth $my::p(m) $my::p(y) yes"
   set res [$my::p(obj) showModal $win -resizable no {*}$args {*}$geo]
   # get the result of the selection if any
   if {$res && $my::p(dvis)} {
@@ -489,8 +513,8 @@ proc ::klnd::calendar {args} {
   } else {
     set res {}
   }
-  $my::p(obj) destroy
-  destroy $win
+  catch {$my::p(obj) destroy}
+  catch {destroy $win}
   return $res
 }
 

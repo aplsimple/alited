@@ -24,7 +24,6 @@ namespace eval ::alited {
     {File} {Datei}
     {Edit} {Bearbeiten}
     {Search} {Suchen}
-    {Conversions} {Umwandlungen}
     {Tools} {Werkzeuge}
     {Setup} {Einstellungen}
     {Help} {Hilfe}
@@ -65,10 +64,10 @@ namespace eval ::alited {
     {Screen Loupe} {Bildschirmlupe}
     {Quitting alited.} {Beenden von alited.}
     {Wait a little ...} {Einen Augenblick ...}
-    {Default} {Voreinstellung}
-    {Default 2} {Voreinstellung 2}
-    {Default 3} {Voreinstellung 3}
-    {Default 4} {Voreinstellung 4}
+    {Standard} {Standard}
+    {Standard 2} {Standard 2}
+    {Standard 3} {Standard 3}
+    {Standard 4} {Standard 4}
     {Test} {Test}
     {Correct Indentation} {Richtig einrücken}
     "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Das Einrücken von \"%f\" anpassen\ndurch Einrückem mit %i Leerzeichen?"
@@ -139,6 +138,7 @@ namespace eval ::alited {
     {Display colors in the whole text?} {Farben im gesamten Text hervorheben?}
     {check RE in Find/Replace box} {aktivieren Sie RE im Suchen/Ersetzen}
     {Context} {Kontext}
+    {Changes will be lost!} {Änderungen werden verloren gehen!}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -223,8 +223,7 @@ namespace eval ::alited {
     {End of line:} {Zeilenende:}
     {Multi-line strings:} {Mehrzeilige Zeichenketten:}
     {Unit lines per 1 red bar:} {Einheitenlinien pro roten Balken:}
-    {List of files:} {Dateiliste:}
-    "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n" "Du kannst\n  - die aktuelle hinzufügen zu\n  - ersetzen mit der aktuellen\n  - löschen\n  - nicht ändern\ndie Dateiliste des Projektes.\n"
+    {List of files (%n):} {Dateiliste (%n):}
     {Add} {Hinzufügen}
     {Substitute} {Ersetzen}
     {Delete} {Löschen}
@@ -549,8 +548,9 @@ namespace eval ::alited {
     {tclsh, wish or tclkit:} {tclsh, wish oder tclkit:}
     {Geometry:} {Geometrie:}
     {Run as external app:} {Eine externe App ausführen:}
-    {Inserts a new line.} {Eine neue Zeile einfügen.}
-    {Deletes a line.} {Löscht eine Zeile.}
+    {Delete an item} {Ein Eintrag löschen}
+    {Move an item up} {Ein Eintrag verschieben abwärts}
+    {Move an item down} {Ein Eintrag verschieben aufwärts}
     {separator} {Trennezichen}
     {If 'yes', means a separator of the toolbar/menu.} {'ja' bedeutet Trennzeichen in der Werkzeugliste/Menü.}
     {For Start...} {Für dem Starten...}

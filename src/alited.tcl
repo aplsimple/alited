@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.4.6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.5.0  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -15,7 +15,7 @@ namespace eval alited {
 
   # versions of mnu/ini to update to
   set al(MNUversion) 1.4.5
-  set al(INIversion) 1.4.2
+  set al(INIversion) 1.4.7
 
   # previous version of alited to update from
   set al(ALEversion) 0.0.1

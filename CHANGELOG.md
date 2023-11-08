@@ -1,5 +1,18 @@
 # LAST CHANGES:
 
+Version `v1.5.0 (8 Nov'23)`
+
+  - BUGFIX: Preferences/Projects: enable/disable translation options
+  - NEW   : es.msg
+  - NEW   : check for changes of Preferences' options
+  - NEW   : file number in Projects/Files tab
+  - CHANGE: labels & buttons of Preferences & Projects
+  - CHANGE: don't close "Projects/Files/No name"
+  - CHANGE: Help/About/Packages tab
+  - CHANGE: alited.ini
+  - CHANGE: packages: e_menu/apave 4.2.0, tkcc
+
+
 Version `v1.4.6 (25 Oct'23)`
 
   - BUGFIX: Projects: alited title's project at open/close files from file list

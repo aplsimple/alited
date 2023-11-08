@@ -93,6 +93,7 @@ proc ::tk::dialog::color:: {args} {
   # so we know how big it wants to be, then center the window in the
   # display (Motif style) and de-iconify it.
 
+  wm title $w $data(-title)
   if {[info exists data(-geometry)] && $data(-geometry) ne {-}} {
     if {[set geo $data(-geometry)] eq {}} {
       set X [winfo rootx $data(-parent)]
@@ -103,13 +104,12 @@ proc ::tk::dialog::color:: {args} {
       set geo +[expr {[winfo pointerx .]+$X}]+[expr {[winfo pointery .]+$Y}]
     }
     lassign [lrange [split $geo +] end-1 end] X Y
-    wm geometry $w +$X+$Y
+    after idle [list after 0 [list ::tk::dialog::color::ShowAtXY $w $X $Y]]
     unset data(-geometry)
   } else {
     ::tk::PlaceWindow $w widget $data(-parent)
+    wm deiconify $w
   }
-  wm title $w $data(-title)
-  wm deiconify $w
 
   # 6. Set a grab and claim the focus too.
 
@@ -134,6 +134,38 @@ proc ::tk::dialog::color:: {args} {
       $::tk::dialog::color::tonemoves]
   }
   return $result
+}
+
+proc ::tk::dialog::color::GetOptions {Nmoveall Ntonemoves} {
+  # Gets current settings of options.
+  #   Nmoveall - name of variable for moveall option
+  #   Ntonemoves - name of variable for tonemoves option
+
+  upvar $Nmoveall moveall $Ntonemoves tonemoves
+  set moveall $::tk::dialog::color::moveall
+  set tonemoves $::tk::dialog::color::tonemoves
+}
+
+proc ::tk::dialog::color::ShowAtXY {win x y} {
+  # Shows the picker at X,Y coordinates, checking the coordinates against the screen, incl. decors
+  #   win - window's path
+  #   x - window's X coordinate
+  #   y - window's Y coordinate
+
+  set w [winfo reqwidth $win]
+  set h [winfo reqheight $win]
+  set scrw [expr {[winfo vrootwidth .] - 12}]
+  set scrh [expr {[winfo vrootheight .] - 36}]
+  if {($x + $w) > $scrw } {
+    set x [expr {$scrw - $w}]
+  }
+  if {($y + $h) > $scrh } {
+    set y [expr {$scrh - $h}]
+  }
+  if {![string match -* $x]} {set x +[string trimleft $x +]}
+  if {![string match -* $y]} {set y +[string trimleft $y +]}
+  wm geometry $win $x$y
+  wm deiconify $win
 }
 
 # ::tk::dialog::color::InitValues --

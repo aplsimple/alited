@@ -34,9 +34,10 @@ proc about::About {} {
   ## ________________________ Preparing tabs _________________________ ##
 
   ::alited::Source_e_menu
+  ::alited::edit::MacroInit
   lassign [::apave::obj csGet] fg fg2 bg bg2 - bS fS
   ::apave::InitAwThemesPath $::alited::LIBDIR
-  foreach _ {alited apave bartabs baltip hl_tcl awthemes} {
+  foreach _ {alited apave bartabs baltip hl_tcl playtkl} {
     if {[set v$_ v[package versions $_]] eq {v} \
     && [catch {set v$_ v[package require $_]}]} {
       set v$_ {}
@@ -85,9 +86,9 @@ proc about::About {} {
     [list "link-bartabs" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/bartabs"] \
     [list "link-hl_tcl" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/hl_tcl/hl_tcl.html"] \
     [list "link-aloupe" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/aloupe/aloupe.html"] \
+    [list "link-playtkl" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/playtkl/playtkl.html"] \
     [list "link-tkcc" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/tkcc"] \
     [list "link-repl" "::apave::openDoc %t@@https://github.com/apnadkarni/tcl-repl"] \
-    [list "link-awthemes" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/awthemes"] \
     [list "link-ale_themes" "::apave::openDoc %t@@https://github.com/aplsimple/ale_themes"] \
     [list "link-tkcon" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Tkcon"] \
     [list "link_" "::apave::openDoc %t@@https://aplsimple.github.io/en/misc/links/links.html@@"] \
@@ -129,15 +130,15 @@ proc about::About {} {
   set ::alited::AboutPack "\n $packages\n\n \
     \u2022 <link-apave>apave $vapave</link-apave>\n\n \
     \u2022 <link-e_menu>e_menu $vemenu</link-e_menu>\n\n \
+    \u2022 <link-ale_themes>ale_themes</link-ale_themes>\n\n \
     \u2022 <link-baltip>baltip $vbaltip</link-baltip>\n\n \
     \u2022 <link-bartabs>bartabs $vbartabs</link-bartabs>\n\n \
     \u2022 <link-hl_tcl>hl_tcl $vhl_tcl</link-hl_tcl>\n\n \
     \u2022 <link-aloupe>aloupe v0.9.6</link-aloupe>\n\n \
-    \u2022 <link-tkcon>tkcon v2.7</link-tkcon>\n\n \
-    \u2022 <link-awthemes>awthemes $vawthemes</link-awthemes>\n\n \
-    \u2022 <link-ale_themes>ale_themes</link-ale_themes>\n\n \
+    \u2022 <link-playtkl>playtkl $vplaytkl</link-playtkl>\n\n \
     \u2022 <link-tkcc>tkcc</link-tkcc>\n\n \
-    \u2022 <link-repl>tcl-repl</link-repl>\n \
+    \u2022 <link-repl>tcl-repl</link-repl>\n\n \
+    \u2022 <link-tkcon>tkcon v2.7</link-tkcon>\n \
     \n menus/*.em v$al(MNUversion) \
     \n alited.ini v$al(INIversion)"
 

@@ -7,11 +7,12 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.1.8
+package provide apave 4.2.0
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
 namespace eval ::apave {
+  mainWindowOfApp .
 }
 
 # ________________________ APave _________________________ #
@@ -78,12 +79,10 @@ oo::class create ::apave::APave {
     #  ttl - title of window
     #  iopts - list of widgets and their attributes
     #  args - list of dialog's attributes
-    #
     # The `iopts` contains lists of three items:
     #   name - name of widgets
     #   prompt - prompt for entering data
     #   valopts - value options
-    #
     # The `valopts` is a list specific for a widget's type, however
     # a first item of `valopts` is always an initial input value.
 
@@ -325,9 +324,7 @@ oo::class create ::apave::APave {
     #   cc - caret's color of text widget
     #   prepcom - a command performing before and after creating a dialog
     #   args - additional options (`-readonly 1` for viewing the file).
-    #
     # If *fg* isn't empty, all three colors are used to color a text.
-    #
     # See also:
     # [aplsimple.github.io](https://aplsimple.github.io/en/tcl/pave/index.html)
 

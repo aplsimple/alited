@@ -228,7 +228,6 @@ oo::class create ::apave::APaveDialog {
     #   butts - list of buttons
     #   defb - button to be selected
     #   args - options
-    #
     # The *butts* is a list of pairs "title of button" "number/ID of button"
 
     foreach {nam num} $butts {
@@ -253,10 +252,8 @@ oo::class create ::apave::APaveDialog {
     #   msg2 - bottom message
     #   maxvalue - maximum value
     #   args - additional attributes of the progress bar
-    #
     # If type={}, widgetType method participates too in progress_Go, and also
     # progress_End puts out a little statistics.
-    #
     # See also: APaveBase::widgetType, progress_Go, progress_End
 
     set ::apave::_AP_VARS(win) .proSplashScreen
@@ -297,10 +294,8 @@ oo::class create ::apave::APaveDialog {
     #   value -  current value of the progress bar
     #   msg1 - top message
     #   msg2 - bottom message
-    #
     # Returns current percents (value) of progress.
     # If it reaches 100, the progress_Go may continue from 0.
-    #
     # See also: progress_Begin
 
     set ::apave::_AP_VARS(ProSplash,val1) $value
@@ -360,7 +355,6 @@ oo::class create ::apave::APaveDialog {
   method pasteText {txt} {
     # Removes a selection at pasting.
     #   txt - text's path
-    #
     # The absence of this feature is very perpendicular of Tk's paste.
 
     set err [catch {$txt tag ranges sel} sel]
@@ -378,10 +372,8 @@ oo::class create ::apave::APaveDialog {
     # Doubles a current line or a selection of text widget.
     #   txt - text's path
     #   dobreak - if true, means "return -code break"
-    #
     # The *dobreak=true* allows to break the Tk processing of keypresses
     # such as Ctrl+D.
-    #
     # If not set, the text widget is identified as `my TexM`.
 
     if {$txt eq {}} {set txt [my TexM]}
@@ -408,10 +400,8 @@ oo::class create ::apave::APaveDialog {
     # Deletes a current line of text widget.
     #   txt - text's path
     #   dobreak - if true, means "return -code break"
-    #
     # The *dobreak=true* allows to break the Tk processing of keypresses
     # such as Ctrl+Y.
-    #
     # If not set, the text widget is identified as `my TexM`.
 
     if {$txt eq {}} {set txt [my TexM]}
@@ -427,10 +417,8 @@ oo::class create ::apave::APaveDialog {
     #   txt - text's path
     #   to - direction (-1 means "up", +1 means "down")
     #   dobreak - if true, means "return -code break"
-    #
     # The *dobreak=true* allows to break the Tk processing of keypresses
     # such as Ctrl+Y.
-    #
     # If not set, the text widget is identified as `my TexM`.
 
   ; proc NewRow {ind rn} {
@@ -957,17 +945,13 @@ oo::class create ::apave::APaveDialog {
     #   argdia - list of dialog's options
     #   precom - command(s) performed before showing the dialog
     #   args - additional options (message's font etc.)
-    #
     # The *argdia* may contain additional options of the query, like these:
     #   -checkbox text (-ch text) - makes the checkbox's text visible
     #   -geometry +x+y (-g +x+y) - sets the geometry of dialog
     #   -color cval    (-c cval) - sets the color of message
-    #
     # If "-geometry" option is set (even equaling "") the Query procedure
     # returns a list with chosen button's ID and a new geometry.
-    #
     # Otherwise it returns only the chosen button's ID.
-    #
     # See also:
     # [aplsimple.github.io](https://aplsimple.github.io/en/tcl/pave/index.html)
 

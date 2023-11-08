@@ -23,7 +23,6 @@ namespace eval ::alited {
     {File} {Файл}
     {Edit} {Правка}
     {Search} {Поиск}
-    {Conversions} {Преобразования}
     {Tools} {Снасти}
     {Setup} {Опции}
     {Help} {Помощь}
@@ -64,10 +63,10 @@ namespace eval ::alited {
     {Screen Loupe} {Экранная лупа}
     {Quitting alited.} {Выходим из alited.}
     {Wait a little ...} {Подождите ...}
-    {Default} {По умолчанию}
-    {Default 2} {По умолчанию 2}
-    {Default 3} {По умолчанию 3}
-    {Default 4} {По умолчанию 4}
+    {Standard} {Стандарт}
+    {Standard 2} {Стандарт 2}
+    {Standard 3} {Стандарт 3}
+    {Standard 4} {Стандарт 4}
     {Test} {Проверка}
     {Correct Indentation} {Править отступы}
     "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Править отступы \"%f\",\nпо %i на каждый?"
@@ -138,6 +137,7 @@ namespace eval ::alited {
     {Display colors in the whole text?} {Отобразить цвета во всем тексте?}
     {check RE in Find/Replace box} {включите RE в окошке Поиск/Замена}
     {Context} {Контекстная}
+    {Changes will be lost!} {Изменения будут потеряны!}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -222,8 +222,7 @@ namespace eval ::alited {
     {End of line:} {Концы строк:}
     {Multi-line strings:} {Многострочные string:}
     {Unit lines per 1 red bar:} {Строк юнита на 1 красную полосу:}
-    {List of files:} {Список файлов:}
-    "You can\n  - add the current one to\n  - substitute with the current one\n  - delete\n  - not change\nthe file list of the project.\n" "Вы можете\n  - добавить текущий список файлов в\n  - заменить текущим списком\n  - удалить\n  - не изменять\nсписок файлов в проекте.\n"
+    {List of files (%n):} {Список файлов (%n):}
     {Add} {Добавить}
     {Substitute} {Заменить}
     {Delete} {Удалить}
@@ -545,8 +544,9 @@ namespace eval ::alited {
     {tclsh, wish or tclkit:} {tclsh, wish или tclkit:}
     {Geometry:} {Геометрия:}
     {Run as external app:} {Как отдельное приложение:}
-    {Inserts a new line.} {Добавляет строку.}
-    {Deletes a line.} {Удаляет строку.}
+    {Delete an item} {Удалить элемент}
+    {Moves an item up} {Поднять элемент}
+    {Moves an item down} {Опустить элемент}
     {separator} {разделитель}
     {If 'yes', means a separator of the toolbar/menu.} {Если включено, означает разделитель в тулбаре/меню.}
     {For Start...} {Для старта...}

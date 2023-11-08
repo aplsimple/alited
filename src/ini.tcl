@@ -238,7 +238,7 @@ proc ini::ReadIni {{projectfile ""}} {
   #   projectfile - project file's name
 
   namespace upvar ::alited al al
-  namespace upvar ::alited::pref em_Num em_Num \
+  namespace upvar ::alited::pref em_Num em_Num em_NumMax em_NumMax \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
   namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo
   alited::pref::Tkcon_Default
@@ -288,6 +288,7 @@ proc ini::ReadIni {{projectfile ""}} {
   set al(PTP,name) [lindex $al(PTP,list) 0]
   set al(PTP,names) [list]
   foreach {n c} $al(PTP,list) {lappend al(PTP,names) $n}
+  set em_Num [expr {min($em_NumMax,$em_i+3)}]
   while {$em_i < $em_Num} {
     set em_sep($em_i) 0
     set em_ico($em_i) [set em_inf($em_i) [set em_mnu($em_i) {}]]
@@ -499,7 +500,7 @@ proc ini::ReadIniEM {nam val emiName} {
   #   emiName - name of em_i (index in arrays of e_menu data)
 
   namespace upvar ::alited al al
-  namespace upvar ::alited::pref em_Num em_Num \
+  namespace upvar ::alited::pref em_NumMax em_NumMax \
     em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
   upvar $emiName em_i
   switch -exact $nam {
@@ -521,7 +522,7 @@ proc ini::ReadIniEM {nam val emiName} {
       }
     }
     em_run {
-      if {$em_i < $em_Num} {
+      if {$em_i < $em_NumMax} {
         lassign [split $val \t] em_sep($em_i) em_ico($em_i) em_inf($em_i)
         if {[string is true -strict $em_sep($em_i)] ||
         $em_ico($em_i) ne {} || $em_inf($em_i) ne {}} {
