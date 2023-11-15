@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.2.0
+package provide apave 4.2.1
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 

@@ -10,18 +10,14 @@
 
 # use TCLLIBPATH variable (some tclkits don't see it)
 catch {
-  set _apave_tcllibpath_ [list]
-  foreach _apave_ [lreverse $::env(TCLLIBPATH)] {
-    set _apave_ [file normalize $_apave_]
-    if {[lsearch -exact $::auto_path $_apave_]<0 && [file exists $_apave_]} {
-      set ::auto_path [linsert $::auto_path 0 $_apave_]
-      lappend _apave_tcllibpath_ $_apave_
+  foreach _ [lreverse $::env(TCLLIBPATH)] {
+    set _ [file normalize $_]
+    if {[lsearch -exact $::auto_path $_]<0 && [file exists $_]} {
+      set ::auto_path [linsert $::auto_path 0 $_]
     }
   }
-  set ::env(TCLLIBPATH) $_apave_tcllibpath_
 }
-unset -nocomplain _apave_tcllibpath_
-unset -nocomplain _apave_
+unset -nocomplain _
 
 # _____ Remove installed subpackages of apave _____ #
 
@@ -439,7 +435,7 @@ oo::class create ::apave::APaveBase {
 
   mixin ::apave::ObjectTheming
 
-  variable PV Moveall Tonemoves Initialcolor Modalwin Fgbut Bgbut Fgtxt Bgtxt Prepost Widgetopts Edge
+  variable PV Moveall Initialcolor Modalwin Fgbut Bgbut Fgtxt Bgtxt Prepost Widgetopts Edge
 
   constructor {{cs -2} args} {
     # Creates APaveBase object.
@@ -457,7 +453,6 @@ oo::class create ::apave::APaveBase {
     # keep the 'important' data of Pave object in array
     array set PV [list]
     set Moveall 1
-    set Tonemoves 1
     set Initialcolor {}
     set Modalwin .
     set Fgbut [ttk::style lookup TButton -foreground]
@@ -560,7 +555,7 @@ oo::class create ::apave::APaveBase {
   method paveoptionValue {opt} {
     # Gets an option's value.
     #   opt - option's name
-    # Returns a value for options like "Moveall", "Tonemoves".
+    # Returns a value for options like "Moveall".
 
     if {$opt in [info object vars [self]]} {
       variable $opt
@@ -1745,7 +1740,7 @@ oo::class create ::apave::APaveBase {
     if {$Initialcolor eq {} && [::isunix]} {
       source [file join $::apave::apaveDir pickers color clrpick.tcl]
     }
-    lassign [::apave::extractOptions args -entry {}] ent
+    lassign [::apave::extractOptions args -entry {} -inifile {}] ent ini
     if {$ent ne {}} {
       set ent [my [my ownWName $ent]]
       set x [winfo rootx $ent]
@@ -1765,8 +1760,7 @@ oo::class create ::apave::APaveBase {
       set Initialcolor black
     }
     if {[catch {lassign [tk_chooseColor -moveall $Moveall \
-    -tonemoves $Tonemoves -initialcolor $Initialcolor {*}$args] \
-    res Moveall Tonemoves}]} {
+    -initialcolor $Initialcolor {*}$args -inifile $ini] res Moveall}]} {
       set args [::apave::removeOptions $args -moveall -tonemoves -geometry]
       set res [tk_chooseColor -initialcolor $Initialcolor {*}$args]
     }

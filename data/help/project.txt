@@ -25,6 +25,8 @@
    - use buttons to <b>erase/paste/undo/redo</b> the text
    - use <b>move</b> buttons to postpone a TODO till next day or week
 
+ Three exclamation marks in TODO (!!!) will make it "eternal" at showing.
+
  When the present day reaches a deadline, its TODO is highlighted and the
  bell rings, to remind of the TODO.
 

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.5.0  ;# for documentation (esp. for Ruff!)
+package provide alited 1.5.1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -685,11 +685,12 @@ namespace eval alited {
   }
   #_______________________
 
-  proc Balloon {msg {red no} {timo 100}} {
+  proc Balloon {msg {red no} {timo 100} args} {
     # Displays a message in a balloon window.
     #   msg - message
     #   red - yes for red background
     #   timo - millisec. before showing the message
+    #   args - options of baltip::tip
 
     variable al
     variable obPav
@@ -707,7 +708,7 @@ namespace eval alited {
     ::baltip clear $al(WIN)
     after $timo [list ::baltip tip $al(WIN) $msg -fg $fg -bg $bg -alpha 0.9 \
         -font {-weight bold -size 11} -pause 1000 -fade 1000 \
-        -geometry $geo -bell $red -on yes -relief groove]
+        -geometry $geo -bell $red -on yes -relief groove {*}$args]
   }
   #_______________________
 
@@ -1011,6 +1012,7 @@ namespace eval alited {
 
     variable al
     variable obPav
+    set al(INI,isfindrepl) [expr {[winfo exist $al(WIN).winFind]}]
     if {$al(INI,confirmexit)>1} {
       set timo "-timeout {$al(INI,confirmexit) ButOK}"
     } else {

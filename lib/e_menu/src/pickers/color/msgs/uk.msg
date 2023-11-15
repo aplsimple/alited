@@ -13,7 +13,6 @@ namespace eval ::tk {
     ::msgcat::mcset uk "&Selection:" " Вибір:"
     ::msgcat::mcset uk "Selection:" "Вибір:"
     ::msgcat::mcset uk "Move all" "Рухати все"
-    ::msgcat::mcset uk "Tone moves" "Тонувати рухи"
     ::msgcat::mcset uk "From clipboard" "З буферу"
     ::msgcat::mcset uk "To clipboard" "До буферу"
     ::msgcat::mcset uk "Loupe" "Лупа"

@@ -13,7 +13,6 @@ namespace eval ::tk {
     ::msgcat::mcset ru "&Selection:" "\u041e\u0442\u0431\u043e\u0440:"
     ::msgcat::mcset ru "Selection:" "\u041e\u0442\u0431\u043e\u0440:"
     ::msgcat::mcset ru "Move all" "\u0414\u0432\u0438\u0433\u0430\u0442\u044c\u0020\u0432\u0441\u0435"
-    ::msgcat::mcset ru "Tone moves" "\u0422\u043e\u043d"
     ::msgcat::mcset ru "From clipboard" "\u0418\u0437\u0020\u0431\u0443\u0444\u0435\u0440\u0430"
     ::msgcat::mcset ru "To clipboard" "\u0412\u0020\u0431\u0443\u0444\u0435\u0440"
     ::msgcat::mcset ru "Loupe" "\u041b\u0443\u043f\u0430"

@@ -12,27 +12,33 @@
 
 package require Tk
 
-# _____ Remove installed (perhaps) packages used here _____ #
-
-foreach _ {apave baltip bartabs hl_tcl ttk::theme::awlight ttk::theme::awdark awthemes} {
-  set __ [package version $_]
-  catch {
-    package forget $_
-    namespace delete ::$_
-    puts "aloupe: clearing $_ $__"
-  }
-  unset __
+namespace eval ::aloupe {
+  variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]}]
 }
 
-# use TCLLIBPATH variable (some tclkits don't see it)
-catch {
-  foreach _apave_ [lreverse $::env(TCLLIBPATH)] {
-    set _apave_ [file normalize $_apave_]
-    if {[lsearch -exact $::auto_path $_apave_]<0 && [file exists $_apave_]} {
-      set ::auto_path [linsert $::auto_path 0 $_apave_]
+# _____ Remove installed (perhaps) packages used here _____ #
+
+if {$::aloupe::solo} {
+  foreach _ {apave baltip bartabs hl_tcl ttk::theme::awlight ttk::theme::awdark awthemes} {
+    set __ [package version $_]
+    catch {
+      package forget $_
+      namespace delete ::$_
+      puts "aloupe: clearing $_ $__"
     }
+    unset __
   }
-  unset _apave_
+
+  # use TCLLIBPATH variable (some tclkits don't see it)
+  catch {
+    foreach _apave_ [lreverse $::env(TCLLIBPATH)] {
+      set _apave_ [file normalize $_apave_]
+      if {[lsearch -exact $::auto_path $_apave_]<0 && [file exists $_apave_]} {
+        set ::auto_path [linsert $::auto_path 0 $_apave_]
+      }
+    }
+    unset _apave_
+  }
 }
 
 package require treectrl
@@ -40,7 +46,7 @@ package require Img
 
 ::msgcat::mcload [file join [file dirname [info script]] msgs]
 
-package provide aloupe 0.9.6
+package provide aloupe 1.0
 
 # ________________________ Variables _________________________ #
 
@@ -139,16 +145,15 @@ proc ::aloupe::my::CreateDisplay {start} {
   pack [ttk::spinbox $data(WDISP).l.sp3 -from 0 -to 60 -justify center \
     -width 2 -textvariable ::aloupe::my::pause] -side left
   grid [ttk::separator $data(WDISP).sep1 -orient horizontal] -row 1 -columnspan 2 -sticky we -pady 2
-  grid [ttk::label $data(LABEL) -image $data(IMAGE) -relief flat \
-    -style [lindex [SetStyle TLabel no -bd 0] 1]] -row 2 -columnspan 2 -padx 2
+  grid [ttk::label $data(LABEL) -image $data(IMAGE) -relief flat] -row 2 -columnspan 2 -padx 2
   set data(BUT2) $data(WDISP).but2
   if {[set but2text $data(-commandname)] eq ""} {
     set but2text [::msgcat::mc "To clipboard"]
   }
-  grid [ttk::button $data(BUT2) -text $but2text \
-    -command ::aloupe::my::Button2Click] -row 3 -column 0 -sticky ew
-  grid [ttk::button $data(WDISP).but1 -text [::msgcat::mc Save] \
-    -command ::aloupe::my::Save] -row 3 -column 1 -sticky ew
+  grid [button $data(BUT2) -text $but2text \
+    -command ::aloupe::my::Button2Click -font TkFixedFont] -row 3 -column 0 -sticky ew
+  grid [button $data(WDISP).but1 -text [::msgcat::mc Save] \
+    -command ::aloupe::my::Save -fg $fg -bg $bg -font TkFixedFont] -row 3 -column 1 -sticky ew
   set data(-geometry) [regexp -inline \\+.* $data(-geometry)]
   if {$data(-geometry) ne ""} {
     wm geometry $data(WDISP) $data(-geometry)
@@ -159,7 +164,7 @@ proc ::aloupe::my::CreateDisplay {start} {
   }
   if {$start} {
     set defargs [list -foreground $fg -background $bg]
-    set data(BUTCFG) [StyleButton2 no {*}$defargs]
+    set data(BUTCFG) [StyleButton2 {*}$defargs]
     lappend data(BUTCFG) {*}$defargs -text $but2text
   }
   bind $data(LABEL) <ButtonPress-1> {::aloupe::my::PickColor %W %X %Y}
@@ -249,7 +254,7 @@ proc ::aloupe::my::DragStart {w X Y} {
     return
   }
   set data(COLOR) [set data(CAPTURE) ""]
-  StyleButton2 no {*}$data(BUTCFG)
+  StyleButton2 {*}$data(BUTCFG)
   InitGeometry
   update
   set data(dragX) [expr {$X - [winfo rootx $w]}]
@@ -379,36 +384,8 @@ proc ::aloupe::my::SaveGeometry {} {
 
 # ________________________ Widgets' styles _________________________ #
 
-proc ::aloupe::my::SetStyle {type domap args} {
-  # Sets a style for of widgets with a type.
-  #   'type - the type of widgets
-  #   domap - yes, if set the map options
-  #   args - configuration options
-  # Returns a list of old type's configuration and new type's name.
-
-  set config [ttk::style configure TButton]
-  set new ${type}_A_LOUPE
-  ttk::style configure $new {*}$config
-  ttk::style configure $new {*}$args
-  if {$domap} {
-    ttk::style map $new {*}[ttk::style map $type]
-    set fg [dict get $args -foreground]
-    set bg [dict get $args -background]
-    ttk::style map $new -foreground [list pressed $fg active $fg alternate $fg focus $fg selected $fg]
-    ttk::style map $new -background [list pressed $bg active $bg alternate $bg focus $bg selected $bg]
-  } else {
-    ttk::style map $new -foreground [list]
-    ttk::style map $new -background [list]
-    ttk::style map $new {*}[ttk::style map $type]
-  }
-  ttk::style layout $new [ttk::style layout $type]
-  return [list $config $new]
-}
-#_______________________
-
-proc ::aloupe::my::StyleButton2 {domap args} {
+proc ::aloupe::my::StyleButton2 {args} {
   # Makes a style for Tbutton.
-   #  domap - yes, if set the map options
   #   args - options ("name value" pairs)
   # Returns the TButton's configuration options.
 
@@ -417,9 +394,10 @@ proc ::aloupe::my::StyleButton2 {domap args} {
     $data(BUT2) configure -text [dict get $args -text]
     set args [dict remove $args -text]
   }
-  lassign [SetStyle TButton $domap {*}$args] config style
-  $data(BUT2) configure -style $style
-  return $config
+  set fg [dict get $args -foreground]
+  set bg [dict get $args -background]
+  $data(BUT2) configure -foreground $fg -background $bg
+  return {}
 }
 
 # ________________________ Capturing image _________________________ #
@@ -429,7 +407,7 @@ proc ::aloupe::my::Button2Click {} {
 
   variable data
   if {$data(COLOR) ne ""} {
-    StyleButton2 yes -background $data(INVCOLOR) -foreground $data(COLOR)
+    StyleButton2 -background $data(INVCOLOR) -foreground $data(COLOR)
     update idletasks
     after 60 ;# just to make the click visible
   }
@@ -470,7 +448,7 @@ proc ::aloupe::my::HandleColor {{doclb yes}} {
         clipboard clear
         clipboard append -type STRING $data(COLOR)
       }
-      StyleButton2 yes -background $data(COLOR) -foreground $data(INVCOLOR) \
+      StyleButton2 -background $data(COLOR) -foreground $data(INVCOLOR) \
         -text $data(COLOR)
       set res yes
     }
@@ -507,12 +485,17 @@ proc ::aloupe::my::SaveOptions {} {
   # Saves options of appearance to a file.
 
   variable data
+  variable size
+  variable zoom
+  variable pause
   if {!$data(-save)} return
+  set data(-size) $size
+  set data(-zoom) $zoom
+  set data(-pause) $pause
   set w $data(WDISP)
-  catch {file mkdir [file dirinfo $data(-inifile)]}
+  catch {file mkdir [file dirname $data(-inifile)]}
   catch {
-    if {[info exists data(CONFIG)]} {set old $data(CONFIG)} {set old ""}
-    append new {[options]} \n
+    append opts {[options]} \n
     foreach opt [array names data] {
       if {$opt in {-size -geometry -background -zoom -pause -alpha -ontop}} {
         if {$opt eq "-geometry"} {
@@ -520,14 +503,12 @@ proc ::aloupe::my::SaveOptions {} {
         } else {
           set val $data($opt)
         }
-        append new "[string range $opt 1 end]=$val" \n
+        append opts "[string range $opt 1 end]=$val" \n
       }
     }
-    if {$old ne $new} {  ;# update config, if necessary
-      set chan [open $data(-inifile) w]
-      puts -nonewline $chan $new
-      close $chan
-    }
+    set chan [open $data(-inifile) w]
+    puts -nonewline $chan $opts
+    close $chan
   }
 }
 
@@ -623,12 +604,12 @@ proc ::aloupe::run {args} {
     set defar ::aloupe::_DEFAULTS_
     array set $defar [array get my::data]
     set my::data(DEFAULTS) $defar
-    catch {set my::data(-inifile) [dict get $args -inifile]}
-    catch {
-      if { ([dict exists $args -save] && [dict get $args -save]) || \
-      (![dict exists $args -save] && $my::data(-save)) } {
-        my::RestoreOptions
-      }
+  }
+  catch {set my::data(-inifile) [dict get $args -inifile]}
+  catch {
+    if {([dict exists $args -save] && [dict get $args -save]) || \
+    (![dict exists $args -save] && $my::data(-save))} {
+      my::RestoreOptions
     }
   }
   # restore the default settings of aloupe (for a 2nd/3rd... run)
@@ -665,7 +646,7 @@ proc ::aloupe::run {args} {
 
 # ___________________________ Stand-alone run ___________________________ #
 
-if {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]} {
+if {$::aloupe::solo} {
   wm withdraw .
   catch {
     ttk::style config TButton -width 9 -buttonborder 1 -labelborder 0 -padding 1

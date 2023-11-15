@@ -327,6 +327,12 @@ tclkit alited.tcl ~/.config/myAlitedOptionsDir
 </pre>
 ... and when in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> we run a script, there are no errors at <code>package require package1; package require package2</code>.
 </p>
+<p>
+<b>Note</b>: in Linux, the best way is probably using <em>~/.profile</em> file where you can set something like:
+<pre class="code">
+export TCLLIBPATH=<font color=#8b2a0e>&quot;~/myPrj/package1 ~/myPrj/package2 /usr/lib/treectrl2.4.1 /usr/lib/tcltk/x86_64-linux-gnu/Img1.4.13&quot;</font>
+</pre>
+</p>
 
 <p>A lot of tclkit links are available in the wiki's <a href="https://wiki.tcl-lang.org/page/Tclkit">Tclkit</a> page.</p>
 

@@ -688,11 +688,14 @@ oo::class create ::apave::APaveDialog {
           # e.g. if "_" stands for cursor then "word_" means selecting "word"
           set pos  [$txt index "insert -1 char wordstart"]
           set pos2 [$txt index "insert -1 char wordend"]
-          set sel [$txt get $pos $pos2]
+          set sel [string trim [$txt get $pos $pos2]]
         }
+        set slen [string length $sel]
+        if {!$slen} {incr slen; set pos2 [$txt index "$pos2 +1c"]}
+        set pos [$txt index "$pos2 -$slen char"]
+        set sel [string trim [$txt get $pos $pos2]]
       }
     }
-    if {[string length $sel] == 0} {set pos {}}
     return [list $sel $pos $pos2]
   }
   #_______________________
@@ -702,7 +705,7 @@ oo::class create ::apave::APaveDialog {
     #   txt - path to the text
 
     lassign [my get_highlighted $txt] sel pos pos2
-    if {$pos eq {}} return
+    if {$sel eq {}} return
     after idle "[self] highlight_matches_real $txt $pos $pos2"
     my set_HighlightedString $sel
     set lenList {}
@@ -745,7 +748,7 @@ oo::class create ::apave::APaveDialog {
 
     my unhighlight_matches $txt
     lassign [my get_highlighted $txt] sel pos pos2
-    if {!$pos} return
+    if {$sel eq {}} return
     my set_HighlightedString $sel
     switch $mode {
       0 { ;# backward

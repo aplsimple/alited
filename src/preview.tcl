@@ -101,6 +101,9 @@ proc preview::Run {} {
   set ::en2 {Combo 1}
   set ::v1 [set ::v2 [set ::c1 [set ::c2 1]]]
   set ::sc [set ::sc2 50]
+  set ::clr1 #e00042
+  set ::datefmt %Y/%m/%d
+  set ::dat1 [clock format [clock seconds] -format $::datefmt]
   trace add variable ::sc write ::tracer
   set ::opc default
   set ::opcSet [list default clam classic alt -- {{light / dark} awlight awdark -- forest-light forest-dark -- lightbrown darkbrown -- plastik}]
@@ -143,8 +146,12 @@ proc preview::Run {} {
     {sca + L 1 2 {-st we} {-length 200 -orient horiz -var ::sc -from 0 -to 100}}
     {h_3 lab3}
     {lab4 h_3 T 1 1 {-st wsn} {-t "OptCascade: "}}
-    {opc + L 1 1 {-st we} {::opc ::opcSet {-width 12}}}
-    {v_2 lab4 T 1 1 {-st ew -rw 1}}
+    {opc + L 1 1 {-st we} {::opc ::opcSet {-w 10}}}
+    {lab5 lab4 T 1 1 {-st wsn} {-t "Color picker: "}}
+    {clr + L 1 1 {-st we} {-tvar ::clr1 -w 12}}
+    {lab6 lab5 T 1 1 {-st wsn} {-t "Date picker: "}}
+    {dat + L 1 1 {-st we} {-tvar ::dat1 -title {Pick a date} -dateformat $::datefmt -w 8}}
+    {v_2 lab6 T 1 1 {-st ew -rw 1}}
     {pro2 h_ L 9 1 {-st ns} {-orient vert -mode indeterminate -afteridle {%w start}}}
   }
   after 100 "preview::Rerun $obj $win"

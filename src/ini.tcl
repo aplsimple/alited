@@ -49,6 +49,7 @@ namespace eval ::alited {
   set al(INI,confirmexit) 1    ;# flag "confirm exiting alited"
   set al(INI,belltoll) 1       ;# flag "bell at warnings"
   set al(INI,LINES1) 10        ;# number of initial "untouched" lines (to ban moves in it)
+  set al(INI,isfindrepl) 0     ;# Find/Replace shown at starting
   set al(PTP,text) {}          ;# project template's text
   set al(PTP,name) {}          ;# current template name
   set al(PTP,names) [list]     ;# all template names
@@ -412,6 +413,7 @@ proc ini::ReadIniOptions {nam val} {
     MaxFiles      {set al(MAXFILES) $val}
     barlablen     {set al(INI,barlablen) $val}
     bartiplen     {set al(INI,bartiplen) $val}
+    isfindrepl    {set al(INI,isfindrepl) $val}
     prjtpls       {set al(PTP,list) [string map [list $alited::EOL \n] $val]}
     backup        {
       if {$val ne {.bak}} {set val {}}
@@ -790,6 +792,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "MaxFiles=$al(MAXFILES)"
   puts $chan "barlablen=$al(INI,barlablen)"
   puts $chan "bartiplen=$al(INI,bartiplen)"
+  puts $chan "isfindrepl=$al(INI,isfindrepl)"
   puts $chan prjtpls=[string map [list \n $alited::EOL] $al(PTP,list)]
   puts $chan "backup=$al(BACKUP)"
   puts $chan "maxbackup=$al(MAXBACKUP)"

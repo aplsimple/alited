@@ -59,20 +59,19 @@ proc tool::InsertInText {str {pos1 {}} {pos2 {}} } {
 proc tool::ColorPicker {} {
   # Calls a color picker passing to it and getting from it a color.
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al PAVEDIR PAVEDIR
   lassign [alited::find::GetWordOfText 2] color pos1 pos2
   if {$color ne {}} {
     set al(chosencolor) $color
   }
-  foreach o {moveall tonemoves} {
-    if {![string is boolean -strict $al($o)]} {set al($o) 0}
+  if {[info commands ::aloupe::run] eq {}} {
+    catch {source [SrcPath [file join $PAVEDIR pickers color aloupe aloupe.tcl]]}
   }
+  if {![string is boolean -strict $al(moveall)]} {set al(moveall) 0}
   set res [::apave::obj chooser colorChooser alited::al(chosencolor) \
-    -moveall $al(moveall) -tonemoves $al(tonemoves) -parent $al(WIN) \
-    -geometry pointer+10+10]
+    -moveall $al(moveall) -parent $al(WIN) -geometry pointer+10+10 -inifile [aloupePath]]
+  catch {lassign [::tk::dialog::color::GetOptions] al(moveall)}
   if {$res ne {}} {
-    set al(moveall) [::apave::obj paveoptionValue Moveall]
-    set al(tonemoves) [::apave::obj paveoptionValue Tonemoves]
     set al(chosencolor) $res
     InsertInText $res $pos1 $pos2
   }
@@ -121,10 +120,18 @@ proc tool::SrcPath {toolpath} {
 }
 #_______________________
 
+proc tool::aloupePath {} {
+  # Gets aloupe ini file's path.
+
+  namespace upvar ::alited USERDIR USERDIR
+  return [file join $USERDIR aloupe.conf]
+}
+#_______________________
+
 proc tool::Loupe {} {
   # Calls a screen loupe.
 
-  namespace upvar ::alited al al LIBDIR LIBDIR PAVEDIR PAVEDIR USERDIR USERDIR
+  namespace upvar ::alited al al LIBDIR LIBDIR PAVEDIR PAVEDIR
   if {$al(IsWindows)} {set le aloupe.exe} {set le aloupe}
   set loupe [file join $LIBDIR util $le]
   if {[file exists $loupe]} {
@@ -133,7 +140,7 @@ proc tool::Loupe {} {
   }
   set loupe [SrcPath [file join $PAVEDIR pickers color aloupe aloupe.tcl]]
   alited::Run $loupe -locale $alited::al(LOCAL) -apavedir $PAVEDIR -cs $al(INI,CS) \
-  -fcgeom $::alited::FilGeometry -inifile [file join $USERDIR aloupe.conf]
+  -fcgeom $::alited::FilGeometry -inifile [aloupePath]
 }
 #_______________________
 

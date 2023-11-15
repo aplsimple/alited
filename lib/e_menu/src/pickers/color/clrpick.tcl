@@ -123,6 +123,8 @@ proc ::tk::dialog::color:: {args} {
 
   vwait ::tk::Priv(selectColor)
   set result $Priv(selectColor)
+  set ::tk::dialog::color::fgsel [$data(finalCanvas) cget -text]
+  set ::tk::dialog::color::bgsel $result
   ::tk::RestoreFocusGrab $w $data(okBtn)
   unset data
 
@@ -136,14 +138,14 @@ proc ::tk::dialog::color:: {args} {
   return $result
 }
 
-proc ::tk::dialog::color::GetOptions {Nmoveall Ntonemoves} {
+proc ::tk::dialog::color::GetOptions {} {
   # Gets current settings of options.
-  #   Nmoveall - name of variable for moveall option
-  #   Ntonemoves - name of variable for tonemoves option
+  # Returns a list of selected color options:
+  #   moveall - value of moveall option
+  #   fgcolor - value of foreground (inverse) color
+  #   bgcolor - value of background (selected) color
 
-  upvar $Nmoveall moveall $Ntonemoves tonemoves
-  set moveall $::tk::dialog::color::moveall
-  set tonemoves $::tk::dialog::color::tonemoves
+  return [list $::tk::dialog::color::moveall $::tk::dialog::color::fgsel $::tk::dialog::color::bgsel]
 }
 
 proc ::tk::dialog::color::ShowAtXY {win x y} {
@@ -233,12 +235,13 @@ proc ::tk::dialog::color::Config {dataName argList} {
   }
 
   set specs [list \
-    [list -moveall "" "" 0] \
-    [list -tonemoves "" "" 1] \
-    [list -geometry "" "" -] \
-    [list -initialcolor "" "" $defaultColor] \
-    [list -parent "" "" "."] \
-    [list -title "" "" [mc "Color"]] \
+    [list -moveall {} {} 0] \
+    [list -tonemoves {} {} 1] \
+    [list -geometry {} {} -] \
+    [list -initialcolor {} {} $defaultColor] \
+    [list -parent {} {} .] \
+    [list -title {} {} [mc "Color"]] \
+    [list -inifile {} {} {}] \
     ]
 
   # 2: parse the arguments
@@ -304,10 +307,12 @@ proc ::tk::dialog::color::BuildDialog {w} {
 
     set height [expr { [winfo reqheight $box.entry] + 1}]
 
+    catch {::apave::obj untouchWidgets $f.sel}
     canvas $f.color -height [expr $height-2] \
       -width $data(BARS_WIDTH) -relief sunken -bd 3
     canvas $f.sel -height [expr $data(PLGN_HEIGHT)+2] \
-      -width $data(canvasWidth) -highlightthickness 0
+      -width $data(canvasWidth) -highlightthickness 0 \
+      -bg [ttk::style lookup . -background]
     pack $f.color -expand yes -fill both
     pack $f.sel -expand yes -fill both
 
@@ -317,17 +322,20 @@ proc ::tk::dialog::color::BuildDialog {w} {
     set data($color,col) $f.color
     set data($color,sel) $f.sel
 
+    set data(cbc1) red
+    set data(cbc2) [ttk::style lookup . -bordercolor]
+    if {$data(cbc2) eq {}} {set data(cbc2) grey}
     bind $data($color,col) <Configure> \
       [list tk::dialog::color::DrawColorScale $w $color 1]
     bind $data($color,col) <Enter> \
-      [list tk::dialog::color::EnterColorBar $w $color]
+      [list tk::dialog::color::EnterLeaveColorBar $w $color $data(cbc1)]
     bind $data($color,col) <Leave> \
-      [list tk::dialog::color::LeaveColorBar $w $color]
+      [list tk::dialog::color::EnterLeaveColorBar $w $color $data(cbc2)]
 
     bind $data($color,sel) <Enter> \
-      [list tk::dialog::color::EnterColorBar $w $color]
+      [list tk::dialog::color::EnterLeaveColorBar $w $color $data(cbc1)]
     bind $data($color,sel) <Leave> \
-      [list tk::dialog::color::LeaveColorBar $w $color]
+      [list tk::dialog::color::EnterLeaveColorBar $w $color $data(cbc2)]
 
     bind $box.entry <Return> [list tk::dialog::color::HandleRGBEntry $w]
   }
@@ -337,18 +345,18 @@ proc ::tk::dialog::color::BuildDialog {w} {
   # for setting the mutual move of selectors:
   set ::tk::dialog::color::tonemoves $data(-tonemoves)
   set ::tk::dialog::color::moveall $data(-moveall)
-  pack [ttk::checkbutton $stripsFrame.moveallColorSel -text [mc "Move all"] \
+  set ::tk::dialog::color::fgsel {}
+  set ::tk::dialog::color::bgsel {}
+  pack [ttk::checkbutton $stripsFrame.moveallColorSel -text "[mc {Move all}]    " \
     -variable ::tk::dialog::color::moveall -command \
     "::tk::dialog::color::StickSelectors $w 1"] -padx 2 -side left
-  pack [ttk::checkbutton $stripsFrame.followColorSel -text [mc "Tone moves"] \
-    -variable ::tk::dialog::color::tonemoves] -padx 20 -side left
   set foc [ttk::frame $stripsFrame.foc]
   foreach l { 804000 004000 004080 008080 800080 808000 \
               ffff00 ff00ff 00ffff 0000ff 00ff00 ff0000} {
-    set fl [frame $stripsFrame.foc.$l -bd 3 -relief raised -height 14 -width 14]
+    set fl [frame $stripsFrame.foc.$l -bd 3 -relief raised -height 24 -width 24]
     $fl configure -bg #$l
     bind $fl <Button-1> [list tk::dialog::color::LittleSwatch $w $mainentry #$l]
-    pack $fl -expand yes -anchor nw -fill both -padx 3 -side left
+    pack $fl -expand yes -anchor nw -padx 2 -side left
   }
   pack $foc -expand yes -anchor nw -fill both -pady 4 -side right
 
@@ -362,8 +370,7 @@ proc ::tk::dialog::color::BuildDialog {w} {
     -text [mc "Selection:"]]
   set ent [ttk::entry $selFrame.ent -textvariable $mainentry -width 14]
   set f1  [ttk::frame $selFrame.f1 -relief sunken]
-  #set data(finalCanvas) [frame $f1.demo -bd 1 -width 110 -height 116]
-  set data(finalCanvas) [label $f1.demo -bd 1 -width 10 -height 7]
+  set data(finalCanvas) [label $f1.demo -bd 1 -width 6 -height 6]
 
   pack $lab -side top -padx 4 -anchor sw
   pack $ent -side top -padx 4 -pady 2 -anchor n
@@ -402,7 +409,7 @@ proc ::tk::dialog::color::BuildDialog {w} {
   if {$aloupe eq ""} {
     grid $botFrame.ok0 x x x $botFrame.ok $botFrame.cancel -sticky ew
   } else {
-    grid $botFrame.ok0 $botFrame.loupe x x x $botFrame.ok $botFrame.cancel -sticky ew
+    grid $botFrame.ok0 $botFrame.loupe x x x $botFrame.ok $botFrame.cancel -sticky ew -padx 2
   }
   grid configure $botFrame.ok $botFrame.cancel -padx 2 -pady 4
   grid columnconfigure $botFrame 2 -weight 2 -uniform space
@@ -570,6 +577,7 @@ proc ::tk::dialog::color::CreateSelector {w sel c } {
     $data(indent) 0]
   set data($c,x) [RgbToX $w $data($c,intensity)]
   $sel move $data($c,index) $data($c,x) 0
+  EnterLeaveColorBar $w $c $data(cbc2)
 }
 
 # Inverts colors from light to dark and vice versa to get "fg" from "bg".
@@ -838,18 +846,11 @@ proc ::tk::dialog::color::HandleRGBEntry {w} {
   $data(green,intensity) $data(blue,intensity)"
 }
 
-# mouse cursor enters a color bar
+# mouse cursor enters/leaves a color bar
 #
-proc ::tk::dialog::color::EnterColorBar {w color} {
+proc ::tk::dialog::color::EnterLeaveColorBar {w color fill} {
   upvar ::tk::dialog::color::[winfo name $w] data
-  $data($color,sel) itemconfigure $data($color,index) -fill red
-}
-
-# mouse leaves enters a color bar
-#
-proc ::tk::dialog::color::LeaveColorBar {w color} {
-  upvar ::tk::dialog::color::[winfo name $w] data
-  $data($color,sel) itemconfigure $data($color,index) -fill black
+  $data($color,sel) itemconfigure $data($color,index) -fill $fill
 }
 
 # user hits "From clipboard" button
@@ -872,8 +873,14 @@ proc ::tk::dialog::color::OkCmd0 {w {clb ""}} {
 # user hits "Loupe" button
 #
 proc ::tk::dialog::color::Loupe {w} {
+  upvar ::tk::dialog::color::[winfo name $w] data
+  if {$data(-inifile) ne {}} {
+    set inifile [list -inifile $data(-inifile)]
+  } else {
+    set inifile []
+  }
   ::aloupe::run -exit no -parent $w -commandname [mc "Color"] \
-    -command "::tk::dialog::color::OkCmd0 $w %c"
+    -command "::tk::dialog::color::OkCmd0 $w %c" {*}$inifile
 }
 
 # user hits OK button

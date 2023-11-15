@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide playtkl 1.0.2
+package provide playtkl 1.0.3
 
 # _________________________ playtkl ________________________ #
 
@@ -87,6 +87,20 @@ proc playtkl::Playing {} {
   set line [lindex $dd(fcont) $dd(idx)]
   if {[regexp {^\s*#+} $line#]} { ;# skip empty or commented
     puts $line
+    after idle ::playtkl::Playing
+    return
+  }
+  if {[string match {stop *} $line]} {
+    bell
+    set scom [string range $line 5 end]
+    set slin "Line#[expr {$dd(idx)+1}]: $scom ="
+    if {[catch {set line "$slin [expr $scom]"}]} {
+      catch {set line "$slin [eval $scom]"}
+    }
+    puts -nonewline stdout "$line : "
+    chan flush stdout
+    gets stdin _
+    puts {}
     after idle ::playtkl::Playing
     return
   }

@@ -1,4 +1,4 @@
-package ifneeded playtkl 1.0.2 [list source [file join $dir playtkl.tcl]]
+package ifneeded playtkl 1.0.3 [list source [file join $dir playtkl.tcl]]
 
 # A short intro (for Ruff! docs generator:)
 
@@ -113,6 +113,17 @@ The file of records can contain empty lines and comments like this:
 It begins with comments about the start / end of recording.
 
 At need, any lines can be commented out, e.g. last ones that close the application as shown above.
+
+Also, as a sort of debugging, any line can be "stop [...]" which stops playing till any keyboard input and Return key. As "[...]", there may be a number or Tcl command to be avaluated with its result shown. For example:
+
+    ...
+    stop [winfo exists .win.#win#menu.#win#menu#file]
+    #ButtonPress .win.#win#menu.#win#menu#file %t=13455419 %K=?? %b=1 %x=46 %y=152 %s=16 %d=??
+    stop 2
+    #ButtonRelease .win.#win#menu.#win#menu#file %t=13455611 %K=?? %b=1 %x=46 %y=152 %s=272 %d=??
+    stop 3
+    ...
+
 
 ## Macros
 

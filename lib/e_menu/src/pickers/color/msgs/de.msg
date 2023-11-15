@@ -13,7 +13,6 @@ namespace eval ::tk {
     ::msgcat::mcset de "&Selection:" " Auswahl:"
     ::msgcat::mcset de "Selection:" "Auswahl:"
     ::msgcat::mcset de "Move all" "Alle bewegen"
-    ::msgcat::mcset de "Tone moves" "Tonen"
     ::msgcat::mcset de "From clipboard" "Aus Zwischenablage"
     ::msgcat::mcset de "To clipboard" "Zu Zwischenablage"
     ::msgcat::mcset de "Loupe" "Lupe"

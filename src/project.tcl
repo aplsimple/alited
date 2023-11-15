@@ -2013,7 +2013,7 @@ proc project::_run {{checktodo yes}} {
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   SaveSettings
   GetProjects
-  ::baltip hide $al(WIN)  ;# hide a TODO balloon if shown
+#!  ::baltip hide $al(WIN) ;# hide a TODO balloon if shown
   if {$checktodo && ![IsOutdated $al(prjname)]} {
     after 200 {
       if {[set prj [alited::project::CheckOutdated]] ne {}} {
