@@ -134,7 +134,7 @@ proc about::About {} {
     \u2022 <link-baltip>baltip $vbaltip</link-baltip>\n\n \
     \u2022 <link-bartabs>bartabs $vbartabs</link-bartabs>\n\n \
     \u2022 <link-hl_tcl>hl_tcl $vhl_tcl</link-hl_tcl>\n\n \
-    \u2022 <link-aloupe>aloupe v0.9.6</link-aloupe>\n\n \
+    \u2022 <link-aloupe>aloupe v1.0</link-aloupe>\n\n \
     \u2022 <link-playtkl>playtkl $vplaytkl</link-playtkl>\n\n \
     \u2022 <link-tkcc>tkcc</link-tkcc>\n\n \
     \u2022 <link-repl>tcl-repl</link-repl>\n\n \

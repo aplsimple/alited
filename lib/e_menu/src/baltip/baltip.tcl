@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.5.4
+package provide baltip 1.5.5
 
 # ________________________ Variables _________________________ #
 
@@ -721,7 +721,8 @@ proc ::baltip::my::Show {w text force geo optvals} {
   } else {
     # just showing, no fading
     catch {after cancel $ttdata(after)}
-    set ttdata(after) [after $data(-pause) [list ::baltip::my::ShowWindow $win]]
+    set ttdata(after) [after $data(-pause) \
+      "::baltip::my::ShowWindow $win; catch {wm attributes $win -alpha $data(-alpha)}"]
   }
   if {$data(-bell)} [list after [expr {$data(-pause)/4}] bell]
   array unset data

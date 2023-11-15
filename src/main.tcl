@@ -743,9 +743,10 @@ proc main::ShowOutdatedTODO {prj date todo} {
   namespace upvar ::alited al al
   set todo "\n$al(MC,prjName) $prj\n\n$al(MC,on) $date\n\n$todo\n"
   set opts {}
-  if {[string first !!! $todo]>-1} {set opts {-per10 0}}
+  if {[string first !!! $todo]>-1} {
+    set opts {-per10 0 -alpha 0.75 -ontop 1}
+  }
   ::alited::Balloon $todo yes 2500 {*}$opts
-  after 1000 alited::main::FocusText
 }
 #_______________________
 
@@ -792,7 +793,8 @@ proc main::InitActions {} {
   if {$al(INI,isfindrepl)} {
     after idle {
       alited::find::_run
-      after 100 {after idle alited::main::FocusText}
+      focus $alited::al(WIN); alited::main::FocusText
+      after idle {after 100 {after idle {after 100 alited::main::FocusText}}}
     }
   }
 }
