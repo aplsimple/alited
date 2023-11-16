@@ -38,7 +38,7 @@ namespace eval ::baltip {
     set ttdata(shiftX) {}
     set ttdata(shiftY) {}
     set ttdata(ontop) no
-    variable GEOACTIVE {-}
+    variable BALLOON {-}
   }
 }
 
@@ -192,8 +192,9 @@ proc ::baltip::tip {w {text "-BALTIPGET"} args} {
       if {$forced || $geo ne {}} {::baltip::my::Show $w $text yes $geo $optvals}
       if {$geo ne {}} {
         # balloon popup message
+        variable my::BALLOON
+        set my::BALLOON $w
         array set my::ttdata $arrsaved
-        bind Tooltip$w <Motion> "::baltip::hide $w yes"
       } else {
         set widgetclass [winfo class $w]
         set tags [bindtags $w]
@@ -298,16 +299,13 @@ proc ::baltip::hide {{w ""} {doit no}} {
   #   doit - yes, if do hide by force
   # Returns 1, if the window was really hidden.
 
-  variable my::ttdata
-  variable my::GEOACTIVE
-  if {$w eq $my::GEOACTIVE || $w eq {} || $doit} {
-    ;# unlock tips after a balloon message
-    set my::GEOACTIVE {-}
-  } elseif {$my::GEOACTIVE ne {-}} {
-    return no
-  }
+  variable my::BALLOON
   my::Command $w {}
-  return [expr {![catch {destroy [tippath $w]}]}]
+  set res 1
+  if {$w ne $my::BALLOON || $doit} {
+    set res [expr {![catch {destroy [tippath $w]}]}]
+  }
+  return $res
 }
 #_______________________
 
@@ -606,9 +604,7 @@ proc ::baltip::my::Show {w text force geo optvals} {
   # See also: Fade, ShowWindow, ::baltip::update
 
   variable ttdata
-  variable GEOACTIVE
   if {![winfo exists $w]} return
-  if {$geo eq {} && $GEOACTIVE ne {-}} return  ;# tips locked at a balloon message
   set win [::baltip::tippath $w]
   # keep the label's colors untouched (for apave package)
   catch {::apave::obj untouchWidgets $win.label}
@@ -618,8 +614,8 @@ proc ::baltip::my::Show {w text force geo optvals} {
   if {[info exists ttdata(optvals,$w)]} {
     catch {array set data [list {*}$ttdata(optvals,$w) {*}$optvals]}
   }
-  if {$geo ne {}} {           ;# balloons not related to widgets
-    set GEOACTIVE $w  ;# lock other tips
+  if {$geo ne {}} {
+    # balloons not related to widgets
   } elseif {$ttdata(global,$w)} {      ;# flag 'use global settings'
     array set data [::baltip::cget]
   } else {
@@ -694,8 +690,8 @@ proc ::baltip::my::Show {w text force geo optvals} {
     bind $win <Any-Enter> "::baltip::hide $w"
     bind Tooltip$win <Any-Enter>  "::baltip::hide $w"
   }
-  bind $win <Any-Button> "::baltip::hide $w"
-  bind Tooltip$win <Any-Button> "::baltip::hide $w"
+  bind $win <Any-Button> "::baltip::hide $w 1"
+  bind Tooltip$win <Any-Button> "::baltip::hide $w 1"
   set aint 20
   set fint [expr {int($data(-fade)/$aint)}]
   set icount [expr {int($data(-per10)/$aint*$icount/10.0)}]

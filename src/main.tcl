@@ -791,11 +791,11 @@ proc main::InitActions {} {
   }
   after idle {alited::main::UpdateGutter; alited::main::FocusText}  ;# get it for sure
   if {$al(INI,isfindrepl)} {
-    after idle {
+    after idle {after 100 {  ;# for getting a current word to find
       alited::find::_run
       focus $alited::al(WIN); alited::main::FocusText
       after idle {after 100 {after idle {after 100 alited::main::FocusText}}}
-    }
+    }}
   }
 }
 

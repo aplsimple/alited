@@ -3644,8 +3644,6 @@ oo::class create ::apave::APaveBase {
       }
       if {$waitvar && $var ne {}} {
         my waitWinVar $win $var $modal ;# show and wait for closing the window
-      } else {
-        wm deiconify $win      ;# show only
       }
     }
   }

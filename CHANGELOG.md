@@ -1,6 +1,6 @@
 # LAST CHANGES:
 
-Version `v1.5.1 (15 Nov'23)`
+Version `v1.5.1 (16 Nov'23)`
 
   - BUGFIX: env(TCLLIBPATH) cleared wrongly in apavebase.tcl
   - BUGFIX: Preferences/Projects: enable/disable translation options
@@ -16,7 +16,7 @@ Version `v1.5.1 (15 Nov'23)`
   - CHANGE: don't close "Projects/Files/No name"
   - CHANGE: Help/About/Packages tab
   - CHANGE: alited.ini
-  - CHANGE: packages: e_menu/apave 4.2.0, tkcc, aloupe 1.0, baltip 1.5.5, playtkl 1.0.3
+  - CHANGE: packages: e_menu/apave 4.2.1, tkcc, aloupe 1.0, baltip 1.5.5, playtkl 1.0.3
 
 
 Version `v1.4.6 (25 Oct'23)`
