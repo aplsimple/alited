@@ -87,6 +87,7 @@ proc hl_html::line {w {pos ""} {prevQtd 0}} {
           if {$s2<0} {set s2 [string length $subline]}
         }
         # erase the currently processed option
+        if {$p1 > $s2} break
         set subline [string replace $subline $p1 $s2 [string repeat { } [expr {$s2-$p1+1}]]]
         # highlight name & value
         incr p1 $r2

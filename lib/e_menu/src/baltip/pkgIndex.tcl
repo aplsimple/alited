@@ -1,4 +1,4 @@
-package ifneeded baltip 1.5.5 [list source [file join $dir baltip.tcl]]
+package ifneeded baltip 1.6.0 [list source [file join $dir baltip.tcl]]
 
 namespace eval ::baltip {
   variable _ruff_preamble {
@@ -212,7 +212,11 @@ For example:
         -geometry +1+100 -font {-weight bold -size 12} \
         -alpha 0.8 -fg white -bg black -per10 3000 -pause 1500 -fade 1500
 
-The `-pause` and `-fade` options make the balloon fade at appearing and disappearing. The `-per10` option defines the balloon's duration: the more the longer.
+The `-pause` and `-fade` options make the balloon fade at appearing and disappearing.
+
+The `-per10` option means "milliseconds per 10 characters", so it defines the balloon's duration: the more the longer.
+
+The `-per10` option is weird a little: while it is active (i.e. while *baltip*'s clock is counting down according to `-per10`), other tips are locked. So, `-per10 10000000` is a bad idea for balloons, use `-eternal 1` instead. If `-eternal 1` option is set, `-per10 1` is set by force to unlock other tips immediately.
 
 The `-geometry` value can include `W` and `H` *wildcards* meaning the width and the height of the balloon. This may be useful when you need to show a balloon at a window's edge and should use the balloon's dimensions which are available only after its creation. The X and Y coordinates are calculated by *baltip* as normal expressions. Of course, they should not include the "+" divider, but this restriction (if any) is easily overcome.
 
@@ -280,7 +284,7 @@ For example:
 Below are listed the *baltip* options that are set with `tip` and `configure` and got with `cget`:
 
  * `-on` - switches all tips on/off;
- * `-per10` - a time of exposition per 10 characters (in millisec.); "0" means "eternal";
+ * `-per10` - a time of exposition per 10 characters (in millisec.);
  * `-fade` - a time of fading (in millisec.);
  * `-pause` - a pause before displaying tips (in millisec.);
  * `-alpha` - an opacity (from 0.0 to 1.0);
@@ -297,7 +301,8 @@ Below are listed the *baltip* options that are set with `tip` and `configure` an
  * `-image` - image option;
  * `-compound` - compound option;
  * `-relief` - relief option;
- * `-bell` - if true, rings at displaying.
+ * `-bell` - if true, rings at displaying;
+ * `-eternal` - if true, makes a tip "eternal", i.e. visible till clicking.
 
 The following options are special:
 

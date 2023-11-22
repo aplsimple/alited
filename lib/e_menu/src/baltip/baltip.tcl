@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.5.5
+package provide baltip 1.6.0
 
 # ________________________ Variables _________________________ #
 
@@ -38,7 +38,7 @@ namespace eval ::baltip {
     set ttdata(shiftX) {}
     set ttdata(shiftY) {}
     set ttdata(ontop) no
-    variable BALLOON {-}
+    set ttdata(balloon) -
   }
 }
 
@@ -67,7 +67,7 @@ proc ::baltip::configure {args} {
       -SPECTIP* -
       -per10 - -fade - -pause - -fg - -bg - -bd - -alpha - -text - -relief - \
       -on - -padx - -pady - -padding - -bell - -under - -font - -image - -compound - \
-      -shiftX - -shiftY - -ontop {
+      -shiftX - -shiftY - -ontop - -eternal {
         set my::ttdata($n1) $v
       }
       -force - -geometry - -index - -tag - -global - -ctag - -nbktab - -reset - \
@@ -125,7 +125,7 @@ proc ::baltip::optionlist {} {
 
   return [list -on -per10 -fade -pause -fg -bg -bd -padx -pady -padding \
       -font -alpha -text -index -tag -bell -under -image -compound -relief \
-      -ctag -nbktab -reset -command -maxexp -shiftX -shiftY -ontop]
+      -ctag -nbktab -reset -command -maxexp -shiftX -shiftY -ontop -eternal]
 }
 #_______________________
 
@@ -186,15 +186,17 @@ proc ::baltip::tip {w {text "-BALTIPGET"} args} {
     set onopt [expr {[string length $text] && $my::ttdata(on)}]
     set optArgs [dict replace $optArgs -text $text]
     set optvals [dict replace $optvals -text $text]
+    set et 0
+    catch {set et [dict get $args -eternal]}
+    if {[set my::ttdata(eternal,$w) $et]} {lappend optvals -per10 1}
     set my::ttdata(optvals,$w) $optvals
     set my::ttdata(on,$w) $onopt
     if {$text ne {}} {
       if {$forced || $geo ne {}} {::baltip::my::Show $w $text yes $geo $optvals}
       if {$geo ne {}} {
         # balloon popup message
-        variable my::BALLOON
-        set my::BALLOON $w
         array set my::ttdata $arrsaved
+        set my::ttdata(balloon) $w
       } else {
         set widgetclass [winfo class $w]
         set tags [bindtags $w]
@@ -299,11 +301,12 @@ proc ::baltip::hide {{w ""} {doit no}} {
   #   doit - yes, if do hide by force
   # Returns 1, if the window was really hidden.
 
-  variable my::BALLOON
+  variable my::ttdata
   my::Command $w {}
   set res 1
-  if {$w ne $my::BALLOON || $doit} {
+  if {(![my::Eternal $w] && $my::ttdata(balloon) ne $w) || $doit} {
     set res [expr {![catch {destroy [tippath $w]}]}]
+    if {$w eq $my::ttdata(balloon)} {set my::ttdata(balloon) -}
   }
   return $res
 }
@@ -453,6 +456,19 @@ proc ::baltip::my::OptionsFromText {w txt} {
     }
   }
   return $txt
+}
+#_______________________
+
+proc ::baltip::my::Eternal {w} {
+  # Checks if the tip is shown till clicking.
+  #   w - tip/widget's path
+
+  variable ttdata
+  set res no
+  if {[catch {set res $ttdata(eternal,$w)}]} {
+    catch {set res $ttdata(eternal,[winfo parent $w])}
+  }
+  return $res
 }
 
 ## ________________________ Binds _________________________ ##
@@ -658,10 +674,8 @@ proc ::baltip::my::Show {w text force geo optvals} {
   }
   lappend ttdata(REGISTERED) $w
   foreach wold [lrange $ttdata(REGISTERED) 0 end-1] {::baltip::hide $wold}
-  if {$data(-fg) eq {} || $data(-bg) eq {}} {
-    set data(-fg) black
-    set data(-bg) #FBFB95
-  }
+  if {$data(-fg) eq {}} {set data(-fg) black}
+  if {$data(-bg) eq {}} {set data(-bg) #FBFB95}
   catch {destroy $win}
   toplevel $win -bg $data(-bg) -class Tooltip$w
   catch {wm withdraw $win}
@@ -766,6 +780,7 @@ proc ::baltip::my::FadeNext {w aint fint icount alpha show geo {geos ""}} {
   #   geos - saved coordinates (+X+Y) of shown tip
   # See also: Fade
 
+  variable ttdata
   incr icount -1
   if {$show} {ShowWindow $w}
   set show 0
@@ -777,6 +792,7 @@ proc ::baltip::my::FadeNext {w aint fint icount alpha show geo {geos ""}} {
     set al 0
   }
   if {$icount<0} {
+    if {[Eternal $w]} return
     if {$al>0} {
       if {[catch {wm attributes $w -alpha $al}]} {set al 0}
     }
@@ -786,6 +802,9 @@ proc ::baltip::my::FadeNext {w aint fint icount alpha show geo {geos ""}} {
       return
     }
   } elseif {$al>0 && $geo eq {}} {
+    if {![Eternal $ttdata(balloon)] && $ttdata(balloon) ne {-}} {
+      ::baltip::hide $ttdata(balloon) yes  ;# non-eternal balloon be destroyed
+    }
     catch {wm attributes $w -alpha $al}
   }
   Fade $w $aint $fint $icount {} $alpha $show $geo +$X+$Y

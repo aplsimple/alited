@@ -103,7 +103,7 @@ proc tool::DatePicker {} {
     -parent $al(WIN) -geometry pointer+10+10 -dateformat $al(TPL,%d)]
   if {$res ne {}} {
     set al(klnddate) $res
-    InsertInText $res $pos1 $pos2
+    InsertInText $res
   }
 }
 #_______________________

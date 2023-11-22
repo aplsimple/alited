@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.5.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.5.2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -694,14 +694,10 @@ namespace eval alited {
 
     variable al
     variable obPav
-    if {$red} {
-      set fg white
-      set bg #bf0909
-    } else {
-      set cs [$obPav csGet]
-      set fg [lindex $cs 14]  ;# colors of baltip's tips
-      set bg [lindex $cs 15]
-    }
+    set cs [$obPav csGet]
+    set fg [lindex $cs 14]  ;# colors of tips
+    set bg [lindex $cs 15]
+    if {$red} {set fg #6e0000}
     lassign [split [winfo geometry $al(WIN)] x+] w h x y
     set geo "+([expr {$w+$x}]-W)+$y-60"
     set msg [string map [list \n "  \n  "] $msg]

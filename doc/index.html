@@ -75,10 +75,14 @@
 <li class="level3"><div class="li"><a href="#checktool">Check Tcl tool</a></div></li>
 <li class="level3"><div class="li"><a href="#paver">Paver</a></div></li>
 <li class="level3"><div class="li"><a href="#custtool">Customizing tools</a></div></li>
+<li class="level3"><div class="li"><a href="#templates">Templates</a></div></li>
 </ul></li>
-<li class="level3"><div class="li"><a href="#templates">Templates</a></div>
+<li class="level3"><div class="li"><a href="#debugtest">Debugging and testing</a></div>
 <ul>
-<li class="level3"><div class="li"><a href="#profiling">Profiling Tcl</a></div></li>
+<li class="level3"><div class="li"><a href="#debugging">Debugging</a></div></li>
+<li class="level3"><div class="li"><a href="#testing">Testing</a></div></li>
+<li class="level3"><div class="li"><a href="#usingtkcon">Using Tkcon</a></div></li>
+<li class="level3"><div class="li"><a href="#profiling">Profiling</a></div></li>
 </ul></li>
 <li class="level2"><div class="li"><a href="#edit">Editing</a></div>
 <ul>
@@ -87,8 +91,8 @@
 <li class="level3"><div class="li"><a href="#rectsel">Rectangular selection</a></div></li>
 <li class="level3"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
 <li class="level3"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
-</ul></li>
 <li class="level2"><div class="li"><a href="#macros">Macros</a></div></li>
+</ul></li>
 <li class="level2"><div class="li"><a href="#usersynt">User syntax</a></div>
 <ul>
 <li class="level3"><div class="li"><a href="#transl">Language translation</a></div></li>
@@ -328,7 +332,7 @@ tclkit alited.tcl ~/.config/myAlitedOptionsDir
 ... and when in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> we run a script, there are no errors at <code>package require package1; package require package2</code>.
 </p>
 <p>
-<b>Note</b>: in Linux, the best way is probably using <em>~/.profile</em> file where you can set something like:
+<b>Note</b>: in Linux, the best way is probably using <i>~/.profile</i> file where you can set something like:
 <pre class="code">
 export TCLLIBPATH=<font color=#8b2a0e>&quot;~/myPrj/package1 ~/myPrj/package2 /usr/lib/treectrl2.4.1 /usr/lib/tcltk/x86_64-linux-gnu/Img1.4.13&quot;</font>
 </pre>
@@ -1024,10 +1028,10 @@ Any project can have its own commands as well as general commands for all projec
 </ul>
 </p>
 <p>
-These commands can be OS commands or executables. For example, the commands below are good for checking the Git status of all projects. Especially if colored with <em>colordiff</em>, the change lines will show what repos were changed):
+These commands can be OS commands or executables. For example, the commands below are good for checking the Git status of all projects. Especially if colored with <i>colordiff</i>, the change lines will show what repos were changed):
 <pre class="code">rm log.txt
 echo ----------------
-pwd
+<b><font color=#3a6797>pwd</font></b>
 git status
 </pre>
 </p>
@@ -1767,10 +1771,9 @@ As <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">a
 <li><a href="https://aplsimple.github.io/en/tcl/e_menu/index.html#tips_and_hints" title="Tips & hints" rel="nofollow">Tips and hints on e_menu</a></li>
 </ul>
 </p>
-
 <br>
 <p>
-<h2 id="templates">Templates</h3>
+<h3 id="templates"><i>Templates</i></h3>
 </p>
 
 <p>
@@ -1821,25 +1824,132 @@ A few of templates support <span class="curid"><a href="#" class="wikilink1" tit
 </p>
 
 <p>
-There are templates to introspect variables:
+There are templates to introspect variables, to enter a Tcl command, to profile Tcl code. See their description in <a href=#debugtest>Debugging and testing</a> below.
+</p>
+
+<br>
+<p>
+<h2 id="debugtest">Debugging and testing</h3>
+</p>
+
+<p>
+Though <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> doesn't provides <i>classical tools</i> for debugging, Tcl's facilities make the debugging easy and flexible.
+</p>
+
+
+<br>
+<p>
+<h3 id="debugging"><i>Debugging</i></h3>
+</p>
+
+<p>
+Most useful debugging tools of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> are provided by its templates <i>message</i> and <i>puts</i>, available through F7 and F8 keys.
+</p>
+
+<p>
+The <i>message</i> template inserts <code>tk_messageBox</code> call into a current Tcl script, like this:
+<pre class="code"><b><font color=#134070>tk_messageBox</font></b> <font color=#6c3e67>-message</font> <font color=#8b2a0e>&quot;tool::DatePicker &quot;</font>  ;<i><font color=#ff0000>#! TODEL</font></i>
+</pre>
+where the current proc/method's name is present (here <code>tool::DatePicker</code>). The inline comment "<code>;#! TODEL</code>" marks the line as TODO to be deleted. All of such comments are easily found through the specific <code>TODEL</code> mark.
+</p>
+
+<p>
+The debugging message can include any useful information (variables, command calls, global counts etc.). This <i>message</i> template is like classical <i>Stop</i> debugging tool.
+</p>
+
+<p>
+The <i>puts</i> template inserts <code>puts</code> call into a current Tcl script, like this:
+<pre class="code"><b><font color=#3a6797>puts</font></b> <font color=#8b2a0e>&quot;<font color=#1b1baa>[</font>incr ::-ALE-<font color=#1b1baa>]</font> tool::DatePicker &quot;</font>  ;<i><font color=#ff0000>#! TODEL</font></i>
+</pre>
+where the above described components are present, plus a specific <code>[incr ::-ALE-]</code> count. The <i>puts</i> will put the message into <i>stdout</i>, so that we can see what's happening in this point of the script.
+</p>
+
+<p>
+Other templates allow to view local and global variables, these are:
 <ul>
-<li>local</li>
-<li>global</li>
-<li>current namespace's</li>
+<li><i>INFO LOCALS</i></li>
+<li><i>INFO GLOBALS</i></li>
+<li><i>INFO VARS [NAMESPACE CURRENT]</i></li>
 </ul>
 </p>
 
 <p>
-There is a template to enter a command, in order to run it immediately in an appropriate place of your application! For example, you can change a local variable to see how your app will behave with the new value.
-</p>
-<p>The <i>doctest</i> template allows to use <a href="https://aplsimple.github.io/en/tcl/doctest/index.html" title="Description of doctest" rel="nofollow">doctest facilities</a> available in <b>T</b> tool of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> (its name is "tests.em: Tests", its full path is "Main menu" -> "Utils" -> "Tests"). Briefly, the <a href="https://aplsimple.github.io/en/tcl/doctest/index.html" title="Description of doctest" rel="nofollow">doctest</a> means specific comments used to test a script's algorithms.
+The <i>COMMAND</i> template allows to suspend the script's execution in order to enter and execute a Tcl command. It's useful when some piece of code needs a run-time checking & correcting, without changing the original code.
 </p>
 
-<p>There are also three templates of <a href=#profiling>profilers</a>.</p>
+<p>
+There can happen intricacies, when your application is hanged up deadly and you don't know where to dig the bug and what's that at all.
+</p>
+
+<p>
+In such cases, try the following:
+<ul>
+<li>open the script which (most obviously) hangs up your application</li>
+<li>run <b>T</b> tool or its menu item <i>Tools / bar-menu / tests.em: Tests</i></li>
+<li>run the item <i>"Trace file.tcl"</i> which will insert the tracing "puts" into the current "file.tcl"</li>
+<li>launch the "file.tcl" and notice in the terminal what is the last proc/method's "puts"</li>
+<li>it's the last traced proc/method that is responsible for the hanging your app; debug it</li>
+<li>before or after the debugging, run <i>"Untrace file.tcl"</i> item of <b>T</b> tool to remove the tracing "puts"</li>
+</ul>
+At tracing/untracing a current script, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> will ask your permission to reload it from disk. It's a normal behaviour of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>.
+</p>
+
+<p>
+</p>
 
 <br>
 <p>
-<h3 id="profiling"><i>Profiling Tcl</i></h3>
+<h3 id="testing"><i>Testing</i></h3>
+</p>
+
+<p>
+<p>The <i>doctest</i> template allows to use <i>doctest</i> facilities available in <b>T</b> tool of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> (or its menu item <i>Tools / bar-menu / tests.em: Tests)</i>.
+</p>
+
+<p>Briefly, the <i>doctest</i> means specific comments used to test a script's algorithms.
+</p>
+
+<p>The <i>doctest</i> is described at
+<a href="https://aplsimple.github.io/en/tcl/doctest/index.html" title="Description of doctest" rel="nofollow">aplsimple.github.io/en/tcl/doctest</a>. The help is also present among <b>T</b> tool's items.
+</p>
+
+<br>
+<p>
+<h3 id="usingtkcon"><i>Using Tkcon</i></h3>
+</p>
+
+<p>
+<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> allows to run Tcl scripts from <i>Tkcon</i>, so that you can access the internal machinery of a script, with entering Tcl commands in <i>Tkcon</i> while the script is executed.
+</p>
+
+<p>
+The <i>Tools / Run...</i> tool has <i>Tkcon</i> checkbox that allows to do this.
+</p>
+
+<p>
+However, even a "bare" <i>Tkcon</i> (e.g. run from <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s Tools) provides the great facilities to debug and test Tcl applications. Try this:
+<ul>
+<li>run <i>Tkcon</i></li>
+<li>open its menu item <i>Console / Attach To... / Interpreter / "your Tcl app"</i></li>
+<li>enter any debugging commands, for example:
+<ul>
+<li><code>namespace children</code></li>
+<li><code>info vars</code></li>
+<li><code>info vars NS::*</code></li>
+<li><code>set NS::somevariable</code></li>
+</ul>
+</li>
+<li>at entering commands in <i>Tkcon</i>, use <i>Tab</i> key to autocomplete variables and commands</li>
+<li>to cancel the attaching to Tcl app, use  <i>Console / Attach To... / Interpreter / None</i></li>
+</ul>
+</p>
+
+<p>
+</p>
+
+<br>
+<p>
+<h3 id="profiling"><i>Profiling</i></h3>
 </p>
 
 <p>
@@ -1874,6 +1984,7 @@ Three templates allow to use a bit modified <a href=https://wiki.tcl-lang.org/pr
 <p>
 And don't forget to remove the profiler's lines after the profiling done! They are marked with <i>;# TODEL</i> comments.
 </p>
+
 
 <p>
 <br>
@@ -2113,15 +2224,11 @@ This way, you will use Tab key to indent. As you like it.
 <p><span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> promotes the idea of <a href=https://www.emacswiki.org/emacs/TabsAreEvil>Tabs Are Evil</a>. A typical case: you use 4-space Tabs and get an external code using 8-space Tabs and (unintentionally) Spaces to indent the code - then you get a mess of indentation as well.
 </p>
 
-<p>
 <br>
-
-</p>
-
-</div>
-
-<h2 id="macros">Macros</h2>
+<p>
+<h3 id="macros"><i>Macros</i></h3>
 <div class="level2">
+</p>
 
 <p>
 The macros are available in "Edit / Play Macro" submenu.
@@ -2217,7 +2324,7 @@ The <i>lib/addon/hl_*.tcl</i> files are easy to implement. Any of existing ones 
 </p>
 
 <p>
-<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is a multilingual program and as such it provides a translation facility (for example, to add new .msg files to <em>alited/data/msgs</em> of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s source :)
+<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is a multilingual program and as such it provides a translation facility (for example, to add new .msg files to <i>alited/data/msgs</i> of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s source :)
 </p>
 <p>
 The translation is available for a specific type of files, i.e. having the extension <i>.l1-l2</i> which means translating from <i>l1</i> language to <i>l2</i> language.

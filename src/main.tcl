@@ -744,7 +744,7 @@ proc main::ShowOutdatedTODO {prj date todo} {
   set todo "\n$al(MC,prjName) $prj\n\n$al(MC,on) $date\n\n$todo\n"
   set opts {}
   if {[string first !!! $todo]>-1} {
-    set opts {-per10 0 -alpha 0.75 -ontop 1}
+    set opts {-ontop 1 -eternal 1 -fg white -bg red}
   }
   ::alited::Balloon $todo yes 2500 {*}$opts
 }

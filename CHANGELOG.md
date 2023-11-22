@@ -1,22 +1,26 @@
 # LAST CHANGES:
 
-Version `v1.5.1 (16 Nov'23)`
+Version `v1.5.2 (22 Nov'23)`
 
   - BUGFIX: env(TCLLIBPATH) cleared wrongly in apavebase.tcl
   - BUGFIX: Preferences/Projects: enable/disable translation options
+  - BUGFIX: hl_html.tcl: hanged with some html files while entering *<tag>*
   - NEW   : es.msg
   - NEW   : Find/Replace at start if present at finish
   - NEW   : check for changes of Preferences' options
   - NEW   : file number in Projects/Files tab
-  - NEW   : !!! in Projects TODO makes its balloon "eternal" (hidden at clicks)
-  - CHANGE: TODO balloon not hidden at entering Projects
+  - NEW   : "!!!" in Projects TODO makes its balloon "eternal" (hidden at clicks)
+  - NEW   : "Check Tcl" tool: check a current file independently on its type (Tcl or not)
+  - CHANGE: at picking dates, don't replace current word (only selection if any)
+  - CHANGE: TODO balloon not hidden at entering Projects; its colors changed
   - CHANGE: run the loupe from the color picker
   - CHANGE: preview.tcl: pickers
   - CHANGE: labels & buttons of Preferences & Projects
   - CHANGE: don't close "Projects/Files/No name"
   - CHANGE: Help/About/Packages tab
   - CHANGE: alited.ini
-  - CHANGE: packages: e_menu/apave 4.2.1, tkcc, aloupe 1.0, baltip 1.5.5, playtkl 1.0.3
+  - CHANGE: Help / alited / Debugging and testing (in index.html)
+  - CHANGE: packages: e_menu/apave 4.2.2, tkcc, aloupe 1.0, baltip 1.6.0, playtkl 1.0.3
 
 
 Version `v1.4.6 (25 Oct'23)`

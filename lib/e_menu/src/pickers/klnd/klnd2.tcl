@@ -105,7 +105,7 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
   if {[set yl $y] && [set ml $m]==12} {set ml 1; incr yl}
   set lday [clock format [clock scan "[incr ml]/1/$yl 1 day ago"] -format %d]
   set iday [set p(icurr$obj) 0]
-  for {set i 1} {$i<43} {incr i} {
+  for {set i 1} {$i<38} {incr i} {
     set fg $p(fg1)
     set bg $p(bg1)
     set wbut [$p($obj) BuT$obj-${i}KLND]
@@ -275,7 +275,7 @@ proc ::klnd::my::BindButtons2 {obj} {
   #   obj - index of calendar
 
   variable p
-  for {set i 1} {$i<43} {incr i} {
+  for {set i 1} {$i<38} {incr i} {
     set but [$::klnd::my::p($obj) BuT$obj-${i}KLND]
     bind $but <Button-1> "::klnd::my::Enter2 $obj $i 1"
   }
@@ -343,7 +343,7 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
   lappend res \
     [list $ownname.laBDays.tcl " \
       set wt - ; \
-      for {set i 1} {\$i<50} {incr i} { \
+      for {set i 1} {\$i<45} {incr i} { \
         if {\$i<8} {set cur $ownname.laBDays.LabDay$obj\$i} {set cur $ownname.laBDays.BuT$obj-\[expr {\$i-7}\]KLND} ; \
         if {(\$i%7)!=1} {set p L; set pw \$pr} {set p T; set pw \$wt; set wt \$cur} ; \
         if {\$i<8} { \
@@ -502,6 +502,3 @@ proc ::klnd::calendar2 {pobj w ownname args} {
 }
 
 # _________________________________ EOF _________________________________ #
-
-#RUNF1: ../../tests/test2_pave.tcl alt 24 9 12 "small icons"
-#RUNF1: ~/PG/github/alited/src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG

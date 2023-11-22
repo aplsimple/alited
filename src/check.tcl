@@ -158,7 +158,10 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
     set wtxt [alited::main::CurrentWTXT]
     set TID [alited::bar::CurrentTabID]
   }
-  if {![alited::file::IsTcl $fname]} return
+  if {$fname ne [alited::bar::FileName] && ![alited::file::IsTcl $fname]} {
+    # do check only a current file and Tcl scripts
+    return
+  }
   set curfile [file tail $fname]
   set textcont [$wtxt get 1.0 end]
   set unittree [alited::unit::GetUnits $TID $textcont]
