@@ -63,7 +63,7 @@ R: %C if {"$::EMENUCOMMIT" eq ""} \
    {set ::EMENUTMP ""} {set ::EMENUTMP "--from $::EMENUCOMMIT --to tip"}
 R: fossil gdiff $::EMENUTMP "$::EMENUFILE"
 
-ITEM = fossil diff ?
+ITEM = fossil diff
 S: cd %PD
 RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
 R: %I {} "DIFF" { \
@@ -111,11 +111,11 @@ R: %IF !$::EMENUBRIEF %THEN %T $::EMENUTMP
 ITEM = fossil add $::FILETAIL ?
 S: %MC ADD FILE %MC add %MC %MC
 
-ITEM = fossil forget $::FILETAIL
-S: %MC FORGET FILE %MC forget %MC -hfg $::em::clrhotk %MC
+ITEM = fossil forget $::FILETAIL ?
+S: %MC FORGET FILE %MC forget %MC -hfg $::em::clrhelp %MC
 
-ITEM = fossil revert $::FILETAIL
-S: %MC REVERT FILE %MC revert %MC -hfg $::em::clrhotk \
+ITEM = fossil revert $::FILETAIL ?
+S: %MC REVERT FILE %MC revert %MC -hfg $::em::clrhelp \
    %MC \n\n Thus, a last check-in of the file(s) would be restored. \
    \n You can undo this with "fossil undo".
 
@@ -125,7 +125,7 @@ ITEM = fossil timeline
 S: cd %PD
 S: fossil timeline
 
-ITEM = fossil timeline --showfiles ?
+ITEM = fossil timeline --showfiles
 R: %I {} "TIMELINE FOR FILE(S)" { \
    v_ {{} {-pady 4} {}} {} \
    dir1 {{Directory:} {} {}} {"%UD"}\
@@ -145,7 +145,7 @@ S: grep $::EMENUTF -e === "$::EMENUTMPFILE"
 
 SEP = 2
 
-ITEM = fossil commit ?
+ITEM = fossil commit
 S: cd %PD
 R: %I {} "TOUCH & COMMIT" { \
    lab1  {{} {} {-t {For TOUCH:} -font {-weight bold}}}  {} \
@@ -198,7 +198,7 @@ S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}
 SW: %IF "$::EM_T_TIME" ni {{} none} && "$::EM_T_FILE" ne "" %THEN fossil touch $::EM_T_v $::EM_T_TIME $::EM_T_FILE
 S: fossil commit --allow-empty $::EM_COMOPT
 
-ITEM = fossil commit -f -tag ?
+ITEM = fossil commit -f -tag
 S: cd %PD
 R: %C set ::COMTAG "%s"
 R: %I warn "TAG COMMIT" { \
@@ -206,7 +206,7 @@ R: %I warn "TAG COMMIT" { \
    } -head {\n This will TAG the last commit:} -weight bold == ::COMTAG
 S: fossil commit -f -tag "$::COMTAG" -bgcolor '#F8A4F6'
 
-ITEM = fossil commit -m ? --branch ?
+ITEM = fossil commit -m --branch
 R: cd %PD
 R: %C if {"$::FSLBRANCH" eq ""} {set ::FSLBRANCH "%s"}
 R: %I warn "COMMIT & BRANCH" { \
@@ -228,7 +228,7 @@ S: fossil stash
 
 ITEM = fossil stash snapshot $::FILETAIL ?
 S: %MC STASH SNAPSHOT %MC stash snapshot \
-   %MC -hfg $::em::clrhotk %MC
+   %MC -hfg $::em::clrhelp %MC
 
 ITEM = fossil stash list -v
 S: cd %PD
@@ -263,7 +263,7 @@ M: m=fossil2.em
 
 SEP = 2
 
-ITEM = fossil touch ?
+ITEM = fossil touch
 S: cd %PD
 R: %I {} "TOUCH" { \
    fil1 {{   File(s):}} {"$::EM_T_FILE"} \
@@ -280,7 +280,7 @@ R: %I {} "TOUCH" { \
 \n\n The 'Verbose' outputs extra information.} \
    } -head {\n This will TOUCH the file(s) of Fossil repository \
    \n to have the file(s) time equal to the time stamp. \n} \
-   -hfg $::em::clrhotk -weight bold == \
+   -hfg $::em::clrhelp -weight bold == \
    ::EM_T_FILE ::EM_T_TIME ::EM_T_DRY ::EM_T_VERBOSE
 S: %C if $::EM_T_DRY {set ::EM_T_n -n} {set ::EM_T_n ""}
 S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}

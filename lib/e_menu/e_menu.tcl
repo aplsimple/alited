@@ -28,7 +28,7 @@ package require Tk
 wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.2.2}
+  variable em_version {e_menu 4.3.0}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -1062,16 +1062,16 @@ proc ::em::shell0 {sel {amp {}} {silent -1}} {
 }
 #_______________________
 
-proc ::em::run_Tcl_code {sel {dosubst false}} {
+proc ::em::run_Tcl_code {sel {dosubst no}} {
   # run a code of Tcl
 
   if {[string first "%C" $sel] == 0} {
     if {[catch {
-      set sel [string range $sel 3 end]
       if {$dosubst} {
         prepr_pn sel
         catch {set sel [subst -nobackslashes -nocommands $sel]}
       }
+      set sel [prepr_hd [string range $sel 3 end]]
       if {[string match "eval *" $sel]} {
         {*}$sel
       } else {
@@ -1139,6 +1139,7 @@ proc ::em::run0 {sel amp silent} {
     } elseif {[run_Tcl_code $sel]} {
       # processed already
     } elseif {[string first {%I } $sel] == 0} {
+      set sel [prepr_hd $sel]
       return [::em::addon input $sel]
     } elseif {[string first {%S } $sel] == 0} {
       S [string range $sel 3 end]
@@ -1252,6 +1253,7 @@ proc ::em::Shell_Run {from typ c1 s1 amp inpsel} {
       if {[string last $::em::R_exit $runp]>0} {set doexit 1}
     }
     prepr_09 seltd ::em::ar_i09 i   ;# set N of runs in command
+    set seltd [prepr_hd $seltd]
     set ::em::IF_exit 1
     if {![$c1 $typ "$seltd" $amp $silent] || $doexit} {
       if {$::em::IF_exit} {
@@ -1368,7 +1370,7 @@ proc ::em::checkForWilds {rsel} {
   upvar $rsel sel
   switch -glob -nocase -- $sel {
     {%B *} {
-      set sel [string trim [string range $sel 3 end] {" }]
+      set sel [string trim [string range $sel 3 end] "\" "]
       if {![catch {::eh::browse $sel} e]} {
         return [list true true]
       }
@@ -1785,6 +1787,13 @@ proc ::em::prepr_call {refname} {
 }
 #_______________________
 
+proc ::em::prepr_hd {com} {
+  # Mr. Preprocessor of 'home dir'.
+
+  return [string map [list %H [::apave::HomeDir]] $com]
+}
+#_______________________
+
 proc ::em::get_pars1 {s1 argc argv} {
   # get pars array
 
@@ -1941,6 +1950,7 @@ proc ::em::init_menuvars {domenu options} {
         if {![info exist ::$vname]} {
           set ::$vname {}
           ::em::prepr_pn vvalue
+          set vvalue [::em::prepr_hd $vvalue]
           set ::$vname [string map [list \\n \n \\ \\\\] $vvalue]
         }
       }
@@ -1962,7 +1972,7 @@ proc ::em::save_menuvars {} {
     } elseif {$opt && [string match {::?*=*} $line]} {
       lassign [regexp -inline "::(\[^=\]+)=\{1\}(.*)" $line] ==> vname vvalue
       catch {
-        if {![regexp "^%\\S" $vvalue]} { ;# don't save for wildcarded
+        if {![regexp {^%[a-zA-GI-Z]} $vvalue]} { ;# don't save for wildcarded, except for %H (home dir)
           set var ::$vname
           set value [string map [list \n \\n] [set $var]]
           lset menudata $i [append var = $value]

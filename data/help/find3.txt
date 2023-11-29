@@ -1,0 +1,30 @@
+ These regular expressions (RE2) allows to apply additional
+ filters to the found strings.
+
+ The RE2 are set in the separate lines of two text fields:
+
+ <r>Including RE2:</r>
+   If any of its RE will prove true, the found string
+   will be in the search result.
+
+ <r>Excluding RE2:</r>
+   If any of its RE will prove true, the found string
+   will <b>not</b> be in the search result.
+
+ For example, with the main RE as
+   <b>(^|[^:]){7}\m\w+::</b>
+ and excluding RE2 as
+    <b>\s*proc\s+
+    \s*method\s+
+    (\[|\{|"|;)\s*\m\w+::</b>
+ we can search the uses of non-absolute names of variables
+ (at least, excluding declarations and calls of commands)
+ which is good at moving from Tcl/Tk 8.6 to Tcl/Tk 9.0.
+
+ If a RE2 line consists of asterisks only (e.g. <b>***</b>),
+ the rest are skipped at filtering. Just to save useful RE2.
+
+ If a RE2 line begins with asteriks and continues with other
+ characters, it's skipped at filtering (e.g. <b>*\s*proc\s+</b>).
+
+ To <r>enable / disable</r> RE2, click the appropriate checkbox.

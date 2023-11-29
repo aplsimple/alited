@@ -455,6 +455,26 @@ proc ::apave::traceRemove {v} {
     trace remove variable $v $o $c
   }
 }
+#_______________________
+
+proc ::apave::HomeDir {} {
+  # For Tcl 9.0 & Windows: gets a home directory ("~").
+
+  if {[catch {set hd [file home]}]} {
+    if {[info exists ::env(HOME)]} {set hd $::env(HOME)} {set hd ~}
+  }
+  return $hd
+}
+#_______________________
+
+proc ::apave::checkHomeDir {com} {
+  # For Tcl 9.0 & Windows: checks a command for "~".
+
+  set hd [HomeDir]
+  set com [string map [list { ~/} " $hd/" \"~/ \"$hd/ '~/ '$hd/ \\n~/ \\n$hd/ \n~/ \n$hd/ \{~/ \{$hd/] $com]
+  if {[string match ~/* $com]} {set com $hd[string range $com 1 end]}
+  return $com
+}
 
 ## ________________________ Inits _________________________ ##
 

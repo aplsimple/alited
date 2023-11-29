@@ -43,7 +43,7 @@ namespace eval ::alited {
   set al(INI,save_onmove) no   ;# do saving alited configuration at tab  moving
   set al(INI,save_onclose) no  ;# do saving alited configuration at tab closing
   set al(INI,save_onsave) yes  ;# do saving alited configuration at file saving
-  set al(INI,maxfind) 16       ;# size for comboboxes of "Find/Replace" dialogue
+  set al(INI,maxfind) 32       ;# size for comboboxes of "Find/Replace" dialogue
   set al(INI,barlablen) 16     ;# width of tab labels in chars
   set al(INI,bartiplen) 32     ;# size of tips for tab bar's arrows & of tabs submenu
   set al(INI,confirmexit) 1    ;# flag "confirm exiting alited"
@@ -113,10 +113,10 @@ namespace eval ::alited {
   # e_menu settings and arguments
   set al(EM,geometry) {}
   set al(EM,save) {}
-  set al(EM,PD=) ~/.config/alited/e_menu/em_projects
+  set al(EM,PD=) [file join $::alited::CONFIGDIRSTD alited e_menu em_projects]
   set al(EM,Tcl) {}
   set al(EM,TclList) [list]
-  set al(EM,h=) ~/DOC/www.tcl.tk/man/tcl8.6
+  set al(EM,h=) [file join $::alited::HOMEDIR DOC www.tcl.tk man tcl8.6]
   set al(EM,tt=) x-terminal-emulator
   set al(EM,tt=List) "$al(EM,tt=)\tlxterminal --geometry=220x55\txterm\tmlterm\tqterminal\tEterm\tkonsole\txgterm"
   set al(EM,wt=) cmd.exe
@@ -139,7 +139,7 @@ namespace eval ::alited {
   set al(closefunc) 0
 
   # initial color of "Choose color" dialogue
-  set alited::al(chosencolor) green
+  set al(chosencolor) green
 
   # subdirectory of project to backup files at modifications
   # and maximum of backups
@@ -414,7 +414,7 @@ proc ini::ReadIniOptions {nam val} {
     barlablen     {set al(INI,barlablen) $val}
     bartiplen     {set al(INI,bartiplen) $val}
     isfindrepl    {set al(INI,isfindrepl) $val}
-    prjtpls       {set al(PTP,list) [string map [list $alited::EOL \n] $val]}
+    prjtpls       {set al(PTP,list) [::alited::ProcEOL $val in]}
     backup        {
       if {$val ne {.bak}} {set val {}}
       set al(BACKUP) $val
@@ -582,6 +582,11 @@ proc ini::ReadIniMisc {nam val} {
     tplilast {set ::alited::unit_tpl::ilast $val}
     incdec {lassign $val al(incdecName) al(incdecDate) al(incdecSize) al(incdecExtn)}
     blifo {set al(lifo) [string is true $val]}
+    InRE2 {set ::alited::find::InRE2 [::alited::ProcEOL $val in]}
+    ExRE2 {set ::alited::find::ExRE2 [::alited::ProcEOL $val in]}
+    chInRE2 {set ::alited::find::chInRE2 [string is true $val]}
+    chExRE2 {set ::alited::find::chExRE2 [string is true $val]}
+    geoRE2 {set ::alited::find::geoRE2 $val}
   }
 }
 
@@ -600,7 +605,7 @@ proc ini::ReadIniPrj {} {
   alited::favor::InitFavorites [list]
   alited::favor_ls::GetIni {}
   if {![file exists $al(prjfile)]} {
-    set al(prjfile) [file join $alited::PRJDIR default$PRJEXT]
+    set al(prjfile) [file join $::alited::PRJDIR default$PRJEXT]
   }
   set al(prjname) [file tail [file rootname $al(prjfile)]]
   puts "alited project: $al(prjfile)"
@@ -634,7 +639,7 @@ proc ini::ReadIniPrj {} {
     set al(prjfile) {}
     set al(prjroot) {}
   }
-  if {$al(prjroot) eq {} && $al(prjname) eq {default}} {set al(prjroot) $alited::DIR}
+  if {$al(prjroot) eq {} && $al(prjname) eq {default}} {set al(prjroot) $::alited::DIR}
   alited::favor::InitFavorites $al(FAV,current)
   catch {close $chan}
   catch {cd $al(prjroot)}
@@ -793,7 +798,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "barlablen=$al(INI,barlablen)"
   puts $chan "bartiplen=$al(INI,bartiplen)"
   puts $chan "isfindrepl=$al(INI,isfindrepl)"
-  puts $chan prjtpls=[string map [list \n $alited::EOL] $al(PTP,list)]
+  puts $chan prjtpls=[::alited::ProcEOL $al(PTP,list) out]
   puts $chan "backup=$al(BACKUP)"
   puts $chan "maxbackup=$al(MAXBACKUP)"
   puts $chan "gutterwidth=$al(ED,gutterwidth)"
@@ -862,7 +867,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "isfavor=$al(FAV,IsFavor)"
   puts $chan "chosencolor=$al(chosencolor)"
   puts $chan "showinfo=$al(TREE,showinfo)"
-  set al(listSBL) [string map [list \n $alited::EOL] $al(listSBL)]
+  set al(listSBL) [::alited::ProcEOL $al(listSBL) out]
   puts $chan "listSBL=$al(listSBL)"
   puts $chan "moveall=$al(moveall)"
   puts $chan "tonemoves=$al(tonemoves)"
@@ -876,6 +881,11 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "incdec=$al(incdecName) $al(incdecDate) $al(incdecSize) $al(incdecExtn)"
   puts $chan "blifo=$al(lifo)"
   puts $chan "activemacro=$al(activemacro)"
+  puts $chan InRE2=[::alited::ProcEOL $::alited::find::InRE2 out]
+  puts $chan ExRE2=[::alited::ProcEOL $::alited::find::ExRE2 out]
+  puts $chan "chInRE2=$::alited::find::chInRE2"
+  puts $chan "chExRE2=$::alited::find::chExRE2"
+  puts $chan "geoRE2=$::alited::find::geoRE2"
   # save the geometry options
   puts $chan {}
   puts $chan {[Geometry]}
@@ -1316,7 +1326,7 @@ proc ini::InitGUI {} {
 proc ini::InitFonts {} {
   # Loads main fonts for alited to use as default and mono.
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al MSGSDIR MSGSDIR
 
   if {$al(FONT) ne {}} {
     catch {
@@ -1340,11 +1350,11 @@ proc ini::InitFonts {} {
   }
   ::apave::obj basicSmallFont $statusfont
   ::apave::obj basicFontSize $al(FONTSIZE,std)
-  set gl [file join $alited::MSGSDIR $al(LOCAL)]
+  set gl [file join $MSGSDIR $al(LOCAL)]
   if {[catch {glob "$gl.msg"}]} {set al(LOCAL) en}
   if {$al(LOCAL) ni {en {}}} {
     # load localized messages
-    msgcat::mcload $alited::MSGSDIR
+    msgcat::mcload $MSGSDIR
     msgcat::mclocale $al(LOCAL)
     alited::msgcatMessages
   } else {
@@ -1420,7 +1430,7 @@ proc ini::_init {} {
       } else {
         set com ""
       }
-      append al(atools) " $img-big \{{} -tip {$alited::al(MC,ico$icon)@@ -under 4 $com} \
+      append al(atools) " $img-big \{{} -tip {$::alited::al(MC,ico$icon)@@ -under 4 $com} \
         -popup {alited::tool::PopupBar %X %Y} "
       switch $icon {
         file {
@@ -1463,7 +1473,7 @@ proc ini::_init {} {
           append al(atools) "-com {alited::tool::_run {} {} -doit yes}\}"
         }
         e_menu {
-          image create photo $img-big -data $alited::img::_AL_IMG(e_menu)
+          image create photo $img-big -data $::alited::img::_AL_IMG(e_menu)
           append al(atools) "-com {alited::tool::e_menu o=0}\}"
         }
         other {
@@ -1507,10 +1517,10 @@ proc ini::_init {} {
     }
   }
   for {set i 0} {$i<8} {incr i} {
-    image create photo alimg_pro$i -data [set alited::img::_AL_IMG($i)]
+    image create photo alimg_pro$i -data [set ::alited::img::_AL_IMG($i)]
   }
-  image create photo alimg_tclfile -data [set alited::img::_AL_IMG(Tcl)]
-  image create photo alimg_kbd -data [set alited::img::_AL_IMG(kbd)]
+  image create photo alimg_tclfile -data [set ::alited::img::_AL_IMG(Tcl)]
+  image create photo alimg_kbd -data [set ::alited::img::_AL_IMG(kbd)]
   # styles & fonts used in "small" dialogues
   initStyles
   lassign [::apave::obj create_FontsType small -size $al(FONTSIZE,small)] \

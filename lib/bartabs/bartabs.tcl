@@ -6,11 +6,11 @@
 # License: MIT.
 ###########################################################
 
-package provide bartabs 1.6.6
+package provide bartabs 1.6.7
 
 # ________________________ NS bartabs _________________________ #
 
-namespace eval bartabs {
+namespace eval ::bartabs {
 
   # IDs for new bars & tabs
   variable NewBarID -1 NewTabID -1 NewTabNo -1
@@ -37,7 +37,7 @@ KTCp4rURAEWmB5A5tzUJAAAAAElFTkSuQmCC}
   variable BarsList [list]
 ; proc drawAll {} {
     # Draws all bars. Used at updating themes etc.
-    foreach bars $bartabs::BarsList {$bars drawAll}
+    foreach bars $::bartabs::BarsList {$bars drawAll}
   }
   #_______________________
 
@@ -66,22 +66,22 @@ KTCp4rURAEWmB5A5tzUJAAAAAElFTkSuQmCC}
 
 # ____________ bartabs class hierarchy ____________ #
 
-oo::class create bartabs::Tab {
+oo::class create ::bartabs::Tab {
 }
 
-oo::class create bartabs::Bar {
-  superclass bartabs::Tab
+oo::class create ::bartabs::Bar {
+  superclass ::bartabs::Tab
 }
 
-oo::class create bartabs::Bars {
-  superclass bartabs::Bar
+oo::class create ::bartabs::Bars {
+  superclass ::bartabs::Bar
 }
 
 # ________________________ Tab _______________________ #
 
 ## ____________ Private methods of Tab ____________ ##
 
-oo::define bartabs::Tab {
+oo::define ::bartabs::Tab {
 
 method My {ID} {
 # Creates a caller of method.
@@ -122,8 +122,8 @@ method Tab_Create {BID TID w text} {
   if {!$bd} {set relief flat}
   if {![my Tab_Is $wb]} {
     if {$wb eq {}} {
-      set bartabs::NewTabNo [expr {($bartabs::NewTabNo+1)%1000000}]
-      set wb $w.$TID[format %06d $bartabs::NewTabNo]
+      set ::bartabs::NewTabNo [expr {($::bartabs::NewTabNo+1)%1000000}]
+      set wb $w.$TID[format %06d $::bartabs::NewTabNo]
       set wb1 $wb.l
       set wb2 $wb.b
     }
@@ -290,8 +290,8 @@ method Tab_Data {BID text} {
 
   variable btData
   if {[dict exists $btData $BID] && [my $BID tabID $text] ne {}} {return {}}
-  my My tab[incr bartabs::NewTabID]
-  return [my Tab_ItemDict tab$bartabs::NewTabID $text]
+  my My tab[incr ::bartabs::NewTabID]
+  return [my Tab_ItemDict tab$::bartabs::NewTabID $text]
 }
 #_______________________
 
@@ -625,7 +625,7 @@ method Tab_BeCurrent {} {
   my $TID Tab_Cmd -csel  ;# command before the selection shown
   my Tab_MarkBar $BID $TID
   if {[set wb2 [my $TID cget -wb2]] ne {} && \
-  ![string match "bartabs::*" [$wb2 cget -image]] &&
+  ![string match *bartabs::* [$wb2 cget -image]] &&
   $TID ni [my $BID listFlag "m"]} {
     $wb2 configure -image bts_ImgNone
   }
@@ -1019,7 +1019,7 @@ method visible {} {
 
 ## ____________ Private methods of Bar ____________ ##
 
-oo::define bartabs::Bar {
+oo::define ::bartabs::Bar {
 
 method Bar_Data {barOptions} {
 # Puts data of new bar in btData.
@@ -1027,7 +1027,7 @@ method Bar_Data {barOptions} {
 # Returns BID of new bar.
 
   variable btData
-  set BID bar[incr bartabs::NewBarID]
+  set BID bar[incr ::bartabs::NewBarID]
   # defaults:
   set barOpts [dict create -wbar {}  -wbase {} -wproc {} -static no -lowlist no \
     -hidearrows no -scrollsel yes -lablen 0 -tiplen 0 -tleft 0 -tright end \
@@ -2005,7 +2005,7 @@ method bindToEvent {w event args} {
 
 ## ____________ Methods of Bars ____________ ##
 
-oo::define bartabs::Bars {
+oo::define ::bartabs::Bars {
 
 variable btData
 
@@ -2013,14 +2013,14 @@ constructor {args} {
   set btData [dict create]
   if {[llength [self next]]} { next {*}$args }
   oo::objdefine [self] "method tab-1 {args} {return {-1}}"
-  lappend bartabs::BarsList [self]
+  lappend ::bartabs::BarsList [self]
 }
 
 destructor {
   my removeAll
   unset btData
-  set i [lsearch -exact $bartabs::BarsList [self]]
-  set bartabs::BarsList [lreplace $bartabs::BarsList $i $i]
+  set i [lsearch -exact $::bartabs::BarsList [self]]
+  set ::bartabs::BarsList [lreplace $::bartabs::BarsList $i $i]
   if {[llength [self next]]} next
 }
 

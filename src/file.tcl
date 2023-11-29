@@ -168,7 +168,7 @@ proc file::IsTcl {fname} {
   # Checks if a file is of Tcl.
   #   fname - file name
 
-  if {[string tolower [file extension $fname]] in $alited::al(TclExts)} {
+  if {[string tolower [file extension $fname]] in $::alited::al(TclExts)} {
     return yes
   }
   return no
@@ -179,7 +179,7 @@ proc file::IsClang {fname} {
   # Checks if a file is of C/C++.
   #   fname - file name
 
-  if {[string tolower [file extension $fname]] in $alited::al(ClangExts)} {
+  if {[string tolower [file extension $fname]] in $::alited::al(ClangExts)} {
     return yes
   }
   return no
@@ -233,7 +233,7 @@ proc file::FileStat {fname} {
 
   set res {}
   array set ares {}
-  if {$alited::al(TREE,showinfo) && ![catch {file stat $fname ares}]} {
+  if {$::alited::al(TREE,showinfo) && ![catch {file stat $fname ares}]} {
     set dtf "%D %T"
     set res "\n\
 \nCreated: [clock format $ares(ctime) -format $dtf]\
@@ -545,7 +545,7 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
   if {$fnames eq {}} {
     set al(TMPfname) {}
     set chosen yes
-    set fnames [$obPav chooser tk_getOpenFile alited::al(TMPfname) -multiple 1 \
+    set fnames [$obPav chooser tk_getOpenFile ::alited::al(TMPfname) -multiple 1 \
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
     if {$al(lifo)} {set fnames [lsort -decreasing $fnames]}
     unset al(TMPfname)
@@ -682,16 +682,16 @@ proc file::SaveFileAs {{TID ""}} {
   namespace upvar ::alited al al obPav obPav
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::FileName $TID]
-  set alited::al(TMPfname) [file tail $fname]
+  set ::alited::al(TMPfname) [file tail $fname]
   if {[IsNoName $fname]} {
-    set alited::al(TMPfname) {}
+    set ::alited::al(TMPfname) {}
     set defext .tcl
     set inidir $al(prjroot)
   } else {
     set defext [file extension $fname]
     set inidir [file dirname $fname]
   }
-  set fname [$obPav chooser tk_getSaveFile alited::al(TMPfname) -initialdir $inidir \
+  set fname [$obPav chooser tk_getSaveFile ::alited::al(TMPfname) -initialdir $inidir \
     -defaultextension $defext -title [msgcat::mc {Save as}] -parent $al(WIN)]
   unset al(TMPfname)
   if {[IsNoName $fname]} {
@@ -1106,7 +1106,7 @@ proc file::MoveFiles {wtree to itemIDs f1112} {
   }
   set curfile [alited::bar::FileName]
   set curdir [file dirname $curfile]
-  set isexternal [expr {[string first [file normalize $alited::al(prjroot)] \
+  set isexternal [expr {[string first [file normalize $::alited::al(prjroot)] \
     [file normalize $curdir]]<0}]
   if {!$isexternal} {
     if {$idx<0} {bell; return}
@@ -1135,7 +1135,7 @@ proc file::MoveFiles {wtree to itemIDs f1112} {
   }
   if {$dirname eq {}} {
     if {$selparent ne {}} {
-      set dirname $alited::al(prjroot)
+      set dirname $::alited::al(prjroot)
     } else {
       bell
       return

@@ -93,4 +93,4 @@ ITEM = edit .gitignore
 RE: %E %PD/.gitignore
 
 ITEM = edit ~/.gitconfig
-RE: %E ~/.gitconfig
+RE: %E %H/.gitconfig

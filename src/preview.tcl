@@ -11,7 +11,7 @@ package require Tk
 
 # _________________________ NS preview ________________________ #
 
-namespace eval preview {
+namespace eval ::preview {
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq \
     [file normalize [info script]]} ? 1 : 0]
   variable argfile [lindex $::argv 0]
@@ -31,7 +31,7 @@ proc ::tracer {args} {
 }
 #_______________________
 
-proc preview::InitArgs {} {
+proc ::preview::InitArgs {} {
   # Reads arguments to preview.
 
   variable argfile
@@ -51,7 +51,7 @@ proc preview::InitArgs {} {
 }
 #_______________________
 
-proc preview::Rerun {obj win} {
+proc ::preview::Rerun {obj win} {
   # Reads arguments and at need reruns the preview.
   #   obj - apave object
   #   win - window's path
@@ -70,7 +70,7 @@ proc preview::Rerun {obj win} {
 }
 #_______________________
 
-proc preview::Run {} {
+proc ::preview::Run {} {
   # Creates a window to preview widgets.
 
   variable LIBDIR
@@ -94,12 +94,14 @@ proc preview::Run {} {
     lassign [::apave::obj defaultATTRS tex] texopts texattrs
     ::apave::obj defaultATTRS tex $texopts [dict set texattrs -insertofftime 0]
   }
+  set ::tclversion "Tcl [package require Tcl] : [info nameofexecutable]"
   set obj previewobj
   set win .win
   catch {::apave::APave create $obj $win}
   set ::en1 {Entry value}
   set ::en2 {Combo 1}
-  set ::v1 [set ::v2 [set ::c1 [set ::c2 1]]]
+  set ::v1 [set ::v2 [set ::c1 1]]
+  set ::c2 0
   set ::sc [set ::sc2 50]
   set ::clr1 #e00042
   set ::datefmt %Y/%m/%d
@@ -107,16 +109,16 @@ proc preview::Run {} {
   trace add variable ::sc write ::tracer
   set ::opc default
   set ::opcSet [list default clam classic alt -- {{light / dark} awlight awdark -- forest-light forest-dark -- lightbrown darkbrown -- plastik}]
-  set ttl [$obj csGetName $preview::CS]
+  set ttl [$obj csGetName $CS]
   set ttl [string range $ttl [string first { } $ttl]+1 end]
-  $obj makeWindow $win.fra "$title: $preview::theme, $ttl, $tint"
+  $obj makeWindow $win.fra "$title: $theme, $ttl, $tint"
   $obj paveWindow $win.fra {
     {nbk - - - - {pack -expand 1 -fill both} {
       f1 {-text " Notebook " -underline 2}
       f2 {-text " Tab #2 " -underline 2}
     }}
     {seh3 - - - - {pack -fill x}}
-    {h_ - - - - {pack}}
+    {lab - - - - {pack -side left -fill x} {-t "$::tclversion" -font TkTooltipFont}}
     {but5 - - - - {pack -side right} {-t "Close" -com exit}}
   }
   $obj paveWindow $win.fra.nbk.f1 {
@@ -162,7 +164,7 @@ proc preview::Run {} {
 
 # ________________________ Run me _________________________ #
 
-  if {$preview::solo} {
+  if {$::preview::solo} {
     wm withdraw .
     if {$::argc != 1} {
       puts "\nUsed by alited as follows:\n  [info nameofexecutable] [info script] argfile\n"

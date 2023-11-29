@@ -7,29 +7,28 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.5.2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.0a1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
+
+  variable tcltk_version [package require Tk]
+  if {![package vsatisfies $tcltk_version 8.6.10-]} {
+    tk_messageBox -message "\nalited needs Tcl/Tk v8.6.10+ \
+      \n\nwhile the current is v$_\n"
+    exit
+  }
 
   variable al; array set al [list]
 
   # versions of mnu/ini to update to
-  set al(MNUversion) 1.4.5
+  set al(MNUversion) 1.6.0a1
   set al(INIversion) 1.4.7
 
   # previous version of alited to update from
   set al(ALEversion) 0.0.1
-
 }
-
-set _ [package require Tk]
 wm withdraw .
 
-if {![package vsatisfies $_ 8.6.10-]} {
-  tk_messageBox -message "\nalited needs Tcl/Tk v8.6.10+ \
-    \n\nwhile the current is v$_\n"
-  exit
-}
 catch {package require comm}  ;# Generic message transport
 
 # _____ Remove installed (perhaps) packages used in alited _____ #
@@ -43,8 +42,6 @@ unset -nocomplain _
 # __________________________ alited:: Main _________________________ #
 
 namespace eval alited {
-
-  variable tcltk_version "Tcl/Tk [package versions Tk]"
 
   ## ________________________ Main variables _________________________ ##
 
@@ -85,11 +82,13 @@ namespace eval alited {
   variable DATAUSER [file join $DATADIR user]
   variable DATAUSERINI [file join $DATAUSER ini]
   variable DATAUSERINIFILE [file join $DATAUSERINI alited.ini]
+  variable HOMEDIR ~
+  if {[info exists ::env(HOME)]} {set HOMEDIR $::env(HOME)}
 
   # directories of user's data
-  variable CONFIGDIRSTD ~/.config
+  variable CONFIGDIRSTD [file join $HOMEDIR .config]
   if {![file exists $CONFIGDIRSTD] && $::tcl_platform(platform) eq {windows}} {
-    set CONFIGDIRSTD [file join ~ AppData Local]
+    set CONFIGDIRSTD [file join $HOMEDIR AppData Local]
   }
   set CONFIGDIRSTD [file normalize $CONFIGDIRSTD]
   variable USERLASTINI [file join $CONFIGDIRSTD alited last.ini]
@@ -218,14 +217,14 @@ namespace eval alited {
 
 # _____________________________ Packages used __________________________ #
 
-lappend auto_path $alited::LIBDIR $::alited::PAVEDIR
+lappend auto_path $::alited::LIBDIR $::alited::PAVEDIR
 
 source [file join $::alited::BARSDIR bartabs.tcl]
 source [file join $::alited::PAVEDIR apave.tcl]
 source [file join $::alited::HLDIR  hl_tcl.tcl]
 source [file join $::alited::HLDIR  hl_c.tcl]
 
-::apave::mainWindowOfApp $alited::al(WIN)
+::apave::mainWindowOfApp $::alited::al(WIN)
 
 # ________________________ ::argv, ::argc _________________________ #
 
@@ -249,12 +248,12 @@ if {[package versions alited] eq {}} {
     set ALITED_PORT no
   }
   if {[set _ [lsearch -glob $::argv LOG=*]]>-1} {
-    set alited::LOG [string range [lindex $::argv $_] 4 end]
+    set ::alited::LOG [string range [lindex $::argv $_] 4 end]
     set ::argv [lreplace $::argv $_ $_]
     incr ::argc -1
   }
   if {[set _ [lsearch -exact $::argv DEBUG]]>-1} {
-    set alited::DEBUG yes
+    set ::alited::DEBUG yes
     set ::argv [lreplace $::argv $_ $_]
     incr ::argc -1
   }
@@ -269,20 +268,20 @@ if {[package versions alited] eq {}} {
   ## ____________________ Last configuration __________________ ##
 
   set readalitedCONFIGS no
-  set isalitedCONFIGS [file exists $alited::USERLASTINI]
+  set isalitedCONFIGS [file exists $::alited::USERLASTINI]
   set _ [lindex $::argv 0]
   if {![llength $::argv] || ![file isdirectory $_]} {
     alited::main_user_dirs
-    if {(![file exists $alited::INIDIR] || ![file exists $alited::PRJDIR]) && \
+    if {(![file exists $::alited::INIDIR] || ![file exists $::alited::PRJDIR]) && \
     $isalitedCONFIGS} {
       # read INIDIR & PRJDIR that were last entered
-      lassign [split [::apave::readTextFile $alited::USERLASTINI] \n] \
-        alited::INIDIR alited::PRJDIR alited::CONFIGS
-      set alited::CONFIGDIR [file dirname [file dirname $alited::INIDIR]]
+      lassign [split [::apave::readTextFile $::alited::USERLASTINI] \n] \
+        ::alited::INIDIR ::alited::PRJDIR ::alited::CONFIGS
+      set ::alited::CONFIGDIR [file dirname [file dirname $::alited::INIDIR]]
       set readalitedCONFIGS yes
     }
   } else {
-    set alited::CONFIGDIR $_
+    set ::alited::CONFIGDIR $_
     set ::argv [lrange $::argv 1 end]
   }
   if {[string index $::argv 0] eq {'} && [string index $::argv end] eq {'}} {
@@ -298,7 +297,7 @@ if {[package versions alited] eq {}} {
   }
   if {!$readalitedCONFIGS && $isalitedCONFIGS} {
     # read configurations used
-    set alited::CONFIGS [lindex [split [::apave::readTextFile $alited::USERLASTINI] \n] 2]
+    set ::alited::CONFIGS [lindex [split [::apave::readTextFile $::alited::USERLASTINI] \n] 2]
   }
   unset -nocomplain readalitedCONFIGS
   unset -nocomplain isalitedCONFIGS
@@ -308,42 +307,42 @@ if {[package versions alited] eq {}} {
   # try to read alited.ini
   set _ [file join $_ alited ini alited.ini]
   if {![catch {set _ [open $_]}]} {
-    set alited::al(ini_file) [split [read $_] \n]
+    set ::alited::al(ini_file) [split [read $_] \n]
     close $_
-    set _ [lindex $alited::al(ini_file) 1]
+    set _ [lindex $::alited::al(ini_file) 1]
     if {[string match comm_port=* $_]} {
-      set alited::al(comm_port) [string range $_ 10 end]
+      set ::alited::al(comm_port) [string range $_ 10 end]
     } else {
-      set alited::al(comm_port) 51837 ;# to be compatible with old style
+      set ::alited::al(comm_port) 51837 ;# to be compatible with old style
     }
   }
   unset -nocomplain _
 
   ## ____________________ Open an existing app __________________ ##
 
-  if {[string is integer -strict $alited::al(comm_port)]} {
+  if {[string is integer -strict $::alited::al(comm_port)]} {
     # Code borrowed from TKE editor.
     # Set the comm port that we will use
     # Change our comm port to a known value
     # (if we fail, the app is already running at that port so connect to it)
     if {$::alited::al(IsWindows) && \
-    ![catch { ::comm::comm config -port $alited::al(comm_port) }]} {
+    ![catch { ::comm::comm config -port $::alited::al(comm_port) }]} {
       set ALITED_PORT no ;# no running app
     }
   } else {
     set ALITED_PORT no
   }
-  if {!$alited::DEBUG && $ALITED_PORT} {
+  if {!$::alited::DEBUG && $ALITED_PORT} {
     if {$::alited::al(IsWindows)} {
       if {[llength $ALITED_ARGV]} {
         # Attempt to add files & raise the existing application
-        if {![catch {::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::open_files_and_raise 0 $ALITED_ARGV}]} {
+        if {![catch {::comm::comm send $::alited::al(comm_port) ::alited::run_remote ::alited::open_files_and_raise 0 $ALITED_ARGV}]} {
           destroy .
           exit
         }
       } else {
         # Attempt to raise the existing application
-        if {![catch { ::comm::comm send $alited::al(comm_port) ::alited::run_remote ::alited::raise_window }]} {
+        if {![catch { ::comm::comm send $::alited::al(comm_port) ::alited::run_remote ::alited::raise_window }]} {
           destroy .
           exit
         }
@@ -558,6 +557,20 @@ namespace eval alited {
     set ln [linsert $ln $pos $item]
     catch {set ln [lreplace $ln $max end]}
   }
+  #_______________________
+
+  proc ProcEOL {val mode} {
+    # Transforms \n to "EOL chars" and vise versa.
+    #   val - string to transform
+    #   mode - if "in", gets \n-valued; if "out", gets EOL-valued.
+
+    variable EOL
+    if {$mode eq {in}} {
+      return [string map [list $EOL \n] $val]
+    } else {
+      return [string map [list \n $EOL] $val]
+    }
+  }
 
   ## ________________________ Messages _________________________ ##
 
@@ -736,7 +749,7 @@ namespace eval alited {
     # Shows "About..." dialogue.
 
     if {[info commands about::About] eq {}} {
-      source [file join $alited::SRCDIR about.tcl]
+      source [file join $::alited::SRCDIR about.tcl]
     }
     about::About
   }
@@ -746,7 +759,7 @@ namespace eval alited {
     # Shows a main help of alited.
     #   ilink - internal link
 
-    ::apave::openDoc file://[file join $alited::DIR doc index.html]$ilink
+    ::apave::openDoc file://[file join $::alited::DIR doc index.html]$ilink
   }
   #_______________________
 
@@ -771,7 +784,7 @@ namespace eval alited {
     } else {
       set msg "Here should be a text of\n\"$fname\""
     }
-    if {$alited::DEBUG} {puts "help file: $fname"}
+    if {$::alited::DEBUG} {puts "help file: $fname"}
     set wmax 1
     foreach ln [split $msg \n] {
       set oc 0
@@ -953,7 +966,13 @@ namespace eval alited {
 
     variable al
     if {$al(EM,Tcl) eq {}} {
-      set tclexe [info nameofexecutable]
+      if {$al(IsWindows)} {
+        # important: refer to tclsh (not wish), to run it in Windows console
+        # though not good for deployed Tcl/Tk 8.6-
+        set tclexe [::apave::autoexec tclsh .exe]
+      } else {
+        set tclexe [info nameofexecutable]
+      }
     } else {
       set tclexe $al(EM,Tcl)
     }
@@ -971,6 +990,14 @@ namespace eval alited {
       puts [Tclexe]\ $com
     }
     return [pid [open |[list [Tclexe] {*}$com]]]
+  }
+  #_______________________
+
+  proc Runtime {args} {
+    # Runs Tcl/Tk script by alited's Tcl/Tk runtime.
+    #   args - script's name and arguments
+
+    exec -- [info nameofexecutable] {*}$args &
   }
   #_______________________
 
@@ -1061,8 +1088,8 @@ namespace eval alited {
 
 # _________________________ Run the app _________________________ #
 
-if {$alited::LOG ne {}} {
-  ::apave::logName $alited::LOG
+if {$::alited::LOG ne {}} {
+  ::apave::logName $::alited::LOG
   ::apave::logMessage "START ------------"
 }
 
@@ -1079,7 +1106,7 @@ if {[info exists ALITED_PORT]} {
     set ::argv {}
     after 10 [list ::alited::open_files_and_raise 0 {*}$ALITED_ARGV]
   }
-  if {$alited::DEBUG} {
+  if {$::alited::DEBUG} {
     alited::ini::_init
   } elseif {[catch {alited::ini::_init} _]} {
     # initialize GUI & data:
@@ -1108,42 +1135,42 @@ if {[info exists ALITED_PORT]} {
   catch {destroy $al(WIN)}
   if {$res} {     ;# run the main form
     # restarting
-    if {[file tail [file dirname $alited::DIR]] eq {alited.kit}} {
-      set alited::DIR [file dirname [file dirname $alited::DIR]]
+    if {[file tail [file dirname $::alited::DIR]] eq {alited.kit}} {
+      set ::alited::DIR [file dirname [file dirname $::alited::DIR]]
     } else {
-      set alited::SCRIPT $alited::SCRIPTNORMAL
+      set ::alited::SCRIPT $::alited::SCRIPTNORMAL
     }
-    if {$alited::LOG ne {}} {
-      ::apave::logMessage "QUIT :: $alited::DIR :: $alited::SCRIPT PORT $alited::ARGV"
+    if {$::alited::LOG ne {}} {
+      ::apave::logMessage "QUIT :: $::alited::DIR :: $::alited::SCRIPT PORT $::alited::ARGV"
     }
-    cd $alited::DIR
-    for {set i [llength $alited::ARGV]} {$i} {} {
+    cd $::alited::DIR
+    for {set i [llength $::alited::ARGV]} {$i} {} {
       incr i -1
-      if {[file isfile [lindex $alited::ARGV $i]]} {  ;# remove file names passed to ALE
-        set alited::ARGV [lreplace $alited::ARGV $i $i]
+      if {[file isfile [lindex $::alited::ARGV $i]]} {  ;# remove file names passed to ALE
+        set ::alited::ARGV [lreplace $::alited::ARGV $i $i]
       }
     }
-    exec -- [info nameofexecutable] $alited::SCRIPT {*}$alited::ARGV &
-  } elseif {$alited::LOG ne {}} {
+    exec -- [info nameofexecutable] $::alited::SCRIPT {*}$::alited::ARGV &
+  } elseif {$::alited::LOG ne {}} {
     ::apave::logMessage {QUIT ------------}
   }
   exit $res
 } else {
   # these scripts are sourced to include them in Ruff!'s generated docs
   namespace eval alited {
-    source [file join $alited::SRCDIR about.tcl]
-    source [file join $alited::SRCDIR check.tcl]
-    source [file join $alited::SRCDIR indent.tcl]
-    source [file join $alited::SRCDIR run.tcl]
-    source [file join $alited::SRCDIR paver.tcl]
-    source [file join $alited::SRCDIR preview.tcl]
-    source [file join $alited::LIBDIR addon hl_md.tcl]
-    source [file join $alited::LIBDIR addon hl_html.tcl]
-    source [file join $alited::LIBDIR addon hl_em.tcl]
-    source [file join $alited::LIBDIR addon hl_alm.tcl]
-    source [file join $alited::LIBDIR addon hl_ini.tcl]
-    source [file join $alited::LIBDIR addon hl_wiki.tcl]
-    source [file join $alited::LIBDIR addon hl_trans.tcl]
+    source [file join $::alited::SRCDIR about.tcl]
+    source [file join $::alited::SRCDIR check.tcl]
+    source [file join $::alited::SRCDIR indent.tcl]
+    source [file join $::alited::SRCDIR run.tcl]
+    source [file join $::alited::SRCDIR paver.tcl]
+    source [file join $::alited::SRCDIR preview.tcl]
+    source [file join $::alited::LIBDIR addon hl_md.tcl]
+    source [file join $::alited::LIBDIR addon hl_html.tcl]
+    source [file join $::alited::LIBDIR addon hl_em.tcl]
+    source [file join $::alited::LIBDIR addon hl_alm.tcl]
+    source [file join $::alited::LIBDIR addon hl_ini.tcl]
+    source [file join $::alited::LIBDIR addon hl_wiki.tcl]
+    source [file join $::alited::LIBDIR addon hl_trans.tcl]
   }
 }
 # _________________________________ EOF _________________________________ #

@@ -102,7 +102,7 @@ SW: fossil configuration pull shun \
 
 SEP = 2
 
-ITEM = fossil checkout ?
+ITEM = fossil checkout
 S: cd %PD
 RW: fossil tim -t ci -n 9999 > $::EMENUTMPFILE
 R: %I {} "CHECKOUT" { \
@@ -118,7 +118,7 @@ R: %I {} "CHECKOUT" { \
    } -head {\n This will CHECKOUT a version / branch / tag \n in "$::EMENUPRJ" repository.\n} -weight bold == ::FSLBRANCH
 S: fossil co --setmtime "$::FSLBRANCH"
 
-ITEM = fossil merge ?
+ITEM = fossil merge
 S: cd %PD
 RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
 R: %I warn "MERGE" { \
@@ -130,7 +130,7 @@ R: %I warn "MERGE" { \
    \n then commits (you may undo the commit afterwards). \n} -weight bold == ::FSLBRANCH
 S: fossil merge "$::FSLBRANCH"\nfossil commit
 
-ITEM = fossil update ?
+ITEM = fossil update
 S: cd %PD
 R: %C  if {![info exist ::FSLUPD]}  {set ::FSLUPD ""}
 RW: fossil tim -t ci -n 99 > $::EMENUTMPFILE
@@ -185,8 +185,8 @@ SEP = 2
 ITEM = fossil init ~/FOSSIL/%PN.fossil
 S: cd %PD
 R: %q "FOSSIL INIT" {Initialize the fossil repository \
-   \n   ~/FOSSIL/%PN.fossil\nin\n   %PD?}
-S: mkdir ~/FOSSIL\necho ------------\nfossil init ~/FOSSIL/%PN.fossil\nfossil open ~/FOSSIL/%PN.fossil\nfossil status
+   \n   %H/FOSSIL/%PN.fossil\nin\n   %PD?}
+S: mkdir %H/FOSSIL\necho ------------\nfossil init %H/FOSSIL/%PN.fossil\nfossil open %H/FOSSIL/%PN.fossil\nfossil status
 
 ITEM = fossil settings
 S: cd %PD
@@ -210,7 +210,7 @@ ITEM = fossil status %PD
 S: cd %PD
 S: echo %PD\ndir\necho ---\nfossil status
 
-ITEM = fossil addremove ?
+ITEM = fossil addremove
 S: cd %PD
 R: %I {} "ADDREMOVE" { \
    chb1 {{Dry run:} {-anchor w -fill none} {-w 3}} {$::EM_T_DRY} \
@@ -227,7 +227,7 @@ R: %I {} "ADDREMOVE" { \
 S: %C if $::EM_T_DRY {set ::EM_T_n -n} {set ::EM_T_n ""}
 S: fossil addremove $::EM_T_n
 
-ITEM = fossil touch ?
+ITEM = fossil touch
 S: cd %PD
 R: %I {} "TOUCH" { \
    fil1 {{   File(s):}} {"$::EM_T_FILE"} \

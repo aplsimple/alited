@@ -1,8 +1,8 @@
  The common options of tools are following:
 
- - <b>tclsh, wish or tclkit</b> is a path to Tcl/Tk executable;
-   by default, it is either a path to tclsh executable found on the
-   system (recommended) or a path to an executable that run alited.tcl
+ - <b>tclsh, wish or tclkit</b> is a path to Tcl/Tk executable
+   used to run alited's Tcl/Tk tools (Tkcon, Loupe, e_menu...);
+   if empty, it is a path to an executable that runs alited.tcl
 
  - <b>Run</b> refers to Run tool: if it is set "in console", Tcl
    scripts will be run in console (terminal) otherwise in Tkcon;

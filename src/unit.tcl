@@ -209,7 +209,7 @@ proc unit::TemplateData {wtxt l1 tpldata} {
   # fill the common wildcards
   set tex [string map [list \
     %d [alited::tool::FormatDate $sec] \
-    %t [clock format $sec -format $al(TPL,%t) -locale $alited::al(LOCAL)] \
+    %t [clock format $sec -format $al(TPL,%t) -locale $::alited::al(LOCAL)] \
     %u $al(TPL,%u) \
     %U $al(TPL,%U) \
     %m $al(TPL,%m) \
@@ -630,7 +630,7 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
     }
   }
   ::apave::undoOut $wtxt
-  after idle "set alited::al(RECREATE) 1 ; alited::tree::RecreateTree"
+  after idle "set ::alited::al(RECREATE) 1 ; alited::tree::RecreateTree"
   if {[set sel [$wtree selection]] ne ""} {
     after idle [list after 10 "$wtree selection set {$sel}"]
   }

@@ -16,7 +16,7 @@ proc menu::Configurations {} {
   #
 
   if {![alited::ini::GetConfiguration]} return
-  set alited::ARGV $::alited::CONFIGDIR
+  set ::alited::ARGV $::alited::CONFIGDIR
   alited::Exit - 1 no
 }
 #_______________________
@@ -189,7 +189,7 @@ proc menu::Paver {mode} {
 
   if {![namespace exists ::alited::paver]} {
     namespace eval ::alited {
-      source [file join $alited::SRCDIR paver.tcl]
+      source [file join $::alited::SRCDIR paver.tcl]
     }
   }
   switch $mode {
@@ -279,7 +279,7 @@ proc menu::FillMenu {} {
   set ttl [msgcat::mc {Rectangular Selection}]
   menu $m.rectsel -tearoff 1 -title $ttl
   $m add cascade -label $ttl -menu $m.rectsel
-  $m.rectsel add checkbutton -label [msgcat::mc Start] -command {alited::edit::RectSelection 0} -variable alited::al(rectSel) -compound left -image alimg_run
+  $m.rectsel add checkbutton -label [msgcat::mc Start] -command {alited::edit::RectSelection 0} -variable ::alited::al(rectSel) -compound left -image alimg_run
   $m.rectsel add separator
   $m.rectsel add command -label [msgcat::mc Cut] -command {alited::edit::RectSelection 2}
   $m.rectsel add command -label [msgcat::mc Copy] -command {alited::edit::RectSelection 3}
@@ -348,7 +348,7 @@ proc menu::FillMenu {} {
   menu $m.filelist -tearoff 0
   $m add cascade -label $al(MC,filelist) -menu $m.filelist
   $m.filelist add command -label $al(MC,filelist) -command {alited::bar::BAR popList} -accelerator $al(acc_21)
-  $m.filelist add checkbutton -label [msgcat::mc {Sorted}] -variable alited::al(sortList)
+  $m.filelist add checkbutton -label [msgcat::mc {Sorted}] -variable ::alited::al(sortList)
 
   ### ________________________ Paver _________________________ ###
 
@@ -379,19 +379,19 @@ proc menu::FillMenu {} {
   $m add separator
 
   $m add checkbutton -label [msgcat::mc {Wrap Lines}] \
-    -variable alited::al(wrapwords) -command alited::file::WrapLines
+    -variable ::alited::al(wrapwords) -command alited::file::WrapLines
   $m add checkbutton -label [msgcat::mc {Tip File Info}] \
-    -variable alited::al(TREE,showinfo) -command alited::file::UpdateFileStat
+    -variable ::alited::al(TREE,showinfo) -command alited::file::UpdateFileStat
 
   menu $m.tipson -tearoff 1
   $m add cascade -label [msgcat::mc {Tips on / off}] -menu $m.tipson
-  $m.tipson add checkbutton -label $al(MC,projects) -variable alited::al(TIPS,Projects) -command alited::ini::SaveIni
-  $m.tipson add checkbutton -label $al(MC,tpl) -variable alited::al(TIPS,Templates) -command alited::ini::SaveIni
-  $m.tipson add checkbutton -label $al(MC,pref) -variable alited::al(TIPS,Preferences) -command alited::ini::SaveIni
-  $m.tipson add checkbutton -label $al(MC,FavLists) -variable alited::al(TIPS,SavedFavorites) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,projects) -variable ::alited::al(TIPS,Projects) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,tpl) -variable ::alited::al(TIPS,Templates) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,pref) -variable ::alited::al(TIPS,Preferences) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,FavLists) -variable ::alited::al(TIPS,SavedFavorites) -command alited::ini::SaveIni
   $m.tipson add separator
-  $m.tipson add checkbutton -label [msgcat::mc Units] -variable alited::al(TIPS,Tree) -command alited::ini::SaveIni
-  $m.tipson add checkbutton -label $al(MC,favorites) -variable alited::al(TIPS,TreeFavor) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label [msgcat::mc Units] -variable ::alited::al(TIPS,Tree) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,favorites) -variable ::alited::al(TIPS,TreeFavor) -command alited::ini::SaveIni
 
   menu $m.tint -tearoff 1
   $m add cascade -label [msgcat::mc Tint] -menu $m.tint

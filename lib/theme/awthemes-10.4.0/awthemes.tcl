@@ -463,7 +463,6 @@ namespace eval ::themeutils {}
 set ::themeutils::awversion 10.4.0
 package provide awthemes $::themeutils::awversion
 
-package require Tk
 # set ::notksvg to true for testing purposes
 # package vcompare is technically correct, not useful,
 # so use 8.6.99

@@ -118,7 +118,7 @@ proc about::About {} {
     \n \
     <red> $long3 </red>\n \
     \n \
-    <red> $alited::tcltk_version </red> <link2></link2>\n \
+    <red> Tcl/Tk $::alited::tcltk_version </red> <link2></link2>\n \
     \n \
     <red> $::tcl_platform(os) $::tcl_platform(osVersion) </red>"
 
@@ -203,7 +203,7 @@ proc about::About {} {
 
   ::alited::msg ok {} $msg \
     -title [msgcat::mc About] -t 1 -w $wmax -h {30 30} -scroll 0 \
-    -tags alited::about::textTags -my "after idle {alited::about::textImaged %w}" \
+    -tags ::alited::about::textTags -my "after idle {alited::about::textImaged %w}" \
     -tab2 $tab2
 
   ## ________________________ Restore defaults _________________________ ##

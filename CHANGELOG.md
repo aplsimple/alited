@@ -1,5 +1,16 @@
 # LAST CHANGES:
 
+Version `v1.6.0a1 (29 Nov'23)`
+
+  - BUGFIX: at selecting in infobar: lost Find (blue) highlighting in other files
+  - NEW   : way to Tcl/Tk 9.0
+  - NEW   : "RE2" button of Find/Replace dialogue: including/excluding RE
+  - CHANGE: if tabbar's "Files to Beginning" is off, a current file isn't first to search in session
+  - CHANGE: Preferences / Tools / tclsh,wish,tclkit : empty value isn't reset (means alited's runtime)
+  - CHANGE: clearing & refactoring
+  - CHANGE: packages: e_menu/apave 4.3.0, bartabs 1.6.7
+
+
 Version `v1.5.2 (22 Nov'23)`
 
   - BUGFIX: env(TCLLIBPATH) cleared wrongly in apavebase.tcl

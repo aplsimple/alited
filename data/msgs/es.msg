@@ -360,6 +360,9 @@ namespace eval ::alited {
     "Paste 'Find'\nCtrl+R" "Pegar 'Buscar'\nCtrl+R"
     {Not found: %s} {No encontrado: %s}
     {Resize} {Redimensionar}
+    {Including RE2:} {Inclusivas RE2:}
+    {Excluding RE2:} {Excluyentes RE2:}
+    "Including / excluding\nregular expressions." {Inclusivas / excluyentes RE.}
   }
 
   ## ________________________ Start and update ________________________ ##

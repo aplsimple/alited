@@ -68,7 +68,7 @@ proc tool::ColorPicker {} {
     catch {source [SrcPath [file join $PAVEDIR pickers color aloupe aloupe.tcl]]}
   }
   if {![string is boolean -strict $al(moveall)]} {set al(moveall) 0}
-  set res [::apave::obj chooser colorChooser alited::al(chosencolor) \
+  set res [::apave::obj chooser colorChooser ::alited::al(chosencolor) \
     -moveall $al(moveall) -parent $al(WIN) -geometry pointer+10+10 -inifile [aloupePath]]
   catch {lassign [::tk::dialog::color::GetOptions] al(moveall)}
   if {$res ne {}} {
@@ -84,7 +84,7 @@ proc tool::FormatDate {{date {}}} {
 
   namespace upvar ::alited al al
   if {$date eq {}} {set date [clock seconds]}
-  return [clock format $date -format $al(TPL,%d) -locale $alited::al(LOCAL)]
+  return [clock format $date -format $al(TPL,%d) -locale $::alited::al(LOCAL)]
 }
 #_______________________
 
@@ -99,7 +99,7 @@ proc tool::DatePicker {} {
   } elseif {![info exists al(klnddate)]} {
     set al(klnddate) [FormatDate]
   }
-  set res [::apave::obj chooser dateChooser alited::al(klnddate) \
+  set res [::apave::obj chooser dateChooser ::alited::al(klnddate) \
     -parent $al(WIN) -geometry pointer+10+10 -dateformat $al(TPL,%d)]
   if {$res ne {}} {
     set al(klnddate) $res
@@ -139,7 +139,7 @@ proc tool::Loupe {} {
     if {![catch {exec $loupe}]} return
   }
   set loupe [SrcPath [file join $PAVEDIR pickers color aloupe aloupe.tcl]]
-  alited::Run $loupe -locale $alited::al(LOCAL) -apavedir $PAVEDIR -cs $al(INI,CS) \
+  alited::Runtime $loupe -locale $::alited::al(LOCAL) -apavedir $PAVEDIR -cs $al(INI,CS) \
   -fcgeom $::alited::FilGeometry -inifile [aloupePath]
 }
 #_______________________
@@ -209,7 +209,7 @@ proc tool::EM_Options {opts} {
   namespace upvar ::alited al al SCRIPTNORMAL SCRIPTNORMAL CONFIGDIR CONFIGDIR
   set sel [string trim [alited::find::GetWordOfText]]
   set sel [lindex [split $sel \n] 0] ;# only 1st line for "selection"
-  set sel [string map [list \" "" \{ "" \} "" \[ "" \] "" \\ "" \$ ""] $sel]
+  set sel [string map [list \" {} \{ {} \} {} \[ {} \] {} \\ {} \$ {}] $sel]
   set f [alited::bar::FileName]
   set d [file dirname $f]
   # get a list of selected tabs (i.e. their file names):
@@ -217,7 +217,7 @@ proc tool::EM_Options {opts} {
   set tabs [alited::bar::BAR listFlag s]
   if {[llength $tabs]>1} {
     foreach tab $tabs {
-      append ls [alited::bar::FileName $tab] " "
+      append ls [alited::bar::FileName $tab] { }
     }
     set ls "\"ls=$ls\""
   } else {
@@ -364,13 +364,13 @@ proc tool::EM_AllStructure1 {mnu lev} {
     incr i
     lassign $mit mnu item
     if {[string match {M-*} $item]} {
-      if {[lsearch -exact -index end $alited::al(EM_STRUCTURE) $item]>-1} {
+      if {[lsearch -exact -index end $::alited::al(EM_STRUCTURE) $item]>-1} {
         continue ;# to avoid infinite cycle
       }
       lassign [split $item \n] item
       set lev [EM_AllStructure1 [string range $item 2 end] [incr lev]]
     } else {
-      lappend alited::al(EM_STRUCTURE) [list $lev $mnu [EM_HotKey $i] $item]
+      lappend ::alited::al(EM_STRUCTURE) [list $lev $mnu [EM_HotKey $i] $item]
     }
   }
   return [incr lev -1]
@@ -381,9 +381,9 @@ proc tool::EM_AllStructure {mnu} {
   # Gets all items of all menus.
   #   mnu - a root menu's file name
 
-  set alited::al(EM_STRUCTURE) [list]
+  set ::alited::al(EM_STRUCTURE) [list]
   EM_AllStructure1 $mnu 0
-  return $alited::al(EM_STRUCTURE)
+  return $::alited::al(EM_STRUCTURE)
 }
 #_______________________
 
@@ -494,7 +494,7 @@ proc tool::Runs {mc runs} {
   #   mc - message for infobar
   #   runs - list of commands
 
-  set runs [string map [list $alited::EOL \n] $runs]
+  set runs [::alited::ProcEOL $runs in]
   foreach run [split $runs \n] {
     if {[set run [string trim $run]] ne {} && [string first # $run]!=0} {
       if {[catch {eval $run} e]} {
@@ -514,13 +514,13 @@ proc tool::AfterStartDlg {} {
 
   namespace upvar ::alited al al obDl2 obDl2
   set lab [msgcat::mc " Enter commands to be run after starting alited.\n They can be Tcl or executables:"]
-  set run [string map [list $alited::EOL \n] $al(afterstart)]
+  set run [::alited::ProcEOL $al(afterstart) in]
   lassign [$obDl2 input {} $al(MC,afterstart) [list \
     lab [list {} {-pady 8} [list -t $lab]] {} \
     tex "{} {} {-w 80 -h 16 -tabnext {butOK butCANCEL} -afteridle {alited::tool::AfterStartSyntax %w}}" "$run" ] \
     -help {alited::tool::HelpTool %w 1}] res run
   if {$res} {
-    set al(afterstart) [string map [list \n $alited::EOL] [string trim $run]]
+    set al(afterstart) [::alited::ProcEOL [string trim $run] out]
     alited::ini::SaveIni
   }
 }
@@ -592,7 +592,7 @@ proc tool::RunTcl {{runmode ""}} {
   #   runmode - mode of running (in console or in tkcon)
   # Returns yes if a tcl file was started.
 
-  if {($runmode eq {} && !$alited::al(prjincons)) || $runmode eq {tkcon}} {
+  if {($runmode eq {} && !$::alited::al(prjincons)) || $runmode eq {tkcon}} {
     lassign [RunArgs] ar rf
     set tclfile {}
     catch {  ;# ar & rf can be badly formed => catch
@@ -623,7 +623,7 @@ proc tool::RunMode {} {
 
   if {![namespace exists ::alited::run]} {
     namespace eval ::alited {
-      source [file join $alited::SRCDIR run.tcl]
+      source [file join $::alited::SRCDIR run.tcl]
     }
   }
   alited::run::RunDlg
@@ -715,7 +715,7 @@ proc tool::e_menu {args} {
   } elseif {$itc==-1 && $iee==-1 && $al(prjincons)} {
     lappend args tc=[alited::Tclexe]  ;# for console - set "path to tclsh" argument
   }
-  if {$alited::al(EM,exec)} {
+  if {$::alited::al(EM,exec)} {
     e_menu1 $args
   } else {
     e_menu2 $args
@@ -763,7 +763,7 @@ proc tool::e_menu2 {opts} {
   ::em::main -prior 1 -modal 0 -remain 0 -noCS 1 {*}$options
   set maingeo [::em::menuOption $::alited::al(EM,mnu) geometry]
   if {[is_mainmenu $options] && $maingeo ne {}} {
-    set alited::al(EM,geometry) $maingeo
+    set ::alited::al(EM,geometry) $maingeo
   }
   ::apave::cs_Active yes
 }
@@ -785,7 +785,7 @@ proc tool::PrepareRunCommand {com fname} {
   set idi Ns7!-=
   set sel [alited::find::GetWordOfText select]
   set com [string map [list %% $idi] $com]
-  set com [string map [list $alited::EOL \n %s $sel \
+  set com [string map [list $::alited::EOL \n %s $sel \
     %f $fname %d [file dirname $fname] %pd $al(prjroot)] $com]
   return [string map [list $idi %] $com]
 }

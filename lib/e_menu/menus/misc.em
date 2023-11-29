@@ -13,22 +13,22 @@ in=1.0
   [file normalize "%PD/../release/[file tail {%PD}]"]}
 ::EMENUOPTS=-r -f
 ::EMENUMULSTER=1
-::EMENUMULSTERDIR=~/PG/github/mulster
-::EMENUMULSTRES1=~/PG/github/aplsimple.github.io/en/tcl/
-::EMENUMULSTRES2=~/PG/github/aplsimple.github.io/en/tcl/alited
+::EMENUMULSTERDIR=%H/PG/github/mulster
+::EMENUMULSTRES1=%H/PG/github/aplsimple.github.io/en/tcl/
+::EMENUMULSTRES2=%H/PG/github/aplsimple.github.io/en/tcl/alited
 ::EMENUMULSTRES3=/home/apl/PG/github/aplsimple.github.io/en/tcl
-::EMENURUFFDIR=~/PG/github/apave pave\n~/PG/github/hl_tcl\n~/PG/github/klnd\n~/PG/github/bartabs\n~/PG/github/trimmer\n~/PG/github/mulster\n~/PG/github/transpops\n~/PG/github/screenshooter\n~/PG/github/baltip\n~/PG/github/aloupe\n~/PG/github/playtkl
-::EMENURUFFIT=~/PG/github/aplsimple.github.io/en/tcl/bartabs/index.html\n~/PG/github/aplsimple.github.io/en/tcl/booksum/index.html\n~/PG/github/aplsimple.github.io/en/tcl/doctest/index.html\n~/PG/github/aplsimple.github.io/en/tcl/pave/index.html\n~/PG/github/aplsimple.github.io/en/tcl/alited/index.html
+::EMENURUFFDIR=%H/PG/github/apave pave\n%H/PG/github/hl_tcl\n%H/PG/github/klnd\n%H/PG/github/bartabs\n%H/PG/github/trimmer\n%H/PG/github/mulster\n%H/PG/github/transpops\n%H/PG/github/screenshooter\n%H/PG/github/baltip\n%H/PG/github/aloupe\n%H/PG/github/playtkl
+::EMENURUFFIT=%H/PG/github/aplsimple.github.io/en/tcl/bartabs/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/booksum/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/doctest/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/pave/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/alited/index.html
 ::EMENU7ZCNT=0
 ::EMENU7ZCOM=zip -r
-::EMENU7ZARC=~/PG/github/apl-github
-::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/apave/*\n~/PG/github/apave_tests/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/klnd/*\n~/PG/github/ale_themes/*\n~/PG/github/wiki.tcl-lang.org/*\n~/PG/github/tclbag/*\n~/PG/github/osetr/*\n~/PG/github/playtkl/*
+::EMENU7ZARC=%H/PG/github/apl-github
+::EMENU7ZDIR=%H/PG/github/alited/*\n%H/PG/github/aloupe/*\n%H/PG/github/aplsimple.github.io/*\n%H/PG/github/baltip/*\n%H/PG/github/bartabs/*\n%H/PG/github/booksum/*\n%H/PG/github/doctest/*\n%H/PG/github/e_menu/*\n%H/PG/github/hl_tcl/*\n%H/PG/github/mulster/*\n%H/PG/github/apave/*\n%H/PG/github/apave_tests/*\n%H/PG/github/poApps/*\n%H/PG/github/screenshooter/*\n%H/PG/github/tkcc/*\n%H/PG/github/transpops/*\n%H/PG/github/trimmer/*\n%H/PG/github/DEMO/*\n%H/PG/github/klnd/*\n%H/PG/github/ale_themes/*\n%H/PG/github/wiki.tcl-lang.org/*\n%H/PG/github/tclbag/*\n%H/PG/github/osetr/*\n%H/PG/github/playtkl/*
 ::EMENU7ZSKIP=
 ::EMENU7ZBAK=/media/apl/KINGSTON/
 ::EMENU7ZGIT=0
 %C set ::EMENU_MULST3 [set ::EMENU_MULST4 ""]
-::EMENU_MULST1=~/TMP/em_mulst.ini
-::EMENU_MULST2=~/TMP/em_mulst.txt
+::EMENU_MULST1=%H/TMP/em_mulst.ini
+::EMENU_MULST2=%H/TMP/em_mulst.txt
 ::EMENU_MULST5=regexp--
 pos=110.0
 
@@ -54,7 +54,7 @@ R: %I {} "TRIMMER" { \
     \n The trimmer does not touch the input Tcl files.} \
    -weight bold == ::EMENUDIR1 ::EMENUDIR2 ::EMENUOPTS
 R: cd $::EMENUDIR1
-S: tclsh ~/UTILS/trimmer/trim.tcl \
+S: tclsh %H/UTILS/trimmer/trim.tcl \
    -i "$::EMENUDIR1" -o "$::EMENUDIR2" $::EMENUOPTS
 
 ITEM = Ruff! $::EMENUP2 ...
@@ -75,7 +75,7 @@ R: %I {} "PROJECT NAME" { \
    } -head {\n This creates Ruff! documentation of Tcl files. \
    \n Customize ruff.tcl at need. } -weight bold == ::EMENUDIR1 ::EMENUP2 ::EMENUMULSTER EMENUMULSTERDIR ::EMENUMULSTRES2
 S: cd $::EMENUDIR1
-SW: tclsh ~/UTILS/ruff.tcl "$::EMENUP2"
+SW: tclsh %H/UTILS/ruff.tcl "$::EMENUP2"
 S: %C set ::EMENUP2html $::EMENUP2.html
 S: %C  \
    if {$::EMENUMULSTER} { \
@@ -83,13 +83,13 @@ S: %C  \
      if {![file exists $::EMENUP2html]} {set ::EMENUP2html [lindex [glob -nocomplain *.html] 0]} ; \
      set ::EMTMP "mv -f $::EMENUP2html $::EMENUMULSTERDIR2 ; \
      cd $::EMENUMULSTERDIR ; tclsh mulster.tcl -b 0 tasks/mulster-ruff ; \
-     cp -f ~/PG/github/mulster/tasks/ruff/mulstered/$::EMENUP2html $::EMENUMULSTRES2" ; \
+     cp -f %H/PG/github/mulster/tasks/ruff/mulstered/$::EMENUP2html $::EMENUMULSTRES2" ; \
      set ::EMENUP2html [file normalize [file join $::EMENUMULSTRES2 $::EMENUP2html]] \
    } else {set ::EMTMP ""}
-SW: $::EMTMP ; tclsh ~/UTILS/highlight_tcl/tcl_html.tcl "$::EMENUP2html"
+SW: $::EMTMP ; tclsh %H/UTILS/highlight_tcl/tcl_html.tcl "$::EMENUP2html"
 R: %B $::EMENUP2html
 
-ITEM = Ruff! all ...
+ITEM = Ruff! all
 R: %I {} "PROJECT DIRECTORIES TO BE PROCESSED" { \
    v_ {{} {-pady 4}} {} \
    tex1 {{ Projects to Ruff!:} {} {-h 8 -w 60 -tabnext chb1}} {$::EMENURUFFDIR} \
@@ -131,14 +131,14 @@ SW: %C \
 SW: %B file://$::EMENUMULSTRES3
 
 ITEM = Freewrap Tcl
-R: cd ~/PG/github/mulster
+R: cd %H/PG/github/mulster
 R: %q FREEWRAP " Want to get freewrapped Tcl executables?"
 SW: tclsh mulster.tcl -b 0 tasks/mulster-freewrap
-R: cd ~/PG/github/freewrap
+R: cd %H/PG/github/freewrap
 RW: ./linux64.672/freewrap ./screenshooter/screenshooter.tcl -w ./linux64.672/freewrap -forcewrap -o ./screenshooter/screenshooter
 RW: ./linux64.672/freewrap ./e_menu/s_menu.tcl -w ./linux64.672/freewrap -forcewrap -o ./e_menu/s_menu
 RW: cp -f ./e_menu/s_menu.tcl ./TEST-kit/e_menu.vfs/e_menu/
-RW: cd ~/PG/github/freewrap/TEST-kit
+RW: cd %H/PG/github/freewrap/TEST-kit
 RW: ./e_m-linux.sh
 
 SEP = 3
@@ -180,7 +180,7 @@ R: %C if {"$::EMENU7ZBAK" ne ""} { \
   file copy -force {$::EMENUTMP} "[file join {$::EMENU7ZBAK} [file tail {$::EMENUTMP}]]" ; \
   if {$::EMENU7ZGIT} { \
     file delete -force "[file join {$::EMENU7ZBAK} FOSSIL]" ; \
-    file copy -force [file normalize ~/FOSSIL] $::EMENU7ZBAK ; \
+    file copy -force [file normalize %H/FOSSIL] $::EMENU7ZBAK ; \
   }}
 R: mplayer %ms/s1.wav
 
@@ -203,4 +203,4 @@ R: %C set ch [open $::EMENU_MULST1 w] ; \
   puts $ch $::EMENU_MULST4 ; \
   puts $ch "OUT=END" ; \
   close $ch
-SW: tclsh ~/PG/github/mulster/mulster.tcl -backup 0 -mode $::EMENU_MULST5 -infile "%f" -outfile "$::EMENU_MULST2" $::EMENU_MULST1
+SW: tclsh %H/PG/github/mulster/mulster.tcl -backup 0 -mode $::EMENU_MULST5 -infile "%f" -outfile "$::EMENU_MULST2" $::EMENU_MULST1

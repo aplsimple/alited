@@ -107,9 +107,9 @@ proc edit::NormIndent {} {
 
   alited::main::CalcIndentation {} yes
   alited::main::UpdateProjectInfo
-  if {![namespace exists alited::indent]} {
-    namespace eval alited {
-      source [file join $alited::SRCDIR indent.tcl]
+  if {![namespace exists ::alited::indent]} {
+    namespace eval ::alited {
+      source [file join $::alited::SRCDIR indent.tcl]
     }
   }
   alited::indent::normalize
@@ -250,8 +250,8 @@ proc edit::ShowColorValues {} {
   if {!$ans_hlcolors} return
   HideColorValues
   lassign [FindColorValues $ans_hlcolors] llen RF
-  if {[winfo exists $alited::find::win] && [winfo ismapped $alited::find::win]} {
-    set alited::find::data(en1) $RF  ;# if "Find/Replace" is shown, set Find = RE
+  if {[winfo exists $::alited::find::win] && [winfo ismapped $::alited::find::win]} {
+    set ::alited::find::data(en1) $RF  ;# if "Find/Replace" is shown, set Find = RE
     [$obFND Cbx1] selection clear
     set msg "   ([msgcat::mc {check RE in Find/Replace box}])"
     set mode 3
@@ -537,7 +537,7 @@ proc edit::MacroInit {} {
 
   if {[info command ::playtkl::play] eq {}} {
     namespace eval :: {
-      source [file join $alited::LIBDIR playtkl playtkl.tcl]
+      source [file join $::alited::LIBDIR playtkl playtkl.tcl]
     }
   }
   ::playtkl::inform no
@@ -614,7 +614,7 @@ proc edit::InputMacro {idx} {
   $obDl2 paveWindow $win.fra [list \
     [list lab - - 1 7 {-padx 4} [list -t $head]] \
     [list fil + T 1 7 {-pady 4 -padx 4 -st ew} \
-      "-tvar alited::al(tmp) -validate focusin -validatecommand alited::edit::ValidMacro -w 30 -initialdir {$dir} -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"] \
+      "-tvar ::alited::al(tmp) -validate focusin -validatecommand alited::edit::ValidMacro -w 30 -initialdir {$dir} -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"] \
     {seh + T 1 7 {-pady 4}} \
     {fra + T 1 3 {}} \
     {.but1 - - - - {-padx 4} {-com 1 -tip "Play Macro" -image alimg_run}} \

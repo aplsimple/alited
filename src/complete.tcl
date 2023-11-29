@@ -226,7 +226,7 @@ proc complete::SelectCommand {obj lbx} {
   #   lbx - listbox's path
 
   variable win
-  $obj res $win [lindex $alited::complete::comms [$lbx curselection]]
+  $obj res $win [lindex $::alited::complete::comms [$lbx curselection]]
 }
 #_______________________
 

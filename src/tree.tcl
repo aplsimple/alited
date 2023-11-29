@@ -303,7 +303,7 @@ proc tree::UnitTitle {title l1 l2} {
   #   l1 - first line of the unit
   #   l2 - latst line of the unit
 
-  if {$title eq {}} {set title "$alited::al(MC,lines) $l1-$l2"}
+  if {$title eq {}} {set title "$::alited::al(MC,lines) $l1-$l2"}
   return $title
 }
 #_______________________
@@ -336,7 +336,7 @@ proc tree::CreateUnitsTree {TID wtree} {
     set parent [lindex $parents [expr {$lev-1}]]
     if {$leaf} {
       set title " $title"
-      set pr [expr {max(0,min(7,($l2-$l1-$alited::al(minredunit))/$al(prjredunit)))}]
+      set pr [expr {max(0,min(7,($l2-$l1-$::alited::al(minredunit))/$al(prjredunit)))}]
       set imgopt "-image alimg_pro$pr"
     } else {
       set imgopt "-image alimg_gulls"
@@ -489,7 +489,7 @@ proc tree::AddTags {wtree} {
 
   namespace upvar ::alited al al
   lassign [::hl_tcl::addingColors {} -AddTags] - - fgbr - - fgred - - - fgtodo
-  append fontN "-font $alited::al(FONT,defsmall)"
+  append fontN "-font $::alited::al(FONT,defsmall)"
   append fontS $fontN " -foreground $fgred"
   $wtree tag configure tagNorm {*}$fontN
   $wtree tag configure tagSel  {*}$fontS
@@ -1112,7 +1112,6 @@ proc tree::RecreateTree {{wtree ""} {headers ""} {clearsel no}} {
     }
   }
   catch {$wtree see [lindex $selection 0]}
-  #  alited::main::SaveVisitInfo
 }
 #_______________________
 

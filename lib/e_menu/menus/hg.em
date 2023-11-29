@@ -164,9 +164,9 @@ R: cd %PD
 R: %P echo "syntax: glob\n.*\n*~\n*.swp\n*.tmp\n*.bak\n*.log\n*.zip\n*.rar\n*.tgz\n*.cur\n*.dll\n*.dylib\n*.ico\n*.gif\n*.bmp\n*.png\n*.jpg\n*.o" > %UD/.hgignore
 S: dir\necho ------------\nhg init\nhg status
 ITEM = edit ~/.hgrc
-R: %P %E $::env(HOME)/.hgrc
+RE: %E %H/.hgrc
 ITEM = edit .hgignore
-R: %E %PD/.hgignore
+RE: %E %PD/.hgignore
 
 [DATA]
 

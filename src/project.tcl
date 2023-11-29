@@ -153,7 +153,7 @@ proc project::CheckOutdated {} {
 
   variable prjlist
   foreach prj $prjlist {
-    if {$prj ne $alited::al(prjname)} {
+    if {$prj ne $::alited::al(prjname)} {
       if {[IsOutdated $prj]} {return $prj}
     }
   }
@@ -178,19 +178,6 @@ proc project::GetOptVal {line} {
     return [list [string range $line 0 $i-1] [string range $line $i+1 end]]
   }
   return [list]
-}
-#_______________________
-
-proc project::ProcEOL {val mode} {
-  # Transforms \n to "EOL chars" and vise versa.
-  #   val - string to transform
-  #   mode - if "in", gets \n-value; if "out", gets EOL-value.
-
-  if {$mode eq {in}} {
-    return [string map [list $alited::EOL \n] $val]
-  } else {
-    return [string map [list \n $alited::EOL] $val]
-  }
 }
 #_______________________
 
@@ -248,7 +235,7 @@ proc project::GetProjectOpts {fname} {
   foreach line [::apave::textsplit $filecont] {
     lassign [GetOptVal $line] opt val
     if {[lsearch $OPTS $opt]>-1} {
-      set prjinfo($pname,$opt) [ProcEOL $val in]
+      set prjinfo($pname,$opt) [::alited::ProcEOL $val in]
     } elseif {$opt eq {tab} && !$currentprj && $val ne {}} {
       lappend prjinfo($pname,tablist) $val
     }
@@ -285,7 +272,7 @@ proc project::PutProjectOpts {fname oldname dorename} {
         if {$opt ni {prjname tablist}} {
           set val [set al($opt)]
           append line \n $opt= $val
-          set prjinfo($al(prjname),$opt) [ProcEOL $val in]
+          set prjinfo($al(prjname),$opt) [::alited::ProcEOL $val in]
         }
       }
     }
@@ -460,12 +447,12 @@ proc project::TabFileInfo {} {
   variable obPrj
   set lbx [$obPrj LbxFlist]
   $lbx delete 0 end
-  foreach tab [lsort -index 0 -dictionary $alited::al(tablist)] {
+  foreach tab [lsort -index 0 -dictionary $::alited::al(tablist)] {
     set fname [lindex [split $tab \t] 0]
     $lbx insert end $fname
   }
   set txt [msgcat::mc {List of files (%n):}]
-  set txt [string map [list %n [llength $alited::al(tablist)]] $txt]
+  set txt [string map [list %n [llength $::alited::al(tablist)]] $txt]
   [$obPrj LabFlist] configure -text $txt
 }
 #_______________________
@@ -584,7 +571,7 @@ proc project::Selected {what {domsg yes}} {
   variable prjlist
   set tree [$obPrj TreePrj]
   if {[set isel [$tree selection]] eq {} && [set isel [$tree focus]] eq {} && $domsg} {
-    Message $alited::al(MC,prjsel) 4
+    Message $::alited::al(MC,prjsel) 4
   }
   if {$isel ne {} && $what eq {index}} {
     set isel [$tree index $isel]
@@ -848,7 +835,7 @@ proc project::LbxPopup {X Y} {
   set popm [$obPrj LbxFlist].popup
   catch {destroy $popm}
   menu $popm -tearoff 0
-  $popm add command -label $alited::al(MC,openselfile) -command alited::project::OpenSelFiles
+  $popm add command -label $::alited::al(MC,openselfile) -command alited::project::OpenSelFiles
   $popm add command -label [msgcat::mc {Close Selected Files}] -command alited::project::CloseSelFiles
   $popm add separator
   $popm add command -label [msgcat::mc {Select All}] -command alited::project::SelectAllFiles -accelerator Ctrl+A
@@ -1126,7 +1113,7 @@ proc project::UpdateMsg {msg {showtotals yes}} {
   #   showtotals - if yes, shows total number of files
 
   variable totalfiles
-  if {$showtotals} {append msg " ($alited::al(MC,files) : $totalfiles) "}
+  if {$showtotals} {append msg " ($::alited::al(MC,files) : $totalfiles) "}
   Message $msg 3
 }
 
@@ -1270,7 +1257,7 @@ proc project::OnProjectEnter {} {
   variable prjinfo
   variable msgtodo
   variable itemtodo
-  lassign [SortRems $prjinfo($alited::al(prjname),prjrem)] dmin - outdated
+  lassign [SortRems $prjinfo($::alited::al(prjname),prjrem)] dmin - outdated
   if {$outdated} {
     set tab1 $win.fra.fraR.nbk.f1
     if {[$win.fra.fraR.nbk select] ne $tab1} {
@@ -1434,7 +1421,7 @@ proc project::KlndPopup {w y m d X Y} {
       $popm add separator
     } else {
       $popm add command -image alimg_$img  -compound left \
-        -label $alited::al(MC,prjT$img) -command alited::project::Klnd_$img
+        -label $::alited::al(MC,prjT$img) -command alited::project::Klnd_$img
     }
   }
   $obPrj themePopup $popm
@@ -1446,7 +1433,7 @@ proc project::KlndPopup {w y m d X Y} {
 proc project::ViewDir {} {
   # Shows file chooser just to view the project's dir
 
-  alited::tool::e_menu EX=4 d=$alited::al(prjroot)
+  alited::tool::e_menu EX=4 d=$::alited::al(prjroot)
 }
 #_______________________
 
@@ -1618,7 +1605,7 @@ proc project::DeleteFromTplList {} {
   variable obPrj
   set cbx [$obPrj CbxTpl]
   RemoveFromTplList [string trim [$cbx get]]
-  $cbx configure -values $alited::al(PTP,names)
+  $cbx configure -values $::alited::al(PTP,names)
   $cbx set {}
 }
 
@@ -1749,18 +1736,18 @@ proc project::MainFrame {} {
       -traverse yes -select f1
     }}
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
-    {.btTad - - - - {pack -side left -anchor n} {-com ::alited::project::Add -tip {$alited::al(MC,prjadd)} -image alimg_add-big}}
-    {.btTch - - - - {pack -side left} {-com ::alited::project::Change -tip {$alited::al(MC,prjchg)} -image alimg_change-big}}
-    {.btTdel - - - - {pack -side left} {-com ::alited::project::Delete -tip {$alited::al(MC,prjdel1)} -image alimg_delete-big}}
+    {.btTad - - - - {pack -side left -anchor n} {-com ::alited::project::Add -tip {$::alited::al(MC,prjadd)} -image alimg_add-big}}
+    {.btTch - - - - {pack -side left} {-com ::alited::project::Change -tip {$::alited::al(MC,prjchg)} -image alimg_change-big}}
+    {.btTdel - - - - {pack -side left} {-com ::alited::project::Delete -tip {$::alited::al(MC,prjdel1)} -image alimg_delete-big}}
     {.h_ - - - - {pack -side left -expand 1}}
-    {.btTtpl - - - - {pack -side left} {-com ::alited::project::Template -tip {$alited::al(MC,CrTemplPrj)} -image alimg_plus-big}}
-    {.btTtview - - - - {pack -side left -padx 4} {-image alimg_folder-big -com alited::project::ViewDir -tip {$alited::al(MC,ViewDir)}}}
+    {.btTtpl - - - - {pack -side left} {-com ::alited::project::Template -tip {$::alited::al(MC,CrTemplPrj)} -image alimg_plus-big}}
+    {.btTtview - - - - {pack -side left -padx 4} {-image alimg_folder-big -com alited::project::ViewDir -tip {$::alited::al(MC,ViewDir)}}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 + T 1 2 {-st nsew} {-padding {2 2}}}
-    {.ButHelp - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,help)} -tip F1 -command ::alited::project::Help}}
+    {.ButHelp - - - - {pack -side left -anchor s -padx 2} {-t {$::alited::al(MC,help)} -tip F1 -command ::alited::project::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
-    {.ButOK - - - - {pack -side left -anchor s -padx 2} {-t {$alited::al(MC,select)} -command ::alited::project::Ok}}
+    {.ButOK - - - - {pack -side left -anchor s -padx 2} {-t {$::alited::al(MC,select)} -command ::alited::project::Ok}}
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::project::Cancel}}
   }
 }
@@ -1790,21 +1777,21 @@ proc project::Tab1 {} {
   return {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
-    {.labName - - 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,prjName)} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
-    {.EntName + L 1 1 {-st sw -pady 5} {-tvar alited::al(prjname) -w 50}}
+    {.labName - - 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,prjName)} -foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {.EntName + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(prjname) -w 50}}
     {.labDir .labName T 1 1 {-st e -pady 8 -padx 3} {-t "Root directory:"}}
-    {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjroot) -w 50 -validate all -validatecommand alited::project::ValidateDir}}
+    {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(prjroot) -w 50 -validate all -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 + T 2 1 {-st nsew -rw 1 -cw 99}}
-    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext "*.texKlnd *.entdir" -tip {-BALTIP {$alited::al(MC,notes)} -MAXEXP 1}}}
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext "*.texKlnd *.entdir" -tip {-BALTIP {$::alited::al(MC,notes)} -MAXEXP 1}}}
     {.sbv + L - - {pack -side left}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
-    {.daT - - - - {pack -fill both} {-tvar alited::project::klnddata(date) -com {alited::project::KlndUpdate; alited::project::KlndBorderText} -dateformat "$alited::al(TPL,%d)" -tip {alited::project::KlndText %D} -popup {alited::project::KlndPopup %W %y %m %d %X %Y} -width 3}}
+    {.daT - - - - {pack -fill both} {-tvar ::alited::project::klnddata(date) -com {alited::project::KlndUpdate; alited::project::KlndBorderText} -dateformat "$::alited::al(TPL,%d)" -tip {alited::project::KlndText %D} -popup {alited::project::KlndPopup %W %y %m %d %X %Y} -width 3}}
     {fra3.fra - - - - {pack -fill both -expand 1}}
     {.seh2 - - - - {pack -side top -fill x}}
-    {.too - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$alited::project::klnddata(toobar)}}}
-    {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext {alited::Tnext *.texPrj} -w 4 -h 8 -tip {-BALTIP {$alited::al(MC,prjTtext)} -MAXEXP 1}}}
+    {.too - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$::alited::project::klnddata(toobar)}}}
+    {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext {alited::Tnext *.texPrj} -w 4 -h 8 -tip {-BALTIP {$::alited::al(MC,prjTtext)} -MAXEXP 1}}}
 }
 }
 #_______________________
@@ -1819,27 +1806,27 @@ proc project::Tab2 {} {
   }
   return {
     {v_ - - 1 10}
-    {lab1 + T 1 2 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,DEFopts)} -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {lab1 + T 1 2 {-st nsew -pady 1 -padx 3} {-t {$::alited::al(MC,DEFopts)} -foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fra2 + T 1 2 {-st nsew -cw 1}}
-    {.labIgn - - 1 1 {-st e -pady 1 -padx 3} {-t {$alited::al(MC,Ign:)}}}
-    {.entIgn + L 1 9 {-st sw -pady 5 -padx 3} {-tvar alited::al(prjdirign) -w 40}}
-    {.labEOL .labIgn T 1 1 {-st e -pady 1 -padx 3} {-t {$alited::al(MC,EOL:)}}}
-    {.cbxEOL + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
-    {.labIndent .labEOL T 1 1 {-st e -pady 1 -padx 3} {-t {$alited::al(MC,indent:)}}}
-    {.spxIndent + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjindent) -from 0 -to 8 -com {::alited::pref::CheckIndent ""}}}
-    {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjindentAuto) -t {$alited::al(MC,indentAuto)}}}
+    {.labIgn - - 1 1 {-st e -pady 1 -padx 3} {-t {$::alited::al(MC,Ign:)}}}
+    {.entIgn + L 1 9 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(prjdirign) -w 40}}
+    {.labEOL .labIgn T 1 1 {-st e -pady 1 -padx 3} {-t {$::alited::al(MC,EOL:)}}}
+    {.cbxEOL + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
+    {.labIndent .labEOL T 1 1 {-st e -pady 1 -padx 3} {-t {$::alited::al(MC,indent:)}}}
+    {.spxIndent + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjindent) -from 0 -to 8 -com {::alited::pref::CheckIndent ""}}}
+    {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} {-var ::alited::al(prjindentAuto) -t {$::alited::al(MC,indentAuto)}}}
     {.labRedunit .labIndent T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
-    {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjredunit) -from $alited::al(minredunit) -to 100}}
-    {.labMult .labRedunit T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$alited::al(MC,notrecomm)}}}
-    {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var alited::al(prjmultiline) -tip {$alited::al(MC,notrecomm)}}}
-    {.labTrWs .labMult T 1 1 {-st e -pady 1 -padx 3} {-t {$alited::al(MC,trailwhite)}}}
-    {.swiTrWs + L 1 1 {-st sw -pady 1} {-var alited::al(prjtrailwhite)}}
+    {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjredunit) -from $::alited::al(minredunit) -to 100}}
+    {.labMult .labRedunit T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$::alited::al(MC,notrecomm)}}}
+    {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var ::alited::al(prjmultiline) -tip {$::alited::al(MC,notrecomm)}}}
+    {.labTrWs .labMult T 1 1 {-st e -pady 1 -padx 3} {-t {$::alited::al(MC,trailwhite)}}}
+    {.swiTrWs + L 1 1 {-st sw -pady 1} {-var ::alited::al(prjtrailwhite)}}
     {.labmaxcom .labTrWs T 1 1 {-st e -pady 1 -padx 3} {-t {Maximum Run commands}}}
-    {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} {-tvar alited::al(prjmaxcoms) -from 4 -to 99 -tabnext alited::Tnext}}
+    {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjmaxcoms) -from 4 -to 99 -tabnext alited::Tnext}}
     {.labTrans .labmaxcom T 1 1 {-st e -pady 5 -padx 3} {-t {Translation link:}}}
-    {.CbxTrans + L 1 9 {-st ew -pady 5} {-h 12 -cbxsel {$::alited::al(prjtran)} -tvar alited::al(prjtran) -values {$alited::al(prjtrans)} -clearcom {alited::main::ClearCbx %w ::alited::al(prjtran)}}}
+    {.CbxTrans + L 1 9 {-st ew -pady 5} {-h 12 -cbxsel {$::alited::al(prjtran)} -tvar ::alited::al(prjtran) -values {$::alited::al(prjtrans)} -clearcom {alited::main::ClearCbx %w ::alited::al(prjtran)}}}
     {.labSwTrans .labTrans T 1 1 {-st e -pady 5 -padx 3} {-t {Adding translations:}}}
-    {.swiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var alited::al(prjtransadd) -tip {If OFF, replaces the original text.}}}
+    {.swiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var ::alited::al(prjtransadd) -tip {If OFF, replaces the original text.}}}
   }
 }
 #_______________________
@@ -1849,9 +1836,9 @@ proc project::Tab3 {} {
 
   return {
     {v_ - - 1 9}
-    {lab1 + T 1 9 {-st nsew -pady 1 -padx 3} {-t {$alited::al(MC,TemplPrj)}}}
-    {lab2 + T 1 1 {-st ew -pady 5 -padx 3} {-t Template: -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
-    {CbxTpl + L 1 3 {-st ew -pady 5} {-w 40 -h 12 -cbxsel {$::alited::al(PTP,name)} -tvar alited::al(PTP,name) -values {$alited::al(PTP,names)} -clearcom alited::project::DeleteFromTplList -selcombobox alited::project::UpdateTplText}}
+    {lab1 + T 1 9 {-st nsew -pady 1 -padx 3} {-t {$::alited::al(MC,TemplPrj)}}}
+    {lab2 + T 1 1 {-st ew -pady 5 -padx 3} {-t Template: -foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {CbxTpl + L 1 3 {-st ew -pady 5} {-w 40 -h 12 -cbxsel {$::alited::al(PTP,name)} -tvar ::alited::al(PTP,name) -values {$::alited::al(PTP,names)} -clearcom alited::project::DeleteFromTplList -selcombobox alited::project::UpdateTplText}}
     {fraTlist + T 1 8 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.TexTemplate - - - - {pack -side left -fill both -expand 1} {-h 20 -w 40 -tabnext "*.butTplDef *.cbxTpl" -wrap none}}
     {.sbv + L - - {pack -side left}}
@@ -1869,34 +1856,34 @@ proc project::Tab4 {} {
   set al(PTP,chbClearTip) [string map [list %f [msgcat::mc General]] $al(MC,alloffile)]
   return {
     {v_ - - 1 3}
-    {Labprj - - 1 2 {} {-foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
-    {ChbClearRun labprj L 1 1 {-st w} {-var alited::al(PTP,chbClearRun) -com alited::project::ChecksRun -takefocus 0}}
+    {Labprj - - 1 2 {} {-foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {ChbClearRun labprj L 1 1 {-st w} {-var ::alited::al(PTP,chbClearRun) -com alited::project::ChecksRun -takefocus 0}}
     {tcl {
         set prt labprj
         set ent Entrun
         for {set i 1} {$i<=$::alited::al(cmdNum)} {incr i} {
-          set lwid "lab$i $prt T 1 1 {-st nse} {-t {$alited::al(MC,com) $i:}}"
+          set lwid "lab$i $prt T 1 1 {-st nse} {-t {$::alited::al(MC,com) $i:}}"
           %C $lwid
-          set lwid "$ent$i lab$i L 1 1 {-cw 1 -st ew} {-tvar alited::al(PTP,run$i)}"
+          set lwid "$ent$i lab$i L 1 1 {-cw 1 -st ew} {-tvar ::alited::al(PTP,run$i)}"
           %C $lwid
-          set lwid "chb$i $ent$i L 1 1 {} {-t {Run it} -var alited::al(PTP,runch$i) -takefocus 0}"
+          set lwid "chb$i $ent$i L 1 1 {} {-t {Run it} -var ::alited::al(PTP,runch$i) -takefocus 0}"
           %C $lwid
           set prt lab$i
           set ent ent
         }
         set lwid {seh1 lab5 T 1 3}
         %C $lwid
-        set lwid {labcom seh1 T 1 2 {} {-t General -foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+        set lwid {labcom seh1 T 1 2 {} {-t General -foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
         %C $lwid
-        set lwid {chbClearCom labcom L 1 1 {-st w} {-var alited::al(PTP,chbClearCom) -com alited::project::ChecksCom -takefocus 0 -tip {$al(PTP,chbClearTip)}}}
+        set lwid {chbClearCom labcom L 1 1 {-st w} {-var ::alited::al(PTP,chbClearCom) -com alited::project::ChecksCom -takefocus 0 -tip {$al(PTP,chbClearTip)}}}
         %C $lwid
         set prt labcom
         for {set i 1} {$i<=$::alited::al(cmdNum)} {incr i} {
-          set lwid "labc$i $prt T 1 1 {-st nse} {-t {$alited::al(MC,com) $i:}}"
+          set lwid "labc$i $prt T 1 1 {-st nse} {-t {$::alited::al(MC,com) $i:}}"
           %C $lwid
-          set lwid "entc$i labc$i L 1 1 {-cw 1 -st ew} {-tvar alited::al(PTP,com$i)}"
+          set lwid "entc$i labc$i L 1 1 {-cw 1 -st ew} {-tvar ::alited::al(PTP,com$i)}"
           %C $lwid
-          set lwid "chbc$i entc$i L 1 1 {} {-t {Run it} -var alited::al(PTP,comch$i) -takefocus 0}"
+          set lwid "chbc$i entc$i L 1 1 {} {-t {Run it} -var ::alited::al(PTP,comch$i) -takefocus 0}"
           %C $lwid
           set prt labc$i
         }
@@ -1904,7 +1891,7 @@ proc project::Tab4 {} {
     }
     {seh2 labc5 T 1 3}
     {h_ seh2 T 1 1}
-    {butRun h_ L 1 2 {-st ew} {-t Run -com alited::project::RunComs -tip {$alited::al(MC,saving) & $alited::al(MC,run)} -tabnext alited::Tnext}}
+    {butRun h_ L 1 2 {-st ew} {-t Run -com alited::project::RunComs -tip {$::alited::al(MC,saving) & $::alited::al(MC,run)} -tabnext alited::Tnext}}
   }
 }
 #_______________________
@@ -1914,7 +1901,7 @@ proc project::Tab5 {} {
 
   return {
     {v_ - - 1 9}
-    {LabFlist + T 1 1 {-pady 3 -padx 3} {-foreground $alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {LabFlist + T 1 1 {-pady 3 -padx 3} {-foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fraFlist + T 1 9 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}
     {.sbvFlist + L - - {pack -side left}}
@@ -2013,11 +2000,10 @@ proc project::_run {{checktodo yes}} {
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   SaveSettings
   GetProjects
-#!  ::baltip hide $al(WIN) ;# hide a TODO balloon if shown
   if {$checktodo && ![IsOutdated $al(prjname)]} {
     after 200 {
       if {[set prj [alited::project::CheckOutdated]] ne {}} {
-        alited::project::Select $alited::project::prjinfo($prj,ID)
+        alited::project::Select $::alited::project::prjinfo($prj,ID)
       }
     }
   }

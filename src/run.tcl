@@ -27,7 +27,7 @@ proc run::RunOptions {args} {
   if {[llength $al(comForceLs)]<2} {set al(comForceLs) [list {}]}
   set al(comForceLs) [linsert $al(comForceLs) 1 $com]
   set al(comForceLs) [lrange $al(comForceLs) 0 $al(prjmaxcoms)]
-  set al(prjbeforerun) [string map [list \n $alited::EOL] [string trim $befrun]]
+  set al(prjbeforerun) [::alited::ProcEOL [string trim $befrun] out]
 }
 
 # ________________________ Button commands _________________________ #
@@ -103,7 +103,7 @@ proc run::InitTex12 {tex1 tex2 cbx} {
     -font $al(FONT) -insertwidth $al(CURSORWIDTH) \
     -cmdpos ::alited::None -dobind yes
   ::hl_tcl::hl_text $tex2
-  bind $tex1 <FocusIn> {set alited::al(run_checkmaxcomms) 1}
+  bind $tex1 <FocusIn> {set ::alited::al(run_checkmaxcomms) 1}
   bind $cbx <FocusOut> alited::run::FillTex1
   bind $cbx <<ComboboxSelected>> alited::run::FillTex1
   ChbForced
@@ -151,7 +151,7 @@ proc run::FillTex2 {args} {
 
   namespace upvar ::alited al al obRun obRun
   set tex2 [$::alited::obRun Tex2]
-  $obRun displayText $tex2 [string map [list $alited::EOL \n] [string trim $al(prjbeforerun)]]
+  $obRun displayText $tex2 [::alited::ProcEOL [string trim $al(prjbeforerun)] in]
 }
 #_______________________
 
@@ -260,25 +260,25 @@ proc run::RunDialogue {} {
   }
   lassign [alited::tool::RunArgs] ar rf
   set vent "$ar$rf"
-  set run [string map [list $alited::EOL \n] $al(prjbeforerun)]
+  set run [::alited::ProcEOL $al(prjbeforerun) in]
   $obRun makeWindow $win.fra $al(MC,run)
   $obRun paveWindow $win.fra {
     {h_ - - 1 5} \
     {lab T + 1 1 {-st e -pady 5} {-t Run:}} \
-    {Rad1 + L 1 2 {} {-tvar alited::al(MC,inconsole) -value 1 -var alited::al(prjincons)}} \
-    {rad2 + L 1 1 {} {-tvar alited::al(MC,intkcon) -value 0 -var alited::al(prjincons)}} \
+    {Rad1 + L 1 2 {} {-tvar ::alited::al(MC,inconsole) -value 1 -var ::alited::al(prjincons)}} \
+    {rad2 + L 1 1 {} {-tvar ::alited::al(MC,intkcon) -value 0 -var ::alited::al(prjincons)}} \
     {seh1 lab T 1 5 {-pady 5}} \
-    {rad3 + T 1 1 {-st w -padx 4} {-t {By command #RUNF:} -value 0 -var alited::al(comForceCh) -com alited::run::ChbForced}} \
-    {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar alited::run::vent}} \
-    {rad4 rad3 T 1 1 {-st w -padx 4} {-t {By command:} -value 1 -var alited::al(comForceCh) -com alited::run::ChbForced}} \
-    {FiL + L 1 4 {-st ew} {-h 12 -cbxsel "$alited::al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$alited::al(comForceLs)"}} \
+    {rad3 + T 1 1 {-st w -padx 4} {-t {By command #RUNF:} -value 0 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
+    {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar ::alited::run::vent}} \
+    {rad4 rad3 T 1 1 {-st w -padx 4} {-t {By command:} -value 1 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
+    {fiL + L 1 4 {-st ew} {-h 12 -cbxsel "$::alited::al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$::alited::al(comForceLs)"}} \
     {fra1 rad4 T 1 5 {-st nsew -cw 1 -rw 1}} \
-    {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 9 -tabnext *Tex2 -afteridle alited::run::FillTex1 -tabnext *tex2}} \
+    {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 9 -afteridle alited::run::FillTex1 -tabnext *tex2}} \
     {.sbv + L - - {pack -side left}} \
     {seh3 fra1 T 1 5 {-pady 5}} \
     {lab2 + T 1 5 {} {-t { OS or Tcl commands to be run before running a current file:}}} \
     {fra2 + T 1 5 {-st nsew}} \
-    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 4 -afteridle alited::run::FillTex2 -tabnext *OK}} \
+    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 4 -afteridle alited::run::FillTex2 -tabnext *butRun}} \
     {.sbv + L - - {pack -side left}} \
     {seh2 fra2 T 1 5 {-pady 5}} \
     {butHelp + T 1 1 {-st w -padx 2} {-t Help -com alited::run::Help}} \

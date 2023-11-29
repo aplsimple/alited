@@ -303,7 +303,7 @@ proc favor::Show {} {
     pack [$obPav BtTAddF] -side left -after [$obPav SevF]
     pack [$obPav BtTRenF] -side left -after [$obPav BtTAddF]
     [$obPav BtTVisitF] configure -image alimg_misc
-    set tip $alited::al(MC,lastvisit)
+    set tip $::alited::al(MC,lastvisit)
     set state normal
     SetFavorites $al(FAV,current)
     $wtree heading #1 -text [msgcat::mc $al(MC,favorites)]

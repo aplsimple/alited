@@ -86,7 +86,7 @@ R: %I {} "COMMIT" { \
    tex1 {{ Message for commit:} {} {-w 50 -h 7 -tabnext butOK}} {$::EM_MSG} \
    } -head {\n This will try to FOSSIL & GIT committing.\n\n A message for commit is required.\
    \n NOTE: quotes and newlines will be removed.\n} \
-   -hfg $::em::clrhotk -weight bold == ::EM_MSG
+   -hfg $::em::clrhelp -weight bold == ::EM_MSG
 R: %C set ::TMP_MSG [string map {\" {} ' {} \n { }} [set ::EM_MSG]]
 R: %C if {"[string trim [set ::TMP_MSG]]" eq ""} {M " Enter some message to commit."; exit}
 R: cd %PD

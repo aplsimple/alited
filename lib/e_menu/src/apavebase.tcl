@@ -1367,7 +1367,7 @@ oo::class create ::apave::APaveBase {
         while {$indexedtips ne {}} {
           lassign $indexedtips idx itip
           if {$idx eq {}} break
-          after idle [list ::baltip tip $win $itip -index $idx]
+          after idle [list ::baltip tip $win $itip -index $idx -ontop 1]
           set indexedtips [lrange $indexedtips 2 end]
         }
       }
@@ -1423,7 +1423,7 @@ oo::class create ::apave::APaveBase {
     menu $win -tearoff 0
     my menuTips $win $tip $w
     my OptionCascade_add $win $vname $items $precom {*}$args
-    trace var $vname w \
+    trace add variable $vname write \
       "$w config -text \"\[[self] optionCascadeText \${$vname}\]\" ;\#"
     lappend ::apave::_AP_VARS(_TRACED_$w) $vname
     ::apave::bindToEvent $w <ButtonPress> focus $w
@@ -1571,7 +1571,7 @@ oo::class create ::apave::APaveBase {
       set geom [set W 640]x[set H 470]
       append geom [my CenteredXY {*}[split [wm geometry $wp] x+] $W $H]
     }
-    if {[::isunix] && ![package vsatisfies [package require Tk] 9.0-]} {
+    if {[::isunix]} {
       # the below equilibristics provides the smooth display
       after idle "catch {wm withdraw $wchooser; wm geometry $wchooser 1x1}"
       after 0 [list after idle \
@@ -1676,12 +1676,12 @@ oo::class create ::apave::APaveBase {
         set rootname 1
         set dn [string range $dn 1 end]
       }
-      set args "-initialfile \"$fn\" -initialdir $dn $parent $args"
+      set args [list -initialfile $fn -initialdir $dn {*}$parent {*}$args]
       incr isfilename
     } elseif {$nchooser eq {tk_chooseDirectory}} {
       set vargeo $dirvar
       set widname [my AuxSetChooserGeometry $vargeo $filvar $parent __tk_choosedir]
-      set args "-initialdir \"[set $tvar]\" $parent $args"
+      set args [list -initialdir [set $tvar] {*}$parent {*}$args]
       incr isfilename
     }
     if {[::isunix] && $choosname ne {dateChooser}} {

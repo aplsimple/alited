@@ -1189,7 +1189,7 @@ Both contain 3 buttons:
 </p><b>~~~</b>
 
 <p>
-The dialogue provides standard options of such type. Probably, except for two of them.
+The dialogue provides standard options of such type. Probably, except for some of them.
 </p>
 
 <p>The "Replace by blank" option means that you can replace the found strings by the blank string which means just deleting the found strings!
@@ -1205,7 +1205,59 @@ If you select tabs of the tab bar with Ctrl+click, the "Find / Replace" dialogue
 </p><b>~~~</b>
 
 <p>
-Also, the dialogue contains a checkbox (between "Find" and "Replace" buttons) allowing to set a default geometry of the dialogue.
+Another non-standard option allows to apply additional filters to the found strings. The dialogue of the filters is brought up with "RE2" button.
+</p>
+<p>
+The dialogue contains two text fields to enter lines with regular expressions (RE2):
+<ul>
+<li><i>Including RE2:</i>
+<ul>
+<li>If any of its RE will prove true, the found string
+will be in the search result.</li>
+</ul>
+</li>
+</ul>
+</p>
+
+<p>
+<ul>
+<li><i>Excluding RE2:</i>
+<ul>
+<li>If any of its RE will prove true, the found string
+will <i>not</i> be in the search result.</li>
+</ul>
+</li>
+</ul>
+</p>
+
+<p>
+For example, with the main RE as
+<pre class="code">(^|[^:]){7}\m\w+::</pre>
+ and excluding RE2 as
+<pre class="code">\s*proc\s+
+\s*method\s+
+(\[|\{|"|;)\s*\m\w+::</pre>
+we can search the uses of non-absolute names of variables
+(at least, excluding declarations and calls of commands)
+which is good at moving from Tcl/Tk 8.6 to Tcl/Tk 9.0.
+</p>
+
+<p>
+If a RE2 line consists of asterisks only (e.g. <code>***</code>),
+the rest are skipped at filtering. Just to save useful RE2.
+</p>
+
+<p>
+If a RE2 line begins with asteriks and continues with other
+characters, it's skipped at filtering (e.g. <code>*\s*proc\s+</code>).
+</p>
+
+<p>
+To <i>enable / disable</i> RE2, click the appropriate checkbox.
+</p><b>~~~</b>
+
+<p>
+Also, the Find/Replace dialogue contains a checkbox (between "Find" and "Replace" buttons) allowing to set a default geometry of the dialogue.
 </p>
 <p>
 Check it, then set the desirable geometry, then close the dialogue - this default geometry would be set every time at opening the dialogue.

@@ -40,7 +40,7 @@ proc bar::PopupTip {wmenu idx TID} {
   # TID - ID of item's tab
 
   if {[$wmenu cget -tearoff]} {incr idx}
-  ::baltip::tip $wmenu [alited::file::FileStat [FileName $TID]] -index $idx -shiftX 10
+  ::baltip::tip $wmenu [alited::file::FileStat [FileName $TID]] -index $idx -shiftX 10 -ontop 1
 }
 #_______________________
 

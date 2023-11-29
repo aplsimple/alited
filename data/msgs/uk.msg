@@ -367,6 +367,9 @@ namespace eval ::alited {
     "Paste 'Find'\nCtrl+R" "Вставити шукане\nCtrl+R"
     {Not found: %s} {Не знайдено: %s}
     {Resize} {Змінити розмір}
+    {Including RE2:} {Включаючі RE2:}
+    {Excluding RE2:} {Виключаючі RE2:}
+    "Including / excluding\nregular expressions." {Включаючі / виключаючі RE.}
   }
 
   ## ________________________ Start and update ________________________ ##

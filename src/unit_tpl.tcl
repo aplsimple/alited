@@ -43,7 +43,7 @@ proc unit_tpl::ReadIni {} {
   }
   foreach lst $al(TPL,list) {
     if {![catch {lassign $lst tpl key cont pos pla indent}]} {
-      set cont [string map [list $::alited::EOL \n] $cont]
+      set cont [::alited::ProcEOL $cont in]
       if {$tpl ne {} && $cont ne {} && $pos ne {}} {
         if {![string is double -strict $pos]} {set pos 1.0}
         lappend tpllist $tpl
@@ -83,7 +83,7 @@ proc unit_tpl::RegisterKeys {} {
   alited::keys::Delete template
   set al(TPL,list) [list]
   foreach tpl $tpllist key $tplkeys cont $tplcont pos $tplpos pla $tplpla ind $tplinds {
-    set cont [string map [list \n $::alited::EOL] $cont]
+    set cont [::alited::ProcEOL $cont out]
     lappend al(TPL,list) [list $tpl $key $cont $pos $pla $ind]
     alited::keys::Add template $tpl $key [list $cont $pos $pla $ind]
   }
@@ -190,7 +190,7 @@ proc unit_tpl::Selected {what {domsg yes}} {
   variable tpllist
   set tree [$obTpl TreeTpl]
   if {[set isel [$tree selection]] eq {} && [set isel [$tree focus]] eq {} && $domsg} {
-    Message $alited::al(MC,tplsel) 4
+    Message $::alited::al(MC,tplsel) 4
   }
   if {$isel ne {} && $what eq {index}} {
     set isel [$tree index $isel]
@@ -416,7 +416,7 @@ proc unit_tpl::Change {} {
   set tplkeys [lreplace $tplkeys $isel $isel $tplkey]
   UpdateTree
   after idle "::alited::unit_tpl::Select $isel"
-  set msg [string map [list %n [incr isel]] $alited::al(MC,tplupd)]
+  set msg [string map [list %n [incr isel]] $::alited::al(MC,tplupd)]
   Message $msg 3
 }
 #_______________________
@@ -462,7 +462,7 @@ proc unit_tpl::Import {} {
   variable indent
   variable win
   set al(TMPfname) alited.ini
-  set fname [$obTpl chooser tk_getOpenFile alited::al(TMPfname) \
+  set fname [$obTpl chooser tk_getOpenFile ::alited::al(TMPfname) \
     -initialdir $DATAUSERINI -parent $win]
   unset al(TMPfname)
   if {$fname eq {}} return
@@ -473,7 +473,7 @@ proc unit_tpl::Import {} {
     if {[string match tpl=* $line]} {
       set line [string range $line 4 end]
       if {![catch {lassign $line tpl tplkey cont pos place indent}]} {
-        set cont [string map [list $::alited::EOL \n] $cont]
+        set cont [::alited::ProcEOL $cont in]
         set indent [IsIndented $indent $cont]
         if {$tpl ne {} && $cont ne {} && $pos ne {}} {
           if {![string is double -strict $pos]} {set pos 1.0}
@@ -534,10 +534,10 @@ proc unit_tpl::_create {{geom ""}} {
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
     {.h_ - - 1 1 {-st we} {-h 20}}
     {.labTpl .h_ T 1 1 {-st we} {-anchor center -t "Current template:"}}
-    {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {-BALTIP {$alited::al(MC,tplent1)} -MAXEXP 1}}}
-    {.CbxKey + L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {-BALTIP {$alited::al(MC,tplent3)} -MAXEXP 1}}}
+    {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {-BALTIP {$::alited::al(MC,tplent1)} -MAXEXP 1}}}
+    {.CbxKey + L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {-BALTIP {$::alited::al(MC,tplent3)} -MAXEXP 1}}}
     {fra1.fratex fra1.labTpl T 10 10 {-st nsew} {}}
-    {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip  {-BALTIP {$alited::al(MC,tplent2)} -MAXEXP 1}}}
+    {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip  {-BALTIP {$::alited::al(MC,tplent2)} -MAXEXP 1}}}
     {.sbvTpl + L - - {pack -side left -fill both} {}}
     {fra2 fra1 T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Place after:"}}
@@ -549,9 +549,9 @@ proc unit_tpl::_create {{geom ""}} {
     {.chb - - - - {pack -side left}  {-t "Indent" -var ::alited::unit_tpl::indent -tip {-BALTIP {$al(MC,tplinds)} -UNDER 4}}}
     {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 + T 1 10 {-st nsew}}
-    {.ButHelp - - - - {pack -side left} {-t {$alited::al(MC,help)} -tip F1 -command ::alited::unit_tpl::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$::alited::al(MC,help)} -tip F1 -command ::alited::unit_tpl::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
-    {.butOK - - - - {pack $::alited::unit_tpl::PACKOK -side left -padx 2} {-t "$alited::al(MC,select)" -command ::alited::unit_tpl::Ok}}
+    {.butOK - - - - {pack $::alited::unit_tpl::PACKOK -side left -padx 2} {-t "$::alited::al(MC,select)" -command ::alited::unit_tpl::Ok}}
     {.butCancel - - - - {pack -side left} {-t $::alited::unit_tpl::BUTEXIT -command ::alited::unit_tpl::Cancel}}
   }
   set tree [$obTpl TreeTpl]

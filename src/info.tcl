@@ -124,6 +124,7 @@ proc info::ListboxSelect {w {checkit no}} {
         if {$TID ne [alited::bar::CurrentTabID]} {
           alited::favor::SkipVisited yes
           alited::bar::BAR $TID show
+          alited::find::SetTags [alited::main::GetWTXT $TID]
         }
         after idle "catch { \
           alited::main::FocusText $TID $line.0 ; \

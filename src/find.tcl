@@ -13,6 +13,8 @@ namespace eval find {
   # dialogues' path
   variable win $::alited::al(WIN).winFind
   variable win2 $::alited::al(WIN).winFind2
+  variable winRE2 $win.winRE2
+  variable obRE2 ::alited::find::obRE2
 
   # initial geometry of the dialogue
   variable geo root=$::alited::al(WIN)
@@ -61,6 +63,13 @@ namespace eval find {
 
   # variable to count matches
   variable counts {}
+
+  # including and excluding RE
+  variable InRE2 [list]
+  variable ExRE2 [list]
+  variable chInRE2 1
+  variable chExRE2 1
+  variable geoRE2 {}
 }
 
 
@@ -75,13 +84,14 @@ proc find::SessionList {} {
 }
 #_______________________
 
-proc find::TabsToSearch {{tab ""}} {
+proc find::TabsToSearch {{tab -} {cur1st yes}} {
   # Gets a list of tabs to search something, beginning from a current tab.
   #   tab - the current tab
+  #   cur1st - if yes, search first in a current tab
 
-  if {$tab eq {}} {set tab [alited::bar::CurrentTabID]}
+  if {$tab eq {-}} {set tab [alited::bar::CurrentTabID]}
   set tabs [SessionList]
-  if {[set i [lsearch -exact -index 0 $tabs $tab]]>0} {
+  if {$cur1st && [set i [lsearch -exact -index 0 $tabs $tab]]>0} {
     set tabs [linsert [lreplace $tabs $i $i] 0 $tab]
   }
   return $tabs
@@ -267,7 +277,7 @@ proc find::DoFindUnit {} {
   $ent configure -values $al(findunitvals)
   InitShowResults
   set n 0
-  if {$alited::main::findunits==1} {
+  if {$::alited::main::findunits==1} {
     set tabs [TabsToSearch]
   } else {
     set tabs [alited::bar::CurrentTabID]
@@ -295,7 +305,7 @@ proc find::FindUnit {} {
   namespace upvar ::alited al al obPav obPav
   set ent [$obPav CbxFindSTD]
   if {[set word [GetWordOfText]] ne {}} {
-    set alited::al(findunit) $word
+    set al(findunit) $word
   }
   if {![info exist al(isfindunit)] || !$al(isfindunit)} {
     set al(isfindunit) true
@@ -448,9 +458,8 @@ proc find::ShowResults1 {allfnd} {
   # Shows a message of all found strings.
   #   allfnd - list of search results
 
-  namespace upvar ::alited al al
   variable data
-  ShowResults [string map [list %n [llength $allfnd] %s $data(en1)] $alited::al(MC,frres1)]
+  ShowResults [string map [list %n [llength $allfnd] %s $data(en1)] $::alited::al(MC,frres1)]
 }
 #_______________________
 
@@ -517,7 +526,7 @@ proc find::UnsetTags {{wtxt ""}} {
 }
 #_______________________
 
-proc find::CheckWord {wtxt index1 index2 {wordonly {}}} {
+proc find::CheckWord {wtxt index1 index2 wordonly} {
   # Check if the found string is a word, at searching by words,
   #   wtxt - text widget's path
   #   index1 - first index of the found string
@@ -526,8 +535,6 @@ proc find::CheckWord {wtxt index1 index2 {wordonly {}}} {
   # Returns "yes" if the found string is a word.
 
   variable adelim
-  variable data
-  if {$wordonly eq {}} {set wordonly $data(c1)}
   if {$wordonly} {
     set index10 [$wtxt index "$index1 - 1c"]
     set index20 [$wtxt index "$index2 + 1c"]
@@ -546,7 +553,7 @@ proc find::Search1 {wtxt pos} {
   variable win
   variable data
   lassign [FindOptions $wtxt] findstr options
-  if {[catch {set fnd [$wtxt search {*}$options -count alited::find::counts -all -- $findstr $pos]} err]} {
+  if {[catch {set fnd [$wtxt search {*}$options -count ::alited::find::counts -all -- $findstr $pos]} err]} {
     alited::msg ok err $err -ontop yes -parent $win
     set data(_ERR_) yes
     return [list 1 {}]
@@ -561,6 +568,11 @@ proc find::Search {wtxt} {
 
   namespace upvar ::alited obPav obPav
   variable counts
+  variable data
+  variable InRE2
+  variable ExRE2
+  variable chInRE2
+  variable chExRE2
   set idx [$wtxt index insert]
   lassign [FindOptions $wtxt] findstr options
   if {![CheckData find]} {return {}}
@@ -572,8 +584,27 @@ proc find::Search {wtxt} {
   set res [list]
   foreach index1 $fnd {
     set index2 [$wtxt index "$index1 + [lindex $counts $i]c"]
-    if {[CheckWord $wtxt $index1 $index2]} {
-      lappend res [list $index1 $index2]
+    if {[CheckWord $wtxt $index1 $index2 $data(c1)]} {
+      set strfound [$wtxt get $index1 $index2]
+      set OK yes
+      if {$chExRE2} {
+        foreach re $ExRE2 {
+          if {[stopRE2 $re]} break
+          if {[skipRE2 $re]} continue
+          set err [catch {set ok [regexp $re $strfound]}]
+          if {$err || $ok} {set OK no; break} ;# anyone excludes
+        }
+      }
+      if {$OK && $chInRE2} {
+        foreach re $InRE2 {
+          if {[stopRE2 $re]} break
+          if {[skipRE2 $re]} continue
+          set OK no
+          set err [catch {set ok [regexp $re $strfound]}]
+          if {!$err && $ok} {set OK yes; break} ;# anyone includes
+        }
+      }
+      if {$OK} {lappend res [list $index1 $index2]}
     }
     incr i
   }
@@ -694,7 +725,7 @@ proc find::FindInSession {{tagme "add"} {inv -1}} {
   InitShowResults
   set allfnd [list]
   set data(_ERR_) no
-  foreach tab [TabsToSearch] {
+  foreach tab [TabsToSearch - $::alited::al(lifo)] {
     set TID [lindex $tab 0]
     lassign [alited::main::GetText $TID no no] curfile wtxt
     lappend allfnd {*}[FindAll $wtxt $TID $tagme]
@@ -744,7 +775,6 @@ proc find::FindReplStr {str} {
 proc find::Replace {} {
   # Replaces one string and finds next.
 
-  namespace upvar ::alited al al
   variable data
   if {![CheckData repl]} return
   set wtxt [alited::main::CurrentWTXT]
@@ -766,7 +796,7 @@ proc find::Replace {} {
   if {$idx1 ne {} && $idx2 ne {}} {
     $wtxt replace $idx1 $idx2 $data(en2)
     SetCursor $wtxt $idx1
-    set msg [string map [list %n 1 %s $data(en1) %r $data(en2)] $alited::al(MC,frres2)]
+    set msg [string map [list %n 1 %s $data(en1) %r $data(en2)] $::alited::al(MC,frres2)]
     ShowResults $msg
     alited::main::UpdateTextGutterTree
   }
@@ -815,7 +845,7 @@ proc find::ReplaceInText {} {
   set wtxt [alited::main::CurrentWTXT]
   set TID [alited::bar::CurrentTabID]
   set rn [ReplaceAll $TID $wtxt [Search $wtxt]]
-  ShowResults2 $rn $alited::al(MC,frres2)
+  ShowResults2 $rn $al(MC,frres2)
   alited::main::UpdateTextGutterTree
 }
 #_______________________
@@ -839,11 +869,11 @@ proc find::ReplaceInSession {} {
   set rn 0
   set waseditcurr no
   set data(_ERR_) no
-  foreach tab [TabsToSearch] {
+  foreach tab [TabsToSearch - $al(lifo)] {
     set TID [lindex $tab 0]
     lassign [alited::main::GetText $TID no no] curfile wtxt
     if {[set rdone [ReplaceAll $TID $wtxt [Search $wtxt]]]} {
-      ShowResults2 $rdone $alited::al(MC,frres2) $TID
+      ShowResults2 $rdone $al(MC,frres2) $TID
       incr rn $rdone
       alited::bar::BAR markTab $TID
       if {$wtxt eq [alited::main::CurrentWTXT]} {
@@ -852,7 +882,7 @@ proc find::ReplaceInSession {} {
     }
     if {$data(_ERR_)} break
   }
-  ShowResults2 $rn $alited::al(MC,frres3)
+  ShowResults2 $rn $al(MC,frres3)
   if {$waseditcurr} {
     alited::main::UpdateTextGutterTreeIcons
   } elseif {$rn} {
@@ -1065,7 +1095,7 @@ proc find::SearchByList_Do {{show yes}} {
   UnsetTags $wtxt
   foreach findword [split $list] {
     lassign [SearchByList_Options $findword] findstr options
-    if {[catch {set fnd [$wtxt search {*}$options -count alited::find::counts -all -- $findstr 1.0]} err]} {
+    if {[catch {set fnd [$wtxt search {*}$options -count ::alited::find::counts -all -- $findstr 1.0]} err]} {
       alited::Message $err 4
       break
     }
@@ -1102,7 +1132,7 @@ proc find::SearchByList {} {
   variable win2
   variable geo2
   set head [msgcat::mc { Enter a list of words divided by spaces:}]
-  set text [string map [list $alited::EOL \n] $al(listSBL)]
+  set text [::alited::ProcEOL $al(listSBL) in]
   if {$al(matchSBL) eq {}} {set al(matchSBL) $al(MC,frExact)}
   after idle [list catch {set ::alited::al(FN2WINDOW) $::apave::MODALWINDOW}]
   $obFN2 makeWindow $win2.fra [msgcat::mc {Find by List}]
@@ -1178,6 +1208,136 @@ proc find::NextFoundByList {{focusDLG yes}} {
   }
 }
 
+# ________________________ RE2 dialogue _________________________ #
+
+proc find::RE2 {} {
+  # RE2 dialogue.
+
+  namespace upvar ::alited al al
+  variable win
+  variable winRE2
+  variable obRE2
+  variable chInRE2
+  variable chExRE2
+  variable geoRE2
+  if {[winfo exists $winRE2]} {
+    focus $winRE2
+    focus [$obRE2 TexIn]
+    return
+  }
+  catch {$obRE2 destroy}
+  set savInRE2 $chInRE2
+  set savExRE2 $chExRE2
+  ::apave::APave create $obRE2 $winRE2
+  $obRE2 makeWindow $winRE2.fra RE2
+  $obRE2 paveWindow $winRE2.fra {
+    {h_ - - 1 5} \
+    {chbIn T + 1 1 {-st w} {-t {Including RE2:} -var ::alited::find::chInRE2}} \
+    {fra1 + T 1 5 {-st nsew -cw 1 -rw 1}} \
+    {.TexIn - - - - {pack -side left -fill both -expand 1} {-w 40 -h 6 -afteridle {alited::find::FillRE2Tex In} -tabnext *texEx}} \
+    {.sbv + L - - {pack -side left}} \
+    {seh3 fra1 T 1 5 {-pady 5}} \
+    {chbEx + T 1 5 {-st w} {-t {Excluding RE2:} -var ::alited::find::chExRE2}} \
+    {fra2 + T 1 5 {-st nsew -cw 1 -rw 1}} \
+    {.TexEx - - - - {pack -side left -fill both -expand 1} {-w 40 -h 6 -afteridle {alited::find::FillRE2Tex Ex} -tabnext *OK}} \
+    {.sbv + L - - {pack -side left}} \
+    {seh2 fra2 T 1 5 {-pady 5}} \
+    {butHelp + T 1 1 {-st w -padx 2} {-t Help -com {alited::find::HelpFind 3}}} \
+    {h_2 + L 1 2 {-st ew}} \
+    {fra3 + L 1 2 {-st e}} \
+    {.butOK - - 1 1 {-padx 2} {-t OK -com alited::find::OKRE2}} \
+    {.butCancel + L 1 1 {-padx 2} {-t Cancel -com {$::alited::find::obRE2 res $::alited::find::winRE2 0}}} \
+  }
+  if {$geoRE2 eq {}} {set geo "-parent $al(WIN)"} {set geo "-geometry $geoRE2"}
+  set res [$obRE2 showModal $winRE2 -onclose destroy -focus [$obRE2 TexIn] \
+    -resizable 1 -minsize {400 200} {*}$geo]
+  if {!$res} {
+    set chInRE2 $savInRE2
+    set chExRE2 $savExRE2
+  }
+  catch {destroy $winRE2}
+  catch {$obRE2 destroy}
+}
+#_______________________
+
+proc find::FillRE2Tex {idx} {
+  # Fills a text field of RE2 dialog.
+  #   idx - the text's index
+
+  variable obRE2
+  set relist [set ::alited::find::${idx}RE2]
+  set tex [$obRE2 Tex$idx]
+  foreach re $relist {
+    $tex insert end $re\n
+  }
+}
+#_______________________
+
+proc find::OKRE2 {} {
+  # Saves data, closes RE2 dialogue.
+
+  variable winRE2
+  variable obRE2
+  variable InRE2
+  variable ExRE2
+  variable geoRE2
+  set InRE2 [set ExRE2 [list]]
+  foreach idx {In Ex} {
+    foreach line [split [[$obRE2 Tex$idx] get 1.0 end] \n] {
+      if {[string trim $line] ne {}} {
+        lappend ${idx}RE2 $line
+        if {![skipRE2 $line] && ![stopRE2 $line] && [catch {regexp $line foo} err]} {
+          alited::Message "$err : $line" 4
+          return
+        }
+      }
+    }
+  }
+  styleButtonRE2
+  set geoRE2 [wm geometry $winRE2]
+  $obRE2 res $winRE2 1
+}
+#_______________________
+
+proc find::skipRE2 {line} {
+  # Checks if a RE2 line has to be skipped.
+  #   line - the line
+
+  return [regexp {^\s*[*]+[^*]+} $line]
+}
+#_______________________
+
+proc find::stopRE2 {line} {
+  # Checks if a text line stops RE2 list.
+  #   line - the line
+
+  return [regexp {^\s*[*]+\s*$} $line]
+}
+#_______________________
+
+proc find::styleButtonRE2 {} {
+  # Gets RE2 button styled.
+
+  namespace upvar ::alited obFND obFND
+  variable InRE2
+  variable ExRE2
+  variable chInRE2
+  variable chExRE2
+  set style TButtonWestFS
+  foreach idx {In Ex} {
+    if {[set ch${idx}RE2]} {
+      foreach line [set ${idx}RE2] {
+        if {[string trim $line] ne {}} {
+          if {[stopRE2 $line]} break
+          if {[skipRE2 $line]} continue
+          set style TButtonRedFS
+        }
+      }
+    }
+  }
+  [$obFND ButRE2] configure -style $style
+}
+
 # _____________________ Find/Replace dialogue ____________________ #
 
 proc find::_create {} {
@@ -1190,20 +1350,23 @@ proc find::_create {} {
   set data(geoDefault) 0
   set data(btTRetry) 0
   set w $win.fra
+  lassign [::alited::FgFgBold] - - fgred
+  ::apave::initStyle TButtonRedFS TButtonBoldFS -foreground $fgred
   $obFND makeWindow $w $al(MC,findreplace) -type dialog
   $obFND paveWindow $w {
     {labB1 - - 1 1    {-st es -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Find: " -style TLabelFS}}
-    {Cbx1 + L 1 4 {-st wes -ipadx 0 -padx 0 -ipady 0 -pady 0} {-tvar ::alited::find::data(en1) -values {$::alited::find::data(vals1)}}}
+    {Cbx1 + L 1 5 {-st wes -ipadx 0 -padx 0 -ipady 0 -pady 0} {-tvar ::alited::find::data(en1) -values {$::alited::find::data(vals1)}}}
     {labB2 labB1 T 1 1 {-st es -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Replace: " -style TLabelFS}}
-    {Cbx2 + L 1 3 {-st wes -ipadx 0 -padx 0 -ipady 0 -pady 0} {-tvar ::alited::find::data(en2) -values {$::alited::find::data(vals2)}}}
-    {btTpaste + L 1 1 {-ipady 0 -pady 0} {-com alited::find::btTPaste -tip "Paste 'Find'\nCtrl+R"}}
+    {Cbx2 + L 1 4 {-st wes -cw 1 -ipadx 0 -padx 0 -ipady 0 -pady 0} {-tvar ::alited::find::data(en2) -values {$::alited::find::data(vals2)}}}
+    {btTpaste + L 1 1 {-st ws -ipady 0 -pady 0} {-com alited::find::btTPaste -tip "Paste 'Find'\nCtrl+R"}}
     {labBm labB2 T 1 1 {-st ens -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Match: " -style TLabelFS}}
     {radA + L 1 1 {-st ens -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Exact" -var ::alited::find::data(v1) -value 1 -style TRadiobuttonFS}}
-    {radB + L 1 1 {-st wns -padx 5 -ipady 0 -pady 0}  {-t "Glob" -var ::alited::find::data(v1) -value 2 -tip "Allows to use *, ?, \[ and \]\nin \"find\" string." -style TRadiobuttonFS}}
-    {radC + L 1 1 {-st wns -ipadx 0 -padx 0 -ipady 0 -pady 0 -cw 1}  {-t "RE" -var ::alited::find::data(v1) -value 3 -tip "Allows to use the regular expressions\nin \"find\" string." -style TRadiobuttonFS}}
-    {BtTretry + L 1 1 {-ipady 0 -pady 0} {-com alited::find::btTRetry -tip "Resize"}}
-    {h_2 labBm T 1 5  {-st es -rw 1 -ipadx 0 -padx 0 -ipady 0 -pady 0}}
-    {seh  + T 1 5  {-st ews -ipadx 0 -padx 0 -ipady 0 -pady 0}}
+    {radB + L 1 1 {-st ns -padx 5 -ipady 0 -pady 0}  {-t "Glob" -var ::alited::find::data(v1) -value 2 -tip "Allows to use *, ?, \[ and \]\nin \"find\" string." -style TRadiobuttonFS}}
+    {radC + L 1 1 {-st wns -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "RE" -var ::alited::find::data(v1) -value 3 -tip "Allows to use the regular expressions\nin \"find\" string." -style TRadiobuttonFS}}
+    {ButRE2 + L 1 1 {-st wns}  {-t "RE2" -w 3 -com ::alited::find::RE2 -tip "Including / excluding\nregular expressions." -style TButtonWestFS}}
+    {BtTretry + L 1 1 {-st wns -ipady 0 -pady 0} {-com alited::find::btTRetry -tip "Resize"}}
+    {h_2 labBm T 1 6 {-st es -rw 1 -ipadx 0 -padx 0 -ipady 0 -pady 0}}
+    {seh  + T 1 6  {-st ews -ipadx 0 -padx 0 -ipady 0 -pady 0}}
     {chb1 +  T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Match whole word" -var ::alited::find::data(c1) -style TCheckbuttonFS}}
     {chb2 + T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Match case" -var ::alited::find::data(c2) -style TCheckbuttonFS}}
     {chb3 + T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Replace by blank" -var ::alited::find::data(c3) -tip "Allows replacements by the empty string,\nin fact, to erase the found ones." -style TCheckbuttonFS}}
@@ -1215,12 +1378,13 @@ proc find::_create {} {
     {But1 + L 1 1 {-st wes -pady 2} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
     {But2 + T 1 1 {-st we -pady 0} {-t "All in Text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
     {But3 + T 1 1 {-st wen -pady 2} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
-    {Chb + T 2 1 {-st en} {-var ::alited::find::data(geoDefault) -tip "Use this geometry of the dialogue\nby default" -takefocus 0}}
+    {Chb + T 2 1 {-st e} {-t {-geometry} -var ::alited::find::data(geoDefault) -tip "Use this geometry of the dialogue\nby default" -takefocus 0 -style TCheckbuttonFS}}
     {but4 + T 1 1 {-st wes -pady 2} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
     {but5 + T 1 1 {-st we -pady 0} {-t "All in Text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
     {But6 + T 1 1 {-st wen -pady 2} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
   }
   SessionButtons
+  styleButtonRE2
   alited::keys::BindAllKeys [alited::main::CurrentWTXT] yes
   bind $win <Enter> alited::find::SessionButtons
   bind $win <F1> {alited::HelpAlited #search1}

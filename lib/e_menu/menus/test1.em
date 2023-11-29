@@ -82,7 +82,7 @@ R: %M "Edit this menu for file extention: %x"
 ITEM = Shell script
 S: ? \
     err=1 ;
-    cd ~/FOSSIL ;
+    cd %H/FOSSIL ;
     while [ $err -eq 1 ];
       do repo=$(find *.fossil 2>/dev/null ) ;
       err=$? ;
@@ -97,7 +97,7 @@ S: ? \
     done
 
 ITEM = Shell script (bash)
-S: %#s err=1; cd ~/FOSSIL
+S: %#s err=1; cd %H/FOSSIL
 
 ITEM = Input dialog
 R: cd %d
@@ -170,4 +170,4 @@ MW: "m=test3.em"
 
 [DATA]
 
-%#s geo=969x487+295+250;pos=5.9 # this script is run with %#s wildcard in test1.mnu|!|# it does the same as the previous "Shell script"|!|# being a bash script as it is|!||!|echo ====|!|err=1|!|cd ~/FOSSIL|!|while [ $err -eq 1 ];|!|  do repo=$(find *.fossil 2>/dev/null )|!|  err=$?|!|  if [ $? -eq 1 ]; then|!|    if [ $(pwd) = '/' ]; then|!|      echo "repo non esistente" ; break|!|    fi|!|    cd ../|!|  else|!|    echo "$(pwd)/${repo}"|!|  fi|!|done
+%#s geo=969x487+295+250;pos=5.9 # this script is run with %#s wildcard in test1.mnu|!|# it does the same as the previous "Shell script"|!|# being a bash script as it is|!||!|echo ====|!|err=1|!|cd %H/FOSSIL|!|while [ $err -eq 1 ];|!|  do repo=$(find *.fossil 2>/dev/null )|!|  err=$?|!|  if [ $? -eq 1 ]; then|!|    if [ $(pwd) = '/' ]; then|!|      echo "repo non esistente" ; break|!|    fi|!|    cd ../|!|  else|!|    echo "$(pwd)/${repo}"|!|  fi|!|done

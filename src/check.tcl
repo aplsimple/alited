@@ -273,18 +273,18 @@ proc check::_create {} {
   $obCHK paveWindow $win.fra {
     {v_ - -}
     {labHead v_ T 1 1 {-st w -pady 4 -padx 8} {-t "Checks available:"}}
-    {chb1 labHead T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chBrace -t {Consistency of {} }}}
-    {chb2 + T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chBracket -t {Consistency of []}}}
-    {chb3 + T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chParenthesis -t {Consistency of ()}}}
-    {chb4 + T 1 1 {-st sw -pady 5 -padx 22} {-var alited::check::chQuotes -t {Consistency of ""}}}
-    {chb9 + T 1 1 {-st sw -pady 1 -padx 22} {-var alited::check::chDuplUnits -t {Duplicate units}}}
+    {chb1 labHead T 1 1 {-st sw -pady 1 -padx 22} {-var ::alited::check::chBrace -t {Consistency of {} }}}
+    {chb2 + T 1 1 {-st sw -pady 5 -padx 22} {-var ::alited::check::chBracket -t {Consistency of []}}}
+    {chb3 + T 1 1 {-st sw -pady 1 -padx 22} {-var ::alited::check::chParenthesis -t {Consistency of ()}}}
+    {chb4 + T 1 1 {-st sw -pady 5 -padx 22} {-var ::alited::check::chQuotes -t {Consistency of ""}}}
+    {chb9 + T 1 1 {-st sw -pady 1 -padx 22} {-var ::alited::check::chDuplUnits -t {Duplicate units}}}
     {v_2 + T}
     {fra + T 1 1 {-st nsew -pady 0 -padx 3} {-padding {5 5 5 5} -relief groove}}
     {fra.lab - - - - {pack -side left} {-t "Check:"}}
     {fra.radA - - - - {pack -side left -padx 9}  {-t "current file" -var ::alited::check::what -value 1}}
     {fra.radB - - - - {pack -side left -padx 9}  {-t "all of session files" -var ::alited::check::what -value 2}}
     {fra2 fra T 1 1 {-st nsew -pady 3 -padx 3} {-padding {5 5 5 5} -relief groove}}
-    {.ButHelp - - - - {pack -side left} {-t {$alited::al(MC,help)} -tip F1 -command ::alited::check::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$::alited::al(MC,help)} -tip F1 -command ::alited::check::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
     {.ButOK - - - - {pack -side left -padx 2} {-t "Check" -command ::alited::check::Check}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::check::Cancel}}

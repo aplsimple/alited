@@ -20,7 +20,7 @@ RE: tclsh /home/apl/PG/github/poApps/poApps.tcl --dirdiff
 ITEM = ruler
 RE: tclsh /usr/share/tcltk/tklib0.7/widget/ruler.tcl
 ITEM = screenshooter
-RE: cd ~/UTILS
+RE: cd %H/UTILS
 RE: ./screenshooter
 ITEM = caja here
 RE: caja "%d"
@@ -47,4 +47,4 @@ ME: m=test1.em "u=%s" w=40
 
 [DATA]
 
-%#W geo=1089x560+0+56;pos=24.62 # Below are the commands to get the Web page by wget.|!|# The downloaded pages are stored in ~/WGET directory (change this if needed).|!|#|!|# Note that .+ are used to edge "some unique string of the page address", e.g.|!|#   wget -r -k -l 2 -p --accept-regex=.+/UNIQUE/.+ https://www.some.com/UNIQUE/some|!|# would download all of https://www.some.com/UNIQUE/some|!|# excluding all external links that don't most likely match /UNIQUE/.|!|#|!|# Note also that -l option means "maximum level to dig".|!|###################################################################################|!|mkdir ~/WGET|!|cd ~/WGET|!||!|# wget the Tcl/Tk man pages:|!|# wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6/|!||!|# wget letter-to-peter|!|# wget -r -k -l 2 -p --accept-regex=.+letter-to-peter.+ http://catesfamily.org.uk/letter-to-peter/|!||!|# wget -r -k -l 2 -p --accept-regex=.+tablelist/.+ https://www.nemethi.de/tablelist/index.html|!|# wget -r -k -l 2 -p --accept-regex=.+mentry/.+ https://www.nemethi.de/mentry/index.html|!||!|# wget -r -k -l 2 -p --accept-regex=.+/manual3.1/.+ http://tcl.apache.org/rivet/manual3.1/|!|wget -r -k -l 2 -p --accept-regex=.+/tcart.+ http://tcart.com/
+%#W geo=1089x560+0+56;pos=24.62 # Below are the commands to get the Web page by wget.|!|# The downloaded pages are stored in %H/WGET directory (change this if needed).|!|#|!|# Note that .+ are used to edge "some unique string of the page address", e.g.|!|#   wget -r -k -l 2 -p --accept-regex=.+/UNIQUE/.+ https://www.some.com/UNIQUE/some|!|# would download all of https://www.some.com/UNIQUE/some|!|# excluding all external links that don't most likely match /UNIQUE/.|!|#|!|# Note also that -l option means "maximum level to dig".|!|###################################################################################|!|mkdir %H/WGET|!|cd %H/WGET|!||!|# wget the Tcl/Tk man pages:|!|# wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6/|!||!|# wget letter-to-peter|!|# wget -r -k -l 2 -p --accept-regex=.+letter-to-peter.+ http://catesfamily.org.uk/letter-to-peter/|!||!|# wget -r -k -l 2 -p --accept-regex=.+tablelist/.+ https://www.nemethi.de/tablelist/index.html|!|# wget -r -k -l 2 -p --accept-regex=.+mentry/.+ https://www.nemethi.de/mentry/index.html|!||!|# wget -r -k -l 2 -p --accept-regex=.+/manual3.1/.+ http://tcl.apache.org/rivet/manual3.1/|!|wget -r -k -l 2 -p --accept-regex=.+/tcart.+ http://tcart.com/

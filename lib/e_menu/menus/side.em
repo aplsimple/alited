@@ -13,8 +13,8 @@ pos=100.0
 ::EMENU7ZCNT=0
 ::EMENU7ZCOM=zip -r
 ::EMENU7ZSUFF=big
-::EMENU7ZARC=~/PG/github/apl-github
-::EMENU7ZDIR=~/PG/github/alited/*\n~/PG/github/aloupe/*\n~/PG/github/aplsimple.github.io/*\n~/PG/github/baltip/*\n~/PG/github/bartabs/*\n~/PG/github/booksum/*\n~/PG/github/doctest/*\n~/PG/github/e_menu/*\n~/PG/github/hl_tcl/*\n~/PG/github/mulster/*\n~/PG/github/apave/*\n~/PG/github/poApps/*\n~/PG/github/screenshooter/*\n~/PG/github/tkcc/*\n~/PG/github/transpops/*\n~/PG/github/trimmer/*\n~/PG/github/DEMO/*\n~/PG/github/klnd/*\n~/PG/github/ale_themes/*\n~/PG/github/wiki.tcl-lang.org/*\n~/PG/github/drawscreen/*
+::EMENU7ZARC=%H/PG/github/apl-github
+::EMENU7ZDIR=%H/PG/github/alited/*\n%H/PG/github/aloupe/*\n%H/PG/github/aplsimple.github.io/*\n%H/PG/github/baltip/*\n%H/PG/github/bartabs/*\n%H/PG/github/booksum/*\n%H/PG/github/doctest/*\n%H/PG/github/e_menu/*\n%H/PG/github/hl_tcl/*\n%H/PG/github/mulster/*\n%H/PG/github/apave/*\n%H/PG/github/poApps/*\n%H/PG/github/screenshooter/*\n%H/PG/github/tkcc/*\n%H/PG/github/transpops/*\n%H/PG/github/trimmer/*\n%H/PG/github/DEMO/*\n%H/PG/github/klnd/*\n%H/PG/github/ale_themes/*\n%H/PG/github/wiki.tcl-lang.org/*\n%H/PG/github/drawscreen/*
 ::EMENU7ZSKIP=
 ::EMENU7ZBAK=/media/apl/KINGSTON/
 ::EMENU7ZGIT=1
@@ -208,7 +208,7 @@ R: %C if {"$::EMENU7ZBAK" ne ""} { \
   file copy -force {$::EMENUTMP} "[file join {$::EMENU7ZBAK} [file tail {$::EMENUTMP}]]" ; \
   if {$::EMENU7ZGIT} { \
     file delete -force "[file join {$::EMENU7ZBAK} FOSSIL]" ; \
-    file copy -force [file normalize ~/FOSSIL] $::EMENU7ZBAK ; \
+    file copy -force [file normalize %H/FOSSIL] $::EMENU7ZBAK ; \
   }}
 R: mplayer %ms/s1.wav
 
@@ -245,15 +245,15 @@ R: caja -g +0+0 /home/apl/PG/github
 ITEM = 5. poApps
 R: tclsh /home/apl/PG/github/poApps/poApps.tcl --dirdiff
 RW: sleep 4
-R: /home/apl/PG/alited/bin/tcltk-8.6.10 /home/apl/PG/github/alited.release/src/alited.tcl LOG=~/TMP/alited.log /home/apl/.config/alited.release
+R: /home/apl/PG/alited/bin/tcltk-8.6.10 /home/apl/PG/github/alited.release/src/alited.tcl LOG=%H/TMP/alited.log /home/apl/.config/alited.release
 ITEM = 6. FVords
 RW: sleep 4
 R: wine /media/apl/KINGSTON/APLinkee.Shk/APLinkee.exe
-R: ~/PROGRAMS/C_COMM/commw /media/apl/KINGSTON/FVords_Prepare fvords.exe
+R: %H/PROGRAMS/C_COMM/commw /media/apl/KINGSTON/FVords_Prepare fvords.exe
 ITEM = 7. Edit
-R: cd ~/PG/github/TKE
-R: "wish" ~/PG/github/TKE/tke/lib/tke.tcl
+R: cd %H/PG/github/TKE
+R: "wish" %H/PG/github/TKE/tke/lib/tke.tcl
 
 [DATA]
 
-%#W geo=1089x560+0+56;pos=23.62 # Below are the commands to get the Web page by wget.|!|# The downloaded pages are stored in ~/WGET directory (change this if needed).|!|#|!|# Note that .+ are used to edge "some unique string of the page address", e.g.|!|#   wget -r -k -l 2 -p --accept-regex=.+/UNIQUE/.+ https://www.some.com/UNIQUE/some|!|# would download all of https://www.some.com/UNIQUE/some|!|# excluding all external links that don't most likely match /UNIQUE/.|!|#|!|# Note also that -l option means "maximum level to dig".|!|###################################################################################|!||!|mkdir ~/WGET|!|cd ~/WGET|!||!|# wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6/|!||!|# wget -r -k -l 2 -p --accept-regex=.+tablelist/.+ https://www.nemethi.de/tablelist/index.html|!|# wget -r -k -l 2 -p --accept-regex=.+mentry/.+ https://www.nemethi.de/mentry/index.html|!||!|# wget -r -k -l 2 -p --accept-regex=.+/manual3.1/.+ http://tcl.apache.org/rivet/manual3.1/|!||!|# wget -r -k -l 2 -p --accept-regex=.+letter-to-peter.+ http://catesfamily.org.uk/letter-to-peter/|!|wget -r -k -l 2 -p --accept-regex=.+/tcart.+ http://tcart.com/
+%#W geo=1089x560+0+56;pos=23.62 # Below are the commands to get the Web page by wget.|!|# The downloaded pages are stored in %H/WGET directory (change this if needed).|!|#|!|# Note that .+ are used to edge "some unique string of the page address", e.g.|!|#   wget -r -k -l 2 -p --accept-regex=.+/UNIQUE/.+ https://www.some.com/UNIQUE/some|!|# would download all of https://www.some.com/UNIQUE/some|!|# excluding all external links that don't most likely match /UNIQUE/.|!|#|!|# Note also that -l option means "maximum level to dig".|!|###################################################################################|!||!|mkdir %H/WGET|!|cd %H/WGET|!||!|# wget -r -k -l 2 -p --accept-regex=.+/man/tcl8\.6.+ https://www.tcl.tk/man/tcl8.6/|!||!|# wget -r -k -l 2 -p --accept-regex=.+tablelist/.+ https://www.nemethi.de/tablelist/index.html|!|# wget -r -k -l 2 -p --accept-regex=.+mentry/.+ https://www.nemethi.de/mentry/index.html|!||!|# wget -r -k -l 2 -p --accept-regex=.+/manual3.1/.+ http://tcl.apache.org/rivet/manual3.1/|!||!|# wget -r -k -l 2 -p --accept-regex=.+letter-to-peter.+ http://catesfamily.org.uk/letter-to-peter/|!|wget -r -k -l 2 -p --accept-regex=.+/tcart.+ http://tcart.com/

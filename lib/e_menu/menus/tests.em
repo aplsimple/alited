@@ -42,7 +42,7 @@ R: %b http://aplsimple.github.io/en/tcl/doctest/index.html
 
 SEP = 3
  
-ITEM = Trace $::FILETAIL with {%s} excluded
+ITEM = Trace $::FILETAIL with {%s} excluded ?
 R: %C if {![info exist ::EMENUEXCL]} {set ::EMENUEXCL "%s"}
 R: %I {} "TRACE" { \
    v_ {{} {-pady 4} {}} {} \
@@ -54,7 +54,7 @@ R: %I {} "TRACE" { \
    } -head {\n This will set tracing 'puts' into a file.} -weight bold == ::EMENUFILE ::EMENUEXCL
 S: tclsh %m/src/atrace.tcl trace $::EMENUFILE $::EMENUEXCL
 
-ITEM = Untrace $::FILETAIL
+ITEM = Untrace $::FILETAIL ?
 R: %I {} "UNTRACE" { \
    v_ {{} {-pady 4} {}} {} \
    fil1 {{    File:} {} {-w 55}} {"$::EMENUFILE"} \

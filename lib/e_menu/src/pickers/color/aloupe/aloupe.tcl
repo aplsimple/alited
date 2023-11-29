@@ -53,6 +53,8 @@ package provide aloupe 1.0
 namespace eval ::aloupe {
   variable filename {}
   namespace eval my {
+    variable HOMEDIR ~
+    if {[info exists ::env(HOME)]} {set HOMEDIR $::env(HOME)}
     variable size 26
     variable zoom 8
     variable pause 0
@@ -70,7 +72,7 @@ namespace eval ::aloupe {
       -geometry "" \
       -parent "" \
       -save yes \
-      -inifile "~/.config/aloupe.conf" \
+      -inifile [file join $HOMEDIR .config aloupe.conf] \
       -locale "" \
       -apavedir "" \
       -cs -2 \

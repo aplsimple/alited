@@ -80,7 +80,7 @@ proc keys::UnBindKeys {wtxt type} {
   foreach kb [alited::keys::EngagedList $type all] {
     lassign $kb -> tpl keys tpldata
     if {[catch {
-      set tpldata [string map [list $::alited::EOL \n] $tpldata]
+      set tpldata [::alited::ProcEOL $tpldata in]
       bind $wtxt "<$keys>" {}
     } err]} then {
       puts "Error of unbinding: $tpl <$keys> - $err"

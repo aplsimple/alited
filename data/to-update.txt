@@ -1,3 +1,15 @@
+=== 2023-11-26 ===
+   EDITED lib/e_menu/menus/fossil.em
+   EDITED lib/e_menu/menus/fossil2.em
+   EDITED lib/e_menu/menus/git2.em
+   EDITED lib/e_menu/menus/hg.em
+   EDITED lib/e_menu/menus/menu.em
+   EDITED lib/e_menu/menus/misc.em
+   EDITED lib/e_menu/menus/side.em
+   EDITED lib/e_menu/menus/test1.em
+   EDITED lib/e_menu/menus/tests.em
+   EDITED lib/e_menu/menus/utils.em
+
 === 2023-11-01 ===
    EDITED data/user/ini/alited.ini
 
