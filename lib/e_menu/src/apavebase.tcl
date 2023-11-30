@@ -3671,7 +3671,7 @@ oo::class create ::apave::APaveBase {
     set rooted 1
     if {$centerme ne {}} {
       ;# forced centering relative to a caller's window
-      lassign [split $centerme x+] rw rh rx ry
+      lassign [split $centerme x+-] rw rh rx ry
       set rooted [expr {![regexp {[+|-]+\d+\++} $centerme]}]
       if {$rooted && [winfo exist $centerme]} {
         set root $centerme

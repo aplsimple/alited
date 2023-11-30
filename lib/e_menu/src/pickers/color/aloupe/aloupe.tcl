@@ -1,16 +1,17 @@
 #! /usr/bin/env tclsh
-# _______________________________________________________________________ #
-#
-# This is a screen loupe.
-#
-# Scripted by Alex Plotnikov (https://aplsimple.github.io).
-#
-# See README.md for details.
-#
+###########################################################
+# Name:    aloupe.tcl
+# Author:  Alex Plotnikov  (aplsimple@gmail.com)
+# Date:    Feb 26, 2021
+# Brief:   Handles a screen loupe.
 # License: MIT.
-# _______________________________________________________________________ #
+###########################################################
+
+# _________________________ aloupe ________________________ #
 
 package require Tk
+
+package provide aloupe 1.1
 
 namespace eval ::aloupe {
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]}]
@@ -41,12 +42,19 @@ if {$::aloupe::solo} {
   }
 }
 
-package require treectrl
-package require Img
+if {[catch {package require treectrl; package require Img} err]} {
+  set tclexe [auto_execok tclsh]
+  set tclrun [info nameofexecutable]
+  if {$tclexe ne {} && $tclexe ne $tclrun} {
+    if {$::aloupe::solo} {set aar $::argv} {set aar {}}
+    exec -- $tclexe [info script] {*}$aar &  ;# when aloupe runs from tclkit, it may fail - try to run it with tclsh deployed
+  } else {
+    puts "aloupe: $err"
+  }
+  if {$::aloupe::solo} exit
+}
 
 ::msgcat::mcload [file join [file dirname [info script]] msgs]
-
-package provide aloupe 1.0
 
 # ________________________ Variables _________________________ #
 

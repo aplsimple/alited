@@ -363,7 +363,7 @@ proc ::apave::splitGeometry {geom {X +0} {Y +0}} {
     if {$x in {"" 0} || [catch {expr {$x+0}}]} {set x $X}
     if {$y in {"" 0} || [catch {expr {$y+0}}]} {set y $Y}
   }
-  return [list $w $h $x $y]
+  return [list $w $h +[expr {max(0,$x)}] +[expr {max(0,$y)}]]
 }
 #_______________________
 

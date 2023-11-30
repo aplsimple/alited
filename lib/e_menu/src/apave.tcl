@@ -284,14 +284,16 @@ oo::class create ::apave::APave {
     set args [::apave::removeOptions $args \
       -titleHELP -buttons -comOK -titleOK -titleCANCEL -centerme -modal]
     lappend args {*}$focusopt
-    if {[catch { \
-        lassign [my PrepArgs {*}$args] args
-        set res [my Query $icon $ttl {} \
+    if {[catch {
+      lassign [my PrepArgs {*}$args] args
+      set res [my Query $icon $ttl {} \
         "$butHelp $buttons butOK $titleOK $comOK $butCancel" \
-        butOK $inopts $args {} {*}$centerme -input yes]} e]} {
+        butOK $inopts $args {} {*}$centerme -input yes]} e]
+    } then {
       catch {destroy $Dlgpath}  ;# Query's window
-      ::apave::obj ok err "ERROR" "\n$e\n" \
-        -t 1 -head "\nAPave returned an error: \n" -hfg red -weight bold
+      set under \n[string repeat _ 80]\n\n
+      ::apave::obj ok err "ERROR" "\n$e$under $inopts$under $args$under $centerme" \
+        -t 1 -head "\nAPave error: \n" -hfg red -weight bold -w 80
       return 0
     }
     if {![lindex $res 0]} {  ;# restore old values if OK not chosen
