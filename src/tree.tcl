@@ -328,6 +328,7 @@ proc tree::CreateUnitsTree {TID wtree} {
   set levprev -1
   set wtxt [alited::main::GetWTXT $TID]
   foreach item $al(_unittree,$TID) {
+    incr iiuni
     if {[llength $item]<3} continue
     set itemID  [alited::tree::NewItemID [incr iit]]
     lassign $item lev leaf fl1 title l1 l2
@@ -338,11 +339,14 @@ proc tree::CreateUnitsTree {TID wtree} {
       set title " $title"
       set pr [expr {max(0,min(7,($l2-$l1-$::alited::al(minredunit))/$al(prjredunit)))}]
       set imgopt "-image alimg_pro$pr"
+      set isopen no
     } else {
       set imgopt "-image alimg_gulls"
+      set levtmp [lindex $al(_unittree,$TID) $iiuni 0]
+      set isopen [expr ($levtmp+0)>$lev]
     }
     $wtree insert $parent end -id $itemID -text "$title" \
-      -values [list $l1 $l2 {} $itemID $lev $leaf $fl1] -open yes {*}$imgopt
+      -values [list $l1 $l2 {} $itemID $lev $leaf $fl1] -open $isopen {*}$imgopt
     $wtree tag add tagNorm $itemID
     if {!$leaf} {
       set parent $itemID

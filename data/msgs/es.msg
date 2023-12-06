@@ -564,6 +564,7 @@ namespace eval ::alited {
     {Forcedly:} {A la forza:}
     {e_menu's own} {e_menu propio}
     {Select any of run item} {Seleccione cualquiera de los elementos ejecutados}
+    "Incorrect \"Preferences/Tools/tclsh...\"\nresults in the error:" "Resultado incorrecto \"Preferencias/Herramientas/tclsh...\"\nen el error:"
   }
 
   ## ________________________ Checks ________________________ ##

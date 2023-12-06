@@ -1071,7 +1071,7 @@ M: m=$menu o=1
 proc ::em::template::help {} {
   # view template.em
 
-  ::apave::obj vieweditFile [file join $::em::exedir src template.em] "" -rotext 0
+  ::apave::obj vieweditFile [file join $::em::exedir src template.em] "" -rotext 0 -ontop $::em::ontop
 }
 
 # ________________________ EOF _________________________ #

@@ -280,7 +280,7 @@ proc keys::Search {type name} {
   set i 0
   foreach kb $al(KEYS,bind) {
     lassign $kb t n n2
-    if {($type eq "" || $t eq $type) && ($name eq "" || $name eq $n || $name eq $n2)} {
+    if {($type eq {} || $t eq $type) && ($name eq {} || $name eq $n || $name eq $n2)} {
       return $i
     }
     incr i

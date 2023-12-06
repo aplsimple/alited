@@ -563,6 +563,7 @@ namespace eval ::alited {
     {Forcedly:} {Принудительно:}
     {e_menu's own} {своя в e_menu}
     {Select any of run item} {Выберите какую-нибудь команду}
+    "Incorrect \"Preferences/Tools/tclsh...\"\nresults in the error:" "Некорректная настройка \"Настройки/Снасти/tclsh...\"\nприводит к ошибке:"
   }
 
   ## ________________________ Checks ________________________ ##

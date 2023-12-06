@@ -181,12 +181,13 @@ proc tool::Help {} {
 }
 #_______________________
 
-proc tool::HelpTool {win hidx} {
+proc tool::HelpTool {win hidx args} {
   # Handles hitting "Help" button in dialogues.
   #   win - dialogue's window name
   #   hidx - help's index
+  #   args - options of Help
 
-  alited::Help $win $hidx
+  alited::Help $win $hidx {*}$args
 }
 #_______________________
 
@@ -747,7 +748,10 @@ proc tool::e_menu1 {opts} {
   if {$thdark==1 && !$csdark || $thdark==0 && $csdark} {
     set opts "th=default $opts th=default" ;# default theme fits any CS
   }
-  alited::Run [file join $::e_menu_dir e_menu.tcl] {*}$opts
+  if {[catch {alited::Run [file join $::e_menu_dir e_menu.tcl] {*}$opts} err]} {
+    set msg [msgcat::mc "Incorrect \"Preferences/Tools/tclsh...\"\nresults in the error:"]
+    alited::msg ok err "$msg\n\n$err"
+  }
 }
 #_______________________
 
@@ -786,7 +790,7 @@ proc tool::PrepareRunCommand {com fname} {
   set sel [alited::find::GetWordOfText select]
   set com [string map [list %% $idi] $com]
   set com [string map [list $::alited::EOL \n %s $sel \
-    %f $fname %d [file dirname $fname] %pd $al(prjroot)] $com]
+    %f $fname %d [file dirname $fname] %pd $al(prjroot) %H [::apave::HomeDir]] $com]
   return [string map [list $idi %] $com]
 }
 #_______________________

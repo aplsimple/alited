@@ -571,6 +571,7 @@ namespace eval ::alited {
     {Forcedly:} {Примусово:}
     {e_menu's own} {своя в e_menu}
     {Select any of run item} {Виберіть яку-небудь команду}
+    "Incorrect \"Preferences/Tools/tclsh...\"\nresults in the error:" "Некоректна настройка \"Настройки/Струменти/tclsh...\"\nпризводить до помилки:"
   }
 
   ## ________________________ Checks ________________________ ##

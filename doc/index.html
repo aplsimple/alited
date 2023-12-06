@@ -1236,7 +1236,7 @@ For example, with the main RE as
  and excluding RE2 as
 <pre class="code">\s*proc\s+
 \s*method\s+
-(\[|\{|"|;)\s*\m\w+::</pre>
+(\[|\{|&quot;|;)\s*\m\w+::</pre>
 we can search the uses of non-absolute names of variables
 (at least, excluding declarations and calls of commands)
 which is good at moving from Tcl/Tk 8.6 to Tcl/Tk 9.0.
@@ -1524,6 +1524,7 @@ The command can include wildcards:
   <li><i>%d</i>  - current file's directory</li>
   <li><i>%pd</i> - project's directory</li>
   <li><i>%s</i> - text's selection / current word
+  <li><i>%H</i> - home directory
   <li><i>%%</i> - %</li>
 </ul>
 The combobox's commands can be created and edited in the text box,

@@ -1,15 +1,4 @@
-
-package ifneeded klnd 1.4 " \
-  source [file join $dir klnd.tcl] ;\
-  source [file join $dir klnd2.tcl] \
-  "
-
-# A short intro (for Ruff! docs generator:)
-
-namespace eval ::klnd {
-  set _ruff_preamble {
-
-  The *klnd* package provides a calendar widget to use along with [apave](../pave/index.html) package.
+The *klnd* package provides a calendar widget to use along with [apave](../pave/index.html) package.
 
   Features:
 
@@ -113,13 +102,3 @@ A command of `-tip` option can use wildcards: %W for a day widget's path, %D for
   The procedures use `obj` argument, which is just an index of a calendar (beginning with 1). If omitted or equal to {}, `obj` means a last created calendar.
 
   The multiple embedded calendars may be united with `-united yes` option, so that a user can select a list of days inside them.
-  }
-}
-
-namespace eval ::klnd::my {
-  variable _ruff_preamble {
-    The `::klnd::my` namespace contains procedures for the "internal" usage by *klnd* package.
-
-    All of them are upper-cased, in contrast with the UI procedures of `klnd` namespace.
-  }
-}

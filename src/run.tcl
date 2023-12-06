@@ -82,7 +82,7 @@ proc run::Help {} {
 
   variable win
   wm attributes $win -topmost 1  ;# let Run dialogue be not hidden
-  alited::tool::HelpTool %w 2
+  alited::tool::HelpTool %w 2 -ontop 1
 }
 
 # ________________________ GUI _________________________ #

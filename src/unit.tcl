@@ -264,13 +264,17 @@ proc unit::TemplateData {wtxt l1 tpldata} {
 }
 #_______________________
 
-proc unit::InsertTemplate {tpldata} {
+proc unit::InsertTemplate {tpldata {dobreak yes}} {
   # Inserts a template into a current text.
   #   tpldata - template
+  #   dobreak - if yes, means "called from bindings, should return -code break"
 
   # for noname file - save it beforehand, as templates refer to a file name
   if {[alited::file::IsNoName [alited::bar::FileName]]} {
-    if {![alited::file::SaveFile]} return
+    if {![alited::file::SaveFile]} {
+      if {$dobreak} {return -code break}
+      return
+    }
   }
   set wtxt [alited::main::CurrentWTXT]
   lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - - l1 l2
@@ -313,6 +317,7 @@ proc unit::InsertTemplate {tpldata} {
   ::tk::TextSetCursor $wtxt $posc
   alited::main::UpdateAll
   after idle alited::main::FocusText
+  if {$dobreak} {return -code break}
 }
 #_______________________
 
@@ -399,7 +404,7 @@ proc unit::Add {} {
   # Runs a dialog "Add Template" and adds a chosen template to a text.
 
   set res [::alited::unit_tpl::_run]
-  if {$res ne {}} {InsertTemplate $res}
+  if {$res ne {}} {InsertTemplate $res no}
   alited::keys::BindKeys [alited::main::CurrentWTXT] template
 }
 #_______________________

@@ -1141,8 +1141,10 @@ oo::class create ::apave::APaveBase {
         append attrs " -onReturn {$::apave::UFF{$cmd} {$from} {$to}$::apave::UFF} $t2"
       }
       tbl { ;# tablelist
-        package require tablelist
-        set widget tablelist::tablelist
+        if {![namespace exists ::tablelist::]} {
+          namespace eval :: {package require tablelist}
+        }
+        set widget ::tablelist::tablelist
         set attrs "[my FCfieldAttrs $wnamefull $attrs -lvar]"
         set attrs "[my ListboxesAttrs $wnamefull $attrs]"
       }
@@ -2144,6 +2146,7 @@ oo::class create ::apave::APaveBase {
         set menuitem [my MakeWidgetName $menupath $v1]
         menu $menuitem -tearoff 0
         set ampos [string first & [string trimleft $v2  \{]]
+        if {$ampos<0} {set ampos 99}
         set v2 [string map {& {}} $v2]
         $menupath add cascade -label [lindex $v2 0] {*}[lrange $v2 1 end] -menu $menuitem -underline $ampos
         continue

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.0a2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.0b3  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -532,8 +532,8 @@ namespace eval alited {
     #   path - the path
 
     set path [string trim $path "\{\}"]  ;# possibly braced if contains spaces
-    set path [string map [list \\ /] $path]
-    return $path
+    set path [string map [list \\ / %H [::apave::HomeDir]] $path]
+    return [::apave::checkHomeDir $path]
   }
   #_______________________
 
@@ -772,7 +772,7 @@ namespace eval alited {
     variable obDlg
     variable al
     if {[HelpOnce 1 $fname]} return
-    set ale1Help [::apave::extractOptions args -ale1Help no]
+    lassign [::apave::extractOptions args -ale1Help no -ontop 0] ale1Help ontop
     lassign [FgFgBold] -> fS
     set ::alited::textTags [list \
       [list "r" "-font {$::apave::FONTMAINBOLD} -foreground $fS"] \
@@ -813,7 +813,7 @@ namespace eval alited {
       destroy $dlg  ;# -ale1Help option permits the only Help window
     }
     set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no -onclose destroy \
-      -centerme $win -text 1 -scroll no -tags ::alited::textTags \
+      -centerme $win -text 1 -scroll no -tags ::alited::textTags -ontop $ontop \
       -w [incr wmax] {*}$args]
     return $res
   }
@@ -868,7 +868,7 @@ namespace eval alited {
     # Shows a help file for a procedure.
     #   win - currently active window
     #   suff - suffix for a help file's name
-    #   args - option of HelpFile
+    #   args - options of HelpFile
 
     HelpFile $win [HelpFname $win $suff] {*}$args
   }
@@ -1100,7 +1100,7 @@ if {$::alited::LOG ne {}} {
 
 if {[info exists ALITED_PORT]} {
   unset -nocomplain ALITED_PORT
-#  catch #\{source ~/PG/github/DEMO/alited/demo.tcl#\} ;#------------- TO COMMENT OUT
+#  source [::apave::HomeDir]/PG/github/DEMO/alited/demo.tcl ;#! for demo: COMMENT OUT
   if {[llength $ALITED_ARGV]} {
     set ::argc 0
     set ::argv {}
@@ -1124,7 +1124,7 @@ if {[info exists ALITED_PORT]} {
   alited::tool::AfterStart
   unset -nocomplain _
   unset -nocomplain ALITED_ARGV
-#  catch #\{source ~/PG/github/DEMO/alited/demo.tcl#\} ;#------------- TO COMMENT OUT
+#  source [::apave::HomeDir]/PG/github/DEMO/alited/demo.tcl ;#! for demo: COMMENT OUT
   if {[catch {set res [alited::main::_run]} err]} {
     set res 0
     set msg "\nERROR in alited:"

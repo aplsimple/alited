@@ -1,14 +1,18 @@
 # LAST CHANGES:
 
-Version `v1.6.0a2 (30 Nov'23)`
+Version `v1.6.0b3 (6 Dec'23)`
 
   - BUGFIX: at selecting in infobar: lost Find (blue) highlighting in other files
+  - BUGFIX: unit treeview's contract icons at all items (seen in Tk 9.0)
   - NEW   : way to Tcl/Tk 9.0
   - NEW   : "RE2" button of Find/Replace dialogue: including/excluding RE
+  - NEW   : Tools/Run : %H (home dir) wildcard
+  - NEW   : menu files (*.em) : %H (home dir) wildcard
   - CHANGE: if tabbar's "Files to Beginning" is off, a current file isn't first to search in session
   - CHANGE: Preferences / Tools / tclsh,wish,tclkit : empty value isn't reset (means alited's runtime)
   - CHANGE: clearing & refactoring
-  - CHANGE: packages: e_menu/apave 4.3.0, bartabs 1.6.7, aloupe 1.1
+  - CHANGE: message about incorrect Preferences/Tools/tclsh...
+  - CHANGE: packages: e_menu/apave 4.3.2, bartabs 1.6.7, aloupe 1.2
 
 
 Version `v1.5.2 (22 Nov'23)`

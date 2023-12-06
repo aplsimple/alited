@@ -348,7 +348,7 @@ proc pref::Ok {args} {
 
 proc pref::Cancel {args} {
   # Closes Preferences.
-  #   args - not empty, if called by Esc, Alt+F4 or [x] button
+  #   args - not empty, if called by Esc, Alt+F4 or "X" button
 
   fetchVars
   GetEmSave out

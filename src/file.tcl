@@ -44,8 +44,8 @@ proc file::IsSaved {TID args} {
   #   args - options of dialogue
   # The appearance of dialogue is controled by $ansSave and $firstSave:
   #   if $ansSave>10, no dialogue at all, meaning the answer = $ansSave
-  #   if $firstSave==-1, no "No ask anymore" (as run by "Close" menu or by "x" icon)
-  # Returns 1 for "yes, needs saving", 2 for "needs no saving", 0 for "cancel".
+  #   if $firstSave==-1, no "No ask anymore" (if run by "Close" menu item or "x" icon of tabbar)
+  # Returns 1 for "yes, needs saving", 2 - "no saving", 0 - "cancel".
 
   variable ansSave
   variable firstSave

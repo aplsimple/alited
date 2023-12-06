@@ -42,6 +42,7 @@
    <b>%d</b>  - current file's directory
    <b>%pd</b> - project's directory
    <b>%s</b>  - text's selection / current word
+   <b>%H</b>  - home directory
    <b>%%</b>  - %
  _______________________________________________________________________
 
