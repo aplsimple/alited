@@ -613,7 +613,7 @@ proc project::CheckNewDir {} {
   variable obPrj
   variable win
   if {![file exists $al(prjroot)]} {
-    FocusInTab f1 [::apave::precedeWidgetName [$obPrj Dir] ent]
+    FocusInTab f1 [$obPrj chooserPath Dir]
     set msg [string map [list %d $al(prjroot)] $al(makeroot)]
     if {![alited::msg yesno ques $msg NO -geometry root=$win]} {
       return no
@@ -672,7 +672,7 @@ proc project::ValidProject {} {
   }
   if {$al(prjroot) eq {}} {
     bell
-    FocusInTab f1 [::apave::precedeWidgetName [$obPrj Dir] ent]
+    FocusInTab f1 [$obPrj chooserPath Dir]
     return no
   }
   set al(prjroot) [file nativename $al(prjroot)]
@@ -1070,7 +1070,14 @@ proc project::Template {} {
     set spprev $sp
   }
   if {"$errmess$namelist" eq {}} {
-    set errmess [msgcat::mc {The project template is empty!}]
+    set errmess {The project template is empty!}
+  } elseif {[ExistingProject yes] ne {}} {
+    return
+  } elseif {[file exists $al(prjroot)]} {
+    set errmess {The project directory already exists! It isn't created with templates.}
+    FocusInTab f1 [$obPrj chooserPath Dir]
+    Message [msgcat::mc $errmess] 4
+    return
   }
   if {$errmess ne {}} {
     set namelist {}  ;# skip the following foreach
@@ -1102,7 +1109,7 @@ proc project::Template {} {
   }
   if {$errmess ne {}} {
     FocusInTab f3 $wtpl
-    Message $errmess 4
+    Message [msgcat::mc $errmess] 4
   }
 }
 #_______________________

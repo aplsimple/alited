@@ -701,7 +701,7 @@ proc pref::CsDark {{cs ""}} {
 proc pref::GetLocaleImage {} {
 
   fetchVars
-  [$obPrf LabLocales] configure -image ::alited::pref::LOC$::alited::al(LOCAL)
+  [$obPrf LabLocales] configure -image ::alited::pref::LOC$al(LOCAL)
 }
 #_______________________
 
@@ -712,12 +712,13 @@ proc pref::InitLocales {} {
   if {[llength $locales]} return
   set imd [file join $::alited::DATADIR img]
   set locales [list]
-  foreach lm [list en {*}[glob -nocomplain [file join $::alited::MSGSDIR *]]] {
+  foreach lm [glob -nocomplain [file join $imd ??.png]] {
     set loc [file rootname [file tail $lm]]
-    catch { ;# no duplicates due to 'catch'
-      image create photo ::alited::pref::LOC$loc -file [file join $imd $loc.png]
-      lappend locales $loc
-    }
+    image create photo ::alited::pref::LOC$loc -file $lm
+    lappend locales $loc
+  }
+  if {![file exists [file join $::alited::MSGSDIR $al(LOCAL).msg]]} {
+    set al(LOCAL) en
   }
   set locales [lsort $locales]
 }
@@ -1716,7 +1717,6 @@ proc pref::_create {tab} {
   #   tab - previous open tab
 
   fetchVars
-  InitLocales
   set tipson [baltip::cget -on]
   set preview 0
   baltip::configure -on $al(TIPS,Preferences)
@@ -1787,6 +1787,7 @@ proc pref::_init {} {
   # Initializes "Preferences" dialogue.
 
   fetchVars
+  InitLocales
   SaveSettings
   set curTab "nbk"
   IniKeys

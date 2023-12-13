@@ -772,6 +772,22 @@ proc find::FindReplStr {str} {
 }
 #_______________________
 
+proc find::Replace1 {wtxt idx1 idx2} {
+  # Replaces a string found, possibly using regsub.
+  #   wtxt - text's path
+  #   idx1 - starting index of the string
+  #   idx2 - ending index of the string
+
+  variable data
+  if {$data(v1)==3} {
+    set replstr [regsub $data(en1) [$wtxt get $idx1 $idx2] $data(en2)]
+  } else {
+    set replstr $data(en2)
+  }
+  $wtxt replace $idx1 $idx2 $replstr
+}
+#_______________________
+
 proc find::Replace {} {
   # Replaces one string and finds next.
 
@@ -794,7 +810,7 @@ proc find::Replace {} {
   if {!$isset} Find
   lassign [$wtxt tag ranges sel] idx1 idx2
   if {$idx1 ne {} && $idx2 ne {}} {
-    $wtxt replace $idx1 $idx2 $data(en2)
+    Replace1 $wtxt $idx1 $idx2
     SetCursor $wtxt $idx1
     set msg [string map [list %n 1 %s $data(en1) %r $data(en2)] $::alited::al(MC,frres2)]
     ShowResults $msg
@@ -810,7 +826,6 @@ proc find::ReplaceAll {TID wtxt allfnd} {
   #   wtxt - text's path
   #   allfnd - list of found strings data (index1, index2)
 
-  variable data
   ::apave::undoIn $wtxt
   set rn 0
   for {set i [llength $allfnd]} {$i} {} {
@@ -821,7 +836,7 @@ proc find::ReplaceAll {TID wtxt allfnd} {
     }
     incr i -1
     lassign [lindex $allfnd $i] idx1 idx2
-    $wtxt replace $idx1 $idx2 $data(en2)
+    Replace1 $wtxt $idx1 $idx2
     incr rn
   }
   if {$rn} {SetCursor $wtxt [lindex $allfnd end 0]}
@@ -1034,7 +1049,7 @@ proc find::CloseFind {args} {
   if {[string match root=* $geo] || $data(geoDefault)} {
     set geo [wm geometry $win] ;# save the new geometry of the dialogue
   }
-  destroy $win
+  catch {destroy $win}
   ClearTags
 }
 #_______________________
@@ -1378,7 +1393,7 @@ proc find::_create {} {
     {But1 + L 1 1 {-st wes -pady 2} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
     {But2 + T 1 1 {-st we -pady 0} {-t "All in Text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
     {But3 + T 1 1 {-st wen -pady 2} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
-    {Chb + T 2 1 {-st e} {-t {-geometry} -var ::alited::find::data(geoDefault) -tip "Use this geometry of the dialogue\nby default" -takefocus 0 -style TCheckbuttonFS}}
+    {chb + T 2 1 {-st e} {-t {-geometry} -var ::alited::find::data(geoDefault) -tip "Use this geometry of the dialogue\nby default" -takefocus 0 -style TCheckbuttonFS}}
     {but4 + T 1 1 {-st wes -pady 2} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
     {but5 + T 1 1 {-st we -pady 0} {-t "All in Text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
     {But6 + T 1 1 {-st wen -pady 2} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}

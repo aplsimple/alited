@@ -1840,12 +1840,10 @@ oo::class create ::apave::APaveBase {
     upvar 1 $r0 w $r1 i $r2 lwlen $r3 lwidgets
     lassign $args name neighbor posofnei rowspan colspan options1 attrs1
     lassign {} wpar view addattrs addattrs2
-    set tvar [::apave::getOption -tvar {*}$attrs1]
-    lassign [::apave::extractOptions attrs1 \
-      -takefocus 0 -showcolor {} -filetypes {} -initialdir {} -initialfile {} \
-      -defaultextension {} -multiple {} -validatecommand {}] \
-      takefocus showcolor filetypes initialdir initialfile \
-      defaultextension multiple validatecommand
+    lassign [::apave::parseOptions $attrs1 -tvar {-} -validatecommand {}] tvar validatecommand
+    lassign [::apave::extractOptions attrs1 -takefocus 0 -showcolor {} -filetypes {} \
+      -initialdir {} -initialfile {} -defaultextension {} -multiple {}] \
+      takefocus showcolor filetypes initialdir initialfile defaultextension multiple
     lassign [::apave::extractOptions options1 -padx 0 -pady 0] padx pady
     set takefocus "-takefocus $takefocus"
     foreach atr {filetypes initialdir initialfile defaultextension multiple} {
@@ -2191,6 +2189,15 @@ oo::class create ::apave::APaveBase {
       after idle [list after 0 [list catch "focus -force $foc"]]
     }
     return [set $tvar] ;#$font
+  }
+  #_______________________
+
+  method chooserPath {W {w ent}} {
+    # Gets a path to chooser's entry or label.
+    #   W - widget/method name (e.g. Fil, Dir)
+    #   w - ent / lab for entry / label
+
+    return [::apave::precedeWidgetName [my $W] $w]
   }
 
   ## ________________________ Widget names & methods _________________________ ##
@@ -2557,6 +2564,7 @@ oo::class create ::apave::APaveBase {
               set attr [subst $attr]
               lassign [::apave::extractOptions attr -tip {} -tooltip {}] tip t2
               set wt $w.$fr
+              if {{-underline} ni $attr} {lappend attr -underline 99}
               $w add [ttk::frame $wt] {*}$attr
               if {[append tip $t2] ne {}} {
                 set tip [my MC $tip]

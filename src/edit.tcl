@@ -162,6 +162,7 @@ proc edit::Comment {} {
   }
   ::apave::undoOut $wtxt
   SelectLines $wtxt $l1 $l2
+  after idle alited::tree::RecreateTree
 }
 #_______________________
 
@@ -196,6 +197,7 @@ proc edit::UnComment {} {
   }
   ::apave::undoOut $wtxt
   SelectLines $wtxt $l1 $l2
+  after idle alited::tree::RecreateTree
 }
 
 # ________________________ Color values _________________________ #

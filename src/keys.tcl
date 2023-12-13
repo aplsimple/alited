@@ -130,8 +130,9 @@ proc keys::ReservedList {} {
     Control-T \
     Control-V \
     Control-W \
-    Control-Alt-W \
+    Control-X \
     Control-Z \
+    Control-Alt-W \
     Control-Shift-Z \
     Control-Shift-F \
     Alt-Up \

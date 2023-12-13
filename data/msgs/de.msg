@@ -266,6 +266,7 @@ namespace eval ::alited {
     {%n commands will be executed!} {%n Befehle werden ausgeführt!}
     {Maximum commands reached: %n, current: %i (see Project/Options)} {Maximal Befehle erreicht: %n, aktuell: %i (siehe Projekt/Optionen)}
     {Maximum Run commands} {Maximal Ausführen Befehle}
+    {The project directory already exists! It isn't created with templates.} {Das Projektverzeichnis existiert bereits! Es wird nicht mit Vorlagen erstellt.}
   }
 
   ## ________________________ Favorites ________________________ ##

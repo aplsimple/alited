@@ -5,8 +5,6 @@
 #
 # Credits: thanks to tkcon and various Wiki snippets
 
-package require Tcl 8.6
-
 namespace eval repl {}
 
 proc repl::complete_command {prefix {ip {}} {ns ::}} {

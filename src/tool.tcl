@@ -748,9 +748,10 @@ proc tool::e_menu1 {opts} {
   if {$thdark==1 && !$csdark || $thdark==0 && $csdark} {
     set opts "th=default $opts th=default" ;# default theme fits any CS
   }
-  if {[catch {alited::Run [file join $::e_menu_dir e_menu.tcl] {*}$opts} err]} {
+  set e_menu [file join $::e_menu_dir e_menu.tcl]
+  if {[catch {alited::Run $e_menu {*}$opts} err]} {
     set msg [msgcat::mc "Incorrect \"Preferences/Tools/tclsh...\"\nresults in the error:"]
-    alited::msg ok err "$msg\n\n$err"
+    alited::Msg "$msg\n\n$e_menu $opts\n\n==>\n$err" err -w {50 80} -h {9 24}
   }
 }
 #_______________________

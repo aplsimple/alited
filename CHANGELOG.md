@@ -1,18 +1,27 @@
 # LAST CHANGES:
 
-Version `v1.6.0b3 (6 Dec'23)`
+Version `v1.6.0b6 (13 Dec'23)`
 
   - BUGFIX: at selecting in infobar: lost Find (blue) highlighting in other files
   - BUGFIX: unit treeview's contract icons at all items (seen in Tk 9.0)
+  - BUGFIX: update unit tree at Comment/Uncomment (with keys or covering few units)
   - NEW   : way to Tcl/Tk 9.0
   - NEW   : "RE2" button of Find/Replace dialogue: including/excluding RE
   - NEW   : Tools/Run : %H (home dir) wildcard
   - NEW   : menu files (*.em) : %H (home dir) wildcard
+  - NEW   : at start, check Tcl runtime path for spaces
+  - NEW   : Projects: check for existing directory at "Create a project by template"
+  - NEW   : Find/Replace: [regsub] is used for RE (Replace & Find fields are both RE)
+  - CHANGE: Preferences/Tools/bar-menu: "icon-characters" modified
+  - CHANGE: save Find/Replace geometry at its "-geometry" = true and closing alited
+  - CHANGE: error message on Preferences/Tools/tclsh improved
+  - CHANGE: make Control+X reserved
+  - CHANGE: mode of locale initializing
   - CHANGE: if tabbar's "Files to Beginning" is off, a current file isn't first to search in session
   - CHANGE: Preferences / Tools / tclsh,wish,tclkit : empty value isn't reset (means alited's runtime)
   - CHANGE: clearing & refactoring
   - CHANGE: message about incorrect Preferences/Tools/tclsh...
-  - CHANGE: packages: e_menu/apave 4.3.2, bartabs 1.6.7, aloupe 1.2
+  - CHANGE: packages: e_menu/apave 4.3.3, bartabs 1.6.7, aloupe 1.2
 
 
 Version `v1.5.2 (22 Nov'23)`

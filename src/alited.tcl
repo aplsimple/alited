@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.0b3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.0b6  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -16,6 +16,11 @@ namespace eval alited {
     tk_messageBox -message "\nalited needs Tcl/Tk v8.6.10+ \
       \n\nwhile the current is v$_\n"
     exit
+  }
+  set _ [info nameofexecutable]
+  if {[string first { } $_]>0} {
+    set res [tk_messageBox -title Warning -icon warning -message "The Tcl runtime path\n\n\"$_\"\n\ncontains spaces.\n\nThis path doesn't fit alited. Only 'non-space' ones do.\n\n==> Some tools won't work." -type okcancel]
+    if {$res ne {ok}} exit
   }
 
   variable al; array set al [list]
@@ -475,24 +480,25 @@ namespace eval alited {
     #   ico - picture or character
     #   to - "in" gets in-chars, "out" gets out-chars
 
-# TODO: codes instead of pictures - not available in 8.6.10
-#!    \U0001f4a5 = 💥
-#!    \U0001f4bb = 💻
-#!    \U0001f3d7 = 🏗
-#!    \U0001f4f6 = 📶
-#!    \U0001f4e1 = 📡
-#!    \U0001f4d6 = 📖
-#!    \U0001f300 = 🌀
-#!    \U0001F58E = 🖎
-#!    \U0001f4d0 = 📐
-#!    \U0001f426 = 🐦
-#!    \U0001f381 = 🎁
-#!    \U0001f3c1 = 🏁
-#!    \U0001f511 = 🔑
-#!    \U0001f4be = 💾
-
+    # TODO: codes instead of pictures - not available in 8.6.10
+    if 0 {
+      \U0001f5f0 = 🗰
+      \U0001f4bb = 💻
+      \U0001f3d7 = 🏗
+      \U0001f4f6 = 📶
+      \U0001f4f7 = 📷
+      \U0001f56e = 🕮
+      \U0001f311 = 🌑
+      \U0001F58E = 🖎
+      \U0001f315 = 🌕
+      \U0001f426 = 🐦
+      \U0001f5e0 = 🗠
+      \U0001f3f2 = 🏲
+      \U0001f5a7 = 🖧
+      \U0001f5ab = 🖫
+    }
     set in {0 1 2 3 4 5 6 7 8 9 & ~ = @}
-    set out {💥 💻 🏗 📶 📡 📖 🌀 🖎 📐 🐦 🎁 🏁 🔑 💾}
+    set out {🗰 💻 🏗 📶 📷 🕮 🌑 🖎 🌕 🐦 🗠 🏲 🖧 🖫}
     if {$to eq {out}} {
       set lfrom $in
       set lto $out
@@ -1044,13 +1050,13 @@ namespace eval alited {
     if {!$ask || !$al(INI,confirmexit) || \
     [msg okcancel info [msgcat::mc {Quitting alited.}] OK {*}$timo]} {
       if {[file::AllSaved]} {
-        catch {ini::SaveIni}
+        catch {find::CloseFind}  ;# save Find/Replace geometry
+        catch {ini::SaveIni}     ;# save alited's settings
         tool::_close                     ;# close all of the
         catch {run::Cancel}              ;# possibly open
         catch {check::Cancel}            ;# non-modal
-        catch {destroy $::alited::find::win}     ;# windows
-        catch {destroy $::alited::find::win2}    ;#
-        catch {destroy $::alited::al(FN2WINDOW)} ;# (and its possible children)
+        catch {destroy $::alited::find::win2}    ;# windows
+        catch {destroy $::alited::al(FN2WINDOW)} ;# and its possible children
         catch {paver::Destroy}
         $obPav res $al(WIN) $res
         ::apave::endWM

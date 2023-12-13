@@ -510,7 +510,7 @@ proc ini::ReadIniEM {nam val emiName} {
     emTcl      {
       set val [alited::UnixPath $val]
       if {[string first { } $val]>0} {
-        tk_messageBox -title Warning -icon warning -message "The path to Tcl executable\n\n\"$val\"\n\ncontains spaces.\n\nThis use case doesn't fit alited.\nOnly 'non-space' paths do."
+        tk_messageBox -title Warning -icon warning -message "The path to Tcl executable\n\n\"$val\"\n\ncontains spaces.\n\nThis path doesn't fit alited. Only 'non-space' ones do.\n\n==> Change this setting:\nPreferences/Tools/tclsh..."
       } else {
         set al(EM,Tcl) $val
       }

@@ -272,6 +272,7 @@ namespace eval ::alited {
     {%n commands will be executed!} {Буде виконано %n команд!}
     {Maximum commands reached: %n, current: %i (see Project/Options)} {Досягнуто максимуму команд: %n, зараз: %i (див. Проекти/Опції)}
     {Maximum Run commands} {Максимум команд "Запуск"}
+    {The project directory already exists! It isn't created with templates.} {Директорія проекту вже існує! Він не створюється по шаблону.}
   }
 
   ## ________________________ Favorites ________________________ ##
