@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.0b6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.0b7  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -482,23 +482,23 @@ namespace eval alited {
 
     # TODO: codes instead of pictures - not available in 8.6.10
     if 0 {
-      \U0001f5f0 = 🗰
+      \U0001f4a5 = 💥
       \U0001f4bb = 💻
       \U0001f3d7 = 🏗
       \U0001f4f6 = 📶
+      \U0001f4e1 = 📡
+      \U0001f4d6 = 📖
+      \U0001f300 = 🌀
       \U0001f4f7 = 📷
-      \U0001f56e = 🕮
-      \U0001f311 = 🌑
-      \U0001F58E = 🖎
-      \U0001f315 = 🌕
+      \U0001f4d0 = 📐
       \U0001f426 = 🐦
-      \U0001f5e0 = 🗠
-      \U0001f3f2 = 🏲
-      \U0001f5a7 = 🖧
-      \U0001f5ab = 🖫
+      \U0001f381 = 🎁
+      \U0001f3c1 = 🏁
+      \U0001f511 = 🔑
+      \U0001f4be = 💾
     }
     set in {0 1 2 3 4 5 6 7 8 9 & ~ = @}
-    set out {🗰 💻 🏗 📶 📷 🕮 🌑 🖎 🌕 🐦 🗠 🏲 🖧 🖫}
+    set out {💥 💻 🏗 📶 📡 📖 🌀 📷 📐 🐦 🎁 🏁 🔑 💾}
     if {$to eq {out}} {
       set lfrom $in
       set lto $out

@@ -1,6 +1,6 @@
 # LAST CHANGES:
 
-Version `v1.6.0b6 (13 Dec'23)`
+Version `v1.6.0b7 (14 Dec'23)`
 
   - BUGFIX: at selecting in infobar: lost Find (blue) highlighting in other files
   - BUGFIX: unit treeview's contract icons at all items (seen in Tk 9.0)
@@ -12,7 +12,8 @@ Version `v1.6.0b6 (13 Dec'23)`
   - NEW   : at start, check Tcl runtime path for spaces
   - NEW   : Projects: check for existing directory at "Create a project by template"
   - NEW   : Find/Replace: [regsub] is used for RE (Replace & Find fields are both RE)
-  - CHANGE: Preferences/Tools/bar-menu: "icon-characters" modified
+  - CHANGE: Preferences/Tint: -increment 5
+  - CHANGE: Preferences/Tools/bar-menu: a char icon changed, adjusting to Github
   - CHANGE: save Find/Replace geometry at its "-geometry" = true and closing alited
   - CHANGE: error message on Preferences/Tools/tclsh improved
   - CHANGE: make Control+X reserved
