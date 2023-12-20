@@ -309,16 +309,18 @@ proc project::CurrProject {} {
 }
 #_______________________
 
-proc project::SaveNotes {} {
-  # Saves a file of notes, for a current item of project list.
-  # Also saves commands of Commands tab.
+proc project::SaveNotes {{prj ""}} {
+  #  For a current item of project list, saves a file of notes and Commands tab's commands.
+  #   prj - project's name
 
   namespace upvar ::alited al al
   variable obPrj
   variable klnddata
-  if {[set prj $klnddata(SAVEPRJ)] ne {}} {
+  if {$prj eq {}} {set prj $klnddata(SAVEPRJ)}
+  if {$prj ne {}} {
     set fnotes [NotesFile $prj]
-    set fcont [[$obPrj TexPrj] get 1.0 {end -1c}]
+    set fcont [string trimright [[$obPrj TexPrj] get 1.0 {end -1c}]]
+    if {$fcont eq {}} {set fcont __$al(MC,coms)__}
     for {set i 1} {$i<=$al(cmdNum)} {incr i} {
       set com [string trim $al(PTP,run$i)]
       set al(PTP,run$i) {}
@@ -344,6 +346,7 @@ proc project::SaveNotes {} {
 
 proc project::NotesFile {prj} {
   # Gets a file name of notes.
+  #   prj - project's name
 
   return [file join $::alited::PRJDIR $prj-notes.txt]
 }
@@ -1452,7 +1455,7 @@ proc project::RunComs {} {
   variable win
   variable prjlist
   variable prjinfo
-  SaveNotes
+  SaveNotes [CurrProject]
   set comtorun {}
   set comcnt 0
   # collect commands executed on the current project

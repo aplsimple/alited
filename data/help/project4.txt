@@ -6,18 +6,25 @@
 
  These commands can be OS commands or executables,
  for example:
-   rm log.txt
    echo ----------------
-   fossil status --changed
-   fossil extras
+   pwd; fossil status --changed; fossil extras
+
+ To find and list files in projects, these may fit:
+   echo ----------------
+   pwd
+   find . -name '*rarebird*' -printf '[%h][%%f]\\n'
+
+ Wildcards used:
+   %f  - current file
+   %d  - current file directory
+   %pd - current project directory
+   %%  - %
 
  All commands are executed in an appropriate project
  directory, i.e. the above commands will be in fact:
-   <b>cd "a-project-root-dir"</b>
-   rm log.txt
+   <b>cd "project-root-dir"</b>
    echo ----------------
-   fossil status --changed
-   fossil extras
+   ...
 
  Check the checkbuttons <b>"Run it"</b> to activate
  the commands.

@@ -67,7 +67,7 @@
  See instances of <b>paveWindow</b> and <b>Tab</b> procs in <b>alited</b>'s code to try <r>paver</r>.
 
  See demo of <r>paver</r> usage in <b>alited</b>'s demo:
-   <link>https://github.com/aplsimple/alited/releases//tag/Demos_of_alited-1.4</link>
+   <link>https://github.com/aplsimple/alited/releases//tag/Demos_of_alited-1.6</link>
 
  See also <r>apave</r> package's description:
    <link>https://aplsimple.github.io/en/tcl/pave</link>

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.0b7  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.0  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -410,6 +410,34 @@ namespace eval alited {
     return [string map [list \
       * _ ? _ ~ _ / _ \\ _ \{ _ \} _ \[ _ \] _ \t _ \n _ \r _ \
       | _ < _ > _ & _ , _ : _ \; _ \" _ ' _ ` _] $name]
+  }
+  #_______________________
+
+  proc RestoreArray {arName arSave} {
+    # Restores an array 1:1.
+    #   arName - fully qualified array name
+    #   arSave - saved array's value (got with "array get")
+    # At restoring, new items of $arName are deleted and existing items are updated,
+    # so that after restoring [array get $arName] is equal to $arSave.
+    # Note: "array unset $arName *; array set $arName $arSave" doesn't ensure this equality.
+
+    set ar $arName
+    array set artmp $arSave
+    set tmp [array names artmp]
+    foreach n [array names $arName] {
+      if {$n ni $tmp} {unset [set ar]($n)} {set [set ar]($n) $artmp($n)}
+    }
+  }
+  #_______________________
+
+  proc EnsureArray {arName args} {
+    # Ensures restoring an array at calling a proc.
+    #   arName - fully qualified array name
+    #   args - proc name & arguments
+
+    set arSave [array get $arName]
+    {*}$args
+    RestoreArray $arName $arSave
   }
   #_______________________
 
@@ -1074,7 +1102,6 @@ namespace eval alited {
   source [file join $SRCDIR bar.tcl]
   source [file join $SRCDIR file.tcl]
   source [file join $SRCDIR unit.tcl]
-  source [file join $SRCDIR unit_tpl.tcl]
   source [file join $SRCDIR tree.tcl]
   source [file join $SRCDIR favor.tcl]
   source [file join $SRCDIR favor_ls.tcl]
@@ -1162,7 +1189,9 @@ if {[info exists ALITED_PORT]} {
   }
   exit $res
 } else {
-  # these scripts are sourced to include them in Ruff!'s generated docs
+  # these scripts are sourced at need, here are listed:
+  #  - for including them in Ruff!'s generated docs
+  #  - as a useful info
   namespace eval alited {
     source [file join $::alited::SRCDIR about.tcl]
     source [file join $::alited::SRCDIR check.tcl]
@@ -1170,6 +1199,7 @@ if {[info exists ALITED_PORT]} {
     source [file join $::alited::SRCDIR run.tcl]
     source [file join $::alited::SRCDIR paver.tcl]
     source [file join $::alited::SRCDIR preview.tcl]
+    source [file join $::alited::SRCDIR unit_tpl.tcl]
     source [file join $::alited::LIBDIR addon hl_md.tcl]
     source [file join $::alited::LIBDIR addon hl_html.tcl]
     source [file join $::alited::LIBDIR addon hl_em.tcl]

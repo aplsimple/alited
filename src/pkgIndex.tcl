@@ -1,4 +1,4 @@
-package ifneeded alited 1.6.0b7 [list source [file join $dir alited.tcl]]
+package ifneeded alited 1.6.0 [list source [file join $dir alited.tcl]]
 
 namespace eval ::alited {
 
@@ -45,13 +45,13 @@ Briefly, [alited](https://github.com/aplsimple/alited) is totally quick, being a
 
 For a quick acquaintance of [alited](https://github.com/aplsimple/alited), a few of demo videos are available:
 
-   * [Demos of alited v1.4](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.4)
+   * [Demos of alited](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
 
-For a quick installation, run [an installer of alited](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4). After the installation, run its desktop shortcut.
+For a quick installation, run [an installer of alited](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.6). After the installation, run its desktop shortcut.
 
 ## Links
 
-   * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.4)
+   * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.6)
 
    * [Description](https://aplsimple.github.io/en/tcl/alited/index.html)
    * [Reference](https://aplsimple.github.io/en/tcl/alited/alited.html)
@@ -65,9 +65,9 @@ For a quick installation, run [an installer of alited](https://github.com/aplsim
 
 In fact, [alited](https://github.com/aplsimple/alited) has been developed by its own v0.2 since 24 April 2021. Inspite of permanent overheads of this way, it turned out to be amazingly productive, more and more in the course of time.
 
-When developing a weekend or small Tcl project, you can nicely do it with Geany or Kate or something else. The situation becomes not so nice with middle and large Tcl projects, however good and smart those editors are (they are indeed).
+When developing a weekend or small Tcl project, you can nicely do it with [Geany](https://www.geany.org) or [Kate](https://kate-editor.org) or something else. The situation becomes not so nice with middle and large Tcl projects, however good and smart those editors are (they are indeed).
 
-What is *a large Tcl project*? The [poApps by Paul Obermeier](http://www.posoft.de/index.html) may be considered a canonical large Tcl project. Its main source directories (poApplib, poTcllib, poTklib) contain about 70 Tcl scripts of size 2.5 Mb (total about 150 files, 5 Mb). Also, [alited](https://github.com/aplsimple/alited) by itself is rather large project containing about 60 main Tcl scripts of size 1.7 Mb (total about 1150 files, 5 Mb), so that no wonder its editing session includes 70-80 files.
+What is *the large Tcl project*? The [poApps by Paul Obermeier](http://www.posoft.de/index.html) may be considered the canonical large Tcl project. Its main source directories (poApplib, poTcllib, poTklib) contain about 70 Tcl scripts of size 2.5 Mb (total about 150 files, 5 Mb). Also, [alited](https://github.com/aplsimple/alited) by itself is rather large project containing about 60 main Tcl scripts of size 1.7 Mb (total about 1150 files, 5 Mb), so that no wonder its editing session includes 70-80 files.
 
 It's with the middle and large Tcl projects that [alited](https://github.com/aplsimple/alited) reveals all its best, while it has 0 Kb of dependencies for developing Tcl/Tk 8.6.10+ and is in no way a half gigabyte monster.
 
@@ -77,7 +77,7 @@ You'll just become more productive with [alited](https://github.com/aplsimple/al
 
 ## Typical story
 
-One day I decided to change [e_menu](https://aplsimple.github.io/en/tcl/e_menu/index.html)'s data format because the old .mnu files seemed to be too complex. The [e_menu](https://aplsimple.github.io/en/tcl/e_menu/index.html) project had started in 2018, when I was an active user of Geany. As a result, its main scripts (*e_menu.tcl* and *e_addon.tcl*) were seen as chaotic mixtures of procedures - no structure, no consistency, no order.
+One day I decided to change [e_menu](https://aplsimple.github.io/en/tcl/e_menu/index.html)'s data format because the old .mnu files seemed to be too complex. The [e_menu](https://aplsimple.github.io/en/tcl/e_menu/index.html) project had started in 2018, when I was an active user of [Geany](https://www.geany.org). As a result, its main scripts (*e_menu.tcl* and *e_addon.tcl*) were seen as chaotic mixtures of procedures - no structure, no consistency, no order.
 
 I tried and tried to implement the format change, getting in the real trouble with the task that seemed to be so hard...
 

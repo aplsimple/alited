@@ -452,8 +452,9 @@ namespace eval ::alited {
   ### ________________________ Saving _________________________ ###
   ::msgcat::mcmset ru {
     {Save before bar-menu runs:} {Сохранять при вызовах bar-menu:}
-    {Current file} {Текущий файл}
     {All files} {Все файлы}
+    {Current} {Текущий}
+    {None} {Ничего}
     {'Recent Files' length:} {Длина списка 'Недавние файлы':}
     {'Last Visited' length:} {Длина списка 'Последние входы':}
     {Maximum of project files:} {Число файлов проекта не более:}

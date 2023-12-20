@@ -7,6 +7,7 @@
 ###########################################################
 
 namespace eval unit {
+  variable ilast -1  ;# last selection in the list of templates
 }
 
 # ________________________ Common _________________________ #
@@ -383,6 +384,7 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi tplind} {
     }
   }
   # indent the template
+  Source_unit_tpl
   if {$indent1<$indent2 && [alited::unit_tpl::IsIndented $tplind $tex]} {
     set indent [string repeat { } [incr indent2 -$indent1]]
     set tlist [split $tex \n]
@@ -400,10 +402,30 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi tplind} {
 }
 #_______________________
 
+proc unit::Source_unit_tpl {} {
+  # Sources unit_tpl.tcl.
+
+  namespace upvar ::alited SRCDIR SRCDIR
+  if {![namespace exists ::alited::unit_tpl]} {
+    namespace eval ::alited {
+      source [file join $SRCDIR unit_tpl.tcl]
+    }
+  }
+}
+#_______________________
+
+proc unit::Run_unit_tpl {args} {
+  # Runs Templates dialogue.
+
+  Source_unit_tpl
+  return [::alited::unit_tpl::_run {*}$args]
+}
+#_______________________
+
 proc unit::Add {} {
   # Runs a dialog "Add Template" and adds a chosen template to a text.
 
-  set res [::alited::unit_tpl::_run]
+  set res [Run_unit_tpl]
   if {$res ne {}} {InsertTemplate $res no}
   alited::keys::BindKeys [alited::main::CurrentWTXT] template
 }

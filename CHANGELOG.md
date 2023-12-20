@@ -1,25 +1,31 @@
 # LAST CHANGES:
 
-Version `v1.6.0b7 (14 Dec'23)`
+Version `v1.6.0 (20 Dec'23)`
 
   - BUGFIX: at selecting in infobar: lost Find (blue) highlighting in other files
   - BUGFIX: unit treeview's contract icons at all items (seen in Tk 9.0)
   - BUGFIX: update unit tree at Comment/Uncomment (with keys or covering few units)
+  - BUGFIX: preview.tcl: duplicates, -traverse for Alt+N/T
+  - BUGFIX: Projects/Commands: saving Commands at empty Notes
   - NEW   : way to Tcl/Tk 9.0
+  - NEW   : %f, %d, %pd, %% wildcards for Projects/Commands
   - NEW   : "RE2" button of Find/Replace dialogue: including/excluding RE
   - NEW   : Tools/Run : %H (home dir) wildcard
   - NEW   : menu files (*.em) : %H (home dir) wildcard
   - NEW   : at start, check Tcl runtime path for spaces
   - NEW   : Projects: check for existing directory at "Create a project by template"
-  - NEW   : Find/Replace: [regsub] is used for RE (Replace & Find fields are both RE)
+  - NEW   : Find/Replace: *regsub* is used for RE (Replace & Find fields are both RE)
+  - CHANGE: unit_tpl.tcl sourced at need
+  - CHANGE: paver.tcl: WidgetList instead of savedcode
+  - CHANGE: Preferences/Saving: radiobuttons of "Save before runs"
   - CHANGE: Preferences/Tint: -increment 5
-  - CHANGE: Preferences/Tools/bar-menu: a char icon changed, adjusting to Github
-  - CHANGE: save Find/Replace geometry at its "-geometry" = true and closing alited
+  - CHANGE: Preferences/Tools/bar-menu: 7th char icon changed
+  - CHANGE: save Find/Replace geometry at its *-geometry* = true and closing alited
   - CHANGE: error message on Preferences/Tools/tclsh improved
   - CHANGE: make Control+X reserved
   - CHANGE: mode of locale initializing
   - CHANGE: if tabbar's "Files to Beginning" is off, a current file isn't first to search in session
-  - CHANGE: Preferences / Tools / tclsh,wish,tclkit : empty value isn't reset (means alited's runtime)
+  - CHANGE: Preferences / Tools / tclsh,wish,tclkit: empty value isn't reset, means alited's runtime
   - CHANGE: clearing & refactoring
   - CHANGE: message about incorrect Preferences/Tools/tclsh...
   - CHANGE: packages: e_menu/apave 4.3.3, bartabs 1.6.7, aloupe 1.2

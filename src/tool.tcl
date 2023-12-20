@@ -391,9 +391,9 @@ proc tool::EM_AllStructure {mnu} {
 proc tool::EM_SaveFiles {} {
   # Saves all files before running e_menu, if this mode is set in "Preferences".
   namespace upvar ::alited al al
-  if {$al(EM,save) in {All yes}} {
+  if {$al(EM,save)==1} {
     alited::file::SaveAll
-  } elseif {$al(EM,save) eq {Current}} {
+  } elseif {$al(EM,save)==2} {
     if {[alited::file::IsModified]} {
       alited::file::SaveFile
     }
@@ -500,7 +500,7 @@ proc tool::Runs {mc runs} {
     if {[set run [string trim $run]] ne {} && [string first # $run]!=0} {
       if {[catch {eval $run} e]} {
         catch {exec -- {*}$run} e2
-        append e " / $e2"
+        if {$e2 ne {}} {set e $e2} {append e " / OS ?"}
       }
       alited::info::Put "$mc\"$run\" -> $e"
       update

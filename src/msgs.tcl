@@ -105,6 +105,9 @@ namespace eval ::alited {
     set al(MC,test)        [msgcat::mc Test]
     set al(MC,restart)     [msgcat::mc "For the settings to be active,\nalited application should be restarted."]
     set al(MC,incorrname)  [msgcat::mc {Incorrect name: "%n"}]
+    set al(MC,allfiles)    [msgcat::mc {All files}]
+    set al(MC,currfile)    [msgcat::mc {Current}]
+    set al(MC,none)        [msgcat::mc {None}]
 
     ## _  menu items _ ##
     set al(MC,lookdecl)    [msgcat::mc {Look for Declaration}]

@@ -2144,9 +2144,9 @@ oo::class create ::apave::APaveBase {
         set menuitem [my MakeWidgetName $menupath $v1]
         menu $menuitem -tearoff 0
         set ampos [string first & [string trimleft $v2  \{]]
-        if {$ampos<0} {set ampos 99}
+        if {$ampos>=0} {append v2 " -underline $ampos"}
         set v2 [string map {& {}} $v2]
-        $menupath add cascade -label [lindex $v2 0] {*}[lrange $v2 1 end] -menu $menuitem -underline $ampos
+        $menupath add cascade -label [lindex $v2 0] {*}[lrange $v2 1 end] -menu $menuitem
         continue
       } else {
         error "\npaveme.tcl: erroneous \"$v1\" for \"$nam\"\n"
@@ -2564,7 +2564,6 @@ oo::class create ::apave::APaveBase {
               set attr [subst $attr]
               lassign [::apave::extractOptions attr -tip {} -tooltip {}] tip t2
               set wt $w.$fr
-              if {{-underline} ni $attr} {lappend attr -underline 99}
               $w add [ttk::frame $wt] {*}$attr
               if {[append tip $t2] ne {}} {
                 set tip [my MC $tip]

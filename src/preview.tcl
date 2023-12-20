@@ -8,6 +8,7 @@
 ###########################################################
 
 package require Tk
+wm withdraw .
 
 # _________________________ NS preview ________________________ #
 
@@ -15,15 +16,22 @@ namespace eval ::preview {
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq \
     [file normalize [info script]]} ? 1 : 0]
   variable argfile [lindex $::argv 0]
+  variable prefCheckID [lindex $::argv 1]
+  variable argline {} iniline {}
   variable theme alt CS -2 tint 0 algeom +1+1 title Test
   variable curswidth 2 cursclr {} cursblink 0
   variable SCRIPT [file normalize [info script]]
   variable DIR [file dirname [file dirname $SCRIPT]]
   variable LIBDIR [file join $DIR lib]
   variable PAVEDIR [file join $LIBDIR e_menu src]
-  if {$solo} {source [file join $PAVEDIR apave.tcl]}
 }
 
+namespace eval :: {
+  if {$::preview::solo} {
+    source [file join $::preview::PAVEDIR apave.tcl]
+    source [file join $::preview::LIBDIR hl_tcl hl_tcl.tcl]
+  }
+}
 # ________________________ Procedures _________________________ #
 
 proc ::tracer {args} {
@@ -35,6 +43,7 @@ proc ::preview::InitArgs {} {
   # Reads arguments to preview.
 
   variable argfile
+  variable argline
   variable theme
   variable CS
   variable tint
@@ -43,11 +52,13 @@ proc ::preview::InitArgs {} {
   variable curswidth
   variable cursclr
   variable cursblink
+  variable prefCheckID
   if {![file exists $argfile]} exit
   set ch [open $argfile]
-  set line [gets $ch]
+  set argline [gets $ch]
   close $ch
-  lassign $line algeom theme CS tint curswidth cursblink cursclr title
+  lassign $argline algeom theme CS tint curswidth cursblink cursclr title ID
+  if {$ID ne $prefCheckID} exit
 }
 #_______________________
 
@@ -57,16 +68,25 @@ proc ::preview::Rerun {obj win} {
   #   win - window's path
 
   variable theme
-  variable CS
   variable tint
+  variable iniline
+  variable argline
   set theme_saved $theme
-  set CS_saved $CS
   set tint_saved $tint
   InitArgs
-  if {$theme_saved ne $theme || $CS_saved!=$CS || $tint_saved!=$tint} {
-    exit
-  }
-  after idle [list after 100 "preview::Rerun $obj $win"]
+  if {$iniline ne $argline} exit
+  after 300 "preview::Rerun $obj $win"
+}
+#_______________________
+
+proc ::preview::SyntaxHighlight {} {
+  # Makes a text being syntax highlighted.
+
+  variable curswidth
+  set cs [::apave::obj csCurrent]
+  set wtxt .win.fra.nbk.f1.texftx1
+  ::hl_tcl::hl_init $wtxt -dark [::apave::obj csDark $cs] -multiline 1 -insertwidth $curswidth
+  ::hl_tcl::hl_text $wtxt
 }
 #_______________________
 
@@ -114,12 +134,13 @@ proc ::preview::Run {} {
   $obj makeWindow $win.fra "$title: $theme, $ttl, $tint"
   $obj paveWindow $win.fra {
     {nbk - - - - {pack -expand 1 -fill both} {
-      f1 {-text " Notebook " -underline 2}
-      f2 {-text " Tab #2 " -underline 2}
+      f1 {-t Notebook -underline 0 -tip Tab\ #1}
+      f2 {-t Tab\ #2 -underline 0 -tip Tab\ #2}
+      -traverse yes
     }}
     {seh3 - - - - {pack -fill x}}
     {lab - - - - {pack -side left -fill x} {-t "$::tclversion" -font TkTooltipFont}}
-    {but5 - - - - {pack -side right} {-t "Close" -com exit}}
+    {but5 - - - - {pack -side right} {-t "Close" -com ::preview::Exit}}
   }
   $obj paveWindow $win.fra.nbk.f1 {
     {lab1 - - 1 1    {-st wsn}  {-t "Entry: "}}
@@ -132,7 +153,7 @@ proc ::preview::Run {} {
     {chb1 + L 1 1 {-st ws} {-t "Checkbox" -var ::c2}}
     {lab3 lab2 T 1 1 {-st wsn} {-t "Combobox: "}}
     {cbx1 + L 1 1 {-st ws} {-w 12 -tvar ::en2 -state readonly -values {"Combo 1" "Combo 2" "Combo 3"}}}
-    {lab4 lab3 T 1 1 {-st en} {-t "Labelframe:\nText:\nTooltip:\nScrollbar:\nTool button:\nPopup menu:"}}
+    {lab4 lab3 T 1 1 {-st en} {-t "Labelframe:\nText:\nTooltip:\nScrollbar:\nTool button:\nPopup menu:\nButton:"}}
     {ftx1 + L 1 4 {-st wesn -cw 1 -rw 1} {-h 5 -w 50 -ro 0 -tvar ::preview::SCRIPT -title {Pick a file to view} -filetypes {{{Tcl scripts} .tcl} {{Text files} {.txt .test}}} -wrap none -tabnext .win.fra.but5 -tip "After choosing a file\nthe text will be read-only."}}
   }
   $obj paveWindow $win.fra.nbk.f2 {
@@ -154,25 +175,33 @@ proc ::preview::Run {} {
     {lab6 lab5 T 1 1 {-st wsn} {-t "Date picker: "}}
     {dat + L 1 1 {-st we} {-tvar ::dat1 -title {Pick a date} -dateformat $::datefmt -w 8}}
     {v_2 lab6 T 1 1 {-st ew -rw 1}}
-    {pro2 h_ L 9 1 {-st ns} {-orient vert -mode indeterminate -afteridle {%w start}}}
+    {pro2 h_ L 10 1 {-st ns} {-orient vert -mode indeterminate -afteridle {%w start}}}
   }
+  after idle ::preview::SyntaxHighlight
   after 100 "preview::Rerun $obj $win"
   $obj showModal $win -focus [$obj Ent1] -geometry $algeom
   destroy $win
   $obj destroy
+  Exit
+}
+#_______________________
+
+proc ::preview::Exit {} {
+  # Quits the preview.
+
+  variable argfile
+  catch {file delete $argfile}
+  exit
 }
 
 # ________________________ Run me _________________________ #
 
-  if {$::preview::solo} {
-    wm withdraw .
-    if {$::argc != 1} {
-      puts "\nUsed by alited as follows:\n  [info nameofexecutable] [info script] argfile\n"
-    } else {
-      preview::InitArgs
-      preview::Run
-    }
-    exit
+  if {$::preview::solo && $::argc == 2} {
+    ::preview::InitArgs
+    set ::preview::iniline $::preview::argline
+    ::preview::Run
+  } else {
+    puts "Called by alited."
   }
-
+  exit
 # ________________________ EOF _________________________ #

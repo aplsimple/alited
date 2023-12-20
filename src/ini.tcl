@@ -112,7 +112,7 @@ namespace eval ::alited {
 
   # e_menu settings and arguments
   set al(EM,geometry) {}
-  set al(EM,save) {}
+  set al(EM,save) 2
   set al(EM,PD=) [file join $::alited::CONFIGDIRSTD alited e_menu em_projects]
   set al(EM,Tcl) {}
   set al(EM,TclList) [list]
@@ -537,7 +537,13 @@ proc ini::ReadIniEM {nam val emiName} {
   if {[string trim $val] eq {}} return  ;# options below should be non-empty
   switch -exact $nam {
     emgeometry {set al(EM,geometry) $val}
-    emsave     {set al(EM,save) $val}
+    emsave     {  ;# messy for compatibility:
+      switch $val [list \
+        3 - {} {set al(EM,save) 3} \
+        2 - Current - {Current file} - $al(MC,currfile) {set al(EM,save) 2} \
+        default {set al(EM,save) 1} \
+      ]
+    }
     emtt       {set al(EM,tt=) $val}
     emttList   {set al(EM,tt=List) $val}
     emwt       {set al(EM,wt=) $val}
@@ -579,7 +585,7 @@ proc ini::ReadIniMisc {nam val} {
     - sortList - activemacro {
       set al($nam) $val
     }
-    tplilast {set ::alited::unit_tpl::ilast $val}
+    tplilast {set ::alited::unit::ilast $val}
     incdec {lassign $val al(incdecName) al(incdecDate) al(incdecSize) al(incdecExtn)}
     blifo {set al(lifo) [string is true $val]}
     InRE2 {set ::alited::find::InRE2 [::alited::ProcEOL $val in]}
@@ -877,7 +883,7 @@ proc ini::SaveIni {{newproject no}} {
     puts $chan "$k=$al($k)"
   }
   puts $chan "sortList=$al(sortList)"
-  puts $chan "tplilast=$::alited::unit_tpl::ilast"
+  puts $chan "tplilast=$::alited::unit::ilast"
   puts $chan "incdec=$al(incdecName) $al(incdecDate) $al(incdecSize) $al(incdecExtn)"
   puts $chan "blifo=$al(lifo)"
   puts $chan "activemacro=$al(activemacro)"

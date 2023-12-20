@@ -280,7 +280,6 @@ proc pref::Ok {args} {
 
   fetchVars
   alited::CloseDlg
-  CheckTheming no
   if {$al(INI,confirmexit)>1} {
     set timo "-timeout {$al(INI,confirmexit) ButOK}"
   } else {
@@ -288,7 +287,6 @@ proc pref::Ok {args} {
   }
   set ans [alited::msg okcancel info $al(MC,restart) OK -centerme $win {*}$timo]
   if {$ans} {
-    GetEmSave out
     # check options that can make alited unusable
     if {$al(INI,HUE)<-50 || $al(INI,HUE)>50} {set al(INI,HUE) 0}
     if {$al(FONTSIZE,small)<6 || $al(FONTSIZE,small)>72} {set al(FONTSIZE,small) 9}
@@ -351,12 +349,14 @@ proc pref::Cancel {args} {
   #   args - not empty, if called by Esc, Alt+F4 or "X" button
 
   fetchVars
-  GetEmSave out
   if {[llength $args]} {
     set ischanged [expr { \
       $al(THEME) ne $opc1 || $al(INI,CS) ne [GetCS] || $al(EM,CS) ne [GetCS 2]}]
     foreach o [SavedOptions] {
-      if {[info exist data($o)] && $al($o) ne $data($o)} {set ischanged yes}
+      if {[info exist data($o)] && $al($o) ne $data($o)} {
+        set ischanged yes
+        break
+      }
     }
     for {set i 0} {$i<$em_Num} {incr i} {
       catch {
@@ -373,7 +373,6 @@ proc pref::Cancel {args} {
       }
     }
     if {$ischanged} {
-      GetEmSave in
       if {![alited::msg okcancel warn {Changes will be lost!} CANCEL]} return
     }
   }
@@ -403,7 +402,6 @@ proc pref::Tab {tab {nt ""} {doit no}} {
     nbk5 {set but Keys}
     nbk6 {set but Tools}
   }
-  CheckTheming no
   [$obPrf But$but] configure -style TButtonWestHL
   fillCan [$obPrf Can$tab] yes
   if {$tab ne $curTab || $doit} {
@@ -504,7 +502,6 @@ proc pref::General_Tab1 {} {
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
     {.labTheme - - 1 1 {-st e -pady 1 -padx 3} {-t {Ttk theme:}}}
     {.opc1 + L 1 1 {-st sw -pady 1} {::alited::pref::opc1 ::alited::pref::opcThemes {-width 21 -compound left -image alimg_gulls -tip {-indexedtips 5 "-BALTIP {$::alited::al(MC,needcs)} -MAXEXP 1"}} {}}}
-    {.chbPrv + L 1 1 {-padx 20} {-t "$::alited::al(MC,test)" -var ::alited::pref::preview -com {alited::pref::CheckTheming yes yes}}}
     {.labCS .labTheme T 1 1 {-st e -pady 1 -padx 3} {-t {Color scheme:}}}
     {.opc2 + L 1 1 {-st sw -pady 1} {::alited::pref::opcc ::alited::pref::opcColors {-width 21 -compound left -image alimg_color -com alited::pref::CheckCS -tip {-indexedtips \
       0 {$::alited::al(MC,nocs)} \
@@ -520,8 +517,9 @@ proc pref::General_Tab1 {} {
       30 {$::alited::al(MC,fitcs): sun-valley-dark} \
       31 {$::alited::al(MC,fitcs): darkbrown} \
       }} {alited::pref::opcToolPre %a}}}
+    {.butOK + L 1 1 {-padx 20} {-t "$::alited::al(MC,test)" -com {alited::pref::CheckTheming yes yes}}}
     {.labHue .labCS T 1 1 {-st e -pady 1 -padx 3} {-t Tint:}}
-    {.SpxHue + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(INI,HUE) -from -50 -to 50 -increment 5 -tip {$::alited::al(MC,hue)}}}
+    {.spxHue + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(INI,HUE) -from -50 -to 50 -increment 5 -tip {$::alited::al(MC,hue)}}}
     {.labCurw .labHue T 1 1 {-st e -pady 1 -padx 3} {-t {Cursor width:}}}
     {.spxCurw + L 1 1 {-st sw -pady 1 -padx 3} {-tvar ::alited::al(CURSORWIDTH) -from 1 -to 8}}
     {.labCC + L 1 1 {-st we -pady 1 -padx 3} {-t {Color of cursor:}}}
@@ -549,7 +547,6 @@ proc pref::General_Tab1 {} {
 proc pref::General_Tab2 {} {
   # Serves to layout "General/Saving" tab.
 
-  GetEmSave in
   return {
     {v_ - - 1 1}
     {fra v_ T 1 1 {-st nsew -cw 1 -rw 1}}
@@ -567,7 +564,9 @@ proc pref::General_Tab2 {} {
     {.labSonsave .labSonclose T 1 1 {-st e -pady 1 -padx 3} {-t "saving a file:"}}
     {.swiOnsave + L 1 1 {-st sw -pady 1 -padx 3} {-var ::alited::al(INI,save_onsave)}}
     {.labSave .labSonsave T 1 1 {-st e -pady 1 -padx 3} {-t "Save before bar-menu runs:"}}
-    {.cbxSave + L 1 2 {-st sw -pady 1} {-values {$::alited::al(pref,saveonrun)} -tvar ::alited::al(EM,save) -state readonly -w 20}}
+    {.rad1 + L 1 1 {-st sw -padx 3} {-var ::alited::al(EM,save) -value 1 -t "$::alited::al(MC,allfiles)"}}
+    {.rad2 + L 1 1 {-st sw -padx 3} {-var ::alited::al(EM,save) -value 2 -t "$::alited::al(MC,currfile)"}}
+    {.rad3 + L 1 1 {-st sw -padx 3} {-var ::alited::al(EM,save) -value 3 -t "$::alited::al(MC,none)"}}
     {.seh3 .labSave T 1 4 {-st ew -pady 5}}
     {.labRecnt + T 1 1 {-st e -pady 1 -padx 3} {-t "'Recent Files' length:"}}
     {.spxRecnt + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(INI,RECENTFILES) -from 10 -to 50}}
@@ -577,7 +576,7 @@ proc pref::General_Tab2 {} {
     {.spxMaxFiles + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(MAXFILES) -from 1000 -to 9999}}
     {.seh4 .labMaxFiles T 1 4 {-st ew -pady 5}}
     {.labBackup + T 1 1 {-st e -pady 1 -padx 3} {-t "Back up files to a project's subdirectory:"}}
-    {.CbxBackup + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(BACKUP) -values {{} .bak} -state readonly -w 6 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." -afteridle alited::pref::CbxBackup -selcombobox alited::pref::CbxBackup}}
+    {.cbxBackup + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(BACKUP) -values {{} .bak} -state readonly -w 6 -tip "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." -afteridle alited::pref::CbxBackup -selcombobox alited::pref::CbxBackup}}
     {.LabMaxBak + L 1 1 {-st e -pady 1 -padx 1} {-t "  Maximum:"}}
     {.SpxMaxBak + L 1 1 {-st sw -pady 1 -padx 1} {-tvar ::alited::al(MAXBACKUP) -from 1 -to 99 -tip {$::alited::al(MC,maxbak)}}}
     {.labBell .labBackup T 1 1 {-st e -pady 1 -padx 3} {-t "Bell at warnings:"}}
@@ -639,27 +638,6 @@ proc pref::CbxBackup {} {
   if {$::alited::al(BACKUP) eq {}} {set state disabled} {set state normal}
   [$obPrf SpxMaxBak] configure -state $state
   [$obPrf LabMaxBak] configure -state $state
-}
-#_______________________
-
-proc pref::GetEmSave {to} {
-  # Gets a name of setting "Save before run".
-  #   to - if "in", gets a localized name; if "out", gets English name
-
-  fetchVars
-  set savcur [msgcat::mc {Current file}]
-  set savall [msgcat::mc {All files}]
-  set al(pref,saveonrun) [list {} $savcur $savall]
-  if {$to eq {in}} {
-    switch -exact $al(EM,save) {
-      Current {set al(EM,save) $savcur}
-      All     {set al(EM,save) $savall}
-    }
-  } elseif {$al(EM,save) eq $savcur} {
-    set al(EM,save) Current
-  } elseif {$al(EM,save) eq $savall} {
-    set al(EM,save) All
-  }
 }
 #_______________________
 
@@ -757,29 +735,27 @@ proc pref::CheckTheming {{doit yes} {force no}} {
 
   namespace upvar ::alited SRCDIR SRCDIR
   fetchVars
-  set cs [CheckCS]
   set fname [file join [alited::tool::EM_dir] preview~]
-  if {!$force && (!$doit || !$preview || ![winfo exists $win])} {
+  if {!$doit || (!$force && ![file exists $fname])} {
     catch {file delete $fname}
-    catch {unset al(CheckTheming)}
+    catch {unset al(checkTheming)}
     return
   }
-  set foc [focus]
+  set cs [CheckCS]
   if {$al(CURSORCOLOR) ne {}} {set cc $al(CURSORCOLOR)} {set cc "{}"}
-  set thopts "$opc1 $cs $al(INI,HUE) $al(CURSORWIDTH) $al(ED,BlinkCurs) $cc"
-  set timo 100
-  if {$force && $preview || \
-  [info exists al(CheckTheming)] && $al(CheckTheming) ne $thopts} {
+  if {[string is double -strict $al(INI,HUE)]} {set hue $al(INI,HUE)} {set hue 0}
+  if {[string is double -strict $al(CURSORWIDTH)]} {set cw $al(CURSORWIDTH)} {set cw 2}
+  set thopts "$opc1 $cs $hue $cw $al(ED,BlinkCurs) $cc"
+  if {![info exists al(checkTheming)] || $al(checkTheming) ne $thopts || $force} {
+    incr al(prefCheckID)
     lassign [split [wm geometry $win] x+] w h x y
     set ch [open $fname w]
-    puts $ch "+[expr {$x+$w/6}]+[expr {$y+$h/3}] $thopts {$::alited::al(MC,test)}"
+    puts $ch "+[expr {$x+$w/6}]+[expr {$y+$h/3}] $thopts {$::alited::al(MC,test)} $al(prefCheckID)"
     close $ch
-    after 100 [list alited::Runtime [file join $SRCDIR preview.tcl] $fname]
-    set timo 500
+    alited::Runtime [file join $SRCDIR preview.tcl] $fname $al(prefCheckID)
+    set al(checkTheming) $thopts
   }
-  set al(CheckTheming) $thopts
-  after $timo alited::pref::CheckTheming
-  focus -force $foc
+  after 100 {alited::pref::CheckTheming yes}
 }
 
 # ________________________ Tab "Editor" _________________________ #
@@ -1070,7 +1046,7 @@ proc pref::Template_Tab {} {
     {.labt .labd T 1 1 {-st e -pady 1 -padx 3} {-t "Time format:"}}
     {.entt + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(TPL,%t) -w 30}}
     {.seh .labt T 1 2 {-pady 3}}
-    {.but + T 1 1 {-st w} {-t {$::alited::al(MC,tpllist)} -com {alited::unit_tpl::_run no "-centerme $::alited::pref::win"} -tabnext alited::Tnext}}
+    {.but + T 1 1 {-st w} {-t {$::alited::al(MC,tpllist)} -com {alited::EnsureArray ::alited::al alited::unit::Run_unit_tpl no "-centerme $::alited::pref::win"} -tabnext alited::Tnext}}
   }
 }
 
@@ -1464,9 +1440,9 @@ proc pref::Runs_Tab {tab} {
     {v_ - - 1 1}
     {fra + T 1 1 {-st nsew -cw 1 -rw 1} {-afteridle ::alited::pref::Em_ShowAll}}
     {fra.fraButs - - 1 1  {pack -anchor w}}
-    {.BtTUp - - - - {pack -side left} {-image alimg_up -com ::alited::pref::UpRun -tip {Move an item up}}}
-    {.BtTDown - - - - {pack -side left} {-image alimg_down -com ::alited::pref::DownRun -tip {Move an item down}}}
-    {.BtTDelRun - - - - {pack -side left} {-image alimg_delete -com ::alited::pref::DelRun -tip {Delete an item}}}
+    {.btTUp - - - - {pack -side left} {-image alimg_up -com ::alited::pref::UpRun -tip {Move an item up}}}
+    {.btTDown - - - - {pack -side left} {-image alimg_down -com ::alited::pref::DownRun -tip {Move an item down}}}
+    {.btTDelRun - - - - {pack -side left} {-image alimg_delete -com ::alited::pref::DelRun -tip {Delete an item}}}
     {fra.ScfRuns - - 1 1  {pack -fill both -expand 1}}
     {tcl {
         set prt "- -"
@@ -1760,7 +1736,6 @@ proc pref::_create {tab} {
   } else {
     after idle "::alited::pref::Tab nbk" ;# first entering
   }
-  bind $win.fra.fraR.nbk <<NotebookTabChanged>> {alited::pref::CheckTheming no}
   bind $win <Control-o> alited::ini::EditSettings
   bind $win <F1> "[$obPrf ButHelp] invoke"
   $obPrf untouchWidgets *.texSample *.texCSample
@@ -1777,7 +1752,6 @@ proc pref::_create {tab} {
   foreach arr {data keys prevkeys savekeys} {array unset $arr *}
   catch {destroy $win}
   $obPrf destroy
-  unset -nocomplain al(CheckTheming)
   unset -nocomplain al(CheckCS)
   return $res
 }

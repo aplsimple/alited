@@ -14,7 +14,7 @@ namespace eval paver {
   variable win2 {}
   variable pobj ::alited::paver::pavedobj
   variable widgetlist {} paverttl {} paverTID {} geometry {}
-  variable code {} savedcode {} modtime {} viewgeo {}
+  variable code {} modtime {} viewgeo {}
   variable viewpos 1.0
 }
 #_______________________
@@ -85,12 +85,11 @@ proc paver::Viewer {} {
   namespace upvar ::alited al al obDl2 obDl2
   variable paverttl
   variable code
-  variable savedcode
   variable geometry
   variable viewgeo
   variable viewpos
   variable win2
-  if {$code eq {}} WidgetList
+  WidgetList
   if {$code eq {}} {
     MessageNotList
     return
@@ -107,9 +106,8 @@ proc paver::Viewer {} {
       -cmdpos ::alited::None -font {$al(FONT,txt)} ; \
     ::hl_tcl::hl_text \$txt}"
   after idle "set ::alited::paver::win2 \[$obDl2 dlgPath\]"
-  set savedcode $code
   $obDl2 misc info $paverttl $code \
-    {Save ::alited::paver::HandleViewer Close ::alited::paver::ExitViewer} TEXT \
+    {OK ::alited::paver::HandleViewer Close ::alited::paver::ExitViewer} TEXT \
     -modal no -waitvar 1 -onclose ::alited::paver::ExitViewer \
     -text 1 -ro 0 -rotext ::alited::paver::code -minsize {300 200} \
     -w {40 80} -h {5 20} -resizable 1 -pos $viewpos {*}$geo
@@ -124,21 +122,19 @@ proc paver::HandleViewer {{act 1} args} {
   variable win2
   variable viewpos
   variable code
-  variable savedcode
   variable viewgeo
   catch {
     set viewgeo [wm geometry $win2]
     if {$act} {
       set tex [$obDl2 TexM]
-      set savedcode [string trim [$tex get 1.0 end]]\n
+      set code [string trim [$tex get 1.0 end]]\n
       set viewpos [$tex index insert]
-      after idle [list alited::paver::_create $savedcode]
+      after idle [list alited::paver::_create $code]
       after idle [list after 99 [list after 99 [list after 99 [list focus $tex]]]]
     } else {
       $obDl2 res $win2 0
       destroy $win2
     }
-    set code $savedcode
   }
 }
 #_______________________

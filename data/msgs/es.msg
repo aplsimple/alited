@@ -453,8 +453,9 @@ namespace eval ::alited {
   ### ________________________ Saving _________________________ ###
   ::msgcat::mcmset es {
     {Save before bar-menu runs:} {Guardar antes de que se ejecute bar-menu:}
-    {Current file} {Archivo actual}
-    {All files} {Todos los archivos}
+    {All files} {Todos archivos}
+    {Current} {Actual}
+    {None} {Ninguno}
     {'Recent Files' length:} {Longitud de 'Archivos recientes':}
     {'Last Visited' length:} {Longitud de 'Últimas visitas':}
     {Maximum of project files:} {Máximo de archivos de proyecto:}

@@ -27,7 +27,6 @@ namespace eval ::alited::unit_tpl {
   variable tpl {}          ;# current template's name
   variable place 1         ;# current template's "where to place"
   variable indent {}       ;# current indent flag
-  variable ilast -1        ;# last selection in the list of templates
   variable dosel yes       ;# if yes, enables "Select" action
 }
 
@@ -61,8 +60,7 @@ proc unit_tpl::ReadIni {} {
 proc unit_tpl::SaveIni {} {
   # Puts templates' data to al(TPL,list) to save in alited.ini.
 
-  variable ilast
-  set ilast [Selected index no]
+  set ::alited::unit::ilast [Selected index no]
   RegisterKeys
   alited::ini::SaveIni
 }
@@ -79,7 +77,6 @@ proc unit_tpl::RegisterKeys {} {
   variable tplpos
   variable tplpla
   variable tplinds
-  variable ilast
   alited::keys::Delete template
   set al(TPL,list) [list]
   foreach tpl $tpllist key $tplkeys cont $tplcont pos $tplpos pla $tplpla ind $tplinds {
@@ -121,7 +118,6 @@ proc unit_tpl::UpdateTree {{saveini yes}} {
   variable tpllist
   variable tplkeys
   variable tplid
-  variable ilast
   set tree [$obTpl TreeTpl]
   $tree delete [$tree children {}]
   set tplid [list]
@@ -131,7 +127,7 @@ proc unit_tpl::UpdateTree {{saveini yes}} {
     if {$item0 eq {}} {set item0 $item}
     lappend tplid $item
   }
-  if {$item0 ne {} && $ilast<0} {Focus $item0}
+  if {$item0 ne {} && $::alited::unit::ilast<0} {Focus $item0}
   ClearCbx
   if {$saveini} SaveIni
 }
@@ -507,7 +503,6 @@ proc unit_tpl::_create {{geom ""}} {
   variable obTpl
   variable win
   variable tpllist
-  variable ilast
   variable tplkey
   variable dosel
   set tipson [baltip::cget -on]
@@ -569,9 +564,9 @@ proc unit_tpl::_create {{geom ""}} {
   bind [$obTpl CbxKey] <FocusOut> ::alited::unit_tpl::ClearCbx
   bind $win <F1> "[$obTpl ButHelp] invoke"
   if {[llength $tpllist]} {set foc $tree} {set foc [$obTpl EntTpl]}
-  if {$ilast>-1} {
-    Select $ilast
-    after idle "alited::unit_tpl::Select $ilast"  ;# just to highlight
+  if {[set il $::alited::unit::ilast] > -1} {
+    Select $il
+    after idle "alited::unit_tpl::Select $il"  ;# just to highlight
   }
   after 500 ::alited::unit_tpl::HelpMe ;# show an introduction after a short pause
   set res [$obTpl showModal $win -onclose ::alited::unit_tpl::Cancel -focus $foc {*}$geom]
