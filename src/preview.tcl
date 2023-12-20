@@ -203,5 +203,4 @@ proc ::preview::Exit {} {
   } else {
     puts "Called by alited."
   }
-  exit
 # ________________________ EOF _________________________ #

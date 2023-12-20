@@ -418,7 +418,7 @@ namespace eval alited {
     #   arName - fully qualified array name
     #   arSave - saved array's value (got with "array get")
     # At restoring, new items of $arName are deleted and existing items are updated,
-    # so that after restoring [array get $arName] is equal to $arSave.
+    # so that after restoring *array get $arName* is equal to $arSave.
     # Note: "array unset $arName *; array set $arName $arSave" doesn't ensure this equality.
 
     set ar $arName
