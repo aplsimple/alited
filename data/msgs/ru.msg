@@ -49,6 +49,7 @@ namespace eval ::alited {
     {Indent} {Добавить отступ}
     {Unindent} {Убрать отступ}
     {Comment} {Закомментить}
+    {Comment:} {Комментарий:}
     {Uncomment} {Раскомментить}
     {Find Next} {Искать дальше}
     {Look for Declaration} {Искать объявление}
@@ -596,6 +597,7 @@ namespace eval ::alited {
     {Play Macro} {Прокрутить макрос}
     {Record Macro} {Записать макрос}
     {Delete Macro} {Удалить макрос}
+    {Record mouse} {Записать мышь}
   }
 
   ## ________________________ Misc. ________________________ ##

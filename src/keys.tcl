@@ -123,7 +123,9 @@ proc keys::ReservedList {} {
     F1 \
     F10 \
     Control-A \
+    Control-B \
     Control-C \
+    Control-E \
     Control-F \
     Control-N \
     Control-O \

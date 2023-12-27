@@ -12,7 +12,7 @@
  To find and list files in projects, these may fit:
    echo ----------------
    pwd
-   find . -name '*rarebird*' -printf '[%h][%%f]\\n'
+   find . -name '*rarebird*' -printf '%h/%%f\\n'
 
  Wildcards used:
    %f  - current file

@@ -1299,6 +1299,16 @@ proc ::apave::InsertChar {wt ch} {
 
   $wt insert [$wt index insert] $ch
 }
+#_______________________
+
+proc ::apave::CursorToBEOL {wt where} {
+  # Sets the cursor to the real start/end of text line.
+  #   wt - text's path
+  #   where - where to set
+
+  set idx [$wt index insert]
+  ::tk::TextSetCursor $wt [$wt index "$idx $where"]
+}
 
 # ________________________ ObjectProperty _________________________ #
 #
@@ -1950,26 +1960,25 @@ oo::class create ::apave::ObjectTheming {
       my Ttk_style map $ts -lightcolor [list focus $bclr]
       my Ttk_style map $ts -darkcolor [list focus $bclr]
     }
-    my Ttk_style configure TLabelframe.Label -foreground $thlp  ;# bclr $tfg2
-    my Ttk_style configure TLabelframe.Label -background $tbg1
-    my Ttk_style configure TLabelframe.Label -font $fontdef
+    ttk::style configure TLabelframe.Label -foreground $thlp -background $tbg1 -font $fontdef
     foreach ts {TNotebook TFrame} {
       my Ttk_style configure $ts -background $tbg1
       my Ttk_style map $ts -background [list focus $tbg1 !focus $tbg1]
     }
-    foreach ts {TNotebook.Tab} {
-      my Ttk_style configure $ts -font $fontdef
-      my Ttk_style map $ts -foreground [list {selected !active} $tfgS {!selected !active} $tfgM active $aclr {selected active} $aclr]
-      my Ttk_style map $ts -background [list {selected !active} $tbgS {!selected !active} $tbgM {!selected active} $tbg2 {selected active} $tbg2]
-    }
+    ttk::style configure TNotebook.Tab -font $fontdef
+    ttk::style map TNotebook.Tab -foreground [list {selected !active} $tfgS \
+      {!selected !active} $tfgM active $aclr {selected active} $aclr] \
+      -background [list {selected !active} $tbgS {!selected !active} $tbgM \
+      {!selected active} $tbg2 {selected active} $tbg2]
     foreach ts {TEntry Treeview TSpinbox TCombobox TCombobox.Spinbox TMatchbox TNotebook.Tab TScale} {
       my Ttk_style map $ts -lightcolor [list focus $bclr active $bclr]
       my Ttk_style map $ts -darkcolor [list focus $bclr active $bclr]
     }
-    my Ttk_style map TScrollbar -troughcolor [list !active $tbg1 active $tbg2]
-    my Ttk_style map TScrollbar -background [list !active $tbg1 disabled $tbg1 {!selected !disabled active} $tbgS]
-    my Ttk_style map TProgressbar -troughcolor [list !active $tbg2 active $tbg1]
-    my Ttk_style configure TProgressbar -background $tbgS
+    ttk::style configure TScrollbar -arrowcolor $tfg1
+    ttk::style map TScrollbar -troughcolor [list !active $tbg1 active $tbg2] \
+      -background [list !active $tbg1 disabled $tbg1 {!selected !disabled active} $tbgS]
+    ttk::style map TProgressbar -troughcolor [list !active $tbg2 active $tbg1]
+    ttk::style configure TProgressbar -background $tbgS
     if {[set cs [my csCurrent]]<20} {
       ttk::style conf TSeparator -background #a2a2a2
     } elseif {$cs<23} {
@@ -1994,24 +2003,25 @@ oo::class create ::apave::ObjectTheming {
       my Ttk_style configure $ts -insertwidth $::apave::_CS_(CURSORWIDTH)
       if {$ts eq {TCombobox}} {
         # combobox is sort of individual
-        my Ttk_style configure $ts -foreground $tfg1
-        my Ttk_style configure $ts -background $tbg1
-        my Ttk_style map $ts -background [list {readonly focus} $tbg2 {active focus} $tbg2]
-        my Ttk_style map $ts -foreground [list {readonly focus} $tfg2 {active focus} $tfg2]
-        my Ttk_style map $ts -fieldforeground [list {active focus} $tfg2 readonly $tfg2 disabled $tfgD]
-        my Ttk_style map $ts -fieldbackground [list {active focus} $tbg2 {readonly focus} $tbg2 {readonly !focus} $tbg1 disabled $tbgD]
-        my Ttk_style map $ts -focusfill	[list {readonly focus} $tbgS]
+        ttk::style configure $ts -foreground $tfg1 -background $tbg1 -arrowcolor $tfg1
+        ttk::style map $ts -background [list {readonly focus} $tbg2 {active focus} $tbg2] \
+          -foreground [list {readonly focus} $tfg2 {active focus} $tfg2] \
+          -fieldforeground [list {active focus} $tfg2 readonly $tfg2 disabled $tfgD] \
+          -fieldbackground [list {active focus} $tbg2 {readonly focus} $tbg2 {readonly !focus} $tbg1 disabled $tbgD] \
+          -focusfill [list {readonly focus} $tbgS] -arrowcolor [list disabled $tfgD]
       } else {
         my Ttk_style configure $ts -foreground $tfg2
         my Ttk_style configure $ts -background $tbg2
         if {$ts eq {Treeview}} {
-          my Ttk_style map $ts -foreground [list readonly $tfgD disabled $tfgD {selected focus} $tfgS {selected !focus} $thlp]
-          my Ttk_style map $ts -background [list readonly $tbgD disabled $tbgD {selected focus} $tbgS {selected !focus} $tbg1]
+          ttk::style map $ts -foreground [list readonly $tfgD disabled $tfgD {selected focus} $tfgS {selected !focus} $thlp] \
+            -background [list readonly $tbgD disabled $tbgD {selected focus} $tbgS {selected !focus} $tbg1]
         } else {
           my Ttk_style map $ts -foreground [list readonly $tfgD disabled $tfgD selected $tfgS]
           my Ttk_style map $ts -background [list readonly $tbgD disabled $tbgD selected $tbgS]
           my Ttk_style map $ts -fieldforeground [list readonly $tfgD disabled $tfgD]
           my Ttk_style map $ts -fieldbackground [list readonly $tbgD disabled $tbgD]
+          my Ttk_style map $ts -arrowcolor [list disabled $tfgD]
+          my Ttk_style configure $ts -arrowcolor $tfg1
         }
       }
     }
@@ -2019,11 +2029,9 @@ oo::class create ::apave::ObjectTheming {
     ttk::style map Heading -foreground [list active $aclr]
     option add *Listbox.font $fontdef
     option add *Menu.font $fontdef
-    my Ttk_style configure TMenubutton -foreground $tfgM
-    my Ttk_style configure TMenubutton -background $tbgM
-    my Ttk_style map TMenubutton -arrowcolor [list disabled $tfgD]
-    my Ttk_style configure TButton -foreground $tfgM
-    my Ttk_style configure TButton -background $tbgM
+    ttk::style configure TMenubutton -foreground $tfgM -background $tbgM -arrowcolor $tfg1
+    ttk::style map TMenubutton -arrowcolor [list disabled $tfgD]
+    ttk::style configure TButton -foreground $tfgM -background $tbgM
     foreach {nam clr} {back tbg2 fore tfg2 selectBack tbgS selectFore tfgS} {
       option add *Listbox.${nam}ground [set $clr]
     }

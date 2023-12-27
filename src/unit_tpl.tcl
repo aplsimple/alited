@@ -499,7 +499,7 @@ proc unit_tpl::_create {{geom ""}} {
   # Creates "Templates" dialogue.
   #   geom - "-geometry" option for showModal
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al tplgeometry tplgeometry
   variable obTpl
   variable win
   variable tpllist
@@ -508,10 +508,10 @@ proc unit_tpl::_create {{geom ""}} {
   set tipson [baltip::cget -on]
   baltip::configure -on $al(TIPS,Templates)
   if {$dosel} {
-    set ::alited::unit_tpl::PACKOK {}
+    set forget {}
     set ::alited::unit_tpl::BUTEXIT Cancel
   } else {
-    set ::alited::unit_tpl::PACKOK forget
+    set forget forget
     set ::alited::unit_tpl::BUTEXIT Close
   }
   ::apave::APave create $obTpl $win
@@ -519,22 +519,22 @@ proc unit_tpl::_create {{geom ""}} {
   $obTpl paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.btTAd - - - - {pack -side top -anchor n} {-com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
-    {.fra.btTChg - - - - {pack -side top} {-com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
-    {.fra.btTDel - - - - {pack -side top} {-com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big}}
+    {.fra.btTAd - - - - {pack $forget -side top -anchor n} {-com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
+    {.fra.btTChg - - - - {pack $forget -side top} {-com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
+    {.fra.btTDel - - - - {pack $forget -side top} {-com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill x -pady 2} {}}
-    {.fra.btTImp - - - - {pack -side top} {-com ::alited::unit_tpl::Import -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big}}
+    {.fra.btTImp - - - - {pack $forget -side top} {-com ::alited::unit_tpl::Import -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big}}
     {.TreeTpl - - - - {pack -side left -expand 1 -fill both} {-h 12 -show headings -columns {C1 C2} -displaycolumns {C1 C2} -columnoptions "C2 {-stretch 0}"}}
     {.sbvTpls + L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
     {.h_ - - 1 1 {-st we} {-h 20}}
-    {.labTpl .h_ T 1 1 {-st we} {-anchor center -t "Current template:"}}
-    {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 50 -tip {-BALTIP {$::alited::al(MC,tplent1)} -MAXEXP 1}}}
-    {.CbxKey + L 1 1 {-st we} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {-BALTIP {$::alited::al(MC,tplent3)} -MAXEXP 1}}}
-    {fra1.fratex fra1.labTpl T 10 10 {-st nsew} {}}
+    {.labTpl .h_ T 1 1 {-st e} {-anchor center -t "Current template:"}}
+    {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 45 -tip {-BALTIP {$::alited::al(MC,tplent1)} -MAXEXP 1}}}
+    {.CbxKey + L 1 1 {-st w} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {-BALTIP {$::alited::al(MC,tplent3)} -MAXEXP 1}}}
+    {fratex fra1 T 10 10 {-st nsew -rw 1 -cw 1} {}}
     {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip  {-BALTIP {$::alited::al(MC,tplent2)} -MAXEXP 1}}}
-    {.sbvTpl + L - - {pack -side left -fill both} {}}
-    {fra2 fra1 T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
+    {.sbvTpl + L - - {pack} {}}
+    {fra2 fratex T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Place after:"}}
     {.radA - - - - {pack -side left -padx 8}  {-t "line" -var ::alited::unit_tpl::place -value 1 -tip {-BALTIP {$al(MC,tplaft1)} -UNDER 4}}}
     {.radB - - - - {pack -side left -padx 8}  {-t "unit" -var ::alited::unit_tpl::place -value 2 -tip {-BALTIP {$al(MC,tplaft2)} -UNDER 4}}}
@@ -546,7 +546,7 @@ proc unit_tpl::_create {{geom ""}} {
     {fra3 + T 1 10 {-st nsew}}
     {.ButHelp - - - - {pack -side left} {-t {$::alited::al(MC,help)} -tip F1 -command ::alited::unit_tpl::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
-    {.butOK - - - - {pack $::alited::unit_tpl::PACKOK -side left -padx 2} {-t "$::alited::al(MC,select)" -command ::alited::unit_tpl::Ok}}
+    {.butOK - - - - {pack $forget -side left -padx 2} {-t "$::alited::al(MC,select)" -command ::alited::unit_tpl::Ok}}
     {.butCancel - - - - {pack -side left} {-t $::alited::unit_tpl::BUTEXIT -command ::alited::unit_tpl::Cancel}}
   }
   set tree [$obTpl TreeTpl]
@@ -569,7 +569,16 @@ proc unit_tpl::_create {{geom ""}} {
     after idle "alited::unit_tpl::Select $il"  ;# just to highlight
   }
   after 500 ::alited::unit_tpl::HelpMe ;# show an introduction after a short pause
-  set res [$obTpl showModal $win -onclose ::alited::unit_tpl::Cancel -focus $foc {*}$geom]
+  set geo {-resizable 1 -minsize {640 480}}
+  if {$geom ne {}} {
+    set geo $geom
+  } elseif {$tplgeometry ne {}} {
+    append geo " -geometry $tplgeometry"
+  }
+  set res [$obTpl showModal $win -onclose ::alited::unit_tpl::Cancel -focus $foc {*}$geo]
+  if {$geom eq {}} {
+    set tplgeometry [wm geometry $win]
+  }
   baltip::configure {*}$tipson
   catch {destroy $win}
   $obTpl destroy

@@ -5,9 +5,7 @@
 # Brief:   Handles Ukranian localization.
 # License: MIT.
 
-
-
-# ________________________ Ukranian vs Russian _________________________ #
+# ________________________ Ukranian letters _________________________ #
 
 # ҐґЄєІіЇї
 
@@ -55,6 +53,7 @@ namespace eval ::alited {
     {Indent} {Додати відступ}
     {Unindent} {Убрати відступ}
     {Comment} {Закоментувати}
+    {Comment:} {Коментар:}
     {Uncomment} {Разкоментувати}
     {Find Next} {Шукати далі}
     {Look for Declaration} {Шукати декларацію}
@@ -604,6 +603,7 @@ namespace eval ::alited {
     {Play Macro} {Прокрутити макрос}
     {Record Macro} {Записати макрос}
     {Delete Macro} {Видалити макрос}
+    {Record mouse} {Записати мишу}
   }
 
   ## ________________________ Misc. ________________________ ##

@@ -950,14 +950,7 @@ proc find::btTRetry {} {
     lassign [split $geo x+] w1 h1 x y
   }
   # set the mouse pointer on the button
-  update
-  set w1 [$obFND BtTretry]
-  set w2 [winfo parent $w1]
-  set w3 [winfo parent $w2]
-  lassign [split [winfo geometry $w2] +x] - - x2 y2
-  lassign [split [winfo geometry $w1] +x] w h x1 y1
-  event generate $w3 <Motion> -warp 1 \
-    -x [expr {$x1+$x2+int($w/2)}] -y [expr {$y1+$y2+int($h/2)}]
+  ::alited::MouseOnWidget [$obFND BtTretry]
 }
 
 # ________________________ Helpers _________________________ #

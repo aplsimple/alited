@@ -150,7 +150,7 @@ proc edit::Comment {} {
   foreach {l1 l2} [lrange $sels 1 end] {
     for {set l $l1} {$l<=$l2} {incr l} {
       if {$ch eq "#"} {
-        # comment-out with TODO comments: to see / to find / to do them afterwards
+        # comment-out with TODO comment: to see / to find / to do them afterwards
         $wtxt insert $l.0 $ch!
         # for Tcl code: it needs to disable also all braces with #\{ #\} patterns
         set line [$wtxt get $l.0 $l.end]
@@ -184,7 +184,7 @@ proc edit::UnComment {} {
       if {[string range $line $isp $isp+$lch0] eq $ch} {
         set lch2 $lch
         if {$ch eq "#"} {
-          if {[regexp {^\s*#!} $line]} {incr lch2}  ;# remove the todo comments
+          if {[regexp {^\s*#!} $line]} {incr lch2}  ;# remove TODO comment
         }
         $wtxt delete $l.$isp "$l.$isp + ${lch2}c"
         if {$ch eq "#"} {
@@ -562,6 +562,13 @@ proc edit::MacroFile {name {dir ""}} {
 }
 #_______________________
 
+proc edit::MacroDir {} {
+  # Gets a directory name of macros.
+
+  return [file dirname [MacroFile .]]
+}
+#_______________________
+
 proc edit::MacroMenu {name doit} {
   # Recreate macros' menu.
   #   name - current macro
@@ -606,28 +613,40 @@ proc edit::InputMacro {idx} {
   variable macrosmode
   set m $al(MENUEDIT).playtkl
   incr idx ;# for -tearoff menu
+  set al(macromouse) no
   set al(tmp) [$m entrycget $idx -label]
   set al(tmpdir) {}
-  set dir [file dirname [MacroFile .]]
+  set dir [MacroDir]
+  set fcont [ReadMacroFile $al(tmp)]
   set win $al(WIN).macro
   set head [msgcat::mc "The macro is updated at its recording.\nPress %s to play it."]
   set head [string map [list %s $al(acc_16)] $head]
   $obDl2 makeWindow $win.fra $al(MC,playtkl)
   $obDl2 paveWindow $win.fra [list \
-    [list lab - - 1 7 {-padx 4} [list -t $head]] \
-    [list fil + T 1 7 {-pady 4 -padx 4 -st ew} \
+    [list lab - - 1 4 {-padx 4} [list -t $head]] \
+    [list fil + T 1 4 {-pady 4 -padx 4 -st ew} \
       "-tvar ::alited::al(tmp) -validate focusin -validatecommand alited::edit::ValidMacro -w 30 -initialdir {$dir} -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"] \
-    {seh + T 1 7 {-pady 4}} \
-    {fra + T 1 3 {}} \
-    {.but1 - - - - {-padx 4} {-com 1 -tip "Play Macro" -image alimg_run}} \
+    {chb + T 1 4 {-st w -pady 4} {-t {Record mouse} -var ::alited::al(macromouse)}} \
+    {seh + T 1 4 {-pady 4}} \
+    {lab2 + T 1 4 {} {-t Comment:}} \
+    {fra0 + T 1 4 {-rw 1 -st nsew}} \
+    {.TexCmn L + - - {pack -side left -expand 1 -fill both -padx 3} {-h 4 -w 40 -wrap word -tabnext *.but1 -rotext ::alited::al(macrocomment) -ro 0}} \
+    {.sbvText + L - - {pack}} \
+    {seh2 fra0 T 1 4 {-pady 4}} \
+    {fra + T 1 1 {-st w}} \
+    {.But1 - - 1 1 {-padx 4} {-com 1 -tip "Play Macro" -image alimg_run}} \
     {.but2 + L 1 1 {} {-com 2 -tip "Record Macro" -image alimg_change}} \
     {.but3 + L 1 1 {-padx 4} {-com 3 -tip "Delete Macro" -image alimg_delete}} \
-    {h_ fra L 1 3 {-st ew}} \
-    {but + L 1 1 {-st e} {-com 0 -t Close}} \
+    {h_ fra L 1 1 {-st we -cw 1}} \
+    {buth + L 1 1 {-st e} {-t Help -com alited::edit::HelpOnMacro}} \
+    {but + L 1 1 {-st e} {-com 0 -t Cancel}} \
   ]
-  after idle [list bind $win <$al(acc_16)> "$win.fra.fra.but1 invoke"]
-  set res [$obDl2 showModal $win -resizable {0 0} -onclose destroy \
-    -geometry pointer+-22+-132 -focus $win.fra.entfil]
+  set tex [$obDl2 TexCmn]
+  bind $win <F1> alited::edit::HelpOnMacro
+  bind $win <$al(acc_16)> "$win.fra.fra.but1 invoke"
+  after 200 [list ::alited::MouseOnWidget [$obDl2 But1]]
+  set res [$obDl2 showModal $win -resizable 1 -focus $win.fra.entfil -geometry pointer+10+10]
+  set al(macrocomment) [$tex get 1.0 end]
   catch {destroy $win}
   set name [alited::NormalizeFileName [file root [file tail $al(tmp)]]]
   set fname [MacroFile $name]
@@ -665,7 +684,7 @@ proc edit::InputMacro {idx} {
           set dlg [::apave::APave new]
           set al(macrotorew) [$dlg misc warn \
             $al(MC,playtkl) $msg {"Rewrite" File "Edit" Change "Cancel" 0} \
-            cancel -ch $al(MC,noask) -g pointer]
+            0 -ch $al(MC,noask) -centerme $al(WIN)]
           $dlg destroy
         }
         switch -glob $al(macrotorew) {
@@ -674,14 +693,13 @@ proc edit::InputMacro {idx} {
           default {set al(macrotorew) {}; return}
         }
       }
-      DoMacro record $name
+      after idle [list alited::edit::DoMacro record $name]
       }
     3 {
       if {![MacroExists $fname]} return
       if {![info exists al(macrotodel)] || $al(macrotodel)<10} {
         set msg [string map [list %f [file tail $fname]] $al(MC,delfile)]
-        set al(macrotodel) \
-          [alited::msg yesno warn $msg NO -ch $al(MC,noask) -geometry pointer]
+        set al(macrotodel) [alited::msg yesno warn $msg NO -ch $al(MC,noask)]
       }
       if {$al(macrotodel)} {
         file delete $fname
@@ -717,10 +735,19 @@ proc edit::DispatchMacro {{mode ""}} {
   if {$mode ne {}} {set macrosmode $mode}
   switch -glob $macrosmode {
     "item*"    {InputMacro [string range $macrosmode 4 end]}
-    "record"   {::playtkl::end; set macrosmode "play"}
-    "play"     {DoMacro play}
-    "quickrec" {DoMacro record $al(MC,quickmacro)}
+    "record"   {
+      set fname [MacroFile $al(activemacro)]
+      if {![info exists al(macrocomment)]} {ReadMacroFile $fname}  ;# get the comment
+      ::playtkl::end $al(macrocomment)
+      set macrosmode {}
+    }
+    "quickrec" {
+      set al(activemacro) $al(MC,quickmacro)
+      set al(macromouse) no
+      DoMacro record $al(MC,quickmacro)
+    }
     "init"     {DoMacro play $al(activemacro)}
+    "play"     {DoMacro play}
   }
 }
 #_______________________
@@ -767,7 +794,7 @@ proc edit::DoMacro {mode {fname ""}} {
   switch $mode {
     "record" {
       set al(activemacro) $name
-      after 100 [list ::playtkl::record $fname $al(acc_16)]
+      after 100 [list ::playtkl::record $fname $al(acc_16) $al(macromouse)]
       after 200 alited::edit::WatchMacro
       alited::Message "[msgcat::mc Recording:] $name" 5; bell
       bell
@@ -778,11 +805,55 @@ proc edit::DoMacro {mode {fname ""}} {
       } else {
         alited::Message {}
       }
+      focus $wtxt
       ::apave::undoIn $wtxt
-      ::playtkl::replay $fname "::apave::undoOut $wtxt" [list *frAText.text* $wtxt]
+      ::playtkl::replay $fname "::apave::undoOut $wtxt" [list *frAText.text* $wtxt] yes $wtxt
     }
   }
   return yes
+}
+#_______________________
+
+proc edit::ReadMacroFile {fname} {
+  # Reads a file of macro and its comment.
+
+  namespace upvar ::alited al al
+  set fcont [::apave::readTextFile [MacroFile $fname]]
+  set al(macrocomment) {}
+  foreach ln [split $fcont \n] {
+    set ln [string trim $ln]
+    if {[string match #* $ln]} {
+      append al(macrocomment) [string trimleft $ln #] \n
+    }
+  }
+  return $fcont
+}
+#_______________________
+
+proc edit::OpenMacroFile {} {
+  # Opens a file of macro.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  set al(TMPfname) [MacroFile $al(MC,quickmacro)]
+  set types [list [list {Macro Files} $al(macroext)]]
+  set fname [$obDl2 chooser tk_getOpenFile ::alited::al(TMPfname) \
+      -initialdir [MacroDir] -filetypes $types -parent $al(WIN)]
+  unset al(TMPfname)
+  if {$fname ne {}} {alited::file::OpenFile $fname}
+}
+#_______________________
+
+proc edit::HelpOnMacro {{modal yes}} {
+  # Shows Play Macro help.
+  #   modal - yes if run from the dialogue
+
+  namespace upvar ::alited al al DATADIR DATADIR
+  set foc [focus]
+  alited::HelpFile $al(WIN) [file join $DATADIR help macro.txt] -head $al(MC,playtkl) -weight bold -modal $modal
+  if {$modal} {
+    focus $al(WIN).macro
+    focus -force $foc
+  }
 }
 
 # ________________________ Rectangular selection _________________________ #

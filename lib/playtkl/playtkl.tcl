@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide playtkl 1.0.3
+package provide playtkl 1.1.0
 
 # _________________________ playtkl ________________________ #
 
@@ -53,6 +53,7 @@ proc playtkl::Recording {win ev args} {
     if {$key eq $dd(endkey)} {
       end
     } else {
+      if {!$dd(mouse) && $ev in {ButtonPress ButtonRelease Motion}} return
       set t [Data %t $args]
       if {[string is integer -strict $t] && $t>0} {
         if {$ev eq {KeyRelease} && $dd(prevev) ne {KeyPress} && $key in {Tab Return}} {
@@ -77,6 +78,12 @@ proc playtkl::Playing {} {
   variable dd
   set llen [llength $dd(fcont)]
   if {[incr dd(idx)]>=$llen} {
+    catch {
+      if {$dd(ismacro)} {
+        focus [winfo toplevel $dd(wfocus)]
+        focus $dd(wfocus)
+      }
+    }
     end
     return
   }
@@ -193,14 +200,16 @@ proc playtkl::inform {msg} {
 }
 #_______________________
 
-proc playtkl::record {fname {endkey ""}} {
+proc playtkl::record {fname {endkey ""} {mouse yes}} {
   # Starts the recording.
   #   fname - name of file to store the recording
   #   endkey - key to stop the recording
+  #   mouse - "no" to disable  mouse events
 
   variable fields
   variable dd
   set dd(isrec) yes
+  set dd(mouse) $mouse
   if {![info exists dd(msgbeg)]} {
     foreach {o w} $fields {append opts " {%$w=$w}"}
     foreach ev {KeyPress KeyRelease ButtonPress ButtonRelease Motion} {
@@ -230,14 +239,18 @@ proc playtkl::play {fname {pausekey ""}} {
 }
 #_______________________
 
-proc playtkl::replay {{fname ""} {cbreplay ""} {mappings {}} {ismacro yes}} {
+proc playtkl::replay {{fname ""} {cbreplay ""} {mappings {}} {ismacro yes} {wfocus ""}} {
   # Replays a read/written recording, fastly at replaying a macro.
   #   fname - name of file to store the recording
   #   cbreplay - callback after replaying (e.g with "text edit separator")
   #   mappings - mappings of some widgets' pathes to currently used ones
   #   ismacro - yes for fast replaying a macro (used by playtkl)
+  #   wfocus - currently focused widget
 
   variable dd
+  if {$wfocus eq {}} {set wfocus [focus]}
+  set dd(wfocus) $wfocus
+  set dd(ismacro) $ismacro
   if {$fname ne {}} {
     set ch [open $fname]
     set dd(fcont) [split [string trim [read $ch]] \n]
@@ -269,8 +282,9 @@ proc playtkl::replay {{fname ""} {cbreplay ""} {mappings {}} {ismacro yes}} {
 
 # ________________________ Game over _________________________ #
 
-proc playtkl::end {} {
+proc playtkl::end {{comments ""}} {
   # Closes the recording/playing.
+  #   comments - comments to macro to be recorded
 
   variable dd
   set msgend [inform End]
@@ -278,6 +292,10 @@ proc playtkl::end {} {
     set dd(fcont) [lsort -index 2 -dictionary $dd(fcont)] ;# sort by time
     if {$msgend ne {}} {
       set dd(fcont) [linsert $dd(fcont) 0 "# $dd(msgbeg)" "# $msgend" #]
+    }
+    if {$comments ne {}} {
+      set comments #[string trim $comments #\n]
+      set dd(fcont) [linsert $dd(fcont) 0 [string map [list \n \n#] $comments]]
     }
     set ch [open $dd(fname) w]
     foreach line $dd(fcont) {puts $ch $line}

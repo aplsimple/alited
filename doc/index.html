@@ -2264,6 +2264,10 @@ This way, you will use Tab key to indent. As you like it.
 <br><br></li>
 <li><i>Ctrl+Down</i> moves the cursor to a next paragraph
 <br><br></li>
+<li><i>Ctrl+B</i> moves the cursor to the real beginning of wrapped line
+<br><br></li>
+<li><i>Ctrl+E</i> moves the cursor to the real end of wrapped line
+<br><br></li>
 <li><i>Ctrl+K</i> clears a line's right part
 <br><br></li>
 <li><i>Ctrl+T</i> inserts a Tab character (its length is set by "Projects / Options / Indentation")
@@ -2296,19 +2300,23 @@ The recorded macro is available through F12 key immediately after its recording 
 </p>
 
 <p>
-To create a saved macro, choose "New" macro (or any other saved macro), change a name as you like and press "Record Macro" button. At recording, try to abide by the rules:
+To create a saved macro, choose any saved macro, change its name to a new one and press "Record Macro" button. At recording, try to abide by the rules:
 <ul>
-<li>use only the keyboard, because though it isn't forbidden, the mouse moves are no good</li>
 <li>don't use keys mapped in "Preferences / Keys" (anyhow, they aren't available in macros)</li>
 <li>preferable are usual "typewriter" keys like these:
 <ul>
 <li>characters</li>
 <li>arrows, Home, End, PgUp, PgDown</li>
-<li>Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Arrow, Ctrl+K</li>
+<li>Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Arrow, Ctrl+K, Ctrl+B, Ctrl+E</li>
 <li>Shift+Home, Shift+End, Shift+Arrow</li>
 <li>Delete, BackSpace</li>
 </ul></li>
+<li>to use the mouse actions (moving, clicking), check "Record mouse" on</li>
 </ul>
+</p>
+
+<p>
+The "Comment" field is useful to remind how the macro should be used. The comment is updated after recording a new or rewriting an existing macro. The playing doesn't update the comment. In a macro file, the comment lines are marked with "#". Any macro file can be edited with "Edit / Play Macro / Open..." menu item.
 </p>
 
 <p>
@@ -2316,7 +2324,7 @@ If a macro is active, it's run through F12 hot key. Though the macros' maximum n
 </p>
 
 <p>
-Any macro can be edited (and saved by a new name), even "Quick macro" if it's worth it. For this, choose a saved macro from "Edit / Play Macro" menu, choose a macro file from the file chooser and press "Record" button. There will be a query about recording. Instead, choose "Edit" to edit the macro (inserting comments, saving by a new name etc.).
+Any macro can be edited (and saved by a new name), even "Quick macro" if it's worth it. For this, choose "Edit / Play Macro / Open..." menu item.
 </p>
 
 <p>

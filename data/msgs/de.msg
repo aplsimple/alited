@@ -5,7 +5,6 @@
 # Brief:   Handles German localization.
 # License: MIT.
 
-
 # ________________________  alited NS _________________________ #
 
 namespace eval ::alited {
@@ -50,6 +49,7 @@ namespace eval ::alited {
     {Indent} {Einrücken}
     {Unindent} {Nicht einrücken}
     {Comment} {Kommentieren}
+    {Comment:} {Kommentar:}
     {Uncomment} {Auskommentieren}
     {Find Next} {Finde Nächsten}
     {Look for Declaration} {Suche nach Erklärung}
@@ -600,6 +600,7 @@ namespace eval ::alited {
     {Play Macro} {Makro wiedergeben}
     {Record Macro} {Makro aufnehmen}
     {Delete Macro} {Makro löschen}
+    {Record mouse} {Maus aufnahmen}
   }
 
   ## ________________________ Misc. ________________________ ##

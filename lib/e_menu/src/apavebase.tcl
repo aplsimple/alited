@@ -48,6 +48,7 @@ namespace eval ::apave {
   variable _AP_IMG;  array set _AP_IMG [list]
   variable _AP_VARS; array set _AP_VARS [list]
   set _AP_VARS(.,MODALS) 0
+  set _AP_VARS(WPAVE) {}
   set _AP_VARS(TIMW) [list]
   set _AP_VARS(LINKFONT) [list -underline 1]
   set _AP_VARS(INDENT) "  "
@@ -56,6 +57,8 @@ namespace eval ::apave {
   set _AP_VARS(KEY,CtrlD) [list Control-D Control-d]
   set _AP_VARS(KEY,CtrlY) [list Control-Y Control-y]
   set _AP_VARS(KEY,CtrlT) [list Control-T Control-t]
+  set _AP_VARS(KEY,CtrlB) [list Control-B Control-b]
+  set _AP_VARS(KEY,CtrlE) [list Control-E Control-e]
   set _AP_VARS(KEY,AltQ) [list Alt-Q Alt-q]
   set _AP_VARS(KEY,AltW) [list Alt-W Alt-w]
   variable _AP_VISITED;  array set _AP_VISITED [list]
@@ -668,9 +671,9 @@ oo::class create ::apave::APaveBase {
 
     upvar 1 $attrsName attrs
     set com [::apave::getOption -com {*}$attrs]
-    if {[string is integer -strict $com]} {
+    if {[string is integer -strict $com]} {  ;# returned integer result
       ::apave::extractOptions attrs -com {}
-      append attrs " -com {[self] res {} $com}" ;# returned integer result
+      append attrs " -com {[self] res {[my pavedPath]} $com}"
     }
     if {[::apave::getOption -image {*}$attrs] ne {}} return
     set txt [::apave::getOption -t {*}$attrs]
@@ -3079,6 +3082,14 @@ oo::class create ::apave::APaveBase {
     foreach k [::apave::getTextHotkeys CtrlT] {
       append res " ; ::apave::bindToEvent $wt <$k> ::apave::InsertChar $wt {\t} {;} break"
     }
+    set lstart linestart
+    if {[::isunix]} {append lstart { +1c}} ;# don't use "break"
+    foreach k [::apave::getTextHotkeys CtrlB] {
+      append res " ; ::apave::bindToEvent $wt <$k> ::apave::CursorToBEOL $wt {$lstart}"
+    }
+    foreach k [::apave::getTextHotkeys CtrlE] {
+      append res " ; ::apave::bindToEvent $wt <$k> ::apave::CursorToBEOL $wt lineend"
+    }
     append res " ;\
       ::apave::bindToEvent $wt <Alt-Up> [self] linesMove $wt -1 ;\
       ::apave::bindToEvent $wt <Alt-Down> [self] linesMove $wt +1"
@@ -3377,6 +3388,13 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
+  method pavedPath {} {
+    # Gets the currently paved window's path.
+
+    return $::apave::_AP_VARS(WPAVE)
+  }
+  #_______________________
+
   method Window {w inplists} {
     # Paves the window with widgets.
     #   w - window's name (path)
@@ -3394,6 +3412,7 @@ oo::class create ::apave::APaveBase {
     # The "portion" refers to a separate block of widgets such as
     # notebook's tabs or frames.
 
+    set ::apave::_AP_VARS(WPAVE) [winfo toplevel $w]
     set lwidgets [list]
     # comments be skipped
     foreach lst $inplists {

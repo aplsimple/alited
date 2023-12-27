@@ -180,6 +180,9 @@ proc menu::FillMacroItems {} {
   $m add separator
   if {!$isaccel} {set al(activemacro) $al(MC,quickmacro)}
   $m add command {*}[MacroOptions quickrec $al(MC,quickmacro)]
+  $m add command -label $al(MC,open...) -command alited::edit::OpenMacroFile
+  $m add separator
+  $m add command -label $al(MC,help) -command {alited::edit::HelpOnMacro no}
 }
 #_______________________
 
@@ -435,7 +438,7 @@ proc menu::FillMenu {} {
         set lab2 [msgcat::mc [string range $lab $i+1 end]]
         set lab "$lab1 / $lab2"
       }
-      $m.helps add command -label $lab -command [list alited::HelpFile . [file join $DATADIR help $hlp] -head $lab -weight bold -ale1Help yes]
+      $m.helps add command -label $lab -command [list alited::HelpFile $al(WIN) [file join $DATADIR help $hlp] -head $lab -weight bold -ale1Help yes]
     }
   }
   $m add separator

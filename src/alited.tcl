@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.0  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -92,8 +92,13 @@ namespace eval alited {
 
   # directories of user's data
   variable CONFIGDIRSTD [file join $HOMEDIR .config]
-  if {![file exists $CONFIGDIRSTD] && $::tcl_platform(platform) eq {windows}} {
-    set CONFIGDIRSTD [file join $HOMEDIR AppData Local]
+  if {![file exists $CONFIGDIRSTD] && \
+  ($::tcl_platform(platform) eq {windows} || [info exists ::env(LOCALAPPDATA)])} {
+    if {[info exists ::env(LOCALAPPDATA)]} {
+      set CONFIGDIRSTD $::env(LOCALAPPDATA)
+    } else {
+      set CONFIGDIRSTD [file join $HOMEDIR AppData Local]
+    }
   }
   set CONFIGDIRSTD [file normalize $CONFIGDIRSTD]
   variable USERLASTINI [file join $CONFIGDIRSTD alited last.ini]
@@ -114,6 +119,8 @@ namespace eval alited {
   # misc. vars
   variable DirGeometry {}  ;# saved geometry of "Choose Directory" dialogue (for Linux)
   variable FilGeometry {}  ;# saved geometry of "Choose File" dialogue (for Linux)
+  variable tplgeometry {}  ;# saved geometry of "Template" dialogue
+  variable favgeometry {}  ;# saved geometry of "Saved favorites" dialogue
   variable pID 0
 
   # misc. consts
@@ -126,6 +133,7 @@ namespace eval alited {
 
   # directory tree's content
   variable _dirtree [list]
+  set al(_dirignore) [list]
 
   # project options' values
   set al(prjname) {}      ;# current project's name
@@ -414,7 +422,7 @@ namespace eval alited {
   #_______________________
 
   proc RestoreArray {arName arSave} {
-    # Restores an array 1:1.
+    # Tries restoring an array 1:1.
     #   arName - fully qualified array name
     #   arSave - saved array's value (got with "array get")
     # At restoring, new items of $arName are deleted and existing items are updated,
@@ -423,9 +431,14 @@ namespace eval alited {
 
     set ar $arName
     array set artmp $arSave
-    set tmp [array names artmp]
-    foreach n [array names $arName] {
-      if {$n ni $tmp} {unset [set ar]($n)} {set [set ar]($n) $artmp($n)}
+    set tmp1 [array names artmp]
+    set tmp2 [array names $arName]
+    foreach n $tmp2 {
+      if {$n ni $tmp1} {unset [set ar]($n)} {set [set ar]($n) $artmp($n)}
+    }
+    foreach n $tmp1 {
+      # deleted items can break 1:1 equality (not the case with alited)
+      if {$n ni $tmp2} {set [set ar]($n) $artmp($n)}
     }
   }
   #_______________________
@@ -438,6 +451,20 @@ namespace eval alited {
     set arSave [array get $arName]
     {*}$args
     RestoreArray $arName $arSave
+  }
+  #_______________________
+
+  proc MouseOnWidget {w1} {
+    # Places the mouse pointer on a widget.
+    #   w1 - the widget's path
+
+    update
+    set w2 [winfo parent $w1]
+    set w3 [winfo parent $w2]
+    lassign [split [winfo geometry $w1] +x] w h x1 y1
+    lassign [split [winfo geometry $w2] +x] - - x2 y2
+    event generate $w3 <Motion> -warp 1 \
+      -x [expr {$x1+$x2+int($w/2)}] -y [expr {$y1+$y2+int($h/2)}]
   }
   #_______________________
 

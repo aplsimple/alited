@@ -437,6 +437,7 @@ proc tree::CreateFilesTree {wtree} {
   if {[catch {set selfile [alited::bar::FileName]}]} {
     set selfile {} ;# at closing by Ctrl+W with file tree open: no current file
   }
+  PrepareDirectoryContents
   foreach item [GetDirectoryContents $al(prjroot)] {
     set itemID  [alited::tree::NewItemID [incr iit]]
     lassign $item lev isfile fname fcount iroot
@@ -877,12 +878,9 @@ proc tree::GetTooltip {ID NC} {
 
 # ________________________ Directories procs _________________________ #
 
-proc tree::GetDirectoryContents {dirname} {
-  # Gets a directory's contents.
-  #   dirname - the directory's name
-  # Returns a list containing the directory's contents.
-  # See also:
-  #   DirContents
+proc tree::PrepareDirectoryContents {} {
+  # Prepares reading a directory's contents.
+  # See also: GetDirectoryContents
 
   namespace upvar ::alited al al _dirtree _dirtree
   set _dirtree [set al(_dirignore) [list]]
@@ -892,6 +890,16 @@ proc tree::GetDirectoryContents {dirname} {
     }
   }
   lappend al(_dirignore) [string toupper [file tail [alited::Tclexe]]]
+}
+#_______________________
+
+proc tree::GetDirectoryContents {dirname} {
+  # Gets a directory's contents.
+  #   dirname - the directory's name
+  # Returns a list containing the directory's contents.
+  # See also: DirContents
+
+  namespace upvar ::alited _dirtree _dirtree
   DirContents $dirname
   return $_dirtree
 }

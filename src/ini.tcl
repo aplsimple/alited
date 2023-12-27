@@ -58,7 +58,7 @@ namespace eval ::alited {
   set al(tonemoves) 1          ;# "tone moves" of color chooser
   set al(checkgeo) {}          ;# geometry of "Check Tcl" window
   set al(HelpedMe) {}          ;# list of helped windows shown by HelpMe proc
-  set al(cmdNum) 5             ;# number of commands on Commands tab
+  set al(cmdNum) 6             ;# number of commands on Commands tab
 
   # flag "use special RE for leafs of unit tree"
   set al(INI,LEAF) 0
@@ -212,9 +212,10 @@ namespace eval ::alited {
   # mode "place tabs to the beginning of bar"
   set al(lifo) 1
 
-  # active macro's name & macro extension
-  set al(activemacro) {}
-  set al(macroext) {.alm}
+  # options for macro play
+  set al(activemacro) {}  ;# active macro's name
+  set al(macroext) {.alm} ;# macro extension
+  set al(macromouse) no   ;# use mouse actions
 
   # flag "Paver tool is auto-updated"
   set al(paverauto) 0
@@ -353,6 +354,8 @@ proc ini::ReadIniGeometry {nam val} {
     geompref       {set ::alited::pref::geo $val}
     dirgeometry    {set ::alited::DirGeometry $val}
     filgeometry    {set ::alited::FilGeometry $val}
+    favgeometry    {set ::alited::favgeometry $val}
+    tplgeometry    {set ::alited::tplgeometry $val}
     treecw0        {set al(TREE,cw0) $val}
     treecw1        {set al(TREE,cw1) $val}
     runGeometry    {set al(runGeometry) $val}
@@ -902,6 +905,8 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "geompref=$::alited::pref::geo"
   puts $chan "dirgeometry=$::alited::DirGeometry"
   puts $chan "filgeometry=$::alited::FilGeometry"
+  puts $chan "favgeometry=$::alited::favgeometry"
+  puts $chan "tplgeometry=$::alited::tplgeometry"
   set wtree [$obPav Tree]
   set al(TREE,cw0) [$wtree column #0 -width]
   set al(TREE,cw1) [$wtree column #1 -width]

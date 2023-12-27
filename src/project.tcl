@@ -50,6 +50,9 @@ namespace eval project {
 
   # total of project files
   variable totalfiles 0
+
+  # separator for commands in Notes
+  variable COMSEP \t
 }
 
 # ________________________ Common _________________________ #
@@ -94,6 +97,7 @@ proc project::GetProjects {} {
   variable ilast
   set prjlist [list]
   set i [set ilast 0]
+  alited::tree::PrepareDirectoryContents
   foreach finfo [alited::tree::GetDirectoryContents $::alited::PRJDIR] {
     set fname [lindex $finfo 2]
     if {[file extension $fname] eq $PRJEXT} {
@@ -316,17 +320,20 @@ proc project::SaveNotes {{prj ""}} {
   namespace upvar ::alited al al
   variable obPrj
   variable klnddata
+  variable COMSEP
   if {$prj eq {}} {set prj $klnddata(SAVEPRJ)}
   if {$prj ne {}} {
     set fnotes [NotesFile $prj]
-    set fcont [string trimright [[$obPrj TexPrj] get 1.0 {end -1c}]]
-    if {$fcont eq {}} {set fcont __$al(MC,coms)__}
+    set fcont [string trimright [[$obPrj TexPrj] get 1.0 end]]
+    if {[catch {set indent [string repeat { } $::alited::al(prjindent)]}]} {set indent {    }}
+    set fcont [string map [list $COMSEP $indent] $fcont]
+    set fcontOrig $fcont
     for {set i 1} {$i<=$al(cmdNum)} {incr i} {
       set com [string trim $al(PTP,run$i)]
       set al(PTP,run$i) {}
       if {$com ne {}} {
         incr irun   ;# starting commands from #1
-        append fcont \nrun$irun@$al(PTP,runch$i)@$com
+        append fcont \nrun$irun$COMSEP$al(PTP,runch$i)$COMSEP$com
         set al(PTP,run$i) $com
       }
     }
@@ -335,9 +342,12 @@ proc project::SaveNotes {{prj ""}} {
       set al(PTP,com$i) {}
       if {$com ne {}} {
         incr irun   ;# starting commands from #1
-        append fcont \nrun$irun@$al(PTP,comch$i)@@$com
+        append fcont \nrun$irun$COMSEP$al(PTP,comch$i)$COMSEP$COMSEP$com
         set al(PTP,com$i) $com
       }
+    }
+    if {$fcontOrig eq {} && $fcont ne {}} {
+      set fcont __$al(MC,coms)__$fcont
     }
     ::apave::writeTextFile $fnotes fcont 0 0
   }
@@ -466,6 +476,7 @@ proc project::ReadNotes {prj} {
 
   namespace upvar ::alited al al
   variable obPrj
+  variable COMSEP
   for {set i 1} {$i<=$al(cmdNum)} {incr i} {
     set al(PTP,run$i) [set al(PTP,com$i) {}]
     set al(PTP,runch$i) [set al(PTP,comch$i) 0]
@@ -478,10 +489,10 @@ proc project::ReadNotes {prj} {
   set fnotes [NotesFile $prj]
   if {[file exists $fnotes]} {
     set cont [::apave::readTextFile $fnotes]
-    if {[set ir [string first run1@ $cont]]>-1} {
+    if {[set ir [string first run1$COMSEP $cont]]>-1} {
       # get commands for Commands tab (project's and common)
       foreach com [split [string range $cont $i end] \n] {
-        lassign [split $com @] run ch com1 com2
+        lassign [split $com $COMSEP] run ch com1 com2
         set ch [string is true -strict $ch]
         if {$com1 ne {}} {
           set al(PTP,run[incr irun]) $com1
@@ -551,8 +562,6 @@ proc project::Select {{item ""}} {
       KlndDay [clock seconds] no
       KlndBorderText
     }
-    $tree see $item
-    $tree focus $item
     ::klnd::blinking no
     set klnddata(SAVEDATE) {}
     catch {after cancel $klnddata(AFTERKLND)}
@@ -561,6 +570,7 @@ proc project::Select {{item ""}} {
     set tip [string map [list %f "$al(MC,prjName) $al(prjname)"] $al(MC,alloffile)]
     ::baltip tip [$obPrj ChbClearRun] $tip
     [$obPrj CbxTrans] configure -values $al(prjtrans)
+    after 200 "$tree see $item; $tree focus $item"
   }
 }
 #_______________________
@@ -684,6 +694,7 @@ proc project::ValidProject {} {
   if {$al(prjredunit)<$al(minredunit) || $al(prjredunit)>100} {set al(prjredunit) 20}
   set msg [string map [list %d $al(prjroot)] $al(checkroot)]
   Message $msg 5
+  alited::tree::PrepareDirectoryContents
   set totalfiles [llength [alited::tree::GetDirectoryContents $al(prjroot)]]
   if {$totalfiles >= $al(MAXFILES)} {
     set msg [string map [list %n $al(MAXFILES)] $al(badroot)]
@@ -1881,7 +1892,7 @@ proc project::Tab4 {} {
           set prt lab$i
           set ent ent
         }
-        set lwid {seh1 lab5 T 1 3}
+        set lwid {seh1 lab6 T 1 3}
         %C $lwid
         set lwid {labcom seh1 T 1 2 {} {-t General -foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
         %C $lwid
@@ -1899,7 +1910,7 @@ proc project::Tab4 {} {
         }
       }
     }
-    {seh2 labc5 T 1 3}
+    {seh2 labc6 T 1 3}
     {h_ seh2 T 1 1}
     {butRun h_ L 1 2 {-st ew} {-t Run -com alited::project::RunComs -tip {$::alited::al(MC,saving) & $::alited::al(MC,run)} -tabnext alited::Tnext}}
   }

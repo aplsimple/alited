@@ -1,5 +1,22 @@
 # LAST CHANGES:
 
+Version `v1.6.1 (27 Dec'23)`
+
+  - BUGFIX: opening Projects: see a current project in the project list if the list is long
+  - NEW   : Edit/Play macro: mouse actions on/off
+  - NEW   : Edit/Play macro: comment field
+  - NEW   : Edit/Play macro: "Help" menu item & button
+  - NEW   : Edit/Play macro: "Open..." menu item to edit & save an existing macro
+  - NEW   : changeable & saveable window geometry of "Templates"
+  - NEW   : changeable & saveable window geometry of "Saved Favorites"
+  - NEW   : Ctrl+B / Ctrl+E to move the cursor to real beginning / end of wrapped line
+  - CHANGE: optimizing the directory content read - thanks to Daniele
+  - CHANGE: "view only" mode for Preferences/Templates/List of Templates
+  - CHANGE: Projects/Commands: total = 6
+  - CHANGE: Projects/Commands: command separator changed (converted: in Notes)
+  - CHANGE: esp. for Windows: use ::env(LOCALAPPDATA) to get config dirname
+  - CHANGE: packages: e_menu/apave 4.3.5, playtkl 1.1.0
+
 Version `v1.6.0 (20 Dec'23)`
 
   - BUGFIX: at selecting in infobar: lost Find (blue) highlighting in other files
@@ -85,7 +102,7 @@ Version `v1.4.5 (27 Sep'23)`
   - CHANGE: menu.em, fossil2.em
   - CHANGE: tool2.txt
   - CHANGE: Preferences: little clearances
-  - CHANGE: e_menu/apave 4.1.6, baltip 1.5.4
+  - CHANGE: e_menu/apave 4.1.6, baltip 1.5.4, hl_tcl 1.0.6
 
 
 Version `v1.4.4 (26 Apr'23)`

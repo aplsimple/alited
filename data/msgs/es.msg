@@ -1,10 +1,9 @@
-###########################################################
+# ________________________ es.msg _________________________ #
 # Name:    es.msg
 # Author:  Alex Plotnikov  (aplsimple@gmail.com)
 # Date:    11/02/2023
 # Brief:   Handles Spanish localization.
 # License: MIT.
-###########################################################
 
 # ________________________  alited NS _________________________ #
 
@@ -50,6 +49,7 @@ namespace eval ::alited {
     {Indent} {Indénter}
     {Unindent} {Desindénter}
     {Comment} {Comentar}
+    {Comment:} {Comentario:}
     {Uncomment} {Descomentar}
     {Find Next} {Buscar siguiente}
     {Look for Declaration} {Buscar declaración}
@@ -597,6 +597,7 @@ namespace eval ::alited {
     {Play Macro} {Reproducir macro}
     {Record Macro} {Grabar macro}
     {Delete Macro} {Borrar macro}
+    {Record mouse} {Grabar ratón}
   }
 
   ## ________________________ Misc. ________________________ ##

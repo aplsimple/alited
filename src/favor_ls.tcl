@@ -345,7 +345,7 @@ proc favor_ls::PutIni {} {
 proc favor_ls::_create {} {
   # Creates "Favorites lists" dialogue.
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al favgeometry favgeometry
   variable obFav
   variable win
   variable favlist
@@ -369,10 +369,10 @@ proc favor_ls::_create {} {
     {fra1.fraEnt - - 1 1 {pack -side top -expand 1 -fill both -pady 4}}
     {.labFav - - 1 1 {pack -side left -padx 4} {-t "$::alited::al(MC,currfavs):"}}
     {.EntFav - - 1 1 {pack -side left -expand 1 -fill both} {-tvar ::alited::favor_ls::fav -tip {$::alited::al(MC,favent1)}}}
-    {fra1.fratex - - 1 2 {pack -side bottom}}
+    {fratex fra1 T 1 2 {-st nswe -rw 1 -cw 1}}
     {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 72 -tip "Favorites of the current list" -ro 1}}
     {.sbvFav + L - - {pack -side left -fill y}}
-    {fra2 fra1 T 1 2 {-st nswe} {-padding {5 5 5 5} -relief groove}}
+    {fra2 fratex T 1 2 {-st nswe} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Non-favorite files to be:"}}
     {.radA - - - - {pack -side left -padx 8}  {-t kept -var ::alited::favor_ls::place -value 1 -tip "Doesn't close any tab without favorites\nat choosing Favorites' list"}}
     {.radB - - - - {pack -side left -padx 8}  {-t closed -var ::alited::favor_ls::place -value 2 -tip "Closes all tabs without favorites\nat choosing Favorites' list"}}
@@ -397,7 +397,10 @@ proc favor_ls::_create {} {
   bind $lbx <Return> ::alited::favor_ls::Ok
   bind $win <F1> "[$obFav ButHelp] invoke"
   after 500 ::alited::favor_ls::HelpMe ;# show an introduction after a short pause
-  set res [$obFav showModal $win -onclose ::alited::favor_ls::Cancel -focus [$obFav EntFav]]
+  set geo {-resizable 1 -minsize {600 400}}
+  if {$favgeometry ne {}} {append geo " -geometry $favgeometry"}
+  set res [$obFav showModal $win -onclose ::alited::favor_ls::Cancel -focus [$obFav EntFav] {*}$geo]
+  set favgeometry [wm geometry $win]
   baltip::configure {*}$tipson
   catch {destroy $win}
   $obFav destroy
