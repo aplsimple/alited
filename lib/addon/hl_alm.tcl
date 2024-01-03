@@ -26,7 +26,7 @@ proc hl_alm::init {w font szfont args} {
   $w tag config almARG -font $font -foreground $clrOPT
   dict set font -slant italic
   $w tag config almCMNT -font $font -foreground $clrCMN
-  foreach t {KEY PATH ARG CMNT} {after idle $w tag raise alm$t}
+  foreach t {KEY CMNT} {after idle $w tag raise alm$t}
   return [namespace current]::line
 }
 #_______________________

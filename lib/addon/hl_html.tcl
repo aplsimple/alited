@@ -26,7 +26,7 @@ proc hl_html::init {w font szfont args} {
   dict set font -weight normal
   dict set font -slant italic
   $w tag config htmCMN -font $font -foreground $clrCMN
-  foreach t {TAG VAL ARG CMN} {after idle $w tag raise htm$t}
+  foreach t {TAG CMN} {after idle $w tag raise htm$t}
   return [namespace current]::line
 }
 #_______________________

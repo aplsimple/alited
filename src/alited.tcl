@@ -7,11 +7,12 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
   variable tcltk_version [package require Tk]
+  variable isTcl90 [package vsatisfies $tcltk_version 9.0-]
   if {![package vsatisfies $tcltk_version 8.6.10-]} {
     tk_messageBox -message "\nalited needs Tcl/Tk v8.6.10+ \
       \n\nwhile the current is v$_\n"
@@ -535,25 +536,14 @@ namespace eval alited {
     #   ico - picture or character
     #   to - "in" gets in-chars, "out" gets out-chars
 
-    # TODO: codes instead of pictures - not available in 8.6.10
-    if 0 {
-      \U0001f4a5 = 💥
-      \U0001f4bb = 💻
-      \U0001f3d7 = 🏗
-      \U0001f4f6 = 📶
-      \U0001f4e1 = 📡
-      \U0001f4d6 = 📖
-      \U0001f300 = 🌀
-      \U0001f4f7 = 📷
-      \U0001f4d0 = 📐
-      \U0001f426 = 🐦
-      \U0001f381 = 🎁
-      \U0001f3c1 = 🏁
-      \U0001f511 = 🔑
-      \U0001f4be = 💾
+    variable isTcl90
+    set in [list 0 1 2 3 4 5 6 7 8 9 & ~ = @]
+    if {$isTcl90} {  ;# codes instead of pictures available in Tcl 9.0
+      set out [list \U0001f4a5 \U0001f4bb \U0001f3d7 \U0001f4f6 \U0001f4e1 \U0001f4d6 \
+        \U0001f300 \U0001f4f7 \U0001f4d0 \U0001f426 \U0001f381 \U0001f3c1 \U0001f511 \U0001f4be]
+    } else {
+      set out [list 💥 💻 🏗 📶 📡 📖 🌀 📷 📐 🐦 🎁 🏁 🔑 💾]
     }
-    set in {0 1 2 3 4 5 6 7 8 9 & ~ = @}
-    set out {💥 💻 🏗 📶 📡 📖 🌀 📷 📐 🐦 🎁 🏁 🔑 💾}
     if {$to eq {out}} {
       set lfrom $in
       set lto $out
@@ -1015,7 +1005,8 @@ namespace eval alited {
           set fsz $al(FONTSIZE,std)
         }
         set res [${addon}::init $wtxt $al(FONT,txt) $fsz {*}$colors]
-        foreach tag {sel hilited hilited2} {after idle "$wtxt tag raise $tag"}
+        ::apave::obj set_highlight_matches $wtxt
+        foreach tag {sel hilited hilited2} {after idle $wtxt tag raise $tag}
       }
     }
     return $res

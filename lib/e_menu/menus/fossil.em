@@ -198,14 +198,6 @@ S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}
 SW: %IF "$::EM_T_TIME" ni {{} none} && "$::EM_T_FILE" ne "" %THEN fossil touch $::EM_T_v $::EM_T_TIME $::EM_T_FILE
 S: fossil commit --allow-empty $::EM_COMOPT
 
-ITEM = fossil commit -f -tag
-S: cd %PD
-R: %C set ::COMTAG "%s"
-R: %I warn "TAG COMMIT" { \
-   ent1 {{Tag for the last commit:} {} {}} {"$::COMTAG"} \
-   } -head {\n This will TAG the last commit:} -weight bold == ::COMTAG
-S: fossil commit -f -tag "$::COMTAG" -bgcolor '#F8A4F6'
-
 ITEM = fossil commit -m --branch
 R: cd %PD
 R: %C if {"$::FSLBRANCH" eq ""} {set ::FSLBRANCH "%s"}
@@ -218,6 +210,23 @@ R: %C lassign {$::FSLBRANCH} ::FSLBRANCH; if {{$::FSLBRANCH} eq {}} EXIT
 R: %C lassign {$::FSLBRANCHCOLOR} ::FSLBRANCHCOLOR
 R: %C if {"$::FSLBRANCHCOLOR" eq {}} {set ::TMPBG ""} {set ::TMPBG "-bgcolor $::FSLBRANCHCOLOR"}
 SW: fossil commit -m $::FSLBRANCH --branch $::FSLBRANCH $::TMPBG
+
+ITEM = fossil addremove
+S: cd %PD
+R: %I {} "ADDREMOVE" { \
+   chb1 {{Dry run:} {-anchor w -fill none} {-w 3}} {$::EM_T_DRY} \
+   v_2 {{} {-pady 4}} {} seh {} {} \
+   texc {{   Hint:} {} {-h 11 -w 73 -ro 1 -wrap word}} \
+   {\n *  All files in the checkout but not in the repository (that is,\
+\n    all files displayed using the 'extras' command) are added as\
+\n    if by the 'add' command.\
+\n\n *  All files in the repository but missing from the checkout (that is,\
+\n    all files that show as MISSING with the 'status' command) are\
+\n    removed as if by the 'rm' command.\
+\n\n The 'Dry run' shows the supposed changes, not doing actually.} \
+   } -head {\n This will ADD the new and REMOVE the deleted\n file(s) of "$::EMENUPRJ" repository. \n} -weight bold == ::EM_T_DRY
+S: %C if $::EM_T_DRY {set ::EM_T_n -n} {set ::EM_T_n ""}
+S: fossil addremove $::EM_T_n
 
 SEP = 2
 

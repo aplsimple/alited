@@ -58,7 +58,6 @@ namespace eval pref {
   variable em_Num 0 ;# number of bar-menu items
   variable em_mnu; array set em_mnu [list] ;# actions
   variable em_ico; array set em_ico [list] ;# icons
-  variable em_sep; array set em_sep [list] ;# separator flags
   variable em_inf; array set em_inf [list] ;# full info
   variable em_Icons [list] ;# list of e_menu icons
 
@@ -129,7 +128,6 @@ proc pref::fetchVars {} {
     variable em_Num
     variable em_mnu
     variable em_ico
-    variable em_sep
     variable em_inf
     variable em_Icons
     variable listIcons
@@ -161,7 +159,6 @@ proc pref::SaveSettings {} {
     catch {
       set data(em_mnu,$i) $em_mnu($i)
       set data(em_ico,$i) $em_ico($i)
-      set data(em_sep,$i) $em_sep($i)
       set data(em_inf,$i) $em_inf($i)
     }
   }
@@ -185,7 +182,6 @@ proc pref::RestoreSettings {} {
     catch {
       set em_mnu($i) $data(em_mnu,$i)
       set em_ico($i) $data(em_ico,$i)
-      set em_sep($i) $data(em_sep,$i)
       set em_inf($i) $data(em_inf,$i)
     }
   }
@@ -366,7 +362,6 @@ proc pref::Cancel {args} {
         set em2 [file rootname $em2]  ;# with old ".mnu" extension
         if {$em_mnu($i) ne $data(em_mnu,$i) || \
             $em_ico($i) ne $data(em_ico,$i) || \
-            $em_sep($i) ne $data(em_sep,$i) || \
             $em1 ne $em2 || $idx1 ne $idx2 || $item1 ne $item2} {
           set ischanged yes
         }
@@ -1438,8 +1433,8 @@ proc pref::Runs_Tab {tab} {
   # get a layout of "bar-menu" tab
   set res {
     {v_ - - 1 1}
-    {fra + T 1 1 {-st nsew -cw 1 -rw 1} {-afteridle ::alited::pref::Em_ShowAll}}
-    {fra.fraButs - - 1 1  {pack -anchor w}}
+    {fra + T 1 1 {-st nsew -cw 1 -rw 1 -padx 8} {-afteridle ::alited::pref::Em_ShowAll}}
+    {fra.fraButs - - 1 1  {pack -anchor w -pady 4}}
     {.btTUp - - - - {pack -side left} {-image alimg_up -com ::alited::pref::UpRun -tip {Move an item up}}}
     {.btTDown - - - - {pack -side left} {-image alimg_down -com ::alited::pref::DownRun -tip {Move an item down}}}
     {.btTDelRun - - - - {pack -side left} {-image alimg_delete -com ::alited::pref::DelRun -tip {Delete an item}}}
@@ -1448,13 +1443,11 @@ proc pref::Runs_Tab {tab} {
         set prt "- -"
         for {set i 0} {$i<$::alited::pref::em_Num} {incr i} {
           set nit [expr {$i+1}]
-          set lwid ".ChbMT$i $prt 1 1 {-padx 10} {-t separator -var ::alited::pref::em_sep($i) -tip {If 'yes', means a separator of the toolbar/menu.} -com {::alited::pref::Em_Chbox $i}}"
+          set lwid ".OpcIco$i $prt 1 1 {-st nsw} {::alited::pref::em_ico($i) ::alited::pref::em_Icons {-width 9 -com alited::pref::Em_ShowAll -tip {{An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar.}}} {alited::pref::opcIcoPre %a}}"
           %C $lwid
-          set lwid ".OpcIco$i + L 1 1 {-st nsw} {::alited::pref::em_ico($i) ::alited::pref::em_Icons {-width 9 -com alited::pref::Em_ShowAll -tooltip {{An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar.}}} {alited::pref::opcIcoPre %a}}"
+          set lwid ".ButMnu$i + L 1 1 {-st sw -pady 1 -padx 8} {-t {$::alited::pref::em_mnu($i)} -com {alited::pref::PickMenuItem $i} -style TButtonWest -tip {{The run item for the menu and/or the toolbar.\nSelect it from the e_menu items.}}}"
           %C $lwid
-          set lwid ".ButMnu$i + L 1 1 {-st sw -pady 1 -padx 10} {-t {$::alited::pref::em_mnu($i)} -com {alited::pref::PickMenuItem $i} -style TButtonWest -tip {{The run item for the menu and/or the toolbar.\nSelect it from the e_menu items.}}}"
-          %C $lwid
-          set prt ".ChbMT$i T"
+          set prt ".OpcIco$i T"
       }}
     }
   }
@@ -1477,11 +1470,9 @@ proc pref::DelRun {} {
   for {set i $idx} {$i<$em_Num} {incr i} {
     if {$i==($em_Num-1)} {
       lassign {} em_mnu($i) em_ico($i) em_inf($i)
-      set em_sep($i) 0
     } else {
       # make upper all the rest actions
       set ip [expr {$i+1}]
-      set em_sep($i) $em_sep($ip)
       set em_ico($i) $em_ico($ip)
       set em_mnu($i) $em_mnu($ip)
       set em_inf($i) $em_inf($ip)
@@ -1497,16 +1488,12 @@ proc pref::Em_ShowAll {{upd yes}} {
   #   upd - if yes, displays the widgets of bar-menu settings.
   fetchVars
   for {set i 0} {$i<$em_Num} {incr i} {
-    if {![info exists em_sep($i)]} {
-      lassign {} em_inf($i) em_mnu($i) em_ico($i) em_sep($i)
-    }
-    set em_sep($i) [string is true -strict $em_sep($i)]
-    if {$em_sep($i)} {
+    if {![info exists em_inf($i)]} {
       lassign {} em_inf($i) em_mnu($i) em_ico($i)
     }
+    if {$em_ico($i) eq {none}} {set em_ico($i) {}}
     if {$upd} {
-      if {$em_sep($i)} {set state disabled} {set state normal}
-      [$obPrf ButMnu$i] configure -text $em_mnu($i) -state $state
+      [$obPrf ButMnu$i] configure -text $em_mnu($i)
       set ico [$obPrf OpcIco$i]
       if {[set k [lsearch $listIcons [$ico cget -text]]]>-1} {
         set img [::apave::iconImage [lindex $listIcons $k]]
@@ -1515,40 +1502,10 @@ proc pref::Em_ShowAll {{upd yes}} {
         set img alimg_none
         set cmpd right
       }
-      $ico configure -state $state -image $img -compound $cmpd
+      $ico configure -image $img -compound $cmpd
     }
   }
   if {$upd} ScrollRuns
-}
-#_______________________
-
-proc pref::Em_Chbox {it} {
-  # Handles "bar-menu" checkbox's clicking.
-  #   it - index of "bar-menu" item
-  # Saves "bar-menu" item to restore it after 2nd click.
-
-  fetchVars
-  set sv ::alited::pref::Chbox_savedinfo
-  set svico ::alited::pref::Chbox_savedinfoico
-  set svmnu ::alited::pref::Chbox_savedinfomnu
-  set svinf ::alited::pref::Chbox_savedinfoinf
-  if {![info exists $sv] || [set $sv] != $it} {
-    set $sv $it
-    set $svico {}
-    set $svico {}
-    set $svmnu {}
-    set $svinf {}
-  }
-  if {$em_sep($it)} {
-    set $svico $em_ico($it)
-    set $svmnu $em_mnu($it)
-    set $svinf $em_inf($it)
-  } else {
-    set em_ico($it) [set $svico]
-    set em_mnu($it) [set $svmnu]
-    set em_inf($it) [set $svinf]
-  }
-  Em_ShowAll
 }
 #_______________________
 
@@ -1622,10 +1579,10 @@ proc pref::FocusedRun {} {
   # Gets an index of current run.
 
   fetchVars
+  set foc [focus]
   set fr -1
   for {set i 0} {$i<$::alited::pref::em_Num} {incr i} {
-    set foc [focus]
-    if {$foc in [list [$obPrf ChbMT$i] [$obPrf OpcIco$i] [$obPrf ButMnu$i]]} {
+    if {$foc in [list [$obPrf OpcIco$i] [$obPrf ButMnu$i]]} {
       set fr $i
       break
     }
@@ -1641,15 +1598,12 @@ proc pref::ExchangeRuns {f1 f2} {
   #   f2 - 2nd item
 
   fetchVars
-  set sep1 $em_sep($f2)
   set ico1 $em_ico($f2)
   set mnu1 $em_mnu($f2)
   set inf1 $em_inf($f2)
-  set em_sep($f2) $em_sep($f1)
   set em_ico($f2) $em_ico($f1)
   set em_mnu($f2) $em_mnu($f1)
   set em_inf($f2) $em_inf($f1)
-  set em_sep($f1) $sep1
   set em_ico($f1) $ico1
   set em_mnu($f1) $mnu1
   set em_inf($f1) $inf1
@@ -1736,7 +1690,7 @@ proc pref::_create {tab} {
   } else {
     after idle "::alited::pref::Tab nbk" ;# first entering
   }
-  bind $win <Control-o> alited::ini::EditSettings
+  foreach o {o O} {bind $win <Control-$o> alited::ini::EditSettings}
   bind $win <F1> "[$obPrf ButHelp] invoke"
   $obPrf untouchWidgets *.texSample *.texCSample
   set res [$obPrf showModal $win -geometry $geo -minsize {800 600} -resizable 1 \

@@ -28,7 +28,7 @@ package require Tk
 wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.3.5}
+  variable em_version {e_menu 4.3.6}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -3120,7 +3120,9 @@ proc ::em::on_exit {{really 1} args} {
   if {!$really && ($::em::ontop || $::em::remain)} return
   # remove temporary files, at closing a parent menu
   if {!$::em::ischild} {
-    catch {file delete {*}[glob "$::em::menudir/*.tmp*"]}
+    if {![catch {set flist [glob [file join $::em::menudir *.tmp*]]}] && $flist ne {}} {
+      catch {file delete {*}$flist}
+    }
   }
   if {$::em::solo} exit
   menuOption $::em::menufilename geometry [::em::geometry]

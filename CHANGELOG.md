@@ -1,8 +1,9 @@
 # LAST CHANGES:
 
-Version `v1.6.1 (27 Dec'23)`
+Version `v1.6.2 (3 Jan'24)`
 
-  - BUGFIX: opening Projects: see a current project in the project list if the list is long
+  - BUGFIX: opening Projects: see current project in project list if the list is long
+  - BUGFIX: bar-menu item "Run Tcl all selection": TF= argument not formed
   - NEW   : Edit/Play macro: mouse actions on/off
   - NEW   : Edit/Play macro: comment field
   - NEW   : Edit/Play macro: "Help" menu item & button
@@ -10,12 +11,17 @@ Version `v1.6.1 (27 Dec'23)`
   - NEW   : changeable & saveable window geometry of "Templates"
   - NEW   : changeable & saveable window geometry of "Saved Favorites"
   - NEW   : Ctrl+B / Ctrl+E to move the cursor to real beginning / end of wrapped line
+  - NEW   : Preferences: undocumented Ctrl+O opens .ini (now with highlighting)
+  - CHANGE: Preferences/Tools/bar-menu: checkbuttons removed (empty items be separators)
+  - CHANGE: processing icon-characters
+  - CHANGE: addon/hl_*.tcl: revised tags to raise (bold & italic left only)
+  - CHANGE: for Tcl 9.0: catch {glob ...} patterns changed, to insure against errors
   - CHANGE: optimizing the directory content read - thanks to Daniele
   - CHANGE: "view only" mode for Preferences/Templates/List of Templates
   - CHANGE: Projects/Commands: total = 6
   - CHANGE: Projects/Commands: command separator changed (converted: in Notes)
   - CHANGE: esp. for Windows: use ::env(LOCALAPPDATA) to get config dirname
-  - CHANGE: packages: e_menu/apave 4.3.5, playtkl 1.1.0
+  - CHANGE: packages: e_menu/apave 4.3.6, playtkl 1.1.0
 
 Version `v1.6.0 (20 Dec'23)`
 

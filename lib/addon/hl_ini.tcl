@@ -28,7 +28,7 @@ proc hl_ini::init {w font szfont args} {
   $w tag config iniVAL -font $font -foreground $clrSTR
   dict set font -slant italic
   $w tag config iniCMNT -font $font -foreground $clrCMN
-  foreach t {SECT OPT VAL CMNT} {after idle $w tag raise ini$t}
+  foreach t {SECT CMNT} {after idle $w tag raise ini$t}
   return [namespace current]::line
 }
 #_______________________

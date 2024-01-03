@@ -1,26 +1,24 @@
- You can add new items to the toolbar and "Tools" menu.
+ You can add new items to the <r>toolbar</r> and <r>Tools</r> menu.
 
  An item contains:
 
-   <b>separator</b> checkbox for a separator of toolbar/menu
+   <b>icons list</b> to set an icon of command
 
-   <b>icons</b> list to set an icon of command
+   <b>button</b> to choose <b>e_menu</b>'s command
 
-   <b>button</b> to choose e_menu's command
+ An empty item stands for a <b>separator</b> of toolbar/menu.
 
- If you want an item be present in the toolbar, select an icon for it.
- If the item should be in "Tools" menu only, leave the icon blank or select
+ If you want an item be present in the <r>toolbar</r>, select an icon for it.
+ If the item should be in <r>Tools</r> menu only, leave the icon blank or select
  <b>none</b> icon.
 
- Hit a <b>right button</b> to choose a command of e_menu. At that, to select
+ Hit a <b>right button</b> to choose a command of <b>e_menu</b>. At that, to select
  a whole menu, right click on its item and choose "Select" from a popup menu.
 
- While choosing a command from e_menu, use Escape key or popup menu's "Exit"
- to quit e_menu.
+ While choosing a command from <b>e_menu</b>, use Escape key or popup menu's "Exit"
+ to quit <b>e_menu</b>.
 
- Clicking a separator checkbutton, you can save/restore its item.
-
- To make a new item, choose one of 3 empty items at the bottom (there are
+ To make a new item, use one of 3 empty items at the bottom (there are
  only 3 of them for a session, but the total is 32). Use also:
 
    <b>up</b> and <b>down</b> buttons to move items up/down

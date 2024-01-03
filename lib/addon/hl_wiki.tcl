@@ -33,7 +33,7 @@ proc hl_wiki::init {w font szfont args} {
   dict set font -weight normal
   $w tag config wikiLINK -font $font -foreground $clrOPT
   $w tag config wikiTAG -font $font -foreground $clrSTR
-  foreach t {LINK TAG CMNT APOS CTGR ITAL BOLD LIST} {after idle $w tag raise wiki$t}
+  foreach t {ITAL BOLD LIST} {after idle $w tag raise wiki$t}
   foreach t {6 5 4 3 2 1} {
     dict set font -weight bold
     dict set font -size [expr {$szfont + [incr sz] -1}]

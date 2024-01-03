@@ -985,17 +985,15 @@ proc file::OpenOfDir {dname} {
   if {$ansOpenOfDir<11} {
     set ansOpenOfDir [alited::msg okcancel warn $msg OK -ch $al(MC,noask)]
   }
-  if {$ansOpenOfDir} {
-    if {![catch {set flist [glob -directory $dname *]}]} {
-      set fnames [list]
-      foreach fname [lsort -decreasing -dictionary $flist] {
-        if {[file isfile $fname] && [IsTcl $fname]} {
-          lappend fnames $fname
-        }
+  if {$ansOpenOfDir && ![catch {set flist [glob -directory $dname *]}] && $flist ne {}} {
+    set fnames [list]
+    foreach fname [lsort -decreasing -dictionary $flist] {
+      if {[file isfile $fname] && [IsTcl $fname]} {
+        lappend fnames $fname
       }
-      OpenFile $fnames no yes
-      after idle {focus -force [alited::main::CurrentWTXT]}
     }
+    OpenFile $fnames no yes
+    after idle {focus -force [alited::main::CurrentWTXT]}
   }
 }
 #_______________________

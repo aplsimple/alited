@@ -2199,20 +2199,18 @@ oo::class create ::apave::ObjectTheming {
     # The *foreground disabled* is set as `grey`.
 
     my create_Fonts
+    if {[ttk::style theme use] eq {classic}} {
+      set hlc "-highlightcolor $tbg1"
+    } else {
+      set hlc {}
+    }
     ttk::style configure "." \
-      -background        $tbg1 \
-      -foreground        $tfg1 \
-      -bordercolor       $bclr \
-      -darkcolor         $tbg1 \
-      -lightcolor        $tbg1 \
-      -troughcolor       $tc \
-      -arrowcolor        $tfg1 \
-      -selectbackground  $tbgS \
-      -selectforeground  $tfgS \
-      ;#-selectborderwidth 0
+      -foreground $tfg1 -background $tbg1 -bordercolor $bclr -darkcolor $tbg1 \
+      -lightcolor $tbg1 -troughcolor $tc -arrowcolor $tfg1 \
+      -selectforeground $tfgS -selectbackground $tbgS {*}$hlc
     ttk::style map "." \
-      -background       [list disabled $bD active $bA] \
-      -foreground       [list disabled grey active $fA]
+      -background [list disabled $bD active $bA] \
+      -foreground [list disabled grey active $fA]
   }
   #_______________________
 

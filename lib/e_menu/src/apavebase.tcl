@@ -458,9 +458,9 @@ oo::class create ::apave::APaveBase {
     set Moveall 1
     set Initialcolor {}
     set Modalwin .
-    set Fgbut [ttk::style lookup TButton -foreground]
-    set Bgbut [ttk::style lookup TButton -background]
-    set Fgtxt [ttk::style lookup TEntry -foreground]
+    set Fgbut [ttk::style lookup TButton -foreground]; if {$Fgbut eq {}} {set Fgbut #000000}
+    set Bgbut [ttk::style lookup TButton -background]; if {$Bgbut eq {}} {set Bgbut #d9d9d9}
+    set Fgtxt [ttk::style lookup TEntry -foreground] ; if {$Fgtxt eq {}} {set Fgtxt #000000}
     set Prepost [list]
     set Widgetopts [list]
     set Edge @@

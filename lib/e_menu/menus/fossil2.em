@@ -210,22 +210,14 @@ ITEM = fossil status %PD
 S: cd %PD
 S: echo %PD\ndir\necho ---\nfossil status
 
-ITEM = fossil addremove
+
+ITEM = fossil commit -f -tag
 S: cd %PD
-R: %I {} "ADDREMOVE" { \
-   chb1 {{Dry run:} {-anchor w -fill none} {-w 3}} {$::EM_T_DRY} \
-   v_2 {{} {-pady 4}} {} seh {} {} \
-   texc {{   Hint:} {} {-h 11 -w 73 -ro 1 -wrap word}} \
-   {\n *  All files in the checkout but not in the repository (that is,\
-\n    all files displayed using the 'extras' command) are added as\
-\n    if by the 'add' command.\
-\n\n *  All files in the repository but missing from the checkout (that is,\
-\n    all files that show as MISSING with the 'status' command) are\
-\n    removed as if by the 'rm' command.\
-\n\n The 'Dry run' shows the supposed changes, not doing actually.} \
-   } -head {\n This will ADD the new and REMOVE the deleted\n file(s) of "$::EMENUPRJ" repository. \n} -weight bold == ::EM_T_DRY
-S: %C if $::EM_T_DRY {set ::EM_T_n -n} {set ::EM_T_n ""}
-S: fossil addremove $::EM_T_n
+R: %C set ::COMTAG "%s"
+R: %I warn "TAG COMMIT" { \
+   ent1 {{Tag for the last commit:} {} {}} {"$::COMTAG"} \
+   } -head {\n This will TAG the last commit:} -weight bold == ::COMTAG
+S: fossil commit -f -tag "$::COMTAG" -bgcolor '#F8A4F6'
 
 ITEM = fossil touch
 S: cd %PD

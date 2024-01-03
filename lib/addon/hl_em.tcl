@@ -35,7 +35,7 @@ proc hl_em::init {w font szfont args} {
   $w tag config emVAL -font $font -foreground $clrSTR
   dict set font -slant italic
   $w tag config emCMNT -font $font -foreground $clrCMN
-  foreach t {RSIM MARK SECT CMNT VAR VAL} {after idle $w tag raise em$t}
+  foreach t {RSIM MARK SECT CMNT} {after idle $w tag raise em$t}
   return [namespace current]::line
 }
 

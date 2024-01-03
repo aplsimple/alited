@@ -241,7 +241,7 @@ proc ini::ReadIni {{projectfile ""}} {
 
   namespace upvar ::alited al al
   namespace upvar ::alited::pref em_Num em_Num em_NumMax em_NumMax \
-    em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
+    em_ico em_ico em_inf em_inf em_mnu em_mnu
   namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo
   alited::pref::Tkcon_Default
   set prjlist [list]
@@ -290,10 +290,9 @@ proc ini::ReadIni {{projectfile ""}} {
   set al(PTP,name) [lindex $al(PTP,list) 0]
   set al(PTP,names) [list]
   foreach {n c} $al(PTP,list) {lappend al(PTP,names) $n}
-  set em_Num [expr {min($em_NumMax,$em_i+3)}]
+  set em_Num [expr {min($em_NumMax,[Em_Number $em_i]+3)}]
   while {$em_i < $em_Num} {
-    set em_sep($em_i) 0
-    set em_ico($em_i) [set em_inf($em_i) [set em_mnu($em_i) {}]]
+    lassign {} em_ico($em_i) em_inf($em_i) em_mnu($em_i)
     incr em_i
   }
   if {$projectfile eq {} && $al(prjfile) eq {}} {
@@ -506,7 +505,7 @@ proc ini::ReadIniEM {nam val emiName} {
 
   namespace upvar ::alited al al
   namespace upvar ::alited::pref em_NumMax em_NumMax \
-    em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
+    em_ico em_ico em_inf em_inf em_mnu em_mnu
   upvar $emiName em_i
   switch -exact $nam {
     emPD       {set al(EM,PD=) [alited::UnixPath $val]}
@@ -528,12 +527,18 @@ proc ini::ReadIniEM {nam val emiName} {
     }
     em_run {
       if {$em_i < $em_NumMax} {
-        lassign [split $val \t] em_sep($em_i) em_ico($em_i) em_inf($em_i)
-        if {[string is true -strict $em_sep($em_i)] ||
-        $em_ico($em_i) ne {} || $em_inf($em_i) ne {}} {
-          set em_mnu($em_i) [alited::NormalizeName [lindex $em_inf($em_i) end]]
-          incr em_i
+        lassign [split $val \t] v1 v2 v3
+        if {$v1 eq "1" && $v2 eq {}} {
+          lassign {} em_ico($em_i) em_inf($em_i)  ;# it's a separator in alited v1.6.2-
+        } elseif {$v1 eq "0" && $v3 ne {}} {
+          set em_ico($em_i) $v2
+          set em_inf($em_i) $v3  ;# it's an item in alited v1.6.2-
+        } else {
+          set em_ico($em_i) $v1 ;# it's a separator / item in v1.6.2+
+          set em_inf($em_i) $v2
         }
+        set em_mnu($em_i) [alited::NormalizeName [lindex $em_inf($em_i) end]]
+        incr em_i
       }
     }
   }
@@ -597,6 +602,22 @@ proc ini::ReadIniMisc {nam val} {
     chExRE2 {set ::alited::find::chExRE2 [string is true $val]}
     geoRE2 {set ::alited::find::geoRE2 $val}
   }
+}
+#_______________________
+
+proc ini::Em_Number {em_N} {
+  # Gets a real number of e_menu items counting non-empty ones only.
+  #   em_N - current number of e_menu items
+
+  namespace upvar ::alited::pref em_inf em_inf
+  for {set i $em_N} {$i>0} {} {
+    set em_N $i
+    incr i -1
+    if {[info exists em_inf($i)] && $em_inf($i) ne {}} {
+      break
+    }
+  }
+  return $em_N
 }
 
 # _______________________ Reading project settings _________________________ #
@@ -758,7 +779,7 @@ proc ini::SaveIni {{newproject no}} {
   #   newproject - flag "for a new project"
 
   namespace upvar ::alited al al obPav obPav
-  namespace upvar ::alited::pref em_Num em_Num em_sep em_sep em_ico em_ico em_inf em_inf
+  namespace upvar ::alited::pref em_Num em_Num em_ico em_ico em_inf em_inf
   namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo
   puts "alited storing: $al(INI)"
   set chan [open $::alited::al(INI) w]
@@ -858,11 +879,12 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "emgeometry=$al(EM,geometry)"
   #  puts $chan "emexec=$al(EM,exec)"
   puts $chan "emdiff=$al(EM,DiffTool)"
-  for {set i 0} {$i<$em_Num} {incr i} {
-    if {[info exists em_sep($i)]} {
-      set em_run $em_sep($i)
-      append em_run \t $em_ico($i) \t $em_inf($i)
-      puts $chan "em_run=$em_run"
+  set em_N [Em_Number $em_Num]
+  for {set i 0} {$i<$em_N} {incr i} {
+    if {[info exists em_inf($i)]} {
+      set em_run em_run=
+      append em_run [alited::TextIcon $em_ico($i) in] \t $em_inf($i)
+      puts $chan $em_run
     }
   }
   puts $chan {}
@@ -1288,7 +1310,22 @@ proc ini::EditSettings {} {
   # Displays the settings file, just to look behind the wall.
 
   namespace upvar ::alited al al obPav obPav
+  after idle alited::ini::HighlightEditSettings
   $obPav vieweditFile $al(INI) {} -rotext 1 -h 25
+}
+#_______________________
+
+proc ini::HighlightEditSettings {} {
+  # Highlights the settings file.
+
+  namespace upvar ::alited al al obPav obPav
+  foreach nam [::hl_tcl::hl_colorNames] {lappend colors $al(ED,$nam)}
+  set wtxt [$obPav TexM]
+  set plcom [alited::HighlightAddon $wtxt $al(INI) $colors]
+  ::hl_tcl::hl_init $wtxt -font $al(FONT,txt) -dark [$obPav csDark] \
+    -multiline 1 -colors $colors -insertwidth $al(CURSORWIDTH) \
+    -readonly 1 -plaintext 0 -plaincom $plcom
+  ::hl_tcl::hl_text $wtxt
 }
 
 # ________________________ Main (+ tool bar) _________________________ #
@@ -1362,7 +1399,9 @@ proc ini::InitFonts {} {
   ::apave::obj basicSmallFont $statusfont
   ::apave::obj basicFontSize $al(FONTSIZE,std)
   set gl [file join $MSGSDIR $al(LOCAL)]
-  if {[catch {glob "$gl.msg"}]} {set al(LOCAL) en}
+  if {[catch {set flist [glob "$gl.msg"]}] || $flist eq {}} {
+    set al(LOCAL) en
+  }
   if {$al(LOCAL) ni {en {}}} {
     # load localized messages
     msgcat::mcload $MSGSDIR
@@ -1398,8 +1437,7 @@ proc ini::_init {} {
 
   namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2 \
     obFND obFND obFN2 obFN2 obCHK obCHK obRun obRun
-  namespace upvar ::alited::pref em_Num em_Num \
-    em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
+  namespace upvar ::alited::pref em_Num em_Num em_ico em_ico em_inf em_inf em_mnu em_mnu
 
   ::apave::initBaltip
   ::apave::obj chooserGeomVars ::alited::DirGeometry ::alited::FilGeometry
@@ -1493,19 +1531,22 @@ proc ini::_init {} {
       }
     }
   }
+  # e_menu items for the toolbar
   set limgs [list]
-  for {set i [set was 0]} {$i<$em_Num} {incr i} {
-    if {[info exists em_ico($i)] && ($em_ico($i) ni {none {}} || $em_sep($i))} {
-      if {[incr was]==1 && !$em_sep($i)} {
+  set em_N [Em_Number $em_Num]
+  for {set i [set was 0]} {$i<$em_N} {incr i} {
+    if {[info exists em_ico($i)] && ($em_ico($i) ni {none {}} || $em_inf($i) eq {})} {
+      if {[incr was]==1 && $em_inf($i) ne {}} {
         append al(atools) { sev 6}
       }
-      if {$em_sep($i)} {
+      if {$em_inf($i) eq {}} {
         append al(atools) { sev 6}
       } else {
-        set tico [alited::TextIcon $em_ico($i) in]
-        if {[string length $tico]==1 || ![string is alpha $tico]} {
-          set img _$tico
-          set txt "-t $em_ico($i)"
+        set tico [alited::TextIcon $em_ico($i)]
+        if {[string length $tico]==1 || ![string is ascii $tico]} {
+          set em_ico($i) $tico
+          set img _$i
+          set txt "-t $tico"
         } else {
           set img [CreateIcon $tico]-big
           set txt {}

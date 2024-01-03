@@ -99,16 +99,14 @@ proc menu::FillRunItems {fname} {
   # Maps %f & %D wildcards to the current file & directory names.
 
   namespace upvar ::alited al al
-  namespace upvar ::alited::pref em_Num em_Num \
-    em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
+  namespace upvar ::alited::pref em_Num em_Num em_mnu em_mnu
   set m $al(TOOLS)
   set maplist [MapRunItems $fname]
-  for {set i 0} {$i<$em_Num} {incr i} {
-    if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
-      if {!$em_sep($i)} {
-        set txt [string map $maplist $em_mnu($i)]
-        $m.runs entryconfigure [expr {$i+1}] -label $txt
-      }
+  set em_N [alited::ini::Em_Number $em_Num]
+  for {set i 0} {$i<$em_N} {incr i} {
+    if {[info exists em_ico($i)] && $em_mnu($i) ne {}} {
+      set txt [string map $maplist $em_mnu($i)]
+      $m.runs entryconfigure [expr {$i+1}] -label $txt
     }
   }
 }
@@ -213,8 +211,7 @@ proc menu::FillMenu {} {
   ::apave::msgcatDialogs
 
   namespace upvar ::alited al al DATADIR DATADIR DIR DIR
-  namespace upvar ::alited::pref em_Num em_Num \
-    em_sep em_sep em_ico em_ico em_inf em_inf em_mnu em_mnu
+  namespace upvar ::alited::pref em_Num em_Num em_ico em_ico em_inf em_inf em_mnu em_mnu
 
   ## ________________________ File _________________________ ##
 
@@ -326,13 +323,14 @@ proc menu::FillMenu {} {
 
   ### ________________________ Runs _________________________ ###
 
-  for {set i [set emwas 0]} {$i<$em_Num} {incr i} {
-    if {[info exists em_ico($i)] && ($em_mnu($i) ne {} || $em_sep($i))} {
+  set em_N [alited::ini::Em_Number $em_Num]
+  for {set i [set emwas 0]} {$i<$em_N} {incr i} {
+    if {[info exists em_inf($i)]} {
       if {[incr emwas]==1} {
         menu $m.runs -tearoff 1
         $m add cascade -label bar-menu -menu $m.runs
       }
-      if {$em_sep($i)} {
+      if {$em_inf($i) eq {}} {
         $m.runs add separator
       } else {
         set com [alited::tool::EM_command $i]

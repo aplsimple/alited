@@ -468,7 +468,7 @@ proc tool::EM_optionTF {args} {
     append sel [$wtxt get $l1.0 $l2.end] \n
   }
   if {[string length [string trimright $sel]]<2 || \
-  (![is_mainmenu $args] && ![EM_menuhere tests $args])} {
+  (![is_mainmenu $args yes] && ![EM_menuhere tests $args])} {
     set tmpname [alited::bar::FileName]
   } else {
     set tmpname [alited::TmpFile SELECTION~]
@@ -640,12 +640,16 @@ proc tool::ComForced {} {
 
 ## ________________________ run/close _________________________ ##
 
-proc tool::is_mainmenu {menuargs} {
+proc tool::is_mainmenu {menuargs {withTF no}} {
   # Checks if e_menu's arguments are for the main menu (run by F4).
   #   menuargs - e_menu's arguments
+  #   withTF - yes, if checking together with TF= argument
   # The e_menu's arguments contain ex= or EX= for bar-menu tools only.
 
-  return [expr {[lsearch -glob -nocase $menuargs EX=*] == -1}]
+  if {$withTF && [lsearch -exact -nocase $menuargs m=menu.em] >= 0} {
+    return 1
+  }
+  return [expr {[lsearch -glob -nocase $menuargs EX=*] < 0}]
 }
 #_______________________
 
