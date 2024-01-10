@@ -355,7 +355,7 @@ proc favor_ls::_create {} {
   ::apave::APave create $obFav $win
   $obFav makeWindow $win $al(MC,FavLists)
   $obFav paveWindow $win {
-    {fraLbxFav - - 1 2 {-st nswe -pady 4} {}}
+    {fraLbxFav - - 1 2 {-st nswe -rw 3 -pady 4} {}}
     {.fra - - - - {pack -side right -fill both} {}}
     {.fra.btTAd - - - - {pack -side top -anchor n} {-com ::alited::favor_ls::Add -tip "Add a list of favorites" -image alimg_add-big}}
     {.fra.btTChg - - - - {pack -side top} {-com ::alited::favor_ls::Change -tip "Change a list of favorites" -image alimg_change-big}}

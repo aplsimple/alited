@@ -25,11 +25,13 @@
    - use buttons to <b>erase/paste/undo/redo</b> the text
    - use <b>move</b> buttons to postpone a TODO till next day or week
 
- Three exclamation marks in TODO (!!!) will make it "eternal" at showing.
+ Three exclamation marks in TODO (!!!) will make it red and "eternal".
 
  When the present day reaches a deadline, its TODO is highlighted and the
  bell rings, to remind of the TODO.
 
- If the TODO is done, just erase it with <r>Erase</r> button.
+ <b>TODO days ahead</b> field allows displaying TODOs of future days. At
+ nearing its "X" day a TODO is yellow, at reaching the day it's red.
 
+ If the TODO is done, just erase it with <r>Erase</r> button.
  Or click <r>Select</r> button if you want to continue with doing the TODO.

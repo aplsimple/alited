@@ -27,6 +27,7 @@
    - <b>Remove trailing whitespaces</b> - if set ON, the trailing
      whitespaces of all texts' lines are removed at saving. Otherwise,
      "Edit" menu item can be used to do this for a current text.
+ _______________________________________________________________________
 
  The <b>Translation link</b> means a link to the translation service used in
  <b>.l1-l2</b> type of files where <b>l1</b> and <b>l2</b> are the language codes.

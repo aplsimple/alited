@@ -224,6 +224,9 @@ namespace eval ::alited {
   set al(rectSel) 0           ;# flag "it was started"
   set al(rectSel,TID) {}      ;# tab ID where it was started
   set al(rectSel,text) [list] ;# selected rectangle
+
+  # "TODO ahead" setting of Projects
+  set al(todoahead) 0
 }
 
 # ________________________ Variables _________________________ #
@@ -436,6 +439,7 @@ proc ini::ReadIniOptions {nam val} {
     findunit      {set al(findunitvals) $val}
     afterstart    {set al(afterstart) $val}
     ALEversion    {set al(ALEversion) $val}
+    todoahead     {set al(todoahead) $val}
   }
 }
 #_______________________
@@ -529,12 +533,12 @@ proc ini::ReadIniEM {nam val emiName} {
       if {$em_i < $em_NumMax} {
         lassign [split $val \t] v1 v2 v3
         if {$v1 eq "1" && $v2 eq {}} {
-          lassign {} em_ico($em_i) em_inf($em_i)  ;# it's a separator in alited v1.6.2-
+          lassign {} em_ico($em_i) em_inf($em_i)  ;# it's a separator in alited v1.6.1
         } elseif {$v1 eq "0" && $v3 ne {}} {
           set em_ico($em_i) $v2
-          set em_inf($em_i) $v3  ;# it's an item in alited v1.6.2-
+          set em_inf($em_i) $v3  ;# it's an item in alited v1.6.1
         } else {
-          set em_ico($em_i) $v1 ;# it's a separator / item in v1.6.2+
+          set em_ico($em_i) $v1 ;# it's a separator / item in v1.6.2
           set em_inf($em_i) $v2
         }
         set em_mnu($em_i) [alited::NormalizeName [lindex $em_inf($em_i) end]]
@@ -846,6 +850,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "findunit=$al(findunitvals)"
   puts $chan "afterstart=$al(afterstart)"
   puts $chan "ALEversion=[AlitedVersion]"
+  puts $chan "todoahead=$al(todoahead)"
 
   puts $chan {}
   puts $chan {[Templates]}

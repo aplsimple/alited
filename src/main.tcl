@@ -734,16 +734,17 @@ proc main::PackTextWidgets {wtxt wsbv} {
 }
 #_______________________
 
-proc main::ShowOutdatedTODO {prj date todo} {
+proc main::ShowOutdatedTODO {prj date todo is} {
   # Shows a balloon with outdated TODO.
   #   prj - project's name
   #   date - date of TODO
   #   todo - text of TODO
+  #   is - 1 for current day TODO, 2 for "ahead" TODO
 
   namespace upvar ::alited al al
   set todo "\n$al(MC,prjName) $prj\n\n$al(MC,on) $date\n\n$todo\n"
   set opts {}
-  if {[string first !!! $todo]>-1} {
+  if {[string first !!! $todo]>-1 || ($is==1 && $al(todoahead))} {
     set opts {-ontop 1 -eternal 1 -fg white -bg red}
   }
   ::alited::Balloon $todo yes 2500 {*}$opts
@@ -759,7 +760,7 @@ proc main::InitActions {} {
   # check for outdated TODOs for current project
   lassign [alited::project::IsOutdated $al(prjname) yes] is date todo
   if {$is} {
-    ShowOutdatedTODO $al(prjname) $date $todo
+    ShowOutdatedTODO $al(prjname) $date $todo $is
   } else {
     # check other projects
     alited::project::SaveSettings
@@ -767,7 +768,7 @@ proc main::InitActions {} {
     set prjname [alited::project::CheckOutdated]
     if {$prjname ne {}} {
       lassign [alited::project::IsOutdated $prjname yes] is date todo
-      ShowOutdatedTODO $prjname $date $todo
+      ShowOutdatedTODO $prjname $date $todo $is
     }
   }
   after idle {alited::main::UpdateGutter; alited::main::FocusText}  ;# get it for sure

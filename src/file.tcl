@@ -233,13 +233,17 @@ proc file::FileStat {fname} {
 
   set res {}
   array set ares {}
-  if {$::alited::al(TREE,showinfo) && ![catch {file stat $fname ares}]} {
-    set dtf "%D %T"
-    set res "\n\
-\nCreated: [clock format $ares(ctime) -format $dtf]\
-\nModified: [clock format $ares(mtime) -format $dtf]\
-\nAccessed: [clock format $ares(atime) -format $dtf]\
-\nSize: [FileSize $ares(size)]"
+  if {$::alited::al(TREE,showinfo)} {
+    if {![catch {file stat $fname ares} err]} {
+      set dtf "%D %T"
+      set res "\n\
+  \nCreated: [clock format $ares(ctime) -format $dtf]\
+  \nModified: [clock format $ares(mtime) -format $dtf]\
+  \nAccessed: [clock format $ares(atime) -format $dtf]\
+  \nSize: [FileSize $ares(size)]"
+    } else {
+      set res \n\n[string map [list {: } :\n] $err]
+    }
   }
   return [append fname $res]
 }

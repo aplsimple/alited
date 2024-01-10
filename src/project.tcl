@@ -53,6 +53,13 @@ namespace eval project {
 
   # separator for commands in Notes
   variable COMSEP \t
+
+  # filter for project files
+  variable filefilter {}
+  variable casefilter 0
+  variable savedfilefilter $filefilter
+  variable savedcasefilter $casefilter
+
 }
 
 # ________________________ Common _________________________ #
@@ -389,8 +396,8 @@ proc project::SortRems {rems} {
   # Returns a list of reminder date before current date, sorted list, flag of outdated reminder.
 
   set tmp [list]
-  set dmin 0
-  set dcur [KlndInDate]
+  set dmin [set outdated 0]
+  set dcur [clock add [KlndInDate] $::alited::al(todoahead) day]
   foreach it $rems {
     lassign $it d text
     lassign [split $d /] y m d
@@ -407,7 +414,13 @@ proc project::SortRems {rems} {
     lassign $it d text
     lappend rems [list [ClockFormat $d] $text]
   }
-  set outdated [expr {$dmin && $dmin<[clock seconds]}]
+  if {$dmin} {
+    if {$dmin<[clock seconds]} {
+      set outdated 1 ;# current day reached
+    } elseif {$dmin<$dcur} {
+      set outdated 2 ;# "ahead" day reached
+    }
+  }
   return [list $dmin $rems $outdated]
 }
 #_______________________
@@ -453,22 +466,6 @@ proc project::KlndBorderText {{clr {}}} {
 }
 
 # ________________________ GUI helpers _________________________ #
-
-proc project::TabFileInfo {} {
-  # Fills a listbox with a list of project files.
-
-  variable obPrj
-  set lbx [$obPrj LbxFlist]
-  $lbx delete 0 end
-  foreach tab [lsort -index 0 -dictionary $::alited::al(tablist)] {
-    set fname [lindex [split $tab \t] 0]
-    $lbx insert end $fname
-  }
-  set txt [msgcat::mc {List of files (%n):}]
-  set txt [string map [list %n [llength $::alited::al(tablist)]] $txt]
-  [$obPrj LabFlist] configure -text $txt
-}
-#_______________________
 
 proc project::ReadNotes {prj} {
   # Reads notes of a project and commands for Commands tab.
@@ -729,6 +726,27 @@ proc project::KlndDayRem {dmin} {
 }
 #_______________________
 
+proc project::Message {msg {mode 1}} {
+  # Displays a message in statusbar of projects dialogue.
+  #   msg - message
+  #   mode - mode of Message
+
+  variable obPrj
+  alited::Message $msg $mode [$obPrj LabMess]
+}
+#_______________________
+
+proc project::focusTree {} {
+  # Sets focus on the treeview.
+
+  variable win
+  variable obPrj
+  focus $win
+  focus [$obPrj TreePrj]
+}
+
+# ________________________ Files tab's procs _________________________ #
+
 proc project::SelFiles {} {
   # Checks for a selection of file listbox.
   # Returns: list of listbox's path and the selection or {}.
@@ -771,21 +789,34 @@ proc project::OpenSelFiles {{showmsg yes}} {
   set al(prjname) $curinfo(prjname)
   lassign [SelFiles] lbx selidx
   if {$lbx ne {}} {
-    if {$showmsg} {
-      set msg [string map [list %n [llength $selidx]] [msgcat::mc {Open files: %n}]]
-      Message $msg 3
-    }
     update
+    set fnames [list]
+    set balloon {}
     foreach idx [lreverse $selidx] {
       set fn [$lbx get $idx]
-      lappend fnames $fn
-      if {[lsearch -index 0 -exact $prjinfo($cprj,tablist) $fn]<0} {
-        set prjinfo($cprj,tablist) [linsert $prjinfo($cprj,tablist) 0 $fn]
+      if {[file exists $fn]} {
+        lappend fnames $fn
+        if {[lsearch -index 0 -exact $prjinfo($cprj,tablist) $fn]<0} {
+          set prjinfo($cprj,tablist) [linsert $prjinfo($cprj,tablist) 0 $fn]
+        }
+      } else {
+        set balloon $fn
       }
     }
-    alited::file::OpenFile $fnames yes yes alited::info::Put
+    set llen [llength $fnames]
+    if {$showmsg} {
+      set msg [string map [list %n $llen] [msgcat::mc {Open files: %n}]]
+      Message $msg 3
+    }
+    if {$llen} {
+      alited::file::OpenFile $fnames yes yes alited::info::Put
+    }
+    if {$balloon ne {}} {
+      after idle alited::Balloon1 $balloon
+    }
   }
   set al(prjname) $prj
+  afterOpenCloseFiles
 }
 #_______________________
 
@@ -828,6 +859,24 @@ proc project::CloseSelFiles {} {
       TabFileInfo
     }
     set al(prjname) $prj
+    afterOpenCloseFiles
+  }
+}
+#_______________________
+
+proc project::afterOpenCloseFiles {} {
+  # Actions after opening/closing files.
+
+  variable obPrj
+  set flist [$obPrj LbxFlist]
+  set fsels [$flist curselection]
+  set item [Selected index]
+  GetProjects
+  UpdateTree
+  Select $item
+  focusTree
+  foreach fsel $fsels {
+    after 300 $flist selection set $fsel $fsel
   }
 }
 #_______________________
@@ -846,11 +895,14 @@ proc project::LbxPopup {X Y} {
   #   Y - y-coordinate of mouse pointer
 
   variable obPrj
+  variable filefilter
   set popm [$obPrj LbxFlist].popup
   catch {destroy $popm}
   menu $popm -tearoff 0
   $popm add command -label $::alited::al(MC,openselfile) -command alited::project::OpenSelFiles
-  $popm add command -label [msgcat::mc {Close Selected Files}] -command alited::project::CloseSelFiles
+  if {$filefilter eq {}} {set state normal} {set state disabled}
+  $popm add command -label [msgcat::mc {Close Selected Files}] \
+    -command alited::project::CloseSelFiles -state $state
   $popm add separator
   $popm add command -label [msgcat::mc {Select All}] -command alited::project::SelectAllFiles -accelerator Ctrl+A
   baltip::sleep 1000
@@ -911,13 +963,98 @@ proc project::PopupMenu {x y X Y} {
 }
 #_______________________
 
-proc project::Message {msg {mode 1}} {
-  # Displays a message in statusbar of projects dialogue.
-  #   msg - message
-  #   mode - mode of Message
+proc project::TabFileHeading {} {
+  # Show Files tab's heading.
 
   variable obPrj
-  alited::Message $msg $mode [$obPrj LabMess]
+  set lbx [$obPrj LbxFlist]
+  set txt [msgcat::mc {List of files (%n):}]
+  set txt [string map [list %n [$lbx index end]] $txt]
+  [$obPrj LabFlist] configure -text $txt
+}
+#_______________________
+
+proc project::TabFileFill {flist} {
+  # Fills a listbox of files.
+  #   flist - file list
+
+  variable obPrj
+  set lbx [$obPrj LbxFlist]
+  $lbx delete 0 end
+  set savfname {}
+  foreach tab [lsort -index 0 -dictionary $flist] {
+    set fname [lindex [split $tab \t] 0]
+    if {$savfname ne $fname} {  ;# no duplicates
+      $lbx insert end $fname
+      set savfname $fname
+    }
+  }
+}
+#_______________________
+
+proc project::TabFileInfo {} {
+  # Fills a listbox with a list of project files.
+
+  variable filefilter
+  if {$filefilter ne {}} {
+    TabFileFilter
+    return
+  }
+  TabFileFill $::alited::al(tablist)
+  TabFileHeading
+}
+#_______________________
+
+proc project::TabFileFilter {} {
+  # Fills a listbox with a list of filtered files of all projects.
+
+  variable filefilter
+  variable casefilter
+  variable prjlist
+  variable prjinfo
+  if {$filefilter eq {}} {
+    TabFileInfo
+    return
+  }
+  set alltablist [list]
+  if {$casefilter} {set nocase {}} {set nocase -nocase}
+  foreach prj $prjlist {
+    foreach tab $prjinfo($prj,tablist) {
+      set fname [lindex [split $tab \t] 0]
+      if {[string match {*}$nocase *$filefilter* $fname]} {
+        lappend alltablist $tab
+      }
+    }
+  }
+  TabFileFill $alltablist
+  TabFileHeading
+}
+#_______________________
+
+proc project::postValidateFilter {} {
+  # Postvalidates the file filter change.
+
+  variable filefilter
+  variable casefilter
+  variable savedfilefilter
+  variable savedcasefilter
+  if {$savedfilefilter ne $filefilter || $savedcasefilter ne $casefilter} {
+    if {$filefilter eq {}} {
+      TabFileInfo
+    } else {
+      TabFileFilter
+    }
+    set savedfilefilter $filefilter
+    set savedcasefilter $casefilter
+  }
+}
+#_______________________
+
+proc project::preValidateFilter {} {
+  # Prevalidates the file filter change.
+
+  after idle alited::project::postValidateFilter
+  return 1
 }
 
 # ________________________ Buttons for project list _________________________ #
@@ -1157,7 +1294,7 @@ proc project::Ok {args} {
     return
   }
   if {[set isel [Selected index]] eq {} || ![ValidProject]} {
-    focus [$obPrj TreePrj]
+    focusTree
     return
   }
   if {![ValidProject]} return
@@ -1802,10 +1939,13 @@ proc project::Tab1 {} {
     {.EntName + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(prjname) -w 50}}
     {.labDir .labName T 1 1 {-st e -pady 8 -padx 3} {-t "Root directory:"}}
     {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(prjroot) -w 50 -validate all -validatecommand alited::project::ValidateDir}}
-    {lab fra1 T 1 2 {-st w -pady 4 -padx 3} {-t "Notes:"}}
+    {lab fra1 T 1 1 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 + T 2 1 {-st nsew -rw 1 -cw 99}}
-    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext "*.texKlnd *.entdir" -tip {-BALTIP {$::alited::al(MC,notes)} -MAXEXP 1}}}
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext *.spx -tip {-BALTIP {$::alited::al(MC,notes)} -MAXEXP 1}}}
     {.sbv + L - - {pack -side left}}
+    {frasp lab L 1 1 {-st nsew}}
+    {.lab - - - - {pack -side left} {-t {TODO days ahead:}}}
+    {.spx - - - - {pack -side left -padx 8} {-tvar ::alited::al(todoahead) -from 0 -to 365 -w 5 -justify center -com alited::project::Select}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
     {.daT - - - - {pack -fill both} {-tvar ::alited::project::klnddata(date) -com {alited::project::KlndUpdate; alited::project::KlndBorderText} -dateformat "$::alited::al(TPL,%d)" -tip {alited::project::KlndText %D} -popup {alited::project::KlndPopup %W %y %m %d %X %Y} -width 3}}
@@ -1922,8 +2062,12 @@ proc project::Tab5 {} {
 
   return {
     {v_ - - 1 9}
-    {LabFlist + T 1 1 {-pady 3 -padx 3} {-foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
-    {fraFlist + T 1 9 {-st nswe -padx 3 -cw 1 -rw 1}}
+    {labFilter + T 1 1 {-st se -padx 1} {-t {All files filter:}}}
+    {EntFilter + L 1 1 {-st swe -padx 1 -cw 1} {-tvar ::alited::project::filefilter -validate all -validatecommand alited::project::preValidateFilter}}
+    {chbFilter + L 1 1 {-st sw -padx 1} {-var ::alited::project::casefilter -t {Match case} -com alited::project::postValidateFilter}}
+    {seh_ labFilter T 1 3}
+    {LabFlist + T 1 3 {-pady 3 -padx 3} {-foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {fraFlist + T 1 3 {-st nswe -padx 3 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}
     {.sbvFlist + L - - {pack -side left}}
   }

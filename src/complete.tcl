@@ -292,7 +292,7 @@ proc complete::PickCommand {wtxt} {
   catch {$obj destroy}
   ::apave::APave create $obj $win
   set lwidgets [list \
-    "Ent - - - - {pack -expand 1 -fill x} {-w $::alited::complete::maxwidth -tvar ::alited::complete::word -validate all -validatecommand {alited::complete::PickValid $wtxt %V %d %i %s %S}}" \
+    "Ent - - - - {pack -expand 1 -fill x} {-w $::alited::complete::maxwidth -tvar ::alited::complete::word -validate key -validatecommand {alited::complete::PickValid $wtxt %V %d %i %s %S}}" \
     "fra - - - - {pack -expand 1 -fill both}" \
     ".Lbx - - - - {pack -side left -expand 1 -fill both} {-h $lht -w $::alited::complete::maxwidth -lvar ::alited::complete::comms -exportselection 0}"
   ]

@@ -1,5 +1,16 @@
 # LAST CHANGES:
 
+Version `1.6.3 (10 Jan'24)`
+
+  - BUGFIX: select from autocomplete list with mouse
+  - NEW   : Projects/Files: filter for all projects' files
+  - NEW   : Projects/Files: increment 1,2,3.. days to show TODOs ahead
+  - CHANGE: Projects/Files: at opening files, message if a file doesn't exists
+  - CHANGE: Projects/Files: after opening/closing files, focus on project list
+  - CHANGE: tip on file: if not accessible, tip error
+  - CHANGE: Templates & Saved Favorites: row weight of list
+
+
 Version `v1.6.2 (3 Jan'24)`
 
   - BUGFIX: opening Projects: see current project in project list if the list is long

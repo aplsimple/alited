@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.3  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -15,7 +15,7 @@ namespace eval alited {
   variable isTcl90 [package vsatisfies $tcltk_version 9.0-]
   if {![package vsatisfies $tcltk_version 8.6.10-]} {
     tk_messageBox -message "\nalited needs Tcl/Tk v8.6.10+ \
-      \n\nwhile the current is v$_\n"
+      \n\nwhile the current is v$tcltk_version\n"
     exit
   }
   set _ [info nameofexecutable]

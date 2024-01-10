@@ -1,7 +1,17 @@
- In the list of files, you can select file(s) with left-click, then use
+ In the <b>List of files</b>, you can select file(s) with left-click, then use
  right-click to invoke the context menu and open/close the files in the
  current session.
 
  Double clicking a file will open it in the current project.
 
  While navigating the list of projects you can open any of their files.
+
+ <r>Note</r>: opening and closing files is for the current project only!
+ The files aren't closed in other projects even when contained there.
+ ______________________________________________________________________
+
+ To filter the all projects' files, enter any part of the file name in
+ <b>All files filter</b> entry field, e.g. "/" will show all files open
+ in all projects.
+
+ <b>Match case</b> checkbox allows the filter be case sensitive.

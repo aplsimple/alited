@@ -517,7 +517,7 @@ proc unit_tpl::_create {{geom ""}} {
   ::apave::APave create $obTpl $win
   $obTpl makeWindow $win $al(MC,tpllist)
   $obTpl paveWindow $win {
-    {fraTreeTpl - - 10 10 {-st nswe -pady 8} {}}
+    {fraTreeTpl - - 10 10 {-st nswe -rw 3 -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
     {.fra.btTAd - - - - {pack $forget -side top -anchor n} {-com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
     {.fra.btTChg - - - - {pack $forget -side top} {-com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
