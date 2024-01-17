@@ -7,13 +7,13 @@
  <b>Check proc's regexp</b> - a regexp by which a proc change is detected
  At modifying a line, these REs decide have the unit tree to be updated.
 
- <b>Use leaf's regexp</b> - allows an additional regexp for leaves
- <b>Leaf's regexp</b> - an additional regexp for leaves
+ <b>Use leaf's regexp</b> - allows an alternative regexp for leaves
+ <b>Leaf's regexp</b> - an alternative regexp for leaves
+
+ The alternative leaf's regexp is useful when you use the doc comments
+ before proc/method declarations. By default alited checks for the doc
+ comments below a proc/method declaration.
 
  <b>Untouched top lines</b> - a number of lines untouched by unit moves
-
- The additional leaf's regexp is useful when you use the header comments
- before proc/method declaration. By default alited checks for the header
- comments below a proc/method declaration.
 
  Use <b>Default</b> button to set default settings.

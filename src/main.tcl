@@ -779,6 +779,13 @@ proc main::InitActions {} {
       after idle {after 100 {after idle {after 100 alited::main::FocusText}}}
     }}
   }
+  # Ctrl-click for Run, e_menu, Tkcon buttons
+  foreach ico {run e_menu other} {
+    set but [alited::tool::ToolButName $ico]
+    bind $but <Control-Button-1> "alited::tool::_run 1 {} -doit yes; break"
+    set tip [::baltip::cget $but -text][alited::tool::AddTooltipRun]
+    after idle [list ::baltip::tip $but $tip]
+  }
 }
 
 # ________________________ Main _create _________________________ #

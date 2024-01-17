@@ -62,10 +62,9 @@ oo::class create ::apave::APaveDialog {
     set HLstring {}   ;# current selected string
 
     # Actions on closing the editor
-  ; proc exitEditor {resExit} {
+  ; proc exitEditor {w resExit} {
       upvar $resExit res
       if {[[my TexM] edit modified]} {
-        set w [my dlgPath]
         set pdlg [::apave::APaveDialog new $w]
         set r [$pdlg misc warn $::apave::msgarray(savetext) \
           "\n $::apave::msgarray(saveask) \n" \
@@ -870,7 +869,7 @@ oo::class create ::apave::APaveDialog {
   }
   #_______________________
 
-  method AppendButtons {widlistName buttons neighbor pos defb timeout win modal} {
+  method AppendButtons {widlistName buttons neighbor pos defb timeout win modal ONCLOSE} {
     # Adds buttons to the widget list from a position of neighbor widget.
     #   widlistName - variable name for widget list
     #   buttons - buttons to add
@@ -880,6 +879,7 @@ oo::class create ::apave::APaveDialog {
     #   timeout  - timeout (to count down seconds and invoke a button)
     #   win - dialogue's path
     #   modal - yes if the window is modal
+    #   ONCLOSE - command to run at closing the dialog
     # Returns list of "Help" button's name and command.
 
     upvar $widlistName widlist
@@ -904,6 +904,7 @@ oo::class create ::apave::APaveDialog {
       } elseif {$Defb2 eq {}} {
         set Defb2 $but
       }
+      if {$ONCLOSE ne {}} {append com " ; $ONCLOSE"}
       if {[set _ [string first "::" $txt]]>-1} {
         set tt " -tip {[string range $txt $_+2 end]}"
         set txt [string range $txt 0 $_-1]
@@ -966,7 +967,7 @@ oo::class create ::apave::APaveDialog {
     set focusmatch {}
     # options of dialog
     lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM optsHead \
-      root rotext head hsz binds postcom onclose timeout tab2 \
+      root rotext head hsz binds postcom onclose ONCLOSE timeout tab2 \
       tags cc themecolors optsGrid addpopup minsize
     set wasgeo [set textmode [set stay [set waitvar 0]]]
     set readonly [set hidefind [set scroll [set modal 1]]]
@@ -994,7 +995,11 @@ oo::class create ::apave::APaveDialog {
         -c - -color {append optsLabel " -foreground {$val}"}
         -a { ;# additional grid options of message labels
           append optsGrid " $val" }
-        -centerme - -ontop - -themed - -resizable - -checkgeometry - -onclose - -comOK - -transient {
+        -onclose {
+          set ONCLOSE [string map [list %w $qdlg] $val]
+          lappend args $opt $ONCLOSE
+        }
+        -centerme - -ontop - -themed - -resizable - -checkgeometry - -comOK - -transient {
           lappend args $opt $val ;# options delegated to showModal method
         }
         -parent - -root { ;# obsolete, used for compatibility
@@ -1243,7 +1248,7 @@ oo::class create ::apave::APaveDialog {
              -label \"Save and Close\" -command \"[self] res $qdlg 1\"
             "
         }
-        set onclose [namespace current]::exitEditor
+        set onclose "[namespace current]::exitEditor $qdlg"
         oo::objdefine [self] export InitFindInText
       } else {
         lappend widlist [list h__ h_3 L 1 4 {-cw 1}]
@@ -1262,7 +1267,7 @@ oo::class create ::apave::APaveDialog {
       [[self] popupHighlightCommands \$pop $wt]"
     }
     # add the buttons
-    lassign [my AppendButtons widlist $buttons h__ L $defb $timeout $qdlg $modal] \
+    lassign [my AppendButtons widlist $buttons h__ L $defb $timeout $qdlg $modal $ONCLOSE] \
       bhelp bcomm
     # make the dialog's window
     set wtop [my makeWindow $qdlg.fra $ttl]

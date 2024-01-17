@@ -18,14 +18,24 @@ proc run::RunOptions {args} {
 
   namespace upvar ::alited al al obRun obRun
   set cbx [$obRun CbxfiL]
-  set com [$cbx get]
+  set com [string trim [$cbx get]]
+  set al(comForce) $com
   set al(comForceLs) [$cbx cget -values]
   set befrun [[$obRun Tex2] get 1.0 end]
-  set al(comForce) [string trim $com]
-  set i [lsearch -exact $al(comForceLs) $com]
-  set al(comForceLs) [lreplace $al(comForceLs) $i $i]
+  if {$com ne {}} {
+    set i [lsearch -exact $al(comForceLs) $com]
+    set al(comForceLs) [lreplace $al(comForceLs) $i $i]
+  }
   if {[llength $al(comForceLs)]<2} {set al(comForceLs) [list {}]}
-  set al(comForceLs) [linsert $al(comForceLs) 1 $com]
+  if {$com ne {}} {
+    set al(comForceLs) [linsert $al(comForceLs) 1 $com]
+  }
+  for {set i [llength $al(comForceLs)]} {$i>1} {} {
+    incr i -1
+    if {[string trim [lindex $al(comForceLs) $i]] eq {}} {
+      set al(comForceLs) [lreplace $al(comForceLs) $i $i]
+    }
+  }
   set al(comForceLs) [lrange $al(comForceLs) 0 $al(prjmaxcoms)]
   set al(prjbeforerun) [::alited::ProcEOL [string trim $befrun] out]
 }

@@ -67,8 +67,8 @@ namespace eval ::alited {
   set al(RE,branchDEF) {^\s*(#+) [_]+\s+([^_]+[^[:blank:]]*)\s+[_]+ (#+)$}
   set al(RE,branch) $al(RE,branchDEF)
 
-  # special RE for leafs (# --  / # -- abc / # --abc--)
-  set al(RE,leafDEF) {^\s*##\s*[-]*([^-]*)\s*[-]*$}
+  # special RE for leafs
+  set al(RE,leafDEF) {^\s*#\s*[=]+([^=]*)\s*[=]+$}
   set al(RE,leaf) $al(RE,leafDEF)
 
   # RE for Tcl leaf units
@@ -1531,7 +1531,7 @@ proc ini::_init {} {
           append al(atools) "-com {alited::tool::e_menu o=0}\}"
         }
         other {
-          append al(atools) "-command alited::tool::tkcon\}"
+          append al(atools) "-com alited::tool::tkcon\}"
         }
       }
     }

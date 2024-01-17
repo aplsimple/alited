@@ -191,6 +191,13 @@ proc tool::HelpTool {win hidx args} {
 }
 #_______________________
 
+proc tool::AddTooltipRun {} {
+  # Addition to Run's tooltip.
+
+  return "\n\nCtrl+click = $::alited::al(acc_2) + F4"
+}
+#_______________________
+
 proc tool::TooltipRun {} {
   # Gets a tip for "Run" tool.
 
@@ -199,7 +206,7 @@ proc tool::TooltipRun {} {
   if {[ComForced]} {
     set res $al(comForce)\n[lindex [split $res \n] 1]
   }
-  return $res
+  append res [AddTooltipRun]
 }
 
 # ________________________ emenu support _________________________ #
@@ -809,7 +816,6 @@ proc tool::_run {{what ""} {runmode ""} args} {
   if {[is_emenu]} return
   set opts "EX=$what"
   if {$what eq {}} {
-    #  it is 'Run me' e_menu item
     set doit [::apave::extractOptions args -doit 0]
     lassign [alited::ExtTrans] ext istrans from to
     if {!$doit && $istrans} {

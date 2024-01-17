@@ -3751,8 +3751,9 @@ oo::class create ::apave::APaveBase {
       set opt(-onclose) "set $varname 0"
     } else {
       set opt(-onclose) "$opt(-onclose) $varname"  ;# $opt(-onclose) is a command
+      set opt(-onclose) [string map [list %w $win] $opt(-onclose)]
     }
-    if {$destroy} {append opt(-onclose) " ; destroy $win"}
+    if {$destroy} {append opt(-onclose) " ; catch {destroy $win}"}
     if {$opt(-resizable) ne {}} {
       if {[string is boolean $opt(-resizable)]} {
         set opt(-resizable) "$opt(-resizable) $opt(-resizable)"

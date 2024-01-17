@@ -384,7 +384,6 @@ proc favor_ls::_create {} {
     {.butOK - - - - {pack -side left -padx 2} {-t "$::alited::al(MC,select)" -command ::alited::favor_ls::Ok}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::favor_ls::Cancel}}
   }
-
   set fav {}
   set lbx [$obFav LbxFav]
   set wtxt [$obFav TexFav]

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.4  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -25,6 +25,7 @@ namespace eval alited {
   }
 
   variable al; array set al [list]
+  variable al2; array set al2 [list] ;# alternative array, just to not touch "al"
 
   # versions of mnu/ini to update to
   set al(MNUversion) 1.6.0a1
@@ -622,6 +623,18 @@ namespace eval alited {
       return [string map [list \n $EOL] $val]
     }
   }
+  #_______________________
+
+  proc DestroyWindow {win foc args} {
+    # Destroys current window and focuses on previously focused widget.
+    #   win - current window passed as %w
+    #   foc - previously focused widget
+
+    catch {destroy $win}
+    catch {
+      after idle "after 100 {catch {focus [winfo toplevel $foc] ; focus $foc}}"
+    }
+  }
 
   ## ________________________ Messages _________________________ ##
 
@@ -863,9 +876,9 @@ namespace eval alited {
     if {$ale1Help && [set dlg [$pobj dlgPath]] ne $al(WIN)} {
       destroy $dlg  ;# -ale1Help option permits the only Help window
     }
-    set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no -onclose destroy \
-      -centerme $win -text 1 -scroll no -tags ::alited::textTags -ontop $ontop \
-      -w [incr wmax] {*}$args]
+    set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no \
+      -onclose "alited::DestroyWindow %w [focus]" -centerme $win -text 1 -scroll no \
+      -tags ::alited::textTags -ontop $ontop -w [incr wmax] {*}$args]
     return $res
   }
   #_______________________
@@ -875,17 +888,17 @@ namespace eval alited {
     #   mode - 1 to check for existance the help; 0 to register it
     #   fname - file of help
 
-    variable al
+    variable al2
     variable obDlg
     set key _help_$fname
     if {$mode} {
-      if {[info exists al($key)] && [winfo exists $al($key)]} {
-        ::apave::deiconify $al($key)
+      if {[info exists al2($key)] && [winfo exists $al2($key)]} {
+        ::apave::deiconify $al2($key)
         return 1
       }
       return 0
     }
-    if {[catch {set al($key) [$obDlg dlgPath]}]} {set al($key) 0}
+    if {[catch {set al2($key) [$obDlg dlgPath]}]} {set al2($key) 0}
   }
   #_______________________
 

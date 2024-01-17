@@ -334,6 +334,7 @@ proc pref::Ok {args} {
     set al(EM,DiffTool) [file join {*}[file split $al(EM,DiffTool)]]
     set al(ED,trans) [[$obPrf CbxTrans] cget -values]
     ::alited::PushInList al(ED,trans) $al(ED,tran)
+    set al(RE,proc) [string trimright $al(RE,proc)]
     $obPrf res $win 1
     alited::Exit - 1 no
   }
@@ -1226,7 +1227,14 @@ proc pref::CheckUseLeaf {} {
   # Enables/disables the "Regexp of a leaf" field.
 
   fetchVars
-  if {$al(INI,LEAF)} {set state normal} {set state disabled}
+  if {$al(INI,LEAF)} {
+    set state normal
+    set al(RE,proc) {}
+  } else {
+    set state disabled
+    set al(RE,proc) [string trimright $al(RE,proc)]
+    if {$al(RE,proc) eq {}} {set al(RE,proc) $al(RE,procDEF)}
+  }
   [$obPrf EntLf] configure -state $state
 }
 

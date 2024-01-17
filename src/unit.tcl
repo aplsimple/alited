@@ -49,16 +49,20 @@ proc unit::GetHeader {wtree ID {NC ""} {wtxt ""} {tip ""} {l1 0} {l2 0}} {
       for {} {$l1<$l2} {} {
         incr l1
         set line [string trim [$wtxt get $l1.0 $l1.end]]
-        set line1 [string trimleft $line {#! }]
-        set line2 [string trimleft $line {/ }]
-        if {[string index $line end] ni [list \\ \{] && \
-        $line ni {{} # //} && ![regexp $al(RE,proc) $line]} {
-          if {[string match #* $line] && $line1 ne {} && \
+        if {[string index $line end] ni [list \\ \{] && $line ni {{} # //} \
+        && ([IsLeafRegexp] || ![regexp $al(RE,proc) $line])} {
+          set line1 [string trimleft $line {#!;}]
+          set line2 [string trimleft $line {/}]
+          if {[string match #* $line] && [string trimleft $line1] ne {} && \
           ![regexp $::hl_tcl::my::data(RETODO) $line]} {
+            if {[regexp {^\s+} $line1]} {set line1 [string range $line1 1 end]}
             append tip \n $line1
-            break
-          } elseif {[string match //* $line] && $line2 ne {}} {
+            if {$al(RE,proc) ne {}} break
+          } elseif {[string match //* $line] && [string trimleft $line2] ne {}} {
+            if {[regexp {^\s+} $line2]} {set line2 [string range $line2 1 end]}
             append tip \n $line2
+            if {$al(RE,proc) ne {}} break
+          } elseif {$line ne {}} {
             break
           }
         }
@@ -194,13 +198,22 @@ proc unit::SwitchUnits {} {
   if {[set TID [alited::favor::OpenSelectedFile $fname]] eq {}} return
   alited::favor::GoToUnit $TID $name $header
 }
+#_______________________
+
+proc unit::IsLeafRegexp {} {
+  # Checks for using "leaf's regexp" preference setting.
+
+  namespace upvar ::alited al al
+  expr {$al(RE,proc) eq {} && $al(INI,LEAF)}
+}
 
 # ________________________ Templates _________________________ #
 
-proc unit::TemplateData {wtxt l1 tpldata} {
+proc unit::TemplateData {wtxt l1 l2 tpldata} {
   # Replaces the template wildcards with data of current text and unit.
   #   wtxt - text's path
   #   l1 - 1st line of current unit
+  #   l2 - last line of current unit
   #   tpldata - template
 
   namespace upvar ::alited al al DIR DIR MNUDIR MNUDIR
@@ -227,11 +240,21 @@ proc unit::TemplateData {wtxt l1 tpldata} {
   #   # ar1 -
   #   # ar2 -
   #   # ar3 -
-  if {[catch {set textcont [$wtxt get $l1.0 $l1.end]}]} {set textcont ""}
-  set indent [string repeat " " [::apave::obj leadingSpaces $textcont]]
-  set textcont [string trim $textcont "\{ "]
-  lassign [split $textcont "\{"] proc
-  set iarg [string range $textcont [string length $proc] end]
+  set unithead {}
+  if {[IsLeafRegexp] && ![catch {set unittext [$wtxt get $l1.0 $l2.end]}]} {
+    foreach t [split $unittext \n] {
+      if {[regexp $al(RE,proc2) $t]} {
+        set unithead $t
+        break
+      }
+    }
+  } else {
+    catch {set unithead [$wtxt get $l1.0 $l1.end]}
+  }
+  set indent [string repeat " " [::apave::obj leadingSpaces $unithead]]
+  set unithead [string trim $unithead "\{ "]
+  lassign [split $unithead "\{"] proc
+  set iarg [string range $unithead [string length $proc] end]
   catch {
     set tpla [string map [list \\n \n] $al(TPL,%a)]
     set oarg [set st1 ""]
@@ -279,7 +302,7 @@ proc unit::InsertTemplate {tpldata {dobreak yes}} {
   }
   set wtxt [alited::main::CurrentWTXT]
   lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - - l1 l2
-  lassign [TemplateData $wtxt $l1 $tpldata] tex posc place tplind
+  lassign [TemplateData $wtxt $l1 $l2 $tpldata] tex posc place tplind
   lassign [split $posc .] -> col0
   switch $place {
     0 { ;# returned by TemplateData: after a declaration

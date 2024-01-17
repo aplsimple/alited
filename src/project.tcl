@@ -915,7 +915,7 @@ proc project::ValidateDir {} {
   # Tries to get a project name at choosing root dir.
 
   namespace upvar ::alited al al
-  update
+  update idletasks ;#  update ;# a bug of ttk?
   if {$al(prjname) eq {}} {
     set al(prjname) [file tail $al(prjroot)]
   }
@@ -1938,7 +1938,7 @@ proc project::Tab1 {} {
     {.labName - - 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,prjName)} -foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {.EntName + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(prjname) -w 50}}
     {.labDir .labName T 1 1 {-st e -pady 8 -padx 3} {-t "Root directory:"}}
-    {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(prjroot) -w 50 -validate all -validatecommand alited::project::ValidateDir}}
+    {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(prjroot) -w 50 -validate focus -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 1 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 + T 2 1 {-st nsew -rw 1 -cw 99}}
     {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext *.spx -tip {-BALTIP {$::alited::al(MC,notes)} -MAXEXP 1}}}

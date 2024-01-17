@@ -622,7 +622,7 @@ The first # characters define the unit tree's level: # means 1, ## means 2, ### 
 </p>
 
 <p>
-Still, if you want to use # alone (without adding _ = - + ~ * . : etc.), you can customize <a href="#" class="wikilink1" title="Table of Contents">alited</a></span> so that ## will mean 1st level, ### 2nd level, #### 3rd level etc., using a branch regexp like this:
+Still, if you want to use # alone (without adding _ = - + ~ * . : etc.), you can customize <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> so that ## will mean 1st level, ### 2nd level, #### 3rd level etc., using a branch regexp like this:
 
 <pre class="code">^\s*#(#+)\s+([^_]+[^[:blank:]]*)
 </pre>
@@ -638,6 +638,55 @@ thus allowing the tree comments as follows:
 </pre>
 
 <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> recognizes the units by these comments and presents them as a tree.
+</p>
+
+<p>
+By default, <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> uses Python's way of
+<i>doc-commenting</i> functions/ methods/ procedures
+(<i>leaf units</i> in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s terms) which means
+their doc comments are usual Tcl commands
+inserted in a unit's body.
+</p>
+
+<p>
+The famous <a href='https://ruff.magicsplat.com'>Ruff!</a> Tcl package is oriented
+to this way of commenting.
+</p>
+
+<p>
+If you prefer the doc commenting in "non-alited" way
+i.e. placing them above unit declarations, then
+you can easily customize <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> so that
+it will see them and their units' bodies as the
+<i>alited leaf units</i>.
+</p>
+
+<p>
+The appropriate settings are in <i>Preferences / Units</i>: just enable <i>leaf's regexp</i>
+</p>
+<p>
+<pre class="code">^\s*#\s*[=]+([^=]*)\s*[=]+$</pre>
+</p>
+<p>
+which means that
+the following snippet will be <i>myProc</i> leaf in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s unit tree:
+<pre class="code"><i><font color=#4b5d50># ======== myProc ========</font></i>
+
+<i><font color=#4b5d50># Does so and so.</font></i>
+<i><font color=#4b5d50>#   a - 1st parameter</font></i>
+<i><font color=#4b5d50>#   b - 2nd parameter</font></i>
+
+<b><font color=#ca14ca>proc</font></b> myProc {a b} {
+  command1
+  command2
+  ..
+}
+</pre>
+</p>
+<p>Of course, the above <i>leaf's regexp</i> can be customized according to your own taste.
+</p>
+<p>
+If you'll make these changes in the unit regexps, it will make sense to modify the according templates: <i>1 (2, 3) level, proc</i> and <i>method</i>.
 </p>
 
 <br><p>
