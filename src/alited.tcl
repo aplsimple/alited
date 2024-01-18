@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.4.1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -625,7 +625,7 @@ namespace eval alited {
   }
   #_______________________
 
-  proc DestroyWindow {win foc args} {
+  proc destroyWindow {win foc args} {
     # Destroys current window and focuses on previously focused widget.
     #   win - current window passed as %w
     #   foc - previously focused widget
@@ -877,7 +877,7 @@ namespace eval alited {
       destroy $dlg  ;# -ale1Help option permits the only Help window
     }
     set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no \
-      -onclose "alited::DestroyWindow %w [focus]" -centerme $win -text 1 -scroll no \
+      -onclose "alited::destroyWindow %w [focus]" -centerme $win -text 1 -scroll no \
       -tags ::alited::textTags -ontop $ontop -w [incr wmax] {*}$args]
     return $res
   }

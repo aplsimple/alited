@@ -124,7 +124,7 @@ oo::class create ::apave::APaveDialog {
       set com 1
     } elseif {$ch ne {}} {
       # some options are incompatible with -ch
-      if {$onclose eq {destroy}} {set onclose {}}
+      if {[string match *destroy* $onclose]} {set onclose {}}
       lappend args -modal 1 -onclose $onclose
       set com 1
     } elseif {$comOK eq {}} {

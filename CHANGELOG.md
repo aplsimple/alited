@@ -1,6 +1,6 @@
 # LAST CHANGES:
 
-Version `v1.6.4 (17 Jan'24)`
+Version `v1.6.4.1 (18 Jan'24)`
 
   - BUGFIX: select from autocomplete list with mouse
   - BUGFIX: Preferences/Units: "Use leaf's regexp" fixed to work as intended
@@ -18,7 +18,7 @@ Version `v1.6.4 (17 Jan'24)`
   - CHANGE: tkcon.tcl: Lremove instead of lremove, as proposed Ian
   - CHANGE: unit::GetHeader: check for "non-alited" style (comment above proc/method)
   - CHANGE: About...
-  - CHANGE: packages: e_menu/apave 4.3.7
+  - CHANGE: packages: e_menu/apave 4.3.8
 
 
 Version `v1.6.2 (3 Jan'24)`
