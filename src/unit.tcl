@@ -658,7 +658,7 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
       return
     }
   }
-  if {$to eq "move"} {
+  if {$to eq {move}} {
     DropUnits $wtree $itemIDs $f1112
     return
   }
@@ -666,7 +666,7 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
   set headers [list]
   foreach ID $itemIDs {
     set hd [GetHeader $wtree $ID]
-    if {$to eq "up"} {
+    if {$to eq {up}} {
       lappend headers $hd
     } else {
       set headers [linsert $headers 0 $hd]
@@ -680,10 +680,11 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
     }
   }
   ::apave::undoOut $wtxt
-  after idle "set ::alited::al(RECREATE) 1 ; alited::tree::RecreateTree"
-  if {[set sel [$wtree selection]] ne ""} {
-    after idle [list after 10 "$wtree selection set {$sel}"]
+  set com "set ::alited::al(RECREATE) 1; alited::tree::RecreateTree"
+  if {[set sel [$wtree selection]] ne {}} {
+    append com "; $wtree selection set {$sel}"
   }
+  after idle $com
 }
 
 # ________________________ Search _________________________ #

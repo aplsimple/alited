@@ -11,7 +11,7 @@
 
 package require Tk
 
-package provide aloupe 1.2
+package provide aloupe 1.3
 
 namespace eval ::aloupe {
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]}]
@@ -446,7 +446,7 @@ proc ::aloupe::my::IsCapture {} {
 
   variable data
   if {$data(CAPTURE) eq ""} {
-    Message -title "Color of Image" -icon warning \
+    Message -title [msgcat::mc {Color of Image}] -icon warning \
       -message  [msgcat::mc "Click, then drag and drop\nthe loupe to get the image."]
     return no
   }
@@ -464,7 +464,7 @@ proc ::aloupe::my::HandleColor {{doclb yes}} {
   set res no
   if {[IsCapture]} {
     if {$data(COLOR) eq ""} {
-      Message -title "Color of Image" -icon warning \
+      Message -title [msgcat::mc {Color of Image}] -icon warning \
         -message [msgcat::mc "Click the magnified image\nto get a pixel's color.\n\nThen hit this button."]
     } else {
       if {$doclb && $data(-commandname) eq ""} {

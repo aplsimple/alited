@@ -782,7 +782,7 @@ proc main::InitActions {} {
   # Ctrl-click for Run, e_menu, Tkcon buttons
   foreach ico {run e_menu other} {
     set but [alited::tool::ToolButName $ico]
-    bind $but <Control-Button-1> "alited::tool::_run 1 {} -doit yes; break"
+    bind $but <Control-Button-1> $al(runAsIs)
     set tip [::baltip::cget $but -text][alited::tool::AddTooltipRun]
     after idle [list ::baltip::tip $but $tip]
   }
@@ -910,9 +910,9 @@ proc main::_create {} {
     {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - {pack}}
     {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
-      {{$::alited::al(MC,Row:)}} 13
+      {{$::alited::al(MC,Row:)}} 12
       {{$::alited::al(MC,Col:)}} 4
-      {{} -anchor w -expand 1} 50
+      {{} -anchor w -expand 1} 51
       {{} -anchor e} 25
     }}}
   }

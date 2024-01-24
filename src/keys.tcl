@@ -237,6 +237,7 @@ proc keys::ReservedAdd {} {
   Add action autocomplete [alited::pref::BindKey 19 - Tab] [list + if $i1 {alited::complete::AutoCompleteCommand; break}]
   Add action goto-bracket [alited::pref::BindKey 20 - Alt-B] {alited::main::GotoBracket; break}
   Add action file-list [alited::pref::BindKey 21 - F9] {alited::bar::BAR popList %X %Y; break}
+  Add action run-file [alited::pref::BindKey 22 - Shift-F5] $al(runAsIs)
 }
 #_______________________
 

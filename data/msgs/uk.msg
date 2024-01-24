@@ -60,6 +60,7 @@ namespace eval ::alited {
     {Look for Word} {Шукати слово}
     {Run} {Запуск}
     {Run...} {Запуск...}
+    {Run as Is} {Запуск як є}
     {in console} {у консолі}
     {in Tkcon} {у Tkcon}
     {Moving} {Переміщення}

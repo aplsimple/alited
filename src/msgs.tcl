@@ -27,6 +27,7 @@ namespace eval ::alited {
     set al(MC,files)       [msgcat::mc Files]
     set al(MC,moving)      [msgcat::mc Moving]
     set al(MC,run)         [msgcat::mc Run]
+    set al(MC,runAsIs)     [msgcat::mc {Run as Is}]
     set al(MC,new)         [msgcat::mc New]
     set al(MC,open...)     [msgcat::mc Open...]
     set al(MC,close)       [msgcat::mc Close]

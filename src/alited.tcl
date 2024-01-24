@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.4.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.5  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -377,6 +377,12 @@ if {[package versions alited] eq {}} {
 
 namespace eval alited {
 
+  proc None {args} {
+    # Useful when to do nothing is better than to do something.
+
+  }
+  #_______________________
+
   proc p+ {p1 p2} {
     # Sums two text positions straightforward: lines & columns separately.
     #   p1 - 1st position
@@ -589,12 +595,6 @@ namespace eval alited {
   }
   #_______________________
 
-  proc None {args} {
-    # Does nothing.
-
-  }
-  #_______________________
-
   proc PushInList {listName item {pos 0} {max 16}} {
     # Pushes an item in a list: deletes an old instance, inserts a new one.
     #   listName - the list's variable name
@@ -621,18 +621,6 @@ namespace eval alited {
       return [string map [list $EOL \n] $val]
     } else {
       return [string map [list \n $EOL] $val]
-    }
-  }
-  #_______________________
-
-  proc destroyWindow {win foc args} {
-    # Destroys current window and focuses on previously focused widget.
-    #   win - current window passed as %w
-    #   foc - previously focused widget
-
-    catch {destroy $win}
-    catch {
-      after idle "after 100 {catch {focus [winfo toplevel $foc] ; focus $foc}}"
     }
   }
 
@@ -936,6 +924,18 @@ namespace eval alited {
 
     HelpFile $win [HelpFname $win $suff] {*}$args
   }
+  #_______________________
+
+  proc destroyWindow {win foc args} {
+    # Destroys current window and focuses on previously focused widget.
+    #   win - current window passed as %w
+    #   foc - previously focused widget
+
+    catch {destroy $win}
+    catch {
+      after idle "after 100 {catch {focus [winfo toplevel $foc] ; focus $foc}}"
+    }
+  }
 
   ## ________________________ Runs & exits _________________________ ##
 
@@ -1009,7 +1009,10 @@ namespace eval alited {
         lassign [glob -nocomplain [file join $LIBDIR addon $addon.tcl]] fhl
         set addon [file rootname [file tail $fhl]]
         if {![namespace exists ::alited::$addon]} {
-          source $fhl
+          if {[catch {source $fhl} err]} {
+            alited::Message $err 4
+            return {}
+          }
         }
         lappend colors [FgFgBold]
         if {[dict exists $al(FONT,txt) -size]} {

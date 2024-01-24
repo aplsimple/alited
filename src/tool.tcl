@@ -194,7 +194,7 @@ proc tool::HelpTool {win hidx args} {
 proc tool::AddTooltipRun {} {
   # Addition to Run's tooltip.
 
-  return "\n\nCtrl+click = $::alited::al(acc_2) + F4"
+  return "\n\nCtrl+click = $::alited::al(acc_22) = $::alited::al(acc_2) + F4"
 }
 #_______________________
 
@@ -819,7 +819,7 @@ proc tool::_run {{what ""} {runmode ""} args} {
     set doit [::apave::extractOptions args -doit 0]
     lassign [alited::ExtTrans] ext istrans from to
     if {!$doit && $istrans} {
-      alited::hl_trans::translateLine
+      alited::hl_trans::translateLine $from $to
       return
     }
     if {!$::alited::DEBUG} {
@@ -881,6 +881,14 @@ proc tool::Run_in_e_menu {com {fnameCur ""}} {
   if {$fnameCur ne {}} {set fnameCur f=[string map [list \\ \\\\] $fnameCur]}
   e_menu ee=$tw[string map [list \" \\\" \\ \\\\] $com] \
     pd=[string map [list \\ \\\\] $al(prjroot)] $tc {*}$fnameCur [SHarg]
+}
+#_______________________
+
+proc tool::RunFile {} {
+  # Runs a current file as is (by associated app).
+
+  alited::Message $::alited::al(MC,run):\ [alited::bar::FileName] 3
+  alited::tool::_run 1 {} -doit yes
 }
 #_______________________
 

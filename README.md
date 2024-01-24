@@ -94,6 +94,10 @@ Below is a screenshot of [alited](https://github.com/aplsimple/alited), just to 
 
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited-ru.png" class="media" alt="">
 
-... and its themed variant on Windows 10:
+... and its dark theme on Windows 10:
 
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited-win10.png" class="media" alt="">
+
+... and its 1.6.5 version installed 24.01.2024 on x86 machine with Debian v6.0 (Linux core v2.6.32) and GNOME v2.30.2 deployed far back in 2010:
+
+<img src="https://aplsimple.github.io/en/tcl/alited/files/alited_in_debian6.png" class="media" alt="">

@@ -91,6 +91,7 @@ namespace eval pref {
     19 [list {Complete Commands} Tab] \
     20 [list $::alited::al(MC,tomatched) Alt-B] \
     21 [list $::alited::al(MC,filelist) F9] \
+    22 [list $::alited::al(MC,runAsIs) Shift-F5] \
   ]
 
   # size of standard keys' data

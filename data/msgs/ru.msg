@@ -56,6 +56,7 @@ namespace eval ::alited {
     {Look for Word} {Искать слово}
     {Run} {Запуск}
     {Run...} {Запуск...}
+    {Run as Is} {Запуск как есть}
     {in console} {в консоли}
     {in Tkcon} {в Tkcon}
     {Moving} {Перемещение}

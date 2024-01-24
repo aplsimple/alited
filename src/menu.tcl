@@ -318,10 +318,13 @@ proc menu::FillMenu {} {
 
   set m [set al(TOOLS) $al(WIN).menu.tool]
   $m add command -label [msgcat::mc Run...] -command alited::tool::RunMode
+  $m add command -label $al(MC,run) -command alited::tool::_run -accelerator $al(acc_3)
+  $m add command -label $al(MC,runAsIs) -command alited::tool::RunFile -accelerator $al(acc_22)
+  $m add separator
   $m add command -label e_menu -command {alited::tool::e_menu o=0} -accelerator $al(acc_2)
   $m add command -label Tkcon -command alited::tool::tkcon
 
-  ### ________________________ Runs _________________________ ###
+  ### ________________________ bar-menu _________________________ ###
 
   set em_N [alited::ini::Em_Number $em_Num]
   for {set i [set emwas 0]} {$i<$em_N} {incr i} {

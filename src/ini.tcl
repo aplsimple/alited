@@ -227,6 +227,9 @@ namespace eval ::alited {
 
   # "TODO ahead" setting of Projects
   set al(todoahead) 0
+
+  # Handler of "Run as Is"
+  set al(runAsIs) {alited::tool::RunFile; break}
 }
 
 # ________________________ Variables _________________________ #

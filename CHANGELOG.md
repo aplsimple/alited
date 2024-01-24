@@ -1,15 +1,21 @@
 # LAST CHANGES:
 
-Version `v1.6.4.1 (18 Jan'24)`
+Version `v1.6.5 (24 Jan'24)`
 
+  - BUGFIX: lost selection at fast moving a group of units (seen in 1.Units demo)
   - BUGFIX: select from autocomplete list with mouse
   - BUGFIX: Preferences/Units: "Use leaf's regexp" fixed to work as intended
   - BUGFIX: dialogues' Help button (F1): previous focus lost
   - BUGFIX: Preferences: calling Help leads to "Changes will be lost" query
   - BUGFIX: at rdbende themes, Projects/root-dir focused => invalid red dir entry (project.tcl 918)
+  - BUGFIX: if .msg file renamed (ru.msg > es.msg), F5 key handles old one (ru.msg)
+  - NEW   : es.msg for screen loupe
   - NEW   : Ctrl-clicking Run/e_menu/Tkcon icons to run files as is (for mouse fans)
+  - NEW   : Shift-F5 to run files as is (for keyboard fans)
+  - NEW   : Tools/Run & Tools/Run as Is
   - NEW   : Projects: increment 1,2,3.. days to show TODOs ahead
   - NEW   : Projects/Files: filter for all projects' files
+  - CHANGE: check for possible errors of hl_trans.tcl
   - CHANGE: Projects/Files: at opening files, message if a file doesn't exists
   - CHANGE: Projects/Files: after opening/closing files, focus on project list
   - CHANGE: tip on file: if not accessible, tip error
@@ -18,7 +24,7 @@ Version `v1.6.4.1 (18 Jan'24)`
   - CHANGE: tkcon.tcl: Lremove instead of lremove, as proposed Ian
   - CHANGE: unit::GetHeader: check for "non-alited" style (comment above proc/method)
   - CHANGE: About...
-  - CHANGE: packages: e_menu/apave 4.3.8
+  - CHANGE: packages: e_menu/apave 4.3.8, aloupe 1.3
 
 
 Version `v1.6.2 (3 Jan'24)`
