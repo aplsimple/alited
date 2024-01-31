@@ -50,6 +50,7 @@ namespace eval ::alited {
     {Unindent} {Nicht einrücken}
     {Comment} {Kommentieren}
     {Comment:} {Kommentar:}
+    {Comments} {Kommentaren}
     {Uncomment} {Auskommentieren}
     {Find Next} {Finde Nächsten}
     {Look for Declaration} {Suche nach Erklärung}
@@ -157,6 +158,7 @@ namespace eval ::alited {
     "Delete \"%f\"?" "Lösche \"%f\"?"
     {Rewrite} {Überschreiben}
     {An open file can not be deleted:} {Eine offene Datei kann nicht gelöscht werden:}
+    {An open file can not be renamed:} {Eine offene Datei kann nicht umbenannt werden:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Datei \"%f\" wurde durch eine Applikation geändert.\n\nBearbeitung beenden und Datei neu laden?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Datei \"%f\" wurde durch eine Applikation gelöscht.\n\nDatei speichern?"
     {Tip File Info} {Tip-Datei Info}
@@ -309,6 +311,8 @@ namespace eval ::alited {
     {Delete all of Favorites?} {Alle Favoriten löschen?}
     {Delete all of the last visited?} {Alle zuletzt Besuchten löschen?}
     {Favorites / Last Visited} {Favoriten / Zuletzt Besuchten}
+    {Opens files with current favorites.} {Öffnet Dateien mit aktuellen Favoriten.}
+    {Number of files to open: %n} {Anzahl der zu öffnenden Dateien: %n}
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##

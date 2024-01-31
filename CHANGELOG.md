@@ -1,5 +1,16 @@
 # LAST CHANGES:
 
+Version `v1.6.6b1 (31 Jan'24)`
+
+  - BUGFIX: update cursor color at 1st changing color scheme in Preferences
+  - NEW   : Saved Faforites: Open button opens favorites' files, in beginning of tabbar
+  - NEW   : Edit/Comments: 3 commenting modes
+  - NEW   : if cursor over non-word, Tab indents (line's beginning) or is Tab char (inside)
+  - CHANGE: Ctrl+Right & Ctrl+Left go over word starts (programmer's viewpoint)
+  - CHANGE: Preferences/Editor: TODO comments added to C++ syntax
+  - CHANGE: packages: hl_tcl 1.1, playtkl 1.3
+
+
 Version `v1.6.5 (24 Jan'24)`
 
   - BUGFIX: lost selection at fast moving a group of units (seen in 1.Units demo)

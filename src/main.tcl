@@ -358,6 +358,8 @@ proc main::HighlightText {TID curfile wtxt} {
       lappend "${lng}colors" $clrCURL
     }
     if {[alited::file::IsClang $curfile]} {
+      lassign [::hl_tcl::addingColors] -> clrCMN2
+      lappend Ccolors $clrCMN2
       ::hl_c::hl_init $wtxt -dark [$obPav csDark] \
         -multiline 1 -keywords $al(ED,CKeyWords) \
         -cmd "::alited::edit::Modified $TID" \
@@ -382,6 +384,7 @@ proc main::HighlightText {TID curfile wtxt} {
         -insertwidth $al(CURSORWIDTH)
     }
     UpdateText $wtxt $curfile
+    BindsForCode $wtxt $curfile
   }
   set al(HL,$wtxt) $ext
 }
@@ -716,6 +719,18 @@ proc main::BindsForText {TID wtxt} {
   ::apave::bindToEvent $wtxt <<Cut>> after 50 {after 50 alited::main::AfterCut}
   alited::keys::ReservedAdd
   alited::keys::BindAllKeys $wtxt no
+}
+#_______________________
+
+proc main::BindsForCode {wtxt curfile} {
+  # Sets bindings for a code.
+  #   wtxt - text widget's path
+  #   curfile - current file's name
+
+#  if {[alited::file::IsTcl $curfile] || [alited::file::IsClang $curfile]} {
+    bind $wtxt <Control-Right> "alited::edit::ControlRight $wtxt %s"
+    bind $wtxt <Control-Left> "alited::edit::ControlLeft $wtxt %s"
+#  }
 }
 #_______________________
 

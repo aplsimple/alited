@@ -151,7 +151,11 @@ proc ::hl_c::my::HighlightLine {txt ln currQtd} {
       HighlightCmd $txt $line $ln $i1 [expr {$i0-1}]
       # a comment/string/char was found
       if {$ip==$data(PAIR_COMMENT1)} {
-        $txt tag add tagCMN1 $ln.$i0 $ln.end
+        if {[regexp -start $i0 {\s*//\s*(!|TODO)} $line]} {
+          $txt tag add tagCMN2 $ln.$i0 $ln.end
+        } else {
+          $txt tag add tagCMN1 $ln.$i0 $ln.end
+        }
         return -1  ;# it was a one-line comment
       }
       set currQtd $ip
@@ -223,7 +227,7 @@ proc ::hl_c::my::RemoveTags {txt from to} {
   #   from - starting index
   #   to - ending index
 
-  foreach tag {tagCOM tagCOMTK tagSTR tagVAR tagCMN tagCMN1 tagPROC tagOPT} {
+  foreach tag {tagCOM tagCOMTK tagSTR tagVAR tagCMN tagCMN1 tagCMN2 tagPROC tagOPT} {
     $txt tag remove $tag $from $to
   }
   return
@@ -598,13 +602,14 @@ proc ::hl_c::hl_text {txt} {
   dict set font1 -weight bold
   dict set font2 -slant italic
   lassign $::hl_c::my::data(COLORS,$txt) \
-    clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT clrBRA clrCURL
+    clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT clrBRA clrCURL clrCMN2
   $txt tag configure tagCOM -font "$font1" -foreground $clrCOM
   $txt tag configure tagCOMTK -font "$font1" -foreground $clrCOMTK
   $txt tag configure tagSTR -font "$font0" -foreground $clrSTR
   $txt tag configure tagVAR -font "$font0" -foreground $clrVAR
   $txt tag configure tagCMN -font "$font2" -foreground $clrCMN
   $txt tag configure tagCMN1 -font "$font2" -foreground $clrCMN
+  $txt tag configure tagCMN2 -font "$font2" -foreground $clrCMN2 ;#red
   $txt tag configure tagPROC -font "$font1" -foreground $clrPROC
   $txt tag configure tagOPT -font "$font1" -foreground $clrOPT
   $txt tag configure tagBRACKET -font "$font0" -foreground $clrBRA

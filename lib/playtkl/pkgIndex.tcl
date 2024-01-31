@@ -1,4 +1,4 @@
-package ifneeded playtkl 1.1.0 [list source [file join $dir playtkl.tcl]]
+package ifneeded playtkl 1.3.0 [list source [file join $dir playtkl.tcl]]
 
 # A short intro (for Ruff! docs generator:)
 
@@ -169,8 +169,6 @@ The following two facts should be counted (i.e. appropriate uses should be avoid
    * *playtkl* cannot catch those events that occur outside of Tk, e.g. MS Windows' file and color choosers don't provide any Tk bindings and as such aren't seen by *playtkl*
 
    * *playtkl* doesn't catch events related to window managers like clicking a window's title buttons
-
-With moveable widgets like scrollbars, scales, rulers etc., there may be problems when the widgets are moved too fast at recording - then, at playing them, the mouse pointer can lag a bit, so that the replayed picture would be distorted. Though a bit annoying, this artifact isn't critical in most cases.
 
 However, if played okay once, a recorded scenario would be played okay in all future runs as well. It isn't hard to reach.
 

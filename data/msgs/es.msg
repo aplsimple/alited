@@ -50,6 +50,7 @@ namespace eval ::alited {
     {Unindent} {Desindénter}
     {Comment} {Comentar}
     {Comment:} {Comentario:}
+    {Comments} {Comentarios}
     {Uncomment} {Descomentar}
     {Find Next} {Buscar siguiente}
     {Look for Declaration} {Buscar declaración}
@@ -157,6 +158,7 @@ namespace eval ::alited {
     "Delete \"%f\"?" "¿Borrar \"%f\"?"
     {Rewrite} {Reescribir}
     {An open file can not be deleted:} {Un archivo abierto no se puede borrar:}
+    {An open file can not be renamed:} {Un archivo abierto no puede ser renombrado:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "El archivo \"%f\" fue modificado por alguna aplicación.\n\n¿Cancelar la edición y recargar el archivo?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "El archivo \"%f\" fue borrado por alguna aplicación.\n\n¿Guardar el archivo?"
     {Tip File Info} {Información del archivo}
@@ -270,7 +272,6 @@ namespace eval ::alited {
     {The project directory already exists! It isn't created with templates.} {¡El directorio del proyecto ya existe! No se crea con plantillas.}
     {All files filter:} {Todos archivos filtran:}
     {TODO days ahead:} {TODO días para el futuro:}
-    
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -309,6 +310,8 @@ namespace eval ::alited {
     {Delete all of Favorites?} {¿Borrar todos los favoritos?}
     {Delete all of the last visited?} {¿Borrar todos las últimas visitas?}
     {Favorites / Last Visited} {Favoritos / Últimas visitas}
+    {Opens files with current favorites.} {Abre archivos con los favoritos actuales.}
+    {Number of files to open: %n} {Número de archivos a abrir: %n}
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##

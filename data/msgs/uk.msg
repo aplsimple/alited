@@ -54,6 +54,7 @@ namespace eval ::alited {
     {Unindent} {Убрати відступ}
     {Comment} {Закоментувати}
     {Comment:} {Коментар:}
+    {Comments} {Коментарі}
     {Uncomment} {Разкоментувати}
     {Find Next} {Шукати далі}
     {Look for Declaration} {Шукати декларацію}
@@ -161,6 +162,7 @@ namespace eval ::alited {
     "Delete \"%f\"?" "Видалити \"%f\"?"
     {Rewrite} {Перезаписати}
     {An open file can not be deleted:} {Неможливо видалити відкритий файл:}
+    {An open file can not be renamed:} {Неможливо перейменувати відкритий файл:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" був змінений іншою програмою.\n\nВідмінити вашу редакцію та завантажити файл знову?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" був видалений іншою програмою.\n\nЗберігти файл?"
     {Tip File Info} {Дані про файли}
@@ -314,6 +316,8 @@ namespace eval ::alited {
     {Delete all of Favorites?} {Видалити все з Вибраного?}
     {Delete all of the last visited?} {Видалити все з Останніх входів?}
     {Favorites / Last Visited} {Вибране / Останні входи}
+    {Opens files with current favorites.} {Відкрити файли з поточним Вибраним.}
+    {Number of files to open: %n} {Кількість файлів на відкриття: %n}
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##

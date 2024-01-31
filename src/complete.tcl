@@ -436,6 +436,22 @@ proc complete::AutoCompleteCommand {} {
   namespace upvar ::alited al al
   variable tclcoms
   variable wordorig
+  set wtxt [alited::main::CurrentWTXT]
+  set pos [$wtxt index insert]
+  set row [expr {int($pos)}]
+  set charsOn [$wtxt get "$pos -1 char" "$pos +1 char"]
+  if {$al(acc_19) eq {Tab} && ![regexp {[[:alnum:]_]} $charsOn]} {
+    # (if the cursor isn't over a word)
+    # Tab is the indentation on the line's beginning or Tab char otherwise
+    set leftpart [$wtxt get $row.0 $pos]
+    if {[string trim $leftpart] eq {}} {
+      lassign [alited::main::CalcIndentation $wtxt] pad padchar
+      $wtxt insert $pos [string repeat $padchar $pad]
+    } else {
+      $wtxt insert $pos \t
+    }
+    return
+  }
   if {![llength $tclcoms]} {
     set tclcoms [::hl_tcl::hl_commands]
     foreach cmd {exit break continue pwd pid} {
@@ -446,7 +462,6 @@ proc complete::AutoCompleteCommand {} {
     }
   }
   lassign [MatchedCommands] wordorig idx1 idx2
-  set wtxt [alited::main::CurrentWTXT]
   while 1 {
     set com [PickCommand $wtxt]
     if {[llength $com]==2 && [lindex $com 0] eq {_alited_}} {
@@ -457,7 +472,6 @@ proc complete::AutoCompleteCommand {} {
     }
   }
   if {$com ne {}} {
-    set row [expr {int([$wtxt index insert])}]
     set isvar [string match \$* $com]
     if {[$wtxt get "$row.$idx1 -1 c"] eq "\$"} {
       incr idx1 -1

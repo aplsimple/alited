@@ -230,6 +230,9 @@ namespace eval ::alited {
 
   # Handler of "Run as Is"
   set al(runAsIs) {alited::tool::RunFile; break}
+
+  # Commenting mode: 0 - TODO, 1 - Classic, 2 - Sticky
+  set al(commentmode) 0
 }
 
 # ________________________ Variables _________________________ #
@@ -608,6 +611,7 @@ proc ini::ReadIniMisc {nam val} {
     chInRE2 {set ::alited::find::chInRE2 [string is true $val]}
     chExRE2 {set ::alited::find::chExRE2 [string is true $val]}
     geoRE2 {set ::alited::find::geoRE2 $val}
+    commentmode {set al(commentmode) $val}
   }
 }
 #_______________________
@@ -925,6 +929,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "chInRE2=$::alited::find::chInRE2"
   puts $chan "chExRE2=$::alited::find::chExRE2"
   puts $chan "geoRE2=$::alited::find::geoRE2"
+  puts $chan "commentmode=$al(commentmode)"
   # save the geometry options
   puts $chan {}
   puts $chan {[Geometry]}

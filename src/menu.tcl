@@ -267,8 +267,15 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,unindent) -command alited::edit::UnIndent -accelerator $al(acc_7)
   $m add command -label $al(MC,corrindent) -command alited::edit::NormIndent
   $m add separator
-  $m add command -label $al(MC,comment) -command alited::edit::Comment -accelerator $al(acc_8)
-  $m add command -label $al(MC,uncomment) -command alited::edit::UnComment -accelerator $al(acc_9)
+  set ttl [msgcat::mc Comments]
+  menu $m.comment -tearoff 1 -title $ttl
+  $m add cascade -label $ttl -menu $m.comment
+  $m.comment add command -label $al(MC,comment) -command alited::edit::Comment -accelerator $al(acc_8)
+  $m.comment add command -label $al(MC,uncomment) -command alited::edit::UnComment -accelerator $al(acc_9)
+  $m.comment add separator
+  $m.comment add radiobutton -variable ::alited::al(commentmode) -value 0 -label TODO
+  $m.comment add radiobutton -variable ::alited::al(commentmode) -value 1 -label Classic
+  $m.comment add radiobutton -variable ::alited::al(commentmode) -value 2 -label Sticky
   $m add separator
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
   $m add command -label [msgcat::mc {Remove Trailing Whitespaces}] -command alited::edit::RemoveTrailWhites

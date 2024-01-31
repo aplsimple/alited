@@ -12,6 +12,7 @@
 namespace eval favor {
   variable tipID {}            ;# ID of item a tip is shown for
   variable initialFavs [list]  ;# favorites that exist at starting "Favorites' list"
+  variable ansOpenFiles 0      ;# response at "Open files"
 }
 
 # ________________________ Common _________________________ #
@@ -265,6 +266,34 @@ proc favor::SetFavorites {cont} {
 }
 #_______________________
 
+proc favor::OpenFiles {cont} {
+  # Opens files with current favorites.
+  #   cont - list of favorites
+
+  variable ansOpenFiles
+  set fnames [list]
+  foreach curfav $cont {
+    catch {
+      lassign $curfav - - - - values
+      lassign $values -> fname
+      if {$fname ne {} && $fname ni $fnames} {
+        lappend fnames $fname
+      }
+    }
+  }
+  if {[set llen [llength $fnames]]} {
+    if {$ansOpenFiles<10} {
+      set msg [msgcat::mc {Number of files to open: %n}]
+      set msg [string map [list %n $llen] $msg]
+      set ansOpenFiles [alited::msg okcancel warn $msg YES -ch $::alited::al(MC,noask)]
+    }
+    if {$ansOpenFiles} {
+      alited::file::OpenFile [lreverse $fnames] no yes
+    }
+  }
+}
+#_______________________
+
 proc favor::InitFavorites {favs} {
   # Initializes favorites list for possible "Back" of "Favorites' Lists".
   #   favs - initial list of project's favorites
@@ -289,6 +318,7 @@ proc favor::Lists {} {
     1 {SetFavorites $cont}
     2 {SetAndClose $cont}
     3 {SetFavorites $initialFavs}
+    5 {OpenFiles $cont}
   }
 }
 

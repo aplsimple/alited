@@ -1,24 +1,28 @@
- Use buttons on the right to <b>add/change/delete</b> a list of favorites.
+ Use buttons on the right to <b>add, change, delete</b> a favorites' item.
 
  Use <r>Add</r> and <r>Change</r> buttons after filling list's name.
 
- Click <b>Current list of favorites</b> button to fill the lower list of
- favorites with the current ones.
-
  The current list of favorites is displayed in the bottom listbox.
- Enter a name for the list and click <b>Add</b> button to use it afterwards.
+ Enter a name for the list and click <r>Add</r> button to save it.
 
- This way you can keep a kind of "projects inside a project", choosing
+ <r>Current list of favorites</r> button fills the lower list of favorites
+ with the current list from the main alited's window. After that,
+ <r>Change</r> button can be used to update a current favorites item.
+
+ This way you can keep a kind of <b>projects inside a project</b>, choosing
  a list of favorites for appropriate tasks inside a current project.
 
  For small tasks, click <b>kept</b> button to work with other open files.
 
  For big tasks, click <b>closed</b> button to work with the favorites only.
 
- Click <b>Back</b> button to return to an original list of favorites
- that were active at opening the current project.
+ <r>Select</r> button or double-clicking a list item makes it active.
 
- Click <b>Select</b> button or double-click a list to make it active.
+ <r>Open...</r> button just opens favorites' files and places them in the
+ beginning of the tabbar. Good for short tasks to open them at need.
+
+ <r>Back</r> button returns to an original list of favorites that were
+ active at opening the current project.
 
  <r>Note</r>: If you consider the current favorites somehow significant,
  save them under some name, let it be even "tmp".

@@ -51,14 +51,14 @@ proc favor_ls::Ok {{res 0}} {
   variable favcont
   variable favpla
   alited::CloseDlg
-  if {!$res} {
+  if {!$res || $res==4} {
     if {[set isel [Selected]] eq {}} {
       focus [$obFav LbxFav]
       return
     }
     set pla [lindex $favpla $isel]
     set cont [lindex $favcont $isel]
-    set res [list $pla [Split $cont]]
+    set res [list [incr pla $res] [Split $cont]]
   }
   Save_favlist
   $obFav res $win $res
@@ -380,9 +380,10 @@ proc favor_ls::_create {} {
     {fra3 + T 1 2 {-st nswe}}
     {.ButHelp - - - - {pack -side left} {-t {$::alited::al(MC,help)} -tip F1 -command ::alited::favor_ls::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
+    {.butOK - - - - {pack -side left} {-t "$::alited::al(MC,select)" -command ::alited::favor_ls::Ok}}
+    {.butOpenFile - - - - {pack -side left -padx 2} {-t Open... -command {::alited::favor_ls::Ok 4} -tip {Opens files with current favorites.}}}
     {.butUndo - - - - {pack -side left} {-t Back -command {::alited::favor_ls::Ok 3} -tip "Sets a list of Favorites\nthat was active initially."}}
-    {.butOK - - - - {pack -side left -padx 2} {-t "$::alited::al(MC,select)" -command ::alited::favor_ls::Ok}}
-    {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::favor_ls::Cancel}}
+    {.butCancel - - - - {pack -side left -padx 2} {-t Cancel -command ::alited::favor_ls::Cancel}}
   }
   set fav {}
   set lbx [$obFav LbxFav]

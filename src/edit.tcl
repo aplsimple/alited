@@ -143,20 +143,26 @@ proc edit::Comment {} {
   # Comments selected lines of text.
   # See also: UnComment
 
+  namespace upvar ::alited obPav obPav al al
   set ch [CommentChar]
   set sels [SelectedLines]
   set wtxt [lindex $sels 0]
   ::apave::undoIn $wtxt
   foreach {l1 l2} [lrange $sels 1 end] {
     for {set l $l1} {$l<=$l2} {incr l} {
-      if {$ch eq "#"} {
-        # comment-out with TODO comment: to see / to find / to do them afterwards
-        $wtxt insert $l.0 $ch!
-        # for Tcl code: it needs to disable also all braces with #\{ #\} patterns
-        set line [$wtxt get $l.0 $l.end]
-        $wtxt replace $l.0 $l.end [string map [list \} #\\\} \{ #\\\{] $line]
-      } else {
-        $wtxt insert $l.0 $ch
+      set line [$wtxt get $l.0 $l.end]
+      set col [$obPav leadingSpaces $line]
+      switch $al(commentmode) {
+        1 {$wtxt insert $l.0 $ch}
+        2 {$wtxt insert $l.$col $ch}
+        default {
+          if {$ch eq "#"} {
+            # comment-out with TODO comment: to see / to find / to do them afterwards
+            # for Tcl code: it needs to disable also all braces with #\{ #\} patterns
+            $wtxt replace $l.0 $l.end [string map [list \} #\\\} \{ #\\\{] $line]
+          }
+          $wtxt insert $l.0 $ch!
+        }
       }
     }
   }
@@ -170,7 +176,7 @@ proc edit::UnComment {} {
   # Uncomments selected lines of text.
   # See also: Comment
 
-  namespace upvar ::alited obPav obPav
+  namespace upvar ::alited obPav obPav al al
   set ch [CommentChar]
   set lch [string length $ch]
   set lch0 [expr {$lch-1}]
@@ -183,11 +189,9 @@ proc edit::UnComment {} {
       set isp [$obPav leadingSpaces $line]
       if {[string range $line $isp $isp+$lch0] eq $ch} {
         set lch2 $lch
-        if {$ch eq "#"} {
-          if {[regexp {^\s*#!} $line]} {incr lch2}  ;# remove TODO comment
-        }
+        if {[regexp "^\\s*$ch!" $line]} {incr lch2}  ;# remove TODO comment
         $wtxt delete $l.$isp "$l.$isp + ${lch2}c"
-        if {$ch eq "#"} {
+        if {$ch eq "#" && !$al(commentmode)} {
           # for Tcl code: it needs to enable also all braces with #\{ #\} patterns
           set line [$wtxt get $l.0 $l.end]
           $wtxt replace $l.0 $l.end [string map [list #\\\} \} #\\\{ \{] $line]
@@ -957,6 +961,109 @@ proc edit::pasteRect {wtxt nl nc} {
     catch {::tk::TextSetCursor $wtxt $pos2}
     catch {$wtxt tag add sel {*}$sels}
   }
+}
+
+# ________________________ To words right / left _________________________ #
+
+proc edit::ControlRight {txt s} {
+  # Goes to a next word's start as seen from programmer's viewpoint.
+  #   txt - text's path
+  #   s - key state
+  # The code is rather efficient with long sequences of non-word chars.
+
+  if {$s % 2} return
+  set pos [$txt index "insert wordend"]
+  lassign [split $pos .] -> col
+  set linestart [expr {int([$txt index insert])}]
+  set lineend [expr {int([$txt index end])}]
+  while {$linestart <= $lineend} {
+    set line [$txt get $linestart.0 $linestart.end]
+    if {int($pos)>$linestart} {
+      set col [string length $line]
+    }
+    set res [regexp -indices -start $col -inline "\\w{1}" $line]
+    if {[llength $res]} {
+      ::tk::TextSetCursor $txt $linestart.[lindex $res 0 0]
+      break
+    }
+    set pos [incr linestart].[set col 0]
+  }
+  return -code break
+
+#  # The below code is rather inefficient with long sequences of non-word chars.
+#  set pos  [$txt index "insert wordend"]
+#  set pos2 [$txt index "$pos +1c"]
+#  set posend [$txt index end]
+#  while {[$txt compare $pos2 < $posend]} {
+#    if {[string is wordchar -strict [$txt get $pos $pos2]]} {
+#      ::tk::TextSetCursor $txt $pos
+#      return -code break
+#    }
+#    set pos $pos2
+#    set pos2 [$txt index "$pos2 +1c"]
+#  }
+}
+#_______________________
+
+proc edit::ControlLeft {txt s} {
+  # Goes to a previous word's start as seen from programmer's viewpoint.
+  #   txt - text's path
+  #   s - key state
+  # The code is rather efficient with long sequences of non-word chars.
+  # See also:
+  #   [Going_on_words_with_Ctrl+arrow](https://core.tcl-lang.org/tk/tktview/168f3ef130)
+  #   [text_index_{insert_wordstart}](https://core.tcl-lang.org/tk/tktview/57b821d2db)
+
+  if {$s % 2} return
+  set pos [$txt index insert]
+  lassign [split $pos .] -> col
+  set linestart [expr {int($pos)}]
+  while {$linestart>=0} {
+    set line [$txt get $linestart.0 $linestart.$col]
+    for {set i [string length $line]} {[incr i -1]>=0} {} {
+      if {[string is wordchar -strict [string index $line $i]]} {
+        if {![string is wordchar -strict [string index $line [expr {$i-1}]]]} {
+          ::tk::TextSetCursor $txt $linestart.$i
+          return -code break
+        }
+      }
+    }
+    incr linestart -1
+    set col {end +1c}
+  }
+  return -code break
+
+#  # The below code goes to WORD ENDS.
+#  if {$s % 2} return
+#  set pos [$txt index insert]
+#  lassign [split $pos .] -> col
+#  set linestart [expr {int($pos)}]
+#  while {$linestart>=0} {
+#    set line [$txt get $linestart.0 $linestart.$col]
+#    for {set i [string length $line]} {[incr i -1]>=0} {} {
+#      if {![string is wordchar -strict [string index $line $i]]} {
+#        if {[string is wordchar -strict [string index $line [expr {$i-1}]]]} {
+#          ::tk::TextSetCursor $txt $linestart.$i
+#          return -code break
+#        }
+#      }
+#    }
+#    incr linestart -1
+#    set col {end +1c}
+#  }
+#
+#  # The below code is rather inefficient with long sequences of non-word chars.
+#  if {$s % 2} return
+#  set pos [$txt index "insert -1c"]
+#  while {[$txt compare $pos >= 1.0]} {
+#    set pos [$txt index "$pos wordstart"]
+#    if {[string is wordchar -strict [$txt get $pos [$txt index "$pos +1c"]]]} {
+#      ::tk::TextSetCursor $txt $pos
+#      return -code break
+#    }
+#    if {$pos eq {1.0}} return
+#    set pos [$txt index "$pos -1c"]
+#  }
 }
 
 # _________________________________ EOF _________________________________ #

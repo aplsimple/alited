@@ -50,6 +50,7 @@ namespace eval ::alited {
     {Unindent} {Убрать отступ}
     {Comment} {Закомментить}
     {Comment:} {Комментарий:}
+    {Comments} {Комментарии}
     {Uncomment} {Раскомментить}
     {Find Next} {Искать дальше}
     {Look for Declaration} {Искать объявление}
@@ -156,7 +157,8 @@ namespace eval ::alited {
     "Remove \"%n\"\nfrom \"%f\"?" "Удалить \"%n\"\nиз \"%f\"?"
     "Delete \"%f\"?" "Удалить \"%f\"?"
     {Rewrite} {Перезаписать}
-    {An open file can not be deleted:} {Невозможно удалить открытый файл:}
+    {An open file can not be deleted:} {Нельзя удалять открытый файл:}
+    {An open file can not be renamed:} {Нельзя переименовывать открытый файл:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" был изменен другим приложением.\n\nОтменить вашу редакцию и перезагрузить файл?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" был удален другим приложением.\n\nСохранить файл?"
     {Tip File Info} {Данные о файлах}
@@ -308,6 +310,8 @@ namespace eval ::alited {
     {Delete all of Favorites?} {Удалить всё из Избранного?}
     {Delete all of the last visited?} {Удалить всё из Последних входов?}
     {Favorites / Last Visited} {Избранное / Последние входы}
+    {Opens files with current favorites.} {Открыть файлы с текущим Избранным.}
+    {Number of files to open: %n} {Число открываемых файлов: %n}
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##

@@ -713,13 +713,13 @@ proc pref::CheckCS {} {
 
   fetchVars
   set cs [GetCS]
-  if {[info exists al(CheckCS)] && $al(CheckCS)!=$cs} {
-    set al(CURSORCOLOR) [lindex [::apave::obj csGet $cs] 7]
+  set cclr [lindex [::apave::obj csGet $cs] 7]
+  if {$al(CURSORCOLOR) ne $cclr} {
     catch {
-      .alwin.diaPref.fra.fraR.nbk.f1.fra1.labclrCC configure -background $al(CURSORCOLOR)
+      .alwin.diaPref.fra.fraR.nbk.f1.fra1.labclrCC configure -background $cclr
+      set al(CURSORCOLOR) $cclr
     }
   }
-  set al(CheckCS) $cs
   return $cs
 }
 #_______________________
@@ -866,7 +866,7 @@ proc pref::Edit_Tab3 {} {
     {fraTab3.scf.sehclr fraTab3.scf.fraDefClr2 T 1 2 {-pady 3}}
     {fraTab3.scf.fra2 + T 1 2 {-st nsew -pady 5}}
     {.lab - - - - {pack -side left -anchor ne -pady 0 -padx 3} {-t {Code snippet:}}}
-    {.TexCSample - - - - {pack -side left -fill both -expand 1} {-h 7 -w 48 -wrap word -tabnext {*.texCKeys *.but3}}}
+    {.TexCSample - - - - {pack -side left -fill both -expand 1} {-h 8 -w 48 -wrap word -tabnext {*.texCKeys *.but3}}}
     {.sbv + L - - {pack -side right}}
     {fraTab3.scf.fra3 fraTab3.scf.fra2 T 1 2 {-st nsew -pady 3}}
     {.lab - - - - {pack -side left -anchor ne -pady 0 -padx 3} {-t {Your key words:}}}
@@ -986,14 +986,14 @@ proc pref::InitSyntaxC {colors} {
   if {[string trim [$tex get 1.0 end]] eq {}} {
     $obPrf displayText $tex {static sample(const char *ptr) {
   char *tx, *st;
-  tx = get_text();
-  st = get_string();
+  tx = get_text();   // inline comment
+  st = get_string(); //! TODO
   if (strstr(tx,st)!=tx) return FALSE;
   /* it's
   okay */
   tx += strlen(st);
   ptr = strstr(tx+1,"My string");
-  return TRUE // inline comment
+  return TRUE
 }}}
   set wk [$obPrf TexCKeys]
   ::apave::bindToEvent $wk <FocusOut> alited::pref::UpdateSyntaxTab 2
@@ -1715,7 +1715,6 @@ proc pref::_create {tab} {
   foreach arr {data keys prevkeys savekeys} {array unset $arr *}
   catch {destroy $win}
   $obPrf destroy
-  unset -nocomplain al(CheckCS)
   return $res
 }
 #_______________________

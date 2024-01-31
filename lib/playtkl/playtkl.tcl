@@ -6,22 +6,22 @@
 # License: MIT.
 ###########################################################
 
-package provide playtkl 1.1.0
+package provide playtkl 1.3.0
 
 # _________________________ playtkl ________________________ #
 
 namespace eval playtkl {
-  variable fields {-time %t -keysym %K -button %b -x %x -y %y -state %s -data %d}
+  variable fields {-time %t -keysym %K -button %b -x %x -y %y -state %s -data %d -delta %D}
   variable dd; array set dd {timing 1 endkey "" pausekey ""}
 }
 #_______________________
 
-proc playtkl::Data {w data} {
+proc playtkl::Data {wc data} {
   # Extracts event's data of wildcard
-  #   w - the wildcard
+  #   wc - the wildcard
   #   data - full list of %w=data
 
-  set i [lsearch -glob $data $w*]
+  set i [lsearch -glob $data $wc=*]
   set d [lindex $data $i]
   return [string range $d [string first = $d]+1 end]
 }
@@ -53,14 +53,27 @@ proc playtkl::Recording {win ev args} {
     if {$key eq $dd(endkey)} {
       end
     } else {
-      if {!$dd(mouse) && $ev in {ButtonPress ButtonRelease Motion}} return
+      if {!$dd(mouse) && $ev in {ButtonPress ButtonRelease Motion MouseWheel}} return
       set t [Data %t $args]
       if {[string is integer -strict $t] && $t>0} {
-        if {$ev eq {KeyRelease} && $dd(prevev) ne {KeyPress} && $key in {Tab Return}} {
-          set t %t=[expr {[Data %t $args]-1}]
-          lappend dd(fcont) KeyPress\ $win\ $args\ $t
+        set t %t=[expr {[Data %t $args]-1}]
+        set ifound -1
+        if {$key in {Tab Return}} {
+          if {$ev eq {KeyRelease} && $dd(prevev) ne {KeyPress}} {
+            lappend dd(fcont) "KeyPress $win $args $t"
+          }
+        } elseif {$ev eq {KeyRelease} && [string length $key]==1} {
+          # KeyRelease of "Ctrl/Alt/Shift + letter" sets the problem:
+          #  the previous KeyPress isn't registered by Tk (only Control_L's etc. are)
+          #  => no response from KeyPress bindings
+          set ifound [FindPrevEvent $key KeyPress $ev $win {*}$args]
+          if {$ifound<0} {
+            lappend dd(fcont) "KeyPress $win $args $t %B=??" ;# %B stands for DEBUG
+          }
         }
-        lappend dd(fcont) $ev\ $win\ $args
+        if {$ifound<0} {
+          lappend dd(fcont) "$ev $win $args"
+        }
       } else {
         inform yes
         inform "BUG? (time received 0): $ev $win $args"
@@ -68,6 +81,29 @@ proc playtkl::Recording {win ev args} {
       set dd(prevev) $ev
     }
   }
+}
+#_______________________
+
+proc playtkl::FindPrevEvent {key ev ev2 win args} {
+  # Searches events "ev" and "ev2" in dd(fcont) list.
+  #   key - current key
+  #   ev - the main event to search
+  #   ev2 - the event tied to the main event
+  #   win - current widget's path
+  #   args - parameters of current event
+
+  variable dd
+  set ifound -1
+  for {set i [llength $dd(fcont)]} {$i} {incr i -1} {
+    set item [lindex $dd(fcont) $i]
+    lassign $item e w
+    set k [Data %K $item]
+    if {$e in "$ev $ev2" && $w eq $win && $k eq $key} {
+      if {$e eq $ev} {set ifound $i}
+      break
+    }
+  }
+  return $ifound
 }
 #_______________________
 
@@ -151,7 +187,8 @@ proc playtkl::Playing {} {
   set dd(win) $win
   set dd(data) $data
   if {$ev eq {Motion} && [info exists X] && [info exists Y]} {
-    after idle [list event generate $win <Motion> -warp 1 -x $X -y $Y]
+    set state [dict get $opts -state]
+    after idle [list event generate $win <Motion> -warp 1 -x $X -y $Y -state $state]
   } else {
     after idle [list event generate $win <$ev> {*}$opts]
   }
@@ -191,7 +228,7 @@ proc playtkl::inform {msg} {
       bell
       set msg [string range "          $msg" end-10 end]
     }
-    set msg "playtkl: $msg: [clock format [clock seconds] -format %T]"
+    set msg "playtkl: $msg: [clock format [clock seconds] -format {%T   %b %d, %Y}]"
     puts $msg
   } else {
     set msg {}
@@ -212,7 +249,7 @@ proc playtkl::record {fname {endkey ""} {mouse yes}} {
   set dd(mouse) $mouse
   if {![info exists dd(msgbeg)]} {
     foreach {o w} $fields {append opts " {%$w=$w}"}
-    foreach ev {KeyPress KeyRelease ButtonPress ButtonRelease Motion} {
+    foreach ev {KeyPress KeyRelease ButtonPress ButtonRelease Motion MouseWheel} {
       bind all <$ev> "+ ::playtkl::Recording %W $ev $opts"
     }
   }

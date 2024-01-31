@@ -435,6 +435,12 @@ proc file::RenameFileInTree {{undermouse yes} args} {
   }
   set name [$wtree item $ID -text]
   set fname [lindex [$wtree item $ID -values] 1]
+  set TID [alited::bar::FileTID $fname]
+  if {$TID ne ""} {
+    bell
+    alited::msg ok warn [msgcat::mc {An open file can not be renamed:}]\n$fname
+    return 0
+  }
   switch -exact -- $args {
     {} {
       set args [alited::favor::GeoForQuery $undermouse]
