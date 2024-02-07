@@ -538,19 +538,33 @@ proc edit::RemoveTrailWhites {{TID ""} {doit no} {skipGUI no}} {
 
 ## ________________________ Preparing macros _________________________ ##
 
-proc edit::MacroInit {} {
-  # Initializes macro stuff.
+proc edit::MacroSource {} {
+  # Loads playtkl package.
 
   if {[info command ::playtkl::play] eq {}} {
     namespace eval :: {
       source [file join $::alited::LIBDIR playtkl playtkl.tcl]
     }
   }
+}
+#_______________________
+
+proc edit::MacroInit {} {
+  # Initializes macro stuff.
+
+  MacroSource
   ::playtkl::inform no
 }
 #_______________________
 
-proc edit::MacroFile {name {dir ""}} {
+proc edit::MacroDir {} {
+  # Gets a directory name of macros.
+
+  return [file dirname [MacroFileName .]]
+}
+#_______________________
+
+proc edit::MacroFileName {name {dir ""}} {
   # Gets a file name for a macro.
   #   name - macro's name
   #   dir - macro's directory
@@ -566,28 +580,27 @@ proc edit::MacroFile {name {dir ""}} {
 }
 #_______________________
 
-proc edit::MacroDir {} {
-  # Gets a directory name of macros.
-
-  return [file dirname [MacroFile .]]
-}
-#_______________________
-
 proc edit::MacroMenu {name doit} {
   # Recreate macros' menu.
   #   name - current macro
   #   doit - yes if update anyway
 
   namespace upvar ::alited al al
+  MacroSource
+  set fname [MacroFileName $name]
   if {$doit || $al(activemacro) ne $name} {
     set al(activemacro) $name
+    playtkl::readcontents $fname
     alited::menu::FillMacroItems
+  } elseif {$al(activemacro) eq $name} {
+    playtkl::readcontents $fname
   }
 }
 #_______________________
 
 proc edit::MacroExists {fname} {
   # Checks for existing macro.
+  # If the macro doesn't exist, shows a message and updates the macros list menu.
   #   fname - macro file name
 
   if {[file exists $fname]} {return yes}
@@ -603,11 +616,57 @@ proc edit::MacroUpdate {fname} {
 
   namespace upvar ::alited al al
   if {[file extension $fname] eq $al(macroext)} {
-    after idle alited::menu::FillMacroItems
+    after idle [list alited::edit::MacroMenu $fname yes]
   }
 }
 
 ## ________________________ Handling macros _________________________ ##
+
+proc edit::DoMacro {mode {fname ""}} {
+  # Plays or records a macro.
+  #   mode - play / record
+  #   fname - name of recorded file
+
+  namespace upvar ::alited al al
+  variable macrosmode
+  MacroInit
+  if {$macrosmode eq "record"} {  ;# repeated recording?
+    ::playtkl::end
+    WatchMacro
+    return no
+  }
+  set name [file rootname [file tail $fname]]
+  if {$fname ne {}} {
+    set fname [MacroFileName $fname]
+    if {$mode eq "play" && ![MacroExists $fname]} {
+      return no
+    }
+  }
+  set wtxt [alited::main::CurrentWTXT]
+  after idle "focus $wtxt"
+  set macrosmode $mode
+  switch $mode {
+    "record" {
+      set al(activemacro) $name
+      after 100 [list ::playtkl::record $fname $al(acc_16) $al(macromouse)]
+      after 200 alited::edit::WatchMacro
+      alited::Message "[msgcat::mc Recording:] $name" 5; bell
+      bell
+    }
+    "play" {
+      if {$fname ne {}} {
+        alited::Message "[msgcat::mc Playing:] $name" 3
+      } else {
+        alited::Message {}
+      }
+      focus $wtxt
+      ::apave::undoIn $wtxt
+      ::playtkl::replay $fname "::apave::undoOut $wtxt" [list *frAText.text* $wtxt] yes $wtxt
+    }
+  }
+  return yes
+}
+#_______________________
 
 proc edit::InputMacro {idx} {
   # Enters/changes a macro.
@@ -618,18 +677,18 @@ proc edit::InputMacro {idx} {
   set m $al(MENUEDIT).playtkl
   incr idx ;# for -tearoff menu
   set al(macromouse) no
-  set al(tmp) [$m entrycget $idx -label]
-  set al(tmpdir) {}
+  set al(_macro) [$m entrycget $idx -label]
+  set al(_macroDir) {}
   set dir [MacroDir]
-  set fcont [ReadMacroFile $al(tmp)]
+  ReadMacroComment $al(_macro)
   set win $al(WIN).macro
   set head [msgcat::mc "The macro is updated at its recording.\nPress %s to play it."]
   set head [string map [list %s $al(acc_16)] $head]
   $obDl2 makeWindow $win.fra $al(MC,playtkl)
-  $obDl2 paveWindow $win.fra [list \
-    [list lab - - 1 4 {-padx 4} [list -t $head]] \
-    [list fil + T 1 4 {-pady 4 -padx 4 -st ew} \
-      "-tvar ::alited::al(tmp) -validate focusin -validatecommand alited::edit::ValidMacro -w 30 -initialdir {$dir} -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"] \
+  $obDl2 paveWindow $win.fra { \
+    {lab - - 1 4 {-padx 4} {-t {$head}}} \
+    {fil + T 1 4 {-pady 4 -padx 4 -st ew} \
+      "-tvar ::alited::al(_macro) -validate all -validatecommand alited::edit::ValidMacro -w 30 -initialdir {$dir} -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"} \
     {chb + T 1 4 {-st w -pady 4} {-t {Record mouse} -var ::alited::al(macromouse)}} \
     {seh + T 1 4 {-pady 4}} \
     {lab2 + T 1 4 {} {-t Comment:}} \
@@ -638,33 +697,34 @@ proc edit::InputMacro {idx} {
     {.sbvText + L - - {pack}} \
     {seh2 fra0 T 1 4 {-pady 4}} \
     {fra + T 1 1 {-st w}} \
-    {.But1 - - 1 1 {-padx 4} {-com 1 -tip "Play Macro" -image alimg_run}} \
-    {.but2 + L 1 1 {} {-com 2 -tip "Record Macro" -image alimg_change}} \
-    {.but3 + L 1 1 {-padx 4} {-com 3 -tip "Delete Macro" -image alimg_delete}} \
+    {.ButPlay - - 1 1 {-padx 4} {-com 1 -tip "Play Macro" -image alimg_run}} \
+    {.ButRec + L 1 1 {} {-com 2 -tip "Record Macro" -image alimg_change}} \
+    {.ButDel + L 1 1 {-padx 4} {-com 3 -tip "Delete Macro" -image alimg_delete}} \
     {h_ fra L 1 1 {-st we -cw 1}} \
     {buth + L 1 1 {-st e} {-t Help -com alited::edit::HelpOnMacro}} \
     {but + L 1 1 {-st e} {-com 0 -t Cancel}} \
-  ]
+  }
   set tex [$obDl2 TexCmn]
   bind $win <F1> alited::edit::HelpOnMacro
-  bind $win <$al(acc_16)> "$win.fra.fra.but1 invoke"
-  after 200 [list ::alited::MouseOnWidget [$obDl2 But1]]
+  set butplay [$obDl2 ButPlay]
+  bind $win <$al(acc_16)> "if {\[$butplay cget -state\] eq {normal}} {$butplay invoke}"
+  after 200 ::alited::MouseOnWidget $butplay
   set res [$obDl2 showModal $win -resizable 1 -focus $win.fra.entfil -geometry pointer+10+10]
   set al(macrocomment) [$tex get 1.0 end]
   catch {destroy $win}
-  set name [alited::NormalizeFileName [file root [file tail $al(tmp)]]]
-  set fname [MacroFile $name]
-  if {$al(tmpdir) ni {. ""}} {
-    set fchosen [MacroFile $name $al(tmpdir)]
+  set name [alited::NormalizeFileName [file root [file tail $al(_macro)]]]
+  set fname [MacroFileName $name]
+  if {$al(_macroDir) ni {. ""}} {
+    # if chosen macro doesn't exist in user's dir, copy it there
+    set fchosen [MacroFileName $name $al(_macroDir)]
     if {$fchosen ne $fname && ![file exists $fname]} {
-      # if chosen macro doesn't exist in user's dir, copy it there
       catch {file copy $fchosen $fname}
       after idle alited::menu::FillMacroItems
     }
     set fname $fchosen
   }
-  unset al(tmp)
-  unset al(tmpdir)
+  unset al(_macro)
+  unset al(_macroDir)
   if {!$res} {
     set macrosmode "init"
     return
@@ -675,8 +735,8 @@ proc edit::InputMacro {idx} {
   }
   switch $res {
     1 {
+      MacroMenu $name no
       if {[DoMacro play $name]} {
-        MacroMenu $name no
         set macrosmode "play"
       }
     }
@@ -719,13 +779,33 @@ proc edit::InputMacro {idx} {
 #_______________________
 
 proc edit::ValidMacro {} {
-  # Gets "root tail" of the file name and saves its directory name.
+  # Validates the macro name.
 
-  namespace upvar ::alited al al
-  set tmpdir [file dirname $al(tmp)]
-  if {$tmpdir ni {. ""}} {set al(tmpdir) $tmpdir}
-  set al(tmp) [file rootname [file tail $al(tmp)]]
+  after idle alited::edit::ValidMacroReal
   return yes
+}
+#_______________________
+
+proc edit::ValidMacroReal {} {
+  # Gets "root tail" of the file name and saves its directory name.
+  # Changes the record icon depending on the macro file exists or not.
+
+  namespace upvar ::alited al al obDl2 obDl2
+  set tmpdir [file dirname $al(_macro)]
+  if {$tmpdir ni {. ""}} {set al(_macroDir) $tmpdir}
+  set al(_macro) [file rootname [file tail $al(_macro)]]
+  if {[file exists [MacroFileName [string trim $al(_macro)]]]} {
+    set icon change
+    set mstate normal
+  } else {
+    set icon add
+    set mstate disabled
+  }
+  set icon alimg_$icon
+  set but [$obDl2 ButRec]
+  if {[$but cget -image] ne $icon} {::apave::blinkWidgetImage $but $icon}
+  [$obDl2 ButPlay] configure -state $mstate
+  [$obDl2 ButDel] configure -state $mstate
 }
 #_______________________
 
@@ -740,8 +820,8 @@ proc edit::DispatchMacro {{mode ""}} {
   switch -glob $macrosmode {
     "item*"    {InputMacro [string range $macrosmode 4 end]}
     "record"   {
-      set fname [MacroFile $al(activemacro)]
-      if {![info exists al(macrocomment)]} {ReadMacroFile $fname}  ;# get the comment
+      set fname [MacroFileName $al(activemacro)]
+      if {![info exists al(macrocomment)]} {ReadMacroComment $fname}  ;# get the comment
       ::playtkl::end $al(macrocomment)
       set macrosmode {}
     }
@@ -772,57 +852,12 @@ proc edit::WatchMacro {} {
 }
 #_______________________
 
-proc edit::DoMacro {mode {fname ""}} {
-  # Plays or records a macro.
-  #   mode - play / record
-  #   fname - name of recorded file
+proc edit::ReadMacroComment {fname} {
+  # Reads macro's comment.
+  #  fname - the macro's file name
 
   namespace upvar ::alited al al
-  variable macrosmode
-  MacroInit
-  if {$macrosmode eq "record"} {  ;# repeated recording?
-    ::playtkl::end
-    WatchMacro
-    return no
-  }
-  set name [file rootname [file tail $fname]]
-  if {$fname ne {}} {
-    set fname [MacroFile $fname]
-    if {$mode eq "play" && ![MacroExists $fname]} {
-      return no
-    }
-  }
-  set wtxt [alited::main::CurrentWTXT]
-  after idle "focus $wtxt"
-  set macrosmode $mode
-  switch $mode {
-    "record" {
-      set al(activemacro) $name
-      after 100 [list ::playtkl::record $fname $al(acc_16) $al(macromouse)]
-      after 200 alited::edit::WatchMacro
-      alited::Message "[msgcat::mc Recording:] $name" 5; bell
-      bell
-    }
-    "play" {
-      if {$fname ne {}} {
-        alited::Message "[msgcat::mc Playing:] $name" 3
-      } else {
-        alited::Message {}
-      }
-      focus $wtxt
-      ::apave::undoIn $wtxt
-      ::playtkl::replay $fname "::apave::undoOut $wtxt" [list *frAText.text* $wtxt] yes $wtxt
-    }
-  }
-  return yes
-}
-#_______________________
-
-proc edit::ReadMacroFile {fname} {
-  # Reads a file of macro and its comment.
-
-  namespace upvar ::alited al al
-  set fcont [::apave::readTextFile [MacroFile $fname]]
+  set fcont [::apave::readTextFile [MacroFileName $fname]]
   set al(macrocomment) {}
   foreach ln [split $fcont \n] {
     set ln [string trim $ln]
@@ -830,7 +865,6 @@ proc edit::ReadMacroFile {fname} {
       append al(macrocomment) [string trimleft $ln #] \n
     }
   }
-  return $fcont
 }
 #_______________________
 
@@ -838,7 +872,7 @@ proc edit::OpenMacroFile {} {
   # Opens a file of macro.
 
   namespace upvar ::alited al al obDl2 obDl2
-  set al(TMPfname) [MacroFile $al(MC,quickmacro)]
+  set al(TMPfname) [MacroFileName $al(MC,quickmacro)]
   set types [list [list {Macro Files} $al(macroext)]]
   set fname [$obDl2 chooser tk_getOpenFile ::alited::al(TMPfname) \
       -initialdir [MacroDir] -filetypes $types -parent $al(WIN)]
@@ -970,6 +1004,8 @@ proc edit::ControlRight {txt s} {
   #   txt - text's path
   #   s - key state
   # The code is rather efficient with long sequences of non-word chars.
+  #   [Going_on_words_with_Ctrl+arrow](https://core.tcl-lang.org/tk/tktview/168f3ef130)
+  #   [text_index_{insert_wordstart}](https://core.tcl-lang.org/tk/tktview/57b821d2db)
 
   if {$s % 2} return
   set pos [$txt index "insert wordend"]
@@ -989,24 +1025,11 @@ proc edit::ControlRight {txt s} {
     set pos [incr linestart].[set col 0]
   }
   return -code break
-
-#  # The below code is rather inefficient with long sequences of non-word chars.
-#  set pos  [$txt index "insert wordend"]
-#  set pos2 [$txt index "$pos +1c"]
-#  set posend [$txt index end]
-#  while {[$txt compare $pos2 < $posend]} {
-#    if {[string is wordchar -strict [$txt get $pos $pos2]]} {
-#      ::tk::TextSetCursor $txt $pos
-#      return -code break
-#    }
-#    set pos $pos2
-#    set pos2 [$txt index "$pos2 +1c"]
-#  }
 }
 #_______________________
 
 proc edit::ControlLeft {txt s} {
-  # Goes to a previous word's start as seen from programmer's viewpoint.
+  # Goes to a previous word's start/end as seen from programmer's viewpoint.
   #   txt - text's path
   #   s - key state
   # The code is rather efficient with long sequences of non-word chars.
@@ -1023,7 +1046,10 @@ proc edit::ControlLeft {txt s} {
     for {set i [string length $line]} {[incr i -1]>=0} {} {
       if {[string is wordchar -strict [string index $line $i]]} {
         if {![string is wordchar -strict [string index $line [expr {$i-1}]]]} {
-          ::tk::TextSetCursor $txt $linestart.$i
+          set pos1 $linestart.$i
+          set pos2 [$txt index "$pos1 wordend"]
+          if {[$txt compare $pos2 < $pos]} {set pos1 $pos2}
+          ::tk::TextSetCursor $txt $pos1
           return -code break
         }
       }
@@ -1032,38 +1058,6 @@ proc edit::ControlLeft {txt s} {
     set col {end +1c}
   }
   return -code break
-
-#  # The below code goes to WORD ENDS.
-#  if {$s % 2} return
-#  set pos [$txt index insert]
-#  lassign [split $pos .] -> col
-#  set linestart [expr {int($pos)}]
-#  while {$linestart>=0} {
-#    set line [$txt get $linestart.0 $linestart.$col]
-#    for {set i [string length $line]} {[incr i -1]>=0} {} {
-#      if {![string is wordchar -strict [string index $line $i]]} {
-#        if {[string is wordchar -strict [string index $line [expr {$i-1}]]]} {
-#          ::tk::TextSetCursor $txt $linestart.$i
-#          return -code break
-#        }
-#      }
-#    }
-#    incr linestart -1
-#    set col {end +1c}
-#  }
-#
-#  # The below code is rather inefficient with long sequences of non-word chars.
-#  if {$s % 2} return
-#  set pos [$txt index "insert -1c"]
-#  while {[$txt compare $pos >= 1.0]} {
-#    set pos [$txt index "$pos wordstart"]
-#    if {[string is wordchar -strict [$txt get $pos [$txt index "$pos +1c"]]]} {
-#      ::tk::TextSetCursor $txt $pos
-#      return -code break
-#    }
-#    if {$pos eq {1.0}} return
-#    set pos [$txt index "$pos -1c"]
-#  }
 }
 
 # _________________________________ EOF _________________________________ #

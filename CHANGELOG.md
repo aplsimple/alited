@@ -1,14 +1,22 @@
 # LAST CHANGES:
 
-Version `v1.6.6b1 (31 Jan'24)`
+Version `v1.6.6 (7 Feb'24)`
 
-  - BUGFIX: update cursor color at 1st changing color scheme in Preferences
+  - BUGFIX: 1st changing color scheme in Preferences: cursor color not updated
+  - BUGFIX: Find/Replace items containing EOL: not saved in alited.ini
+  - BUGFIX: renaming file extension: previous syntax tags remained
+  - BUGFIX: Tools/Paver: Widget List closes on "OK"; comment-out spawns errors
   - NEW   : Saved Faforites: Open button opens favorites' files, in beginning of tabbar
   - NEW   : Edit/Comments: 3 commenting modes
-  - NEW   : if cursor over non-word, Tab indents (line's beginning) or is Tab char (inside)
-  - CHANGE: Ctrl+Right & Ctrl+Left go over word starts (programmer's viewpoint)
+  - NEW   : if cursor over non-word, Tab indents at line's beginning or puts Tab char if inside
+  - CHANGE: Recent Files: save original file name after "Save as"; remove after "Close & Delete"
+  - CHANGE: if Preferences/Units "Use leaf's regexp": tree tips, command completion, Alt+A
+  - CHANGE: if "file modified by some app & reloaded", Undo is possible to restore orig.text
+  - CHANGE: Play macro dialogue: if macro exists then icon "change" else icon "new"
+  - CHANGE: Ctrl+Right & Ctrl+Left go over word starts/ends (programmer's viewpoint)
   - CHANGE: Preferences/Editor: TODO comments added to C++ syntax
-  - CHANGE: packages: hl_tcl 1.1, playtkl 1.3
+  - CHANGE: small code clearance
+  - CHANGE: packages: e_menu/apave 4.3.9, hl_tcl 1.1, playtkl 1.4.1
 
 
 Version `v1.6.5 (24 Jan'24)`

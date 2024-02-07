@@ -140,12 +140,14 @@ proc file::OutwardChange {TID {docheck yes}} {
       if {$isfile} {
         set wtxt [alited::main::GetWTXT $TID]
         set pos [$wtxt index insert]
-        DisplayFile $TID $fname $wtxt yes
-        alited::main::UpdateAll
+        set filecont [ReadFile $TID $fname 1]  ;# let Undo be possible
+        $wtxt replace 1.0 end $filecont
         catch {
           ::tk::TextSetCursor $wtxt $pos
           ::alited::main::CursorPos $wtxt
         }
+        alited::main::UpdateAll
+        alited::main::FocusText
       } else {
         alited::bar::BAR $TID configure --mtime {}
         SaveFileAs $TID
@@ -473,7 +475,7 @@ proc file::CheckForNew {{docheck no}} {
   namespace upvar ::alited al al
   if {$docheck} {
     if {![llength [alited::bar::BAR listTab]] && ![info exists al(project::Ok)]} {
-      alited::file::NewFile
+      NewFile
     }
   } else {
     after idle {::alited::file::CheckForNew yes}
@@ -482,16 +484,17 @@ proc file::CheckForNew {{docheck no}} {
 
 # ________________________ "File" menu _________________________ #
 
-proc file::ReadFile {TID fname} {
+proc file::ReadFile {TID fname {doErr 0}} {
   # Reads a file, creates its unit tree.
   #   TID - ID of tab
   #   fname - file name
+  #   doErr - if 'true', exit at errors with error message
   # Returns the file's contents.
 
   namespace upvar ::alited al al
   set enc [Encoding $fname]
   append enc { } [EOL $fname]
-  set filecont [::apave::readTextFile $fname {} 0 {*}$enc]
+  set filecont [::apave::readTextFile $fname {} $doErr {*}$enc]
   set al(_unittree,$TID) [alited::unit::GetUnits $TID $filecont]
   return $filecont
 }
@@ -533,7 +536,7 @@ proc file::NewFile {{fname ""}} {
       set tab [set fname $al(MC,nofile)]
     } else {
       set tab [alited::bar::UniqueListTab $fname]
-      set fname [alited::file::FileStat $fname]
+      set fname [FileStat $fname]
     }
     set TID [alited::bar::InsertTab $tab $fname]
   }
@@ -594,7 +597,7 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
         # open new tab
         set tab [alited::bar::UniqueListTab $fname]
         set TID [alited::bar::InsertTab $tab [FileStat $fname]]
-        alited::file::AddRecent $fname
+        AddRecent $fname
         if {$Message ne {}} {
           $Message "[msgcat::mc {Open file:}] $fname"
         }
@@ -649,6 +652,7 @@ proc file::SaveFileByName {TID fname {doit no}} {
     return 0
   }
   unset al(_NO_OUTWARD_)
+  alited::edit::MacroUpdate $fname
   OutwardChange $TID no
   alited::edit::BackupFile $TID
   if {!$doit} {
@@ -691,7 +695,7 @@ proc file::SaveFileAs {{TID ""}} {
 
   namespace upvar ::alited al al obPav obPav
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
-  set fname [alited::bar::FileName $TID]
+  set fname [set fnameorig [alited::bar::FileName $TID]]
   set ::alited::al(TMPfname) [file tail $fname]
   if {[IsNoName $fname]} {
     set ::alited::al(TMPfname) {}
@@ -707,9 +711,9 @@ proc file::SaveFileAs {{TID ""}} {
   if {[IsNoName $fname]} {
     set res 0
   } elseif {[set res [SaveFileByName $TID $fname]]} {
+    AddRecent $fnameorig
     RenameFile $TID $fname
     alited::main::ShowHeader yes
-    alited::edit::MacroUpdate $fname
     if {$al(TREE,isunits)} {set fname {}}
     alited::tree::RecreateTree {} $fname
     alited::tree::SeeSelection
@@ -749,6 +753,7 @@ proc file::CloseAndDelete {} {
     # to save first (for normal closing only)
     if {[SaveAndClose]} {
       DeleteFile $fname
+      FillRecent $fname
       if {!$al(TREE,isunits)} {alited::tree::RecreateTree {} {} yes}
       alited::edit::MacroUpdate $fname
     }
@@ -899,7 +904,7 @@ proc file::CloseFile {TID checknew args} {
   }
   alited::tree::UpdateFileTree
   if {$al(closefunc) != 1} {  ;# close func = 1 means "close all"
-    alited::file::AddRecent $fname
+    AddRecent $fname
   }
   after idle [list alited::bar::RenameTitles $TID]
   return $res
@@ -1363,12 +1368,17 @@ proc file::SelectInTree {wtree id} {
 
 proc file::FillRecent {{delit ""}} {
   # Creates "Recent Files" menu items.
-  #   delit - index of Recent Files item to be deleted
+  #   delit - index or a file name of Recent Files item to be deleted
 
   namespace upvar ::alited al al
   if {[string is integer -strict $delit] && \
   $delit>-1 && $delit<[llength $al(RECENTFILES)]} {
     set al(RECENTFILES) [lreplace $al(RECENTFILES) $delit $delit]
+  } elseif {$delit ne {}} {
+    set delit [lsearch -exact $al(RECENTFILES) $delit]
+    if {$delit>=0} {
+      set al(RECENTFILES) [lreplace $al(RECENTFILES) $delit $delit]
+    }
   }
   set m $al(MENUFILE).recentfiles
   $m configure -tearoff 0
@@ -1394,8 +1404,10 @@ proc file::InsertRecent {fname pos} {
 
 proc file::AddRecent {fname} {
   namespace upvar ::alited al al
-  InsertRecent $fname 0
-  FillRecent
+  if {![IsNoName $fname]} {
+    InsertRecent $fname 0
+    FillRecent
+  }
 }
 
 proc file::ChooseRecent {fname} {

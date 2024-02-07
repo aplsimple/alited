@@ -105,7 +105,7 @@ namespace eval ::alited {
   set al(TPL,%U) {Alex Plotnikov}
   set al(TPL,%m) aplsimple@gmail.com
   set al(TPL,%w) https://aplsimple.github.io
-  set al(TPL,%a) {  #   %a - \\n}
+  set al(TPL,%a) {#   %a - \n}
 
   # key bindings
   set al(KEYS,bind) [list]
@@ -485,7 +485,7 @@ proc ini::ReadIniTemplates {nam val {updwc yes}} {
     }
   }
   if {$updwc} {
-    foreach n {%d %t %u %U %m %w %a} {
+    foreach n {%d %t %u %U %m %w} {
       if {$n eq $nam} {
         if {$val ne ""} {set al(TPL,$n) $val}
         break
@@ -750,7 +750,7 @@ proc ini::ReadPrjMisc {nam val} {
         # lists of find/replace strings to be restored only
         set ::alited::find::data(en1) {}
         set ::alited::find::data(en2) {}
-        array set data $val
+        array set data [::alited::ProcEOL $val in]
         set ::alited::find::data(vals1) $data(vals1)
         set ::alited::find::data(vals2) $data(vals2)
       }
@@ -864,7 +864,7 @@ proc ini::SaveIni {{newproject no}} {
   foreach t $al(TPL,list) {
     puts $chan "tpl=$t"
   }
-  foreach n {%d %t %u %U %m %w %a} {
+  foreach n {%d %t %u %U %m %w} {
     puts $chan "$n=$al(TPL,$n)"
   }
   puts $chan {}
@@ -1042,7 +1042,7 @@ proc ini::SaveIniPrj {{newproject no}} {
     }
     puts $chan {}
     puts $chan {[Misc]}
-    puts $chan datafind=[array get ::alited::find::data]
+    puts $chan datafind=[::alited::ProcEOL [array get ::alited::find::data] out]
     puts $chan comforce=$al(comForce)
     puts $chan comforcech=$al(comForceCh)
     puts $chan comforcels=$al(comForceLs)
@@ -1291,7 +1291,7 @@ proc ini::CreateMacrosDir {} {
   # Creates macros' directory.
 
   namespace upvar ::alited al al DATAUSER DATAUSER
-  set macrodir [file dirname [alited::edit::MacroFile -]]
+  set macrodir [file dirname [alited::edit::MacroFileName -]]
   if {![file exists $macrodir]} {
     file mkdir $macrodir
     foreach f [glob -nocomplain [file join $DATAUSER macro *]] {

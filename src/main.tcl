@@ -347,7 +347,16 @@ proc main::HighlightText {TID curfile wtxt} {
   namespace upvar ::alited al al obPav obPav
   # the language (Tcl or C) is defined by the file's extension
   set ext [string tolower [file extension $curfile]]
-  if {![info exists al(HL,$wtxt)] || $al(HL,$wtxt) ne $ext} {
+  set itwas [info exists al(HL,$wtxt)]
+  if {!$itwas || $al(HL,$wtxt) ne $ext} {
+    if {$itwas} {
+      # remove old syntax
+      foreach tag [$wtxt tag names] {
+        if {![string match hil* $tag] && $tag ne {sel}} {
+          $wtxt tag delete $tag
+        }
+      }
+    }
     set clrnams [::hl_tcl::hl_colorNames]
     set clrCURL [lindex [$obPav csGet] 16]
     # get a color list for the highlighting Tcl and C
@@ -583,7 +592,11 @@ proc main::AfterUndoRedo {} {
   # Actions after undo/redo.
 
   HighlightLine
-  after 0 {after idle {alited::main::SaveVisitInfo ; alited::main::UpdateUnitTree}}
+  after 0 {after idle {
+    alited::main::SaveVisitInfo
+    alited::main::UpdateUnitTree
+    alited::main::FocusText}
+  }
 }
 #_______________________
 
@@ -845,14 +858,14 @@ proc main::_create {} {
 #### ________________________ Tree's toolbar _________________________ ####
 }
     {.fraBot.panBM.fraTree.fra1.BtTswitch - - - - {pack -side left -fill x} {-image alimg_gulls -com alited::tree::SwitchTree}}
-    {.fraBot.panBM.fraTree.fra1.BtTUpdT - - - - {pack -side left -fill x} {-image alimg_retry -tip {$::alited::al(MC,updtree)}
+    {.fraBot.panBM.fraTree.fra1.BtTUpdT - - - - {pack -side left -fill x} {-image alimg_retry -tip {$al(MC,updtree)}
     -command alited::main::UpdateAll}}
     {.fraBot.panBM.fraTree.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
     {.fraBot.panBM.fraTree.fra1.BtTUp - - - - {pack -side left -fill x} {-image alimg_up -com {alited::tree::MoveItem up}}}
     {.fraBot.panBM.fraTree.fra1.BtTDown - - - - {pack -side left -fill x} {-image alimg_down -com {alited::tree::MoveItem down}}}
     {.fraBot.panBM.fraTree.fra1.sev2 - - - - {pack -side left -fill y -padx 5}}
     {.fraBot.panBM.fraTree.fra1.BtTAddT - - - - {pack -side left -fill x} {-image alimg_add -com alited::tree::AddItem}}
-    {.fraBot.panBM.fraTree.fra1.BtTRenT - - - - {pack forget -side left -fill x} {-image alimg_change -tip "$::alited::al(MC,renamefile)\nF2" -com {::alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
+    {.fraBot.panBM.fraTree.fra1.BtTRenT - - - - {pack forget -side left -fill x} {-image alimg_change -tip "$al(MC,renamefile)\nF2" -com {::alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
     {.fraBot.panBM.fraTree.fra1.BtTDelT - - - - {pack -side left -fill x} {-image alimg_delete -com alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraBot.panBM.fraTree.fra1.btTCtr - - - - {pack -side left -fill x} {-image alimg_minus -com {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}
@@ -863,7 +876,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.sev3 - - - - {pack -side right -fill y -padx 0}}
     {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1}
-      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $::alited::al(TREE,cw0)} L1 {-width $::alited::al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0 -selectmode extended -tip {-BALTIP {alited::tree::GetTooltip %i %c} -SHIFTX 10}}}
+      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $al(TREE,cw0)} L1 {-width $al(TREE,cw1) -anchor e}" -style TreeNoHL -takefocus 0 -selectmode extended -tip {-BALTIP {alited::tree::GetTooltip %i %c} -SHIFTX 10}}}
 {#
 ### ________________________ Favorites _________________________ ###
 }
@@ -875,14 +888,14 @@ proc main::_create {} {
 {#
 #### ________________________ Favorites' toolbar _________________________ ####
 }
-    {.fraFV.fra1.BtTVisitF - - - - {pack -side left -fill x} {-image alimg_misc -tip {$::alited::al(MC,lastvisit)} -com alited::favor::SwitchFavVisit}}
+    {.fraFV.fra1.BtTVisitF - - - - {pack -side left -fill x} {-image alimg_misc -tip {$al(MC,lastvisit)} -com alited::favor::SwitchFavVisit}}
     {.fraFV.fra1.sev0 - - - - {pack -side left -fill y -padx 5}}
-    {.fraFV.fra1.BtTListF - - - - {pack -side left -fill x} {-image alimg_SaveFile -tip {$::alited::al(MC,FavLists)} -com alited::favor::Lists}}
+    {.fraFV.fra1.BtTListF - - - - {pack -side left -fill x} {-image alimg_SaveFile -tip {$al(MC,FavLists)} -com alited::favor::Lists}}
     {.fraFV.fra1.SevF - - - - {pack -side left -fill y -padx 5}}
-    {.fraFV.fra1.BtTAddF - - - - {pack -side left -fill x} {-image alimg_add -tip {$::alited::al(MC,favoradd)} -com alited::favor::Add}}
-    {.fraFV.fra1.BtTRenF - - - - {pack -side left -fill x} {-image alimg_change -tip {$::alited::al(MC,favorren)} -command ::alited::favor::Rename}}
-    {.fraFV.fra1.btTDelF - - - - {pack -side left -fill x} {-image alimg_delete -tip {$::alited::al(MC,favordel)} -com alited::favor::Delete}}
-    {.fraFV.fra1.btTDelAllF - - - - {pack -side left -fill x} {-image alimg_trash -tip {$::alited::al(MC,favordelall)} -com alited::favor::DeleteAll}}
+    {.fraFV.fra1.BtTAddF - - - - {pack -side left -fill x} {-image alimg_add -tip {$al(MC,favoradd)} -com alited::favor::Add}}
+    {.fraFV.fra1.BtTRenF - - - - {pack -side left -fill x} {-image alimg_change -tip {$al(MC,favorren)} -command ::alited::favor::Rename}}
+    {.fraFV.fra1.btTDelF - - - - {pack -side left -fill x} {-image alimg_delete -tip {$al(MC,favordel)} -com alited::favor::Delete}}
+    {.fraFV.fra1.btTDelAllF - - - - {pack -side left -fill x} {-image alimg_trash -tip {$al(MC,favordelall)} -com alited::favor::DeleteAll}}
     {.fraFV.fra1.h_2 - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraFV.fra1.sev2 - - - - {pack -side right -fill y -padx 0}}
     {.fraFV.fra - - - - {pack -fill both -expand 1} {}}
@@ -900,7 +913,7 @@ proc main::_create {} {
     {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3}}
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both -padx 0 -pady 0 -ipadx 0 -ipady 0} {-background $::apave::BGMAIN2}}
-    {.fraTop.panTop.frAText.Text - - - - {pack -expand 1 -fill both} {-bd 0 -w 80 -h 20 -gutter GutText -gutterwidth $::alited::al(ED,gutterwidth) -guttershift $::alited::al(ED,guttershift) $::alited::al(TEXT,opts)}}
+    {.fraTop.panTop.frAText.Text - - - - {pack -expand 1 -fill both} {-bd 0 -w 80 -h 20 -gutter GutText -gutterwidth $al(ED,gutterwidth) -guttershift $al(ED,guttershift) $al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
 {#
 ### ________________________ Find units _________________________ ###
@@ -910,7 +923,7 @@ proc main::_create {} {
     {.fraTop.fraSbh.SbhText .fraTop.panTop.frAText.text T - - {pack -fill x}}
     {.fraTop.FraHead  - - - - {pack forget -side bottom -fill x} {-padding {4 4 4 4} -relief groove}}
     {.fraTop.fraHead.labFind - - - - {pack -side left} {-t {    Unit: }}}
-    {.fraTop.fraHead.CbxFindSTD - - - - {pack -side left} {-tvar ::alited::al(findunit) -values {$::alited::al(findunitvals)} -w 30 -tip {$al(MC,findunit)}}}
+    {.fraTop.fraHead.CbxFindSTD - - - - {pack -side left} {-tvar ::alited::al(findunit) -values {$al(findunitvals)} -w 30 -tip {$al(MC,findunit)}}}
     {.fraTop.fraHead.btT - - - - {pack -side left -padx 4} {-t {Find: } -com alited::find::DoFindUnit -w 8 -anchor e -tip {Find Unit}}}
     {.fraTop.fraHead.rad1 - - - - {pack -side left -padx 4} {-takefocus 0 -var ::alited::main::findunits -t {in all} -value 1}}
     {.fraTop.fraHead.rad2 - - - - {pack -side left -padx 4} {-takefocus 0 -var ::alited::main::findunits -t {in current} -value 2}}
@@ -921,12 +934,12 @@ proc main::_create {} {
 }
     {.fraBot - - - - {add}}
     {.fraBot.fra - - - - {pack -fill both -expand 1}}
-    {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1} {-h 1 -w 40 -lvar ::alited::info::list -font $::alited::al(FONT,defsmall) -highlightthickness 0}}
+    {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1} {-h 1 -w 40 -lvar ::alited::info::list -font $al(FONT,defsmall) -highlightthickness 0}}
     {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - {pack}}
     {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
-      {{$::alited::al(MC,Row:)}} 12
-      {{$::alited::al(MC,Col:)}} 4
+      {{$al(MC,Row:)}} 12
+      {{$al(MC,Col:)}} 4
       {{} -anchor w -expand 1} 51
       {{} -anchor e} 25
     }}}

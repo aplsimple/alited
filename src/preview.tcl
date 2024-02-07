@@ -134,13 +134,13 @@ proc ::preview::Run {} {
   $obj makeWindow $win.fra "$title: $theme, $ttl, $tint"
   $obj paveWindow $win.fra {
     {nbk - - - - {pack -expand 1 -fill both} {
-      f1 {-t Notebook -underline 0 -tip Tab\ #1}
-      f2 {-t Tab\ #2 -underline 0 -tip Tab\ #2}
+      f1 {-t Notebook -underline 0 -tip "Tab #1"}
+      f2 {-t "Tab #2" -underline 0 -tip "Tab #2"}
       -traverse yes
     }}
     {seh3 - - - - {pack -fill x}}
     {lab - - - - {pack -side left -fill x} {-t "$::tclversion" -font TkTooltipFont}}
-    {but5 - - - - {pack -side right} {-t "Close" -com ::preview::Exit}}
+    {but5 - - - - {pack -side right} {-t Close -com ::preview::Exit}}
   }
   $obj paveWindow $win.fra.nbk.f1 {
     {lab1 - - 1 1    {-st wsn}  {-t "Entry: "}}

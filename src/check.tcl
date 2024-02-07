@@ -284,7 +284,7 @@ proc check::_create {} {
     {fra.radA - - - - {pack -side left -padx 9}  {-t "current file" -var ::alited::check::what -value 1}}
     {fra.radB - - - - {pack -side left -padx 9}  {-t "all of session files" -var ::alited::check::what -value 2}}
     {fra2 fra T 1 1 {-st nsew -pady 3 -padx 3} {-padding {5 5 5 5} -relief groove}}
-    {.ButHelp - - - - {pack -side left} {-t {$::alited::al(MC,help)} -tip F1 -command ::alited::check::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -command ::alited::check::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
     {.ButOK - - - - {pack -side left -padx 2} {-t "Check" -command ::alited::check::Check}}
     {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::check::Cancel}}

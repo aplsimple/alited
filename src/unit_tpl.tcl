@@ -529,10 +529,10 @@ proc unit_tpl::_create {{geom ""}} {
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
     {.h_ - - 1 1 {-st we} {-h 20}}
     {.labTpl .h_ T 1 1 {-st e} {-anchor center -t "Current template:"}}
-    {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 45 -tip {-BALTIP {$::alited::al(MC,tplent1)} -MAXEXP 1}}}
-    {.CbxKey + L 1 1 {-st w} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {-BALTIP {$::alited::al(MC,tplent3)} -MAXEXP 1}}}
+    {.EntTpl .labTpl L 1 8 {-st we} {-tvar ::alited::unit_tpl::tpl -w 45 -tip {-BALTIP {$al(MC,tplent1)} -MAXEXP 1}}}
+    {.CbxKey + L 1 1 {-st w} {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList -state readonly -h 16 -w 16 -tip {-BALTIP {$al(MC,tplent3)} -MAXEXP 1}}}
     {fratex fra1 T 10 10 {-st nsew -rw 1 -cw 1} {}}
-    {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip  {-BALTIP {$::alited::al(MC,tplent2)} -MAXEXP 1}}}
+    {.TexTpl - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 80 -tip  {-BALTIP {$al(MC,tplent2)} -MAXEXP 1}}}
     {.sbvTpl + L - - {pack} {}}
     {fra2 fratex T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Place after:"}}
@@ -544,9 +544,9 @@ proc unit_tpl::_create {{geom ""}} {
     {.chb - - - - {pack -side left}  {-t "Indent" -var ::alited::unit_tpl::indent -tip {-BALTIP {$al(MC,tplinds)} -UNDER 4}}}
     {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 + T 1 10 {-st nsew}}
-    {.ButHelp - - - - {pack -side left} {-t {$::alited::al(MC,help)} -tip F1 -command ::alited::unit_tpl::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -command ::alited::unit_tpl::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
-    {.butOK - - - - {pack $forget -side left -padx 2} {-t "$::alited::al(MC,select)" -command ::alited::unit_tpl::Ok}}
+    {.butOK - - - - {pack $forget -side left -padx 2} {-t "$al(MC,select)" -command ::alited::unit_tpl::Ok}}
     {.butCancel - - - - {pack -side left} {-t $::alited::unit_tpl::BUTEXIT -command ::alited::unit_tpl::Cancel}}
   }
   set tree [$obTpl TreeTpl]

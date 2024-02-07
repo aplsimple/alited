@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.6b1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.6.6  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -162,9 +162,9 @@ namespace eval alited {
   set al(prjtransadd) $al(ED,TRANSADD)   ;#
   foreach _ $OPTS {set al(DEFAULT,$_) $al($_)}
 
-  set al(TITLE) {%f :: %d :: %p}         ;# alited title's template
-  set al(TclExtsDef) {.tcl .tm .msg}     ;# extensions of Tcl files
-  set al(ClangExtsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
+  set al(TITLE) {%f :: %d :: %p}           ;# alited title's template
+  set al(TclExtsDef) {.tcl .tm .msg .test} ;# extensions of Tcl files
+  set al(ClangExtsDef) {.c .h .cpp .hpp}   ;# extensions of C/C++ files
   set al(TextExtsDef) {html htm css md txt sh bat ini alm em ale conf wiki} ;# ... plain texts
   set al(TclExts) $al(TclExtsDef)
   set al(ClangExts) $al(ClangExtsDef)
@@ -456,9 +456,11 @@ namespace eval alited {
     #   arName - fully qualified array name
     #   args - proc name & arguments
 
+    set foc [focus]
     set arSave [array get $arName]
     {*}$args
     RestoreArray $arName $arSave
+    after 100 "alited::FocusByForce $foc"
   }
   #_______________________
 
@@ -622,6 +624,14 @@ namespace eval alited {
     } else {
       return [string map [list \n $EOL] $val]
     }
+  }
+  #_______________________
+
+  proc FocusByForce {foc} {
+    # Focuses a widget.
+    #   foc - widget's path
+
+    catch {focus -force [winfo toplevel $foc]; focus $foc}
   }
 
   ## ________________________ Messages _________________________ ##
@@ -933,7 +943,7 @@ namespace eval alited {
 
     catch {destroy $win}
     catch {
-      after idle "after 100 {catch {focus [winfo toplevel $foc] ; focus $foc}}"
+      after idle "after 100 {alited::FocusByForce $foc}"
     }
   }
 

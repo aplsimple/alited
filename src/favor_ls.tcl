@@ -361,14 +361,14 @@ proc favor_ls::_create {} {
     {.fra.btTChg - - - - {pack -side top} {-com ::alited::favor_ls::Change -tip "Change a list of favorites" -image alimg_change-big}}
     {.fra.btTDel - - - - {pack -side top} {-com ::alited::favor_ls::Delete -tip "Delete a list of favorites" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill y}}
-    {.fra.btTCur - - - - {pack -side top} {-com ::alited::favor_ls::GetCurrentList -tip "$::alited::al(MC,currfavs)" -image alimg_heart-big}}
+    {.fra.btTCur - - - - {pack -side top} {-com ::alited::favor_ls::GetCurrentList -tip "$al(MC,currfavs)" -image alimg_heart-big}}
     {.LbxFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 40 -lvar ::alited::favor_ls::favlist}}
     {.sbvFavs + L - - {pack -side left -fill y} {}}
     {fra1 fraLbxFav T 1 2 {-st nswe}}
     {.h_ - - 1 1 {pack -side top -expand 1 -fill both -pady 10}}
     {fra1.fraEnt - - 1 1 {pack -side top -expand 1 -fill both -pady 4}}
-    {.labFav - - 1 1 {pack -side left -padx 4} {-t "$::alited::al(MC,currfavs):"}}
-    {.EntFav - - 1 1 {pack -side left -expand 1 -fill both} {-tvar ::alited::favor_ls::fav -tip {$::alited::al(MC,favent1)}}}
+    {.labFav - - 1 1 {pack -side left -padx 4} {-t "$al(MC,currfavs):"}}
+    {.EntFav - - 1 1 {pack -side left -expand 1 -fill both} {-tvar ::alited::favor_ls::fav -tip {$al(MC,favent1)}}}
     {fratex fra1 T 1 2 {-st nswe -rw 1 -cw 1}}
     {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 72 -tip "Favorites of the current list" -ro 1}}
     {.sbvFav + L - - {pack -side left -fill y}}
@@ -378,9 +378,9 @@ proc favor_ls::_create {} {
     {.radB - - - - {pack -side left -padx 8}  {-t closed -var ::alited::favor_ls::place -value 2 -tip "Closes all tabs without favorites\nat choosing Favorites' list"}}
     {LabMess fra2 T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 + T 1 2 {-st nswe}}
-    {.ButHelp - - - - {pack -side left} {-t {$::alited::al(MC,help)} -tip F1 -command ::alited::favor_ls::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -command ::alited::favor_ls::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
-    {.butOK - - - - {pack -side left} {-t "$::alited::al(MC,select)" -command ::alited::favor_ls::Ok}}
+    {.butOK - - - - {pack -side left} {-t "$al(MC,select)" -command ::alited::favor_ls::Ok}}
     {.butOpenFile - - - - {pack -side left -padx 2} {-t Open... -command {::alited::favor_ls::Ok 4} -tip {Opens files with current favorites.}}}
     {.butUndo - - - - {pack -side left} {-t Back -command {::alited::favor_ls::Ok 3} -tip "Sets a list of Favorites\nthat was active initially."}}
     {.butCancel - - - - {pack -side left -padx 2} {-t Cancel -command ::alited::favor_ls::Cancel}}

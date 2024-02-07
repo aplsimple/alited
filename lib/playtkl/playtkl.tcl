@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide playtkl 1.3.0
+package provide playtkl 1.4.1
 
 # _________________________ playtkl ________________________ #
 
@@ -62,10 +62,12 @@ proc playtkl::Recording {win ev args} {
           if {$ev eq {KeyRelease} && $dd(prevev) ne {KeyPress}} {
             lappend dd(fcont) "KeyPress $win $args $t"
           }
-        } elseif {$ev eq {KeyRelease} && [string length $key]==1} {
-          # KeyRelease of "Ctrl/Alt/Shift + letter" sets the problem:
-          #  the previous KeyPress isn't registered by Tk (only Control_L's etc. are)
-          #  => no response from KeyPress bindings
+        } elseif {$ev eq {KeyRelease} && ([string length $key]==1 || \
+        $key in {Left Right Up Down Home End Next Prior \
+        F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12})} {
+          # KeyRelease of "Ctrl/Alt/Shift + char/navigating/function key" sets the problem:
+          #   the previous KeyPress can be not registered by Tk (only Control's etc.)
+          #   => no response from KeyPress bindings
           set ifound [FindPrevEvent $key KeyPress $ev $win {*}$args]
           if {$ifound<0} {
             lappend dd(fcont) "KeyPress $win $args $t %B=??" ;# %B stands for DEBUG
@@ -112,6 +114,10 @@ proc playtkl::Playing {} {
 
   variable fields
   variable dd
+  if {$dd(pause)} {
+    after 200 ::playtkl::Playing
+    return
+  }
   set llen [llength $dd(fcont)]
   if {[incr dd(idx)]>=$llen} {
     catch {
@@ -121,10 +127,6 @@ proc playtkl::Playing {} {
       }
     }
     end
-    return
-  }
-  if {$dd(pause)} {
-    after 200 ::playtkl::Playing
     return
   }
   set line [lindex $dd(fcont) $dd(idx)]
@@ -187,19 +189,34 @@ proc playtkl::Playing {} {
   set dd(win) $win
   set dd(data) $data
   if {$ev eq {Motion} && [info exists X] && [info exists Y]} {
-    set state [dict get $opts -state]
-    after idle [list event generate $win <Motion> -warp 1 -x $X -y $Y -state $state]
+    GenerateEvent $win Motion -warp 1 -x $X -y $Y -state [dict get $opts -state]
   } else {
-    after idle [list event generate $win <$ev> {*}$opts]
+    GenerateEvent $win $ev {*}$opts
   }
   set line [lindex $dd(fcont) $dd(idx)+1]
   set time1 [Data %t [lrange $line 2 end]]
-  if {!$time || ![string is integer -strict $time1]} {
+  if {!$time || ![string is integer -strict $time1] || $dd(ismacro)} {
     set aft idle
   } else {
     set aft [expr {max(0,$time1-$time)}]
   }
   after $aft ::playtkl::Playing
+}
+#_______________________
+
+proc playtkl::GenerateEvent {win ev args} {
+  # Generates an event for a widget.
+  #   win - widget's path
+  #   ev - event
+
+  variable dd
+  if {[winfo exists $win]} {
+    if {$dd(ismacro)} {
+      event generate $win <$ev> {*}$args
+    } else {
+      after idle [list after 0 event generate $win <$ev> {*}$args]
+    }
+  }
 }
 #_______________________
 
@@ -237,16 +254,18 @@ proc playtkl::inform {msg} {
 }
 #_______________________
 
-proc playtkl::record {fname {endkey ""} {mouse yes}} {
+proc playtkl::record {fname {endkey ""} {mouse yes} {details ""}} {
   # Starts the recording.
   #   fname - name of file to store the recording
   #   endkey - key to stop the recording
   #   mouse - "no" to disable  mouse events
+  #   details - additional info on the recording
 
   variable fields
   variable dd
   set dd(isrec) yes
   set dd(mouse) $mouse
+  set dd(details) [string map [list \n "\n# "] $details]
   if {![info exists dd(msgbeg)]} {
     foreach {o w} $fields {append opts " {%$w=$w}"}
     foreach ev {KeyPress KeyRelease ButtonPress ButtonRelease Motion MouseWheel} {
@@ -261,6 +280,19 @@ proc playtkl::record {fname {endkey ""} {mouse yes}} {
 }
 
 # ________________________ Playback _________________________ #
+
+proc playtkl::readcontents {fname} {
+  # Reads (updates) a log file's contents. Useful at changing the file manually.
+  #   fname - file name
+
+  variable dd
+  catch {
+    set ch [open $fname]
+    set dd(fcont) [split [string trim [read $ch]] \n]
+    close $ch
+  }
+}
+#_______________________
 
 proc playtkl::play {fname {pausekey ""}} {
   # Starts the playback.
@@ -288,11 +320,7 @@ proc playtkl::replay {{fname ""} {cbreplay ""} {mappings {}} {ismacro yes} {wfoc
   if {$wfocus eq {}} {set wfocus [focus]}
   set dd(wfocus) $wfocus
   set dd(ismacro) $ismacro
-  if {$fname ne {}} {
-    set ch [open $fname]
-    set dd(fcont) [split [string trim [read $ch]] \n]
-    close $ch
-  }
+  if {$fname ne {}} {readcontents $fname}
   set line [lindex $dd(fcont) 0]
   lassign $line dd(prevev) dd(win)
   set dd(data) [lrange $line 2 end]
@@ -303,11 +331,10 @@ proc playtkl::replay {{fname ""} {cbreplay ""} {mappings {}} {ismacro yes} {wfoc
   set dd(mappings) $mappings
   if {$ismacro} {
     set fcont [list]
-    set time 0
     foreach line $dd(fcont) {
       if {![regexp {^\s*#+} $line#]} { ;# skip empty or commented
         set ln [lrange $line 0 1]
-        append ln " %t=[incr time 2] " [lrange $line 3 end]
+        append ln " %t=0 " [lrange $line 3 end]
         lappend fcont $ln
       }
     }
@@ -319,20 +346,27 @@ proc playtkl::replay {{fname ""} {cbreplay ""} {mappings {}} {ismacro yes} {wfoc
 
 # ________________________ Game over _________________________ #
 
-proc playtkl::end {{comments ""}} {
+proc playtkl::end {{macrodetails ""}} {
   # Closes the recording/playing.
-  #   comments - comments to macro to be recorded
+  #   macrodetails - comments to macro to be recorded
 
   variable dd
   set msgend [inform End]
   if {$dd(isrec)} {
     set dd(fcont) [lsort -index 2 -dictionary $dd(fcont)] ;# sort by time
     if {$msgend ne {}} {
-      set dd(fcont) [linsert $dd(fcont) 0 "# $dd(msgbeg)" "# $msgend" #]
+      set details {}
+      catch {append details "# $::argv0 $::argv"}
+      append details "\n# $dd(details)"
+      set tp "# Tcl v[info tclversion] : [info nameofexecutable]"
+      foreach a [lsort [array names ::tcl_platform]] {
+        append tp "\n# $a = " $::tcl_platform($a)
+      }
+      set dd(fcont) [linsert $dd(fcont) 0 $details # $tp # "# $dd(msgbeg)" "# $msgend" #]
     }
-    if {$comments ne {}} {
-      set comments #[string trim $comments #\n]
-      set dd(fcont) [linsert $dd(fcont) 0 [string map [list \n \n#] $comments]]
+    if {$macrodetails ne {}} {
+      set macrodetails #[string trim $macrodetails #\n]
+      set dd(fcont) [linsert $dd(fcont) 0 [string map [list \n \n#] $macrodetails]]
     }
     set ch [open $dd(fname) w]
     foreach line $dd(fcont) {puts $ch $line}

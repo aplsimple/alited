@@ -440,11 +440,11 @@ proc complete::AutoCompleteCommand {} {
   set pos [$wtxt index insert]
   set row [expr {int($pos)}]
   set charsOn [$wtxt get "$pos -1 char" "$pos +1 char"]
-  if {$al(acc_19) eq {Tab} && ![regexp {[[:alnum:]_]} $charsOn]} {
+  set leftpart [string trim [$wtxt get $row.0 $pos]]
+  if {$al(acc_19) eq {Tab} && (![regexp {[[:alnum:]_]} $charsOn] || $leftpart eq {})} {
     # (if the cursor isn't over a word)
     # Tab is the indentation on the line's beginning or Tab char otherwise
-    set leftpart [$wtxt get $row.0 $pos]
-    if {[string trim $leftpart] eq {}} {
+    if {$leftpart eq {}} {
       lassign [alited::main::CalcIndentation $wtxt] pad padchar
       $wtxt insert $pos [string repeat $padchar $pad]
     } else {

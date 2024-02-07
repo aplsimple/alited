@@ -64,7 +64,8 @@ oo::class create ::apave::APaveDialog {
     # Actions on closing the editor
   ; proc exitEditor {w resExit} {
       upvar $resExit res
-      if {[[my TexM] edit modified]} {
+      set wtxt [my TexM]
+      if {[my askForSave $wtxt] && [$wtxt edit modified]} {
         set pdlg [::apave::APaveDialog new $w]
         set r [$pdlg misc warn $::apave::msgarray(savetext) \
           "\n $::apave::msgarray(saveask) \n" \
@@ -603,6 +604,24 @@ oo::class create ::apave::APaveDialog {
       \$pop add command [my iconA down] -accelerator Alt+Down -label \"Line(s) Down\" \\
        -command \"[self] linesMove {$txt} +1 0\""
   }
+  #_______________________
+
+  method askForSave {wtxt {doask ""}} {
+    # For a text, sets/gets "ask for save changes" flag.
+    #   wtxt - text's path
+    #   doask - flag
+    # If the flag argument omitted, returns the flag else sets it.
+    # See also: constructor
+
+    set prop _AskForSave_$wtxt
+    if {$doask eq {}} {
+      set res [::apave::getProperty $prop]
+      if {![string is false -strict $res]} {set res 1}
+    } else {
+      set res [::apave::setProperty $prop $doask]
+    }
+    return $res
+  }
 
   ## ________________________ Highlighting _________________________ ##
 
@@ -968,7 +987,7 @@ oo::class create ::apave::APaveDialog {
     # options of dialog
     lassign {} chmsg geometry optsLabel optsMisc optsFont optsFontM optsHead \
       root rotext head hsz binds postcom onclose ONCLOSE timeout tab2 \
-      tags cc themecolors optsGrid addpopup minsize
+      tags cc themecolors optsGrid addpopup minsize savetext
     set wasgeo [set textmode [set stay [set waitvar 0]]]
     set readonly [set hidefind [set scroll [set modal 1]]]
     set curpos {1.0}
@@ -1032,6 +1051,7 @@ oo::class create ::apave::APaveDialog {
         -timeout - -focusback - -scroll - -tab2 - -stay - -modal - -waitvar {
           set [string range $opt 1 end] $val
         }
+        -savetext {set savetext $val}
         default {
           append optsFont " $opt $val"
           if {$opt ne "-family"} {
@@ -1333,19 +1353,23 @@ oo::class create ::apave::APaveDialog {
     my SetGetTexts set $qdlg.fra $inopts $widlist
     lassign [my LowercaseWidgetName $qdlg.fra.$tab2$defb] focusnow
     if {$textmode} {
-      my displayTaggedText [my TexM] msg $tags
+      set wtxt [my TexM]
+      my displayTaggedText $wtxt msg $tags
       if {$defb eq "ButTEXT"} {
         if {$readonly} {
           lassign [my LowercaseWidgetName $Defb1] focusnow
         } else {
-          set focusnow [my TexM]
+          set focusnow $wtxt
           catch "::tk::TextSetCursor $focusnow $curpos"
           foreach k {w W} \
             {catch "bind $focusnow <Control-$k> {[self] res $qdlg 1; break}"}
         }
       }
       if {$readonly} {
-        my readonlyWidget ::[my TexM] true false
+        my readonlyWidget ::$wtxt true false
+      }
+      if {$savetext ne {}} {
+        my askForSave $wtxt $savetext
       }
     }
     if {$focusmatch ne {}} {

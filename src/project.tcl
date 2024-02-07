@@ -1935,13 +1935,13 @@ proc project::Tab1 {} {
   return {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
-    {.labName - - 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,prjName)} -foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {.labName - - 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,prjName)} -foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {.EntName + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(prjname) -w 50}}
     {.labDir .labName T 1 1 {-st e -pady 8 -padx 3} {-t "Root directory:"}}
     {.Dir + L 1 9 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(prjroot) -w 50 -validate focus -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 1 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 + T 2 1 {-st nsew -rw 1 -cw 99}}
-    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext *.spx -tip {-BALTIP {$::alited::al(MC,notes)} -MAXEXP 1}}}
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} {-h 20 -w 40 -wrap word -tabnext *.spx -tip {-BALTIP {$al(MC,notes)} -MAXEXP 1}}}
     {.sbv + L - - {pack -side left}}
     {frasp lab L 1 1 {-st nsew}}
     {.lab - - - - {pack -side left} {-t {TODO days ahead:}}}
@@ -1952,7 +1952,7 @@ proc project::Tab1 {} {
     {fra3.fra - - - - {pack -fill both -expand 1}}
     {.seh2 - - - - {pack -side top -fill x}}
     {.too - - - - {pack -side top} {-relief flat -borderwidth 0 -array {$::alited::project::klnddata(toobar)}}}
-    {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext {alited::Tnext *.texPrj} -w 4 -h 8 -tip {-BALTIP {$::alited::al(MC,prjTtext)} -MAXEXP 1}}}
+    {.TexKlnd - - - - {pack -side left -fill both -expand 1} {-wrap word -tabnext {alited::Tnext *.texPrj} -w 4 -h 8 -tip {-BALTIP {$al(MC,prjTtext)} -MAXEXP 1}}}
 }
 }
 #_______________________
@@ -1967,25 +1967,25 @@ proc project::Tab2 {} {
   }
   return {
     {v_ - - 1 10}
-    {lab1 + T 1 2 {-st nsew -pady 1 -padx 3} {-t {$::alited::al(MC,DEFopts)} -foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {lab1 + T 1 2 {-st nsew -pady 1 -padx 3} {-t {$al(MC,DEFopts)} -foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fra2 + T 1 2 {-st nsew -cw 1}}
-    {.labIgn - - 1 1 {-st e -pady 1 -padx 3} {-t {$::alited::al(MC,Ign:)}}}
+    {.labIgn - - 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,Ign:)}}}
     {.entIgn + L 1 9 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(prjdirign) -w 40}}
-    {.labEOL .labIgn T 1 1 {-st e -pady 1 -padx 3} {-t {$::alited::al(MC,EOL:)}}}
+    {.labEOL .labIgn T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,EOL:)}}}
     {.cbxEOL + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
-    {.labIndent .labEOL T 1 1 {-st e -pady 1 -padx 3} {-t {$::alited::al(MC,indent:)}}}
+    {.labIndent .labEOL T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,indent:)}}}
     {.spxIndent + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjindent) -from 0 -to 8 -com {::alited::pref::CheckIndent ""}}}
-    {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} {-var ::alited::al(prjindentAuto) -t {$::alited::al(MC,indentAuto)}}}
+    {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} {-var ::alited::al(prjindentAuto) -t {$al(MC,indentAuto)}}}
     {.labRedunit .labIndent T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
-    {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjredunit) -from $::alited::al(minredunit) -to 100}}
-    {.labMult .labRedunit T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$::alited::al(MC,notrecomm)}}}
-    {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var ::alited::al(prjmultiline) -tip {$::alited::al(MC,notrecomm)}}}
-    {.labTrWs .labMult T 1 1 {-st e -pady 1 -padx 3} {-t {$::alited::al(MC,trailwhite)}}}
+    {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjredunit) -from $al(minredunit) -to 100}}
+    {.labMult .labRedunit T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$al(MC,notrecomm)}}}
+    {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var ::alited::al(prjmultiline) -tip {$al(MC,notrecomm)}}}
+    {.labTrWs .labMult T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,trailwhite)}}}
     {.swiTrWs + L 1 1 {-st sw -pady 1} {-var ::alited::al(prjtrailwhite)}}
     {.labmaxcom .labTrWs T 1 1 {-st e -pady 1 -padx 3} {-t {Maximum Run commands}}}
     {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjmaxcoms) -from 4 -to 99 -tabnext alited::Tnext}}
     {.labTrans .labmaxcom T 1 1 {-st e -pady 5 -padx 3} {-t {Translation link:}}}
-    {.CbxTrans + L 1 9 {-st ew -pady 5} {-h 12 -cbxsel {$::alited::al(prjtran)} -tvar ::alited::al(prjtran) -values {$::alited::al(prjtrans)} -clearcom {alited::main::ClearCbx %w ::alited::al(prjtran)}}}
+    {.CbxTrans + L 1 9 {-st ew -pady 5} {-h 12 -cbxsel {$al(prjtran)} -tvar ::alited::al(prjtran) -values {$al(prjtrans)} -clearcom {alited::main::ClearCbx %w ::alited::al(prjtran)}}}
     {.labSwTrans .labTrans T 1 1 {-st e -pady 5 -padx 3} {-t {Adding translations:}}}
     {.swiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var ::alited::al(prjtransadd) -tip {If OFF, replaces the original text.}}}
   }
@@ -1997,9 +1997,9 @@ proc project::Tab3 {} {
 
   return {
     {v_ - - 1 9}
-    {lab1 + T 1 9 {-st nsew -pady 1 -padx 3} {-t {$::alited::al(MC,TemplPrj)}}}
-    {lab2 + T 1 1 {-st ew -pady 5 -padx 3} {-t Template: -foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
-    {CbxTpl + L 1 3 {-st ew -pady 5} {-w 40 -h 12 -cbxsel {$::alited::al(PTP,name)} -tvar ::alited::al(PTP,name) -values {$::alited::al(PTP,names)} -clearcom alited::project::DeleteFromTplList -selcombobox alited::project::UpdateTplText}}
+    {lab1 + T 1 9 {-st nsew -pady 1 -padx 3} {-t {$al(MC,TemplPrj)}}}
+    {lab2 + T 1 1 {-st ew -pady 5 -padx 3} {-t Template: -foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {CbxTpl + L 1 3 {-st ew -pady 5} {-w 40 -h 12 -cbxsel {$al(PTP,name)} -tvar ::alited::al(PTP,name) -values {$al(PTP,names)} -clearcom alited::project::DeleteFromTplList -selcombobox alited::project::UpdateTplText}}
     {fraTlist + T 1 8 {-st nswe -padx 3 -cw 1 -rw 1}}
     {.TexTemplate - - - - {pack -side left -fill both -expand 1} {-h 20 -w 40 -tabnext "*.butTplDef *.cbxTpl" -wrap none}}
     {.sbv + L - - {pack -side left}}
@@ -2017,7 +2017,7 @@ proc project::Tab4 {} {
   set al(PTP,chbClearTip) [string map [list %f [msgcat::mc General]] $al(MC,alloffile)]
   return {
     {v_ - - 1 3}
-    {Labprj - - 1 2 {} {-foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {Labprj - - 1 2 {} {-foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {ChbClearRun labprj L 1 1 {-st w} {-var ::alited::al(PTP,chbClearRun) -com alited::project::ChecksRun -takefocus 0}}
     {tcl {
         set prt labprj
@@ -2052,7 +2052,7 @@ proc project::Tab4 {} {
     }
     {seh2 labc6 T 1 3}
     {h_ seh2 T 1 1}
-    {butRun h_ L 1 2 {-st ew} {-t Run -com alited::project::RunComs -tip {$::alited::al(MC,saving) & $::alited::al(MC,run)} -tabnext alited::Tnext}}
+    {butRun h_ L 1 2 {-st ew} {-t Run -com alited::project::RunComs -tip {$al(MC,saving) & $al(MC,run)} -tabnext alited::Tnext}}
   }
 }
 #_______________________
@@ -2066,7 +2066,7 @@ proc project::Tab5 {} {
     {EntFilter + L 1 1 {-st swe -padx 1 -cw 1} {-tvar ::alited::project::filefilter -validate all -validatecommand alited::project::preValidateFilter}}
     {chbFilter + L 1 1 {-st sw -padx 1} {-var ::alited::project::casefilter -t {Match case} -com alited::project::postValidateFilter}}
     {seh_ labFilter T 1 3}
-    {LabFlist + T 1 3 {-pady 3 -padx 3} {-foreground $::alited::al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {LabFlist + T 1 3 {-pady 3 -padx 3} {-foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fraFlist + T 1 3 {-st nswe -padx 3 -rw 1}}
     {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}
     {.sbvFlist + L - - {pack -side left}}

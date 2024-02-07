@@ -316,6 +316,23 @@ proc ::apave::blinkWidget {w {fg #000} {bg #fff} {fg2 {}} {bg2 red} \
 }
 #_______________________
 
+proc ::apave::blinkWidgetImage {w img1 {img2 alimg_none} {cnt 6} {ms 100}} {
+  # Makes a widget's image blink.
+  #   w - widget's path
+  #   img1 - main image
+  #   img2 - flashed image
+  #   cnt - count of flashes
+  #   ms - millisec between flashes
+
+  set imgcur $img1
+  if {$cnt>0} {
+    if {$cnt % 2} {set imgcur $img2}
+    after $ms "::apave::blinkWidgetImage $w $img1 $img2 [incr cnt -1] $ms"
+  }
+  $w configure -image $imgcur
+}
+#_______________________
+
 proc ::apave::autoexec {comm {ext ""}} {
   # Imitates Tcl's auto_execok.
   #   comm - a command to find

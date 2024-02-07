@@ -147,18 +147,18 @@ proc menu::FillMacroItems {} {
 
   namespace upvar ::alited al al
   set m $al(MENUEDIT).playtkl
-  set imax 102
+  set imax 99
   set pmax 34
-  for {set i 0} {$i<$imax} {incr i} {
+  for {set i 0} {$i<[expr {$imax+$pmax}]} {incr i} {
     if {[catch {$m delete 1}]} break
   }
   set isaccel 0
-  set pattern [alited::edit::MacroFile *$al(macroext)]
+  set pattern [alited::edit::MacroFileName *$al(macroext)]
   set lmacro [lsort -command alited::menu::CompareFnames [glob -nocomplain $pattern]]
   set imax [expr {min([llength $lmacro],$imax-2)}]
   for {set i [set idx 0]} {$i<$imax} {incr i} {
     set am [lindex $lmacro $i]
-    if {[alited::edit::MacroFile $am] ne [alited::edit::MacroFile $al(MC,quickmacro)]} {
+    if {[alited::edit::MacroFileName $am] ne [alited::edit::MacroFileName $al(MC,quickmacro)]} {
       set am [file rootname [file tail $am]]
       set opts [MacroOptions item$idx $am]
       if {[incr idx]%$pmax} {set cbr {}} {set cbr {-columnbreak 1}}
@@ -429,7 +429,7 @@ proc menu::FillMenu {} {
 
   ## ________________________ Help _________________________ ##
 
-  set m [set al(MENUHELP) $al(WIN).menu.help]
+  set m $al(WIN).menu.help
   $m add command -label Tcl/Tk -command alited::tool::Help -accelerator F1
   $m add separator
   $m add command -label alited -command alited::HelpAlited

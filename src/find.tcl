@@ -1143,35 +1143,36 @@ proc find::SearchByList {} {
   set text [::alited::ProcEOL $al(listSBL) in]
   if {$al(matchSBL) eq {}} {set al(matchSBL) $al(MC,frExact)}
   after idle [list catch {set ::alited::al(FN2WINDOW) $::apave::MODALWINDOW}]
+  set headfont [$obFN2 boldDefFont]
   $obFN2 makeWindow $win2.fra [msgcat::mc {Find by List}]
-  $obFN2 paveWindow $win2.fra [list \
-    [list labhead - - 1 5 {} [list -t $head -font [$obFN2 boldDefFont]]] \
-    [list lab1 + T 1 1 {-st en -padx 5} [list -t [msgcat::mc List:]]] \
+  $obFN2 paveWindow $win2.fra { \
+    {labhead - - 1 5 {} {-t "$head" -font "$headfont"}} \
+    {lab1 + T 1 1 {-st en -padx 5} {-t List:}} \
     {fra1 + L 1 4 {-st nsew -rw 1}} \
     {.Text + L - - {pack -side left -expand 1 -fill both} {-w 30 -h 5 -tabnext {*rad1 *CANCEL}}} \
     {.sbvText + L - - {pack}} \
     {seh1 lab1 T 1 5} \
-    {lab2 + T 1 1 {-st en -padx 5} {-t "$::alited::al(MC,frMatch)"}} \
+    {lab2 + T 1 1 {-st en -padx 5} {-t "$al(MC,frMatch)"}} \
     {fra2 + L 1 4 {-st w}} \
-    {.rad1 - - 1 1 {} {-var ::alited::al(matchSBL) -value "$::alited::al(MC,frExact)" -t "$::alited::al(MC,frExact)"}} \
+    {.rad1 - - 1 1 {} {-var ::alited::al(matchSBL) -value "$al(MC,frExact)" -t "$al(MC,frExact)"}} \
     {.rad2 + L 1 1 {-padx 10} {-var ::alited::al(matchSBL) -value Glob -t Glob}} \
     {.rad3 + L 1 1 {} {-var ::alited::al(matchSBL) -value RE -t RE}} \
     {seh2 lab2 T 1 5} \
-    {lab3 + T 1 1 {-st en -padx 5} {-t "$::alited::al(MC,frWord):"}} \
+    {lab3 + T 1 1 {-st en -padx 5} {-t "$al(MC,frWord):"}} \
     {fra3 + L 1 3 {-st we}} \
     {.chb1 - - 1 1 {-st w} {-var ::alited::al(wordonlySBL)}} \
-    {.lab4 + L 1 1 {-st en -padx 5} {-t "$::alited::al(MC,frCase):"}} \
+    {.lab4 + L 1 1 {-st en -padx 5} {-t "$al(MC,frCase):"}} \
     {.chb2 + L 1 1 {-st w} {-var ::alited::al(caseSBL)}} \
     {seh3 lab3 T 1 5} \
     {butHelp + T 1 1 {-st w} {-t Help -com {alited::find::HelpFind 2}}} \
     {h_ + L 1 1 {-st ew -cw 1}} \
     {butFind + L 1 1 {} {-t Find -com ::alited::find::SearchByList_Do}} \
     {ButDown + L 1 1 {} {-t {Find Next} -com ::alited::find::NextFoundByList}} \
-    [list butCancel + L 1 1 {} [list -t Cancel -com alited::find::CloseFind2]] \
-    ]
+    {butCancel + L 1 1 {} {-t Cancel -com alited::find::CloseFind2}} \
+  }
   set wtxt [$obFN2 Text]
   after idle [list $obFN2 displayText $wtxt $text]
-  after 100 [list focus $wtxt]
+  after 300 focus $wtxt
   bind $win2 <F3> "[$obFN2 ButDown] invoke"
   $obFN2 showModal $win2 -modal no -waitvar no -onclose alited::find::CloseFind2 \
     -geometry $geo2 -ontop [::isKDE] -resizable 1 -minsize {200 200}

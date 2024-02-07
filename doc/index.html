@@ -65,6 +65,7 @@
 <li class="level3"><div class="li"><a href="#searchmenu">Search menu</a></div></li>
 <li class="level3"><div class="li"><a href="#search1">Find / Replace</a></div></li>
 <li class="level3"><div class="li"><a href="#search2">Other search tools</a></div></li>
+<li class="level3"><div class="li"><a href="#completion">Command / variable completion</a></div></li>
 </ul>
 </li>
 <li class="level2"><div class="li"><a href="#tools">Tools</a></div>
@@ -1257,7 +1258,7 @@ Both contain 3 buttons:
 
 <p>
 <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> has the find and replace functions united in this dialogue.
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 The dialogue provides standard options of such type. Probably, except for some of them.
@@ -1273,7 +1274,7 @@ Another uncommon option is a search in selected files. Sometimes very useful.
 </p>
 <p>
 If you select tabs of the tab bar with Ctrl+click, the "Find / Replace" dialogue will offer "All in N" meaning selected files (including a current one).
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 Another non-standard option allows applying filters to the found strings. The dialogue of the filters is brought up with "RE2" button.
@@ -1325,7 +1326,7 @@ characters, it's skipped at filtering (e.g. <code>*\s*proc\s+</code>).
 
 <p>
 To <i>enable / disable</i> RE2, click the appropriate checkbox.
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 All of the found in text / session / selected files instances are presented in the info listbox.
@@ -1337,11 +1338,11 @@ The info listbox allows to go to a found instance's line, with just clicking it.
 
 <p>
 The info listbox has a context menu allowing you to navigate through its items just with keys (Up / Down / Ctrl+Home / Ctrl+End).
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 While the "Find / Replace" dialogue is open, the found strings are highlighted. When you close the dialogue, the highlighting disappears.
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 The "Find / Replace" dialogue allows you to replace the found strings with a new one. At single replacements, first hit "Find", then "Replace" - next found strings will be presented one by one.
@@ -1350,7 +1351,7 @@ The "Find / Replace" dialogue allows you to replace the found strings with a new
 <p>
 To copy "Find" entry to "Replace" entry, click the button "Paste" or press Ctrl+R keys.
 </p>
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 To fill "Find" field of the "Find / Replace" dialogue quickly, select a text or set the caret on a word and
@@ -1359,7 +1360,7 @@ To fill "Find" field of the "Find / Replace" dialogue quickly, select a text or 
 <li> click "Find / Replace" icon of the toolbar </li>
 </ul>
 </p>
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 Also, the "Find / Replace" dialogue contains the <i>-geometry</i> checkbox (between "Find" and "Replace" buttons) allowing to set a default geometry of the dialogue.
@@ -1386,7 +1387,7 @@ Search facilities of <span class="curid"><a href="#" class="wikilink1" title="Ta
 <li> Completion of commands and variables</li>
 <li> Highlighting words and selections</li>
 </ul>
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 Press Ctrl+Shift+F or hit "Edit / Find Unit" menu item to find unit(s) by <i>case insensitive glob</i> patterns.
@@ -1394,7 +1395,7 @@ Press Ctrl+Shift+F or hit "Edit / Find Unit" menu item to find unit(s) by <i>cas
 
 <p>
 It's very helpful when you remember a part of a unit's name, so just enter this part to find the unit.
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 To look for a proc/method declaration, you can try:
@@ -1403,15 +1404,15 @@ To look for a proc/method declaration, you can try:
 <li> press Ctrl+L, when the cursor is on its name</li>
 <li> hit "Edit / Look for Declaration" menu item</li>
 </ul>
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 For a quick search of a word (or a selected text), there is a nice Ctrl+Shift+click applied to the word. It means a search throughout <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session and is <i>very helpful</i> in some cases.
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 Sometimes, a whole list of words should be sought in a file. There is an appropriate item in "Search" menu. The search result is displayed in a text widget, so that you can copy-paste it to a code. After closing the window of search results, you can switch to another file without closing the window of search options.
-</p><b>~~~</b>
+</p><hr>
 
 <p>
 To find a word or a selection in a directory, hit the appropriate button of the toolbar. The search will be performed by "grep" command with options:
@@ -1423,25 +1424,9 @@ To find a word or a selection in a directory, hit the appropriate button of the 
 
 <p>
 Other "grep" facilities are available in <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> tool. Run it with F4 key and hit "Search all" item.
-</p><b>~~~</b>
-
-<p>
-To complete a command / variable, press Tab key while the cursor is on initial characters of it - this will offer you to select from a list of variables / commands available in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session's files. The completed word can be modified in its entry, Enter key will replace a text's word with a current selection of the list.
-</p>
-<p>If Tab key is pressed at $ (or $: or $::), the completion list would include only the variables of current proc/method and (if $: or $::) Tcl global variables.
 </p>
 
-<p>
-The Tab key to do the completion is customizeable (like many other keys) in "Setup / Preferences / Keys".
-</p>
-
-<p>
-At the completion, the commands to choose are:
-<ul>
-<li> not qualified for a current file</li>
-<li> qualified for others (if they are declared so)</li>
-</ul>
-</p><b>~~~</b>
+<hr>
 
 <p>
 The double click on a word highlights all of its occurences (if red) or only one (if not red). E.g., this allows to view a variable's usage.
@@ -1453,6 +1438,62 @@ Also, the double click allows to prove that the clicked word is unique throughou
 
 <p>
 If you want to highlight a selection, run a context menu.
+</p>
+
+
+<br><p>
+<h3 id="completion"><i>Command / variable completion</i></h3>
+</p>
+
+<p>
+To complete a command / variable, press Tab key while the cursor is on initial characters of it - this will offer you to select from a list of commands / variables available in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session's files. The completed word can be modified in its entry, Enter key will replace a text's word with a current selection of the list.
+</p>
+<p>If Tab key is pressed at $ (or $: or $::), the completion list would include only the variables of current proc/method and (if $: or $::) Tcl global variables.
+</p>
+
+<p>
+The Tab key to do the completion is customizeable (like many other keys) in "Setup / Preferences / Keys".
+</p>
+
+<p>
+Though, probably there is no need to change its mapping in Preferences, even when you use the Tab key to indent lines. The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> will expand such keypressing with indenting spaces when the cursor is set at the left (empty) part of the line.
+</p>
+
+<p>
+Also, inside the current line, when the cursor is set on non-word character, pressing Tab key will insert the Tab character (Ctrl+T combination does it as well).
+</p>
+
+<p>
+The indentation's length is set in Projects/Options.
+</p>
+
+<p>
+At the completion, the commands to choose are:
+<ul>
+<li> not qualified for a current file</li>
+<li> qualified for others (if they are declared so)</li>
+</ul>
+</p>
+
+<p>
+The proposed commands are taken from the unit trees of all files of the current <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s session.
+Thus, if you use your own <i>leaf's regexp</i> of Preferences/Units, then all leaf units (procedures and methods) should be commented according to the <i>leaf's regexp</i>, e.g. this way:
+
+<pre class="code"><i><font color=#4b5d50># ======== myProc ========</font></i>
+
+<i><font color=#4b5d50># Does so and so.</font></i>
+<i><font color=#4b5d50>#   a - 1st parameter</font></i>
+<i><font color=#4b5d50>#   b - 2nd parameter</font></i>
+
+<b><font color=#ca14ca>proc</font></b> myProc {a b} {
+
+  command1 <font color=#1b1baa>$a</font>
+  command2 <font color=#1b1baa>$b</font>
+  ..
+}
+</pre>
+
+The <code>myProc</code> of the <code># ======== myProc ========</code> line will be taken to the unit tree and as such used at the command completion.
 </p>
 
 <p>
@@ -2403,7 +2444,7 @@ The "Comment" field is useful to remind how the macro should be used. The commen
 </p>
 
 <p>
-If a macro is active, it's run through F12 hot key. Though the macros' maximum number is 100, only one macro may be active.
+If a macro is active, it's run through F12 hot key. Though the macros' maximum number is 97, only one macro may be active.
 </p>
 
 <p>

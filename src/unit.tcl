@@ -12,6 +12,29 @@ namespace eval unit {
 
 # ________________________ Common _________________________ #
 
+proc unit::GetDeclaration {wtxt tip l1 l2} {
+  # Gets a unit's declaration.
+  #   wtxt - text widget
+  #   tip - unit's name
+  #   l1 - 1st line of unit
+  #   l2 - last line of unit
+
+  namespace upvar ::alited al al
+  set unithead $tip
+  if {[IsLeafRegexp] && ![catch {set unittext [$wtxt get $l1.0 $l2.end]}]} {
+    foreach t [split $unittext \n] {
+      if {[regexp $al(RE,proc2) $t]} {
+        set unithead $t
+        break
+      }
+    }
+  } else {
+    catch {set unithead [$wtxt get $l1.0 $l1.end]}
+  }
+  return $unithead
+}
+#_______________________
+
 proc unit::GetHeader {wtree ID {NC ""} {wtxt ""} {tip ""} {l1 0} {l2 0}} {
   # Gets a header of unit: declaration + initial comments.
   #   wtree - unit tree widget
@@ -38,7 +61,7 @@ proc unit::GetHeader {wtree ID {NC ""} {wtxt ""} {tip ""} {l1 0} {l2 0}} {
       if {$wtxt eq {}} {
         set wtxt [alited::main::CurrentWTXT]
       }
-      set tip2 [string trim [$wtxt get $l1.0 $l1.end]]
+      set tip2 [GetDeclaration $wtxt $tip $l1 $l2]
       if {[string match "*\{" $tip2]} {
         set tip [string trim $tip2 " \{"]
       }
@@ -57,7 +80,7 @@ proc unit::GetHeader {wtree ID {NC ""} {wtxt ""} {tip ""} {l1 0} {l2 0}} {
           ![regexp $::hl_tcl::my::data(RETODO) $line]} {
             if {[regexp {^\s+} $line1]} {set line1 [string range $line1 1 end]}
             append tip \n $line1
-            if {$al(RE,proc) ne {}} break
+            break
           } elseif {[string match //* $line] && [string trimleft $line2] ne {}} {
             if {[regexp {^\s+} $line2]} {set line2 [string range $line2 1 end]}
             append tip \n $line2
@@ -240,23 +263,15 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
   #   # ar1 -
   #   # ar2 -
   #   # ar3 -
-  set unithead {}
-  if {[IsLeafRegexp] && ![catch {set unittext [$wtxt get $l1.0 $l2.end]}]} {
-    foreach t [split $unittext \n] {
-      if {[regexp $al(RE,proc2) $t]} {
-        set unithead $t
-        break
-      }
-    }
-  } else {
-    catch {set unithead [$wtxt get $l1.0 $l1.end]}
-  }
-  set indent [string repeat " " [::apave::obj leadingSpaces $unithead]]
+  set unithead [GetDeclaration $wtxt {} $l1 $l2]
+  set pad1 [string repeat " " [::apave::obj leadingSpaces $unithead]]
   set unithead [string trim $unithead "\{ "]
   lassign [split $unithead "\{"] proc
   set iarg [string range $unithead [string length $proc] end]
+  if {[IsLeafRegexp]} {set tex [string trim $tex]}
+  set pad2 [string repeat " " [::apave::obj leadingSpaces $tex]]
   catch {
-    set tpla [string map [list \\n \n] $al(TPL,%a)]
+    set tpla $pad2[string map [list \\n \n] $al(TPL,%a)]
     set oarg [set st1 ""]
     if {[string match \{*\} $iarg]} {set iarg [string range $iarg 1 end-1]}
     foreach a [list {*}$iarg] {
@@ -265,15 +280,14 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
       if {$a ne {}} {
         set st [string map [list %a $a] $tpla]
         if {$st1 eq ""} {set st1 $st}
-        append oarg $indent$st
+        append oarg $pad1$st
       }
     }
     if {[string first %a $tex]>-1} {
       set place 0
       set pos 1.[string length $st1]
     }
-    set tea [string map [list \\n \n %a $oarg] $tex]
-    if {[string first %a $tex]==-1} {set tex $tea} {set tex $indent$tea}
+    set tex $pad1[string map [list \\n \n %a $oarg] $tex]
   }
   set ll1 [string length $tex]
   set tex [string map [list %p [lindex $proc 1]] $tex]
