@@ -1,5 +1,6 @@
 namespace eval ::aloupe {
   ::msgcat::mcset ru {Loupe} {Лупа}
+  ::msgcat::mcset ru {Refresh} {Обновить}
   ::msgcat::mcset ru {To clipboard} {В буфер}
   ::msgcat::mcset ru {Save} {Сохранить}
   ::msgcat::mcset ru {Close} {Закрыть}

@@ -58,6 +58,7 @@ namespace eval ::alited {
     set al(MC,swfiles)     [msgcat::mc {Switch to Unit Tree}]
     set al(MC,swunits)     [msgcat::mc {Switch to File Tree}]
     set al(MC,filesadd)    [msgcat::mc {Create File}]
+    set al(MC,filesadd...) [msgcat::mc {Create File...}]
     set al(MC,filesadd2)   [msgcat::mc "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)."]
     set al(MC,filesdel)    [msgcat::mc {Delete File}]
     set al(MC,fileexist)   [msgcat::mc "\nFile \"%f\" already exists in\n%d\n"]
@@ -118,6 +119,8 @@ namespace eval ::alited {
     set al(MC,hlcolors)    [msgcat::mc {Display Colors}]
     set al(MC,playtkl)     [msgcat::mc {Play Macro}]
     set al(MC,quickmacro)  {Quick macro}
+    set al(MC,formatdesc)  [msgcat::mc {Moving Unit Descriptions}]
+    set al(MC,formatdesc...) [msgcat::mc {Moving Unit Descriptions...}]
 
     ## _  project options _ ##
     set al(MC,Ign:)        [msgcat::mc {Skip subdirectories:}]
@@ -127,10 +130,11 @@ namespace eval ::alited {
     set al(MC,redunit)     [msgcat::mc {Unit lines per 1 red bar:}]
     set al(MC,multiline)   [msgcat::mc {Multi-line strings:}]
     set al(MC,trailwhite)  [msgcat::mc {Remove trailing whitespaces:}]
+    set al(MC,useleafRE)   [msgcat::mc {Use leaf's regexp:}]
+    set al(MC,leafRE)      [msgcat::mc {Leaf's regexp:}]
 
     ## _ templates _ ##
     set al(MC,tpl)         [msgcat::mc Templates]
-    set al(MC,tpllist)     [msgcat::mc {List of Templates}]
     set al(MC,tplsel)      [msgcat::mc {Click a template}]
     set al(MC,tplnew)      [msgcat::mc {The template #%n added}]
     set al(MC,tplupd)      [msgcat::mc {The template #%n updated}]
@@ -191,6 +195,7 @@ namespace eval ::alited {
     set al(MC,favexists)   [msgcat::mc {This list already exists}]
     set al(MC,faverrsav)   [msgcat::mc "This list not saved to\n\"%f\"."]
     set al(MC,favdelq)     [msgcat::mc {Delete a favorites' list #%n ?}]
+    set al(MC,unitprocsd)  [msgcat::mc {%f processed, units touched: %n - ALREADY PROCESSED?}]
 
     ## _ find-replace dialogue _ ##
     set al(MC,frMatch) [msgcat::mc {Match: }]
@@ -207,6 +212,9 @@ namespace eval ::alited {
     set al(MC,removed)     [msgcat::mc "\"%f\" removed to \"%d\""]
     set al(MC,nottoopen)   [msgcat::mc "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?"]
     set al(MC,renamefile)  [msgcat::mc {Rename File}]
+    set al(MC,renamefile...) [msgcat::mc {Rename File...}]
+    set al(MC,clonefile)   [msgcat::mc {Clone File}]
+    set al(MC,clonefile...) [msgcat::mc {Clone File...}]
     set al(MC,openselfile) [msgcat::mc {Open Selected Files}]
     set al(MC,filelist)    [msgcat::mc {File List}]
 

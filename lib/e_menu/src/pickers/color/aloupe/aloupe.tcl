@@ -11,7 +11,7 @@
 
 package require Tk
 
-package provide aloupe 1.3
+package provide aloupe 1.4
 
 namespace eval ::aloupe {
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]}]
@@ -157,7 +157,7 @@ proc ::aloupe::my::CreateDisplay {start} {
   catch {set fg [dict get $opts -foreground]}
   catch {set bg [dict get $opts -background]}
   $data(WDISP) configure -background $bg
-  grid [label $data(WDISP).l -fg $fg -bg $bg] -row 0 -columnspan 2 -sticky we
+  grid [label $data(WDISP).l -fg $fg -bg $bg] -row 0 -columnspan 3 -sticky we
   pack [label $data(WDISP).l.lab1 -text " [::msgcat::mc Size]" -fg $fg -bg $bg] -side left -anchor e -expand 1
   pack [ttk::spinbox $data(WDISP).l.sp1 -from 8 -to 500 -justify center \
     -width 4 -textvariable ::aloupe::my::size -command ::aloupe::my::ShowLoupe] -side left
@@ -167,16 +167,18 @@ proc ::aloupe::my::CreateDisplay {start} {
   pack [label $data(WDISP).l.lab3 -text " [::msgcat::mc Pause]" -fg $fg -bg $bg] -side left -anchor e -expand 1
   pack [ttk::spinbox $data(WDISP).l.sp3 -from 0 -to 60 -justify center \
     -width 2 -textvariable ::aloupe::my::pause] -side left
-  grid [ttk::separator $data(WDISP).sep1 -orient horizontal] -row 1 -columnspan 2 -sticky we -pady 2
-  grid [ttk::label $data(LABEL) -image $data(IMAGE) -relief flat] -row 2 -columnspan 2 -padx 2
+  grid [ttk::separator $data(WDISP).sep1 -orient horizontal] -row 1 -columnspan 3 -sticky we -pady 2
+  grid [ttk::label $data(LABEL) -image $data(IMAGE) -relief flat] -row 2 -columnspan 3 -padx 2
   set data(BUT2) $data(WDISP).but2
   if {[set but2text $data(-commandname)] eq ""} {
     set but2text [::msgcat::mc "To clipboard"]
   }
+  grid [button $data(WDISP).but0 -text [::msgcat::mc "Refresh"] \
+    -command ::aloupe::my::Refresh -font TkFixedFont] -row 3 -column 0 -sticky ew
   grid [button $data(BUT2) -text $but2text \
-    -command ::aloupe::my::Button2Click -font TkFixedFont] -row 3 -column 0 -sticky ew
+    -command ::aloupe::my::Button2Click -font TkFixedFont] -row 3 -column 1 -sticky ew
   grid [button $data(WDISP).but1 -text [::msgcat::mc Save] \
-    -command ::aloupe::my::Save -fg $fg -bg $bg -font TkFixedFont] -row 3 -column 1 -sticky ew
+    -command ::aloupe::my::Save -fg $fg -bg $bg -font TkFixedFont] -row 3 -column 2 -sticky ew
   set data(-geometry) [regexp -inline \\+.* $data(-geometry)]
   if {$data(-geometry) ne ""} {
     wm geometry $data(WDISP) $data(-geometry)
@@ -363,6 +365,14 @@ proc ::aloupe::my::DisplayImage {w} {
   wm deiconify $data(WDISP)
   wm deiconify $data(WLOUP)
   focus -force $data(WDISP).but2
+}
+#_______________________
+
+proc ::aloupe::my::Refresh {} {
+  # Refreshes the loupe image without mouse click.
+
+  variable data
+  ::aloupe::my::DisplayImage $data(WLOUP)
 }
 
 # ________________________ Geometry _________________________ #

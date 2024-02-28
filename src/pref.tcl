@@ -266,9 +266,24 @@ proc pref::MainFrame {} {
     {fraB + T 1 2 {-st nsew} {-padding {2 2}}}
     {.ButHelp - - - - {pack -side left} {-t {$::alited::al(MC,help)} -tip F1 -com ::alited::pref::Help}}
     {.LabMess - - - - {pack -side left -expand 1 -fill both -padx 8}}
-    {.ButOK - - - - {pack -side left -anchor s -padx 2} {-t Save -command ::alited::pref::Ok}}
-    {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::pref::Cancel}}
+    {.ButOK - - - - {pack -side left -anchor s -padx 2} {-t Save -com ::alited::pref::Ok}}
+    {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -com ::alited::pref::Cancel}}
   }
+}
+#_______________________
+
+proc pref::CheckOk {} {
+  # Checker for "OK" button.
+  # Returns yes if OK button may be handled, else no.
+
+  fetchVars
+  if {$al(INI,LEAF) && $al(RE,leaf) eq {}} {
+    bell
+    ::alited::pref::Tab nbk3 $win.fra.fraR.nbk3.f1 yes no
+    focus [$obPrf EntLf]
+    return no
+  }
+  return yes
 }
 #_______________________
 
@@ -276,6 +291,7 @@ proc pref::Ok {args} {
   # Handler of "OK" button.
 
   fetchVars
+  if {![CheckOk]} return
   alited::CloseDlg
   if {$al(INI,confirmexit)>1} {
     set timo "-timeout {$al(INI,confirmexit) ButOK}"
@@ -379,13 +395,15 @@ proc pref::Cancel {args} {
 }
 #_______________________
 
-proc pref::Tab {tab {nt ""} {doit no}} {
+proc pref::Tab {tab {nt ""} {doit no} {focus1st yes}} {
   # Handles changing tabs of notebooks.
   #   tab - name of notebook
   #   nt - tab of notebook
-  #   doit - if yes, forces changing tabs.
+  #   doit - if yes, forces changing tabs
+  #   focus1st - if yes, focuses 1st widget of tab
   # At changing the current notebook: we need to save the old selection
   # in order to restore the selection at returning to the notebook.
+
   fetchVars
   foreach nbk {nbk nbk2 nbk3 nbk4 nbk5 nbk6} {fillCan [$obPrf Can$nbk]}
   foreach but {Home Change Categories Actions Keys Tools} {
@@ -434,10 +452,12 @@ proc pref::Tab {tab {nt ""} {doit no}} {
     # (makes sense at switching tabs, when open 1st time)
     after 10 [list after 10 [list after 10 [list after 10 "wm geometry $win \[wm geometry $win\]"]]]
   }
-  foreach w [$win.fra.fraR.$curTab tabs] {
-    if {[string match *$nt $w]} {
-      after 10 [list after 10 [list after 10 [list after 10 "::apave::focusFirst $w"]]]
-      break
+  if {$focus1st} {
+    foreach w [$win.fra.fraR.$curTab tabs] {
+      if {[string match *$nt $w]} {
+        after 10 [list after 10 [list after 10 [list after 10 "::apave::focusFirst $w"]]]
+        break
+      }
     }
   }
 }
@@ -606,8 +626,8 @@ proc pref::General_Tab3 {} {
     {.SwiTrWs + L 1 1 {-st sw -pady 1 -padx 3} {-var ::alited::al(DEFAULT,prjtrailwhite) -tabnext alited::Tnext}}
     {.labTrans .labTrWs T 1 1 {-st e -pady 5 -padx 3} {-t {Translation link:}}}
     {.CbxTrans + L 1 9 {-st ew -pady 5} {-h 12 -cbxsel {$al(ED,tran)} -tvar ::alited::al(ED,tran) -values {$al(ED,trans)} -clearcom {alited::main::ClearCbx %w ::alited::al(ED,tran)}}}
-    {.labSwTrans .labTrans T 1 1 {-st e -pady 5 -padx 3} {-t {Adding translations:}}}
-    {.SwiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var ::alited::al(ED,transadd) -tip {If OFF, replaces the original text.}}}
+    {#.labSwTrans .labTrans T 1 1 {-st e -pady 5 -padx 3} {-t {Adding translations:}}}
+    {#.SwiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var ::alited::al(ED,transadd) -tip {If OFF, replaces the original text.}}}
   }
 }
 #_______________________
@@ -649,7 +669,8 @@ proc pref::CheckUseDef {} {
     set state disabled
     [$obPrf CbxEOL] configure -state $state
   }
-  foreach w {EntIgn SpxIndent SpxRedunit SwiMult ChbIndAuto SwiTrWs CbxTrans SwiTrans} {
+  # SwiTrans obsolete
+  foreach w {EntIgn SpxIndent SpxRedunit SwiMult ChbIndAuto SwiTrWs CbxTrans} {
     [$obPrf $w] configure -state $state
   }
 }
@@ -1043,7 +1064,7 @@ proc pref::Template_Tab {} {
     {.labt .labd T 1 1 {-st e -pady 1 -padx 3} {-t "Time format:"}}
     {.entt + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(TPL,%t) -w 30}}
     {.seh .labt T 1 2 {-pady 3}}
-    {.but + T 1 1 {-st w} {-t {$al(MC,tpllist)} -com {alited::EnsureArray ::alited::al alited::unit::Run_unit_tpl no "-centerme $::alited::pref::win"} -tabnext alited::Tnext}}
+    {.but + T 1 1 {-st w} {-t {$al(MC,tpl)} -com {alited::EnsureArray ::alited::al alited::unit::Run_unit_tpl no "-centerme $::alited::pref::win"} -tabnext alited::Tnext}}
   }
 }
 
@@ -1193,16 +1214,16 @@ proc pref::Units_Tab {} {
     {.labBr - - 1 1 {-st e -pady 1 -padx 3} {-t "Branch's regexp:"}}
     {.entBr + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(RE,branch) -w 70}}
     {.labPr .labBr T 1 1 {-st e -pady 1 -padx 3} {-t "Proc's regexp:"}}
-    {.entPr + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(RE,proc) -w 70}}
-    {.labLf2 .labPr T 1 1 {-st e -pady 1 -padx 3} {-t "Check branch's regexp:"}}
+    {.EntPr + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(RE,proc) -w 70}}
+    {.labUself .labPr T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,useleafRE)}}}
+    {.swiUself + L 1 1 {-st sw -pady 1} {-var ::alited::al(INI,LEAF) -com alited::pref::CheckUseLeaf -afteridle alited::pref::CheckUseLeaf}}
+    {.labLf .labUself T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,leafRE)}}}
+    {.EntLf + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(RE,leaf) -w 70}}
+    {.labLf2 .labLf T 1 1 {-st e -pady 1 -padx 3} {-t "Check branch's regexp:"}}
     {.entLf2 + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(RE,leaf2) -w 70}}
     {.labPr2 .labLf2 T 1 1 {-st e -pady 1 -padx 3} {-t "Check proc's regexp:"}}
     {.entPr2 + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(RE,proc2) -w 70}}
-    {.labUself .labPr2 T 1 1 {-st e -pady 1 -padx 3} {-t "Use leaf's regexp:"}}
-    {.swiUself + L 1 1 {-st sw -pady 1} {-var ::alited::al(INI,LEAF) -onvalue yes -offvalue no -com alited::pref::CheckUseLeaf -afteridle alited::pref::CheckUseLeaf}}
-    {.labLf .labUself T 1 1 {-st e -pady 1 -padx 3} {-t "Leaf's regexp:"}}
-    {.EntLf + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(RE,leaf) -w 70}}
-    {.labUnt .labLf T 1 1 {-st e -pady 1 -padx 3} {-t "Untouched top lines:"}}
+    {.labUnt .labPr2 T 1 1 {-st e -pady 1 -padx 3} {-t "Untouched top lines:"}}
     {.spxUnt + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(INI,LINES1) -from 2 -to 200 -w 9}}
     {.but .labUnt T 1 1 {-st w} {-t Standard -com alited::pref::Units_Default -tabnext alited::Tnext}}
   }
@@ -1220,6 +1241,7 @@ proc pref::Units_Default {} {
   set al(RE,proc) $al(RE,procDEF)
   set al(RE,leaf2) $al(RE,leaf2DEF)
   set al(RE,proc2) $al(RE,proc2DEF)
+  CheckUseLeaf
 
 }
 #_______________________
@@ -1229,14 +1251,16 @@ proc pref::CheckUseLeaf {} {
 
   fetchVars
   if {$al(INI,LEAF)} {
-    set state normal
-    set al(RE,proc) {}
+    set state1 disabled
+    set state2 normal
   } else {
-    set state disabled
-    set al(RE,proc) [string trimright $al(RE,proc)]
-    if {$al(RE,proc) eq {}} {set al(RE,proc) $al(RE,procDEF)}
+    set state1 normal
+    set state2 disabled
   }
-  [$obPrf EntLf] configure -state $state
+  if {$al(RE,proc)  eq {}} {set al(RE,proc)  [string trimright $al(RE,procDEF)]}
+  if {$al(RE,proc2) eq {}} {set al(RE,proc2) [string trimright $al(RE,proc2DEF)]}
+  [$obPrf EntPr] configure -state $state1
+  [$obPrf EntLf] configure -state $state2
 }
 
 # ________________________ Tab "Tools" _________________________ #

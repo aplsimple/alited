@@ -26,8 +26,9 @@ proc paver::Close {args} {
   variable win
   variable geometry
   catch {
-    set geometry [wm geometry $win]
-    set geometry [string range $geometry [string first + $geometry] end]
+    set geo [wm geometry $win]
+    set geo [string range $geo [string first + $geo] end]
+    if {$geo ne {+0+0}} {set geometry $geo}
   }
   catch {$pobj res $win 0}
   catch {destroy $win}
@@ -63,16 +64,17 @@ proc paver::AutoUpdate {{dorun 0}} {
   variable paverTID
   variable modtime
   set fname [alited::bar::FileName]
-  if {!$al(paverauto) || ![winfo exists $win]} return
-  if {!$dorun} {
+  if {!$al(paverauto)} return
+  if {!$dorun && [winfo exists $win]} {
     ::apave::deiconify $::alited::paver::win
-    after idle ::alited::paver::_run
+    after idle alited::paver::_run
   }
   if {[file exists $fname]} {
     set TID [alited::bar::CurrentTabID]
     if {$TID eq $paverTID && [set dt [file mtime $fname]] ne $modtime} {
       set modtime $dt
-      if {$dorun==1} {after idle ::alited::paver::_run}
+      if {$dorun==1} {after idle alited::paver::_run}
+      after 500 {after idle alited::main::FocusText}
     }
   }
   after 300 {::alited::paver::AutoUpdate 1}
@@ -204,8 +206,15 @@ proc paver::WidgetList {} {
     if {$i<0} {set i 9999999} {incr i 5}
   }
   set widgetlist [string trim [string range $widgetlist [incr i] end-1]]
+  catch {
+    set wlist [list]
+    foreach widitem $widgetlist {
+      catch {set widitem [subst -nobackslashes -nocommands $widitem]}
+      lappend wlist $widitem
+    }
+    set widgetlist $wlist
+  }
   set widgetlist [string map [list "\[list " "\{" "\]" "\}" "\[" "\{" "\$" ""] $widgetlist]
-  set buba {`*|wE/R98U-A$#^q}
   set wlist [list]
   foreach widitem $widgetlist {
     lassign $widitem wid nei pos rspan cspan gridpack attrs
@@ -225,14 +234,21 @@ proc paver::WidgetList {} {
       set gridpack [lrange $gridpack 0 $i-1]
       lappend gridpack {*}$opts
     }
-    foreach opt {-font -validate -validatecommand -foreground -background -fg -bg -from -to \
+    foreach opt {-validate -validatecommand -foreground -background -fg -bg -from -to \
     -variable -textvariable -listvariable -command -var -tvar -lvar -com -array -afteridle \
     -ALL} {
       ::apave::extractOptions attrs $opt {}
     }
+    set font [::apave::extractOptions attrs -font {}]
+    if {$font ne "{}" && ![catch {font actual $font}]} {
+      append attrs " -font $font"
+    }
+    set style [::apave::extractOptions attrs -style {}]
+    if {![catch {set _ [ttk::style configure $style]}] && $_ ne {}} {
+      append attrs " -style $style"
+    }
     set attrs [RemoveVarOptions $attrs]
     set attrs2 [list]
-    set attrs [string map [list \\ $buba] $attrs]
     foreach {opt val} $attrs {
       set val [RemoveVarOptions $val]
       if {[llength $val]%2} {
@@ -249,7 +265,6 @@ proc paver::WidgetList {} {
       lappend attrs2 $opt $val2
     }
     set attrs $attrs2
-    set attrs [string map [list $buba \\] $attrs]
     set widitem [list $wid $nei $pos $rspan $cspan $gridpack $attrs]
     lappend wlist $widitem
     append code [list $widitem] \n

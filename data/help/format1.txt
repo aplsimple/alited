@@ -1,0 +1,43 @@
+ This dialogue allows moving the <b>unit descriptions</b> inside or outside
+ the leaf units (procs and methods).
+
+ The inside descriptions are just <b>below</b> the unit declarations.
+ The outside descriptions are just <b>above</b> the unit declarations.
+
+ The outside descriptions set a problem before the unit tree: when you
+ select a unit in the unit tree, the cursor is set on its declaration,
+ while you would prefer it being on the head line of its description.
+
+ The problem is solved by <b>Leaf's regexp</b> option of <b>Projects/Options</b>
+ defining the head line (<b>"separator"</b>) of units. It will be active
+ for the appropriate project.
+
+ Also, you can use the analogue option of <b>Preferences/Units</b> which
+ allows using a common <b>Leaf's regexp</b> for all projects.
+
+ Switch the option on and set your preferable regular expression.
+
+ The standard <b>Leaf's regexp</b> defines the head line of units like this:
+
+ <b># =========================== UnitName ==============================</b>
+ or
+ <b># UnitName ==========================================================</b>
+
+ The <b>N</b> of "Separator" field is a wildcard for the unit name.
+ The number in parenthesises <b>(70)</b> means maximum length of separators.
+
+ If your current unit descriptions are not that you want, in this
+ dialogue you can move them to the proper place.
+
+ When moving the descriptions inside the units, you can optionally set
+ a <b>separator</b> (e.g. #-------) to be placed above the unit declarations.
+
+ If there is no unit processed and <b>ALREADY PROCESSED?</b> displayed, the
+ reason may be that <b>alited</b> cannot find the source unit head lines. In
+ ideal the unit tree shows <b>leaf units</b> with their descriptions to move.
+ Try to change <b>Leaf's regexp</b> settings in Projects and/or Preferences.
+
+ <r>Note</r>: The inside unit descriptions allow using <b>Ruff!</b> doc generator
+ (see <link>ruff.magicsplat.com</link>). It's default setting of <b>alited</b> as well.
+
+ There are also doc generators handling the outside unit descriptions.

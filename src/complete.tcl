@@ -53,12 +53,15 @@ proc complete::CursorCoordsChar {wtxt shift} {
 }
 #_______________________
 
-proc complete::TextCursorCoordinates {wtxt} {
+proc complete::TextCursorCoordinates {{wtxt ""}} {
   # Gets cursor's screen coordinates under cursor in a text.
   # Also, sets the focus on the text (to make this task be possible at all).
   #   wtxt - text's path
   # Returns a list of X and Y coordinates.
 
+  if {$wtxt eq {}} {
+    set wtxt [alited::main::CurrentWTXT]
+  }
   focus $wtxt
   set res [CursorCoordsChar $wtxt {}]
   lassign $res X Y ch
@@ -138,7 +141,7 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
   } else {
     set withcomm yes
     # get commands available in files of current session
-    foreach tab [alited::find::SessionList] {
+    foreach tab [alited::SessionList] {
       set TID [lindex $tab 0]
       lassign [alited::main::GetText $TID no no] curfile wtxt
       foreach it $al(_unittree,$TID) {
@@ -445,8 +448,7 @@ proc complete::AutoCompleteCommand {} {
     # (if the cursor isn't over a word)
     # Tab is the indentation on the line's beginning or Tab char otherwise
     if {$leftpart eq {}} {
-      lassign [alited::main::CalcIndentation $wtxt] pad padchar
-      $wtxt insert $pos [string repeat $padchar $pad]
+      $wtxt insert $pos [alited::main::CalcPad $wtxt]
     } else {
       $wtxt insert $pos \t
     }

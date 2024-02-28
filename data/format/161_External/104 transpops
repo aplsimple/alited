@@ -1,0 +1,40 @@
+
+# The mode=4 means that external command(s) will be applied to a selected text
+# or the lines of selected text or, if there is no selection, to a current line.
+#
+# The selection (or lines of selection) is saved to a temporary file
+# that is processed by commands.
+#
+# The following wildcards (case insensitive) can be used:
+#   %S - file name for saved selection
+#   %L - file name for saved lines of selection
+#   %H - home directory
+#   %P - directory of current project
+#   %F - current file name
+#   %D - directory of current file
+#   %A - directory of alited
+#   %E - Tcl/Tk executable as set in Preferences/Tools (or one executing alited)
+#
+# The commands can be formed as follows:
+#   Unix = "command" arguments
+#   Linux = "command" arguments
+#   Windows = "command" arguments
+#   Command = "command" arguments
+#
+# There may be several commands executed one by one.
+#
+# The command types may be mixed in one configuration file, at that:
+# - if the current platform is Unix, then "Unix / Linux" command(s) will be executed only
+# - if the current platform is Windows, then "Windows" command(s) will be executed only
+# - if the current platform isn't Unix nor Windows or no Unix/Linux/Windows commands set,
+#   then "Command" command(s) will be executed only
+
+# ===========================================================================
+#
+# This configuration file runs the lines of selection as Tcl code.
+#
+# This runs transpops.tcl to test the selected transpops message.
+
+Mode=4
+
+Command = %E %H/PG/github/transpops/transpops.tcl {%L}

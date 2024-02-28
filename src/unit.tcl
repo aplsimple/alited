@@ -69,11 +69,12 @@ proc unit::GetHeader {wtree ID {NC ""} {wtxt ""} {tip ""} {l1 0} {l2 0}} {
         return $tip  ;# returns a declaration only
       }
       # find first commented line, after the proc/method declaration
+      set isleafRE [IsLeafRegexp]
       for {} {$l1<$l2} {} {
         incr l1
         set line [string trim [$wtxt get $l1.0 $l1.end]]
         if {[string index $line end] ni [list \\ \{] && $line ni {{} # //} \
-        && ([IsLeafRegexp] || ![regexp $al(RE,proc) $line])} {
+        && ($isleafRE || ![regexp $al(RE,proc) $line])} {
           set line1 [string trimleft $line {#!;}]
           set line2 [string trimleft $line {/}]
           if {[string match #* $line] && [string trimleft $line1] ne {} && \
@@ -104,6 +105,18 @@ proc unit::BranchLines {ID} {
   set l1 [lindex $branch 0 4 0]
   set l2 [lindex $branch end 4 1]
   return [list $l1 $l2]
+}
+#_______________________
+
+proc unit::UnitHeaderMode {TID} {
+  # Gets modes for unit tree : do use RE for leaf headers and do not.
+  #   TID - tab's ID
+  # Returns 2 flags: "Use leaf's RE" and "Use proc/method declaration".
+
+  set isLeafRE [IsLeafRegexp]
+  set isProc [expr {!$isLeafRE && [alited::file::IsTcl [alited::bar::FileName $TID]]}]
+  set leafRE [LeafRegexp]
+  return [list $isLeafRE $isProc $leafRE]
 }
 #_______________________
 
@@ -145,9 +158,7 @@ proc unit::GetUnits {TID textcont} {
   set textcont [split $textcont \n]
   set llen [llength $textcont]
   lappend textcont ""  ;# to save a last unit to the retlist
-  set isLeaf [expr {$al(INI,LEAF) && $al(RE,leaf) ne {}}]
-  set isProc [expr {(!$al(INI,LEAF) || \
-    [alited::file::IsTcl [alited::bar::FileName $TID]]) && $al(RE,proc) ne {}}]
+  lassign [UnitHeaderMode $TID] isLeafRE isProc leafRE
   set i [set lev [set leaf [set icomleaf -1]]]
   foreach line $textcont {
     incr i
@@ -157,8 +168,8 @@ proc unit::GetUnits {TID textcont} {
       set leaf [set icomleaf 0]
       set lev [expr {max(0,[string length $cmn1]-1)}]
     } elseif { \
-    $isLeaf && [regexp $al(RE,leaf) $line -> t1 t2 t3 t4 t5 t6 t7] || \
-    $isProc && [regexp $al(RE,proc) $line -> t1 t2 t3 t4 t5 t6 t7]} {
+    $isProc && [regexp $al(RE,proc) $line -> t1 t2 t3 t4 t5 t6 t7] || \
+    $isLeafRE && [regexp $leafRE $line -> t1 t2 t3 t4 t5 t6 t7]} {
       set title $t1  ;# default title: just after found string
       foreach t {t7 t6 t5 t4 t3 t2} {
         if {[set _ [set $t]] ne ""} {
@@ -223,11 +234,49 @@ proc unit::SwitchUnits {} {
 }
 #_______________________
 
-proc unit::IsLeafRegexp {} {
-  # Checks for using "leaf's regexp" preference setting.
+proc unit::RecreateUnits {TID wtxt} {
+  # Recreates the internal tree of units.
+  #   TID - tab's ID
+  #   wtxt - text's path
 
   namespace upvar ::alited al al
-  expr {$al(RE,proc) eq {} && $al(INI,LEAF)}
+  set al(_unittree,$TID) [GetUnits $TID [$wtxt get 1.0 {end -1 char}]]
+}
+#_______________________
+
+proc unit::LeafRegexp {} {
+  # Gets "leaf's regexp" setting.
+
+  namespace upvar ::alited al al
+  if {$al(prjuseleafRE) && $al(prjleafRE) ne {}} {
+    return $al(prjleafRE)
+  }
+  return $al(RE,leaf)
+}
+#_______________________
+
+proc unit::IsLeafRegexp {} {
+  # Checks for using "leaf's regexp" setting.
+
+  namespace upvar ::alited al al
+  set al(prjuseleafRE) [string is true -strict $al(prjuseleafRE)]
+  if {$al(prjuseleafRE) && $al(prjleafRE) ne {}} {
+    set res 1
+  } else {
+    set res [expr {$al(RE,leaf) ne {} && $al(INI,LEAF)}]
+  }
+  return $res
+}
+#_______________________
+
+proc unit::UnitRegexp {} {
+  # Gets RE to check unit's beginning.
+
+  namespace upvar ::alited al al
+  if {[IsLeafRegexp]} {
+    return [LeafRegexp]
+  }
+  return $al(RE,proc2)
 }
 
 # ________________________ Templates _________________________ #

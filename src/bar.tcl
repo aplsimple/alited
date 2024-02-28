@@ -557,6 +557,7 @@ proc bar::ColorBar {} {
   set cs [$obPav csCurrent]
   if {$cs>-1} {
     lassign [$obPav csGet $cs] cfg2 cfg1 cbg2 cbg1 cfhh - - - - - - - - - - - - fgmark
+    # %t wildcard means "a tooltip on the list of files":
     BAR configure -fgmark $fgmark -comlist {::alited::bar::SelFile %ID "%t"}
   }
 }

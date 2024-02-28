@@ -96,6 +96,7 @@ namespace eval ::alited {
     {Switch to Unit Tree} {Wechsel zu Einheitenbaum}
     {Switch to File Tree} {Wechsel zu Dateibaum}
     {Create File} {Datei erzeugen}
+    {Create File...} {Datei erzeugen...}
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Einen Namen eingeben für eine Datei, die erzeugt wird in:\n%d\n\nWenn es ein Verzeichnis ist, wähle 'Verzeichnis'-Box aus. Das Verzeichnis kann Unterverzeichnisse enthalten (a/b/c)."
     {Delete File} {Datei löschen}
     "\nFile \"%f\" already exists in\n%d\n" "\nDatei \"%f\" existinert schon in\n%d\n"
@@ -163,6 +164,10 @@ namespace eval ::alited {
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Datei \"%f\" wurde durch eine Applikation gelöscht.\n\nDatei speichern?"
     {Tip File Info} {Tip-Datei Info}
     {Rename File} {Datei umbenennen}
+    {Rename File...} {Datei umbenennen...}
+    {Clone File} {Datei klonen}
+    {Clone File...} {Datei klonen...}
+    {Clone...} {Klonen...}
     {Select one file in the tree.} {Wähle eine Datei im Baum.}
     {Open Selected Files} {Öffne ausgewählte Dateien}
     {Close Selected Files} {Schliesse ausgewählte Dateien}
@@ -174,7 +179,6 @@ namespace eval ::alited {
     {Template:} {Vorlage:}
     {Templates} {Vorlagen}
     {Templates...} {Vorlagen...}
-    {List of Templates} {Liste der Vorlagen}
     {Current template:} {Aktuell Vorlage:}
     {New template:} {Neue Vorlage:}
     {Hot keys} {Hotkey}
@@ -350,7 +354,7 @@ namespace eval ::alited {
     {All in Session} {Alle in Sitzung}
     {All in %n Files} {Alle in %n Dateien}
     "Allows to use *, ?, \[ and \]\nin \"find\" string." "Erlaubt die Verwendung von *, ?, \[ und \]\n  im Suchstring."
-    "Allows to use the regular expressions\nin \"find\" string." "Erlaubt die Verwendung von regulären Ausdrücken\n  im Suchstring."
+    "Allows to use the regular expressions\nin \"find\" string." "Erlaubt die Verwendung von RE\n  im Suchstring."
     "Allows replacements by the empty string,\nin fact, to erase the found ones." "Erlaubt das Ersetzen durch eine leere Zeichenkette,\num faktisch die Funde zu löschen."
     "Keeps the dialogue above other windows." "Behält Dialoge oberhalb anderer Fenster."
     "Found %n matches for \"%s\"." "%n Treffer gefunden für \"%s\"."
@@ -536,12 +540,12 @@ namespace eval ::alited {
 
   ### ________________________ Units _________________________ ###
   ::msgcat::mcmset de {
-    {Branch's regexp:} {Regulärere Ausdruck für Zweige:}
-    {Proc's regexp:} {Regulärere Ausdruck für Prozeduren:}
-    {Check branch's regexp:} {Prüfe regulären Ausdrück für Zweige:}
-    {Check proc's regexp:} {Prüfe regulären Ausdrück für Prozeduren:}
-    {Use leaf's regexp:} {Benutze regulären Ausdruck für Endpunkte:}
-    {Leaf's regexp:} {Regulärere Ausdruck für Endpunkte:}
+    {Branch's regexp:} {RE für Zweige:}
+    {Proc's regexp:} {RE für Prozeduren:}
+    {Check branch's regexp:} {Prüfe RE für Zweige:}
+    {Check proc's regexp:} {Prüfe RE für Prozeduren:}
+    {Use leaf's regexp:} {Benutze RE für Endpunkte:}
+    {Leaf's regexp:} {RE für Endpunkte:}
     {Untouched top lines:} {Unveränderte obere Zeilen:}
     {For leaf units only!} {Nur für Endpunkten!}
   }
@@ -673,6 +677,44 @@ namespace eval ::alited {
     {Copy} {Kopieren}
     {Paste} {Einfügen}
     {Move the cursor to select a rectangle.} {Bewegen Sie den Cursor, um ein Rechteck auszuwählen.}
+  }
+
+  ## ________________________ Formats _________________________ ##
+
+  ::msgcat::mcmset de {
+    {Formats} {Formate}
+    {Moving Unit Descriptions} {Einheitebeschreibungen verschieben}
+    {Moving Unit Descriptions...} {Einheitebeschreibungen verschieben...}
+    {Move Unit Descriptions} {Einheitebeschreibungen verschieben}
+    {Selected} {Ausgewählt}
+    {All open} {Alle offenen}
+    {Move proc/method descriptions:} {Verschieben proc/method Beschreibungen:}
+    {From inside to out} {Von innen nach außen}
+    {From out to inside} {Von außen nach innen}
+    {Separator:} {Separator:}
+    {Process .tcl file(s):} {Bearbeiten .tcl Datei(en):}
+    " Current leaf's RE\n\n   <r>%r1</r>\n\n is not equal to standard\n\n   <r>%r2</r>\n\n as set in Projects/Options and Preferences/Units."
+    " Aktuel Endpunktes RE\n\n   <r>%r1</r>\n\n ist nicht gleich standard\n\n   <r>%r2</r>\n\n wie gesetzt in Projekte/Optionen und Einstellungen/Einheiten."
+    "The separator doesn't match to the regexp:\n\n  "
+    "Der Separator passt nicht dazu RE:\n\n  "
+    {Separator must contain "n" or "N" for unit name!}
+    {Separator muss "n" oder "N" für Einheitsname enthalten!}
+    {The separator should be Tcl comment!} {Der Separator sollte Tcl Kommentar sein!}
+    {Were all files properly backed up?} {Waren alle Dateien richtig gesichert?}
+    "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
+    "PROJECTS OPTION \"Benutze RE für Endpunkte\" VORÜBERGEHEND UMGESCHALTET ZU "
+    {%f is not open yet - SKIPPED} {%f ist noch nicht geöffnet - WEGGELASSEN}
+    {Files processed successfully: %n} {Erfolgreich verarbeitete Dateien: %n}
+    {%f processed, units touched: %n} {%f bearbeitet, Einheiten berührt: %n}
+    {%f processed, units touched: %n - ALREADY PROCESSED?}
+    {%f bearbeitet, Einheiten berührt: %n - BEREITS VERARBEITET?}
+    {ERROR} {FEHLER}
+    {Strings} {Zeichenketten}
+    {Keyboard} {Schlüsselanhänger}
+    {Sorting lines} {Sortieren der Zeilen}
+    {Applied to one selection only!} {Nur auf eine Auswahl angewendet!}
+    "Incorrect mapped 'from-to' in: %l" "Inkorrekt kartiert 'von-zu' in: %l"
+    "'from' refers to previous 'to' in: %l (see: %n)" "'von' bezieht sich auf vorherige 'zu' in: %l (siehe: %n)"
   }
 
   ## ________________________ EONS alited _________________________ ##

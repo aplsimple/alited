@@ -100,6 +100,7 @@ namespace eval ::alited {
     {Switch to Unit Tree} {Перейти на список юнітів}
     {Switch to File Tree} {Перейти на список файлів}
     {Create File} {Створити файл}
+    {Create File...} {Створити файл...}
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Введіть ім'я файлу, створюваного в:\n%d\n\nЯкщо це каталог, включіть опцію 'Каталог'.\nКаталог може включати підкаталоги (a/b/c)."
     {Delete File} {Видалити файл}
     "\nFile \"%f\" already exists in\n%d\n" "\nФайл \"%f\" вже існує в\n%d\n"
@@ -167,6 +168,10 @@ namespace eval ::alited {
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" був видалений іншою програмою.\n\nЗберігти файл?"
     {Tip File Info} {Дані про файли}
     {Rename File} {Перейменувати файл}
+    {Rename File...} {Перейменувати файл...}
+    {Clone File} {Клонувати файл}
+    {Clone File...} {Клонувати файл...}
+    {Clone...} {Клонувати...}
     {Select one file in the tree.} {Виберіть один файл у списку.}
     {Open Selected Files} {Відкрити виділені файли}
     {Close Selected Files} {Закрити виділені файли}
@@ -178,7 +183,6 @@ namespace eval ::alited {
     {Template:} {Шаблон:}
     {Templates} {Шаблони}
     {Templates...} {Шаблони...}
-    {List of Templates} {Список шаблонів}
     {Current template:} {Поточний шаблон:}
     {New template:} {Новий шаблон:}
     {Hot keys} {Клявіши}
@@ -676,6 +680,44 @@ namespace eval ::alited {
     {Copy} {Копіювати}
     {Paste} {Вставити}
     {Move the cursor to select a rectangle.} {Рухайте курсор для виділення прямокутника.}
+  }
+
+  ## ________________________ Formats _________________________ ##
+
+  ::msgcat::mcmset uk {
+    {Formats} {Формати}
+    {Moving Unit Descriptions} {Перенесення описів юнитів}
+    {Moving Unit Descriptions...} {Перенесення описів юнитів...}
+    {Move Unit Descriptions} {Перенести описи юнитів}
+    {Selected} {Виділені}
+    {All open} {Всі відкриті}
+    {Move proc/method descriptions:} {Перенести описи proc/method:}
+    {From inside to out} {Внутрішні у зовнішні}
+    {From out to inside} {Зовнішні у внутрішні}
+    {Separator:} {Сепаратор:}
+    {Process .tcl file(s):} {Обробити .tcl файл(и):}
+    " Current leaf's RE\n\n   <r>%r1</r>\n\n is not equal to standard\n\n   <r>%r2</r>\n\n as set in Projects/Options and Preferences/Units."
+    " Поточний RE юніта\n\n   <r>%r1</r>\n\n не рівен стандартному\n\n   <r>%r2</r>\n\n згідно з настройками\n Проекти/Опції та Настройки/Опції."
+    "The separator doesn't match to the regexp:\n\n  "
+    "Сепаратор не відповідає регулярному виразу:\n\n  "
+    {Separator must contain "n" or "N" for unit name!}
+    {Сепаратор повинен включати "n" або "N" для назви юніта!}
+    {The separator should be Tcl comment!} {Сепаратор повинен бути коментарем Tcl!}
+    {Were all files properly backed up?} {Всі файли архівовані?}
+    "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
+    "ОПЦІЯ ПРОЕКТУ \"Використовувати RE листа\" терміново переключена у "
+    {%f is not open yet - SKIPPED} {%f ще не відкрит - ПРОПУЩЕНИЙ}
+    {Files processed successfully: %n} {Успішно оброблено файлів: %n}
+    {%f processed, units touched: %n} {%f оброблений, зачеплено юнітів: %n}
+    {%f processed, units touched: %n - ALREADY PROCESSED?}
+    {%f оброблений, зачеплено юнітів: %n - ВЖЕ ОБРОБЛЕНИЙ?}
+    {ERROR} {ПОМИЛКА}
+    {Strings} {Стрічки}
+    {Keyboard} {Клавіатура}
+    {Sorting lines} {Сортування рядків}
+    {Applied to one selection only!} {Припустиме тільки одне виділення!}
+    "Incorrect mapped 'from-to' in: %l" "Некоректне відображення 'з-на' у: %l"
+    "'from' refers to previous 'to' in: %l (see: %n)" "'з' посилається на попереднє 'на' у: %l (див.: %n)"
   }
 
   ## ________________________ EONS alited _________________________ ##

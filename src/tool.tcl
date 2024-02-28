@@ -68,8 +68,10 @@ proc tool::ColorPicker {} {
     catch {source [SrcPath [file join $PAVEDIR pickers color aloupe aloupe.tcl]]}
   }
   if {![string is boolean -strict $al(moveall)]} {set al(moveall) 0}
+  lassign [alited::complete::TextCursorCoordinates] X Y
+  incr Y 10
   set res [::apave::obj chooser colorChooser ::alited::al(chosencolor) \
-    -moveall $al(moveall) -parent $al(WIN) -geometry pointer+10+10 -inifile [aloupePath]]
+    -moveall $al(moveall) -parent $al(WIN) -geometry +$X+$Y -inifile [aloupePath]]
   catch {lassign [::tk::dialog::color::GetOptions] al(moveall)}
   if {$res ne {}} {
     set al(chosencolor) $res
@@ -99,8 +101,10 @@ proc tool::DatePicker {} {
   } elseif {![info exists al(klnddate)]} {
     set al(klnddate) [FormatDate]
   }
+  lassign [alited::complete::TextCursorCoordinates] X Y
+  incr Y 10
   set res [::apave::obj chooser dateChooser ::alited::al(klnddate) \
-    -parent $al(WIN) -geometry pointer+10+10 -dateformat $al(TPL,%d)]
+    -parent $al(WIN) -geometry +$X+$Y -dateformat $al(TPL,%d)]
   if {$res ne {}} {
     set al(klnddate) $res
     InsertInText $res
@@ -207,6 +211,30 @@ proc tool::TooltipRun {} {
     set res $al(comForce)\n[lindex [split $res \n] 1]
   }
   append res [AddTooltipRun]
+}
+#_______________________
+
+proc tool::Translate {from to what} {
+  # Translates 'what' from a language to a language.
+  #   from - source language code
+  #   to - destination language code
+  #   what - what to translate
+
+  namespace upvar ::alited al al LIBDIR LIBDIR
+  if {[info command ::alited::hl_trans::translateLine] eq {}} {
+    namespace eval ::alited {
+      source [file join $LIBDIR addon hl_trans.tcl]
+    }
+  }
+  alited::MessageNotDisturb
+  lassign [alited::hl_trans::TranslateText $what $from $to] ok translation
+  ::baltip hide
+  if {$ok} {
+    set what $translation
+  } else {
+    alited::Message $translation 4
+  }
+  return $what
 }
 
 # ________________________ emenu support _________________________ #
@@ -706,7 +734,7 @@ proc tool::e_menu {args} {
     append args { AL=1}  ;# to read a current file only at "Run me"
   }
   set wtxt [alited::main::CurrentWTXT]
-  lassign [::hl_tcl::hl_colors $wtxt] - - clrSTR clrVAR clrCMN clrPROC
+  lassign [::hl_tcl::hl_colors .] - - clrSTR clrVAR clrCMN clrPROC
   if {$clrSTR eq {lightgreen}} {set clrSTR #90ee90}
   if {![string match #* $clrSTR]} {set clrSTR $clrVAR}
   if {[string match #* $clrSTR]} {
@@ -817,11 +845,11 @@ proc tool::_run {{what ""} {runmode ""} args} {
   set opts "EX=$what"
   if {$what eq {}} {
     set doit [::apave::extractOptions args -doit 0]
-    lassign [alited::ExtTrans] ext istrans from to
-    if {!$doit && $istrans} {
-      alited::hl_trans::translateLine $from $to
-      return
-    }
+#!    lassign [alited::ExtTrans] ext istrans from to
+#!    if #\{!$doit && $istrans#\} #\{
+#!      alited::hl_trans::translateLine $from $to
+#!      return
+#!    #\}
     if {!$::alited::DEBUG} {
       if {$al(EM,exec)} {
         set fpid [alited::TmpFile .pid~]

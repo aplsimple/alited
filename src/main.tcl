@@ -660,6 +660,15 @@ proc main::CalcIndentation {{wtxt ""} {doit no}} {
 }
 #_______________________
 
+proc main::CalcPad {{wtxt ""}} {
+  # Calculates the indenting pad for the edited text.
+  #   wtxt - text's path
+
+  lassign [CalcIndentation $wtxt] pad padchar
+  return [string repeat $padchar $pad]
+}
+#_______________________
+
 proc main::UpdateProjectInfo {{indent {}}} {
   # Displays a project settings in the status bar.
   #   indent - indentation calculated for a text
@@ -867,6 +876,7 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra1.BtTAddT - - - - {pack -side left -fill x} {-image alimg_add -com alited::tree::AddItem}}
     {.fraBot.panBM.fraTree.fra1.BtTRenT - - - - {pack forget -side left -fill x} {-image alimg_change -tip "$al(MC,renamefile)\nF2" -com {::alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
     {.fraBot.panBM.fraTree.fra1.BtTDelT - - - - {pack -side left -fill x} {-image alimg_delete -com alited::tree::DelItem}}
+    {.fraBot.panBM.fraTree.fra1.BtTCloT - - - - {pack forget -side left -fill x} {-image alimg_copy -com alited::file::CloneFile -tip "$al(MC,clonefile)"}}
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraBot.panBM.fraTree.fra1.btTCtr - - - - {pack -side left -fill x} {-image alimg_minus -com {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}
     {.fraBot.panBM.fraTree.fra1.btTExp - - - - {pack -side left -fill x} {-image alimg_plus -com {alited::tree::ExpandContractTree Tree} -tip "Expand All"}}
@@ -964,12 +974,13 @@ proc main::_run {} {
   # Runs the alited, displaying its main form with attributes
   # 'modal', 'not closed by Esc', 'decorated with Contract/Expand buttons',
   # 'minimal sizes' and 'saved geometry'.
-  #
   # After closing the alited, saves its settings (geometry etc.).
+  # See also: menu::TearoffCascadeMenu
 
   namespace upvar ::alited al al obPav obPav
   ::apave::setAppIcon $al(WIN) $::alited::img::_AL_IMG(ale)
   after 1000 {alited::ini::CheckUpdates no}
+  after 2000 [list wm iconphoto $al(WIN) -default [::apave::getAppIcon]]
   set ans [$obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
     -onclose alited::Exit {*}$al(GEOM) -resizable 1 -ontop no]
   # ans==2 means 'no saves of settings' (imaginary mode)

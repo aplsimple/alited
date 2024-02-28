@@ -8,6 +8,7 @@
 
 namespace eval menu {
   variable tint; array set tint [list]
+  variable inctint 5
 }
 
 # ________________________ procs _________________________ #
@@ -26,19 +27,49 @@ proc menu::CheckMenuItems {} {
 
   namespace upvar ::alited al al
   set TID [alited::bar::CurrentTabID]
-  foreach idx {10 11 12} {
+  foreach idx {11 12 13} {
     if {[alited::bar::BAR isTab $TID]} {
       set dsbl [alited::bar::BAR checkDisabledMenu $al(BID) $TID [incr item]]
     } else {
       set dsbl yes
     }
     if {$dsbl} {
-      set state "-state disabled"
+      set state {-state disabled}
     } else {
-      set state "-state normal"
+      set state {-state normal}
     }
     $al(MENUFILE) entryconfigure $idx {*}$state
   }
+  if {[alited::file::IsNoName [alited::bar::FileName]]} {
+    set state {-state disabled}
+  } else {
+    set state {-state normal}
+  }
+  $al(MENUFILE) entryconfigure 2 {*}$state
+}
+#_______________________
+
+proc menu::TintRange {} {
+  # Gets the range for tints, counting the current one as the middle point.
+
+  namespace upvar ::alited al al
+  variable inctint
+  set MT 50
+  set mt 30
+  for {set i $MT} {$i>=-$MT} {incr i -$inctint} {
+    set tint($i) [alited::IsRoundInt $::apave::_CS_(HUE) $i]
+    if {[alited::IsRoundInt $al(INI,HUE) $i]} {
+      if {$i>0} {
+        set max [expr {min($i+$mt,$MT)}]
+        set min [expr {max(min($max-2*$mt,0),-$MT)}]
+      } else {
+        set min [expr {max($i-$mt,-$MT)}]
+        set max [expr {min(max($min+2*$mt,0),$MT)}]
+      }
+      return [list $max $min]
+    }
+  }
+  return [list $mt -$mt]
 }
 #_______________________
 
@@ -46,8 +77,9 @@ proc menu::CheckTint {{doit no}} {
   # Sets a check in menu "Tint" according to the current tint.
   #   doit - "yes" at restarting this procedure after a pause
 
-  namespace upvar ::alited al al obPav obPav
+  namespace upvar ::alited al al
   variable tint
+  variable inctint
   if {!$doit} {
     # we can postpone updating the Tint menu
     after idle {after 500 {alited::menu::CheckTint yes}}
@@ -56,7 +88,8 @@ proc menu::CheckTint {{doit no}} {
   set fg1 [lindex [alited::FgFgBold] 1]
   set fg2 [$al(SETUP) entrycget 0 -foreground]
   set ti 0
-  for {set i 50} {$i>=-50} {incr i -5} {
+  lassign [TintRange] max min
+  for {set i $max} {$i>=$min} {incr i -$inctint} {
     set tint($i) [alited::IsRoundInt $::apave::_CS_(HUE) $i]
     if {[alited::IsRoundInt $al(INI,HUE) $i]} {
       set fg $fg1
@@ -80,6 +113,18 @@ proc menu::SetTint {tint} {
   alited::bar::BAR update
   CheckTint
   alited::ini::initStyles
+  # the infobar listbox needs colorizing by force
+  set fg [ttk::style configure TLabel -foreground]
+  set bg [ttk::style configure TLabel -background]
+  set bs [lindex [$obPav csGet] 5]
+  [$obPav LbxInfo] configure -foreground $fg -background $bg -selectbackground $bs
+  # Find/Replace dialogue may be open at start (and presently) - update it too
+  if {[winfo exists $::alited::find::win]} {
+    alited::find::CloseFind
+    alited::find::_run
+  }
+  set TID [alited::bar::CurrentTabID]
+  after 500 "alited::bar::OnTabSelection $TID"
 }
 #_______________________
 
@@ -200,14 +245,126 @@ proc menu::Paver {mode} {
     3 ::alited::paver::Help
   }
 }
+#_______________________
+
+proc menu::FillFormatItems {mnu {dir ""} {lev 0} {mnuID 0}} {
+  # Fills Edit/Format submenu with items taken from "alited/data/format" directory.
+  #   mnu - submenu's path
+  #   dir - directory name
+  #   lev - current level of subdirectory
+  #   mnuID - menu's ID
+
+  namespace upvar ::alited al al
+  if {$dir eq {}} {
+    set dir [file join $::alited::DATADIR format]
+  }
+  set fnames [glob -nocomplain -directory $dir *]
+  foreach fn [lsort -dictionary $fnames] {
+    set it [string range [file tail $fn] 4 end] ;# first 4 chars for sorting
+    set it [string map [list _ { }] $it]
+    if {[file isdirectory $fn]} {
+      if {$lev<3} {  ;# prohibit too deep diving
+        set subm [MenuCascade $mnu m[incr mnuID] $it]
+        alited::menu::FillFormatItems $subm $fn [expr {$lev+1}] $mnuID
+      }
+    } elseif {$it eq {}} {
+      $mnu add separator
+    } else {
+      if {[incr idx] % 25} {set cbr {}} {set cbr {-columnbreak 1}}
+      $mnu add command -label $it -command [list alited::edit::RunFormat $fn] {*}$cbr
+    }
+  }
+  if {!$lev} {
+    $mnu add separator
+    $mnu add command -label $al(MC,open...) -command [list alited::edit::OpenFormatFile $dir]
+  }
+}
+
+## ________________________ Tear-off menus _________________________ ##
+
+proc menu::MenuCascade {mnu mnuName mnuTitle {subTitle ""}} {
+  # Creates a cascade submenu, saving its title (for saved/restored submenus).
+  #   mnu - parent menu's path
+  #   mnuName - submenu name
+  #   mnuTitle - parent's title
+  #   subTitle - submenu's title
+  # See also: SaveCascadeMenuGeo
+
+  set mnuPath $mnu.$mnuName
+  set mnuTitle [msgcat::mc $mnuTitle]
+  if {$subTitle eq {}} {
+    set subTitle $mnuTitle
+  } else {
+    set subTitle [msgcat::mc $subTitle]
+  }
+  set submnu [menu $mnuPath -tearoff 1 -title $subTitle]
+  $mnu add cascade -label $mnuTitle -menu $submnu
+  set ::alited::al(MNUMEM,$mnuName) [list $submnu $subTitle]
+  return $mnuPath
+}
+#_______________________
+
+proc menu::SaveCascadeMenuGeo {} {
+  # Saves the geometry of tear-off menus.
+  # See also: MenuCascade, RestoreCascadeMenu
+
+  namespace upvar ::alited al al
+  # clear all geometry data of menus
+  foreach n [array names al -glob MNUGEO,*] {unset al($n)}
+  # set the currently existing tearoff menus' geometry data
+  foreach w [winfo children $al(WIN)] {
+    # only tearoff menus counted:
+    if {[regexp {\.tearoff\d+$} $w]} {
+      set mtitle [wm title $w]
+      # find the tearoff menu among those registered by MenuCascade
+      foreach mMem [array names al -glob MNUMEM,*] {
+        lassign $al($mMem) mnuPath mnuTitle
+        if {$mtitle eq $mnuTitle} {
+          set mgeo MNUGEO,$mnuPath
+          set al($mgeo) [list $mnuPath [wm geometry $w]]
+          break
+        }
+      }
+    }
+  }
+}
+#_______________________
+
+proc menu::RestoreCascadeMenu {} {
+  # Restores cascade menus at starting alited.
+
+  namespace upvar ::alited al al
+  foreach mn [array names al -glob MNUGEO,*] {
+    lassign $al($mn) mnu mnugeo
+    if {[winfo exists $mnu]} {
+      incr itearoff
+      set mtearoff $al(WIN).tearoff$itearoff
+      after 1000 [list alited::menu::TearoffCascadeMenu $mnu $mtearoff $mnugeo]
+    }
+  }
+}
+#_______________________
+
+proc menu::TearoffCascadeMenu {mnu mtearoff mnugeo} {
+  # Tear off a cascade menus at starting alited.
+  #   mnu - menu's path
+  #   mtearoff - tearoff menu's path
+  #   mnugeo - geometry of menu
+
+  $mnu invoke 0
+  catch {
+    wm geometry $mtearoff $mnugeo
+    if {[::isunix]} {wm iconphoto $mtearoff -default alimg_none}
+  }
+}
 
 # ________________________ Fill Menu _________________________ #
 
 proc menu::FillMenu {} {
   # Populates alited's main menu.
 
+  variable inctint
   # alited_checked
-
   ::apave::msgcatDialogs
 
   namespace upvar ::alited al al DATADIR DATADIR DIR DIR
@@ -218,6 +375,7 @@ proc menu::FillMenu {} {
   set m [set al(MENUFILE) $al(WIN).menu.file]
   $m add command -label $al(MC,new) -command alited::file::NewFile -accelerator Ctrl+N
   $m add command -label $al(MC,open...) -command alited::file::OpenFile -accelerator Ctrl+O
+  $m add command -label [msgcat::mc Clone...] -command {alited::file::CloneFile no no}
   menu $m.recentfiles -tearoff 1
   $m add cascade -label [msgcat::mc {Recent Files}] -menu $m.recentfiles
   $m add separator
@@ -267,6 +425,9 @@ proc menu::FillMenu {} {
   $m add command -label $al(MC,unindent) -command alited::edit::UnIndent -accelerator $al(acc_7)
   $m add command -label $al(MC,corrindent) -command alited::edit::NormIndent
   $m add separator
+
+  ### ________________________ Comments _________________________ ###
+
   set ttl [msgcat::mc Comments]
   menu $m.comment -tearoff 1 -title $ttl
   $m add cascade -label $ttl -menu $m.comment
@@ -276,16 +437,20 @@ proc menu::FillMenu {} {
   $m.comment add radiobutton -variable ::alited::al(commentmode) -value 0 -label TODO
   $m.comment add radiobutton -variable ::alited::al(commentmode) -value 1 -label Classic
   $m.comment add radiobutton -variable ::alited::al(commentmode) -value 2 -label Sticky
+
+  ### ________________________ Formats _________________________ ###
+
+  MenuCascade $m format [msgcat::mc Formats]
+  FillFormatItems $m.format
   $m add separator
+
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)
   $m add command -label [msgcat::mc {Remove Trailing Whitespaces}] -command alited::edit::RemoveTrailWhites
   $m add separator
 
   ### ________________________ Rectangular Selection _________________________ ###
 
-  set ttl [msgcat::mc {Rectangular Selection}]
-  menu $m.rectsel -tearoff 1 -title $ttl
-  $m add cascade -label $ttl -menu $m.rectsel
+  MenuCascade $m rectsel [msgcat::mc {Rectangular Selection}]
   $m.rectsel add checkbutton -label [msgcat::mc Start] -command {alited::edit::RectSelection 0} -variable ::alited::al(rectSel) -compound left -image alimg_run
   $m.rectsel add separator
   $m.rectsel add command -label [msgcat::mc Cut] -command {alited::edit::RectSelection 2}
@@ -294,15 +459,13 @@ proc menu::FillMenu {} {
 
   ### ________________________ Color Values _________________________ ###
 
-  menu $m.hlcolors -tearoff 1 -title [msgcat::mc Colors]
-  $m add cascade -label [msgcat::mc {Color Values #hhhhhh}] -menu $m.hlcolors
+  MenuCascade $m hlcolors [msgcat::mc {Color Values #hhhhhh}] [msgcat::mc Colors]
   $m.hlcolors add command -label $al(MC,hlcolors) -command alited::edit::ShowColorValues
   $m.hlcolors add command -label [msgcat::mc {Hide Colors}] -command alited::edit::HideColorValues
 
   ### ________________________ Macro _________________________ ###
 
-  menu $m.playtkl -tearoff 1
-  $m add cascade -label $::alited::al(MC,playtkl) -menu $m.playtkl
+  MenuCascade $m playtkl $::alited::al(MC,playtkl)
   FillMacroItems
 
   ## ________________________ Search _________________________ ##
@@ -364,8 +527,8 @@ proc menu::FillMenu {} {
   ### ________________________ Paver _________________________ ###
 
   $m add separator
-  menu $m.paver -tearoff 1
-  $m add cascade -label Paver -menu $m.paver
+  MenuCascade $m paver Paver
+
   $m.paver add command -label {Paver} -command {alited::menu::Paver 0}
   $m.paver add separator
   $m.paver add checkbutton -label [msgcat::mc {Auto Update}] \
@@ -404,21 +567,22 @@ proc menu::FillMenu {} {
   $m.tipson add checkbutton -label [msgcat::mc Units] -variable ::alited::al(TIPS,Tree) -command alited::ini::SaveIni
   $m.tipson add checkbutton -label $al(MC,favorites) -variable ::alited::al(TIPS,TreeFavor) -command alited::ini::SaveIni
 
-  menu $m.tint -tearoff 1
-  $m add cascade -label [msgcat::mc Tint] -menu $m.tint
-  for {set ti 50} {$ti>=-50} {incr ti -5} {
+  MenuCascade $m tint [msgcat::mc Tint]
+  lassign [TintRange] max min
+  for {set ti $max} {$ti>=$min} {incr ti -$inctint} {
     set ti1 [string range "   $ti" end-2 end]
     if {$ti<0} {
       set ti2 "[msgcat::mc Darker:] $ti1"
     } elseif {$ti>0} {
       set ti2 "[msgcat::mc Lighter:]$ti1"
     } else {
-      set ti3 [::apave::obj csGetName $al(INI,CS)]
-      set ti2 CS\ #[string trim $ti3]
+      set ti2 CS\ #$al(INI,CS)
     }
     $m.tint add checkbutton -label $ti2 -command "alited::menu::SetTint $ti" -variable alited::menu::tint($ti)
   }
   CheckTint
+  $m add separator
+  $m add command -label $al(MC,formatdesc...) -command alited::edit::FormatUnitDesc
   $m add separator
 
   $m add command -label [msgcat::mc {For Start...}] -command alited::tool::AfterStartDlg
@@ -456,6 +620,7 @@ proc menu::FillMenu {} {
   $m add separator
   $m add command -label [msgcat::mc "About..."] -command alited::HelpAbout
   alited::file::FillRecent
+  RestoreCascadeMenu
 }
 #_______________________
 
@@ -494,6 +659,7 @@ proc menu::HelpFiles {} {
     favor_ls.txt {Setup\Favorites Lists...} \
     tool1.txt {Setup\For Start...} \
     ini.txt {Setup\Configurations...} \
+    format1.txt {Setup\Moving Unit Descriptions...} \
     - - \
     alited-trans.txt Translation \
   ]

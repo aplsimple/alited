@@ -57,7 +57,17 @@ proc favor_ls::Ok {{res 0}} {
       return
     }
     set pla [lindex $favpla $isel]
-    set cont [lindex $favcont $isel]
+    if {$res!=4} {
+      # list of fav.units
+      set cont [lindex $favcont $isel]
+    } else {
+      # list of files of fav.units
+      if {$::alited::al(FAV,IsFavor)} {
+        set cont [ComposeText no]
+      } else {
+        set cont [Text]
+      }
+    }
     set res [list [incr pla $res] [Split $cont]]
   }
   Save_favlist
@@ -90,28 +100,71 @@ proc favor_ls::HelpMe {args} {
   variable win
   alited::HelpMe $win
 }
+#_______________________
+
+proc favor_ls::DoubleClick {} {
+  # Handles double clicking on the list:
+  # in "Favorites" mode, invokes "Select" button, otherwise "Open...".
+
+  namespace upvar ::alited al al
+  variable obFav
+  if {$al(FAV,IsFavor)} {set but ButOK} {set but ButOpenFile}
+  [$obFav $but] invoke
+}
+
 # _______________________ List events handlers _______________________ #
 
-proc favor_ls::GetCurrentList {args} {
-  # Gets a current list of favorites from alited's main form.
+proc favor_ls::Text {} {
+  # Gets the text widget's content.
+
+  variable obFav
+  return [[$obFav TexFav] get 1.0 {end -1 char}]
+}
+#_______________________
+
+proc favor_ls::ComposeText {isfavor args} {
+  # Composes a current text of favorites or files of favorites.
+  #   isfavor - "yes" to get favorites, "no" to get files of favorites
   #   args - a list of favorites
   # If args is omitted, the current favorites tree's contents will be the list.
 
-  variable obFav
   variable currents
   set text [set currents {}]
+  set prevnames [list]
   if {![llength $args]} {set args [alited::tree::GetTree {} TreeFavor]}
   foreach it $args {
     if {$text ne {}} {
       append text \n
       append currents $::alited::EOL
     }
-    append text [lindex $it 4 0]
+    if {$isfavor} {
+      append text [lindex $it 4 0]
+    } else {
+      set fname [lindex $it 4 1]
+      if {$fname ni $prevnames} {lappend prevnames $fname}
+    }
     append currents $it
   }
+  if {!$isfavor} {
+    foreach fname [lsort $prevnames] {
+      if {$text ne {}} {append text \n}
+      append text $fname
+    }
+  }
+  return $text
+}
+#_______________________
+
+proc favor_ls::DisplayText {args} {
+  # Displays text of favorites or their files.
+  #   args - a list of favorites
+  # See also: ComposeText
+
+  namespace upvar ::alited al al
+  variable obFav
   set w [$obFav TexFav]
   $obFav readonlyWidget $w no
-  $obFav displayText $w $text
+  $obFav displayText $w [ComposeText $al(FAV,IsFavor) {*}$args]
   $obFav readonlyWidget $w yes
 }
 #_______________________
@@ -124,14 +177,6 @@ proc favor_ls::Selected {} {
     Message $::alited::al(MC,favsel) 4
   }
   return $isel
-}
-#_______________________
-
-proc favor_ls::Text {} {
-  # Gets a text with a list of favorites.
-
-  variable obFav
-  return [[$obFav TexFav] get 1.0 {end -1 char}]
 }
 #_______________________
 
@@ -148,11 +193,10 @@ proc favor_ls::Select {{isel ""}} {
   set lbx [$obFav LbxFav]
   if {$isel eq {}} {set isel [$lbx curselection]}
   if {$isel eq {} && [llength $favlist]} {set isel 0}
-  if {$isel ne {}} {
-    set fav [lindex $favlist $isel]
+  if {$isel ne {} && [set fav [lindex $favlist $isel]] ne {}} {
     set place [lindex $favpla $isel]
     set cont [Split [lindex $favcont $isel]]
-    GetCurrentList {*}$cont
+    DisplayText {*}$cont
     Focus $isel
   }
 }
@@ -352,49 +396,49 @@ proc favor_ls::_create {} {
   variable fav
   set tipson [baltip::cget -on]
   baltip::configure -on $al(TIPS,SavedFavorites)
+  if {$al(FAV,IsFavor)} {set forget {}} {set forget forget}
   ::apave::APave create $obFav $win
   $obFav makeWindow $win $al(MC,FavLists)
   $obFav paveWindow $win {
-    {fraLbxFav - - 1 2 {-st nswe -rw 3 -pady 4} {}}
-    {.fra - - - - {pack -side right -fill both} {}}
+    {fraLbxFav - - 1 2 {-st nswe -rw 1 -pady 4} {}}
+    {.fra - - - - {pack $forget -side right -fill both} {}}
     {.fra.btTAd - - - - {pack -side top -anchor n} {-com ::alited::favor_ls::Add -tip "Add a list of favorites" -image alimg_add-big}}
     {.fra.btTChg - - - - {pack -side top} {-com ::alited::favor_ls::Change -tip "Change a list of favorites" -image alimg_change-big}}
     {.fra.btTDel - - - - {pack -side top} {-com ::alited::favor_ls::Delete -tip "Delete a list of favorites" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill y}}
-    {.fra.btTCur - - - - {pack -side top} {-com ::alited::favor_ls::GetCurrentList -tip "$al(MC,currfavs)" -image alimg_heart-big}}
+    {.fra.btTCur - - - - {pack $forget -side top} {-com ::alited::favor_ls::DisplayText -tip "$al(MC,currfavs)" -image alimg_heart-big}}
     {.LbxFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 40 -lvar ::alited::favor_ls::favlist}}
     {.sbvFavs + L - - {pack -side left -fill y} {}}
     {fra1 fraLbxFav T 1 2 {-st nswe}}
     {.h_ - - 1 1 {pack -side top -expand 1 -fill both -pady 10}}
     {fra1.fraEnt - - 1 1 {pack -side top -expand 1 -fill both -pady 4}}
-    {.labFav - - 1 1 {pack -side left -padx 4} {-t "$al(MC,currfavs):"}}
-    {.EntFav - - 1 1 {pack -side left -expand 1 -fill both} {-tvar ::alited::favor_ls::fav -tip {$al(MC,favent1)}}}
+    {.labFav - - 1 1 {pack $forget -side left -padx 4} {-t "$al(MC,currfavs):"}}
+    {.EntFav - - 1 1 {pack $forget -side left -expand 1 -fill both} {-tvar ::alited::favor_ls::fav -tip {$al(MC,favent1)}}}
     {fratex fra1 T 1 2 {-st nswe -rw 1 -cw 1}}
-    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 72 -tip "Favorites of the current list" -ro 1}}
+    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 72 -tip "Favorites of the current list" -ro 1 -wrap none}}
     {.sbvFav + L - - {pack -side left -fill y}}
     {fra2 fratex T 1 2 {-st nswe} {-padding {5 5 5 5} -relief groove}}
-    {.labBA - - - - {pack -side left} {-t "Non-favorite files to be:"}}
-    {.radA - - - - {pack -side left -padx 8}  {-t kept -var ::alited::favor_ls::place -value 1 -tip "Doesn't close any tab without favorites\nat choosing Favorites' list"}}
-    {.radB - - - - {pack -side left -padx 8}  {-t closed -var ::alited::favor_ls::place -value 2 -tip "Closes all tabs without favorites\nat choosing Favorites' list"}}
+    {.labBA - - - - {pack $forget -side left} {-t "Non-favorite files to be:"}}
+    {.radA - - - - {pack $forget -side left -padx 8}  {-t kept -var ::alited::favor_ls::place -value 1 -tip "Doesn't close any tab without favorites\nat choosing Favorites' list"}}
+    {.radB - - - - {pack $forget -side left -padx 8}  {-t closed -var ::alited::favor_ls::place -value 2 -tip "Closes all tabs without favorites\nat choosing Favorites' list"}}
     {LabMess fra2 T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 + T 1 2 {-st nswe}}
-    {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -command ::alited::favor_ls::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -com ::alited::favor_ls::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
-    {.butOK - - - - {pack -side left} {-t "$al(MC,select)" -command ::alited::favor_ls::Ok}}
-    {.butOpenFile - - - - {pack -side left -padx 2} {-t Open... -command {::alited::favor_ls::Ok 4} -tip {Opens files with current favorites.}}}
-    {.butUndo - - - - {pack -side left} {-t Back -command {::alited::favor_ls::Ok 3} -tip "Sets a list of Favorites\nthat was active initially."}}
-    {.butCancel - - - - {pack -side left -padx 2} {-t Cancel -command ::alited::favor_ls::Cancel}}
+    {.ButOK - - - - {pack $forget -side left} {-t "$al(MC,select)" -com ::alited::favor_ls::Ok}}
+    {.ButOpenFile - - - - {pack -side left -padx 2} {-t Open... -com {::alited::favor_ls::Ok 4} -tip {Opens files with current favorites.}}}
+    {.butUndo - - - - {pack $forget -side left} {-t Back -com {::alited::favor_ls::Ok 3} -tip "Sets a list of Favorites\nthat was active initially."}}
+    {.butCancel - - - - {pack -side left -padx 2} {-t Cancel -com ::alited::favor_ls::Cancel}}
   }
   set fav {}
   set lbx [$obFav LbxFav]
-  set wtxt [$obFav TexFav]
-  GetCurrentList
+  DisplayText
   Restore_favlist
+  if {!$al(FAV,IsFavor)} {after idle "alited::favor_ls::Select 0 ; focus $lbx"}
   bind $lbx <<ListboxSelect>> ::alited::favor_ls::Select
   bind $lbx <FocusIn> ::alited::favor_ls::Select
-  bind $lbx <Delete> ::alited::favor_ls::Delete
-  bind $lbx <Double-Button-1> ::alited::favor_ls::Ok
-  bind $lbx <Return> ::alited::favor_ls::Ok
+  bind $lbx <Double-Button-1> ::alited::favor_ls::DoubleClick
+  bind $lbx <Return> ::alited::favor_ls::DoubleClick
   bind $win <F1> "[$obFav ButHelp] invoke"
   after 500 ::alited::favor_ls::HelpMe ;# show an introduction after a short pause
   set geo {-resizable 1 -minsize {600 400}}

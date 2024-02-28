@@ -232,6 +232,7 @@ proc file::FileStat {fname} {
   # Gets a file's attributes: times & size.
   #   fname - file name
   # Returns a string with file name and attributes divided by \n.
+  # See also: bar::ColorBar
 
   set res {}
   array set ares {}
@@ -244,7 +245,7 @@ proc file::FileStat {fname} {
   \nAccessed: [clock format $ares(atime) -format $dtf]\
   \nSize: [FileSize $ares(size)]"
     } else {
-      set res \n\n[string map [list {: } :\n] $err]
+      set res \n\n[string map [list {: } :\n \" ''] $err]
     }
   }
   return [append fname $res]
@@ -376,6 +377,53 @@ proc file::AllSaved {} {
 }
 #_______________________
 
+proc file::TreeFilename {} {
+  # Fetches a file name selected in the file tree.
+  # Returns a list of tree path, name in tree, the file name, its ID in tree, its TID in tabbar.
+
+  namespace upvar ::alited obPav obPav
+  set wtree [$obPav Tree]
+  set ID [$wtree selection]
+  if {[llength $ID]!=1} {
+    alited::msg ok err [msgcat::mc {Select one file in the tree.}]
+    return {}
+  }
+  set name [$wtree item $ID -text]
+  set fname [lindex [$wtree item $ID -values] 1]
+  set TID [alited::bar::FileTID $fname]
+  return [list $wtree $name $fname $ID $TID]
+}
+#_______________________
+
+proc file::CommandForFile2 {comm fname fname2} {
+  # Execute a command for two files.
+  #   comm - the command
+  #   fname - 1st file name
+  #   fname2 - 2nd file name
+  # Returns yes, if success.
+
+  if {[catch {file $comm $fname $fname2} err]} {
+    alited::msg ok err $err -text 1 -w 60 -h {5 9}
+    return no
+  }
+  return yes
+}
+#_______________________
+
+proc file::SelectFileInTree {wtree fname ID} {
+  # Finds a file in file tree and selects it.
+  #   wtree - file tree's path
+  #   fname - file name
+  #   ID - ID of default item to select (if the file not found)
+
+  alited::tree::RecreateTree $wtree -
+  set ltree [alited::tree::GetTree]
+  set i [lsearch -exact -index {4 1} $ltree $fname]
+  if {$i>-1} {set ID [lindex $ltree $i 2]}
+  SelectInTree $wtree $ID
+}
+#_______________________
+
 proc file::RenameFile {TID fname {doshow yes}} {
   # Renames a file.
   #   TID - ID of tab
@@ -401,10 +449,7 @@ proc file::DoRenameFileInTree {wtree ID fname fname2} {
   #   fname2 - new file name (full)
 
   set fsplit [file split $fname]
-  if {[catch {file rename $fname $fname2} err]} {
-    alited::msg ok err $err -text 1 -w 40 -h {5 7}
-    return
-  }
+  if {![CommandForFile2 rename $fname $fname2]} return
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
     set fname1 [alited::bar::FileName $TID]
@@ -429,40 +474,19 @@ proc file::RenameFileInTree {{undermouse yes} args} {
   #   args - options for query
 
   namespace upvar ::alited al al obPav obPav obDl2 obDl2
-  set wtree [$obPav Tree]
-  set ID [$wtree selection]
-  if {[llength $ID]!=1} {
-    alited::msg ok err [msgcat::mc {Select one file in the tree.}]
-    return
-  }
-  set name [$wtree item $ID -text]
-  set fname [lindex [$wtree item $ID -values] 1]
-  set TID [alited::bar::FileTID $fname]
+  lassign [TreeFilename] wtree name fname ID TID
+  if {$fname eq {}} return
   if {$TID ne ""} {
     bell
     alited::msg ok warn [msgcat::mc {An open file can not be renamed:}]\n$fname
     return 0
   }
-  switch -exact -- $args {
-    {} {
-      set args [alited::favor::GeoForQuery $undermouse]
-    }
-    - {
-      set args {}
-    }
-  }
-  lassign [$obDl2 input {} $al(MC,renamefile) [list \
-    ent "{} {} {-w 32}" "{$name}"] \
-    -head [msgcat::mc {File name:}] {*}$args] res name2
+  lassign [InputFileName $al(MC,renamefile) $name $undermouse {*}$args] res name2
   set name2 [string trim $name2]
   if {$res && $name2 ne {} && $name2 ne $name} {
     set fname2 [file join [file dirname $fname] $name2]
     DoRenameFileInTree $wtree $ID $fname $fname2
-    alited::tree::RecreateTree $wtree -
-    set ltree [alited::tree::GetTree]
-    set i [lsearch -exact -index {4 1} $ltree $fname2]
-    if {$i>-1} {set ID [lindex $ltree $i 2]}
-    SelectInTree $wtree $ID
+    SelectFileInTree $wtree $fname2 $ID
   }
 }
 #_______________________
@@ -480,6 +504,84 @@ proc file::CheckForNew {{docheck no}} {
   } else {
     after idle {::alited::file::CheckForNew yes}
   }
+}
+#_______________________
+
+proc file::InputFileName {title name undermouse args} {
+  # Dialogue to input a file name.
+  #   title - title of the dialogue
+  #   name - current file name
+  #   undermouse - yes if open under the mouse pointer
+  #   args - options for query
+
+  namespace upvar ::alited obDl2 obDl2
+  switch -exact -- $args {
+    {} {
+      set args [alited::favor::GeoForQuery $undermouse]
+    }
+    - {
+      set args {}
+    }
+  }
+  lassign [$obDl2 input {} $title [list \
+    ent "{} {} {-w 32}" "{$name}"] \
+    -head [msgcat::mc {File name:}] {*}$args] res name
+  return [list $res $name]
+}
+#_______________________
+
+proc file::CloneFile {{undermouse yes} {fromtree yes}} {
+  # Clones a current file in a file tree.
+  #   undermouse - if yes, run by mouse click
+  #   fromtree - if yes, gets the file name from the file tree
+
+  namespace upvar ::alited al al
+  if {$fromtree} {
+    lassign [TreeFilename] - - fname
+    set ar {}
+  } else {
+    set fname [alited::bar::FileName]
+    set ar -
+  }
+  if {$fname eq {} || [alited::file::IsNoName $fname]} return
+  set fname2 [CloneFileName $fname]
+  set name [file tail $fname2]
+  lassign [InputFileName $al(MC,clonefile) $name $undermouse {*}$ar] res name2
+  if {$res && $name2 ne {}} {
+    set fname2 [file join [file dirname $fname2] $name2]
+    if {![CommandForFile2 copy $fname $fname2]} return
+    OpenFile $fname2
+    if {!$al(TREE,isunits)} RecreateFileTree
+  }
+}
+#_______________________
+
+proc file::CloneFileName {fname} {
+  # Gets a clone's name.
+  #   fname - file name
+  # Returns the clone's file name.
+
+  namespace upvar ::alited al al
+  set tailname [file tail $fname]
+  set ext [file extension $tailname]
+  set root [file rootname $tailname]
+  # remove possibly existing suffix from the filename
+  set suffix {_\d+$}
+  set suff [regexp -inline $suffix $root]
+  set i1 2
+  set i2 99
+  if {$suff ne {}} {
+    set root [string range $root 0 end-[string length $suff]]
+    # find a free number for the clone
+    for {set i $i1} {$i<=$i2} {incr i} {
+      set suff [string map [list {\d+} $i \$ {}] $suffix]
+      set fname2 [file join [file dirname $fname] $root$suff$ext]
+      if {![file exists $fname2]} break
+    }
+  } else {
+    set fname2 [file join [file dirname $fname] ${root}_$i1$ext]
+  }
+  return $fname2
 }
 
 # ________________________ "File" menu _________________________ #

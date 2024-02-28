@@ -28,7 +28,7 @@ package require Tk
 wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.3.9}
+  variable em_version {e_menu 4.3.10}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -1283,10 +1283,10 @@ proc ::em::shell_run {from typ c1 s1 amp {inpsel ""}} {
     return
   }
   # repeat input dialogues: set by ::em::NE in .em or by NE=1 argument of e_menu
-  set ::em::inputResult 0
+  set ::em::inputResult [set ::em::inputStay 0]
   while {1} {
     ::em::Shell_Run $from $typ $c1 $s1 $amp $inpsel
-    if {!$::em::inputResult || !$::em::NE} break
+    if {!$::em::inputStay && (!$::em::inputResult || !$::em::NE)} break
   }
 }
 

@@ -272,23 +272,23 @@ proc favor::OpenFiles {cont} {
 
   variable ansOpenFiles
   set fnames [list]
-  foreach curfav $cont {
-    catch {
-      lassign $curfav - - - - values
-      lassign $values -> fname
-      if {$fname ne {} && $fname ni $fnames} {
-        lappend fnames $fname
-      }
-    }
+  foreach fname $cont {
+    if {$fname ne {}} {lappend fnames $fname}
   }
   if {[set llen [llength $fnames]]} {
     if {$ansOpenFiles<10} {
       set msg [msgcat::mc {Number of files to open: %n}]
       set msg [string map [list %n $llen] $msg]
-      set ansOpenFiles [alited::msg okcancel warn $msg YES -ch $::alited::al(MC,noask)]
+      set ansOpenFiles [alited::msg okcancel warn $msg OK -ch $::alited::al(MC,noask)]
     }
     if {$ansOpenFiles} {
-      alited::file::OpenFile [lreverse $fnames] no yes
+      # try to show them all on the 1st page of tabbar
+      foreach fname [lreverse $fnames] {
+        if {[set TID [alited::file::OpenFile $fname]] ne {}} {
+          alited::bar::BAR moveTab $TID 0
+        }
+      }
+      alited::bar::BAR update
     }
   }
 }
@@ -309,7 +309,7 @@ proc favor::Lists {} {
 
   namespace upvar ::alited al al
   variable initialFavs
-  if {!$al(FAV,IsFavor)} SwitchFavVisit
+#!  if #\{!$al(FAV,IsFavor)#\} SwitchFavVisit
   if {![llength $initialFavs]} {
     set initialFavs [alited::tree::GetTree {} TreeFavor]
   }
@@ -350,7 +350,7 @@ proc favor::Show {} {
     SetFavorites $al(FAV,visited)
     $wtree heading #1 -text [msgcat::mc $al(MC,lastvisit)]
   }
-  [$obPav BtTListF] configure -state $state
+#!  [$obPav BtTListF] configure -state $state
   baltip::tip [$obPav BtTVisitF] $tip
 }
 #_______________________

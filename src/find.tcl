@@ -75,22 +75,13 @@ namespace eval find {
 
 # ________________________ Common _________________________ #
 
-proc find::SessionList {} {
-  # Returns a list of all tabs or selected tabs (if set).
-
-  set res [alited::bar::BAR listFlag s]
-  if {[llength $res]==1} {set res [alited::bar::BAR listTab]}
-  return $res
-}
-#_______________________
-
 proc find::TabsToSearch {{tab -} {cur1st yes}} {
   # Gets a list of tabs to search something, beginning from a current tab.
   #   tab - the current tab
   #   cur1st - if yes, search first in a current tab
 
   if {$tab eq {-}} {set tab [alited::bar::CurrentTabID]}
-  set tabs [SessionList]
+  set tabs [alited::SessionList]
   if {$cur1st && [set i [lsearch -exact -index 0 $tabs $tab]]>0} {
     set tabs [linsert [lreplace $tabs $i $i] 0 $tab]
   }

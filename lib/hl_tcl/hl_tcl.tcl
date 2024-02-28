@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.1.0
+package provide hl_tcl 1.1.1
 
 # ______________________ Common data ____________________ #
 
@@ -486,7 +486,14 @@ proc hl_tcl::my::IsCurline {txt {flag ""}} {
   #   flag - the flag
 
   variable data
-  if {$flag eq {}} {return $data(HL_CURLINE,$txt)}
+  if {$flag eq {}} {
+    if {[info exists data(HL_CURLINE,$txt)]} {
+      set flag $data(HL_CURLINE,$txt)
+    } else {
+      set flag 0
+    }
+    return $flag
+  }
   set data(HL_CURLINE,$txt) $flag
 }
 #_______________________

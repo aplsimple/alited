@@ -117,6 +117,7 @@ proc hl_trans::translateLine {from to} {
   #   from - source language code
   #   to - destination language code
 
+if 0 {  ;# obsolete
   namespace upvar ::alited al al
   variable errmsg
   set wtxt [alited::main::CurrentWTXT]
@@ -126,9 +127,7 @@ proc hl_trans::translateLine {from to} {
     bell
     return
   }
-  lassign [alited::complete::TextCursorCoordinates $wtxt] X Y
-  ::baltip::showBalloon "Working...\nDon't disturb." \
-    -geometry "+$X+$Y" -fg $al(MOVEFG) -bg $al(MOVEBG)
+  alited::MessageNotDisturb
   lassign [TranslateText $line $from $to] ok translation
   ::baltip hide
   if {$ok} {
@@ -154,5 +153,6 @@ proc hl_trans::translateLine {from to} {
   } else {
     alited::Message $translation 4
   }
+}
 }
 # ________________________ EOF _________________________ #

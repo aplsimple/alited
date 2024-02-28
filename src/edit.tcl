@@ -413,8 +413,8 @@ proc edit::CheckSaveIcons {modif} {
     $b_save configure -state $stat
     $b_saveall configure -state normal
   }
-  $al(MENUFILE) entryconfigure 4 -state [$b_save cget -state]
-  $al(MENUFILE) entryconfigure 6 -state [$b_saveall cget -state]
+  $al(MENUFILE) entryconfigure 5 -state [$b_save cget -state]
+  $al(MENUFILE) entryconfigure 7 -state [$b_saveall cget -state]
 }
 #_______________________
 
@@ -460,16 +460,14 @@ proc edit::Modified {TID wtxt {l1 0} {l2 0} args} {
           set doit [expr {$lastrow != int([$wtxt index {end -1c}])}]
         }
         set l1 [expr {int($pos)}]
-        set notfound [catch {set ifound [lsearch -index 4 $al(_unittree,$TID) $l1]}]
-        if {$doit || (!$notfound && $ifound>-1) || \
-        $al(INI,LEAF) && [regexp $al(RE,leaf2) $args] || \
-        [regexp $al(RE,proc2) $args]} {
+        set line [$wtxt get $l1.0 $l1.end]
+        if {$doit || (![catch {set ifound [lsearch -index 4 $al(_unittree,$TID) $l1]}] \
+        && $ifound>-1) || [regexp [alited::unit::UnitRegexp] $line]} {
           alited::tree::RecreateTree
         } else {
-          set line [$wtxt get $l1.0 $l1.end]
-          if {$al(INI,LEAF) && [regexp $al(RE,leaf) $line] || \
-          !$al(INI,LEAF) && [regexp $al(RE,proc) $line] || \
-          [regexp $al(RE,branch) $line]} {
+          set REtd {(#\s*(!|TODO))|(//\s*(!|TODO))} ;# RE for todo in Tcl and C
+          if {$al(INI,LEAF) && [regexp $al(RE,leaf) $line] || [regexp $REtd $line] \
+          || !$al(INI,LEAF) && [regexp $al(RE,proc) $line] || [regexp $al(RE,branch) $line]} {
             alited::tree::RecreateTree
           }
         }
@@ -961,10 +959,16 @@ proc edit::saveRect {mode wtxt} {
   namespace upvar ::alited al al
   set selection [$wtxt tag ranges sel]
   if {[llength $selection]} {
+    set ln1 999999999
     set al(rectSel,text) [list]
     foreach {from to} $selection {
+      set ln2 [alited::pint $from]
+      while {[incr ln1]<$ln2} {       ;# empty intermediate lines
+        lappend al(rectSel,text) {}   ;# to be included too
+      }
       lappend al(rectSel,text) [$wtxt get $from $to]
       if {$mode==2} {$wtxt delete $from $to}
+      set ln1 [alited::pint $to]
     }
     if {$mode==2} {
       catch {::tk::TextSetCursor $wtxt [lindex $selection 0 0]}
@@ -1058,6 +1062,165 @@ proc edit::ControlLeft {txt s} {
     set col {end +1c}
   }
   return -code break
+}
+
+# ________________________ Formats _________________________ #
+
+proc edit::IniParameter {parname line {case -nocase}} {
+  # Gets parameter value from a line of ini-file.
+  #   parname - parameter name (can contain several names separated with comma)
+  #   line - line content
+  #   case - option "-nocase" for regexp (default) or any other option
+
+  foreach pname [split $parname ,] {
+    if {[regexp {*}$case "^\\s*$pname\\s*=\\s*" $line]} {
+      set i [string first = $line]
+      set res [string range $line [incr i] end]
+      return [string trim $res]
+    }
+  }
+  return {}
+}
+#_______________________
+
+proc edit::SourceFormatTcl {} {
+  # Sources format.tcl.
+
+  if {![namespace exists ::alited::format]} {
+    namespace eval ::alited {
+      source [file join $::alited::SRCDIR format.tcl]
+    }
+  }
+}
+#_______________________
+
+proc edit::FormatUnitDesc {} {
+
+  SourceFormatTcl
+  alited::format::UnitDesc
+}
+#_______________________
+
+proc edit::RunFormat {fname} {
+  # Does format according to a format file.
+  #   fname - format file's name
+
+  SourceFormatTcl
+  set cont [split [::apave::readTextFile $fname] \n]
+  set mode 0
+  foreach line $cont {
+    incr iline
+    set mode [IniParameter mode $line]
+    if {$mode in {1 2 3 4}} {
+      alited::format::Mode$mode [lrange $cont $iline end]
+      break
+    }
+  }
+}
+#_______________________
+
+proc edit::OpenFormatFile {dir} {
+  # Opens file(s) from data/format directory or its subdirectories.
+  #   dir - (sub)directory name
+
+  namespace upvar ::alited al al obPav obPav DATADIR DATADIR
+  set ::alited::al(TMPfname) {}
+  if {[glob -nocomplain -directory $dir *] eq {}} {
+    set dir [file dirname $dir]
+  }
+  set fnames [$obPav chooser tk_getOpenFile ::alited::al(TMPfname) \
+    -initialdir $dir -parent $al(WIN) -multiple 1]
+  unset ::alited::al(TMPfname)
+  foreach fn [lreverse [lsort $fnames]] {
+    alited::file::OpenFile $fn yes
+  }
+}
+#_______________________
+
+proc edit::InvertStringCase {str} {
+  # Inverts cases in a string (e.g. InversE -> iNVERSe).
+  #   str - the string
+
+  set res {}
+  lmap ch [split $str {}] {
+    if {[string is lower $ch]} {
+      set ch [string toupper $ch]
+    } else {
+      set ch [string tolower $ch]
+    }
+    append res $ch
+  }
+  return $res
+}
+#_______________________
+
+proc edit::SqueezeString {str} {
+  # Squeezes multiple spaces to one space (except for leading spaces)
+  # and removes tailing spaces, e.g. "   a  b   c " => "   a b c".
+  #   str - the string
+
+  set isp [apave::obj leadingSpaces $str]
+  set substring [string range $str $isp end]
+  set splist [regexp -inline -all {[ ]+} $substring]
+  set splist [lsort -decreasing -command alited::edit::CompareByLength $splist]
+  foreach sp $splist {
+    set substring [string map [list $sp { }] $substring]
+  }
+  set res [string repeat { } $isp]
+  append res [string trimright $substring]
+}
+#_______________________
+
+proc edit::ReverseString {str} {
+  # The same as [string reverse], but counts escaping braces made in format::Mode2.
+  #   str - the string to reverse
+  # See also: format::Mode2
+
+  set str [UnEscapeValue $str]
+  set str [string reverse $str]
+  EscapeValue $str
+}
+#_______________________
+
+proc edit::SqueezeLines {strlist} {
+  # Squeezes a list of lines.
+  #   strlist - the list
+
+  set res [list]
+  foreach str $strlist {lappend res [SqueezeString $str]}
+  return $res
+}
+#_______________________
+
+proc edit::CompareByLength {s1 s2} {
+  # Compares two string by length.
+  #   s1 - 1st string
+  #   s2 - 2nd string
+
+  set l1 [string length $s1]
+  set l2 [string length $s2]
+  if {$l1>$l2} {
+    return 1
+  } elseif {$l1<$l2} {
+    return -1
+  }
+  return 0
+}
+#_______________________
+
+proc edit::EscapeValue {value} {
+  # Escapes a value's backslashes and braces.
+  #   value - the value
+
+  return [string map [list \\ \\\\ \} \\\} \{ \\\{] $value]
+}
+#_______________________
+
+proc edit::UnEscapeValue {value} {
+  # Unescapes a value's backslashes and braces.
+  #   value - the value
+
+  return [string map [list \\\\ \\ \\\}  \} \\\{ \{] $value]
 }
 
 # _________________________________ EOF _________________________________ #

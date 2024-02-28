@@ -96,6 +96,7 @@ namespace eval ::alited {
     {Switch to Unit Tree} {Cambiar por árbol de unidades}
     {Switch to File Tree} {Cambiar por árbol de archivos}
     {Create File} {Crear archivo}
+    {Create File...} {Crear archivo...}
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Introduzca un nombre de archivo para crear en:\n %d\n\nSi es una carpeta, marque 'Carpeta'.\nLa carpeta puede incluir subcarpetas (a/b/c)."
     {Delete File} {Borrar archivo}
     "\nFile \"%f\" already exists in\n%d\n" "\nEl archivo \"%f\" ya existe en\n%d\n"
@@ -163,6 +164,10 @@ namespace eval ::alited {
     "File \"%f\" was deleted by some application.\n\nSave the file?" "El archivo \"%f\" fue borrado por alguna aplicación.\n\n¿Guardar el archivo?"
     {Tip File Info} {Información del archivo}
     {Rename File} {Renombrar archivo}
+    {Rename File...} {Renombrar archivo...}
+    {Clone File} {Clonar archivo}
+    {Clone File...} {Clonar archivo...}
+    {Clone...} {Clonar...}
     {Select one file in the tree.} {Seleccionar un archivo en el árbol.}
     {Open Selected Files} {Abrir archivos seleccionados}
     {Close Selected Files} {Cerrar archivos seleccionados}
@@ -174,7 +179,6 @@ namespace eval ::alited {
     {Template:} {Plantilla:}
     {Templates} {Plantillas}
     {Templates...} {Plantillas...}
-    {List of Templates} {Lista de plantillas}
     {Current template:} {Plantilla actual:}
     {New template:} {Nueva plantilla:}
     {Hot keys} {Teclas rápidas}
@@ -297,6 +301,7 @@ namespace eval ::alited {
     "Closes all tabs without favorites\nat choosing Favorites' list" "Cierra todas las pestañas sin favoritos\nal elegir la lista de favoritos"
     "Sets a list of Favorites\nthat was active initially." "Establece una lista de favoritos\nque estaba activo inicialmente."
     {Delete a favorites' list #%n ?} {¿Borrar una lista de favoritos #%n ?}
+    {Favorites} {Favoritos}
     {Favorites Lists...} {Listas de favoritos...}
     "Add \"%n\" of %f\nto Favorites?" "¿Añadir \"%n\" de %f\na favoritos?"
     "Item \"%n\" of %f\nis already in Favorites." "El elemento \"%n\"de %f\nya está en favoritos."
@@ -670,6 +675,44 @@ namespace eval ::alited {
     {Copy} {Copiar}
     {Paste} {Pegar}
     {Move the cursor to select a rectangle.} {Mueve el cursor para seleccionar un rectángulo.}
+  }
+
+  ## ________________________ Formats _________________________ ##
+
+  ::msgcat::mcmset es {
+    {Formats} {Formatos}
+    {Moving Unit Descriptions} {Mover descripciones de la unidad}
+    {Moving Unit Descriptions...} {Mover descripciones de la unidad...}
+    {Move Unit Descriptions} {Mover descripciones de la unidad}
+    {Selected} {Seleccionado}
+    {All open} {Todo abierto}
+    {Move proc/method descriptions:} {Mover proc/method descripciones:}
+    {From inside to out} {De dentro a fuera}
+    {From out to inside} {De fuera a dentro}
+    {Separator:} {Separador:}
+    {Process .tcl file(s):} {Procesar .tcl archivo(s):}
+    " Current leaf's RE\n\n   <r>%r1</r>\n\n is not equal to standard\n\n   <r>%r2</r>\n\n as set in Projects/Options and Preferences/Units."
+    " Corriente RE de hoja\n\n   <r>%r1</r>\n\n no es igual a la norma\n\n   <r>%r2</r>\n\n como se establece en Proyectos/Opciones y Preferencias/Unidades."
+    "The separator doesn't match to the regexp:\n\n  "
+    "El separador no coincide con regexp:\n\n  "
+    {Separator must contain "n" or "N" for unit name!}
+    {¡El separador debe contener "n" o "N" para el nombre de unidad!}
+    {The separator should be Tcl comment!} {¡El separador debe ser Tcl comentario!}
+    {Were all files properly backed up?} {¿Todos los archivos estaban correctamente respaldados?}
+    "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
+    "PROYECTO OPCION \"Usar la expresión regular para hoja\" CAMBIADO TEMPORALMENTE "
+    {%f is not open yet - SKIPPED} {%f todavía no está abierto - SALTANDO}
+    {Files processed successfully: %n} {Archivos procesados con éxito: %n}
+    {%f processed, units touched: %n} {%f está procesado, las unidades fueron tocadas: %n}
+    {%f processed, units touched: %n - ALREADY PROCESSED?}
+    {%f está procesado, las unidades fueron tocadas: %n - YA PROCESADOS?}
+    {ERROR} {ERROR}
+    {Strings} {Cadenas}
+    {Keyboard} {Teclado}
+    {Sorting lines} {Ordenar líneas}
+    {Applied to one selection only!} {¡Aplicada a una selección solamente!}
+    "Incorrect mapped 'from-to' in: %l" "Mapa incorrecto 'desde-hacia' dentro: %l"
+    "'from' refers to previous 'to' in: %l (see: %n)" "'desde' se refiere a anteriores 'hacia' dentro: %l (ve: %n)"
   }
 
   ## ________________________ EONS alited _________________________ ##

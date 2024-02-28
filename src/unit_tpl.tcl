@@ -515,7 +515,7 @@ proc unit_tpl::_create {{geom ""}} {
     set ::alited::unit_tpl::BUTEXIT Close
   }
   ::apave::APave create $obTpl $win
-  $obTpl makeWindow $win $al(MC,tpllist)
+  $obTpl makeWindow $win $al(MC,tpl)
   $obTpl paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -rw 3 -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}

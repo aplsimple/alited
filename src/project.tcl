@@ -568,6 +568,7 @@ proc project::Select {{item ""}} {
     ::baltip tip [$obPrj ChbClearRun] $tip
     [$obPrj CbxTrans] configure -values $al(prjtrans)
     after 200 "$tree see $item; $tree focus $item"
+    CheckPrjUseLeaf
   }
 }
 #_______________________
@@ -685,6 +686,11 @@ proc project::ValidProject {} {
     FocusInTab f1 [$obPrj chooserPath Dir]
     return no
   }
+  if {$al(prjuseleafRE) && $al(prjleafRE) eq {}} {
+    bell
+    FocusInTab f2 [$obPrj EntLf]
+    return no
+  }
   set al(prjroot) [file nativename $al(prjroot)]
   if {![CheckNewDir]} {return no}
   if {$al(prjindent)<0 || $al(prjindent)>8} {set al(prjindent) 2}
@@ -702,6 +708,36 @@ proc project::ValidProject {} {
     set res yes
   }
   return $res
+}
+#_______________________
+
+proc project::CheckPrjLeaf {} {
+  # Checks "Regexp of a leaf" field.
+
+  namespace upvar ::alited al al
+  if {$al(prjleafRE) eq {}} {
+    set al(prjleafRE) [string trimright $al(RE,leaf)]
+  }
+}
+#_______________________
+
+proc project::CheckPrjUseLeaf {} {
+  # Enables/disables the "Regexp of a leaf" field.
+
+  namespace upvar ::alited al al
+  variable obPrj
+  CheckPrjLeaf
+  set al(prjuseleafRE) [string is true -strict $al(prjuseleafRE)]
+  if {$al(prjuseleafRE)} {set _ normal} {set _ disabled}
+  [$obPrj EntLf] configure -state $_
+}
+#_______________________
+
+proc project::StdLeafRE {} {
+  # Sets standard RE for leaf unit.
+
+  namespace upvar ::alited al al
+  set al(prjleafRE) $al(RE,leafDEF)
 }
 #_______________________
 
@@ -1903,10 +1939,10 @@ proc project::MainFrame {} {
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 + T 1 2 {-st nsew} {-padding {2 2}}}
-    {.ButHelp - - - - {pack -side left -anchor s -padx 2} {-t {$::alited::al(MC,help)} -tip F1 -command ::alited::project::Help}}
+    {.ButHelp - - - - {pack -side left -anchor s -padx 2} {-t {$::alited::al(MC,help)} -tip F1 -com ::alited::project::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
-    {.ButOK - - - - {pack -side left -anchor s -padx 2} {-t {$::alited::al(MC,select)} -command ::alited::project::Ok}}
-    {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -command ::alited::project::Cancel}}
+    {.ButOK - - - - {pack -side left -anchor s -padx 2} {-t {$::alited::al(MC,select)} -com ::alited::project::Ok}}
+    {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -com ::alited::project::Cancel}}
   }
 }
 #_______________________
@@ -1970,7 +2006,7 @@ proc project::Tab2 {} {
     {lab1 + T 1 2 {-st nsew -pady 1 -padx 3} {-t {$al(MC,DEFopts)} -foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fra2 + T 1 2 {-st nsew -cw 1}}
     {.labIgn - - 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,Ign:)}}}
-    {.entIgn + L 1 9 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(prjdirign) -w 40}}
+    {.entIgn + L 1 8 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(prjdirign) -w 50}}
     {.labEOL .labIgn T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,EOL:)}}}
     {.cbxEOL + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,indent:)}}}
@@ -1978,16 +2014,23 @@ proc project::Tab2 {} {
     {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} {-var ::alited::al(prjindentAuto) -t {$al(MC,indentAuto)}}}
     {.labRedunit .labIndent T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
     {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjredunit) -from $al(minredunit) -to 100}}
-    {.labMult .labRedunit T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$al(MC,notrecomm)}}}
+    {.labmaxcom .labRedunit T 1 1 {-st e -pady 1 -padx 3} {-t {Maximum Run commands}}}
+    {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjmaxcoms) -from 4 -to 99 -tabnext alited::Tnext}}
+    {.labMult .labmaxcom T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,multiline)} -tip {$al(MC,notrecomm)}}}
     {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} {-var ::alited::al(prjmultiline) -tip {$al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,trailwhite)}}}
     {.swiTrWs + L 1 1 {-st sw -pady 1} {-var ::alited::al(prjtrailwhite)}}
-    {.labmaxcom .labTrWs T 1 1 {-st e -pady 1 -padx 3} {-t {Maximum Run commands}}}
-    {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(prjmaxcoms) -from 4 -to 99 -tabnext alited::Tnext}}
-    {.labTrans .labmaxcom T 1 1 {-st e -pady 5 -padx 3} {-t {Translation link:}}}
-    {.CbxTrans + L 1 9 {-st ew -pady 5} {-h 12 -cbxsel {$al(prjtran)} -tvar ::alited::al(prjtran) -values {$al(prjtrans)} -clearcom {alited::main::ClearCbx %w ::alited::al(prjtran)}}}
-    {.labSwTrans .labTrans T 1 1 {-st e -pady 5 -padx 3} {-t {Adding translations:}}}
-    {.swiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var ::alited::al(prjtransadd) -tip {If OFF, replaces the original text.}}}
+    {.seh .labTrWs T 1 9}
+    {.labUself + T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,useleafRE)}}}
+    {.swiUself + L 1 1 {-st sw -pady 1} {-var ::alited::al(prjuseleafRE) -com alited::project::CheckPrjUseLeaf}}
+    {.butStd + L 1 7 {-st e} {-t Standard -com alited::project::StdLeafRE}}
+    {.labLf .labUself T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,leafRE)}}}
+    {.EntLf + L 1 8 {-st sew -pady 1} {-tvar ::alited::al(prjleafRE)}}
+    {.seh2 .labLf T 1 9}
+    {.labTrans + T 1 1 {-st e -pady 5 -padx 3} {-t {Translation link:}}}
+    {.CbxTrans + L 1 8 {-st ew -pady 5} {-h 12 -cbxsel {$al(prjtran)} -tvar ::alited::al(prjtran) -values {$al(prjtrans)} -clearcom {alited::main::ClearCbx %w ::alited::al(prjtran)}}}
+    {#.labSwTrans .labTrans T 1 1 {-st e -pady 5 -padx 3} {-t {Adding translations:}}}
+    {#.swiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var ::alited::al(prjtransadd) -tip {If OFF, replaces the original text.}}}
   }
 }
 #_______________________
@@ -2175,7 +2218,7 @@ proc project::_run {{checktodo yes}} {
   after 200 alited::project::OnProjectEnter
   set res [_create]
   if {$updateGUI} {
-    alited::main::UpdateTextGutterTree ;# settings may be changed as for GUI
+    alited::main::UpdateAll ;# settings may be changed as for GUI
   }
   return $res
 }

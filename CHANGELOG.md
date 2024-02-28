@@ -1,12 +1,36 @@
 # LAST CHANGES:
 
+Version `v1.7.0 (28 Feb'24)`
+
+  - BUGFIX: run e_menu tools on file.c
+  - BUGFIX: Tools/Paver: if layout erroneous, geometry of preview lost
+  - BUGFIX: Edit/Rectangular Selection: bad Cut/Copy through empty lines
+  - BUGFIX: choose from File List: error if file name with spaces and not available
+  - NEW   : some tear-off menu (Edit/*, Paver, Tint) restored at start, with old geometry
+  - NEW   : Setup/Move unit descriptions: to move docstrings in/out the units
+  - NEW   : Project/Options: leaf's RE for projects - if set, overrides Preferences/Unit's
+  - NEW   : e_menu's dialogs: if set topmost manually, remain on executing command
+  - NEW   : Tools/Screen loupe: Refresh button
+  - NEW   : Edit/Formats: letter cases, sorting, mapping, translating... (extensible)
+  - NEW   : "Clone file" in File & tree's menu & toolbar
+  - NEW   : "Little things" in [alited's demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
+  - DELETE: run translation by F5 on .msg/ln-ln: outdated by Edit/Formats/Translation
+  - CHANGE: tinting alited on the fly: list of tints, updating infobar & Find/Replace
+  - CHANGE: Tools/Check Tcl: case insensitive alited..check and check..alited switch the check off
+  - CHANGE: enable "Saved favorites' list" button for the mode "Last visited"
+  - CHANGE: Linux: date & color pickers: open under the caret instead of the pointer
+  - CHANGE: Tools/Paver: -font & -style options & var.values: let them remain if possible
+  - CHANGE: Tools/Paver: if preview was shown & auto update, show the preview at saving
+  - CHANGE: packages: e_menu/apave 4.3.10, hl_tcl 1.1.1, aloupe 1.4
+
+
 Version `v1.6.6 (7 Feb'24)`
 
   - BUGFIX: 1st changing color scheme in Preferences: cursor color not updated
   - BUGFIX: Find/Replace items containing EOL: not saved in alited.ini
   - BUGFIX: renaming file extension: previous syntax tags remained
   - BUGFIX: Tools/Paver: Widget List closes on "OK"; comment-out spawns errors
-  - NEW   : Saved Faforites: Open button opens favorites' files, in beginning of tabbar
+  - NEW   : Saved Favorites: Open button opens favorites' files, in beginning of tabbar
   - NEW   : Edit/Comments: 3 commenting modes
   - NEW   : if cursor over non-word, Tab indents at line's beginning or puts Tab char if inside
   - CHANGE: Recent Files: save original file name after "Save as"; remove after "Close & Delete"

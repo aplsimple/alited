@@ -1,5 +1,6 @@
 namespace eval ::aloupe {
   ::msgcat::mcset es {Loupe} {Lupa}
+  ::msgcat::mcset es {Refresh} {Refrescar}
   ::msgcat::mcset es {To clipboard} {A portapapeles}
   ::msgcat::mcset es {Save} {Guardar}
   ::msgcat::mcset es {Close} {Cerrar}

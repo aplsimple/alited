@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.6.6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.7.0  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -131,7 +131,9 @@ namespace eval alited {
 
   # project options' names
   variable OPTS [list \
-    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmultiline prjbeforerun prjtrailwhite prjincons prjmaxcoms prjtran prjtrans prjtransadd]
+    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit \
+    prjmultiline prjbeforerun prjtrailwhite prjincons prjmaxcoms prjtran \
+    prjtrans prjtransadd prjuseleafRE prjleafRE]
 
   # directory tree's content
   variable _dirtree [list]
@@ -152,6 +154,8 @@ namespace eval alited {
   set al(prjincons) 1     ;# "run Tcl scripts in console" flag
   set al(prjdirign) {.git .bak} ;# ignored subdirectories of project
   set al(prjmaxcoms) 20   ;# maximum of "Run..." commands
+  set al(prjuseleafRE) 0  ;# "use leaf's RE"
+  set al(prjleafRE) {}    ;# "leaf's RE"
   set al(ED,TRAN) https://libretranslate.de/translate
   set al(ED,TRANS) [list $al(ED,TRAN) \
     https://translate.argosopentech.com/translate \
@@ -165,7 +169,7 @@ namespace eval alited {
   set al(TITLE) {%f :: %d :: %p}           ;# alited title's template
   set al(TclExtsDef) {.tcl .tm .msg .test} ;# extensions of Tcl files
   set al(ClangExtsDef) {.c .h .cpp .hpp}   ;# extensions of C/C++ files
-  set al(TextExtsDef) {html htm css md txt sh bat ini alm em ale conf wiki} ;# ... plain texts
+  set al(TextExtsDef) {html htm css md txt sh bat ini alm em ale conf wiki ui} ;# ... plain texts
   set al(TclExts) $al(TclExtsDef)
   set al(ClangExts) $al(ClangExtsDef)
   set al(TextExts) $al(TextExtsDef)
@@ -401,6 +405,16 @@ namespace eval alited {
   }
   #_______________________
 
+  proc pint {pos} {
+    # Gets int part of text position, e.g. "4" for "4.end".
+    #   pos - position in text
+
+    if {[set i [string first . $pos]]>0} {incr i -1} {set i end}
+    expr {int([string range $pos 0 $i])}
+  }
+
+  #_______________________
+
   proc IsRoundInt {i1 i2} {
     # Checks whether an integer equals roundly to other integer.
     #   i1 - integer to compare
@@ -633,8 +647,51 @@ namespace eval alited {
 
     catch {focus -force [winfo toplevel $foc]; focus $foc}
   }
+  #_______________________
+
+  proc SessionList {{mode 0}} {
+    # Returns a list of all tabs or selected tabs (if set).
+    #   mode - 0 get selected or all, 1 force selected, 2 force all
+
+    set res [alited::bar::BAR listFlag s]
+    if {(!$mode && [llength $res]==1) || $mode==2} {
+      set res [alited::bar::BAR listTab]
+    }
+    return $res
+  }
+  #_______________________
+
+  proc ProcessFiles {procname what} {
+    # Processes files according to Selected/All choice.
+    #   procname - name of command to run on files (TID passed)
+    #   what - what to process: 1 - selected, 2 - all
+    # Returns numbers of all and processed files.
+    # See also: SessionList
+
+    variable da
+    set all [set processed 0]
+    foreach tab [alited::SessionList $what] {
+      incr all
+      incr processed [$procname [lindex $tab 0]]
+    }
+    return [list $all $processed]
+  }
 
   ## ________________________ Messages _________________________ ##
+
+  proc MessageTags {} {
+    # Gets tags for texts shown with messages.
+    # Returns "-tags option" for messages.
+
+    lassign [FgFgBold] -> fS
+    set ::alited::textTags [list \
+      [list "r" "-font {$::apave::FONTMAINBOLD} -foreground $fS"] \
+      [list "b" "-foreground $fS"] \
+      [list "link" "::apave::openDoc %t@@https://%l@@"] \
+      ]
+    return "-tags ::alited::textTags"
+  }
+  #_______________________
 
   proc TipMessage {lab tip} {
     # Shows a tip on status message and clears the status message.
@@ -711,6 +768,7 @@ namespace eval alited {
       return  ;# at exiting app
     }
     if {$lab eq {}} {set lab [$obPav Labstat3]}
+    if {$first} {set msg [msgcat::mc $msg]}
     if {!$first && $msg ne {} && [winfo exists $lab]} {
       set curmsg [$lab cget -text]
       # if a message changed or expired, don't touch it (don't cover it with old 'msg')
@@ -757,6 +815,18 @@ namespace eval alited {
     if {$msec>0} {
       set al(afterID) [after $msec [list ::alited::Message $msg $mode $lab no]]
     }
+  }
+  #_______________________
+
+  proc MessageNotDisturb {} {
+    # Show "Don't disturb" message.
+
+    variable al
+    lassign [alited::complete::TextCursorCoordinates] X Y
+    set msg "Working...\nDon't disturb."
+    Message $msg 3
+    ::baltip::showBalloon $msg \
+      -geometry "+$X+$Y" -fg $al(MOVEFG) -bg $al(MOVEBG)
   }
   #_______________________
 
@@ -835,12 +905,7 @@ namespace eval alited {
     variable al
     if {[HelpOnce 1 $fname]} return
     lassign [::apave::extractOptions args -ale1Help no -ontop 0] ale1Help ontop
-    lassign [FgFgBold] -> fS
-    set ::alited::textTags [list \
-      [list "r" "-font {$::apave::FONTMAINBOLD} -foreground $fS"] \
-      [list "b" "-foreground $fS"] \
-      [list "link" "::apave::openDoc %t@@https://%l@@"] \
-      ]
+    set tags [MessageTags]
     if {[file exists $fname]} {
       set msg [::apave::readTextFile $fname]
     } else {
@@ -876,7 +941,7 @@ namespace eval alited {
     }
     set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no \
       -onclose "alited::destroyWindow %w [focus]" -centerme $win -text 1 -scroll no \
-      -tags ::alited::textTags -ontop $ontop -w [incr wmax] {*}$args]
+      {*}$tags -ontop $ontop -w [incr wmax] {*}$args]
     return $res
   }
   #_______________________
@@ -1012,7 +1077,7 @@ namespace eval alited {
           after idle alited::main::FocusText
         }
         switch $ext {
-          htm {set ext html}
+          htm - ui {set ext html}
           ale - conf {set ext ini}
         }
         set addon hl_$ext
@@ -1122,6 +1187,7 @@ namespace eval alited {
     if {!$ask || !$al(INI,confirmexit) || \
     [msg okcancel info [msgcat::mc {Quitting alited.}] OK {*}$timo]} {
       if {[file::AllSaved]} {
+        alited::menu::SaveCascadeMenuGeo
         catch {find::CloseFind}  ;# save Find/Replace geometry
         catch {ini::SaveIni}     ;# save alited's settings
         tool::_close                     ;# close all of the
@@ -1244,6 +1310,7 @@ if {[info exists ALITED_PORT]} {
     source [file join $::alited::SRCDIR paver.tcl]
     source [file join $::alited::SRCDIR preview.tcl]
     source [file join $::alited::SRCDIR unit_tpl.tcl]
+    source [file join $::alited::SRCDIR format.tcl]
     source [file join $::alited::LIBDIR addon hl_md.tcl]
     source [file join $::alited::LIBDIR addon hl_html.tcl]
     source [file join $::alited::LIBDIR addon hl_em.tcl]

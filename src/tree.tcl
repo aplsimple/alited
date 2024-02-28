@@ -263,9 +263,11 @@ proc tree::Create {} {
   || !$al(TREE,isunits) && $al(TREE,files)} return  ;# no need
   set wtree [$obPav Tree]
   if {$al(TREE,isunits)} {
-    pack forget [$obPav BtTRenT] ;# hide 'Rename' button for unit tree
+    pack forget [$obPav BtTRenT] ;# hide Rename & Clone buttons for unit tree
+    pack forget [$obPav BtTCloT]
   } else {
-    pack [$obPav BtTRenT] -side left -after [$obPav BtTAddT]  ;# display 'Rename' button
+    pack [$obPav BtTRenT] -side left -after [$obPav BtTAddT]  ;# show Rename & Clone buttons
+    pack [$obPav BtTCloT] -side left -after [$obPav BtTDelT]
     # for file tree: get its current "open branch" flags
     # in order to check them in CreateFilesTree
     set al(SAVED_FILE_TREE) [list]
@@ -317,7 +319,7 @@ proc tree::CreateUnitsTree {TID wtree} {
   set al(TREE,units) yes
   [$obPav BtTswitch] configure -image alimg_folder
   baltip::tip [$obPav BtTswitch] $al(MC,swunits)
-  baltip::tip [$obPav BtTAddT] $al(MC,tpllist)
+  baltip::tip [$obPav BtTAddT] $al(MC,tpl)
   baltip::tip [$obPav BtTDelT] $al(MC,unitsdel)
   baltip::tip [$obPav BtTUp] $al(MC,moveupU)
   baltip::tip [$obPav BtTDown] $al(MC,movedownU)
@@ -367,7 +369,7 @@ proc tree::ColorUnitsTree {TID wtxt wtree wait} {
   #   wait - waiting mode: -1 no wait, >0 wait for highlighting done, 0 waiting done
 
   namespace upvar ::alited al al
-  if {$TID ne [alited::bar::FileTID [alited::bar::FileName]]} return
+  if {$TID ne [alited::bar::CurrentTabID]} return
   # colorizing should wait for the highlighting done
   if {$wait>0} {
     if {[alited::file::IsClang [alited::bar::FileName $TID]]} {
@@ -583,7 +585,7 @@ proc tree::ShowPopupMenu {ID X Y} {
   if {$al(TREE,isunits)} {
     set img alimg_folder
     set m1 $al(MC,swunits)
-    set m2 $al(MC,tpllist)
+    set m2 $al(MC,tpl)
     set m3 $al(MC,unitsdel)
     set moveup $al(MC,moveupU)
     set movedown $al(MC,movedownU)
@@ -593,7 +595,7 @@ proc tree::ShowPopupMenu {ID X Y} {
   } else {
     set img alimg_gulls
     set m1 $al(MC,swfiles)
-    set m2 $al(MC,filesadd)
+    set m2 $al(MC,filesadd...)
     set m3 $al(MC,filesdel)
     set moveup $al(MC,moveupF)
     set movedown $al(MC,movedownF)
@@ -616,7 +618,7 @@ proc tree::ShowPopupMenu {ID X Y} {
     -command "::alited::tree::AddItem $ID" {*}$accins -image alimg_add
   if {!$al(TREE,isunits)} {
     $popm add command {*}[$obPav iconA change] \
-      -label $al(MC,renamefile) -accelerator F2 \
+      -label $al(MC,renamefile...) -accelerator F2 \
       -command {::alited::file::RenameFileInTree no}
   }
   $popm add command {*}[$obPav iconA none] -label $m3 \
@@ -633,6 +635,8 @@ proc tree::ShowPopupMenu {ID X Y} {
         -command "clipboard clear ; clipboard append {$header}"
     }
   } else {
+    $popm add command {*}[$obPav iconA copy] \
+      -label $al(MC,clonefile...) -command ::alited::file::CloneFile
     if {$isfile} {set fname [file dirname $fname]}
     set sname [file tail $fname]
     $popm add separator
@@ -1098,7 +1102,7 @@ proc tree::RecreateTree {{wtree ""} {headers ""} {clearsel no}} {
     set al(TREE,units) no
     set TID [alited::bar::CurrentTabID]
     set wtxt [alited::main::CurrentWTXT]
-    set al(_unittree,$TID) [alited::unit::GetUnits $TID [$wtxt get 1.0 {end -1 char}]]
+    alited::unit::RecreateUnits $TID $wtxt
   } else {
     set al(TREE,files) no
   }

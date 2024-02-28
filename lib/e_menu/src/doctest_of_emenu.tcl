@@ -5,26 +5,8 @@
 # See README.md for details.
 #
 #########################################################################
-#
-# Test cases for TKE e_menu plugin.
-# #ARGS<N>: means arguments for 'Run me' menu item.
-# First case without "-" will be run:
-#
-#-ARGS0: /home/apl/PG/Tcl-Tk/projects/pave/paveme.tcl
-#-ARGS1: -s 1 -v 1 /home/apl/PG/Tcl-Tk/projects/pave/paveme.tcl
-#-ARGS2: -s 0 -v 1 -b 2 /home/apl/PG/Tcl-Tk/projects/pave/paveme.tcl
-#-ARGS3: -s 0 -v -1 -b 2 /home/apl/PG/Tcl-Tk/projects/pave/paveme.tcl
-#-ARGS4: -s 0 -v 1 -b 2 -b 1 /home/apl/PG/Tcl-Tk/projects/pave/paveme.tcl
-#-ARGS5: -v 0 /home/apl/TKE-clone/TKE-clone/plugins/doctest/README.md
-#-ARGS6: -v -1 /home/apl/TKE-clone/TKE-clone/plugins/doctest/README.md
-#-ARGS7: -v 1 /home/apl/TKE-clone/TKE-clone/plugins/doctest/README.md
-#-ARGS8: -v 1 -b factorial /home/apl/PG/Tcl-Tk/projects/doctest/README.md
-#-ARGS9: -v 0 -s 0 /home/apl/TKE-clone/TKE-clone/plugins/e_menu/e_menu/e_menu.tcl
-#ARGS10: -v 1 /home/apl/PG/Tcl-Tk/projects/doctest/README.md
-#
-#########################################################################
 
-namespace eval doctest {
+namespace eval ::doctest {
 
   variable SYNOPSIS "This is used for doctesting Tcl code.
 
@@ -54,7 +36,7 @@ See README.md for details."
 
 Make the doctest blocks as
 
-  $doctest::TEST_BEGIN ?name-of-block?
+  $::doctest::TEST_BEGIN ?name-of-block?
 
   ...
   #% tested-command
@@ -63,7 +45,7 @@ Make the doctest blocks as
   \[#> output of tested-command\]
   ...
 
-  $doctest::TEST_END
+  $::doctest::TEST_END
 
 See details in README.md"
   variable options
@@ -72,7 +54,7 @@ See details in README.md"
 ###################################################################
 # Show info message, e.g.: MES "Info title" $st == $BL_END \n\n ...
 
-proc doctest::MES {title args} {
+proc ::doctest::MES {title args} {
 
   puts "\n $title:"
   foreach ls $args {
@@ -83,18 +65,18 @@ proc doctest::MES {title args} {
   }
 }
 
-proc doctest::ERR {args} { MES ERROR {*}$args }
+proc ::doctest::ERR {args} { MES ERROR {*}$args }
 
 ###################################################################
 # Get line stripped of spaces and uppercased
 
-proc doctest::strip_upcase {st} {
+proc ::doctest::strip_upcase {st} {
 
   return [string toupper [string map {{ } _} [string trim $st { _}]]]
 }
 
 # previous proc's value, with \n (to find an exact "-b" block name)
-proc doctest::strip_upcase_nn {st} {
+proc ::doctest::strip_upcase_nn {st} {
 
   return "\n[strip_upcase $st]\n"
 }
@@ -102,7 +84,7 @@ proc doctest::strip_upcase_nn {st} {
 ###################################################################
 # Make string of args (1 2 3 ... be string of "1 2 3 ...")
 
-proc doctest::string_of_args {args} {
+proc ::doctest::string_of_args {args} {
 
   set msg ""; foreach m $args {set msg "$msg $m"}
   return [string trim $msg " \{\}"]
@@ -111,7 +93,7 @@ proc doctest::string_of_args {args} {
 ###################################################################
 # Show synopsis and exit
 
-proc doctest::exit_on_error { {ams ""}} {
+proc ::doctest::exit_on_error { {ams ""}} {
 
   variable SYNOPSIS
   variable UNDER
@@ -122,7 +104,7 @@ proc doctest::exit_on_error { {ams ""}} {
 ###################################################################
 # Get line's contents
 
-proc doctest::get_line_contents {ind} {
+proc ::doctest::get_line_contents {ind} {
 
   variable options
   return [lindex $options(cnt) [incr ind -1]]
@@ -131,7 +113,7 @@ proc doctest::get_line_contents {ind} {
 ###################################################################
 # Get test blocks (TEST_BEGIN ... TEST_END)
 
-proc doctest::get_test_block {begin end} {
+proc ::doctest::get_test_block {begin end} {
 
   set block ""
   for {set i $begin} {$i<=$end} {incr i} {
@@ -140,7 +122,7 @@ proc doctest::get_test_block {begin end} {
   return $block
 }
 
-proc doctest::get_test_blocks {} {
+proc ::doctest::get_test_blocks {} {
 
   variable BL_BEGIN
   variable BL_END
@@ -184,7 +166,7 @@ proc doctest::get_test_blocks {} {
 ###################################################################
 # Get line of command or command's waited result
 
-proc doctest::get_line {type i prevcontinuedName} {
+proc ::doctest::get_line {type i prevcontinuedName} {
 
   upvar $prevcontinuedName prevcontinued
   variable NOTHING
@@ -217,7 +199,7 @@ proc doctest::get_line {type i prevcontinuedName} {
 #   - command/result lines
 #   - next line to process
 
-proc doctest::get_com_res {type i1 i2} {
+proc ::doctest::get_com_res {type i1 i2} {
 
   variable TEST
   variable NOTHING
@@ -252,7 +234,7 @@ proc doctest::get_com_res {type i1 i2} {
 ###################################################################
 # Get commands' results
 
-proc doctest::get_commands {i1 i2} {
+proc ::doctest::get_commands {i1 i2} {
 
   variable TEST_COMMAND
   return [get_com_res $TEST_COMMAND $i1 $i2]
@@ -261,7 +243,7 @@ proc doctest::get_commands {i1 i2} {
 ###################################################################
 # Get waited results
 
-proc doctest::get_results {i1 i2} {
+proc ::doctest::get_results {i1 i2} {
 
   variable TEST_RESULT
   return [get_com_res $TEST_RESULT $i1 $i2]
@@ -270,7 +252,7 @@ proc doctest::get_results {i1 i2} {
 ###################################################################
 # Execute commands and compare their results to waited ones
 
-proc doctest::execute_and_check {block safe commands results} {
+proc ::doctest::execute_and_check {block safe commands results} {
 
   set err ""
   set ok 0
@@ -298,7 +280,7 @@ proc doctest::execute_and_check {block safe commands results} {
 ###################################################################
 # Test block of commands and their results
 
-proc doctest::do_block {begin end blk safe verbose} {
+proc ::doctest::do_block {begin end blk safe verbose} {
 
   variable UNDER
   variable options
@@ -341,11 +323,14 @@ proc doctest::do_block {begin end blk safe verbose} {
   return $block_ok
 }
 
-proc doctest::do_test {blocks safe verbose} {
+proc ::doctest::do_test {blocks safe verbose} {
 
   variable HINT1
   variable UNDER
   variable ntestedany
+  puts [set _ "Tcl v[package require Tcl]"]
+  puts [string repeat = [string length $_]]\n
+  unset _
   set all_ok -1
   set ptested [set ntested [set ntestedany 0]]
   foreach {begin end blk} $blocks {
@@ -377,7 +362,7 @@ proc doctest::do_test {blocks safe verbose} {
   ###################################################################
   # check if "doctest source" and return sourced name or ""
 
-  proc doctest::sourced_line {line} {
+  proc ::doctest::sourced_line {line} {
 
     variable TEST_COMMAND
     return [regexp -nocase -inline \
@@ -388,7 +373,7 @@ proc doctest::do_test {blocks safe verbose} {
   ###################################################################
   # check if the line is "doctest quote"
 
-  proc doctest::is_quoted_line {line} {
+  proc ::doctest::is_quoted_line {line} {
 
     variable BL_BEGIN
     variable BL_END
@@ -404,7 +389,7 @@ proc doctest::do_test {blocks safe verbose} {
 ###################################################################
 # Get text of file and options
 
-proc doctest::init {args} {
+proc ::doctest::init {args} {
 
   variable options
   variable TEST_COMMAND
@@ -475,7 +460,7 @@ proc doctest::init {args} {
 ###################################################################
 # Perform doctest
 
-proc doctest::do {} {
+proc ::doctest::do {} {
 
   variable TEST_BEGIN
   variable TEST_END
@@ -492,6 +477,6 @@ proc doctest::do {} {
 #####################################################################
 # main program huh
 
-doctest::init {*}$::argv
-doctest::do
+::doctest::init {*}$::argv
+::doctest::do
 

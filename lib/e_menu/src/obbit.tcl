@@ -552,7 +552,6 @@ proc ::apave::initWM {args} {
 
 proc ::apave::endWM {args} {
   # Finishes the window management by apave, closing and clearing all.
-  # Finishes the window management by apave, closing and clearing all.
   #   args - if any set, means "ask if apave's WM is finished"
 
   if {[llength $args]} {return [info exists ::apave::_CS_(endWM)]}

@@ -34,23 +34,9 @@
      "Edit" menu item can be used to do this for a current text.
 
  The <b>Translation link</b> means a link to the translation service used in
- <b>.l1-l2</b> type of files where <b>l1</b> and <b>l2</b> are the language codes.
-
- Also <b>l2.msg</b> files can be translated from English to <b>l2</b>.
-
- For example:
-   <b>*.en-de</b> files are for English-Deutsch translations
-   <b>ru.msg</b> files are for English-Russian translations
-
- When you open/create this type file, you run the line by line
- translation with just pressing F5 key (of <b>Tools/Run</b>) while the caret
- is set on an appropriate line.
+ <b>Edit/Formats/Translation</b>.
 
  These translation links were active on September 2023:
    https://libretranslate.de/translate
    https://translate.argosopentech.com/translate
    https://translate.terraprint.co/translate
-
- The <b>Adding translations</b> switch selects a mode of handling translations:
-   - if ON,  the translated line is inserted after the original line
-   - if OFF, the translated line replaces the original line

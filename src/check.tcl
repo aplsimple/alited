@@ -93,9 +93,9 @@ proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""} {bold no} {see no}} {
   set mapP2 [list "{\)}" {}]
   set mapQ [list "{\"}" {}]
   foreach line [split [$wtxt get $pos1 $pos2] \n] {
-    if {[regexp {\s*#\s*alited_checked\s*$} $line]} {
-      # if a line is like: # alited_checked
-      # skip this unit as checked by a human
+    if {[string match -nocase *#*alited*check* $line] \
+    ||  [string match -nocase *#*check*alited* $line]} {
+      # if a line is "checked by alited", skip this unit as checked by a human
       return 0
     }
     if {$chBrace} {
@@ -284,10 +284,10 @@ proc check::_create {} {
     {fra.radA - - - - {pack -side left -padx 9}  {-t "current file" -var ::alited::check::what -value 1}}
     {fra.radB - - - - {pack -side left -padx 9}  {-t "all of session files" -var ::alited::check::what -value 2}}
     {fra2 fra T 1 1 {-st nsew -pady 3 -padx 3} {-padding {5 5 5 5} -relief groove}}
-    {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -command ::alited::check::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -com ::alited::check::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
-    {.ButOK - - - - {pack -side left -padx 2} {-t "Check" -command ::alited::check::Check}}
-    {.butCancel - - - - {pack -side left} {-t Cancel -command ::alited::check::Cancel}}
+    {.ButOK - - - - {pack -side left -padx 2} {-t "Check" -com ::alited::check::Check}}
+    {.butCancel - - - - {pack -side left} {-t Cancel -com ::alited::check::Cancel}}
   }
   bind $win <F1> "[$obCHK ButHelp] invoke"
   if {[set geo $al(checkgeo)] ne {}} {

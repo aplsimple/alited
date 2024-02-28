@@ -1,0 +1,12 @@
+# ReverseString is the same as [string reverse] but counts the unpaired braces of {%v}.
+
+Mode = 2
+
+Command = alited::edit::ReverseString {%v}
+
+# ===========================================================================
+#
+# The mode=2 means that command(s) will be applied to a selected text
+# or, if there is no selection, to a current line.
+#
+# In the command, {%v} wildcard stands for the selection or the current line.

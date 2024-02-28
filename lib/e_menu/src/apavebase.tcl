@@ -47,6 +47,7 @@ namespace eval ::apave {
     err warn ques retry yes no ok cancel exit }
   variable _AP_IMG;  array set _AP_IMG [list]
   variable _AP_VARS; array set _AP_VARS [list]
+  set _AP_VARS(APPICON) {}
   set _AP_VARS(.,MODALS) 0
   set _AP_VARS(WPAVE) {}
   set _AP_VARS(TIMW) [list]
@@ -273,13 +274,22 @@ namespace eval ::apave {
     # a file's name containing th image data.
     # If it fails to find an image in either, no icon is set.
 
-    set appIcon {}
+    variable _AP_VARS
+    set _AP_VARS(APPICON) {}
     if {$winicon ne {}} {
-      if {[catch {set appIcon [image create photo -data $winicon]}]} {
-        catch {set appIcon [image create photo -file $winicon]}
+      if {[catch {set _AP_VARS(APPICON) [image create photo -data $winicon]}]} {
+        catch {set _AP_VARS(APPICON) [image create photo -file $winicon]}
       }
     }
-    if {$appIcon ne {}} {wm iconphoto $win -default $appIcon}
+    if {$_AP_VARS(APPICON) ne {}} {wm iconphoto $win -default $_AP_VARS(APPICON)}
+  }
+  #_______________________
+
+  proc getAppIcon {} {
+    # Gets application's icon.
+
+    variable _AP_VARS
+    return $_AP_VARS(APPICON)
   }
   #_______________________
 
@@ -1676,7 +1686,7 @@ oo::class create ::apave::APaveBase {
         set dn [file dirname $fn]
         set fn [file tail $fn]
       }
-      set dn [::apave::extractOptions args -initialdir $dn]
+      lassign [::apave::extractOptions args -initialdir $dn] dn
       if {[string match -* $dn]} {
         set rootname 1
         set dn [string range $dn 1 end]

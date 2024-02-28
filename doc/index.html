@@ -47,7 +47,8 @@
 <li class="level3"><div class="li"><a href="#units2">Branches and leaves</a></div></li>
 <li class="level3"><div class="li"><a href="#units3">Creation of the tree</a></div></li>
 <li class="level3"><div class="li"><a href="#units4">Favorites and Last visited</a></div></li>
-<li class="level3"><div class="li"><a href="#units5">Searching units etc.</a></div></li>
+<li class="level3"><div class="li"><a href="#units5">Unit descriptions</a></div></li>
+<li class="level3"><div class="li"><a href="#units6">Searching units etc.</a></div></li>
 </ul>
 </li>
 <li class="level2"><div class="li"><a href="#projects">Projects</a></div>
@@ -92,6 +93,7 @@
 <li class="level3"><div class="li"><a href="#rectsel">Rectangular selection</a></div></li>
 <li class="level3"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
 <li class="level3"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
+<li class="level2"><div class="li"><a href="#formats">Formatting</a></div></li>
 <li class="level2"><div class="li"><a href="#macros">Macros</a></div></li>
 </ul></li>
 <li class="level2"><div class="li"><a href="#usersynt">User syntax</a></div>
@@ -845,14 +847,96 @@ In a session, the visited units are highlighted in the unit tree, so that you ca
 </p>
 
 <br><p>
-<h3 id="units5"><i>Searching units etc.</i></h3>
+<h3 id="units5"><i>Unit descriptions</i></h3>
+</p>
+
+<p>
+The unit descriptions ("docstrings") are the continuous lines of comments describing a unit as a whole.
+</p>
+
+<p>
+By default, <span><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is set to see the unit descriptions inside the unit body, when the docstrings are located just <b>under</b> the appropriate declaration, e.g.:
+
+<pre class="code"><b><font color=#ca14ca>proc</font></b> ::K {x y} {
+
+  <i><font color=#4b5d50># K combinator.</font></i>
+  <i><font color=#4b5d50>#   x - returned value</font></i>
+  <i><font color=#4b5d50>#   y - discarded value</font></i>
+
+  <i><font color=#4b5d50># it isn't a docstring comment</font></i>
+  <b><font color=#3a6797>set</font></b> x
+}
+</pre>
+</p>
+
+<p>
+There is also another way of placing the unit descriptions: just <b>above</b> the appropriate declaration, e.g.:
+
+<pre class="code"><i><font color=#4b5d50># ==== ::K ====</font></i>
+
+<i><font color=#4b5d50># K combinator.</font></i>
+<i><font color=#4b5d50>#   x - returned value</font></i>
+<i><font color=#4b5d50>#   y - discarded value</font></i>
+
+<b><font color=#ca14ca>proc</font></b> ::K {x y} {
+
+  <i><font color=#4b5d50># it isn't a docstring comment</font></i>
+  <b><font color=#3a6797>set</font></b> x
+}
+</pre>
+</p>
+
+<p>
+The <b>above</b> ("outside") descriptions set a problem before <span><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s unit tree: when you
+select a unit in the unit tree, the cursor is set on its declaration,
+while you would prefer it being on the head line of its description.
+</p>
+
+<p>
+The problem is solved by <i>Leaf's regexp</i> option of <i>Projects/Options</i> settings. Just refer to <i>Projects/Options</i> settings and switch the <i>Use leaf's regexp</i> on. Then you may customize the regular expression, by default it equals to
+<pre class="code">{^\s*#\s*=+\s*([^=\s]+)\s*=+$}
+</pre>
+so e.g. the <code># ==== ::K ====</code> line will be seen as the unit's beginning line. (Don't forget clicking "Change" button to save the project options.)
+</p>
+
+<p>
+Also, the <span><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> allows converting the docstring format of Tcl scripts from one to other and vice versa. For this, the <i>Setup / Move Units Description</i> menu item is used.
+</p>
+
+<p>
+The <i>Move Units Description</i> dialogue allows moving the <i>unit descriptions</i> inside or outside the leaf units (procs and methods).
+</p>
+
+<p>
+Switch on the appropriate direction (to inside or outside). Then enter the <i>Separator</i> - a comment that will separate the units. It can be a combination of ### or === or --- or ___ that is preceding with Tcl comment character (#).
+</p>
+
+<p>
+The <b>N</b> of <i>Separator</i> field is a wildcard for the unit name.
+ The number in parenthesises <b>(70)</b> means maximum length of separators at converting.
+</p>
+
+<p>
+You can convert a current file or "all files" i.e. all Tcl files that have been open and viewed in the current <span><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> session.
+</p>
+
+<p>
+<b>Note #1</b>: If all of your projects are using the "outside" unit descriptions, just refer to the <i>Preferences / Units</i> and customize <i>Leaf's regexp</i> which will be active for all projects (if not overcome by the project options).
+</p>
+
+<p>
+<b>Note #2</b>: The inside unit descriptions allow using <a href=https://ruff.magicsplat.com>Ruff!</a> doc generator. It's default setting of <span><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> as well.
+</p>
+
+<br><p>
+<h3 id="units6"><i>Searching units etc.</i></h3>
 </p>
 
 <p>
 Two search tools might be very useful while you are dealing with the units:
 <ul>
-  <li> Search Units
-  <li> Go to Line
+  <li> Search Units</li>
+  <li> Go to Line</li>
 </ul>
 </p>
 
@@ -1774,11 +1858,11 @@ To get rid of these "inconsistencies" you can insert branches named like "End of
 There may be inconsistencies of "", when the double quotes are used in regular expressions. Also, some procedures or methods may be rather voluminous (though mostly uniform, like a creation of menu items), so that they are divided into components with <a href=#units1> alited's branches</a>. As a result, their units become "inconsistent".
 </p>
 <p>
-To overcome these false inconsistencies, you can use special comments meaning "this unit is checked and proved normal":
-<pre class="code"><i><font color=#4b5d50># alited_checked</font></i>
+To overcome these false inconsistencies, you can use special comments meaning "this unit is checked and proved normal", setting in comments <i>alited</i> and <i>check</i> (or <i>check</i> and <i>alited</i>) all case insensitive:
+<pre class="code"><i><font color=#4b5d50># alited check</font></i>
 </pre>
 or this way:
-<pre class="code">command checked...  ;<i><font color=#4b5d50># alited_checked</font></i>
+<pre class="code">command to be checked...  ;<i><font color=#4b5d50># CHECKED BY ALITED</font></i>
 </pre>
 </p>
 
@@ -2403,6 +2487,46 @@ This way, you will use Tab key to indent. As you like it.
 <p><b>Note</b>: By default, <i>Tab</i> key is used in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> for "Command complete" tool. Refer to "Preferences/Keys" to redefine it.
 </p>
 <p><span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> promotes the idea of <a href=https://www.emacswiki.org/emacs/TabsAreEvil>Tabs Are Evil</a>. A typical case: you use 4-space Tabs and get an external code using 8-space Tabs and (unintentionally) Spaces to indent the code - then you get a mess of indentation as well.
+</p>
+
+<br>
+<p>
+<h3 id="formats"><i>Formatting</i></h3>
+</p>
+
+<p>
+The <i>Edit / Formats</i> menu provides a batch of useful text handlers that apply various formatting methods to the current text.
+</p>
+
+<p>
+Mostly, the handlers deal with the selected text. The selection can be only one, multiple selections are not allowed.
+</p>
+
+<p>
+If there is no text selection, the current line is processed.
+</p>
+
+<p>
+The handlers can be modified or added. For this, choose <i>Edit / Formats / Open...</i> menu item, then select a file of appropriate type. If you create ("save as") a new handler, restart <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> to make it active.
+</p>
+
+<p>
+The existing handlers are commented in every detail. When creating a new handler, name it so that its initial 4 characters allow placing it in the appropriate place among its comrade handlers. "Empty" names like 010, 100, 500 mean the dividers in <i>Edit / Formats</i> menus.
+</p>
+
+<p>
+The <i>Edit / Formats / External</i> submenu contains not the text handlers but the external commands that process the current text selection or the lines of the selection. The externals are also commented in the smallest detail.
+</p>
+
+<p>
+<b>Note #1</b>: if you decide to create a subdirectory of <i>format</i> directory, don't use spaces in its name. Use "_" or "-" instead.
+</p>
+
+<p>
+<b>Note #2</b>: the <i>Edit / Formats</i> submenus are good candidates to "freeze" them with their dotted items and move them to convenient places of the screen, perhaps changing their sizes. So that they will be at hand in the next sessions of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>. An example of this is presented in <A href="https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6">"Little things" demo</A>.
+</p>
+
+<p>
 </p>
 
 <br>

@@ -791,15 +791,25 @@ proc ::em::input {cmd} {
   if {$dp < 0} {set dp 999999}
   set data [string range $cmd $dp+4 end]
   set geo [::em::centerme]
-  set cmd "$dialog input [string range $cmd 2 $dp-1] $geo -ontop $::em::ontop"
+  set ontop $::em::ontop
+  if {[info exists ::em::inputStay] && $::em::inputStay} {
+    # formerly, the dialog was set topmost manually
+    set ontop 1
+  }
+  set cmd "$dialog input [string range $cmd 2 $dp-1] $geo -ontop $ontop -stay 1"
   catch {set cmd [subst $cmd]}
   if {[set lb [countCh $cmd \{]] != [set rb [countCh $cmd \}]]} {
     dialog_box ERROR " Number of left braces : $lb\n Number of right braces: $rb \
-      \n\n     are not equal!" ok err OK {*}$geo -ontop $::em::ontop
+      \n\n     are not equal!" ok err OK {*}$geo -ontop $ontop
   }
   set res [eval $cmd [::em::theming_pave]]
-  $dialog destroy
+  set win [$dialog dlgPath]
   set r [lindex $res 0]
+  # is the dialog set topmost manually? if yes, let it remain (with em::inputStay=1)
+  set ::em::inputStay [expr {$r && !$::em::ontop && [winfo exists $win] \
+    && [wm attributes $win -topmost]}]
+  catch {destroy $win}
+  $dialog destroy
   if {$r && $data ne {}} {
     lassign $res -> {*}$data
     foreach n [split $data " "] {

@@ -68,7 +68,7 @@ namespace eval ::alited {
   set al(RE,branch) $al(RE,branchDEF)
 
   # special RE for leafs
-  set al(RE,leafDEF) {^\s*#\s*[=]+([^=]*)\s*[=]+$}
+  set al(RE,leafDEF) {^\s*#\s*=+\s*([^=\s]+)\s*=+$}
   set al(RE,leaf) $al(RE,leafDEF)
 
   # RE for Tcl leaf units
@@ -233,6 +233,14 @@ namespace eval ::alited {
 
   # Commenting mode: 0 - TODO, 1 - Classic, 2 - Sticky
   set al(commentmode) 0
+
+  # options for Edit/Formats submenu
+  set al(format_separ1DEF) \
+    {# == N (70)=============================================================================}
+  set al(format_separ2DEF) #_______________________
+  set al(format_separ1) $al(format_separ1DEF)
+  set al(format_separ2) $al(format_separ2DEF)
+
 }
 
 # ________________________ Variables _________________________ #
@@ -325,6 +333,7 @@ proc ini::ReadIni {{projectfile ""}} {
       set ::alited::PanTop_wh "-w $w2 -h $h2" ;# the status bar is wanted
     }
   }
+  if {$al(RE,leaf) eq {}} {set al(RE,leaf) $al(RE,leafDEF)}
   ReadIniPrj
   set al(TEXT,opts) "-padx 3 -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3)"
   if {!$al(INI,belltoll)} {
@@ -417,7 +426,7 @@ proc ini::ReadIniOptions {nam val} {
     REproc2       {set al(RE,proc2) $val}
     REleaf        {set al(RE,leaf) $val}
     REleaf2       {set al(RE,leaf2) $val}
-    UseLeaf       {set al(INI,LEAF) $val}
+    UseLeaf       {set al(INI,LEAF) [string is true -strict $val]}
     Lines1        {set al(INI,LINES1) $val}
     RecentFiles   {set al(INI,RECENTFILES) $val}
     MaxLast       {set al(FAV,MAXLAST) $val}
@@ -437,7 +446,6 @@ proc ini::ReadIniOptions {nam val} {
     BlinkCurs     {set al(ED,BlinkCurs) $val}
     EDtran        {set al(ED,tran) $val}
     EDtrans       {set al(ED,trans) $val}
-    EDtransadd    {set al(ED,transadd) $val}
     ClrCurs       {set al(CURSORCOLOR) $val}
     cursorwidth   {set al(CURSORWIDTH) $val}
     prjdefault    {set al(PRJDEFAULT) $val}
@@ -447,6 +455,7 @@ proc ini::ReadIniOptions {nam val} {
     ALEversion    {set al(ALEversion) $val}
     todoahead     {set al(todoahead) $val}
   }
+#    EDtransadd    {set al(ED,transadd) $val} obsolete
 }
 #_______________________
 
@@ -598,9 +607,9 @@ proc ini::ReadIniMisc {nam val} {
   switch -glob -- $nam {
     isfavor {set al(FAV,IsFavor) $val}
     showinfo {set al(TREE,showinfo) $val}
-    TIPS,* {set al($nam) $val}
     listSBL - HelpedMe - checkgeo - tonemoves - moveall - chosencolor \
-    - sortList - activemacro {
+    - sortList - activemacro - commentmode - format_separ1 - format_separ2 \
+    - TIPS,* - MNUGEO,* {
       set al($nam) $val
     }
     tplilast {set ::alited::unit::ilast $val}
@@ -611,7 +620,6 @@ proc ini::ReadIniMisc {nam val} {
     chInRE2 {set ::alited::find::chInRE2 [string is true $val]}
     chExRE2 {set ::alited::find::chExRE2 [string is true $val]}
     geoRE2 {set ::alited::find::geoRE2 $val}
-    commentmode {set al(commentmode) $val}
   }
 }
 #_______________________
@@ -848,7 +856,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "BlinkCurs=$al(ED,BlinkCurs)"
   puts $chan "EDtran=$al(ED,tran)"
   puts $chan "EDtrans=$al(ED,trans)"
-  puts $chan "EDtransadd=$al(ED,transadd)"
+#  puts $chan "EDtransadd=$al(ED,transadd)"
   puts $chan "ClrCurs=$al(CURSORCOLOR)"
   puts $chan "prjdefault=$al(PRJDEFAULT)"
   foreach k [array names al DEFAULT,*] {
@@ -916,7 +924,10 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "tonemoves=$al(tonemoves)"
   puts $chan "checkgeo=$al(checkgeo)"
   puts $chan "HelpedMe=$al(HelpedMe)"
-  foreach k [array names al TIPS,*] {
+  foreach k [array names al -glob TIPS,*] {
+    puts $chan "$k=$al($k)"
+  }
+  foreach k [array names al -glob MNUGEO,*] {
     puts $chan "$k=$al($k)"
   }
   puts $chan "sortList=$al(sortList)"
@@ -930,6 +941,8 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "chExRE2=$::alited::find::chExRE2"
   puts $chan "geoRE2=$::alited::find::geoRE2"
   puts $chan "commentmode=$al(commentmode)"
+  puts $chan "format_separ1=$al(format_separ1)"
+  puts $chan "format_separ2=$al(format_separ2)"
   # save the geometry options
   puts $chan {}
   puts $chan {[Geometry]}
@@ -1370,6 +1383,7 @@ proc ini::InitGUI {} {
   if {[llength $clrvals]==[llength $clrnams]} {
     ::hl_tcl::hl_colors {-AddTags} $Dark {*}$clrvals
   }
+  ::hl_tcl::hl_colors . $Dark {*}$clrvals ;# default Tcl syntax colors
   if {!$al(ED,BlinkCurs)} {
     lassign [::apave::obj defaultATTRS tex] texopts texattrs
     ::apave::obj defaultATTRS tex $texopts [dict set texattrs -insertofftime 0]
@@ -1483,7 +1497,7 @@ proc ini::_init {} {
   TipToolHotkeys
   foreach {icon} {none gulls heart add change delete up down paste plus minus retry \
   misc previous previous2 next next2 folder file OpenFile SaveFile saveall undo redo \
-  box replace ok color date help run e_menu other trash actions paste} {
+  box replace ok color date help run e_menu other trash actions paste copy} {
     set img [CreateIcon $icon]
     if {$icon in {file OpenFile SaveFile saveall box undo redo replace \
     ok color date help run e_menu other}} {

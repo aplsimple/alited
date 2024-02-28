@@ -96,6 +96,7 @@ namespace eval ::alited {
     {Switch to Unit Tree} {Перейти на список юнитов}
     {Switch to File Tree} {Перейти на список файлов}
     {Create File} {Создать файл}
+    {Create File...} {Создать файл...}
     "Enter a name of file to create in:\n%d\n\nIf it is a directory, check 'Directory' box.\nThe directory can include subdirectories (a/b/c)." "Введите имя файла, создаваемого в:\n%d\n\nЕсли это каталог, включите опцию 'Каталог'.\nКаталог может включать подкаталоги (a/b/c)."
     {Delete File} {Удалить файл}
     "\nFile \"%f\" already exists in\n%d\n" "\nФайл \"%f\" уже существует в\n%d\n"
@@ -163,6 +164,10 @@ namespace eval ::alited {
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" был удален другим приложением.\n\nСохранить файл?"
     {Tip File Info} {Данные о файлах}
     {Rename File} {Переименовать файл}
+    {Rename File...} {Переименовать файл...}
+    {Clone File} {Клонировать файл}
+    {Clone File...} {Клонировать файл...}
+    {Clone...} {Клонировать...}
     {Select one file in the tree.} {Выберите один файл в списке.}
     {Open Selected Files} {Открыть выделенные файлы}
     {Close Selected Files} {Закрыть выделенные файлы}
@@ -174,7 +179,6 @@ namespace eval ::alited {
     {Template:} {Шаблон:}
     {Templates} {Шаблоны}
     {Templates...} {Шаблоны...}
-    {List of Templates} {Список шаблонов}
     {Current template:} {Текущий шаблон:}
     {New template:} {Новый шаблон:}
     {Hot keys} {Клавиши}
@@ -297,6 +301,7 @@ namespace eval ::alited {
     "Closes all tabs without favorites\nat choosing Favorites' list" "Закрывать \"неизбранные\" закладки\nпри выборе списка Избранного"
     "Sets a list of Favorites\nthat was active initially." "Восстанавливает список Избранного,\nдействовавший вначале."
     {Delete a favorites' list #%n ?} {Удалить список Избранного #%n ?}
+    {Favorites} {Избранное}
     {Favorites Lists...} {Списки Избранного...}
     "Add \"%n\" of %f\nto Favorites?" "Добавить \"%n\" файла %f\nв Избранное?"
     "Item \"%n\" of %f\nis already in Favorites." "Юнит \"%n\" из %f\nуже есть в Избранном."
@@ -670,6 +675,44 @@ namespace eval ::alited {
     {Copy} {Копировать}
     {Paste} {Вставить}
     {Move the cursor to select a rectangle.} {Переместите курсор для выделения прямоугольника.}
+  }
+
+  ## ________________________ Formats _________________________ ##
+
+  ::msgcat::mcmset ru {
+    {Formats} {Форматы}
+    {Moving Unit Descriptions} {Перенос описаний юнитов}
+    {Moving Unit Descriptions...} {Перенос описаний юнитов...}
+    {Move Unit Descriptions} {Перенести описания юнитов}
+    {Selected} {Выделенные}
+    {All open} {Все открытые}
+    {Move proc/method descriptions:} {Перенести описания proc/method:}
+    {From inside to out} {Внутренние наружу}
+    {From out to inside} {Наружные внутрь}
+    {Separator:} {Разделитель:}
+    {Process .tcl file(s):} {Обработать .tcl файл(ы):}
+    " Current leaf's RE\n\n   <r>%r1</r>\n\n is not equal to standard\n\n   <r>%r2</r>\n\n as set in Projects/Options and Preferences/Units."
+    " Текущее RE юнита\n\n   <r>%r1</r>\n\n не равно стандартному\n\n   <r>%r2</r>\n\n согласно настройкам\n Проекты/Опции и Настройки/Опции."
+    "The separator doesn't match to the regexp:\n\n  "
+    "Разделитель не соответствует регулярному выражению:\n\n  "
+    {Separator must contain "n" or "N" for unit name!}
+    {Разделитель должен содержать "n" или "N" для имени юнита!}
+    {The separator should be Tcl comment!} {Разделитель должен быть комментарием Tcl!}
+    {Were all files properly backed up?} {Все ли файлы архивированы?}
+    "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
+    "ОПЦИЯ ПРОЕКТА \"Использовать RE листа\" временно переключена в "
+    {%f is not open yet - SKIPPED} {%f еще не открыт - ПРОПУЩЕН}
+    {Files processed successfully: %n} {Успешно обработано файлов: %n}
+    {%f processed, units touched: %n} {%f обработан, затронуто юнитов: %n}
+    {%f processed, units touched: %n - ALREADY PROCESSED?}
+    {%f обработан, затронуто юнитов: %n - УЖЕ ОБРАБОТАН?}
+    {ERROR} {ОШИБКА}
+    {Strings} {Строки}
+    {Keyboard} {Клавиатура}
+    {Sorting lines} {Сортировка строк}
+    {Applied to one selection only!} {Разрешено только одно выделение!}
+    "Incorrect mapped 'from-to' in: %l" "Некорректное отображение 'с-на' в: %l"
+    "'from' refers to previous 'to' in: %l (see: %n)" "'с' ссылается на предыдущее 'на' в: %l (см.: %n)"
   }
 
   ## ________________________ EONS alited _________________________ ##

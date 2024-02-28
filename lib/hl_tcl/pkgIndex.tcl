@@ -1,5 +1,5 @@
 
-package ifneeded hl_tcl 1.1.0 [list source [file join $dir hl_tcl.tcl]]
+package ifneeded hl_tcl 1.1.1 [list source [file join $dir hl_tcl.tcl]]
 
 # short intro (for Ruff! docs generator)
 

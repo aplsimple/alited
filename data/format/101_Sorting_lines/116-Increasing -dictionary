@@ -1,0 +1,19 @@
+
+# The mode=3 means that command(s) will be applied to a list of lines
+# that are selected.
+#
+# The lines may be selected partly, e.g. from 7th column of first line
+# through other lines to 7th column of last line.
+#
+# The typical case of mode=3 is the sorting lines.
+#
+# In the command, %v wildcard stands for "list of selected lines".
+#
+# After applying the command to the list, its result will replace
+# the processed lines in the text.
+
+# ===========================================================================
+#
+Mode = 3
+
+Command = lsort -dictionary {%v}

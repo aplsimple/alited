@@ -31,12 +31,13 @@ proc info::Get {i} {
 }
 #_______________________
 
-proc info::Put {msg {inf ""} {bold no} {see no}} {
+proc info::Put {msg {inf ""} {bold no} {red no} {see no}} {
   # Puts a message to the info listbox widget.
   #   msg - the message
   #   inf - additional data for the message (1st line of unit etc.)
   #   bold - if yes, displays the message bolded
-  #   see - if yes, makes the message seen in red color
+  #   red - if yes, makes the message seen in red color
+  #   see - if yes, makes the message seen
 
   namespace upvar ::alited obPav obPav
   variable list
@@ -44,13 +45,16 @@ proc info::Put {msg {inf ""} {bold no} {see no}} {
   variable lastred
   ClearRed
   set llen [llength $list]
+  if {[lindex $list end] eq {} && $msg eq {}} return
   lappend list $msg
   lappend info $inf
   set lbx [$obPav LbxInfo]
   lassign [alited::FgFgBold] -> fgbold fgred
-  if {$see} {
-    set fgbold $fgred
+  if {$red || $see} {
     $lbx see end
+  }
+  if {$red} {
+    set fgbold $fgred
     set lastred $llen
   } elseif {!$bold} {
     return
