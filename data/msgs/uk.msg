@@ -355,8 +355,8 @@ namespace eval ::alited {
     {Stay on top:} {Над всіма вікнами:}
     {Find} {Пошук}
     {Replace} {Заміна}
-    {All in Text} {Все у тексті}
-    {All in Session} {Все у сеансі}
+    {All in text} {Все у тексті}
+    {All in session} {Все у сеансі}
     {All in %n Files} {Все у %n файлах}
     "Allows to use *, ?, \[ and \]\nin \"find\" string." "Дозволяє використовувати *, ?, \[, \]\nу рядку пошуку."
     "Allows to use the regular expressions\nin \"find\" string." "Дозволяє використовувати регулярні вирази\nу пошуку."
@@ -690,7 +690,6 @@ namespace eval ::alited {
     {Moving Unit Descriptions...} {Перенесення описів юнитів...}
     {Move Unit Descriptions} {Перенести описи юнитів}
     {Selected} {Виділені}
-    {All open} {Всі відкриті}
     {Move proc/method descriptions:} {Перенести описи proc/method:}
     {From inside to out} {Внутрішні у зовнішні}
     {From out to inside} {Зовнішні у внутрішні}
@@ -706,7 +705,6 @@ namespace eval ::alited {
     {Were all files properly backed up?} {Всі файли архівовані?}
     "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
     "ОПЦІЯ ПРОЕКТУ \"Використовувати RE листа\" терміново переключена у "
-    {%f is not open yet - SKIPPED} {%f ще не відкрит - ПРОПУЩЕНИЙ}
     {Files processed successfully: %n} {Успішно оброблено файлів: %n}
     {%f processed, units touched: %n} {%f оброблений, зачеплено юнітів: %n}
     {%f processed, units touched: %n - ALREADY PROCESSED?}

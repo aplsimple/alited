@@ -350,8 +350,8 @@ namespace eval ::alited {
     {Stay on top:} {Bleibe oben:}
     {Find} {Finde}
     {Replace} {Ersetze}
-    {All in Text} {Alle in Text}
-    {All in Session} {Alle in Sitzung}
+    {All in text} {Alle in Text}
+    {All in session} {Alle in Sitzung}
     {All in %n Files} {Alle in %n Dateien}
     "Allows to use *, ?, \[ and \]\nin \"find\" string." "Erlaubt die Verwendung von *, ?, \[ und \]\n  im Suchstring."
     "Allows to use the regular expressions\nin \"find\" string." "Erlaubt die Verwendung von RE\n  im Suchstring."
@@ -687,7 +687,6 @@ namespace eval ::alited {
     {Moving Unit Descriptions...} {Einheitebeschreibungen verschieben...}
     {Move Unit Descriptions} {Einheitebeschreibungen verschieben}
     {Selected} {Ausgewählt}
-    {All open} {Alle offenen}
     {Move proc/method descriptions:} {Verschieben proc/method Beschreibungen:}
     {From inside to out} {Von innen nach außen}
     {From out to inside} {Von außen nach innen}
@@ -703,7 +702,6 @@ namespace eval ::alited {
     {Were all files properly backed up?} {Waren alle Dateien richtig gesichert?}
     "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
     "PROJECTS OPTION \"Benutze RE für Endpunkte\" VORÜBERGEHEND UMGESCHALTET ZU "
-    {%f is not open yet - SKIPPED} {%f ist noch nicht geöffnet - WEGGELASSEN}
     {Files processed successfully: %n} {Erfolgreich verarbeitete Dateien: %n}
     {%f processed, units touched: %n} {%f bearbeitet, Einheiten berührt: %n}
     {%f processed, units touched: %n - ALREADY PROCESSED?}

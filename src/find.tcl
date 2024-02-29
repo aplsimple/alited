@@ -694,7 +694,7 @@ proc find::FindAll {wtxt TID {tagme "add"}} {
 
 proc find::FindInText {{inv -1}} {
   # Searches all strings in a current text.
-  #   inv - index of a button that was hit (2 means "All in Text" button)
+  #   inv - index of a button that was hit (2 means "All in text" button)
 
   variable data
   if {$inv>-1} {set data(lastinvoke) $inv}
@@ -708,7 +708,7 @@ proc find::FindInText {{inv -1}} {
 proc find::FindInSession {{tagme "add"} {inv -1}} {
   # Searches all strings in a session.
   #   tagme - if "add", means "add find tag to the found strings of the text"
-  #   inv - index of a button that was hit (3 means "All in Session" button)
+  #   inv - index of a button that was hit (3 means "All in session" button)
 
   variable data
   if {![CheckData find]} return
@@ -973,7 +973,7 @@ proc find::SessionButtons {} {
   if {[set llen [llength [alited::bar::BAR listFlag s]]]>1} {
     set btext [string map [list %n $llen] [msgcat::mc {All in %n Files}]]
   } else {
-    set btext [msgcat::mc {All in Session}]
+    set btext [msgcat::mc {All in session}]
   }
   [$obFND But3] configure -text $btext
   [$obFND But6] configure -text $btext
@@ -1376,11 +1376,11 @@ proc find::_create {} {
     {chb4 +  T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Wrap" -var ::alited::find::data(c4) -style TCheckbuttonFS}}
     {sev2 cbx1 L 9 1}
     {But1 + L 1 1 {-st wes -pady 2} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
-    {But2 + T 1 1 {-st we -pady 0} {-t "All in Text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
+    {But2 + T 1 1 {-st we -pady 0} {-t "All in text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
     {But3 + T 1 1 {-st wen -pady 2} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
     {chb + T 2 1 {-st e} {-t {-geometry} -var ::alited::find::data(geoDefault) -tip "Use this geometry of the dialogue\nby default" -takefocus 0 -style TCheckbuttonFS}}
     {but4 + T 1 1 {-st wes -pady 2} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
-    {but5 + T 1 1 {-st we -pady 0} {-t "All in Text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
+    {but5 + T 1 1 {-st we -pady 0} {-t "All in text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
     {But6 + T 1 1 {-st wen -pady 2} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
   }
   SessionButtons

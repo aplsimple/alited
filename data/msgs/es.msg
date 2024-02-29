@@ -350,8 +350,8 @@ namespace eval ::alited {
     {Stay on top:} {Encima de todos:}
     {Find} {Buscar}
     {Replace} {Reemplazar}
-    {All in Text} {Todo en Texto}
-    {All in Session} {Todo en Sesión}
+    {All in text} {Todo en texto}
+    {All in session} {Todo en sesión}
     {All in %n Files} {Todo en archivos %n}
     "Allows to use *, ?, \[ and \]\nin \"find\" string." "Permite usar *, ?, \[ y \]\nen la cadena buscada."
     "Allows to use the regular expressions\nin \"find\" string." "Permite usar las expresiones regulares\nen la cadena buscada."
@@ -685,7 +685,6 @@ namespace eval ::alited {
     {Moving Unit Descriptions...} {Mover descripciones de la unidad...}
     {Move Unit Descriptions} {Mover descripciones de la unidad}
     {Selected} {Seleccionado}
-    {All open} {Todo abierto}
     {Move proc/method descriptions:} {Mover proc/method descripciones:}
     {From inside to out} {De dentro a fuera}
     {From out to inside} {De fuera a dentro}
@@ -701,7 +700,6 @@ namespace eval ::alited {
     {Were all files properly backed up?} {¿Todos los archivos estaban correctamente respaldados?}
     "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
     "PROYECTO OPCION \"Usar la expresión regular para hoja\" CAMBIADO TEMPORALMENTE "
-    {%f is not open yet - SKIPPED} {%f todavía no está abierto - SALTANDO}
     {Files processed successfully: %n} {Archivos procesados con éxito: %n}
     {%f processed, units touched: %n} {%f está procesado, las unidades fueron tocadas: %n}
     {%f processed, units touched: %n - ALREADY PROCESSED?}

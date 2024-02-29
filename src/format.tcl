@@ -40,7 +40,7 @@ proc format::UnitDesc {} {
   foreach TID [alited::SessionList 1] {if {[isTclScript $TID]} {incr stcl}}
   foreach tab [alited::SessionList 2] {if {[isTclScript $tab]} {incr atcl}}
   set selected [msgcat::mc Selected]\ ($stcl)
-  set allopen [msgcat::mc {All open}]\ ($atcl)
+  set allopen [msgcat::mc {All in session}]\ ($atcl)
   set REleaf [alited::unit::LeafRegexp]
   $obDl2 makeWindow $win.fra $al(MC,formatdesc)
   $obDl2 paveWindow $win.fra {
@@ -207,13 +207,12 @@ proc format::Re_FgColor {} {
 ## ________________________ Move actions _________________________ ##
 
 proc format::isTclScript {tab} {
-  # Check if the tab's file is of .tcl type and open.
+  # Check if the tab's file is of .tcl type.
   #   tab - tab's info
 
   set TID [lindex $tab 0]
   set fn [alited::bar::FileName $TID]
-  set wtxt [alited::main::GetWTXT $TID]
-  expr {$wtxt ne {} && [string tolower [file extension $fn]] eq {.tcl}}
+  expr {[string tolower [file extension $fn]] eq {.tcl}}
 }
 #_______________________
 
@@ -376,10 +375,7 @@ proc format::MoveUnitDesc {TID} {
   set cont [alited::file::ReadFileByTID $TID]  ;# let it be read anyhow
   set wtxt [alited::main::GetWTXT $TID]
   if {$wtxt eq {}} {
-    set msg [msgcat::mc {%f is not open yet - SKIPPED}]
-    set msg [string map [list %f $fname] $msg]
-    alited::info::Put $msg $infdat
-    return 0
+    lassign [alited::main::GetText $TID no no] -> wtxt
   }
   set lfRE $al(prjuseleafRE)
   if {$da(RE_SWITCHED) || $da(dir)==1} {
@@ -415,6 +411,9 @@ proc format::MoveUnitDesc {TID} {
     if {[llength $item]<3} continue
     lassign $item lev leaf fl1 title l1 l2
     if {$leaf && $title ne {}} {
+      if {[string first { } $title]>0 && $l1==1} {
+        continue ;# intro lines
+      }
       lassign [Separ1 $da(separSav1)] separ limit
       set title [string map [list n $title N $title] $separ]
       set title [string range $title 0 $limit]
@@ -430,6 +429,7 @@ proc format::MoveUnitDesc {TID} {
     }
   }
   if {$moved} {
+    alited::bar::BAR markTab $TID
     set newcont {}
     foreach c $cont {
       append newcont $c \n
@@ -535,6 +535,7 @@ proc format::Ok {} {
     set al(format_separ1) $da(separSav1)
     set al(format_separ2) $da(separSav2)
     lassign [alited::ProcessFiles alited::format::MoveUnitDesc $da(what)] all processed
+    if {$processed} alited::main::UpdateIcons
     set msg [msgcat::mc {Files processed successfully: %n}]
     set msg [string map [list %n $processed] $msg]
     alited::info::Put $msg {} yes [expr {!$processed}] yes
