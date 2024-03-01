@@ -1,10 +1,11 @@
 # LAST CHANGES:
 
-Version `v1.7.1 (29 Feb'24)`
+Version `v1.7.1 (1 Mar'24)`
 
   - BUGFIX: Moving unit descriptions: processed tabs in tabbar not marked as modified
   - CHANGE: Moving unit descriptions: "All in session" instead of "All open"
   - CHANGE: Moving unit descriptions: intro lines ("All of...") skipped
+  - CHANGE: Edit/Rectangular selection/Paste: cursor set after 1st line pasted position
 
 
 Version `v1.7.0 (28 Feb'24)`

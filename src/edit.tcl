@@ -993,10 +993,11 @@ proc edit::pasteRect {wtxt nl nc} {
         $wtxt insert $nl.$nc $line
         set pos2 $nl.[expr {$nc+[string length $line]}]
         lappend sels $nl.$nc $pos2
+        if {![info exists pos1]} {set pos1 $pos2}
       }
       incr nl
     }
-    catch {::tk::TextSetCursor $wtxt $pos2}
+    catch {::tk::TextSetCursor $wtxt $pos1}
     catch {$wtxt tag add sel {*}$sels}
   }
 }
