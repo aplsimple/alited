@@ -322,6 +322,7 @@ namespace eval ::alited {
     {Favorites / Last Visited} {Вибране / Останні входи}
     {Opens files with current favorites.} {Відкрити файли з поточним Вибраним.}
     {Number of files to open: %n} {Кількість файлів на відкриття: %n}
+    "Add .tcl files of current session\nas the favorites" "Додати .tcl файли поточного сеансу\nяк список Вибраного"
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##

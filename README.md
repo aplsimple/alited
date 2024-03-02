@@ -36,21 +36,20 @@ It's quick at maintaining [Tcl/Tk](https://wiki.tcl-lang.org/) code.
 
 Briefly, [alited](https://github.com/aplsimple/alited) is totally quick, being at that *a pure [Tcl/Tk](https://wiki.tcl-lang.org/) application.*
 
-For a quick acquaintance of [alited](https://github.com/aplsimple/alited), a few of demo videos are available:
+For a quick acquaintance of [alited](https://github.com/aplsimple/alited), a few of [its demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6) are available.
 
-   * [Demos of alited](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
-
-For a quick installation, run [an installer of alited](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.6). After the installation, run its desktop shortcut.
+For a quick installation of [alited](https://github.com/aplsimple/alited), just run an [installer of alited](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.6).
 
 # Links
 
    * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.6)
 
-   * [Description](https://aplsimple.github.io/en/tcl/alited/index.html)
-   * [Reference](https://aplsimple.github.io/en/tcl/alited/alited.html)
-
    * [Source #1](https://chiselapp.com/user/aplsimple/repository/alited/download)
    * [Source #2](https://github.com/aplsimple/alited)
+
+   * [Description](https://aplsimple.github.io/en/tcl/alited/index.html)
+   * [Reference](https://aplsimple.github.io/en/tcl/alited/alited.html)
+   * [Demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
 
 # Inevitable blah-blah
 
@@ -58,15 +57,17 @@ For a quick installation, run [an installer of alited](https://github.com/aplsim
 
 In fact, [alited](https://github.com/aplsimple/alited) has been developed by its own v0.2 since 24 April 2021. Inspite of permanent overheads of this way, it turned out to be amazingly productive, more and more in the course of time.
 
-When developing a weekend or small Tcl project, you can nicely do it with [Geany](https://www.geany.org) or [Kate](https://kate-editor.org) or something else. The situation becomes not so nice with middle and large Tcl projects, however good and smart those editors are (they are indeed).
+When developing a weekend or small Tcl/Tk project, you can nicely do it with [Geany](https://www.geany.org) or [Kate](https://kate-editor.org) or something else. The situation becomes not so nice with middle and large Tcl/Tk projects, however good and smart those editors are (they are indeed).
 
 What is *the large Tcl project*? The [poApps by Paul Obermeier](http://www.posoft.de/index.html) may be considered the canonical large Tcl project. Its main source directories (poApplib, poTcllib, poTklib) contain about 70 Tcl scripts of size 2.5 Mb (total about 150 files, 5 Mb). Also, [alited](https://github.com/aplsimple/alited) by itself is rather large project containing about 60 main Tcl scripts of size 1.7 Mb (total about 1150 files, 5 Mb), so that no wonder its editing session includes 70-80 files.
 
-It's with the middle and large Tcl projects that [alited](https://github.com/aplsimple/alited) reveals all its best, while it has 0 Kb of dependencies for developing Tcl/Tk 8.6.10+ and is in no way a half gigabyte monster.
+It is with the middle and large Tcl projects that [alited](https://github.com/aplsimple/alited) reveals all its best, while it has 0 Kb of dependencies for developing Tcl/Tk 8.6.10+ and is in no way a half gigabyte monster.
 
 The cause is obvious: those other editors aren't Tclish, while [alited](https://github.com/aplsimple/alited) is. It is intended specifically for developing Tcl/Tk projects, not for being a universal plug to every hole. Going its own way, of course. Don't forget that it has been coded in Tcl/Tk.
 
-You'll just become more productive with [alited](https://github.com/aplsimple/alited) at developing Tcl code. Just so simple.
+By the way, sometimes I still return to the good old [Geany](https://www.geany.org) or [Pluma](http://mate-desktop.org) (when my [alited](https://github.com/aplsimple/alited) is busy with an open dialogue) - just to confirm once more how good [alited](https://github.com/aplsimple/alited) is.
+
+One just becomes more productive with [alited](https://github.com/aplsimple/alited) at developing Tcl code. Just so simple.
 
 # Typical story
 
@@ -76,7 +77,7 @@ I tried and tried to implement the format change, getting in the real trouble wi
 
 Finally, in one moment, I decided to rearrange my scripts by **alited's means**, i.e. to make a proper unit tree and to place the code units in their proper branches.
 
-It was only after this radical rearrangement of *e_menu.tcl* and *e_addon.tcl* that I felt the format change can be easily implemented. I did it in two days instead of two weeks as it threatened to be at first.
+It was only after the radical rearrangement of *e_menu.tcl* and *e_addon.tcl* that I felt the format change can be easily implemented. I did it in two days instead of two weeks as it threatened to be at first.
 
 Along the way, I got two nice unit trees of code. Being two nice pieces of documentation too.
 
@@ -98,6 +99,6 @@ Below is a screenshot of [alited](https://github.com/aplsimple/alited), just to 
 
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited-win10.png" class="media" alt="">
 
-... and its 1.6.5 version installed 24.01.2024 on x86 machine with Debian v6.0 (Linux core v2.6.32) and GNOME v2.30.2 deployed far back in 2010:
+... and its 1.6.5 version installed 24.01.2024 on x86 machine with Debian v6.0 (Linux core v2.6.32) and GNOME v2.30.2, deployed far back in 2010:
 
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited_in_debian6.png" class="media" alt="">

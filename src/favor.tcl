@@ -266,6 +266,14 @@ proc favor::SetFavorites {cont} {
 }
 #_______________________
 
+proc favor::IsFavoritesFiles {cont} {
+  # Checks if the selected favorites list is a list of file names
+  #   cont - content of the list
+
+  expr {[lindex $cont 0 0] eq {FILE}}
+}
+#_______________________
+
 proc favor::OpenFiles {cont} {
   # Opens files with current favorites.
   #   cont - list of favorites
@@ -309,7 +317,6 @@ proc favor::Lists {} {
 
   namespace upvar ::alited al al
   variable initialFavs
-#!  if #\{!$al(FAV,IsFavor)#\} SwitchFavVisit
   if {![llength $initialFavs]} {
     set initialFavs [alited::tree::GetTree {} TreeFavor]
   }
@@ -350,7 +357,6 @@ proc favor::Show {} {
     SetFavorites $al(FAV,visited)
     $wtree heading #1 -text [msgcat::mc $al(MC,lastvisit)]
   }
-#!  [$obPav BtTListF] configure -state $state
   baltip::tip [$obPav BtTVisitF] $tip
 }
 #_______________________
@@ -358,7 +364,7 @@ proc favor::Show {} {
 proc favor::ShowFavVisit {} {
   # Show favorites/last visits, depending on the mode.
 
-  namespace upvar ::alited al al obPav obPav
+  namespace upvar ::alited al al
   SetFavorites $al(FAV,current)
   if {!$al(FAV,IsFavor)} Show
 }
@@ -366,7 +372,7 @@ proc favor::ShowFavVisit {} {
 proc favor::SwitchFavVisit {} {
   # Switches favorites / last visited units' view.
 
-  namespace upvar ::alited al al obPav obPav
+  namespace upvar ::alited al al
   set al(FAV,IsFavor) [expr {!$al(FAV,IsFavor)}]
   Show
 }

@@ -317,6 +317,7 @@ namespace eval ::alited {
     {Favorites / Last Visited} {Favoriten / Zuletzt Besuchten}
     {Opens files with current favorites.} {Öffnet Dateien mit aktuellen Favoriten.}
     {Number of files to open: %n} {Anzahl der zu öffnenden Dateien: %n}
+    "Add .tcl files of current session\nas the favorites" "Hinzufügen .tcl Dateien der aktuellen Sitzung\nals Favoriten"
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##

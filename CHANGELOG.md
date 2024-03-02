@@ -1,8 +1,10 @@
 # LAST CHANGES:
 
-Version `v1.7.1 (1 Mar'24)`
+Version `v1.7.2 (2 Mar'24)`
 
   - BUGFIX: Moving unit descriptions: processed tabs in tabbar not marked as modified
+  - NEW   : Saved favorites: "Add session files as favorites" button
+  - DRAFT : Tools/Project printer
   - CHANGE: Moving unit descriptions: "All in session" instead of "All open"
   - CHANGE: Moving unit descriptions: intro lines ("All of...") skipped
   - CHANGE: Edit/Rectangular selection/Paste: cursor set after 1st line pasted position

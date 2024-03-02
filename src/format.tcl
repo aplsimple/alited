@@ -37,8 +37,8 @@ proc format::UnitDesc {} {
   set separSav2 $da(separSav2)
   lassign [Re_Colors] fgRE da(bgRE)
   set stcl [set atcl 0]
-  foreach TID [alited::SessionList 1] {if {[isTclScript $TID]} {incr stcl}}
-  foreach tab [alited::SessionList 2] {if {[isTclScript $tab]} {incr atcl}}
+  foreach TID [alited::SessionList 1] {if {[alited::isTclScript $TID]} {incr stcl}}
+  foreach tab [alited::SessionList 2] {if {[alited::isTclScript $tab]} {incr atcl}}
   set selected [msgcat::mc Selected]\ ($stcl)
   set allopen [msgcat::mc {All in session}]\ ($atcl)
   set REleaf [alited::unit::LeafRegexp]
@@ -206,16 +206,6 @@ proc format::Re_FgColor {} {
 
 ## ________________________ Move actions _________________________ ##
 
-proc format::isTclScript {tab} {
-  # Check if the tab's file is of .tcl type.
-  #   tab - tab's info
-
-  set TID [lindex $tab 0]
-  set fn [alited::bar::FileName $TID]
-  expr {[string tolower [file extension $fn]] eq {.tcl}}
-}
-#_______________________
-
 proc format::Separ1 {title} {
   # Gets "real" separator and limit of its length (extracted from it).
   #   title - title
@@ -369,7 +359,7 @@ proc format::MoveUnitDesc {TID} {
 
   namespace upvar ::alited al al
   variable da
-  if {![isTclScript $TID]} {return 0}
+  if {![alited::isTclScript $TID]} {return 0}
   set infdat [list $TID 1]
   set fname [file tail [alited::bar::FileName $TID]]
   set cont [alited::file::ReadFileByTID $TID]  ;# let it be read anyhow

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.7.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.7.2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -676,6 +676,16 @@ namespace eval alited {
     }
     return [list $all $processed]
   }
+  #_______________________
+
+  proc isTclScript {tab} {
+    # Check if the tab's file is of .tcl type.
+    #   tab - tab's info
+
+    set TID [lindex $tab 0]
+    set fn [alited::bar::FileName $TID]
+    expr {[string tolower [file extension $fn]] eq {.tcl}}
+  }
 
   ## ________________________ Messages _________________________ ##
 
@@ -1152,13 +1162,21 @@ namespace eval alited {
   }
   #_______________________
 
+  proc ScriptSource {script} {
+    # Sources script.tcl (at need).
+    #   script - the script name
+
+    variable SRCDIR
+    if {[info commands ::alited::${script}::_run] eq {}} {
+      source [file join $SRCDIR $script.tcl]
+    }
+  }
+  #_______________________
+
   proc CheckSource {} {
     # Sources check.tcl (at need).
 
-    variable SRCDIR
-    if {[info commands ::alited::check::_run] eq {}} {
-      source [file join $SRCDIR check.tcl]
-    }
+    ScriptSource check
   }
   #_______________________
 
@@ -1167,6 +1185,14 @@ namespace eval alited {
 
     CheckSource
     check::_run
+  }
+  #_______________________
+
+  proc PrinterRun {} {
+    # Runs "Project Printer".
+
+    ScriptSource printer
+    printer::_run
   }
   #_______________________
 
@@ -1311,6 +1337,7 @@ if {[info exists ALITED_PORT]} {
     source [file join $::alited::SRCDIR preview.tcl]
     source [file join $::alited::SRCDIR unit_tpl.tcl]
     source [file join $::alited::SRCDIR format.tcl]
+    source [file join $::alited::SRCDIR printer.tcl]
     source [file join $::alited::LIBDIR addon hl_md.tcl]
     source [file join $::alited::LIBDIR addon hl_html.tcl]
     source [file join $::alited::LIBDIR addon hl_em.tcl]

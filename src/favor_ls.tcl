@@ -56,14 +56,16 @@ proc favor_ls::Ok {{res 0}} {
       focus [$obFav LbxFav]
       return
     }
+    set cont [lindex $favcont $isel]
+    set isfiles [alited::favor::IsFavoritesFiles [Split $cont]]
+    if {$isfiles} {set res 4}
     set pla [lindex $favpla $isel]
     if {$res!=4} {
       # list of fav.units
-      set cont [lindex $favcont $isel]
     } else {
       # list of files of fav.units
-      if {$::alited::al(FAV,IsFavor)} {
-        set cont [ComposeText no]
+      if {$::alited::al(FAV,IsFavor) && !$isfiles} {
+        set cont [ComposeText no {*}[Split $cont]]
       } else {
         set cont [Text]
       }
@@ -132,12 +134,16 @@ proc favor_ls::ComposeText {isfavor args} {
   set text [set currents {}]
   set prevnames [list]
   if {![llength $args]} {set args [alited::tree::GetTree {} TreeFavor]}
+  set isfiles [alited::favor::IsFavoritesFiles $args]
   foreach it $args {
     if {$text ne {}} {
       append text \n
       append currents $::alited::EOL
     }
-    if {$isfavor} {
+    if {$isfiles} {
+      set fname [lindex $it 1]
+      if {$fname ni $prevnames} {lappend prevnames $fname}
+    } elseif {$isfavor} {
       append text [lindex $it 4 0]
     } else {
       set fname [lindex $it 4 1]
@@ -145,7 +151,7 @@ proc favor_ls::ComposeText {isfavor args} {
     }
     append currents $it
   }
-  if {!$isfavor} {
+  if {!$isfavor || $isfiles} {
     foreach fname [lsort $prevnames] {
       if {$text ne {}} {append text \n}
       append text $fname
@@ -155,17 +161,26 @@ proc favor_ls::ComposeText {isfavor args} {
 }
 #_______________________
 
-proc favor_ls::DisplayText {args} {
+proc favor_ls::DisplayText {cont} {
   # Displays text of favorites or their files.
-  #   args - a list of favorites
-  # See also: ComposeText
+  #   cont - text's content
+  # See also: DisplayFavorText
 
-  namespace upvar ::alited al al
   variable obFav
   set w [$obFav TexFav]
   $obFav readonlyWidget $w no
-  $obFav displayText $w [ComposeText $al(FAV,IsFavor) {*}$args]
+  $obFav displayText $w $cont
   $obFav readonlyWidget $w yes
+}
+#_______________________
+
+proc favor_ls::DisplayFavorText {args} {
+  # Displays text of favorites or their files.
+  #   args - a list of favorites
+  # See also: ComposeText, DisplayText
+
+  namespace upvar ::alited al al
+  DisplayText [ComposeText $al(FAV,IsFavor) {*}$args]
 }
 #_______________________
 
@@ -196,7 +211,7 @@ proc favor_ls::Select {{isel ""}} {
   if {$isel ne {} && [set fav [lindex $favlist $isel]] ne {}} {
     set place [lindex $favpla $isel]
     set cont [Split [lindex $favcont $isel]]
-    DisplayText {*}$cont
+    DisplayFavorText {*}$cont
     Focus $isel
   }
 }
@@ -258,6 +273,43 @@ proc favor_ls::Add {} {
   }
   Save_favlist
   Focus $isel
+}
+#_______________________
+
+proc favor_ls::AddFiles {} {
+  # Adds .tcl files of current session as the favorites.
+
+  namespace upvar ::alited al al
+  variable currents
+  variable place
+  # scan all .tcl and add its initial units to the favorites' list
+  set text [set currents {}]
+  set place 1
+  foreach tab [alited::SessionList 2] {
+    if {[alited::isTclScript $tab]} {
+      set TID [lindex $tab 0]
+      set wtxt [alited::main::GetWTXT $TID]
+      if {$wtxt eq {}} {
+        alited::main::GetText $TID no no
+      }
+      set it [lindex $al(_unittree,$TID) 0]
+      if {$it ne {}} {
+        if {$text ne {}} {
+          append text \n
+          append currents $::alited::EOL
+        }
+        set fname [alited::bar::FileName $TID]
+        append text $fname
+        append currents [list FILE $fname]
+      }
+    }
+  }
+  if {$text eq {}} {
+    alited::info::Put {.tcl files not found} {} yes yes yes
+  } else {
+    DisplayText $text
+    Add
+  }
 }
 #_______________________
 
@@ -406,7 +458,8 @@ proc favor_ls::_create {} {
     {.fra.btTChg - - - - {pack -side top} {-com ::alited::favor_ls::Change -tip "Change a list of favorites" -image alimg_change-big}}
     {.fra.btTDel - - - - {pack -side top} {-com ::alited::favor_ls::Delete -tip "Delete a list of favorites" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill y}}
-    {.fra.btTCur - - - - {pack $forget -side top} {-com ::alited::favor_ls::DisplayText -tip "$al(MC,currfavs)" -image alimg_heart-big}}
+    {.fra.btTFil - - - - {pack $forget -side top} {-com ::alited::favor_ls::AddFiles -tip "Add .tcl files of current session\nas the favorites" -image alimg_plus-big}}
+    {.fra.btTCur - - - - {pack $forget -side top} {-com ::alited::favor_ls::DisplayFavorText -tip "$al(MC,currfavs)" -image alimg_heart-big}}
     {.LbxFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 40 -lvar ::alited::favor_ls::favlist}}
     {.sbvFavs + L - - {pack -side left -fill y} {}}
     {fra1 fraLbxFav T 1 2 {-st nswe}}
@@ -432,7 +485,7 @@ proc favor_ls::_create {} {
   }
   set fav {}
   set lbx [$obFav LbxFav]
-  DisplayText
+  DisplayFavorText
   Restore_favlist
   if {!$al(FAV,IsFavor)} {after idle "alited::favor_ls::Select 0 ; focus $lbx"}
   bind $lbx <<ListboxSelect>> ::alited::favor_ls::Select
