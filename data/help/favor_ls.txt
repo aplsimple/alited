@@ -2,6 +2,9 @@
 
  Use <r>Add</r> and <r>Change</r> buttons after filling list's name.
 
+ Use <r>Add Files</r> button to create the favorite list from the current
+ session's files.
+
  The current list of favorites is displayed in the bottom listbox.
  Enter a name for the list and click <r>Add</r> button to save it.
 

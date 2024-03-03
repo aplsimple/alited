@@ -36,9 +36,8 @@ proc format::UnitDesc {} {
   set separSav1 $da(separSav1)
   set separSav2 $da(separSav2)
   lassign [Re_Colors] fgRE da(bgRE)
-  set stcl [set atcl 0]
-  foreach TID [alited::SessionList 1] {if {[alited::isTclScript $TID]} {incr stcl}}
-  foreach tab [alited::SessionList 2] {if {[alited::isTclScript $tab]} {incr atcl}}
+  set stcl [llength [SessionTclList 1]]
+  set atcl [llength [SessionTclList 2]]
   set selected [msgcat::mc Selected]\ ($stcl)
   set allopen [msgcat::mc {All in session}]\ ($atcl)
   set REleaf [alited::unit::LeafRegexp]

@@ -152,7 +152,7 @@ proc favor_ls::ComposeText {isfavor args} {
     append currents $it
   }
   if {!$isfavor || $isfiles} {
-    foreach fname [lsort $prevnames] {
+    foreach fname [lsort -dictionary $prevnames] {
       if {$text ne {}} {append text \n}
       append text $fname
     }
@@ -282,30 +282,56 @@ proc favor_ls::AddFiles {} {
   namespace upvar ::alited al al
   variable currents
   variable place
-  # scan all .tcl and add its initial units to the favorites' list
-  set text [set currents {}]
-  set place 1
-  foreach tab [alited::SessionList 2] {
-    if {[alited::isTclScript $tab]} {
-      set TID [lindex $tab 0]
-      set wtxt [alited::main::GetWTXT $TID]
-      if {$wtxt eq {}} {
-        alited::main::GetText $TID no no
-      }
-      set it [lindex $al(_unittree,$TID) 0]
-      if {$it ne {}} {
-        if {$text ne {}} {
-          append text \n
-          append currents $::alited::EOL
-        }
-        set fname [alited::bar::FileName $TID]
-        append text $fname
-        append currents [list FILE $fname]
-      }
+  variable fav
+  variable obFav
+  if {$fav eq ""} {
+    focus [$obFav EntFav]
+    Message $al(MC,favent1) 4
+    return
+  }
+  set tsel [alited::SessionTclList 1]
+  set tall [alited::SessionTclList 2]
+  set isel [llength $tsel]
+  set iall [llength $tall]
+  set msgNoTcl {No .tcl files found in the session}
+  if {$iall<1} {
+    Message $msgNoTcl 4
+    return
+  }
+  set msg [msgcat::mc "\n Save as favorites list: selected (%s) or all (%a) files?\n"]
+  set msg [string map [list %s $isel %a $iall] $msg]
+  if {$isel>1} {set res 1} {set res 2}
+  set res [$obFav misc ques [msgcat::mc Question] $msg {Selected 1 {All files} 2 Cancel 0} $res]
+  switch $res {
+    1 {set tabs $tsel}
+    2 {set tabs $tall}
+    default {return}
+  }
+  # scan all .tcl to get the favorites' list from them
+  set fnames [list]
+  foreach tab $tabs {
+    set TID [lindex $tab 0]
+    set wtxt [alited::main::GetWTXT $TID]
+    if {$wtxt eq {}} {
+      alited::main::GetText $TID no no
+    }
+    set it [lindex $al(_unittree,$TID) 0]
+    if {$it ne {}} {
+      lappend fnames [alited::bar::FileName $TID]
     }
   }
+  # create the sorted list of favorite files
+  set text [set currents {}]
+  foreach fname [lsort -dictionary $fnames] {
+    if {$text ne {}} {
+      append text \n
+      append currents $::alited::EOL
+    }
+    append text $fname
+    append currents [list FILE $fname]
+  }
   if {$text eq {}} {
-    alited::info::Put {.tcl files not found} {} yes yes yes
+    Message $msgNoTcl 4
   } else {
     DisplayText $text
     Add

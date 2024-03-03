@@ -523,7 +523,7 @@ proc menu::FillMenu {} {
   $m.filelist add command -label $al(MC,filelist) -command {alited::bar::BAR popList} -accelerator $al(acc_21)
   $m.filelist add checkbutton -label [msgcat::mc {Sorted}] -variable ::alited::al(sortList)
   $m add command -label $al(MC,checktcl...) -command alited::CheckRun
-  $m add command -label [msgcat::mc {Project Printer...}] -command alited::PrinterRun
+#!  $m add command -label [msgcat::mc #\{Project Printer...#\}] -command alited::PrinterRun
 
   ### ________________________ Paver _________________________ ###
 

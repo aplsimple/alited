@@ -318,6 +318,8 @@ namespace eval ::alited {
     {Opens files with current favorites.} {Открыть файлы с текущим Избранным.}
     {Number of files to open: %n} {Число открываемых файлов: %n}
     "Add .tcl files of current session\nas the favorites" "Добавить .tcl файлы текущего сеанса\nкак список Избранного"
+    {No .tcl files found in the session} {No .tcl files found in the session}
+    " Save as favorites list:\n selected (%s) or all (%a) files?" " Save as favorites list:\n selected (%s) or all (%a) files?"
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##

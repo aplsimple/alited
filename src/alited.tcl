@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.7.2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.7.3  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -649,18 +649,6 @@ namespace eval alited {
   }
   #_______________________
 
-  proc SessionList {{mode 0}} {
-    # Returns a list of all tabs or selected tabs (if set).
-    #   mode - 0 get selected or all, 1 force selected, 2 force all
-
-    set res [alited::bar::BAR listFlag s]
-    if {(!$mode && [llength $res]==1) || $mode==2} {
-      set res [alited::bar::BAR listTab]
-    }
-    return $res
-  }
-  #_______________________
-
   proc ProcessFiles {procname what} {
     # Processes files according to Selected/All choice.
     #   procname - name of command to run on files (TID passed)
@@ -678,6 +666,18 @@ namespace eval alited {
   }
   #_______________________
 
+  proc SessionList {{mode 0}} {
+    # Returns a list of all tabs or selected tabs (if set).
+    #   mode - 0 get selected or all, 1 force selected, 2 force all
+
+    set res [alited::bar::BAR listFlag s]
+    if {(!$mode && [llength $res]==1) || $mode==2} {
+      set res [alited::bar::BAR listTab]
+    }
+    return $res
+  }
+  #_______________________
+
   proc isTclScript {tab} {
     # Check if the tab's file is of .tcl type.
     #   tab - tab's info
@@ -685,6 +685,20 @@ namespace eval alited {
     set TID [lindex $tab 0]
     set fn [alited::bar::FileName $TID]
     expr {[string tolower [file extension $fn]] eq {.tcl}}
+  }
+  #_______________________
+
+  proc SessionTclList {{mode 0}} {
+    # Returns a list of all tabs or selected tabs of .tcl files.
+    #   mode - 0 get selected or all, 1 force selected, 2 force all
+
+    set ltabs [list]
+    foreach tab [alited::SessionList $mode] {
+      if {[alited::isTclScript $tab]} {
+        lappend ltabs $tab
+      }
+    }
+    return $ltabs
   }
 
   ## ________________________ Messages _________________________ ##

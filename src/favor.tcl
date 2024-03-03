@@ -274,8 +274,9 @@ proc favor::IsFavoritesFiles {cont} {
 }
 #_______________________
 
-proc favor::OpenFiles {cont} {
+proc favor::OpenFiles {pla cont} {
   # Opens files with current favorites.
+  #   pla - if 5, current files remain; if 6, current files close
   #   cont - list of favorites
 
   variable ansOpenFiles
@@ -291,6 +292,7 @@ proc favor::OpenFiles {cont} {
     }
     if {$ansOpenFiles} {
       # try to show them all on the 1st page of tabbar
+      if {$pla==6} {alited::file::CloseAll 1}
       foreach fname [lreverse $fnames] {
         if {[set TID [alited::file::OpenFile $fname]] ne {}} {
           alited::bar::BAR moveTab $TID 0
@@ -325,7 +327,7 @@ proc favor::Lists {} {
     1 {SetFavorites $cont}
     2 {SetAndClose $cont}
     3 {SetFavorites $initialFavs}
-    5 {OpenFiles $cont}
+    5 - 6 {OpenFiles $pla $cont}
   }
 }
 

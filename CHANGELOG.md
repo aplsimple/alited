@@ -1,6 +1,6 @@
 # LAST CHANGES:
 
-Version `v1.7.2 (2 Mar'24)`
+Version `v1.7.3 (3 Mar'24)`
 
   - BUGFIX: Moving unit descriptions: processed tabs in tabbar not marked as modified
   - NEW   : Saved favorites: "Add session files as favorites" button
