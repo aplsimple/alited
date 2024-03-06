@@ -106,6 +106,7 @@ namespace eval ::alited {
     {Update Tree} {Обновить список}
     {Contract All} {Свернуть всё}
     {Expand All} {Развернуть всё}
+    {Expand Selected} {Развернуть выбранные}
     "Move %f\nto\n%d\n?" "Переместить %f\nв\n%d\n?"
     {To Last Visited} {На последний вход}
     {To Matched Bracket} {На парную скобку}
@@ -318,8 +319,8 @@ namespace eval ::alited {
     {Opens files with current favorites.} {Открыть файлы с текущим Избранным.}
     {Number of files to open: %n} {Число открываемых файлов: %n}
     "Add .tcl files of current session\nas the favorites" "Добавить .tcl файлы текущего сеанса\nкак список Избранного"
-    {No .tcl files found in the session} {No .tcl files found in the session}
-    " Save as favorites list:\n selected (%s) or all (%a) files?" " Save as favorites list:\n selected (%s) or all (%a) files?"
+    {No .tcl files found in the session} {Файлов .tcl в сессии не найдено}
+    "\n Save as favorites list: selected (%s) or all (%a) files?\n" "\n Сохранить как список Избранного: выделенные (%s) либо все (%a) файлы?\n"
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##
@@ -547,7 +548,7 @@ namespace eval ::alited {
     {Check proc's regexp:} {Проверка на функцию:}
     {Use leaf's regexp:} {Использовать RE листа:}
     {Leaf's regexp:} {RE листа:}
-    {Untouched top lines:} {Статичных начальных строк:}
+    {Unaffected top lines:} {Статичных начальных строк:}
     {For leaf units only!} {Только для юнитов листьев!}
   }
 
@@ -636,8 +637,8 @@ namespace eval ::alited {
   #   Line - 2nd column's title of unit tree
   ::msgcat::mcmset ru {
     {Row} {Стр.}
-    {Row: } {Стр: }
-    { Col: } { Поз: }
+    {Row } {Стр }
+    { Col } { Поз }
     {    Unit: } {   Юнит: }
   }
 
@@ -704,8 +705,8 @@ namespace eval ::alited {
     "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
     "ОПЦИЯ ПРОЕКТА \"Использовать RE листа\" временно переключена в "
     {Files processed successfully: %n} {Успешно обработано файлов: %n}
-    {%f processed, units touched: %n} {%f обработан, затронуто юнитов: %n}
-    {%f processed, units touched: %n - ALREADY PROCESSED?}
+    {%f processed, units affected: %n} {%f обработан, затронуто юнитов: %n}
+    {%f processed, units affected: %n - ALREADY PROCESSED?}
     {%f обработан, затронуто юнитов: %n - УЖЕ ОБРАБОТАН?}
     {ERROR} {ОШИБКА}
     {Strings} {Строки}

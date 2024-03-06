@@ -909,7 +909,7 @@ proc find::btTPaste {} {
   } else {
     [$obFND Cbx1] selection clear
     set data(en2) $data(en1)
-    alited::CursorAtEnd [$obFND Cbx2]
+    ::apave::CursorAtEnd [$obFND Cbx2]
   }
 }
 #_______________________
@@ -941,7 +941,7 @@ proc find::btTRetry {} {
     lassign [split $geo x+] w1 h1 x y
   }
   # set the mouse pointer on the button
-  ::alited::MouseOnWidget [$obFND BtTretry]
+  ::apave::MouseOnWidget [$obFND BtTretry]
 }
 
 # ________________________ Helpers _________________________ #

@@ -1,13 +1,17 @@
 # LAST CHANGES:
 
-Version `v1.7.3 (3 Mar'24)`
+Version `v1.8.0a1 (3 Mar'24)`
 
   - BUGFIX: Moving unit descriptions: processed tabs in tabbar not marked as modified
   - NEW   : Saved favorites: "Add session files as favorites" button
+  - NEW   : Rectangular selection: equal columns => selecting to line ends
   - DRAFT : Tools/Project printer
+  - CHANGE: project directory read made quicker
+  - CHANGE: tabs moving from tabbar's popup menu: stay at neighbor tab, not at moved one
   - CHANGE: Moving unit descriptions: "All in session" instead of "All open"
   - CHANGE: Moving unit descriptions: intro lines ("All of...") skipped
   - CHANGE: Edit/Rectangular selection/Paste: cursor set after 1st line pasted position
+  - CHANGE: packages: e_menu/apave 4.4.0, bartabs 1.6.8
 
 
 Version `v1.7.0 (28 Feb'24)`

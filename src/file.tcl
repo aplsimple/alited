@@ -1500,7 +1500,7 @@ proc file::FillRecent {{delit ""}} {
 proc file::InsertRecent {fname pos} {
   namespace upvar ::alited al al
   if {![IsNoName $fname]} {
-    ::alited::PushInList al(RECENTFILES) $fname $pos $al(INI,RECENTFILES)
+    ::apave::PushInList al(RECENTFILES) $fname $pos $al(INI,RECENTFILES)
   }
 }
 

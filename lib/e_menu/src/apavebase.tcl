@@ -3824,7 +3824,11 @@ oo::class create ::apave::APaveBase {
       }
       wm geometry $win $inpgeom
     }
-    after 50 [list if "\[winfo exist $opt(-focus)\]" "focus -force $opt(-focus)"]
+    if {$opt(-focus) eq {Tab}} {
+      after 100 "catch {focus $win; event generate $win <Tab>}" ;# to focus on 1st
+    } else {
+      after 100 "catch {focus -force $opt(-focus)}"
+    }
     if {[info exists ::transpops::my::cntwait]} {
       # this specific bind - for transpops package (to hide a demo message by keys)
       bind $win <Control-Alt-0> {set ::transpops::my::cntwait 0}

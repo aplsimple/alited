@@ -566,8 +566,8 @@ proc format::BeforeFormatting {{islines no}} {
     set pos2 $pos.end
   }
   if {$islines} {
-    set pos1 [alited::pint $pos1].0
-    set pos2 [alited::pint $pos2].end
+    set pos1 [::apave::pint $pos1].0
+    set pos2 [::apave::pint $pos2].end
   }
   set valueOrig [set value [$wtxt get $pos1 $pos2]]
   return [list $wtxt $value $pos1 $pos2]

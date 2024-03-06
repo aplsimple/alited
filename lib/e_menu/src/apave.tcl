@@ -7,12 +7,201 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.3.10
+package provide apave 4.4.0
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
 namespace eval ::apave {
   mainWindowOfApp .
+
+  # ________________________ Independent procs _________________________ #
+
+  proc None {args} {
+    # Useful when to do nothing is better than to do something.
+
+  }
+  #_______________________
+
+  proc p+ {p1 p2} {
+    # Sums two text positions straightforward: lines & columns separately.
+    #   p1 - 1st position
+    #   p2 - 2nd position
+    # The lines may be with "-".
+    # Reasons for this:
+    #  1. expr $p1+$p2 doesn't work, e.g. 309.10+1.4=310.5 instead of 310.14
+    #  2. do it without a text widget's path (for text's arithmetic)
+
+    lassign [split $p1 .] l11 c11
+    lassign [split $p2 .] l21 c21
+    foreach n {l11 c11 l21 c21} {
+      if {![string is digit -strict [string trimleft [set $n] -]]} {set $n 0}
+    }
+    return [incr l11 $l21].[incr c11 $c21]
+  }
+  #_______________________
+
+  proc pint {pos} {
+    # Gets int part of text position, e.g. "4" for "4.end".
+    #   pos - position in text
+
+    if {[set i [string first . $pos]]>0} {incr i -1} {set i end}
+    expr {int([string range $pos 0 $i])}
+  }
+
+  #_______________________
+
+  proc intInRange {int min max} {
+    # Checks whether an integer is in min-max range.
+    #   int - the integer
+    #   min - minimum of the range
+    #   max - maximum of the range
+
+    expr {[string is integer -strict $int] && $int>=$min && $int<=$max}
+  }
+  #_______________________
+
+  proc IsRoundInt {i1 i2} {
+    # Checks whether an integer equals roundly to other integer.
+    #   i1 - integer to compare
+    #   i2 - integer to be compared (rounded) to i1
+
+    return [expr {$i1>($i2-3) && $i1<($i2+3)}]
+  }
+  #_______________________
+
+  proc NormalizeName {name} {
+    # Removes spec.characters from a name (sort of normalizing it).
+    #   name - the name
+
+    return [string map [list \\ {} \{ {} \} {} \[ {} \] {} \t {} \n {} \r {} \" {}] $name]
+  }
+  #_______________________
+
+  proc NormalizeFileName {name} {
+    # Removes spec.characters from a file/dir name (sort of normalizing it).
+    #   name - the name of file/dir
+
+    set name [string trim $name]
+    return [string map [list \
+      * _ ? _ ~ _ / _ \\ _ \{ _ \} _ \[ _ \] _ \t _ \n _ \r _ \
+      | _ < _ > _ & _ , _ : _ \; _ \" _ ' _ ` _] $name]
+  }
+  #_______________________
+
+  proc RestoreArray {arName arSave} {
+    # Tries restoring an array 1:1.
+    #   arName - fully qualified array name
+    #   arSave - saved array's value (got with "array get")
+    # At restoring, new items of $arName are deleted and existing items are updated,
+    # so that after restoring *array get $arName* is equal to $arSave.
+    # Note: "array unset $arName *; array set $arName $arSave" doesn't ensure this equality.
+
+    set ar $arName
+    array set artmp $arSave
+    set tmp1 [array names artmp]
+    set tmp2 [array names $arName]
+    foreach n $tmp2 {
+      if {$n ni $tmp1} {unset [set ar]($n)} {set [set ar]($n) $artmp($n)}
+    }
+    foreach n $tmp1 {
+      # deleted items can break 1:1 equality (not the case with alited)
+      if {$n ni $tmp2} {set [set ar]($n) $artmp($n)}
+    }
+  }
+  #_______________________
+
+  proc EnsureArray {arName args} {
+    # Ensures restoring an array at calling a proc.
+    #   arName - fully qualified array name
+    #   args - proc name & arguments
+
+    set arSave [array get $arName]
+    {*}$args
+    RestoreArray $arName $arSave
+  }
+  #_______________________
+
+  proc MouseOnWidget {w1} {
+    # Places the mouse pointer on a widget.
+    #   w1 - the widget's path
+
+    update
+    set w2 [winfo parent $w1]
+    set w3 [winfo parent $w2]
+    lassign [split [winfo geometry $w1] +x] w h x1 y1
+    lassign [split [winfo geometry $w2] +x] - - x2 y2
+    event generate $w3 <Motion> -warp 1 \
+      -x [expr {$x1+$x2+int($w/2)}] -y [expr {$y1+$y2+int($h/2)}]
+  }
+  #_______________________
+
+  proc CursorAtEnd {w} {
+    # Sets the cursor at the end of a field.
+    #   w - the field's path
+
+    focus $w
+    $w selection clear
+    $w icursor end
+  }
+  #_______________________
+
+  proc UnixPath {path} {
+    # Makes a path "unix-like" to be good for Tcl.
+    #   path - the path
+
+    set path [string trim $path "\{\}"]  ;# possibly braced if contains spaces
+    set path [string map [list \\ / %H [::apave::HomeDir]] $path]
+    return [::apave::checkHomeDir $path]
+  }
+  #_______________________
+
+  proc PushInList {listName item {pos 0} {max 16}} {
+    # Pushes an item in a list: deletes an old instance, inserts a new one.
+    #   listName - the list's variable name
+    #   item - item to push
+    #   pos - position in the list to push in
+    #   max - maximum length of the list
+
+    upvar $listName ln
+    if {[set i [lsearch -exact $ln $item]]>-1} {
+      set ln [lreplace $ln $i $i]
+    }
+    set ln [linsert $ln $pos $item]
+    catch {set ln [lreplace $ln $max end]}
+  }
+  #_______________________
+
+  proc FocusByForce {foc {cnt 10}} {
+    # Focuses a widget.
+    #   foc - widget's path
+
+    if {[incr cnt -1]>0} {
+      after idle after 5 ::apave::FocusByForce $foc $cnt
+    } else {
+      catch {focus -force [winfo toplevel $foc]; focus $foc}
+    }
+  }
+  #_______________________
+
+  proc HomeDir {} {
+    # For Tcl 9.0 & Windows: gets a home directory ("~").
+
+    if {[catch {set hd [file home]}]} {
+      if {[info exists ::env(HOME)]} {set hd $::env(HOME)} {set hd ~}
+    }
+    return $hd
+  }
+  #_______________________
+
+  proc checkHomeDir {com} {
+    # For Tcl 9.0 & Windows: checks a command for "~".
+
+    set hd [HomeDir]
+    set com [string map [list { ~/} " $hd/" \"~/ \"$hd/ '~/ '$hd/ \\n~/ \\n$hd/ \n~/ \n$hd/ \{~/ \{$hd/] $com]
+    if {[string match ~/* $com]} {set com $hd[string range $com 1 end]}
+    return $com
+  }
+
 }
 
 # ________________________ APave _________________________ #

@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide bartabs 1.6.7
+package provide bartabs 1.6.8
 
 # ________________________ NS bartabs _________________________ #
 
@@ -2252,7 +2252,11 @@ method MoveTab {TID1 TID2} {
     set tabs [lreplace $tabs $i1 $i1]
     set i [expr {$i1>$i2?($i2+1):$i2}]
     my $BID1 configure -TABS [linsert $tabs $i $tab]
-    my $TID1 show yes
+    # let a neighbor be shown if possible
+    set TID [lindex $tabs $i1 0]
+    if {[catch {my $TID show yes}]} {
+      my $TID1 show yes ;# old way: show 1st moved tab
+    }
   }
 }
 

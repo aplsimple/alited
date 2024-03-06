@@ -317,7 +317,7 @@ proc complete::PickCommand {wtxt} {
     incr Y 40
     after 100 "wm deiconify $win"
   }
-  after idle "alited::CursorAtEnd $ent"
+  after idle "::apave::CursorAtEnd $ent"
   bind $ent <Return> {+ alited::complete::EntReturn}
   bind $win <FocusOut> {alited::complete::PickFocusOut %W}
   set res [$obj showModal $win -focus $ent -modal no -geometry +$X+$Y]
@@ -379,7 +379,7 @@ proc complete::PickValid {wtxt V d i s S} {
   variable commsorig
   variable wordorig
   if {$V eq {focusin}} {
-    alited::CursorAtEnd [$obj Ent]
+    ::apave::CursorAtEnd [$obj Ent]
   }
   switch $d {
     0 {

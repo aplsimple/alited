@@ -105,7 +105,7 @@ proc paver::Viewer {} {
   after idle "catch { \
     set txt \[$obDl2 TexM\] ; \
     ::hl_tcl::hl_init \$txt -dark [$obDl2 csDark] -colors {[alited::SyntaxColors]} \
-      -cmdpos ::alited::None -font {$al(FONT,txt)} ; \
+      -cmdpos ::apave::None -font {$al(FONT,txt)} ; \
     ::hl_tcl::hl_text \$txt}"
   after idle "set ::alited::paver::win2 \[$obDl2 dlgPath\]"
   $obDl2 misc info $paverttl $code \
@@ -132,7 +132,7 @@ proc paver::HandleViewer {{act 1} args} {
       set code [string trim [$tex get 1.0 end]]\n
       set viewpos [$tex index insert]
       after idle [list alited::paver::_create $code]
-      after idle [list after 300 [list alited::FocusByForce $tex]]
+      after idle [list after 100 [list ::apave::FocusByForce $tex]]
     } else {
       $obDl2 res $win2 0
       destroy $win2

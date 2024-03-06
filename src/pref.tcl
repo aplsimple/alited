@@ -301,15 +301,15 @@ proc pref::Ok {args} {
   set ans [alited::msg okcancel info $al(MC,restart) OK -centerme $win {*}$timo]
   if {$ans} {
     # check options that can make alited unusable
-    if {$al(INI,HUE)<-50 || $al(INI,HUE)>50} {set al(INI,HUE) 0}
-    if {$al(FONTSIZE,small)<6 || $al(FONTSIZE,small)>72} {set al(FONTSIZE,small) 9}
-    if {$al(FONTSIZE,std)<7 || $al(FONTSIZE,std)>72} {set al(FONTSIZE,std) 10}
-    if {$al(INI,RECENTFILES)<10 || $al(INI,RECENTFILES)>50} {set al(INI,RECENTFILES) 16}
-    if {$al(FAV,MAXLAST)<10 || $al(FAV,MAXLAST)>100} {set al(FAV,MAXLAST) 100}
-    if {$al(MAXFILES)<1000 || $al(MAXFILES)>9999} {set al(MAXFILES) 2000}
-    if {$al(INI,barlablen)<10 || $al(INI,barlablen)>100} {set al(INI,barlablen) 16}
-    if {$al(INI,bartiplen)<10 || $al(INI,bartiplen)>100} {set al(INI,bartiplen) 32}
-    if {$al(CURSORWIDTH)<1 || $al(CURSORWIDTH)>8} {set al(CURSORWIDTH) 2}
+    if {![::apave::intInRange $al(INI,HUE) -50 50]} {set al(INI,HUE) 0}
+    if {![::apave::intInRange $al(FONTSIZE,small) 6 72]} {set al(FONTSIZE,small) 9}
+    if {![::apave::intInRange $al(FONTSIZE,std) 7 72]} {set al(FONTSIZE,std) 10}
+    if {![::apave::intInRange $al(INI,RECENTFILES) 10 50]} {set al(INI,RECENTFILES) 16}
+    if {![::apave::intInRange $al(FAV,MAXLAST) 10 100]} {set al(FAV,MAXLAST) 100}
+    if {![::apave::intInRange $al(MAXFILES) 1000 9999]} {set al(MAXFILES) 5000}
+    if {![::apave::intInRange $al(INI,barlablen) 10 100]} {set al(INI,barlablen) 16}
+    if {![::apave::intInRange $al(INI,bartiplen) 10 100]} {set al(INI,bartiplen) 32}
+    if {![::apave::intInRange $al(CURSORWIDTH) 1 8]} {set al(CURSORWIDTH) 2}
     set al(THEME) $opc1
     set al(INI,CS) [GetCS]
     if {![string is integer -strict $al(INI,CS)]} {set al(INI,CS) -1}
@@ -350,7 +350,7 @@ proc pref::Ok {args} {
     }
     set al(EM,DiffTool) [file join {*}[file split $al(EM,DiffTool)]]
     set al(ED,trans) [[$obPrf CbxTrans] cget -values]
-    ::alited::PushInList al(ED,trans) $al(ED,tran)
+    ::apave::PushInList al(ED,trans) $al(ED,tran)
     set al(RE,proc) [string trimright $al(RE,proc)]
     $obPrf res $win 1
     alited::Exit - 1 no
@@ -1563,7 +1563,7 @@ proc pref::PickMenuItem {it} {
       set idx - ;# to open the whole menu
     }
     $w configure -text $item2
-    set em_mnu($it) [alited::NormalizeName $item2]
+    set em_mnu($it) [::apave::NormalizeName $item2]
     set em_inf($it) [list [file tail $menu] $idx $item2]
     ScrollRuns
   }

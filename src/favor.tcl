@@ -432,7 +432,7 @@ proc favor::Add {{undermouse yes} {idnames {}}} {
       if {$idnlen==0} {
         set pos [[alited::main::CurrentWTXT] index insert]
         set line [expr {($l1 eq {} || $l2 eq {} || $l1>$pos || $l2<$pos) ? 0 : \
-          [alited::p+ $pos -$l1]}]
+          [::apave::p+ $pos -$l1]}]
       } else {
         set line 0 ;# favorites added from the tree
       }

@@ -399,7 +399,7 @@ proc unit::InsertTemplate {tpldata {dobreak yes}} {
     if {[string index $tex end] ne "\n"} {append tex \n}
   }
   set posc "[expr {int($posc)-1}].$col0"
-  set posc [alited::p+ $pos0 $posc]
+  set posc [::apave::p+ $pos0 $posc]
   $wtxt insert $pos0 $tex
   ::tk::TextSetCursor $wtxt $posc
   alited::main::UpdateAll

@@ -397,7 +397,7 @@ proc ini::ReadIniOptions {nam val} {
   switch -glob -- $nam {
     comm_port_list {set al(comm_port_list) $val}
     project {
-      set al(prjfile) [alited::UnixPath $val]
+      set al(prjfile) [::apave::UnixPath $val]
       set al(prjname) [file tail [file rootname $val]]
     }
     theme         {set al(THEME) $val}
@@ -527,9 +527,9 @@ proc ini::ReadIniEM {nam val emiName} {
     em_ico em_ico em_inf em_inf em_mnu em_mnu
   upvar $emiName em_i
   switch -exact $nam {
-    emPD       {set al(EM,PD=) [alited::UnixPath $val]}
+    emPD       {set al(EM,PD=) [::apave::UnixPath $val]}
     emTcl      {
-      set val [alited::UnixPath $val]
+      set val [::apave::UnixPath $val]
       if {[string first { } $val]>0} {
         tk_messageBox -title Warning -icon warning -message "The path to Tcl executable\n\n\"$val\"\n\ncontains spaces.\n\nThis path doesn't fit alited. Only 'non-space' ones do.\n\n==> Change this setting:\nPreferences/Tools/tclsh..."
       } else {
@@ -540,7 +540,7 @@ proc ini::ReadIniEM {nam val emiName} {
       set al(EM,TclList) {}
       foreach t [split [string trim $val] \t] {
         if {[string trim $t] ne {}} {
-          append al(EM,TclList) \t [alited::UnixPath $t]
+          append al(EM,TclList) \t [::apave::UnixPath $t]
         }
       }
     }
@@ -556,7 +556,7 @@ proc ini::ReadIniEM {nam val emiName} {
           set em_ico($em_i) $v1 ;# it's a separator / item in v1.6.2
           set em_inf($em_i) $v2
         }
-        set em_mnu($em_i) [alited::NormalizeName [lindex $em_inf($em_i) end]]
+        set em_mnu($em_i) [::apave::NormalizeName [lindex $em_inf($em_i) end]]
         incr em_i
       }
     }
@@ -574,15 +574,15 @@ proc ini::ReadIniEM {nam val emiName} {
     emtt       {set al(EM,tt=) $val}
     emttList   {set al(EM,tt=List) $val}
     emwt       {set al(EM,wt=) $val}
-    emmenu     {set al(EM,mnu) [alited::UnixPath $val]}
+    emmenu     {set al(EM,mnu) [::apave::UnixPath $val]}
     emmenudir  {
-      set val [alited::UnixPath $val]
+      set val [::apave::UnixPath $val]
       if {[file exists $val]} {set al(EM,mnudir) $val}
     }
     emcs       {set al(EM,CS) $val}
     emowncs    {set al(EM,ownCS) $val}
     emdiff     {set al(EM,DiffTool) $val}
-    emh        {set al(EM,h=) [alited::UnixPath $val]}
+    emh        {set al(EM,h=) [::apave::UnixPath $val]}
   }
 #    emexec     #\{set al(EM,exec) $val#\}
 }

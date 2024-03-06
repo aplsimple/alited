@@ -106,6 +106,7 @@ namespace eval ::alited {
     {Update Tree} {Baum aktualisieren}
     {Contract All} {Alle kolabieren}
     {Expand All} {Alle erweitern}
+    {Expand Selected} {Ausgewählte erweitern}
     "Move %f\nto\n%d\n?" "Verschiebe %f\nnach\n%d\n?"
     {To Last Visited} {Zu zuletzt Besuchten}
     {To Matched Bracket} {Zur passenden Klammer}
@@ -318,6 +319,8 @@ namespace eval ::alited {
     {Opens files with current favorites.} {Öffnet Dateien mit aktuellen Favoriten.}
     {Number of files to open: %n} {Anzahl der zu öffnenden Dateien: %n}
     "Add .tcl files of current session\nas the favorites" "Hinzufügen .tcl Dateien der aktuellen Sitzung\nals Favoriten"
+    {No .tcl files found in the session} {Keine .tcl Dateien in der Sitzung gefunden}
+    "\n Save as favorites list: selected (%s) or all (%a) files?\n" "\n Speichern als Favoritenliste: ausgewählt (%s) oder alle (%a) Dateien?\n"
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##
@@ -547,7 +550,7 @@ namespace eval ::alited {
     {Check proc's regexp:} {Prüfe RE für Prozeduren:}
     {Use leaf's regexp:} {Benutze RE für Endpunkte:}
     {Leaf's regexp:} {RE für Endpunkte:}
-    {Untouched top lines:} {Unveränderte obere Zeilen:}
+    {Unaffected top lines:} {Unveränderte obere Zeilen:}
     {For leaf units only!} {Nur für Endpunkten!}
   }
 
@@ -636,8 +639,8 @@ namespace eval ::alited {
   #   Line - 2nd column's title of unit tree
   ::msgcat::mcmset de {
     {Row} {Zeile}
-    {Row: } {Zeil: }
-    { Col: } { Spal: }
+    {Row } {Zeil }
+    { Col } { Spal }
     {    Unit: } {   Einheit: }
   }
 
@@ -704,8 +707,8 @@ namespace eval ::alited {
     "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
     "PROJECTS OPTION \"Benutze RE für Endpunkte\" VORÜBERGEHEND UMGESCHALTET ZU "
     {Files processed successfully: %n} {Erfolgreich verarbeitete Dateien: %n}
-    {%f processed, units touched: %n} {%f bearbeitet, Einheiten berührt: %n}
-    {%f processed, units touched: %n - ALREADY PROCESSED?}
+    {%f processed, units affected: %n} {%f bearbeitet, Einheiten berührt: %n}
+    {%f processed, units affected: %n - ALREADY PROCESSED?}
     {%f bearbeitet, Einheiten berührt: %n - BEREITS VERARBEITET?}
     {ERROR} {FEHLER}
     {Strings} {Zeichenketten}

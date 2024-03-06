@@ -111,7 +111,7 @@ proc run::InitTex12 {tex1 tex2 cbx} {
   ::hl_tcl::hl_text $tex1
   ::hl_tcl::hl_init $tex2 -dark [$obRun csDark] -plaintext 1 \
     -font $al(FONT) -insertwidth $al(CURSORWIDTH) \
-    -cmdpos ::alited::None -dobind yes
+    -cmdpos ::apave::None -dobind yes
   ::hl_tcl::hl_text $tex2
   bind $tex1 <FocusIn> {set ::alited::al(run_checkmaxcomms) 1}
   bind $cbx <FocusOut> alited::run::FillTex1

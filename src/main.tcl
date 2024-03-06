@@ -581,7 +581,7 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
     set treeID [alited::tree::NewItemID [incr iit]]
     lassign $it lev leaf fl1 title l1 l2
     if {$name eq [alited::tree::UnitTitle $title $l1 $l2]} {
-      set al(CPOS,$TID,$header) [alited::p+ $pos -$l1]
+      set al(CPOS,$TID,$header) [::apave::p+ $pos -$l1]
       return
     }
   }

@@ -398,19 +398,40 @@ proc bar::FileName {{TID ""}} {
 }
 #_______________________
 
-proc bar::FileTID {fname} {
+proc bar::FileTID {fname {filesTIDs ""}} {
   # Gets a tab's ID of a file name.
   #   fname - file name
+  #   filesTIDs - prepared list of pairs "filename & TID"
+  # The *filesTIDs* is useful at massive calls of this proc.
+  # See also: FilesTIDs
 
-  set TID {}
-  foreach tab [BAR listTab] {
-    set TID2 [lindex $tab 0]
-    if {$fname eq [FileName $TID2]} {
-      set TID $TID2
-      break
+  if {[llength $filesTIDs]} {
+    if {[set i [lsearch -exact -index 0 $filesTIDs $fname]]>=0} {
+      return [lindex $filesTIDs $i 1]
+    }
+  } else {
+    foreach tab [BAR listTab] {
+      set TID2 [lindex $tab 0]
+      if {$fname eq [FileName $TID2]} {
+        return $TID2
+      }
     }
   }
-  return $TID
+  return {}
+}
+#_______________________
+
+proc bar::FilesTIDs {} {
+  # Gets a list of pairs "filename & TID".
+  # Useful at massive calls of FileTID proc.
+  # See also: FileTID
+
+  set filesTIDs [list]
+  foreach tab [BAR listTab] {
+    set TID [lindex $tab 0]
+    lappend filesTIDs [list [FileName $TID] $TID]
+  }
+  return $filesTIDs
 }
 
 # ________________________ State of bar / tab _________________________ #
@@ -515,7 +536,7 @@ proc bar::CurrentControlTab {{fname ""}} {
   if {[set ret [expr {$fname eq {}}]]} {
     set fname [FileName]
   }
-  ::alited::PushInList ctrltablist $fname $ret
+  ::apave::PushInList ctrltablist $fname $ret
   return $fname
 }
 #_______________________

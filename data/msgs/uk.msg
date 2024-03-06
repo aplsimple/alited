@@ -110,6 +110,7 @@ namespace eval ::alited {
     {Update Tree} {Оновити список}
     {Contract All} {Згорнути все}
     {Expand All} {Розгорнути все}
+    {Expand Selected} {Розгорнути вибрані}
     "Move %f\nto\n%d\n?" "Переместити %f\nу\n%d\n?"
     {To Last Visited} {На останній вхід}
     {To Matched Bracket} {На парну скобку}
@@ -323,6 +324,8 @@ namespace eval ::alited {
     {Opens files with current favorites.} {Відкрити файли з поточним Вибраним.}
     {Number of files to open: %n} {Кількість файлів на відкриття: %n}
     "Add .tcl files of current session\nas the favorites" "Додати .tcl файли поточного сеансу\nяк список Вибраного"
+    {No .tcl files found in the session} {Файлів .tcl у сессії не знайдено}
+    "\n Save as favorites list: selected (%s) or all (%a) files?\n" "\n Зберегти як список Вибраного: вибрані (%s) або всі (%a) файли?\n"
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##
@@ -550,7 +553,7 @@ namespace eval ::alited {
     {Check proc's regexp:} {Перевірка на функцію:}
     {Use leaf's regexp:} {Використовувати RE листа:}
     {Leaf's regexp:} {RE листа:}
-    {Untouched top lines:} {Статичних початкових рядків:}
+    {Unaffected top lines:} {Статичних початкових рядків:}
     {For leaf units only!} {Тільки для юнітів листів!}
   }
 
@@ -639,8 +642,8 @@ namespace eval ::alited {
   #   Line - 2nd column's title of unit tree
   ::msgcat::mcmset uk {
     {Row} {Ряд.}
-    {Row: } {Ряд: }
-    { Col: } { Поз: }
+    {Row } {Ряд }
+    { Col } { Поз }
     {    Unit: } {   Юніт: }
   }
 
@@ -707,8 +710,8 @@ namespace eval ::alited {
     "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
     "ОПЦІЯ ПРОЕКТУ \"Використовувати RE листа\" терміново переключена у "
     {Files processed successfully: %n} {Успішно оброблено файлів: %n}
-    {%f processed, units touched: %n} {%f оброблений, зачеплено юнітів: %n}
-    {%f processed, units touched: %n - ALREADY PROCESSED?}
+    {%f processed, units affected: %n} {%f оброблений, зачеплено юнітів: %n}
+    {%f processed, units affected: %n - ALREADY PROCESSED?}
     {%f оброблений, зачеплено юнітів: %n - ВЖЕ ОБРОБЛЕНИЙ?}
     {ERROR} {ПОМИЛКА}
     {Strings} {Стрічки}

@@ -1,0 +1,1305 @@
+body {
+background: linear-gradient(45deg, #E1E9DE 12%, transparent 0, transparent 88%, #E1E9DE 0),
+    linear-gradient(130deg, transparent 37%, #E9EFE7 0, #E9EFE7 63%, transparent 0),
+    linear-gradient(45deg, transparent 37%, #E1E9DE 0, #E1E9DE 63%, transparent 0) #E5E5E5;
+    background-size: 25px 25px;
+}
+#wrapper {
+margin-right: auto;
+margin-left: auto;
+height: 100%;
+width: 100%;
+}
+header, footer {
+background-color: #E0E9DD;
+border-radius: 6px;
+margin: auto;
+padding: 8px;
+width: auto;
+box-shadow: inset 0 0 10px #000000;
+height: 3.6em;
+color: #322400;
+background: linear-gradient(180deg, #899984 0%,
+#E0E9DD 100%);
+}
+footer {
+height: 2.2em;
+}
+#sec2 {
+background-color: #E0E9DD;
+border-radius: 6px;
+margin: auto;
+padding: 8px;
+width: auto;
+box-shadow: inset 0 0 10px #000000;
+}
+
+#spr {
+float:right;
+margin-left: auto;
+}
+
+#spr, #spr2 {
+font-size: 0.8em;
+}
+
+img, table {
+    filter: drop-shadow(0 0 5px black);
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+section {
+background-color: #E9EFE7;
+border: 2px solid #bfbfbf;
+color: #322400;
+box-shadow: inset 0 0 10px #000000;
+}
+
+#nav {
+border-radius: 6px;
+margin: auto;
+padding: 8px;
+width: 98.0%;
+font-size: 1em;
+}
+#nav a {
+display: inline-block;
+text-decoration: none;
+background-color: #3C9279;
+border-radius: 6px;
+color: #322400;
+padding-left: 3px;
+padding-right: 3px;
+background: linear-gradient(180deg, #E0E9DD 0%,
+#899984 100%);
+box-shadow: 3px 3px 3px hsla(0, 0%, 26.6667%, 0.8);
+border: 1px solid #bfbfbf;
+-o-transition: all 0.5s ease 0s;
+-ms-transition: all 0.5s ease 0s;
+-moz-transition: all 0.5s ease 0s;
+-webkit-transition: all 0.5s ease 0s;
+transition: all 0.5s ease 0s;
+}
+
+#nav1 {
+/*margin-left: 2%;*/
+}
+
+#helpme, #helpme2 {
+float:right;
+margin-right: auto;
+}
+
+#content {
+margin-left: 1%;
+margin-right: 1%;
+margin-bottom: 1%;
+float: right;
+width: 98.0%;
+}
+
+#content a {
+text-decoration: none;
+font-size: 1em;
+background-color: #b01c20;
+border-radius: 6px;
+color: white;
+padding: 1%;
+background: linear-gradient(180deg, #EC9799 0%,
+#9E1823 100%);
+margin-top: 30px;
+box-shadow: 5px 5px 5px hsla(0, 0%, 26.6667%, 0.8);
+text-shadow: 0px 1px black;
+border: 1px solid #bfbfbf;
+-o-transition: all 0.5s ease 0s;
+-ms-transition: all 0.5s ease 0s;
+-moz-transition: all 0.5s ease 0s;
+-webkit-transition: all 0.5s ease 0s;
+transition: all 0.5s ease 0s;
+}
+#content a:hover {
+border: 1px solid #000000;
+color: #000000;
+text-shadow: 0px 1px white;
+}
+
+#nav a:hover {
+border: 1px solid #000000;
+color: #000000;
+text-shadow: 0px 1px white;
+}
+
+#flag {
+margin-left: 2%;
+margin-right: 2%;
+}
+
+.spbetween {
+margin: 1px;
+}
+textarea#textin {
+border: 2px solid #bfbfbf;
+width: 98.0%;
+margin: 1%;
+padding: 1%;
+font-family: Times; font-size: 1.2em; color: red;
+}
+textarea#textout {
+border: 2px solid #bfbfbf;
+width: 98.0%;
+margin: 1%;
+padding: 0.5%;
+font-family: Times; font-size: 1.1em; color: red;
+}
+
+span.new-sp {
+color: green;
+font-weight: bold;
+}
+
+span.upd-sp {
+color: navy;
+font-weight: bold;
+}
+
+span.del-sp {
+color: red;
+font-weight: bold;
+}
+
+span.bg1 {
+background-color: #E9EFE7;
+border: 1px solid #322400;
+border-radius: 6px;
+color: #322400;
+font-size: 1em;
+background: linear-gradient(180deg, #E0E9DD 0%,
+#899984 100%);
+}
+span.bg2 {
+background-color: #FFCCCC;
+border: 1px solid #322400;
+border-radius: 4px;
+color: #322400;
+font-size: 1em;
+}
+span.bg3 {
+background-color: #7BA0AD;
+border: 1px solid #322400;
+border-radius: 4px;
+color: white;
+font-size: 0.8em;
+font-weight: bold;
+}
+
+#cb2{
+margin-left: 2%;
+}
+
+
+#sel1, #sel2 {
+float:right;
+margin-left: 1%;
+}
+
+p {
+text-align: justify;
+}
+
+span.code {
+font-family: times; font-size: 1.2em; color: red;
+}
+
+table{
+background-color: E0E0DD;
+margin: 1%;
+padding: 1%;
+width: 98.0%;
+box-shadow: inset 0 0 5px #000000;
+}
+td{
+margin:1%;
+font-size: 0.9em;
+}
+
+/* moved from css.css */
+
+  .dokuwiki table.inline {
+    background-color: #fff;
+    width: auto;
+  }
+  .dokuwiki table.inline th,
+  .dokuwiki table.inline td {
+    border: 1px solid #8cacbb;
+  }
+  .dokuwiki table.inline th {
+    color: inherit;
+    background-color: #dee7ec;
+  }
+  .dokuwiki table.inline tr:hover td,
+  .dokuwiki table.inline tr:hover th,
+  .dokuwiki table.inline th:hover {
+    background-color: #dee7ec;
+  }
+
+  #bodyContent {
+    font-size: 0.8em;
+    line-height: 1.5em;
+  }
+
+  div#bodyContent {
+    margin-left: 0;
+    border: 0 none;
+    font-size: 1em;
+  }
+
+  #dw__toc /* new */ {
+    float: right;
+    margin: 0 0 1.1em 1.1em;
+    width: 12em;
+    background-color: #dee7ec;
+    color: inherit;
+  }
+
+  [dir=rtl] .dokuwiki div.toc,
+  [dir=rtl] #dw__toc /* new */ {
+    float: left;
+    margin: 0 1.4em 1.4em 0;
+  }
+  .dokuwiki div.tocheader,
+  #dw__toc h3 /* new */ {
+    padding: .2em .5em;
+    font-weight: bold;
+    margin-bottom: 0;
+    font-size: 1em;
+  }
+  .dokuwiki .toc span.toc_open,
+  .dokuwiki .toc span.toc_close,
+  #dw__toc h3 strong /* new */ {
+    float: right;
+    margin: 0 .2em;
+    line-height: 1;
+  }
+  [dir=rtl] .dokuwiki .toc span.toc_open,
+  [dir=rtl] .dokuwiki .toc span.toc_close,
+  [dir=rtl] #dw__toc h3 strong /* new */ {
+    float: left;
+  }
+  .dokuwiki #toc__inside,
+  #dw__toc > div {
+    padding: .2em .5em;
+  }
+  .dokuwiki #toc__inside ul,
+  #dw__toc ul /* new */ {
+    padding: 0;
+    margin: 0;
+  }
+  .dokuwiki #toc__inside ul li,
+  #dw__toc ul li /* new */ {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    line-height: 1.4;
+  }
+  .dokuwiki #toc__inside ul li div.li,
+  #dw__toc ul li div.li /* new */ {
+    padding: .15em 0;
+  }
+  .dokuwiki #toc__inside ul ul,
+  #dw__toc ul ul /* new */ {
+    padding-left: 1em;
+  }
+  [dir=rtl] .dokuwiki #toc__inside ul ul,
+  [dir=rtl] #dw__toc ul ul /* new */ {
+    padding-left: 0;
+    padding-right: 1em;
+  }
+  .dokuwiki ul.idx {
+    padding-left: 0;
+  }
+  [dir=rtl] .dokuwiki ul.idx {
+    padding-right: 0;
+  }
+
+
+  div.dokuwiki div.toc {
+    margin: 1.2em 0 0 2em;
+    float: right;
+    width: 200px;
+    font-size: 80%;
+    clear: both;
+    background-color: transparent;
+  }
+  div.dokuwiki div.toc div.tocheader {
+    border: 1px solid #8cacbb;
+    background-color: #dee7ec;
+    text-align: left;
+    font-weight: bold;
+    padding: 3px;
+    margin-bottom: 2px;
+    line-height: 1.45em;
+  }
+  div.dokuwiki div.toc span.toc_open,
+  div.dokuwiki div.toc span.toc_close {
+    border: 0.4em solid #dee7ec;
+    float: right;
+    display: block;
+    margin: 0.4em 3px 0 0;
+  }
+  div.dokuwiki div.toc span.toc_open span,
+  div.dokuwiki div.toc span.toc_close span {
+    display: none;
+  }
+  div.dokuwiki div.toc span.toc_open {
+    margin-top: 0.4em;
+    border-top: 0.4em solid #000;
+  }
+  div.dokuwiki div.toc span.toc_close {
+    margin-top: 0;
+    border-bottom: 0.4em solid #000;
+  }
+  div.dokuwiki div.toc #toc__inside {
+    border: 1px solid #8cacbb;
+    background-color: #fff;
+    text-align: left;
+    padding: 0.5em 0 0.7em 0;
+  }
+  div.dokuwiki div.toc ul.toc {
+    list-style-type: none;
+    list-style-image: none;
+    line-height: 1.2em;
+    padding: 0 !important;
+    margin: 0.3em 0 0 1.5em !important;
+  }
+  div.dokuwiki div.toc ul.toc li {
+    list-style-image: none;
+    list-style-type: none;
+    padding-left: 0.4em !important;
+    margin-bottom: 0.1em !important;
+  }
+  div.dokuwiki div.toc ul.toc li.clear {
+    background-image: none;
+    padding-left: 0.4em;
+  }
+  div.dokuwiki div.toc a.toc:link,
+  div.dokuwiki div.toc a.toc:visited {
+    color: #0B3467;
+  }
+  div.dokuwiki div.toc a.toc:hover,
+  div.dokuwiki div.toc a.toc:active {
+    color: #000;
+  }
+  div.toc,
+  div.dokuwiki div.toc a.toc,
+  div.dokuwiki div.toc ul.toc {
+    border: 0 none;
+    background: transparent none;
+    font-size: 100%;
+  }
+  div.dokuwiki div.toc ul.toc {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 1em !important;
+    list-style-type: none !important;
+    list-style-image: none !important;
+    margin: 0 !important;
+  }
+  div.dokuwiki div.toc a.toc {
+    padding: 0;
+  }
+  div.dokuwiki #dw__toc {
+    margin: 1.2em 0.3em 0 2em;
+    float: right;
+    width: ALITED_TABLE_OF_CONTENTS_WIDTHem;
+    font-size: 90%;
+    clear: both;
+    background-color: #fff;
+  }
+  div.dokuwiki #dw__toc h3 {
+    border: 1px solid #8cacbb !important;
+    background-color: #dee7ec !important;
+    text-align: left;
+    font-weight: bold !important;
+    padding: 3px !important;
+    margin-bottom: 2px !important;
+    line-height: 1.45em;
+    font-size: 90% !important;
+  }
+  div.dokuwiki #dw__toc h3 strong {
+    margin-top: 0.2em;
+  }
+  div.dokuwiki #dw__toc h3 ~ div {
+    border: 1px solid #8cacbb;
+    padding-left: 10px;
+  }
+  div.dokuwiki #dw__toc ul.toc {
+    background-color: transparent !important;
+    border: 0 none;
+  }
+  div.dokuwiki #dw__toc ul.toc li {
+    list-style-image: none;
+    list-style-type: none;
+    padding-left: 0.4em !important;
+    margin-bottom: 0.1em !important;
+  }
+
+
+  a {
+    text-decoration: none;
+    color: #0B3467;
+    background: none;
+  }
+  a:visited {
+    color: #0B3467;
+  }
+  a:active {
+    color: #faa700;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  a.stub {
+    color: #772233;
+  }
+  a.new,
+  #p-personal a.new {
+    color: #ba0000;
+  }
+  a.new:visited,
+  #p-personal a.new:visited {
+    color: #a55858;
+  }
+  img {
+    border: none;
+    vertical-align: middle;
+  }
+  hr {
+    height: 1px;
+    color: #aaa;
+    background-color: #aaa;
+    border: 0;
+    margin: .2em 0 .2em 0;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: black;
+    background: none;
+    font-weight: normal;
+    margin: 0;
+    padding-top: .5em;
+    padding-bottom: .17em;
+    border-bottom: 1px solid #aaa;
+    width: auto;
+  }
+  h1 {
+    font-size: 188%;
+  }
+  h1 .editsection {
+    font-size: 53%;
+  }
+  h2 {
+    font-size: 150%;
+  }
+  h2 .editsection {
+    font-size: 67%;
+  }
+  h3,
+  h4,
+  h5,
+  h6 {
+    border-bottom: none;
+    font-weight: bold;
+  }
+  h3 {
+    font-size: 132%;
+  }
+  h3 .editsection {
+    font-size: 76%;
+    font-weight: normal;
+  }
+  h4 {
+    font-size: 116%;
+  }
+  h4 .editsection {
+    font-size: 86%;
+    font-weight: normal;
+  }
+  h5 {
+    font-size: 100%;
+  }
+  h5 .editsection {
+    font-weight: normal;
+  }
+  h6 {
+    font-size: 80%;
+  }
+  h6 .editsection {
+    font-size: 125%;
+    font-weight: normal;
+  }
+  h1,
+  h2 {
+    margin-bottom: .6em;
+  }
+  h3,
+  h4,
+  h5 {
+    margin-bottom: .3em;
+  }
+
+
+  p {
+    margin: .4em 0 .5em 0;
+    line-height: 1.5em;
+  }
+  p img {
+    margin: 0;
+  }
+  abbr,
+  acronym,
+  .explain {
+    border-bottom: 1px dotted black;
+    color: black;
+    background: none;
+    cursor: help;
+  }
+  q {
+    font-family: Times, "Times New Roman", serif;
+    font-style: italic;
+  }
+  pre,
+  code,
+  tt {
+    font-family: Consolas,"Courier New",monospace,sans-serif;
+    color: black;
+    background-color: #f9f9f9;
+  }
+  ul {
+    line-height: 1.5em;
+    list-style-type: square;
+    margin: .3em 0 0 1.5em;
+    padding: 0;
+    list-style-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAANCAMAAABW4lS6AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRFAFKM////QIUK9QAAAAJ0Uk5T/wDltzBKAAAAGklEQVR42mJgBAEGokgGBjBGBxBxsBqAAAMACHwALd5r8ygAAAAASUVORK5CYII=);
+  }
+  ol {
+    line-height: 1.5em;
+    margin: .3em 0 0 3.2em;
+    padding: 0;
+    list-style-image: none;
+  }
+  li {
+    margin-bottom: .1em;
+  }
+  dt {
+    font-weight: bold;
+    margin-bottom: .1em;
+  }
+  dl {
+    margin-top: .2em;
+    margin-bottom: .5em;
+  }
+  dd {
+    line-height: 1.5em;
+    margin-left: 2em;
+    margin-bottom: .1em;
+  }
+  table {
+    font-size: 100%;
+    color: black;
+    /* we don't want the bottom borders of <h2>s to be visible through
+	 * floated tables */
+    background-color: white;
+  }
+  fieldset table {
+    /* but keep table layouts in forms clean... */
+    background: none;
+  }
+  fieldset {
+    border: 1px solid #2f6fab;
+    margin: 1em 0 1em 0;
+    padding: 0 1em 1em;
+    line-height: 1.5em;
+  }
+  fieldset.nested {
+    margin: 0 0 0.5em 0;
+    padding: 0 0.5em 0.5em;
+  }
+  legend {
+    padding: .5em;
+    font-size: 95%;
+  }
+  form {
+    border: none;
+    margin: 0;
+  }
+  textarea {
+    width: 100%;
+    padding: .1em;
+  }
+  select {
+    vertical-align: top;
+  }
+  #toc,
+  .toc,
+  .mw-warning {
+    border: 1px solid #aaa;
+    background-color: #f9f9f9;
+    padding: 5px;
+    font-size: 95%;
+  }
+  #toc h2,
+  .toc h2 {
+    display: inline;
+    border: none;
+    padding: 0;
+    font-size: 100%;
+    font-weight: bold;
+  }
+  #toc #toctitle,
+  .toc #toctitle,
+  #toc .toctitle,
+  .toc .toctitle {
+    text-align: center;
+  }
+  #toc ul,
+  .toc ul {
+    list-style-type: none;
+    list-style-image: none;
+    margin-left: 0;
+    padding-left: 0;
+    text-align: left;
+  }
+  #toc ul ul,
+  .toc ul ul {
+    margin: 0 0 0 2em;
+  }
+  #toc .toctoggle,
+  .toc .toctoggle {
+    font-size: 94%;
+  }
+  div.floatright,
+  table.floatright {
+    clear: right;
+    float: right;
+    position: relative;
+    margin: 0 0 .5em .5em;
+    border: 0;
+  }
+  div.floatright p {
+    font-style: italic;
+  }
+  div.floatleft,
+  table.floatleft {
+    float: left;
+    clear: left;
+    position: relative;
+    margin: 0 .5em .5em 0;
+    border: 0;
+  }
+  div.floatleft p {
+    font-style: italic;
+  }
+  div.thumb {
+    margin-bottom: .5em;
+    border-style: solid;
+    border-color: white;
+    width: auto;
+    background-color: transparent;
+  }
+  div.thumbinner {
+    border: 1px solid #ccc;
+    padding: 3px !important;
+    background-color: #f9f9f9;
+    font-size: 94%;
+    text-align: center;
+    overflow: hidden;
+  }
+  html .thumbimage {
+    border: 1px solid #ccc;
+  }
+  html .thumbcaption {
+    border: none;
+    text-align: left;
+    line-height: 1.4em;
+    padding: 3px !important;
+    font-size: 94%;
+  }
+  div.magnify {
+    float: right;
+    border: none !important;
+    background: none !important;
+  }
+  div.magnify a,
+  div.magnify img {
+    display: block;
+    border: none !important;
+    background: none !important;
+  }
+  div.tright {
+    clear: right;
+    float: right;
+    border-width: .5em 0 .8em 1.4em;
+  }
+  div.tleft {
+    float: left;
+    clear: left;
+    margin-right: .5em;
+    border-width: .5em 1.4em .8em 0;
+  }
+  img.thumbborder {
+    border: 1px solid #dddddd;
+  }
+  .hiddenStructure {
+    display: none;
+  }
+
+
+  div#content a.external {
+    color: #36b;
+  }
+
+
+  html {
+    background-color: #f3f3f3;
+    color: #000;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+  body {
+    font: normal 100%/1.4 sans-serif;
+  }
+  hr {
+    border: 0 none;
+    text-align: center;
+    width: 100%;
+    clear: both;
+  }
+  caption,
+  legend {
+    color: #000;
+    font-family: sans-serif;
+    background-color: inherit;
+  }
+  pre {
+    font-family: sans-serif;
+    overflow: auto;
+  }
+  pre.code,
+  code,
+  samp,
+  kbd {
+    font-family: Consolas,"Courier New",monospace,sans-serif;
+  }
+  img {
+    border-width: 0;
+    background-color: transparent;
+    max-width:100%;height:auto;
+  }
+  blockquote {
+    padding: 0 1.25em;
+    border: solid #8cacbb;
+    border-width: 0 0 0 .25em;
+  }
+  q:before,
+  q:after {
+    content: '';
+  }
+  sub,
+  sup {
+    font-size: .8em;
+    line-height: 1;
+  }
+  sub {
+    vertical-align: sub;
+  }
+  sup {
+    vertical-align: super;
+  }
+  form {
+    display: inline;
+    padding: 0;
+  }
+  label {
+    vertical-align: middle;
+    cursor: pointer;
+  }
+  input,
+  textarea,
+  button,
+  select,
+  optgroup,
+  option {
+    font: inherit;
+    color: inherit;
+    /* background-color destroys button look */
+    line-height: 1;
+    margin: 0;
+    vertical-align: middle;
+  }
+  input[type=text],
+  input[type=password],
+  textarea {
+    padding: .1em;
+  }
+  input[type=radio],
+  input[type=checkbox],
+  input.check {
+    padding: 0;
+  }
+  input[type=submit],
+  input.button,
+  button {
+    cursor: pointer;
+  }
+  input[disabled],
+  button[disabled],
+  input[readonly],
+  button[readonly] {
+    cursor: auto;
+  }
+  optgroup {
+    font-style: italic;
+    font-weight: bold;
+  }
+  option {
+    font-style: normal;
+    font-weight: normal;
+  }
+  table {
+    border-collapse: collapse;
+    empty-cells: show;
+    border-spacing: 0;
+    border: 1px solid #8cacbb;
+    max-width:100%;height:auto;
+  }
+  caption {
+    caption-side: top;
+    text-align: left;
+    margin: 0 0 .3em;
+  }
+  th,
+  td {
+    padding: .3em .5em;
+    margin: 0;
+    vertical-align: top;
+    border: 1px solid #8cacbb;
+    text-align: left;
+  }
+  th {
+    font-weight: bold;
+    background-color: #dee7ec;
+  }
+  p,
+  ul,
+  ol,
+  dl,
+  pre,
+  table,
+  blockquote,
+  fieldset,
+  address {
+    margin: 0 0 1.4em 0;
+    /* bottom margin = line-height */
+    padding: 0;
+  }
+  div {
+    margin: 0;
+    padding: 0;
+  }
+  ul,
+  ol {
+    padding: 0 0 0 1.5em;
+  }
+  li,
+  dd {
+    padding: 0;
+    margin: 0 0 0 1.5em;
+  }
+  dt {
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+  }
+  li ul,
+  li ol,
+  li dl,
+  dl ul,
+  dl ol,
+  dl dl {
+    margin-bottom: 0;
+    padding: 0;
+  }
+  li li {
+    font-size: 100%;
+  }
+  ul {
+    list-style: square outside;
+  }
+  ol {
+    list-style: decimal outside;
+  }
+  ol ol {
+    list-style-type: lower-alpha;
+  }
+  ol ol ol {
+    list-style-type: upper-roman;
+  }
+  ol ol ol ol {
+    list-style-type: upper-alpha;
+  }
+  ol ol ol ol ol {
+    list-style-type: lower-roman;
+  }
+
+  div.dokuwiki p,
+  div.dokuwiki blockquote,
+  div.dokuwiki table,
+  div.dokuwiki pre {
+    margin: 0 0 1.0em 0;
+  }
+  div.dokuwiki textarea.edit {
+    font-family: monospace, serif;
+    /* second generic font fixes problem with font-size, see
+     http://meyerweb.com/eric/thoughts/2010/02/12/fixed-monospace-sizing/ */
+    font-size: 14px;
+    color: #000;
+    background-color: #fff;
+    border: 1px solid #8cacbb;
+    padding: 0.3em 0 0 0.3em;
+    width: 100%;
+    line-height: 17px;
+  }
+  div.dokuwiki legend {
+    font-family: sans-serif;
+    font-weight: normal;
+    background-color: transparent;
+    text-align: left;
+    /* needed for webkit browsers */
+  }
+
+  div.dokuwiki a:link,
+  div.dokuwiki a:visited {
+    color: #0B3467;
+    text-decoration: none;
+  }
+  div.dokuwiki a:hover,
+  div.dokuwiki a:active {
+    color: #000;
+    text-decoration: underline;
+  }
+  a.wikilink2,
+  a.wikilink2:link,
+  a.wikilink2:visited,
+  a.wikilink2:hover {
+    color: #ba0000 !important;
+    text-decoration: none;
+  }
+  a.wikilink2:hover {
+    border-bottom: 0 none !important;
+    text-decoration: none !important;
+  }
+  .dokuwiki span.curid a {
+    font-weight: normal;
+  }
+  .dokuwiki a.wikilink1,
+  .dokuwiki a.wikilink1:visited {
+    color: #0B3467 !important;
+  }
+
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: sans-serif;
+    background-color: inherit;
+    padding: 0;
+    clear: left;
+    /* ideally 'both', but problems with toc */
+  }
+  div#content .dokuwiki h1,
+  div#content .dokuwiki h2,
+  div#content .dokuwiki h3,
+  div#content .dokuwiki h4,
+  div#content .dokuwiki h5,
+  div#content .dokuwiki h6 {
+    border-bottom: 1px solid #aaa;
+    color: #000;
+    margin: 0;
+    padding-bottom: 0.17em;
+    padding-top: 0.5em;
+  }
+  div#content .dokuwiki h1 a,
+  div#content .dokuwiki h2 a,
+  div#content .dokuwiki h3 a,
+  div#content .dokuwiki h4 a,
+  div#content .dokuwiki h5 a,
+  div#content .dokuwiki h6 a {
+    color: #000;
+  }
+  div#content .dokuwiki h1 a:hover,
+  div#content .dokuwiki h2 a:hover,
+  div#content .dokuwiki h3 a:hover,
+  div#content .dokuwiki h4 a:hover,
+  div#content .dokuwiki h5 a:hover,
+  div#content .dokuwiki h6 a:hover {
+    text-decoration: none;
+  }
+  div#content .dokuwiki h1 {
+    font-size: 160%;
+  }
+  div#content .dokuwiki h1,
+  div#content .dokuwiki h2 {
+    margin-bottom: 0.6em;
+    font-weight: normal;
+  }
+  div#content .dokuwiki h3,
+  div#content .dokuwiki h4,
+  div#content .dokuwiki h5,
+  div#content .dokuwiki h6 {
+    font-weight: bold;
+    border-bottom: none;
+    margin-bottom: 0.3em;
+  }
+  div#content .dokuwiki h3 {
+    font-size: 132%;
+  }
+  div#content .dokuwiki h4 {
+    font-size: 116%;
+  }
+  div#content .dokuwiki h5 {
+    font-size: 100%;
+  }
+  div#content .dokuwiki h6 {
+    font-size: 80%;
+  }
+  div#content .dokuwiki div.level1,
+  div#content .dokuwiki div.level2,
+  div#content .dokuwiki div.level3,
+  div#content .dokuwiki div.level4,
+  div#content .dokuwiki div.level5 {
+    margin-left: 0;
+  }
+  div.dokuwiki ul {
+    line-height: 1.5em;
+    padding: 0;
+    list-style-type: square;
+    list-style-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAANCAMAAABW4lS6AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRFAFKM////QIUK9QAAAAJ0Uk5T/wDltzBKAAAAGklEQVR42mJgBAEGokgGBjBGBxBxsBqAAAMACHwALd5r8ygAAAAASUVORK5CYII=) !important;
+    margin: 0.3em 0 1em 1.5em;
+    color: #000;
+  }
+  div.dokuwiki ol {
+    line-height: 1.5em;
+    padding: 0;
+    list-style-image: none;
+    margin: 0.3em 0 1em 1.5em;
+    color: #000;
+    font-weight: bold;
+  }
+  div.dokuwiki li ul,
+  div.dokuwiki li ol {
+    margin: 0 0 0 1.5em;
+    /* no bottom gap in between and smaller left margin for nested lists */
+  }
+  div.dokuwiki .li {
+    color: #000;
+    /* the list items overriding the ul/ol definition */
+    font-weight: normal;
+  }
+  div.dokuwiki ol {
+    list-style-type: decimal;
+  }
+  div.dokuwiki ol ol {
+    list-style-type: upper-roman;
+  }
+  div.dokuwiki ol ol ol {
+    list-style-type: lower-alpha;
+  }
+  div.dokuwiki ol ol ol ol {
+    list-style-type: lower-greek;
+  }
+  div.dokuwiki li.open {
+    list-style-image: url(/lib/tpl/vector/static/3rd/dokuwiki/images/open.gif);
+  }
+  div.dokuwiki li.closed {
+    list-style-image: url(data:image/gif;base64,R0lGODlhBQANAIABAGOMnAAAACH5BAEKAAEALAAAAAAFAA0AAAINjI+pCHDtAnSzymbwKgA7);
+  }
+  div.dokuwiki li {
+    margin-left: 0;
+    margin-bottom: 1px;
+  }
+  div#content .dokuwiki blockquote {
+    border-left: 2px solid #8cacbb;
+    padding-left: 3px;
+    padding-right: 0;
+    margin-left: 0.2em;
+  }
+  .dokuwiki dl.code dt,
+  .dokuwiki dl.file dt {
+    background-color: #dee7ec;
+    border: solid #8cacbb;
+    border-width: 1px 1px 0;
+    color: inherit;
+    display: inline;
+    padding: 0 .5em;
+    margin-left: 1em;
+  }
+  .dokuwiki dl.code dd,
+  .dokuwiki dl.file dd {
+    margin: 0;
+  }
+  /*div#content .dokuwiki code,*/
+  div#content .dokuwiki pre,
+  div#content .dokuwiki pre.code,
+  div#content .dokuwiki pre.file,
+  div#content .dokuwiki samp,
+  div#content .dokuwiki kbd,
+  div#content .dokuwiki tt {
+    font-size: 100%;
+    background-color: #f9f9f9;
+    color: #000;
+    font-size: 1em;
+    direction: ltr;
+    text-align: left;
+  }
+  div#content .dokuwiki em.u code {
+    /* fix if background-color hides underlining */
+    text-decoration: underline;
+  }
+  div#content .dokuwiki pre,
+  div#content .dokuwiki pre.code,
+  div#content .dokuwiki pre.file {
+    line-height: 1.2em;
+    padding: 0.5em;
+    border: 1px dashed #8cacbb;
+  }
+  div#content .dokuwiki dl.file,
+  div#content .dokuwiki dl.file dd {
+    margin-left: 0;
+  }
+  div#content .dokuwiki dl.file dt,
+  div#content .dokuwiki dl.code dt {
+    background-color: #f9f9f9;
+    border-bottom: 2px solid #f9f9f9;
+    border-top: 1px dashed #8cacbb;
+    border-left: 1px dashed #8cacbb;
+    border-right: 1px dashed #8cacbb;
+    display: inline;
+    margin-left: 2em;
+    padding: 0.1em 1em;
+  }
+  div#content .dokuwiki dl.file dt a,
+  div#content .dokuwiki dl.code dt a {
+    color: #000;
+  }
+
+
+  .dokuwiki table {
+    border-collapse: collapse;
+    empty-cells: show;
+    border-spacing: 0;
+    border: 1pt solid #ccc;
+  }
+  .dokuwiki th,
+  .dokuwiki td {
+    padding: 3pt 5pt;
+    margin: 0;
+    vertical-align: top;
+    border: 1pt solid #666;
+    text-align: left;
+  }
+
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    font-size: 1em;
+  }
+
+.collapsible {
+  font-size: 0.8em;
+  display: inline-block;
+  text-decoration: none;
+  background-color: #3C9279;
+  border-radius: 6px;
+  color: #322400;
+  padding: 5px;
+  background: linear-gradient(180deg, #E0E9DD 0%,
+  #899984 100%);
+  box-shadow: 5px 5px 5px hsla(0, 0%, 26.6667%, 0.8);
+  border: 1px solid #bfbfbf;
+  -o-transition: all 0.5s ease 0s;
+  -ms-transition: all 0.5s ease 0s;
+  -moz-transition: all 0.5s ease 0s;
+  -webkit-transition: all 0.5s ease 0s;
+  transition: all 0.5s ease 0s;
+}
+
+.collapsible:hover {
+border: 1px solid #000000;
+color: #000000;
+text-shadow: 0px 1px white;
+}
+.active:hover {
+  color: navy;
+  background-color: #a1ccea;
+}
+
+.collapsible2 {
+  font-size: 0.8em;
+  display: inline-block;
+  text-decoration: none;
+  background-color: #3C9279;
+  border-radius: 3px;
+  color: #322400;
+  padding: 2px;
+  background: linear-gradient(180deg, #E0E9DD 0%,
+  #899984 100%);
+  box-shadow: 2px 2px 2px hsla(0, 0%, 26.6667%, 0.8);
+  border: 1px solid #bfbfbf;
+  -o-transition: all 0.5s ease 0s;
+  -ms-transition: all 0.5s ease 0s;
+  -moz-transition: all 0.5s ease 0s;
+  -webkit-transition: all 0.5s ease 0s;
+  transition: all 0.5s ease 0s;
+}
+
+.collapsible2:hover {
+border: 1px solid #000000;
+color: #000000;
+text-shadow: 0px 1px white;
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+}
+pre {
+  padding-left: 15px;
+  border: 1px dashed #2f6fab;
+  line-height: 1.5em;
+}
+code {
+  padding-left: 2px;
+  padding-right: 2px;
+  line-height: 1.5em;
+}
+.table {
+        width: 100%;
+        -ms-overflow-scrolling: touch;
+        -moz-overflow-scrolling: touch;
+        -webkit-overflow-scrolling: touch;
+        overflow-x: auto;
+        display: block;
+}

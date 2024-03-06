@@ -109,12 +109,13 @@ proc tree::CurrentItemByLine {{pos ""} {fullinfo no}} {
 }
 #_______________________
 
-proc tree::CurrentItem {{Tree Tree}} {
+proc tree::CurrentItem {{Tree Tree} {wtree ""}} {
   # Gets ID of selected item of the tree.
   #   Tree - the tree widget's name
+  #   wtree - full path to the tree
 
   namespace upvar ::alited obPav obPav
-  set wtree [$obPav $Tree]
+  if {$wtree eq {}} {set wtree [$obPav $Tree]}
   set it [$wtree focus]
   if {$it eq {}} {set it [lindex [$wtree selection] 0]}
   return $it
@@ -159,7 +160,7 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   AddTagSel $wtree $itnew
   # get saved pos
   if {[info exists al(CPOS,$ctab,$header)]} {
-    set pos [alited::p+ $l1 $al(CPOS,$ctab,$header)]
+    set pos [::apave::p+ $l1 $al(CPOS,$ctab,$header)]
   } else {
     set pos [$wtxt index insert]
   }
@@ -187,12 +188,12 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
       set opos [$wtxt index insert]
       if {$o1<=$opos && $opos<($o2+1)} {
         set ohead [alited::unit::GetHeader $wtree $itold]
-        set al(CPOS,$otab,$ohead) [alited::p+ $opos -$o1]
+        set al(CPOS,$otab,$ohead) [::apave::p+ $opos -$o1]
       }
     }
   }
   alited::bar::BAR configure --currSelTab $ctab --currSelItem $itnew
-  catch {set al(CPOS,$ctab,$header) [alited::p+ $pos -$l1]}
+  catch {set al(CPOS,$ctab,$header) [::apave::p+ $pos -$l1]}
   if {$doFocus} {
     alited::main::FocusText $TID $pos
   }
@@ -229,11 +230,12 @@ proc tree::SaveCursorPos {} {
 }
 #_______________________
 
-proc tree::SeeSelection {} {
+proc tree::SeeSelection {{wtree ""}} {
   # Sees (makes visible) a current selected item in the tree.
+  #   wtree - tree's path
 
   namespace upvar ::alited al al obPav obPav
-  set wtree [$obPav Tree]
+  if {$wtree eq {}} {set wtree [$obPav Tree]}
   set selection [$wtree selection]
   if {[llength $selection]==1} {$wtree see $selection}
 }
@@ -439,6 +441,7 @@ proc tree::CreateFilesTree {wtree} {
   if {[catch {set selfile [alited::bar::FileName]}]} {
     set selfile {} ;# at closing by Ctrl+W with file tree open: no current file
   }
+  set filesTIDs [alited::bar::FilesTIDs]
   PrepareDirectoryContents
   foreach item [GetDirectoryContents $al(prjroot)] {
     set itemID  [alited::tree::NewItemID [incr iit]]
@@ -450,7 +453,6 @@ proc tree::CreateFilesTree {wtree} {
     } else {
       set parent [alited::tree::NewItemID [incr iroot]]
     }
-    set isopen no
     if {$isfile} {
       if {[alited::file::IsTcl $fname]} {
         set imgopt {-image alimg_tclfile}
@@ -460,18 +462,14 @@ proc tree::CreateFilesTree {wtree} {
     } else {
       set imgopt {-image alimg_folder}
       # get the directory's flag of expanded branch (in the file tree)
-      set idx [lsearch -index 0 -exact $al(SAVED_FILE_TREE) $fname]
-      if {$idx>-1} {
-        set isopen [lindex $al(SAVED_FILE_TREE) $idx 1]
-      }
     }
     if {$fcount} {set fc $fcount} {set fc {}}
     $wtree insert $parent end -id $itemID -text "$title" \
-      -values [list $fc $fname $isfile $itemID] -open $isopen {*}$imgopt
+      -values [list $fc $fname $isfile $itemID] -open no {*}$imgopt
     $wtree tag add tagNorm $itemID
     if {!$isfile} {
       $wtree tag add tagBranch $itemID
-    } elseif {[alited::bar::FileTID $fname] ne {}} {
+    } elseif {[alited::bar::FileTID $fname $filesTIDs] ne {}} {
       $wtree tag add tagSel $itemID
     }
   }
@@ -1029,13 +1027,14 @@ proc tree::ForEach {wtree aproc {lev 0} {branch {}}} {
 }
 #_______________________
 
-proc tree::GetTree {{parent {}} {Tree Tree}} {
+proc tree::GetTree {{parent {}} {Tree Tree} {wtree ""}} {
   # Gets a tree or its branch.
   #   parent - ID of the branch
   #   Tree - name of the tree widget
+  #   wtree - full path to the tree
 
   namespace upvar ::alited obPav obPav
-  set wtree [$obPav $Tree]
+  if {$wtree eq {}} {set wtree [$obPav $Tree]}
   set tree [list]
   set levp -1
   ForEach $wtree {

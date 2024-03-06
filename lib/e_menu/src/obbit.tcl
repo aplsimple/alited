@@ -474,26 +474,6 @@ proc ::apave::traceRemove {v} {
     trace remove variable $v $o $c
   }
 }
-#_______________________
-
-proc ::apave::HomeDir {} {
-  # For Tcl 9.0 & Windows: gets a home directory ("~").
-
-  if {[catch {set hd [file home]}]} {
-    if {[info exists ::env(HOME)]} {set hd $::env(HOME)} {set hd ~}
-  }
-  return $hd
-}
-#_______________________
-
-proc ::apave::checkHomeDir {com} {
-  # For Tcl 9.0 & Windows: checks a command for "~".
-
-  set hd [HomeDir]
-  set com [string map [list { ~/} " $hd/" \"~/ \"$hd/ '~/ '$hd/ \\n~/ \\n$hd/ \n~/ \n$hd/ \{~/ \{$hd/] $com]
-  if {[string match ~/* $com]} {set com $hd[string range $com 1 end]}
-  return $com
-}
 
 ## ________________________ Inits _________________________ ##
 
@@ -1113,17 +1093,17 @@ proc ::apave::logMessage {msg {lev 16}} {
 }
 #_______________________
 
-proc ::apave::readTextFile {fileName {varName ""} {doErr 0} args} {
+proc ::apave::readTextFile {fname {varName ""} {doErr 0} args} {
   # Reads a text file.
-  #   fileName - file name
+  #   fname - file name
   #   varName - variable name for file content or ""
   #   doErr - if 'true', exit at errors with error message
   # Returns file contents or "".
 
   variable _PU_opts
   if {$varName ne {}} {upvar $varName fvar}
-  if {[catch {set chan [open $fileName]} _PU_opts(_ERROR_)]} {
-    if {$doErr} {error [::apave::error $fileName]}
+  if {[catch {set chan [open $fname]} _PU_opts(_ERROR_)]} {
+    if {$doErr} {error [::apave::error $fname]}
     set fvar {}
   } else {
     set enc [::apave::getOption -encoding {*}$args]
@@ -1132,15 +1112,15 @@ proc ::apave::readTextFile {fileName {varName ""} {doErr 0} args} {
     ::apave::textChanConfigure $chan $enc $eol
     set fvar [read $chan]
     close $chan
-    logMessage "read $fileName"
+    logMessage "read $fname"
   }
   return $fvar
 }
 #_______________________
 
-proc ::apave::writeTextFile {fileName {varName ""} {doErr 0} {doSave 1} args} {
+proc ::apave::writeTextFile {fname {varName ""} {doErr 0} {doSave 1} args} {
   # Writes to a text file.
-  #   fileName - file name
+  #   fname - file name
   #   varName - variable name for file content or ""
   #   doErr - if 'true', exit at errors with error message
   #   doSave - if 'true', saves an empty file, else deletes it
@@ -1154,12 +1134,12 @@ proc ::apave::writeTextFile {fileName {varName ""} {doErr 0} {doSave 1} args} {
   }
   set res yes
   if {!$doSave && [string trim $contents] eq {}} {
-    if {[catch {file delete $fileName} _PU_opts(_ERROR_)]} {
+    if {[catch {file delete $fname} _PU_opts(_ERROR_)]} {
       set res no
     } else {
-      logMessage "delete $fileName"
+      logMessage "delete $fname"
     }
-  } elseif {[catch {set chan [open $fileName w]} _PU_opts(_ERROR_)]} {
+  } elseif {[catch {set chan [open $fname w]} _PU_opts(_ERROR_)]} {
     set res no
   } else {
     set enc [::apave::getOption -encoding {*}$args]
@@ -1167,9 +1147,9 @@ proc ::apave::writeTextFile {fileName {varName ""} {doErr 0} {doSave 1} args} {
     ::apave::textChanConfigure $chan $enc $eol
     puts -nonewline $chan $contents
     close $chan
-    logMessage "write $fileName"
+    logMessage "write $fname"
   }
-  if {!$res && $doErr} {error [::apave::error $fileName]}
+  if {!$res && $doErr} {error [::apave::error $fname]}
   return $res
 }
 #_______________________

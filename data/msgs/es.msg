@@ -106,6 +106,7 @@ namespace eval ::alited {
     {Update Tree} {Actualizar árbol}
     {Contract All} {Contratar todo}
     {Expand All} {Expandir todo}
+    {Expand Selected} {Expandir seleccionadas}
     "Move %f\nto\n%d\n?" "¿Mover %f\nen\n%d\n?"
     {To Last Visited} {A la última visita}
     {To Matched Bracket} {Al corchete emparejado}
@@ -318,6 +319,8 @@ namespace eval ::alited {
     {Opens files with current favorites.} {Abre archivos con los favoritos actuales.}
     {Number of files to open: %n} {Número de archivos a abrir: %n}
     "Add .tcl files of current session\nas the favorites" "Añadir .tcl archivos de sesión\ncomo los favoritos"
+    {No .tcl files found in the session} {No se han encontrado .tcl archivos en la sesión}
+    "\n Save as favorites list: selected (%s) or all (%a) files?\n" "\n ¿Guardar como lista de favoritos: seleccionados (%s) o todos (%a) los archivos?\n"
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##
@@ -545,7 +548,7 @@ namespace eval ::alited {
     {Check proc's regexp:} {Expresión regular para probar de proc:}
     {Use leaf's regexp:} {Usar la expresión regular para hoja:}
     {Leaf's regexp:} {Expresión regular para hoja:}
-    {Untouched top lines:} {Líneas superiores intactas:}
+    {Unaffected top lines:} {Líneas superiores intactas:}
     {For leaf units only!} {¡Solo para hojas!}
   }
 
@@ -634,8 +637,8 @@ namespace eval ::alited {
   #   Line - 2nd column's title of unit tree
   ::msgcat::mcmset es {
     {Row} {Fila}
-    {Row: } {Fila: }
-    { Col: } { Col: }
+    {Row } {Fila }
+    { Col } { Col }
     {    Unit: } {    Unidad: }
   }
 
@@ -702,8 +705,8 @@ namespace eval ::alited {
     "PROJECT OPTION \"Use leaf's regexp\" SWITCHED TEMPORARILY TO "
     "PROYECTO OPCION \"Usar la expresión regular para hoja\" CAMBIADO TEMPORALMENTE "
     {Files processed successfully: %n} {Archivos procesados con éxito: %n}
-    {%f processed, units touched: %n} {%f está procesado, las unidades fueron tocadas: %n}
-    {%f processed, units touched: %n - ALREADY PROCESSED?}
+    {%f processed, units affected: %n} {%f está procesado, las unidades fueron tocadas: %n}
+    {%f processed, units affected: %n - ALREADY PROCESSED?}
     {%f está procesado, las unidades fueron tocadas: %n - YA PROCESADOS?}
     {ERROR} {ERROR}
     {Strings} {Cadenas}

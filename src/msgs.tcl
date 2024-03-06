@@ -17,8 +17,10 @@ namespace eval ::alited {
 
     ## _ common _ ##
     set al(MC,nofile)      [msgcat::mc {No name}]
-    set al(MC,warning)     [msgcat::mc Warning]
     set al(MC,info)        [msgcat::mc Information]
+    set al(MC,warning)     [msgcat::mc Warning]
+    set al(MC,error)       [msgcat::mc Error]
+    set al(MC,question)    [msgcat::mc Question]
     set al(MC,wait)        [msgcat::mc {Wait a little ...}]
     set al(MC,help)        [msgcat::mc Help]
     set al(MC,select)      [msgcat::mc Select]  ;# verb
@@ -87,8 +89,8 @@ namespace eval ::alited {
     set al(MC,nodelopen)   [msgcat::mc {An open file can not be deleted:}]
     set al(MC,modiffile)   [msgcat::mc "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?"]
     set al(MC,wasdelfile)  [msgcat::mc "File \"%f\" was deleted by some application.\n\nSave the file?"]
-    set al(MC,Row:)        [msgcat::mc {Row: }]
-    set al(MC,Col:)        [msgcat::mc { Col: }]
+    set al(MC,Row:)        [msgcat::mc {Row }]
+    set al(MC,Col:)        [msgcat::mc { Col }]
     set al(MC,Item)        [msgcat::mc Item]
     set al(MC,errmove)     [msgcat::mc "\"%n\" contains unbalanced \{\}: %1!=%2"]
     set al(MC,afterstart)  [msgcat::mc {For Start}]
@@ -195,7 +197,7 @@ namespace eval ::alited {
     set al(MC,favexists)   [msgcat::mc {This list already exists}]
     set al(MC,faverrsav)   [msgcat::mc "This list not saved to\n\"%f\"."]
     set al(MC,favdelq)     [msgcat::mc {Delete a favorites' list #%n ?}]
-    set al(MC,unitprocsd)  [msgcat::mc {%f processed, units touched: %n - ALREADY PROCESSED?}]
+    set al(MC,unitprocsd)  [msgcat::mc {%f processed, units affected: %n - ALREADY PROCESSED?}]
 
     ## _ find-replace dialogue _ ##
     set al(MC,frMatch) [msgcat::mc {Match: }]

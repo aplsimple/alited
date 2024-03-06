@@ -91,7 +91,7 @@ proc project::CheckProjectName {} {
 
   namespace upvar ::alited al al
   set oldname $al(prjname)
-  set al(prjname) [alited::NormalizeFileName $al(prjname)]
+  set al(prjname) [::apave::NormalizeFileName $al(prjname)]
   return [expr {$oldname eq $al(prjname)}]
 }
 #_______________________
@@ -1166,7 +1166,7 @@ proc project::Change {} {
   }
   set prjinfo($newprj,prjrem) $prjinfo($oldprj,prjrem) ;# reminders
   set al(prjtrans) [[$obPrj CbxTrans] cget -values]
-  ::alited::PushInList al(prjtrans) $al(prjtran)
+  ::apave::PushInList al(prjtrans) $al(prjtran)
   PutProjectOpts $fname $oldname yes
   GetProjects
   UpdateTree
@@ -1228,7 +1228,7 @@ proc project::Template {} {
   set margin [set indent [set spprev -1]]
   foreach name [split [$wtpl get 1.0 end] \n] {
     if {[set name [string trimright $name]] eq {}} continue
-    if {[string trim $name] ne [alited::NormalizeFileName $name]} {
+    if {[string trim $name] ne [::apave::NormalizeFileName $name]} {
       set errmess [string map [list %n $name] $al(MC,incorrname)]
       break
     }
@@ -2169,12 +2169,12 @@ proc project::_create {} {
   if {$ilast>-1} {Select $ilast}
   $obPrj displayText [$obPrj TexTemplate] $al(PTP,text)
   ::hl_tcl::hl_init $prjtex -dark [$obPrj csDark] -plaintext 1 \
-    -cmdpos ::alited::None -dobind yes \
+    -cmdpos ::apave::None -dobind yes \
     -font $al(FONT) -insertwidth $al(CURSORWIDTH)
   ::hl_tcl::hl_text $prjtex
   ::hl_tcl::hl_init $klndtex -dark [$obPrj csDark] -plaintext 1 \
     -cmd ::alited::project::KlndTextModified \
-    -cmdpos ::alited::None -dobind yes \
+    -cmdpos ::apave::None -dobind yes \
     -font $al(FONT) -insertwidth $al(CURSORWIDTH)
   ::hl_tcl::hl_text $klndtex
   set res [$obPrj showModal $win -geometry $geo -minsize {600 400} -resizable 1 \

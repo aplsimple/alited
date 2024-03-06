@@ -301,7 +301,7 @@ proc favor_ls::AddFiles {} {
   set msg [msgcat::mc "\n Save as favorites list: selected (%s) or all (%a) files?\n"]
   set msg [string map [list %s $isel %a $iall] $msg]
   if {$isel>1} {set res 1} {set res 2}
-  set res [$obFav misc ques [msgcat::mc Question] $msg {Selected 1 {All files} 2 Cancel 0} $res]
+  set res [$obFav misc ques $al(MC,question) $msg {Selected 1 {All files} 2 Cancel 0} $res]
   switch $res {
     1 {set tabs $tsel}
     2 {set tabs $tall}

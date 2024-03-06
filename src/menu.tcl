@@ -57,8 +57,8 @@ proc menu::TintRange {} {
   set MT 50
   set mt 30
   for {set i $MT} {$i>=-$MT} {incr i -$inctint} {
-    set tint($i) [alited::IsRoundInt $::apave::_CS_(HUE) $i]
-    if {[alited::IsRoundInt $al(INI,HUE) $i]} {
+    set tint($i) [::apave::IsRoundInt $::apave::_CS_(HUE) $i]
+    if {[::apave::IsRoundInt $al(INI,HUE) $i]} {
       if {$i>0} {
         set max [expr {min($i+$mt,$MT)}]
         set min [expr {max(min($max-2*$mt,0),-$MT)}]
@@ -90,8 +90,8 @@ proc menu::CheckTint {{doit no}} {
   set ti 0
   lassign [TintRange] max min
   for {set i $max} {$i>=$min} {incr i -$inctint} {
-    set tint($i) [alited::IsRoundInt $::apave::_CS_(HUE) $i]
-    if {[alited::IsRoundInt $al(INI,HUE) $i]} {
+    set tint($i) [::apave::IsRoundInt $::apave::_CS_(HUE) $i]
+    if {[::apave::IsRoundInt $al(INI,HUE) $i]} {
       set fg $fg1
     } else {
       set fg $fg2
@@ -523,7 +523,7 @@ proc menu::FillMenu {} {
   $m.filelist add command -label $al(MC,filelist) -command {alited::bar::BAR popList} -accelerator $al(acc_21)
   $m.filelist add checkbutton -label [msgcat::mc {Sorted}] -variable ::alited::al(sortList)
   $m add command -label $al(MC,checktcl...) -command alited::CheckRun
-#!  $m add command -label [msgcat::mc #\{Project Printer...#\}] -command alited::PrinterRun
+  $m add command -label [msgcat::mc {Project Printer...}] -command alited::PrinterRun
 
   ### ________________________ Paver _________________________ ###
 

@@ -1,0 +1,32 @@
+ The <r>Project printer</r> tool allows creating a "hard copy" of
+ the project.
+
+ The <b>hard copy</b> is a set of .html files that are created from
+ selected project files in the chosen <r>Output directory</r>.
+
+ The <r>Markdown processor</r> is used to include Readme, README,
+ Readme.md, README.md (and so on) files into the .html files.
+
+ It's highly recommended to install and use the <b>pandoc</b>
+ application available at:
+   <link>github.com/jgm/pandoc/releases</link>
+
+ The <b>alited</b>'s own markdown processor can be used for the very
+ basic markdown documents like <b>alited</b>'s README.md which is
+ nevertheless quite enough for most of projects.
+
+ If you enter other markdown command, use in it <b>%i</b> wildcard
+ for the source README and <b>%o</b> for a target (temporary) file.
+
+ The <r>color fields</r> and <r>width of contents</r> affect the appearance
+ of the resulting .html files.
+
+ The <b>file tree</b> allows selecting the files for the resulting
+ hard copy. To select files, use the tools above the file
+ tree. Or <b>Space</b> key.
+
+ The <b>hard copy</b> can be printed by means of a browser.
+
+ The <r>Final processor</r> means a command to process the resulting
+ <b>hard copy</b>, e.g. to embed it in a reference guide or just to
+ browse the <b>output directory</b> (use <b>%D</b> wildcard for its name).

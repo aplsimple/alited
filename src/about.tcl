@@ -100,6 +100,7 @@ proc about::About {} {
     [list "linkDN" "::apave::openDoc %t@@https://github.com/par7133@@"] \
     [list "linkAM" "::apave::openDoc %t@@https://en.wikipedia.org/wiki/Argentina@@"] \
     [list "linkHO" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Harald+Oehlmann@@"] \
+    [list "linkJM" "::apave::openDoc %t@@https://github.com/jgm@@"] \
     ]
 
   ### ________________________ "General" tab _________________________ ###
@@ -184,6 +185,7 @@ proc about::About {} {
     \u2022 <linkDA>Danilo Chang</linkDA>\n \
     \u2022 <linkET>Enrico Troeger</linkET>\n \
     \u2022 <linkHO>Harald Oehlmann</linkHO>\n \
+    \u2022 <linkJM>John MacFarlane</linkJM>\n \
     \n <link_>Excuse my memory if I omitted someone's name.</link_>\n"
 
   ### ________________________ Combining tabs _________________________ ###

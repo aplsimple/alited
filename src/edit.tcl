@@ -706,11 +706,11 @@ proc edit::InputMacro {idx} {
   bind $win <F1> alited::edit::HelpOnMacro
   set butplay [$obDl2 ButPlay]
   bind $win <$al(acc_16)> "if {\[$butplay cget -state\] eq {normal}} {$butplay invoke}"
-  after 200 ::alited::MouseOnWidget $butplay
+  after 200 ::apave::MouseOnWidget $butplay
   set res [$obDl2 showModal $win -resizable 1 -focus $win.fra.entfil -geometry pointer+10+10]
   set al(macrocomment) [$tex get 1.0 end]
   catch {destroy $win}
-  set name [alited::NormalizeFileName [file root [file tail $al(_macro)]]]
+  set name [::apave::NormalizeFileName [file root [file tail $al(_macro)]]]
   set fname [MacroFileName $name]
   if {$al(_macroDir) ni {. ""}} {
     # if chosen macro doesn't exist in user's dir, copy it there
@@ -945,6 +945,7 @@ proc edit::makeRect {wtxt alnl alnc nl nc} {
   set l2 [expr {max($alnl,$nl)}]
   set c1 [expr {min($alnc,$nc)}]
   set c2 [expr {max($alnc,$nc)}]
+  if {$c1==$c2} {set c2 end}  ;# to select "all to line ends"
   for {set l $l1} {$l<=$l2} {incr l} {
     $wtxt tag add sel $l.$c1 $l.$c2
   }
@@ -962,13 +963,13 @@ proc edit::saveRect {mode wtxt} {
     set ln1 999999999
     set al(rectSel,text) [list]
     foreach {from to} $selection {
-      set ln2 [alited::pint $from]
+      set ln2 [::apave::pint $from]
       while {[incr ln1]<$ln2} {       ;# empty intermediate lines
         lappend al(rectSel,text) {}   ;# to be included too
       }
       lappend al(rectSel,text) [$wtxt get $from $to]
       if {$mode==2} {$wtxt delete $from $to}
-      set ln1 [alited::pint $to]
+      set ln1 [::apave::pint $to]
     }
     if {$mode==2} {
       catch {::tk::TextSetCursor $wtxt [lindex $selection 0 0]}
