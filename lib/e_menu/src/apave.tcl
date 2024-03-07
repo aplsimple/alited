@@ -202,6 +202,38 @@ namespace eval ::apave {
     return $com
   }
 
+  #_______________________
+
+  proc FileTail {basepath fullpath} {
+    # Extracts a tail path from a full file path.
+    # E.g. FileTail /a/b /a/b/cd/ef => cd/ef
+    #   basepath - base path
+    #   fullpath - full path
+
+    set lbase [file split $basepath]
+    set lfull [file split $fullpath]
+    set ll [expr {[llength $lfull] - [llength $lbase] - 1}]
+    if {$ll>-1} {
+      return [file join {*}[lrange $lfull end-$ll end]]
+    }
+    return {}
+  }
+
+  proc FileRelativeTail {basepath fullpath} {
+    # Gets a base relative path.
+    # E.g. FileRelativeTail /a/b /a/b/cd/ef => ../ef
+    #   basepath - base path
+    #   fullpath - full path
+
+    set tail [FileTail $basepath $fullpath]
+    set lev [llength [file split $tail]]
+    set base {}
+    for {set i 1} {$i<$lev} {incr i} {append base ../}
+    append base [file tail $tail]
+  }
+
+  ## ________________________ EONS apave _________________________ ##
+
 }
 
 # ________________________ APave _________________________ #

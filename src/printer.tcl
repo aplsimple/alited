@@ -12,8 +12,9 @@
 namespace eval printer {
   variable win $::alited::al(WIN).printer
   variable itemID1 {}
-  variable inifile {}
+  variable inifile {} iniprjfile {}
   variable tpldir {} cssdir {}
+  variable CSS css
   variable indextpl {} indextpl2 {} csstpl {} titletpl {} csscont {}
   variable indexname index.html
   variable indexname2 index_2.html
@@ -21,14 +22,17 @@ namespace eval printer {
   variable readmecont {}
   variable markedIDs [list] markedfiles [list]
   variable copyleft {<!-- Made by alited -->}
+  variable tmpC {}
   # wildcards in templates
   variable wcalited ALITED_ ;# to avoid self-wildcarding
+  variable wcstyle ${wcalited}STYLE
   variable wctitle ${wcalited}TITLE
-  variable wctoc   ${wcalited}TABLE_OF_CONTENTS
+  variable wctoc   ${wcalited}TABLE_CONTENTS
   variable wclink  ${wcalited}CURRENT_LINK
   variable wcreadm ${wcalited}README_CONTENTS
   variable wcbody  ${wcalited}BODY_CONTENTS
-  variable wcwidth ${wcalited}TABLE_OF_CONTENTS_WIDTH
+  variable wcwidth ${wcalited}TABLE_WIDTH
+  variable wcback  ${wcalited}BACK_REF
   variable wcfg    ${wcalited}FG
   variable wcbg    ${wcalited}BG
   # saved options
@@ -38,9 +42,60 @@ namespace eval printer {
   variable mdproc {pandoc}
   variable mdprocs [list pandoc alited]
   variable ttlfg #fefefe ttlbg #0b3467
-  variable leaffg #343434 leafbg #84ade0
+  variable leaffg #1a1a1a leafbg #87bcd3
   variable cwidth 10
-  variable final {}
+  variable final {caja %D}
+}
+#_______________________
+
+proc printer::fetchVars {} {
+  # Delivers namespace variables to a caller.
+
+  uplevel 1 {
+    namespace upvar ::alited al al obDl2 obDl2 INIDIR INIDIR PRJDIR PRJDIR DATADIR DATADIR
+    variable win
+    variable itemID1
+    variable inifile
+    variable iniprjfile
+    variable tpldir
+    variable cssdir
+    variable CSS
+    variable indextpl
+    variable indextpl2
+    variable csstpl
+    variable titletpl
+    variable csscont
+    variable indexname
+    variable indexname2
+    variable cssname
+    variable readmecont
+    variable markedIDs
+    variable markedfiles
+    variable copyleft
+    variable tmpC
+    variable wcstyle
+    variable wctitle
+    variable wctoc
+    variable wclink
+    variable wcreadm
+    variable wcbody
+    variable wcwidth
+    variable wcback
+    variable wcfg
+    variable wcbg
+    variable geometry
+    variable width1
+    variable width2
+    variable dir
+    variable mdproc
+    variable mdprocs
+    variable ttlfg
+    variable ttlbg
+    variable leaffg
+    variable leafbg
+    variable cwidth
+    variable final
+  }
 }
 
 # ________________________ Ini file _________________________ #
@@ -48,22 +103,9 @@ namespace eval printer {
 proc printer::ReadIni {} {
   # Reads ini data.
 
-  namespace upvar ::alited al al
-  variable inifile
-  variable geometry
-  variable width1
-  variable width2
-  variable dir
-  variable mdproc
-  variable mdprocs
-  variable ttlfg
-  variable ttlbg
-  variable leaffg
-  variable leafbg
-  variable cwidth
-  variable final
-  variable markedfiles
+  fetchVars
   set cont [apave::readTextFile $inifile]
+  append cont \n [apave::readTextFile $iniprjfile]
   set markedfiles [list]
   foreach line [split $cont \n] {
     set line [string trim $line]
@@ -86,43 +128,29 @@ proc printer::ReadIni {} {
 proc printer::SaveIni {} {
   # Saves ini data.
 
-  namespace upvar ::alited obDl2 obDl2
-  variable inifile
-  variable geometry
-  variable width1
-  variable width2
-  variable dir
-  variable mdproc
-  variable mdprocs
-  variable ttlfg
-  variable ttlbg
-  variable leaffg
-  variable leafbg
-  variable cwidth
-  variable final
-  variable markedIDs
+  fetchVars
   set wtree [$obDl2 Tree]
-  set    ::_ {}
-  append ::_ "geometry=$geometry" \n
-  append ::_ "width1=$width1"	\n
-  append ::_ "width2=$width2"	\n
-  append ::_ "dir=$dir"				\n
-  append ::_ "mdproc=$mdproc"	\n
-  append ::_ "mdprocs=[set mdprocs]"	\n
-  append ::_ "ttlfg=$ttlfg"	\n
-  append ::_ "ttlbg=$ttlbg"	\n
-  append ::_ "leaffg=$leaffg"	\n
-  append ::_ "leafbg=$leafbg"	\n
-  append ::_ "cwidth=$cwidth"	\n
-  append ::_ "final=$final"
+  set    tmpC {}
+  append tmpC "geometry=$geometry" \n
+  append tmpC "width1=$width1" \n
+  append tmpC "width2=$width2" \n
+  append tmpC "mdproc=$mdproc" \n
+  append tmpC "ttlfg=$ttlfg" \n
+  append tmpC "ttlbg=$ttlbg" \n
+  append tmpC "leaffg=$leaffg" \n
+  append tmpC "leafbg=$leafbg" \n
+  append tmpC "cwidth=$cwidth" \n
+  apave::writeTextFile $inifile ::alited::printer::tmpC
+  set    tmpC {}
+  append tmpC "dir=$dir" \n
+  append tmpC "final=$final"
   foreach item [alited::tree::GetTree {} {} $wtree] {
     lassign [lindex $item 4] - fname leaf itemID
     if {$itemID in $markedIDs} {
-      append ::_ \nfile=$fname
+      append tmpC \nfile=$fname
     }
   }
-  apave::writeTextFile $inifile ::_
-  unset ::_
+  apave::writeTextFile $iniprjfile ::alited::printer::tmpC
 }
 
 # ________________________ Expand / Contract _________________________ #
@@ -130,8 +158,7 @@ proc printer::SaveIni {} {
 proc printer::ExpandMarked {} {
   # Shows all marked tree item.
 
-  namespace upvar ::alited obDl2 obDl2
-  variable markedIDs
+  fetchVars
   ExpandContract no
   set wtree [$obDl2 Tree]
   set taghas -1
@@ -148,7 +175,7 @@ proc printer::ExpandContract {{isexp yes}} {
   # Expands or contracts the tree.
   #   isexp - yes, if to expand; no, if to contract
 
-  namespace upvar ::alited al al obDl2 obDl2
+  fetchVars
   set wtree [$obDl2 Tree]
   set itemID [alited::tree::CurrentItem {} $wtree]
   set branch [set selbranch {}]
@@ -175,9 +202,7 @@ proc printer::ExpandContract {{isexp yes}} {
 proc printer::MarkUnmarkFile {} {
   # Marks/unmarks and item in file tree.
 
-  namespace upvar ::alited obDl2 obDl2
-  variable markedIDs
-  variable itemID1
+  fetchVars
   set wtree [$obDl2 Tree]
   set itemID [$wtree focus]
   if {$itemID eq {}} {
@@ -204,8 +229,7 @@ proc printer::MarkUnmarkFile {} {
 proc printer::MarkTotal {} {
   # Show a number of marked items.
 
-  namespace upvar ::alited obDl2 obDl2
-  variable markedIDs
+  fetchVars
   [$obDl2 Labstat2] configure -text [llength $markedIDs]
 }
 #_______________________
@@ -336,9 +360,7 @@ proc printer::Message {msg {mode 1}} {
 proc printer::CheckData {} {
   # Check for correctness of the dialog's data.
 
-  namespace upvar ::alited obDl2 obDl2
-  variable dir
-  variable cwidth
+  fetchVars
   set dir [string trim $dir]
   if {$dir eq {}} {
     set errfoc [$obDl2 chooserPath Dir]
@@ -367,9 +389,7 @@ proc printer::CheckFile {fname} {
 proc printer::CheckDir {} {
   # Checks the output directory.
 
-  namespace upvar ::alited al al
-  variable dir
-  variable indexname
+  fetchVars
   set dircont [glob -nocomplain [file join $dir *]]
   if {![llength $dircont]} {return yes}
   # possible errors:
@@ -389,7 +409,7 @@ proc printer::CheckDir {} {
         Message [string map [list %n $indexname] $err2] 4
         return no  ;# alien content file
       }
-    } elseif {$ftail ne {css}} {
+    } elseif {$ftail ne $CSS} {
       incr cntdir
     }
   }
@@ -412,22 +432,7 @@ proc printer::CheckDir {} {
 proc printer::CheckTemplates {} {
   # Checks alited's templates for .html files.
 
-  namespace upvar ::alited al al
-  variable wcreadm
-  variable wctitle
-  variable wcbody
-  variable wctoc
-  variable wcwidth
-  variable dir
-  variable tpldir
-  variable indextpl
-  variable indexname
-  variable cssdir
-  variable csstpl
-  variable cssname
-  variable csscont
-  variable cwidth
-  variable readmecont
+  fetchVars
   set csscont [apave::readTextFile $csstpl]
   if {$csscont eq {}} {
     Message "No template file for $cssname found: alited broken?" 4
@@ -437,7 +442,7 @@ proc printer::CheckTemplates {} {
   set indexcont [apave::readTextFile $indextpl]
   set readmecont [string map [list $wcreadm $readmecont $wcbody {}] $indexcont]
   set readmecont [string map [list $wctitle $ttl $wctoc $ttl] $readmecont]
-  set cssdir_to  [file join $dir css]
+  set cssdir_to  [file join $dir $CSS]
   catch {file mkdir $cssdir_to}
   set csscont [string map [list $wcwidth $cwidth] $csscont]
   set css_to [file join $cssdir_to $cssname]
@@ -478,17 +483,6 @@ proc printer::GetReadme {dirfrom} {
 }
 #_______________________
 
-proc printer::GetDirLink {dir} {
-  # Gets a dir link for index.html.
-  #   dir - directory name
-
-  namespace upvar ::alited al al
-  set ir [string length $al(prjroot)]
-  set dirtail [string range $dir [incr ir] end]
-  return [list $dirtail <li><b>$dirtail</b></li>]
-}
-#_______________________
-
 proc printer::GetFileName {dir2 fname} {
   # Gets a file link for index.html.
   #   dir2 - directory name
@@ -500,12 +494,31 @@ proc printer::GetFileName {dir2 fname} {
 }
 #_______________________
 
-proc printer::GetFileLink {link ftail} {
-  # Gets a file link for index.html.
-  #   link - file name
-  #   ftail - tail of file name
+proc printer::GetDirLink {dir} {
+  # Gets a dir link for index.html.
+  #   dir - directory name
 
-  return "<ul class=toc><li><a href=\"$link\">$ftail</a></li></ul>"
+  namespace upvar ::alited al al
+  set dirtail [::apave::FileTail $al(prjroot) $dir]
+  return [list $dirtail [GetBranchLink # $dirtail]]
+}
+#_______________________
+
+proc printer::GetBranchLink {link title} {
+  # Gets a contents branch link for index.html.
+  #   link - link address
+  #   title - link title
+
+  return "<li><b><a href=\"$link\">$title</a></b></li>"
+}
+#_______________________
+
+proc printer::GetLeafLink {link title} {
+  # Gets a contents leaf link for index.html.
+  #   link - link address
+  #   title - link title
+
+  return "<ul class=toc><li><a href=\"$link\">$title</a></li></ul>"
 }
 #_______________________
 
@@ -514,19 +527,7 @@ proc printer::MakeFile {fname fname2} {
   #   fname - source file's name
   #   fname2 - resulting file
 
-  variable dir
-  variable indextpl
-  variable indextpl2
-  variable wctitle
-  variable wclink
-  variable wcreadm
-  variable wctoc
-  variable wcbody
-  variable wclink
-  variable wcfg
-  variable wcbg
-  variable leaffg
-  variable leafbg
+  fetchVars
   set ftail [file tail $fname2]
   Message $ftail 3
   update
@@ -535,18 +536,48 @@ proc printer::MakeFile {fname fname2} {
     return $fname2
   }
   set cont [apave::readTextFile $fname]
-  if {[set TID [alited::bar::FileTID $fname]] ne {}} {
-# TODO    set tpl [apave::readTextFile $indextpl]
-    set tpl [apave::readTextFile $indextpl2]
-    set tpl [string map [list $wctoc $ftail $wclink {}] $tpl]
+  set TID  [alited::bar::FileTID $fname]
+  set wtxt [alited::main::GetWTXT $TID]
+  if {$TID ne {} && $wtxt ne {}} {
+    alited::InitUnitTree $TID
   } else {
-    set tpl [apave::readTextFile $indextpl2]
+    set TID TMP
+    set wtxt [$obDl2 TexTmp]
+    $wtxt replace 1.0 end $cont            ;# imitate tab of bar
+    alited::unit::RecreateUnits $TID $wtxt  ;# to get unit tree
   }
-  set ::_ [string map [list $wctitle $ftail $wclink {} $wcreadm {} \
-    $wcfg $leaffg $wcbg $leafbg $wcbody "<pre class=\"code\">$cont</pre>"] $tpl]
+  if {[llength $al(_unittree,$TID)]<2} {
+    set tpl [apave::readTextFile $indextpl2]  ;# no units
+  } else {
+    set tpl [apave::readTextFile $indextpl]
+    set tpl [string map [list $wctoc $ftail] $tpl]
+    set contlist [split $cont \n]
+    foreach item $al(_unittree,$TID) {
+      if {[llength $item]<3} continue
+      lassign $item lev leaf fl1 title l1 l2
+      set ttl [string map {" " _} [::apave::NormalizeName $title]]
+      if {$leaf} {
+        set link [GetLeafLink #$ttl $ttl]
+      } else {
+        set link [GetBranchLink #$ttl $ttl]
+      }
+      append link \n$wclink
+      set tpl [string map [list $wclink $link] $tpl]
+      set line [lindex $contlist [incr l1 -1]]
+      set contlist [lreplace $contlist $l1 $l1 "$line<a id=$ttl></a>"]
+    }
+    set cont {}
+    foreach line $contlist {append cont $line\n}
+  }
+  set rootpath [file dirname [::apave::FileRelativeTail $dir $fname2]]
+  set csspath [file join $rootpath $CSS $cssname]
+  set tpl [string map [list $wctitle $ftail $wcstyle $csspath] $tpl]
+  set tpl [string map [list $wclink {} $wcreadm {}] $tpl]
+  set tpl [string map [list $wcfg $leaffg $wcbg $leafbg] $tpl]
+  set tpl [string map [list $wcback [file join $rootpath $indexname]] $tpl]
+  set tmpC [string map [list $wcbody "<pre class=\"code\">$cont</pre>"] $tpl]
   set fname2 [file rootname $fname2].html
-  apave::writeTextFile $fname2 ::_
-  unset ::_
+  apave::writeTextFile $fname2 ::alited::printer::tmpC
   Hl_html $fname2
   return $fname2
 }
@@ -566,26 +597,20 @@ proc printer::Process {wtree} {
   # Processes files to make the resulting .html.
   #   wtree - tree's path
 
-  namespace upvar ::alited al al
-  variable markedIDs
-  variable tpldir
-  variable dir
-  variable readmecont
-  variable indexname
-  variable final
-  variable wclink
-  variable wcfg
-  variable ttlfg
-  variable wcbg
-  variable ttlbg
+  fetchVars
+  set index_to [file join $dir $indexname]
+  if {![file exists $index_to]} {
+    # make empty index.html, to get rid of possible error messages
+    set readmecont $copyleft
+    apave::writeTextFile $index_to ::alited::printer::readmecont
+  }
   set readmecont [GetReadme $al(prjroot)]
   if {![CheckData]} {return no}
   if {![CheckDir]} {return no}
   if {![CheckTemplates]} {return no}
-  set index_to [file join $dir $indexname]
   set curdir {}
   set fcnt [set dcnt 0]
-  foreach itemID $markedIDs {
+  foreach itemID [lsort -dictionary $markedIDs] {
     lassign [$wtree item $itemID -values] -> fname isfile
     if {!$isfile} {
       incr dcnt
@@ -608,22 +633,22 @@ proc printer::Process {wtree} {
       catch {file mkdir [file dirname $fname2]}
     }
     set fname [MakeFile $fname $fname2]
-    set link [GetFileLink $fname [file tail $fname2]]
+    set link [GetLeafLink $fname [file tail $fname2]]
     append link \n$wclink
     set readmecont [string map [list $wclink $link] $readmecont]
     incr fcnt
   }
-  set readmecont [string map [list $wclink {}] $readmecont]
+  set csspath [file join $CSS $cssname]
+  set readmecont [string map [list $wclink {} $wcstyle $csspath] $readmecont]
   set readmecont [string map [list $wcfg $ttlfg $wcbg $ttlbg] $readmecont]
   apave::writeTextFile $index_to ::alited::printer::readmecont 1
   set msg [msgcat::mc {Processed: %d directories, %f files}]
   set msg [string map [list %d $dcnt %f $fcnt] $msg]
   Message $msg
+  bell
   if {$final ne {}} {
     set com [string map [list %D $dir] $final]
     exec -- {*}$com
-  } else {
-    bell
   }
   return yes
 }
@@ -639,27 +664,20 @@ proc printer::Help {} {
 
 proc printer::Ok {} {
 
-  namespace upvar ::alited obDl2 obDl2
-  variable win
-  variable geometry
-  variable width1
-  variable width2
+  fetchVars
   set wtree [$obDl2 Tree]
   set geometry [wm geometry $win]
   set width1 [$wtree column #0 -width]
   set width2 [$wtree column #1 -width]
-  if {[Process $wtree]} {
-    SaveIni
-#!    $obDl2 res $win 1
-  }
+  SaveIni
+  Process $wtree
 }
 #_______________________
 
 proc printer::Cancel {} {
   # Cancel handling the dialog.
 
-  namespace upvar ::alited obDl2 obDl2
-  variable win
+  fetchVars
   $obDl2 res $win 0
 }
 
@@ -669,10 +687,7 @@ proc printer::FillTree {wtree} {
   # Populates the tree of project files.
   #   wtree - tree's path
 
-  namespace upvar ::alited al al
-  variable markedIDs
-  variable markedfiles
-  variable itemID1
+  fetchVars
   $wtree heading #0 -text ":: [file tail $al(prjroot)] ::"
   $wtree heading #1 -text $al(MC,files)
   alited::tree::PrepareDirectoryContents
@@ -718,11 +733,7 @@ proc printer::FillTree {wtree} {
 proc printer::_create  {} {
   # Creates Project Printer dialogue.
 
-  namespace upvar ::alited obDl2 obDl2
-  variable win
-  variable geometry
-  variable width1
-  variable width2
+  fetchVars
   set tipmark "[msgcat::mc (Un)Select]\nSpace"
   lassign [alited::FgFgBold] -> fgbold
   $obDl2 makeWindow $win.fra [msgcat::mc {Project Printer}]
@@ -769,6 +780,7 @@ proc printer::_create  {} {
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
     {.butOK - - - - {pack -side left} {-t OK -com alited::printer::Ok}}
     {.butCancel - - - - {pack -side left -padx 2} {-t Cancel -com alited::printer::Cancel}}
+    {.TexTmp - - - - {pack forget -side left}}
     {fraBot fraMid T 1 4 {-st we}}
     {.stat - - - - {pack -side bottom} {-array {
       {{} -anchor w -expand 1} 30
@@ -790,24 +802,16 @@ proc printer::_create  {} {
 proc printer::_run  {} {
   # Runs Project Printer dialogue.
 
-  namespace upvar ::alited al al PRJDIR PRJDIR DATADIR DATADIR
-  variable inifile
-  variable tpldir
-  variable indextpl
-  variable indextpl2
-  variable titletpl
-  variable indexname
-  variable indexname2
-  variable cssdir
-  variable csstpl
-  variable cssname
+  fetchVars
+  set dir [file join [apave::HomeDir] TMP alited]
   set tpldir [file join $DATADIR printer]
   set indextpl [file join $tpldir $indexname]
   set indextpl2 [file join $tpldir $indexname2]
   set titletpl [file join $tpldir title.html]
-  set cssdir [file join $tpldir css]
+  set cssdir [file join $tpldir $CSS]
   set csstpl [file join $cssdir $cssname]
-  set inifile [file join $PRJDIR $al(prjname).prn]
+  set inifile [file join $INIDIR printer.ini]
+  set iniprjfile [file join $PRJDIR $al(prjname).prn]
   ReadIni
   _create
 }

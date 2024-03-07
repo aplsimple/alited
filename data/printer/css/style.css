@@ -1,8 +1,4 @@
 body {
-background: linear-gradient(45deg, #E1E9DE 12%, transparent 0, transparent 88%, #E1E9DE 0),
-    linear-gradient(130deg, transparent 37%, #E9EFE7 0, #E9EFE7 63%, transparent 0),
-    linear-gradient(45deg, transparent 37%, #E1E9DE 0, #E1E9DE 63%, transparent 0) #E5E5E5;
-    background-size: 25px 25px;
 }
 #wrapper {
 margin-right: auto;
@@ -144,14 +140,14 @@ border: 2px solid #bfbfbf;
 width: 98.0%;
 margin: 1%;
 padding: 1%;
-font-family: Times; font-size: 1.2em; color: red;
+font-family: Times; font-size: 1em; color: red;
 }
 textarea#textout {
 border: 2px solid #bfbfbf;
 width: 98.0%;
 margin: 1%;
 padding: 0.5%;
-font-family: Times; font-size: 1.1em; color: red;
+font-family: Times; font-size: 1em; color: red;
 }
 
 span.new-sp {
@@ -209,14 +205,14 @@ text-align: justify;
 }
 
 span.code {
-font-family: times; font-size: 1.2em; color: red;
+font-family: times; font-size: 1em; color: red;
 }
 
 table{
 background-color: E0E0DD;
 margin: 1%;
 padding: 1%;
-width: 98.0%;
+width: 100%;
 box-shadow: inset 0 0 5px #000000;
 }
 td{
@@ -410,9 +406,9 @@ font-size: 0.9em;
     padding: 0;
   }
   div.dokuwiki #dw__toc {
-    margin: 1.2em 0.3em 0 2em;
+    margin: 0 0 0 0;
     float: right;
-    width: ALITED_TABLE_OF_CONTENTS_WIDTHem;
+    width: ALITED_TABLE_WIDTHem;
     font-size: 90%;
     clear: both;
     background-color: #fff;
@@ -795,6 +791,10 @@ font-size: 0.9em;
   samp,
   kbd {
     font-family: Consolas,"Courier New",monospace,sans-serif;
+  }
+  pre.code {
+    font-size: 90%;
+    line-height: 1.5em;
   }
   img {
     border-width: 0;

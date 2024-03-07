@@ -36,8 +36,8 @@ proc format::UnitDesc {} {
   set separSav1 $da(separSav1)
   set separSav2 $da(separSav2)
   lassign [Re_Colors] fgRE da(bgRE)
-  set stcl [llength [SessionTclList 1]]
-  set atcl [llength [SessionTclList 2]]
+  set stcl [llength [alited::SessionTclList 1]]
+  set atcl [llength [alited::SessionTclList 2]]
   set selected [msgcat::mc Selected]\ ($stcl)
   set allopen [msgcat::mc {All in session}]\ ($atcl)
   set REleaf [alited::unit::LeafRegexp]
@@ -443,16 +443,6 @@ proc format::MoveUnitDesc {TID} {
 }
 #_______________________
 
-proc format::InitUnitTree {TID} {
-  # Initializes the unit tree of file to be processed.
-  #   TID - tab's ID
-
-  set wtxt [alited::main::GetWTXT $TID]
-  if {$wtxt ne {}} {alited::unit::RecreateUnits $TID $wtxt}
-  return 1
-}
-#_______________________
-
 proc format::LeafRE {} {
   # Gets the chosen leaf's RE (current or standard, seen by the user).
 
@@ -497,7 +487,7 @@ proc format::CheckOk {} {
   }
   if {$res} {
     alited::info::Put {}
-    alited::ProcessFiles alited::format::InitUnitTree $da(what)
+    alited::ProcessFiles alited::InitUnitTree $da(what)
     set lfRE [alited::unit::IsLeafRegexp]
     if {$da(dir)==1 && $lfRE || $da(dir)==2 && !$lfRE} {
       set al(prjuseleafRE) [expr {!$lfRE}]

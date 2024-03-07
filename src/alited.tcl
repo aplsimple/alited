@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.0a1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.0a2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -555,6 +555,16 @@ namespace eval alited {
     set foc [focus]
     ::apave::EnsureArray $arName {*}$args
     after 100 "::apave::FocusByForce $foc"
+  }
+  #_______________________
+
+  proc InitUnitTree {TID} {
+    # Initializes the unit tree of file to be processed.
+    #   TID - tab's ID
+
+    set wtxt [main::GetWTXT $TID]
+    if {$wtxt ne {}} {unit::RecreateUnits $TID $wtxt}
+    return 1
   }
 
   ## ________________________ Messages _________________________ ##

@@ -114,7 +114,8 @@ proc unit::UnitHeaderMode {TID} {
   # Returns 2 flags: "Use leaf's RE" and "Use proc/method declaration".
 
   set isLeafRE [IsLeafRegexp]
-  set isProc [expr {!$isLeafRE && [alited::file::IsTcl [alited::bar::FileName $TID]]}]
+  set isProc [expr {!$isLeafRE && \
+    ($TID eq {TMP} || [alited::file::IsTcl [alited::bar::FileName $TID]])}]
   set leafRE [LeafRegexp]
   return [list $isLeafRE $isProc $leafRE]
 }
