@@ -43,10 +43,14 @@ proc ::hl_tcl_html::highlight {htmlfile darkedit args} {
   chan configure $chan -encoding utf-8
   set text [read $chan]
   close $chan
-  lassign [::hl_tcl::hl_colors 1 $darkedit] clrCOM clrCOMTK clrSTR \
-    clrVAR clrCMN clrPROC clrOPT clrBRA
+  lassign [::hl_tcl::hl_colors 1 $darkedit] clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT
   lassign [::hl_tcl::addingColors $darkedit] -> clrCMN2
+  set cs {}
   foreach {tag1 tag2} $args {
+    if {[string match -nocase cs $tag1]} {
+      lassign [split $tag2 ,] clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT
+      continue
+    }
     set ic [set ic2 0]
     while {$ic>=0 && $ic2>=0} {
       set ic [string first $tag1 $text $ic]

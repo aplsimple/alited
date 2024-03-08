@@ -30,6 +30,7 @@ namespace eval printer {
   variable wctoc   ${wcalited}TABLE_CONTENTS
   variable wclink  ${wcalited}CURRENT_LINK
   variable wcreadm ${wcalited}README_CONTENTS
+  variable wcbttl  ${wcalited}BODY_TITLE
   variable wcbody  ${wcalited}BODY_CONTENTS
   variable wcwidth ${wcalited}TABLE_WIDTH
   variable wcback  ${wcalited}BACK_REF
@@ -44,7 +45,8 @@ namespace eval printer {
   variable ttlfg #fefefe ttlbg #0b3467
   variable leaffg #1a1a1a leafbg #87bcd3
   variable cwidth 10
-  variable final {caja %D}
+  variable cs 1
+  variable final {"%D"}
 }
 #_______________________
 
@@ -53,48 +55,12 @@ proc printer::fetchVars {} {
 
   uplevel 1 {
     namespace upvar ::alited al al obDl2 obDl2 INIDIR INIDIR PRJDIR PRJDIR DATADIR DATADIR
-    variable win
-    variable itemID1
-    variable inifile
-    variable iniprjfile
-    variable tpldir
-    variable cssdir
-    variable CSS
-    variable indextpl
-    variable indextpl2
-    variable csstpl
-    variable titletpl
-    variable csscont
-    variable indexname
-    variable indexname2
-    variable cssname
-    variable readmecont
-    variable markedIDs
-    variable markedfiles
-    variable copyleft
-    variable tmpC
-    variable wcstyle
-    variable wctitle
-    variable wctoc
-    variable wclink
-    variable wcreadm
-    variable wcbody
-    variable wcwidth
-    variable wcback
-    variable wcfg
-    variable wcbg
-    variable geometry
-    variable width1
-    variable width2
-    variable dir
-    variable mdproc
-    variable mdprocs
-    variable ttlfg
-    variable ttlbg
-    variable leaffg
-    variable leafbg
-    variable cwidth
-    variable final
+    foreach _ {win itemID1 inifile iniprjfile tpldir cssdir CSS indextpl indextpl2 csstpl \
+    titletpl csscont indexname indexname2 cssname readmecont markedIDs markedfiles copyleft \
+    wcbttl wcstyle wctitle wctoc wclink wcreadm wcbody wcwidth wcback wcfg wcbg tmpC cs \
+    geometry width1 width2 dir mdproc mdprocs ttlfg ttlbg leaffg leafbg cwidth final} {
+      variable $_
+    }
   }
 }
 
@@ -113,7 +79,7 @@ proc printer::ReadIni {} {
       lappend markedfiles $val
     } else {
       foreach opt {geometry width1 width2 dir mdproc mdprocs \
-      ttlfg ttlbg leaffg leafbg cwidth final} {
+      ttlfg ttlbg leaffg leafbg cwidth cs final} {
         if {[set val [alited::edit::IniParameter $opt $line]] ne {}} {
           set $opt $val
         }
@@ -140,6 +106,7 @@ proc printer::SaveIni {} {
   append tmpC "leaffg=$leaffg" \n
   append tmpC "leafbg=$leafbg" \n
   append tmpC "cwidth=$cwidth" \n
+  append tmpC "cs=$cs" \n
   apave::writeTextFile $inifile ::alited::printer::tmpC
   set    tmpC {}
   append tmpC "dir=$dir" \n
@@ -569,26 +536,39 @@ proc printer::MakeFile {fname fname2} {
     set cont {}
     foreach line $contlist {append cont $line\n}
   }
+  set readme [GetReadme [file dirname $fname]]
+  if {$readme eq {}} {
+    set bttl {}
+  } else {
+    set ttltable {<table border=0 cellPadding=4 cellSpacing=0 width="100%"><td border=0 bgColor=ALITED_BG><div style="text-align:center"><a href="ALITED_BACK_REF"><font color=ALITED_FG size=6><b>ALITED_TITLE</b></font></div></td></table>}
+    set bttl $ttltable
+  }
   set rootpath [file dirname [::apave::FileRelativeTail $dir $fname2]]
   set csspath [file join $rootpath $CSS $cssname]
+  set tpl [string map [list $wclink {} $wcreadm $readme $wcbttl $bttl] $tpl]
   set tpl [string map [list $wctitle $ftail $wcstyle $csspath] $tpl]
-  set tpl [string map [list $wclink {} $wcreadm {}] $tpl]
   set tpl [string map [list $wcfg $leaffg $wcbg $leafbg] $tpl]
   set tpl [string map [list $wcback [file join $rootpath $indexname]] $tpl]
   set tmpC [string map [list $wcbody "<pre class=\"code\">$cont</pre>"] $tpl]
   set fname2 [file rootname $fname2].html
   apave::writeTextFile $fname2 ::alited::printer::tmpC
-  Hl_html $fname2
+  set clrvals [::hl_tcl::hl_colors $cs 0]
+  set cset cs=
+  foreach val $clrvals {
+    append cset $val,
+  }
+  Hl_html $fname2 $cset
   return $fname2
 }
 #_______________________
 
-proc printer::Hl_html {fname} {
+proc printer::Hl_html {fname cset} {
   # Highlights Tcl code in html file
   #   fname - file name
+  #   cset - colors
 
   namespace upvar ::alited LIBDIR LIBDIR
-  set com [list [alited::Tclexe] [file join $LIBDIR hl_tcl tcl_html.tcl] $fname]
+  set com [list [alited::Tclexe] [file join $LIBDIR hl_tcl tcl_html.tcl] $cset $fname]
   exec -- {*}$com
 }
 #_______________________
@@ -639,16 +619,20 @@ proc printer::Process {wtree} {
     incr fcnt
   }
   set csspath [file join $CSS $cssname]
-  set readmecont [string map [list $wclink {} $wcstyle $csspath] $readmecont]
-  set readmecont [string map [list $wcfg $ttlfg $wcbg $ttlbg] $readmecont]
+  set readmecont [string map [list $wclink {} $wcback {} $wcstyle $csspath] $readmecont]
+  set readmecont [string map [list $wcfg $ttlfg $wcbg $ttlbg $wcbttl {}] $readmecont]
   apave::writeTextFile $index_to ::alited::printer::readmecont 1
   set msg [msgcat::mc {Processed: %d directories, %f files}]
   set msg [string map [list %d $dcnt %f $fcnt] $msg]
   Message $msg
   bell
   if {$final ne {}} {
-    set com [string map [list %D $dir] $final]
-    exec -- {*}$com
+    if {$final eq {%D} || $final eq {"%D"}} {
+      ::apave::openDoc [file join $dir $indexname]
+    } else {
+      set com [string map [list %D $dir] $final]
+      exec -- {*}$com
+    }
   }
   return yes
 }
@@ -764,10 +748,14 @@ proc printer::_create  {} {
     {.lfr2.clr3 + L 1 3 {-st nw} {-tvar ::alited::printer::leaffg}}
     {.lfr2.lab2 .lfr2.lab1 T 1 1 {-st ne} {-t {Background:}}}
     {.lfr2.clr4 + L 1 3 {-st nw} {-tvar ::alited::printer::leafbg}}
-    {.v_4 .lfr2 T 1 3 {-pady 8}}
-    {.fraw + T 1 3 {-st nw}}
-    {.fraw.lab3 + T 1 1 {-st nse} {-t {Width of contents:}}}
-    {.fraw.SpxCwidth + L 1 1 {-st nsw -padx 4} {-tvar ::alited::printer::cwidth -from 5 -to 99 -w 4 -justify center}}
+    {.fraw .lfr2 T 1 3 {-st nw -pady 6}}
+    {.fraw.labcs - - 1 1 {-st ne -pady 4} {-t {Syntax colors:}}}
+    {.fraw.rad1 + L 1 1 {-st nsw -padx 4} {-var ::alited::printer::cs -value 1 -t 1}}
+    {.fraw.rad2 + L 1 1 {-st nsw -padx 9} {-var ::alited::printer::cs -value 2 -t 2}}
+    {.fraw.rad3 + L 1 1 {-st nsw -padx 4} {-var ::alited::printer::cs -value 3 -t 3}}
+    {.fraw.rad4 + L 1 1 {-st nsw -padx 9} {-var ::alited::printer::cs -value 4 -t 4}}
+    {.fraw.labwc .fraw.labcs T 1 1 {-st nse} {-t {Width of contents:}}}
+    {.fraw.SpxCwidth + L 1 4 {-st nsw -padx 4} {-tvar ::alited::printer::cwidth -from 5 -to 99 -w 4 -justify center}}
     {.seh .fraw T 1 3 {-pady 8}}
     {.lab4 + T 1 1 {-st nw} {-t {Final processor:}}}
     {.fil + T 1 3 {-st new} {-tvar ::alited::printer::final -w 40}}
@@ -776,7 +764,7 @@ proc printer::_create  {} {
     {.SbvTree fraTree.Tree L - - {pack -side right -fill both}}
     {fraMid fraBody T 1 3 {-st wes -rw 1 -padx 2}}
     {.seh1 - - - - {pack -side top -expand 1 -fill both -pady 4}}
-    {.butHelp - - - - {pack -side left} {-t Help -com alited::printer::Help}}
+    {.butHelp - - - - {pack -side left} {-t Help -com alited::printer::Help -takefocus 0}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
     {.butOK - - - - {pack -side left} {-t OK -com alited::printer::Ok}}
     {.butCancel - - - - {pack -side left -padx 2} {-t Cancel -com alited::printer::Cancel}}
@@ -803,7 +791,7 @@ proc printer::_run  {} {
   # Runs Project Printer dialogue.
 
   fetchVars
-  set dir [file join [apave::HomeDir] TMP alited]
+  set dir [file join [apave::HomeDir] TMP alited $al(prjname)]
   set tpldir [file join $DATADIR printer]
   set indextpl [file join $tpldir $indexname]
   set indextpl2 [file join $tpldir $indexname2]

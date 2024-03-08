@@ -2,9 +2,9 @@
  the project.
 
  The <b>hard copy</b> is a set of .html files that are created from
- selected project files in the chosen <r>Output directory</r>.
+ selected project files in the chosen <r>output directory</r>.
 
- The <r>Markdown processor</r> is used to include Readme, README,
+ The <r>markdown processor</r> is used to include Readme, README,
  Readme.md, README.md (and so on) files into the .html files.
 
  It's highly recommended to install and use the <b>pandoc</b>
@@ -18,15 +18,22 @@
  If you enter other markdown command, use in it <b>%i</b> wildcard
  for the source README and <b>%o</b> for a target (temporary) file.
 
- The <r>color fields</r> and <r>width of contents</r> affect the appearance
- of the resulting .html files.
+ The <r>colors</r> and <r>width of contents</r> affect the appearance of
+ the resulting .html files.
 
  The <b>file tree</b> allows selecting the files for the resulting
  hard copy. To select files, use the tools above the file
  tree. Or <b>Space</b> key.
 
- The <b>hard copy</b> can be printed by means of a browser.
+ The <b>hard copy</b> can be printed by means of a browser. Or be
+ handled by a file manager or another <b>final processor</b>.
 
- The <r>Final processor</r> means a command to process the resulting
+ The <r>final processor</r> means a command to process the resulting
  <b>hard copy</b>, e.g. to embed it in a reference guide or just to
- browse the <b>output directory</b> (use <b>%D</b> wildcard for its name).
+ browse the <b>output directory</b>. Use <b>%D</b> wildcard for its name.
+ Alone <b>%D</b> or <b>"%D"</b> means opening <b>index.html</b> in a browser.
+ ____________________________________________________________
+
+ In the .html files, first is included a <b>README</b> file of the
+ appropriate directory, if there is any of Readme, README,
+ Readme.md, README.md (and so on).
