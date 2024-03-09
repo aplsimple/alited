@@ -832,6 +832,27 @@ proc tree::DestroyMoveWindow {cancel} {
 }
 #_______________________
 
+proc tree::UnitTooltip {wtxt l1 l2} {
+  # Gets unit's tooltip.
+  #   wtxt - text's path
+  #   l1 - 1st line's number
+  #   l2 - last line's number
+
+  set tip {}
+  foreach {p1 p2} [$wtxt tag ranges tagCMN2] {
+    if {[$wtxt compare $l1.0 <= $p1] && [$wtxt compare $p2 <= $l2.end]} {
+      set todo [string trimleft [$wtxt get $p1 $p2] #!]
+      switch [incr tiplines] {
+        1  {append tip \n_______________________\n}
+        13 {break}
+      }
+      append tip \n $todo
+    }
+  }
+  return $tip
+}
+#_______________________
+
 proc tree::GetTooltip {ID NC} {
   # Gets a tip for unit / file tree's item.
   #   ID - ID of treeview item
@@ -849,16 +870,7 @@ proc tree::GetTooltip {ID NC} {
     catch {
       lassign [$wtree item $ID -values] l1 l2
       set wtxt [alited::main::CurrentWTXT]
-      foreach {p1 p2} [$wtxt tag ranges tagCMN2] {
-        if {[$wtxt compare $l1.0 <= $p1] && [$wtxt compare $p2 <= $l2.end]} {
-          set todo [string trimleft [$wtxt get $p1 $p2] #!]
-          switch [incr tiplines] {
-            1  {append tip \n_______________________\n}
-            13 {break}
-          }
-          append tip \n $todo
-        }
-      }
+      append tip [UnitTooltip $wtxt $l1 $l2]
     }
     if {!$al(TIPS,Tree) && ![info exists todo]} {
       # no tips while switched off (excepting for TODOs)

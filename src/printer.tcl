@@ -25,17 +25,21 @@ namespace eval printer {
   variable tmpC {}
   # wildcards in templates
   variable wcalited ALITED_ ;# to avoid self-wildcarding
+  variable leafttl "<table border=0 cellPadding=4 cellSpacing=0 width=100%><td border=0 bgColor=${wcalited}BG><div style=text-align:center><a href=\"${wcalited}BACK_REF\"><font color=${wcalited}FG size=6><b>${wcalited}TITLE</b></font></div></td></table>"
   variable wcstyle ${wcalited}STYLE
   variable wctitle ${wcalited}TITLE
   variable wctoc   ${wcalited}TABLE_CONTENTS
   variable wclink  ${wcalited}CURRENT_LINK
-  variable wcreadm ${wcalited}README_CONTENTS
+  variable wcrmcon ${wcalited}README_CONTENTS
+  variable wcrmttl ${wcalited}README_TITLE
   variable wcbttl  ${wcalited}BODY_TITLE
   variable wcbody  ${wcalited}BODY_CONTENTS
   variable wcwidth ${wcalited}TABLE_WIDTH
   variable wcback  ${wcalited}BACK_REF
   variable wcfg    ${wcalited}FG
   variable wcbg    ${wcalited}BG
+  variable wcleaft ${wcalited}LEAF_TITLE
+  variable wctipw  ${wcalited}TIP_WIDTH
   # saved options
   variable geometry root=$::alited::al(WIN)
   variable width1 {} width2 {}
@@ -57,8 +61,9 @@ proc printer::fetchVars {} {
     namespace upvar ::alited al al obDl2 obDl2 INIDIR INIDIR PRJDIR PRJDIR DATADIR DATADIR
     foreach _ {win itemID1 inifile iniprjfile tpldir cssdir CSS indextpl indextpl2 csstpl \
     titletpl csscont indexname indexname2 cssname readmecont markedIDs markedfiles copyleft \
-    wcbttl wcstyle wctitle wctoc wclink wcreadm wcbody wcwidth wcback wcfg wcbg tmpC cs \
-    geometry width1 width2 dir mdproc mdprocs ttlfg ttlbg leaffg leafbg cwidth final} {
+    wcbttl wcstyle wctitle wctoc wclink wcrmcon wcbody wcwidth wcback wcfg wcbg tmpC cs \
+    geometry width1 width2 dir mdproc mdprocs ttlfg ttlbg leaffg leafbg cwidth final \
+    leafttl wcleaft wctipw wcrmttl} {
       variable $_
     }
   }
@@ -405,13 +410,13 @@ proc printer::CheckTemplates {} {
     Message "No template file for $cssname found: alited broken?" 4
     return no
   }
-  set ttl ":: $al(prjname) ::"
   set indexcont [apave::readTextFile $indextpl]
-  set readmecont [string map [list $wcreadm $readmecont $wcbody {}] $indexcont]
-  set readmecont [string map [list $wctitle $ttl $wctoc $ttl] $readmecont]
+  set readmecont [string map [list $wcrmcon $readmecont $wcbody {}] $indexcont]
   set cssdir_to  [file join $dir $CSS]
   catch {file mkdir $cssdir_to}
-  set csscont [string map [list $wcwidth $cwidth] $csscont]
+  set tipw [expr {$cwidth*20}]
+  set csscont [string map \
+    [list $wcwidth $cwidth $wctipw $tipw $wcfg $ttlfg $wcbg $ttlbg] $csscont]
   set css_to [file join $cssdir_to $cssname]
   apave::writeTextFile $css_to ::alited::printer::csscont 1
   return yes
@@ -446,7 +451,7 @@ proc printer::GetReadme {dirfrom} {
   exec -- {*}$com
   set res [apave::readTextFile $tmpname]
   catch {file delete $tmpname}
-  return $res
+  return [list $res $fname]
 }
 #_______________________
 
@@ -480,12 +485,36 @@ proc printer::GetBranchLink {link title} {
 }
 #_______________________
 
-proc printer::GetLeafLink {link title} {
+proc printer::GetLeafLink {link title {tip ""}} {
   # Gets a contents leaf link for index.html.
   #   link - link address
   #   title - link title
+  #   tip - tooltip's text
 
-  return "<ul class=toc><li><a href=\"$link\">$title</a></li></ul>"
+  set title [lindex [split $title :] end]
+  if {$tip eq {}} {
+    return "<ul class=toc><li><a href='$link'>$title</a></li></ul>"
+  }
+  return "<ul class=toc><li><div class=tooltip><a href=\"$link\">$title</a><span class=tooltiptext>$tip</span></div></li></ul>"
+}
+
+#_______________________
+
+proc printer::UnitTooltip {wtxt l1 l2} {
+  # Gets unit's tooltip.
+  #   wtxt - text's path
+  #   l1 - 1st line's number
+  #   l2 - last line's number
+
+  set tip {}
+  for {incr l1} {$l1<=$l2} {incr l1} {
+    set line [string trimleft [$wtxt get $l1.0 $l1.end]]
+    if {[string match #* $line]} {
+      set tip [string trimleft $line {#! }]
+    }
+    if {$line ne {}} break
+  }
+  return $tip
 }
 #_______________________
 
@@ -510,7 +539,7 @@ proc printer::MakeFile {fname fname2} {
   } else {
     set TID TMP
     set wtxt [$obDl2 TexTmp]
-    $wtxt replace 1.0 end $cont            ;# imitate tab of bar
+    $wtxt replace 1.0 end $cont             ;# imitate tab of bar
     alited::unit::RecreateUnits $TID $wtxt  ;# to get unit tree
   }
   if {[llength $al(_unittree,$TID)]<2} {
@@ -524,28 +553,32 @@ proc printer::MakeFile {fname fname2} {
       lassign $item lev leaf fl1 title l1 l2
       set ttl [string map {" " _} [::apave::NormalizeName $title]]
       if {$leaf} {
-        set link [GetLeafLink #$ttl $ttl]
+        set tip " $title - [UnitTooltip $wtxt $l1 $l2]"
+        set link [GetLeafLink #$ttl $ttl $tip]
       } else {
         set link [GetBranchLink #$ttl $ttl]
       }
       append link \n$wclink
       set tpl [string map [list $wclink $link] $tpl]
-      set line [lindex $contlist [incr l1 -1]]
+      set l1 [expr {max(0,$l1-2)}]
+      set line [lindex $contlist $l1]
       set contlist [lreplace $contlist $l1 $l1 "$line<a id=$ttl></a>"]
     }
     set cont {}
     foreach line $contlist {append cont $line\n}
   }
-  set readme [GetReadme [file dirname $fname]]
+  lassign [GetReadme [file dirname $fname]] readme rmname
   if {$readme eq {}} {
     set bttl {}
+    set rmttl $leafttl
   } else {
-    set ttltable {<table border=0 cellPadding=4 cellSpacing=0 width="100%"><td border=0 bgColor=ALITED_BG><div style="text-align:center"><a href="ALITED_BACK_REF"><font color=ALITED_FG size=6><b>ALITED_TITLE</b></font></div></td></table>}
-    set bttl $ttltable
+    set bttl $leafttl
+    set rmttl [string map [list $wctitle [file tail $rmname]] $leafttl]
   }
   set rootpath [file dirname [::apave::FileRelativeTail $dir $fname2]]
   set csspath [file join $rootpath $CSS $cssname]
-  set tpl [string map [list $wclink {} $wcreadm $readme $wcbttl $bttl] $tpl]
+  set tpl [string map [list $wclink {} $wcrmcon $readme $wcrmttl $rmttl $wcbttl $bttl] $tpl]
+  set tpl [string map [list $wcleaft $leafttl] $tpl]
   set tpl [string map [list $wctitle $ftail $wcstyle $csspath] $tpl]
   set tpl [string map [list $wcfg $leaffg $wcbg $leafbg] $tpl]
   set tpl [string map [list $wcback [file join $rootpath $indexname]] $tpl]
@@ -554,9 +587,7 @@ proc printer::MakeFile {fname fname2} {
   apave::writeTextFile $fname2 ::alited::printer::tmpC
   set clrvals [::hl_tcl::hl_colors $cs 0]
   set cset cs=
-  foreach val $clrvals {
-    append cset $val,
-  }
+  foreach val $clrvals {append cset $val,}
   Hl_html $fname2 $cset
   return $fname2
 }
@@ -584,7 +615,7 @@ proc printer::Process {wtree} {
     set readmecont $copyleft
     apave::writeTextFile $index_to ::alited::printer::readmecont
   }
-  set readmecont [GetReadme $al(prjroot)]
+  lassign [GetReadme $al(prjroot)] readmecont rmname
   if {![CheckData]} {return no}
   if {![CheckDir]} {return no}
   if {![CheckTemplates]} {return no}
@@ -618,7 +649,15 @@ proc printer::Process {wtree} {
     set readmecont [string map [list $wclink $link] $readmecont]
     incr fcnt
   }
+  if {$rmname eq {}} {
+    set rmttl $leafttl
+  } else {
+    set rmttl [string map [list $wctitle [file tail $rmname]] $leafttl]
+  }
   set csspath [file join $CSS $cssname]
+  set readmecont [string map [list $wcleaft $leafttl $wcrmttl $leafttl] $readmecont]
+  set ttl ":: $al(prjname) ::"
+  set readmecont [string map [list $wctitle $ttl $wctoc $ttl] $readmecont]
   set readmecont [string map [list $wclink {} $wcback {} $wcstyle $csspath] $readmecont]
   set readmecont [string map [list $wcfg $ttlfg $wcbg $ttlbg $wcbttl {}] $readmecont]
   apave::writeTextFile $index_to ::alited::printer::readmecont 1
