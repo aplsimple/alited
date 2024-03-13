@@ -1,17 +1,28 @@
 # LAST CHANGES:
 
-Version `v1.8.0b1 (9 Mar'24)`
+Version `v1.8.0b4 (13 Mar'24)`
 
   - BUGFIX: Moving unit descriptions: processed tabs in tabbar not marked as modified
+  - BUGFIX: false checking Tcl at Tools/Run with cursor being in no unit
+  - BUGFIX: Edit/Play macro (issues with activating & some keys)
+  - DRAFT : Tools/Project printer
+  - DRAFT : "Project printer" in [alited's demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
+  - NEW   : Ctrl+click on Undo/Redo tool buttons: "all in text"
   - NEW   : Saved favorites: "Add session files as favorites" button
   - NEW   : Rectangular selection: equal columns => selecting to line ends
-  - DRAFT : Tools/Project printer
-  - CHANGE: project directory read made quicker
+  - NEW   : Edit/Formats: "HTML chars" & "Various chars" (Mode=5)
+  - NEW   : Edit/Formats: backslashes to continue commands
+  - NEW   : Find/Replace dialogue: Ctrl+T to enter the text
+  - CHANGE: project file tree: got quicker
+  - CHANGE: %M wildcard in templates refering to user's menus directory, not alited's
+  - CHANGE: file::DisplayFile: added "doErr" argument to show Tcl errors
+  - CHANGE: some long lines wrapped, esp. in apave layouts
+  - CHANGE: playing macros from "Macro" dialogue: wait a little before playing
   - CHANGE: tabs moving from tabbar's popup menu: stay at neighbor tab, not at moved one
   - CHANGE: Moving unit descriptions: "All in session" instead of "All open"
   - CHANGE: Moving unit descriptions: intro lines ("All of...") skipped
   - CHANGE: Edit/Rectangular selection/Paste: cursor set after 1st line pasted position
-  - CHANGE: packages: e_menu/apave 4.4.0, bartabs 1.6.8
+  - CHANGE: packages: e_menu/apave 4.4.0, bartabs 1.6.8, playtkl 1.4.2
 
 
 Version `v1.7.0 (28 Feb'24)`

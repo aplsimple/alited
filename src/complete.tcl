@@ -92,6 +92,7 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
   # first, add variables
   set wtxt [alited::main::CurrentWTXT]
   lassign [alited::favor::CurrentName] itemID name l1 l2
+  if {$l2 eq {}} {set l1 [set l2 0]}
   catch {
     # get variables from the current proc's header
     lassign [split [$wtxt get $l1.0 [expr {$l1+4}].0] \n] h1 h2 h3 h4
@@ -111,8 +112,8 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
     }
   }
   # get variables from the current proc's body
-  set RE \
-{(?:(((^\s*|\[\s*|\{\s*)+((set|unset|append|lappend|incr|variable|global)\s+))|\$)([:a-zA-Z0-9_]*[\(]*[:a-zA-Z0-9_,\$]*[\)]*))}
+  set RE {(?:(((^\s*|\[\s*|\{\s*)+((set|unset|append|lappend|incr|variable|global)\s+)}
+  append RE {)|\$)([:a-zA-Z0-9_]*[\(]*[:a-zA-Z0-9_,\$]*[\)]*))}
   foreach line [split [$wtxt get $l1.0 [incr l2].0] \n] {
     foreach {- - - - - - v} [regexp -all -inline $RE $line] {
       if {[string match *(* $v] || [string match *)* $v]} {
@@ -295,9 +296,13 @@ proc complete::PickCommand {wtxt} {
   catch {$obj destroy}
   ::apave::APave create $obj $win
   set lwidgets [list \
-    "Ent - - - - {pack -expand 1 -fill x} {-w $::alited::complete::maxwidth -tvar ::alited::complete::word -validate key -validatecommand {alited::complete::PickValid $wtxt %V %d %i %s %S}}" \
+    "Ent - - - - {pack -expand 1 -fill x} {-w $::alited::complete::maxwidth \
+    -tvar ::alited::complete::word -validate key \
+    -validatecommand {alited::complete::PickValid $wtxt %V %d %i %s %S}}" \
     "fra - - - - {pack -expand 1 -fill both}" \
-    ".Lbx - - - - {pack -side left -expand 1 -fill both} {-h $lht -w $::alited::complete::maxwidth -lvar ::alited::complete::comms -exportselection 0}"
+    ".Lbx - - - - {pack -side left -expand 1 -fill both} \
+    {-h $lht -w $::alited::complete::maxwidth \
+    -lvar ::alited::complete::comms -exportselection 0}"
   ]
   if {$llen>$mlen} {
     # add vertical scrollbar if number of items exceeds max.height

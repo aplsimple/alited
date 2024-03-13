@@ -531,7 +531,10 @@ proc ini::ReadIniEM {nam val emiName} {
     emTcl      {
       set val [::apave::UnixPath $val]
       if {[string first { } $val]>0} {
-        tk_messageBox -title Warning -icon warning -message "The path to Tcl executable\n\n\"$val\"\n\ncontains spaces.\n\nThis path doesn't fit alited. Only 'non-space' ones do.\n\n==> Change this setting:\nPreferences/Tools/tclsh..."
+        tk_messageBox -title Warning -icon warning -message \
+          "The path to Tcl executable\n\n\"$val\"\n\ncontains spaces.\n \
+          \nThis path doesn't fit alited. Only 'non-space' ones do.\n \
+          \n==> Change this setting:\nPreferences/Tools/tclsh..."
       } else {
         set al(EM,Tcl) $val
       }
@@ -1279,7 +1282,8 @@ proc ini::GetUserDirs {{initmnu no}} {
 proc ini::CreateUserDirs {} {
   # Creates main directories for settings.
 
-  namespace upvar ::alited al al USERDIR USERDIR INIDIR INIDIR PRJDIR PRJDIR MNUDIR MNUDIR DATAUSER DATAUSER DATAUSERINIFILE DATAUSERINIFILE PRJEXT PRJEXT
+  namespace upvar ::alited al al USERDIR USERDIR INIDIR INIDIR PRJDIR PRJDIR \
+    MNUDIR MNUDIR DATAUSER DATAUSER DATAUSERINIFILE DATAUSERINIFILE PRJEXT PRJEXT
   foreach dir {USERDIR INIDIR PRJDIR} {
     catch {file mkdir [set $dir]}
   }
@@ -1345,7 +1349,7 @@ proc ini::HighlightEditSettings {} {
   # Highlights the settings file.
 
   namespace upvar ::alited al al obPav obPav
-  foreach nam [::hl_tcl::hl_colorNames] {lappend colors $al(ED,$nam)}
+  set colors [alited::Hl_Colors]
   set wtxt [$obPav TexM]
   set plcom [alited::HighlightAddon $wtxt $al(INI) $colors]
   ::hl_tcl::hl_init $wtxt -font $al(FONT,txt) -dark [$obPav csDark] \

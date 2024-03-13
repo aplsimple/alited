@@ -1,0 +1,19 @@
+# Replaces some symbols with html counterparts:
+#  <			&gt;
+#  >			&lt;
+#  &			&amp;
+#  "			&quot;
+#  Space		&nbsp;
+#  ...
+# See also: https://www.w3schools.com/html/html_entities.asp
+
+Mode = 2
+
+Command = string map [list > "&gt;" < "&lt;" & "&amp;" {"} "&quot;" { } "&nbsp;" ' "&apos;" © "&copy;" ® "&reg;" £ "&pound;" ¥ "&yen;" € "&euro;" ∀ "&forall;" ∃ "&exist;" ∅ "&empty;" ∇ "&nabla;" ∈ "&isin;" ∉ "&notin;" ∋ "&ni;" ∏ "&prod;" ∑ "&sum;" ™ "&trade;" ← "&larr;" ↑ "&uarr;" → "&rarr;" ↓ "&darr;"] {%v}
+
+# ===========================================================================
+#
+# The mode=2 means that command(s) will be applied to a selected text
+# or, if there is no selection, to a current line.
+#
+# In the command, {%v} wildcard stands for the selection or the current line.

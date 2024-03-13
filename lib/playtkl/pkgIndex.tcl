@@ -1,4 +1,4 @@
-package ifneeded playtkl 1.4.1 [list source [file join $dir playtkl.tcl]]
+package ifneeded playtkl 1.4.2 [list source [file join $dir playtkl.tcl]]
 
 # A short intro (for Ruff! docs generator:)
 

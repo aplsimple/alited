@@ -636,7 +636,11 @@ proc edit::DoMacro {mode {fname ""}} {
   set name [file rootname [file tail $fname]]
   if {$fname ne {}} {
     set fname [MacroFileName $fname]
-    if {$mode eq "play" && ![MacroExists $fname]} {
+    if {$mode eq "play"} {
+      if {[MacroExists $fname]} {
+        # play the macro after a pause to dismiss intervening events
+        after 50 [list after idle [list after 50 [list after idle alited::edit::DoMacro $mode]]]
+      }
       return no
     }
   }
@@ -686,12 +690,15 @@ proc edit::InputMacro {idx} {
   $obDl2 paveWindow $win.fra { \
     {lab - - 1 4 {-padx 4} {-t {$head}}} \
     {fil + T 1 4 {-pady 4 -padx 4 -st ew} \
-      "-tvar ::alited::al(_macro) -validate all -validatecommand alited::edit::ValidMacro -w 30 -initialdir {$dir} -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"} \
+      "-tvar ::alited::al(_macro) -validate all \
+      -validatecommand alited::edit::ValidMacro -w 30 -initialdir {$dir} \
+      -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"} \
     {chb + T 1 4 {-st w -pady 4} {-t {Record mouse} -var ::alited::al(macromouse)}} \
     {seh + T 1 4 {-pady 4}} \
     {lab2 + T 1 4 {} {-t Comment:}} \
     {fra0 + T 1 4 {-rw 1 -st nsew}} \
-    {.TexCmn L + - - {pack -side left -expand 1 -fill both -padx 3} {-h 4 -w 40 -wrap word -tabnext *.but1 -rotext ::alited::al(macrocomment) -ro 0}} \
+    {.TexCmn L + - - {pack -side left -expand 1 -fill both -padx 3} \
+      {-h 4 -w 40 -wrap word -tabnext *.but1 -rotext ::alited::al(macrocomment) -ro 0}} \
     {.sbvText + L - - {pack}} \
     {seh2 fra0 T 1 4 {-pady 4}} \
     {fra + T 1 1 {-st w}} \
@@ -828,8 +835,18 @@ proc edit::DispatchMacro {{mode ""}} {
       set al(macromouse) no
       DoMacro record $al(MC,quickmacro)
     }
-    "init"     {DoMacro play $al(activemacro)}
-    "play"     {DoMacro play}
+    "init"     {
+      # the very first call of DispatchMacro: activate an old active macro
+      MacroMenu $al(activemacro) yes
+      DoMacro play $al(activemacro)
+      set macrosmode {}
+      after idle {set alited::edit::macrosmode play}
+    }
+    "play"     {
+      DoMacro play
+      set macrosmode {}
+      after idle {set alited::edit::macrosmode play}
+    }
   }
 }
 #_______________________
@@ -1108,12 +1125,25 @@ proc edit::RunFormat {fname} {
   #   fname - format file's name
 
   SourceFormatTcl
-  set cont [split [::apave::readTextFile $fname] \n]
+  set fcont [split [::apave::readTextFile $fname] \n]
   set mode 0
+  set cont [list]
+  set backslashed {}
+  foreach line $fcont {
+    set line [string trimright $line]
+    if {[string index $line end] eq "\\"} {
+      append backslashed { } [string trimright $line \\]
+      continue
+    } elseif {$backslashed ne {}} {
+      set line "$backslashed $line"
+      set backslashed {}
+    }
+    lappend cont $line
+  }
   foreach line $cont {
     incr iline
     set mode [IniParameter mode $line]
-    if {$mode in {1 2 3 4}} {
+    if {$mode in {1 2 3 4 5}} {
       alited::format::Mode$mode [lrange $cont $iline end]
       break
     }

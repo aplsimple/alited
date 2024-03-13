@@ -410,7 +410,12 @@ namespace eval ::alited {
     {Authors:} {Автори:}
     {License:} {Ліцензія:}
     {Acknowledgements} {Вдячності}
-    "Many thanks to the following people\n who have contributed to this project\n with their participation, advice and code" "Щира подяка всім цим людям,\n що внесли свій вклад в цей проект\n своїми порадами, співучастю та кодом"
+    "Many thanks to the following people \
+    \n who have contributed to this project \
+    \n with their participation, advice and code"
+    "Щира подяка всім цим людям, \
+    \n що внесли свій вклад в цей проект \
+    \n своїми порадами, співучастю та кодом"
     {Special thanks also to} {Особлива вдячність також}
     {Packages} {Пакети}
     {Packages used by <red>alited %ver</red>:} {Пакети, використовані в <red>alited %ver</red>:}
@@ -720,6 +725,27 @@ namespace eval ::alited {
     {Applied to one selection only!} {Припустиме тільки одне виділення!}
     "Incorrect mapped 'from-to' in: %l" "Некоректне відображення 'з-на' у: %l"
     "'from' refers to previous 'to' in: %l (see: %n)" "'з' посилається на попереднє 'на' у: %l (див.: %n)"
+  }
+
+  ## ________________________ Project printer _________________________ ##
+
+  ::msgcat::mcmset uk {
+    {Project Printer} {Друкар проекту}
+    {Project Printer...} {Друкар проекту...}
+    {Output directory:} {Каталог призначення:}
+    {Markdown processor:} {Обробник markdown:}
+    {Directory title colors} {Коліри заголовку каталога}
+    {Foreground:} {Текст:}
+    {Background:} {Фон:}
+    {File title colors} {Коліри заголовку файла}
+    {Syntax colors:} {Коліри синтаксису:}
+    {Width of contents:} {Ширина змісту:}
+    {Final processor:} {Остаточний обробник:}
+    {Output directory cannot be cleared: alien files} {Каталог призначення неможливо вичистити: чужі файли}
+    {Output directory cannot be cleared: alien %n} {Каталог призначення неможливо вичистити: чужі %n}
+    {Output directory cannot be cleared: alien directories} {Каталог призначення неможливо вичистити: чужі каталоги}
+    "The output directory\n  %n\ncontains %c subdirectories.\n\nAll will be replaced with the new!" "Каталог призначення\n  %n\nмає %c підкаталогів.\n\nВсі вони будуть заміщені новими!"
+    {Sort units:} {Сортувати юніти:}
   }
 
   ## ________________________ EONS alited _________________________ ##

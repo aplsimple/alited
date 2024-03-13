@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.0b1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.0b4  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -20,7 +20,10 @@ namespace eval alited {
   }
   set _ [info nameofexecutable]
   if {[string first { } $_]>0} {
-    set res [tk_messageBox -title Warning -icon warning -message "The Tcl runtime path\n\n\"$_\"\n\ncontains spaces.\n\nThis path doesn't fit alited. Only 'non-space' ones do.\n\n==> Some tools won't work." -type okcancel]
+    set res [tk_messageBox -title Warning -icon warning -message \
+      "The Tcl runtime path\n\n\"$_\"\n\ncontains spaces.\n \
+      \nThis path doesn't fit alited. Only 'non-space' ones do.\n \
+      \n==> Some tools won't work." -type okcancel]
     if {$res ne {ok}} exit
   }
 
@@ -355,13 +358,15 @@ if {[package versions alited] eq {}} {
     if {$::alited::al(IsWindows)} {
       if {[llength $ALITED_ARGV]} {
         # Attempt to add files & raise the existing application
-        if {![catch {::comm::comm send $::alited::al(comm_port) ::alited::run_remote ::alited::open_files_and_raise 0 $ALITED_ARGV}]} {
+        if {![catch {::comm::comm send $::alited::al(comm_port) ::alited::run_remote \
+        ::alited::open_files_and_raise 0 $ALITED_ARGV}]} {
           destroy .
           exit
         }
       } else {
         # Attempt to raise the existing application
-        if {![catch { ::comm::comm send $::alited::al(comm_port) ::alited::run_remote ::alited::raise_window }]} {
+        if {![catch { ::comm::comm send $::alited::al(comm_port) ::alited::run_remote \
+        ::alited::raise_window }]} {
           destroy .
           exit
         }
@@ -565,6 +570,32 @@ namespace eval alited {
     set wtxt [main::GetWTXT $TID]
     if {$wtxt ne {}} {unit::RecreateUnits $TID $wtxt}
     return 1
+  }
+  #_______________________
+
+  proc MapWildCards {com} {
+    # Maps some common wildcards in a command
+    #   com - the command
+    # Wildcards:
+    #   %H - home directory
+    #   %P - directory of current project
+    #   %F - current file name
+    #   %D - directory of current file
+    #   %A - directory of alited
+    #   %M - directory of e_menu's menus
+    #   %E - Tcl/Tk executable as set in Preferences/Tools
+
+    variable al
+    variable DIR
+    set filename [bar::FileName]
+    set dirname [file dirname $filename]
+    set com [string map [list %H [apave::HomeDir]] $com]
+    set com [string map [list %P $al(prjroot)] $com]
+    set com [string map [list %F $filename] $com]
+    set com [string map [list %D $dirname] $com]
+    set com [string map [list %A $DIR] $com]
+    set com [string map [list %M $al(EM,mnudir)] $com]
+    set com [string map [list %E [Tclexe]] $com]
   }
 
   ## ________________________ Messages _________________________ ##
@@ -991,6 +1022,15 @@ namespace eval alited {
       }
     }
     return $res
+  }
+  #_______________________
+
+  proc Hl_Colors {} {
+    # Gets highlighting colors.
+
+    variable al
+    foreach nam [::hl_tcl::hl_colorNames] {lappend colors $al(ED,$nam)}
+    return $colors
   }
   #_______________________
 

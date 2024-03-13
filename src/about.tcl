@@ -148,7 +148,9 @@ proc about::About {} {
 
   ### ________________________ "Acknowledgements" tab _________________________ ###
 
-  set ackn [msgcat::mc "Many thanks to the following people\n who have contributed to this project\n with their participation, advice and code"]
+  set ackn [msgcat::mc "Many thanks to the following people \
+    \n who have contributed to this project \
+    \n with their participation, advice and code"]
   set spec [msgcat::mc "Special thanks also to"]
   set ::alited::AboutAckn "\n $ackn\n\n \
     \u2022 <linkSH>Steve Huntley</linkSH>\n \
@@ -192,7 +194,13 @@ proc about::About {} {
 
   set wmax [expr {4+max([string length $long1], \
     [string length $long2],[string length $long3])}]
-  set tab2 [list General Packages "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexPack - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 -rotext ::alited::AboutPack -tags ::alited::about::textTags}}" Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} {.TexAckn - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 34 -rotext ::alited::AboutAckn -tags ::alited::about::textTags}} {.sbv .texAckn L - - {pack -side right}}"]
+  set tab2 [list General Packages "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} \
+    {.TexPack - - - - {pack -side left -expand 1 -fill both} {-w $wmax -h 31 \
+    -rotext ::alited::AboutPack -tags ::alited::about::textTags}}" \
+    Acknowledgements "{fra - - 1 99 {-st nsew -rw 1 -cw 1}} \
+    {.TexAckn - - - - {pack -side left -expand 1 -fill both} \
+    {-w $wmax -h 34 -rotext ::alited::AboutAckn -tags ::alited::about::textTags}} \
+    {.sbv .texAckn L - - {pack -side right}}"]
 
   ## ________________________ Change default options _________________________ ##
 

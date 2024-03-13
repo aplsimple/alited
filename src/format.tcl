@@ -524,6 +524,7 @@ proc format::Ok {} {
 #_______________________
 
 proc format::Cancel {} {
+  # Handles pressing Cancel button of Move Descriptions dialogue.
 
   namespace upvar ::alited obDl2 obDl2
   variable win
@@ -697,8 +698,6 @@ proc format::Mode4 {cont args} {
   lassign [BeforeFormatting yes] wtxt valueLines
   set comcount 0
   set err 0
-  set filename [alited::bar::FileName]
-  set dirname [file dirname $filename]
   set tmpname [alited::TmpFile FORMAT~]
   foreach line $cont {
     set com {}
@@ -718,18 +717,7 @@ proc format::Mode4 {cont args} {
     if {$com ne {}} {
       set abracadabra {*@&D34oP`G-}
       set com [string map [list %% $abracadabra] $com]
-      #   %H - home directory
-      #   %P - directory of current project
-      #   %F - current file name
-      #   %D - directory of current file
-      #   %A - directory of alited
-      #   %E - Tcl/Tk executable as set in Preferences/Tools
-      set com [string map -nocase [list %H [apave::HomeDir]] $com]
-      set com [string map -nocase [list %P $al(prjroot)] $com]
-      set com [string map -nocase [list %F $filename] $com]
-      set com [string map -nocase [list %D $dirname] $com]
-      set com [string map -nocase [list %A $::alited::DIR] $com]
-      set com [string map -nocase [list %E [alited::Tclexe]] $com]
+      set com [alited::MapWildCards $com]
       #   %S - file name for saved selection
       #   %L - file name for saved lines of selection
       if {[string first %S $com]>=0 && $valueSel ne {}} {
@@ -740,6 +728,26 @@ proc format::Mode4 {cont args} {
       set com [string map -nocase [list %S $tmpname %L $tmpname] $com]
       set com [string map [list $abracadabra %] $com]
       alited::tool::Run_in_e_menu $com
+    }
+  }
+}
+
+# ________________________ inserting at cursor _________________________ #
+
+proc format::Mode5 {cont args} {
+  # Inserts a string at the current cursor position.
+  #   cont - list of config.file's lines
+
+  lassign [BeforeFormatting] wtxt
+  foreach line $cont {
+    set pos [$wtxt index insert]
+    if {[set com [alited::edit::IniParameter command $line]] ne {}} {
+      if {[catch {set value [eval $com]} e]} {
+        alited::Message $e 4
+        set err 1
+        break
+      }
+      $wtxt insert $pos $value
     }
   }
 }

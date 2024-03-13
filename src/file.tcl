@@ -620,8 +620,8 @@ proc file::DisplayFile {TID fname wtxt doreload} {
   }
   # another critical point: read the file only at need
   if {$doreload || [set filecont [ReadFileByTID $TID yes]] eq {}} {
-    # last check point: 0 bytes of the file => read it anyway
-    set filecont [ReadFile $TID $fname]
+    # last check point: 0 bytes of the file => read it anyway with showing errors
+    set filecont [ReadFile $TID $fname 1]
   }
   $obPav displayText $wtxt $filecont
   $obPav makePopup $wtxt no yes

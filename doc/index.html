@@ -75,6 +75,7 @@
 <li class="level3"><div class="li"><a href="#runme">"Tools / Run..."</a></div></li>
 <li class="level3"><div class="li"><a href="#helptool">Tcl/Tk help tool</a></div></li>
 <li class="level3"><div class="li"><a href="#checktool">Check Tcl tool</a></div></li>
+<li class="level3"><div class="li"><a href="#printer">Project printer</a></div></li>
 <li class="level3"><div class="li"><a href="#paver">Paver</a></div></li>
 <li class="level3"><div class="li"><a href="#custtool">Customizing tools</a></div></li>
 <li class="level3"><div class="li"><a href="#templates">Templates</a></div></li>
@@ -1878,6 +1879,74 @@ or this way:
 It's very good to eliminate <b>all</b> inconsistencies in a project - this would greatly help with eliminating the errors and omissions, however trifling they seem to be.
 </p>
 
+
+<br>
+<p>
+<h3 id=printer><i>Project printer</i></h3>
+</p>
+
+<p>
+The <i>Project printer</i> tool allows creating a "hard copy" of the project.
+</p>
+
+<p>
+The <i>hard copy</i> is a set of .html files that are created from selected project files in the chosen <i>output directory</i>.
+</p>
+
+<p>
+The <i>markdown processor</i> is used to include Readme, README, Readme.md, README.md (and so on) files into the .html files.
+</p>
+
+<p>
+It's highly recommended to install and use the <i>pandoc</i> application available at
+<a href=https://github.com/jgm/pandoc/releases>github.com/jgm/pandoc/releases</a>.
+</p>
+
+<p>
+The <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s own markdown processor can be used for the very basic markdown documents like <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s README.md which is nevertheless quite sufficient for most of projects.
+</p>
+
+<p>
+If you enter other markdown command, use in it <i>%i</i> wildcard for the source README and <i>%o</i> for a target (temporary) file.
+</p>
+
+<p>
+The <i>colors, sort units</i> and <i>width of contents</i> affect the appearance of the resulting .html files. Sorting units is useful for unit trees without branches.
+</p>
+
+<p>
+The <i>file tree</i> serves to select files for the resulting hard copy, using the tool bar above the tree or <i>Space</i> key.
+</p>
+
+<p>
+The <i>hard copy</i> can be printed by means of a browser. Or be handled by a file manager or another <i>final processor</i>.
+</p>
+
+<p>
+The <i>final processor</i> means a command to process the resulting <i>hard copy</i>, e.g. to embed it in a reference guide or just to browse the <i>output directory</i>. Use <i>%D</i> wildcard for its name. Alone <i>%D</i> or <i>"%D"</i> means opening <i>index.html</i> in a browser.
+</p>
+
+<p>
+Other wildcards for the <i>final processor</i>:
+<ul>
+<li><code>%H</code> - home directory</li>
+<li><code>%P</code> - directory of current project</li>
+<li><code>%F</code> - current file name</li>
+<li><code>%A</code> - directory of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span></li>
+<li><code>%M</code> - directory of <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a>'s menus</li>
+<li><code>%E</code> - Tcl/Tk executable as set in Preferences/Tools (or one executing <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>)</li>
+</ul>
+</p>
+
+<p>
+E.g.
+<pre class="code">%E %A/lib/e_menu/e_menu.tcl m=%M/misc ex=7</pre>
+runs 7th <i>e_menu</i> item of <i>misc.em</i> menu. In fact, it embeds the created hard copy into <a href="https://aplsimple.github.io/en/tcl/printer/alited/index.html">https://aplsimple.github.io</a>.
+</p>
+
+<p>
+In the .html files, first included is a <i>README</i> file of the appropriate directory, if there is any of Readme, README, Readme.md, README.md (and so on).
+</p>
 
 <br>
 <p>

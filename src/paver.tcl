@@ -209,7 +209,7 @@ proc paver::WidgetList {} {
   catch {
     set wlist [list]
     foreach widitem $widgetlist {
-      catch {set widitem [subst -nobackslashes -nocommands $widitem]}
+#!      catch #\{set widitem [subst -nobackslashes -nocommands $widitem]#\}
       lappend wlist $widitem
     }
     set widgetlist $wlist

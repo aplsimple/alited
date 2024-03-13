@@ -1,0 +1,24 @@
+
+# The mode=5 means that the result of Tcl command(s) will be inserted at the
+# current cursor position.
+#
+# The command can use "_", "__", "_1", "_2" and similar names of variables.
+
+# ===========================================================================
+
+# Shows some symbols.
+#
+# Also demonstrates, how to use
+#   "\" to continue commands
+#   ";" to add commands
+#   multiple "command="
+
+Mode = 5
+
+# trade, currency, logic
+command = set _ {©®™} ; \
+       append _ {£¥€} ; \
+       append _ {∀∃∅∇∈∉∋∏∑}
+
+# arrows
+command = set _ {←↑→↓}

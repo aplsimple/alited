@@ -18,7 +18,7 @@ The *klnd* package provides a calendar widget to use along with [apave](../pave/
 
   <img src="../pave/files/widgdat2.png" class="media" alt="">
 
-  <hr>
+## Synopsis
 
   To directly call the calendar, use the following commands:
 
@@ -50,7 +50,7 @@ The *klnd* package provides a calendar widget to use along with [apave](../pave/
 
   The `-parent` option may be used along with `-geometry, -entry`, as it allows a child window to inherit the parent's attributes.
 
-  <hr>
+## Hot keys
 
   The calendar provides the hotkeys Left, Right, Up, Down, PageUp, PageDown, Home, End and F3 to navigate through days, months and years.
 

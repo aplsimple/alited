@@ -406,7 +406,12 @@ namespace eval ::alited {
     {Authors:} {Authoren:}
     {License:} {Lizens:}
     {Acknowledgements} {Anerkennungen}
-    "Many thanks to the following people\n who have contributed to this project\n with their participation, advice and code" "Vielen Dank an die folgenden Personen,\n die zu diesem Projekt beigetragen haben\n mit ihrer Teilnahme, Beratung und Code"
+    "Many thanks to the following people \
+    \n who have contributed to this project \
+    \n with their participation, advice and code"
+    "Vielen Dank an die folgenden Personen, \
+    \n die zu diesem Projekt beigetragen haben \
+    \n mit ihrer Teilnahme, Beratung und Code"
     {Special thanks also to} {Besonderen Dank auch an}
     {Packages} {Pakete}
     {Packages used by <red>alited %ver</red>:} {Von <red>alited %ver</red> verwendete Pakete:}
@@ -717,6 +722,27 @@ namespace eval ::alited {
     {Applied to one selection only!} {Nur auf eine Auswahl angewendet!}
     "Incorrect mapped 'from-to' in: %l" "Inkorrekt kartiert 'von-zu' in: %l"
     "'from' refers to previous 'to' in: %l (see: %n)" "'von' bezieht sich auf vorherige 'zu' in: %l (siehe: %n)"
+  }
+
+  ## ________________________ Project printer _________________________ ##
+
+  ::msgcat::mcmset de {
+    {Project Printer} {Projektdrucker}
+    {Project Printer...} {Projektdrucker...}
+    {Output directory:} {Ausgabeverzeichnis:}
+    {Markdown processor:} {Markdown-Prozessor:}
+    {Directory title colors} {Farben für Verzeichnistitel}
+    {Foreground:} {Vordergrund:}
+    {Background:} {Hintergrund:}
+    {File title colors} {Farben für Dateititel}
+    {Syntax colors:} {Farben für Syntax:}
+    {Width of contents:} {Breite des Inhalts:}
+    {Final processor:} {Endverarbeiter:}
+    {Output directory cannot be cleared: alien files} {Ausgabeverzeichnis dies kann nicht gelöscht werden: fremde Dateien}
+    {Output directory cannot be cleared: alien %n} {Ausgabeverzeichnis dies kann nicht gelöscht werden: fremde %n}
+    {Output directory cannot be cleared: alien directories} {Ausgabeverzeichnis kann nicht gelöscht werden: fremde Verzeichnisse}
+    "The output directory\n  %n\ncontains %c subdirectories.\n\nAll will be replaced with the new!" "Ausgabeverzeichnis\n  %n\nenthält %c Unterverzeichnisse.\n\nAlle werden durch die neuen ersetzt!"
+    {Sort units:} {Sortieren Einheiten:}
   }
 
   ## ________________________ EONS alited _________________________ ##

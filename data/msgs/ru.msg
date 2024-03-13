@@ -265,7 +265,7 @@ namespace eval ::alited {
     {Incorrect name: "%n"} {Некорректное имя: "%n"}
     {The project template is empty!} {Шаблон проекта пуст!}
     {Incorrect indentation in Project template: %n} {Некорректний отступ в шаблоне проекта: %n}
-    "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project." "Укажите дерево директорий для шаблона проекта.\nДелайте одинаковые отступы для указания поддиректорий.\n\nФайлы типа README*, CHANGELOG* будут создаваться пустыми.\nФайлы типа LICENSE* будут браться из текущего проекта."
+    "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project." "Укажите дерево каталогов для шаблона проекта.\nДелайте одинаковые отступы для указания подкаталогов.\n\nФайлы типа README*, CHANGELOG* будут создаваться пустыми.\nФайлы типа LICENSE* будут браться из текущего проекта."
     {Create a project by template} {Создать проект по шаблону}
     {Project directory} {Директория проекта}
     {Command} {Команда}
@@ -405,7 +405,12 @@ namespace eval ::alited {
     {Authors:} {Авторы:}
     {License:} {Лицензия:}
     {Acknowledgements} {Благодарности}
-    "Many thanks to the following people\n who have contributed to this project\n with their participation, advice and code" "Огромное спасибо всем этим людям,\n внесшим свой вклад в этот проект\n своими советами, соучастием и кодом"
+    "Many thanks to the following people \
+    \n who have contributed to this project \
+    \n with their participation, advice and code"
+    "Огромное спасибо всем этим людям, \
+    \n внесшим свой вклад в этот проект \
+    \n своими советами, соучастием и кодом"
     {Special thanks also to} {Особая благодарность также}
     {Packages} {Пакеты}
     {Packages used by <red>alited %ver</red>:} {Пакеты, использованные в <red>alited %ver</red>:}
@@ -715,6 +720,27 @@ namespace eval ::alited {
     {Applied to one selection only!} {Разрешено только одно выделение!}
     "Incorrect mapped 'from-to' in: %l" "Некорректное отображение 'с-на' в: %l"
     "'from' refers to previous 'to' in: %l (see: %n)" "'с' ссылается на предыдущее 'на' в: %l (см.: %n)"
+  }
+
+  ## ________________________ Project printer _________________________ ##
+
+  ::msgcat::mcmset ru {
+    {Project Printer} {Печатник проекта}
+    {Project Printer...} {Печатник проекта...}
+    {Output directory:} {Каталог назначения:}
+    {Markdown processor:} {Обработчик markdown:}
+    {Directory title colors} {Цвета заголовка каталога}
+    {Foreground:} {Текст:}
+    {Background:} {Фон:}
+    {File title colors} {Цвета заголовка файла}
+    {Syntax colors:} {Цвета синтаксиса:}
+    {Width of contents:} {Ширина содержимого:}
+    {Final processor:} {Окончательный обработчик:}
+    {Output directory cannot be cleared: alien files} {Невозможно очистить каталог назначения: чужие файлы}
+    {Output directory cannot be cleared: alien %n} {Невозможно очистить каталог назначения: чужие %n}
+    {Output directory cannot be cleared: alien directories} {Невозможно очистить каталог назначения: чужие каталоги}
+    "The output directory\n  %n\ncontains %c subdirectories.\n\nAll will be replaced with the new!" "Каталог назначения\n  %n\nсодержит %c подкаталогов.\n\nВсе они будут замещены новыми!"
+    {Sort units:} {Сортировать юниты:}
   }
 
   ## ________________________ EONS alited _________________________ ##

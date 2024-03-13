@@ -426,7 +426,7 @@ proc find::FindOptions {wtxt} {
 # ________________________ Show results _________________________ #
 
 proc find::ShowResults {msg {mode 3} {TID ""}} {
-  # Display a message containing results of a search.
+  # Shows a message containing results of a search.
   #   msg - the message
   #   mode - mode for alited::Message
   #   TID - tab's ID where the searches were performed in
@@ -744,7 +744,7 @@ proc find::FindNext {} {
 #_______________________
 
 proc find::NotFoundMessage {what} {
-  # Displays "not found" message.
+  # Shows "not found" message.
   #   what - what's not found
 
   set msg [msgcat::mc {Not found: %s}]
@@ -1355,37 +1355,66 @@ proc find::_create {} {
   $obFND makeWindow $w $al(MC,findreplace) -type dialog
   $obFND paveWindow $w {
     {labB1 - - 1 1    {-st es -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Find: " -style TLabelFS}}
-    {Cbx1 + L 1 5 {-st wes -ipadx 0 -padx 0 -ipady 0 -pady 0} {-tvar ::alited::find::data(en1) -values {$::alited::find::data(vals1)}}}
-    {labB2 labB1 T 1 1 {-st es -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Replace: " -style TLabelFS}}
-    {Cbx2 + L 1 4 {-st wes -cw 1 -ipadx 0 -padx 0 -ipady 0 -pady 0} {-tvar ::alited::find::data(en2) -values {$::alited::find::data(vals2)}}}
-    {btTpaste + L 1 1 {-st ws -ipady 0 -pady 0} {-com alited::find::btTPaste -tip "Paste 'Find'\nCtrl+R"}}
-    {labBm labB2 T 1 1 {-st ens -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Match: " -style TLabelFS}}
-    {radA + L 1 1 {-st ens -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Exact" -var ::alited::find::data(v1) -value 1 -style TRadiobuttonFS}}
-    {radB + L 1 1 {-st ns -padx 5 -ipady 0 -pady 0}  {-t "Glob" -var ::alited::find::data(v1) -value 2 -tip "Allows to use *, ?, \[ and \]\nin \"find\" string." -style TRadiobuttonFS}}
-    {radC + L 1 1 {-st wns -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "RE" -var ::alited::find::data(v1) -value 3 -tip "Allows to use the regular expressions\nin \"find\" string." -style TRadiobuttonFS}}
-    {ButRE2 + L 1 1 {-st wns}  {-t "RE2" -w 3 -com ::alited::find::RE2 -tip "Including / excluding\nregular expressions." -style TButtonWestFS}}
+    {Cbx1 + L 1 5 {-st wes -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-tvar ::alited::find::data(en1) -values {$::alited::find::data(vals1)}}}
+    {labB2 labB1 T 1 1 {-st es -ipadx 0 -padx 0 -ipady 0 -pady 0}  \
+      {-t "Replace: " -style TLabelFS}} \
+    {Cbx2 + L 1 4 {-st wes -cw 1 -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-tvar ::alited::find::data(en2) -values {$::alited::find::data(vals2)}}}
+    {btTpaste + L 1 1 {-st ws -ipady 0 -pady 0} \
+      {-com alited::find::btTPaste -tip "Paste 'Find'\nCtrl+R"}} \
+    {labBm labB2 T 1 1 {-st ens -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-t "Match: " -style TLabelFS}}
+    {radA + L 1 1 {-st ens -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-t "Exact" -var ::alited::find::data(v1) -value 1 -style TRadiobuttonFS}}
+    {radB + L 1 1 {-st ns -padx 5 -ipady 0 -pady 0} \
+      {-t "Glob" -var ::alited::find::data(v1) -value 2 \
+      -tip "Allows to use *, ?, \[ and \]\nin \"find\" string." -style TRadiobuttonFS}}
+    {radC + L 1 1 {-st wns -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-t "RE" -var ::alited::find::data(v1) -value 3 \
+      -tip "Allows to use the regular expressions\nin \"find\" string." -style TRadiobuttonFS}}
+    {ButRE2 + L 1 1 {-st wns}  {-t "RE2" -w 3 -com ::alited::find::RE2 \
+      -tip "Including / excluding\nregular expressions." -style TButtonWestFS}}
     {BtTretry + L 1 1 {-st wns -ipady 0 -pady 0} {-com alited::find::btTRetry -tip "Resize"}}
     {h_2 labBm T 1 6 {-st es -rw 1 -ipadx 0 -padx 0 -ipady 0 -pady 0}}
     {seh  + T 1 6  {-st ews -ipadx 0 -padx 0 -ipady 0 -pady 0}}
-    {chb1 +  T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Match whole word" -var ::alited::find::data(c1) -style TCheckbuttonFS}}
-    {chb2 + T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Match case" -var ::alited::find::data(c2) -style TCheckbuttonFS}}
-    {chb3 + T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Replace by blank" -var ::alited::find::data(c3) -tip "Allows replacements by the empty string,\nin fact, to erase the found ones." -style TCheckbuttonFS}}
+    {chb1 +  T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-t "Match whole word" -var ::alited::find::data(c1) -style TCheckbuttonFS}}
+    {chb2 + T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-t "Match case" -var ::alited::find::data(c2) -style TCheckbuttonFS}}
+    {chb3 + T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-t "Replace by blank" -var ::alited::find::data(c3) \
+      -tip "Allows replacements by the empty string,\nin fact, to erase the found ones." \
+      -style TCheckbuttonFS}}
     {sev1 chb1 L 4 1 }
-    {rad1 + L 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Up" -image alimg_up -compound left -var ::alited::find::data(v2) -value 1 -style TRadiobuttonFS}}
-    {rad2 +  T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Down" -image alimg_down -compound left -var ::alited::find::data(v2) -value 2 -style TRadiobuttonFS}}
-    {chb4 +  T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} {-t "Wrap" -var ::alited::find::data(c4) -style TCheckbuttonFS}}
+    {rad1 + L 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-t "Up" -image alimg_up -compound left -var ::alited::find::data(v2) \
+      -value 1 -style TRadiobuttonFS}}
+    {rad2 +  T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-t "Down" -image alimg_down -compound left -var ::alited::find::data(v2) \
+      -value 2 -style TRadiobuttonFS}}
+    {chb4 +  T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0} \
+      {-t "Wrap" -var ::alited::find::data(c4) -style TCheckbuttonFS}}
     {sev2 cbx1 L 9 1}
-    {But1 + L 1 1 {-st wes -pady 2} {-t "Find" -com "::alited::find::Find 1" -style TButtonWestBoldFS}}
-    {But2 + T 1 1 {-st we -pady 0} {-t "All in text" -com "::alited::find::FindInText 2" -style TButtonWestFS}}
-    {But3 + T 1 1 {-st wen -pady 2} {-com "::alited::find::FindInSession add 3" -style TButtonWestFS}}
-    {chb + T 2 1 {-st e} {-t {-geometry} -var ::alited::find::data(geoDefault) -tip "Use this geometry of the dialogue\nby default" -takefocus 0 -style TCheckbuttonFS}}
-    {but4 + T 1 1 {-st wes -pady 2} {-t Replace -com "::alited::find::Replace" -style TButtonWestBoldFS}}
-    {but5 + T 1 1 {-st we -pady 0} {-t "All in text" -com "::alited::find::ReplaceInText" -style TButtonWestFS}}
-    {But6 + T 1 1 {-st wen -pady 2} {-com "::alited::find::ReplaceInSession" -style TButtonWestFS}}
+    {But1 + L 1 1 {-st wes -pady 2} {-t "Find" -com "::alited::find::Find 1" \
+      -style TButtonWestBoldFS}}
+    {But2 + T 1 1 {-st we -pady 0} {-t "All in text" -com "::alited::find::FindInText 2" \
+      -style TButtonWestFS}}
+    {But3 + T 1 1 {-st wen -pady 2} {-com "::alited::find::FindInSession add 3" \
+      -style TButtonWestFS}}
+    {chb + T 2 1 {-st e} {-t {-geometry} -var ::alited::find::data(geoDefault) \
+      -tip "Use this geometry of the dialogue\nby default" -takefocus 0 -style TCheckbuttonFS}}
+    {but4 + T 1 1 {-st wes -pady 2} {-t Replace -com "::alited::find::Replace" \
+      -style TButtonWestBoldFS}}
+    {but5 + T 1 1 {-st we -pady 0} {-t "All in text" -com "::alited::find::ReplaceInText" \
+      -style TButtonWestFS}}
+    {But6 + T 1 1 {-st wen -pady 2} {-com "::alited::find::ReplaceInSession" \
+      -style TButtonWestFS}}
   }
   SessionButtons
   styleButtonRE2
-  alited::keys::BindAllKeys [alited::main::CurrentWTXT] yes
+  set wtxt [alited::main::CurrentWTXT]
+  alited::keys::BindAllKeys $wtxt yes
   bind $win <Enter> alited::find::SessionButtons
   bind $win <F1> {alited::HelpAlited #search1}
   bind $win <F3> "$w.but1 invoke"
@@ -1393,6 +1422,7 @@ proc find::_create {} {
   bind $w.cbx2 <Return> "$w.but4 invoke"
   foreach k {f F} {bind $win <Control-$k> {::alited::find::LastInvoke; break}}
   foreach k {r R} {bind $win <Control-$k> {::alited::find::btTPaste; break}}
+  foreach k {t T} {bind $win <Control-$k> "apave::FocusByForce $wtxt"}
   FocusCbx
   set but [$obFND But1]
   lassign [split [winfo geometry $but] x+] w h

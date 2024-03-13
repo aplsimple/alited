@@ -11,14 +11,134 @@ package provide apave 4.4.0
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
+# ________________________ Independent procs _________________________ #
+
+proc ::iswindows {} {
+  # Checks for "platform is MS Windows".
+
+  expr {$::tcl_platform(platform) eq {windows}}
+}
+
+proc ::isunix {} {
+  # Checks for "platform is Unix".
+
+  expr {$::tcl_platform(platform) eq {unix}}
+}
+
+proc ::isKDE {} {
+  # Checks for "desktop is KDE".
+
+  expr {[info exists ::env(XDG_CURRENT_DESKTOP)] && $::env(XDG_CURRENT_DESKTOP) eq {KDE}}
+}
+
+# ________________________ apave NS _________________________ #
+
 namespace eval ::apave {
   mainWindowOfApp .
-
-  # ________________________ Independent procs _________________________ #
 
   proc None {args} {
     # Useful when to do nothing is better than to do something.
 
+  }
+  #_______________________
+
+  proc autoexec {comm {ext ""}} {
+    # Imitates Tcl's auto_execok.
+    #   comm - a command to find
+    #   ext - file's extension (for Windows)
+    # If it doesn't get the command from Tcl's auto_execok,
+    # it tries to knock at its file by itself.
+
+    if {$ext ne {} && [::iswindows]} {append comm $ext}
+    set res [auto_execok $comm]
+    if {$res eq {} && [file exists $comm]} {
+      set res $comm
+    }
+    return $res
+  }
+  #_______________________
+
+  proc openDoc {url} {
+    # Opens a document.
+    #   url - document's file name, www link, e-mail etc.
+
+    set commands {xdg-open open start}
+    foreach opener $commands {
+      if {$opener eq "start"} {
+        set command [list {*}[auto_execok start] {}]
+      } else {
+        set command [auto_execok $opener]
+      }
+      if {[string length $command]} {
+        break
+      }
+    }
+    if {[string length $command] == 0} {
+      puts "ERROR: couldn't find any opener"
+    }
+    # remove the tailing " &" (as e_menu can set)
+    set url [string trimright $url]
+    if {[string match "* &" $url]} {set url [string range $url 0 end-2]}
+    set url [string trim $url]
+    if {[catch {exec -- {*}$command $url &} error]} {
+      puts "ERROR: couldn't execute '$command':\n$error"
+    }
+  }
+  #_______________________
+
+  proc countChar {str ch} {
+    # Counts a character in a string.
+    #   str - a string
+    #   ch - a character
+    #
+    # Returns a number of non-escaped occurences of character *ch* in
+    # string *str*.
+    #
+    # See also:
+    # [wiki.tcl-lang.org](https://wiki.tcl-lang.org/page/Reformatting+Tcl+code+indentation)
+
+    set icnt 0
+    while {[set idx [string first $ch $str]] >= 0} {
+      set backslashes 0
+      set nidx $idx
+      while {[string equal [string index $str [incr nidx -1]] \\]} {
+        incr backslashes
+      }
+      if {$backslashes % 2 == 0} { incr icnt }
+      set str [string range $str [incr idx] end]
+    }
+    return $icnt
+  }
+  #_______________________
+
+  proc traceRemove {v} {
+    # Cancels tracing of a variable.
+    #   v - variable's name
+
+    foreach t [trace info variable $v] {
+      lassign $t o c
+      trace remove variable $v $o $c
+    }
+  }
+
+  ## ________________________ Integers _________________________ ##
+
+
+  proc getN {sn {defn 0} {min ""} {max ""}} {
+    # Gets a number from a string
+    #   sn - string containing a number
+    #   defn - default value when sn is not a number
+    #   min - minimal value allowed
+    #   max - maximal value allowed
+
+    if {$sn eq "" || [catch {set sn [expr {$sn}]}]} {set sn $defn}
+    if {$max ne ""} {
+      set sn [expr {min($max,$sn)}]
+    }
+    if {$min ne ""} {
+      set sn [expr {max($min,$sn)}]
+    }
+    return $sn
   }
   #_______________________
 
@@ -47,7 +167,6 @@ namespace eval ::apave {
     if {[set i [string first . $pos]]>0} {incr i -1} {set i end}
     expr {int([string range $pos 0 $i])}
   }
-
   #_______________________
 
   proc intInRange {int min max} {
@@ -67,24 +186,24 @@ namespace eval ::apave {
 
     return [expr {$i1>($i2-3) && $i1<($i2+3)}]
   }
-  #_______________________
 
-  proc NormalizeName {name} {
-    # Removes spec.characters from a name (sort of normalizing it).
-    #   name - the name
+  ## _______________________ Lists, arrays _______________________ ##
 
-    return [string map [list \\ {} \{ {} \} {} \[ {} \] {} \t {} \n {} \r {} \" {}] $name]
-  }
-  #_______________________
+  proc lsearchFile {flist fname} {
+    # Searches a file name in a list, using normalized file names.
+    #   flist - list of file names
+    #   fname - file name to find
+    # Returns an index of found file name or -1 if it's not found.
 
-  proc NormalizeFileName {name} {
-    # Removes spec.characters from a file/dir name (sort of normalizing it).
-    #   name - the name of file/dir
-
-    set name [string trim $name]
-    return [string map [list \
-      * _ ? _ ~ _ / _ \\ _ \{ _ \} _ \[ _ \] _ \t _ \n _ \r _ \
-      | _ < _ > _ & _ , _ : _ \; _ \" _ ' _ ` _] $name]
+    set i 0
+    set fname [file normalize $fname]
+    foreach fn $flist {
+      if {[file normalize $fn] eq $fname} {
+        return $i
+      }
+      incr i
+    }
+    return -1
   }
   #_______________________
 
@@ -121,6 +240,121 @@ namespace eval ::apave {
   }
   #_______________________
 
+  proc PushInList {listName item {pos 0} {max 16}} {
+    # Pushes an item in a list: deletes an old instance, inserts a new one.
+    #   listName - the list's variable name
+    #   item - item to push
+    #   pos - position in the list to push in
+    #   max - maximum length of the list
+
+    upvar $listName ln
+    if {[set i [lsearch -exact $ln $item]]>-1} {
+      set ln [lreplace $ln $i $i]
+    }
+    set ln [linsert $ln $pos $item]
+    catch {set ln [lreplace $ln $max end]}
+  }
+
+  ## ________________________ Widgets _________________________ ##
+
+  proc repaintWindow {win {wfoc ""}} {
+    # Shows a window and, optionally, focuses on a widget of it.
+    #   win - the window's path
+    #   wfoc - the widget's path or a command to get it
+    # Returns yes, if the window is shown successfully.
+
+    if {[winfo exists $win]} {
+      # esp. for KDE
+      if {[isKDE]} {
+        wm withdraw $win
+        wm deiconify $win
+        # KDE is KDE, Tk is Tk, and never the twain shall meet
+        wm attributes $win -topmost [wm attributes $win -topmost]
+      }
+      update
+      if {$wfoc ne {}} {
+        catch {set wfoc [{*}$wfoc]}
+        focus $wfoc
+      }
+      return yes
+    }
+    return no
+  }
+  #_______________________
+
+  proc rootModalWindow {pwin} {
+    # Gets a parent modal window for a given one.
+    #   pwin - default parent
+
+    set root $pwin
+    foreach w [winfo children $pwin] {
+      if {[winfo ismapped $w] && [InfoFind $w yes] ne {}} {
+        set root [winfo toplevel $w]
+      }
+    }
+    return $root
+  }
+  #_______________________
+
+  proc splitGeometry {geom {X +0} {Y +0}} {
+    # Gets widget's geometry components.
+    #   geom - geometry
+    #   X - default X-coordinate
+    #   Y - default Y-coordinate
+    # Returns a list of width, height, X and Y (coordinates are always with + or -).
+
+    lassign [split $geom x+-] w h
+    lassign [regexp -inline -all {([+-][[:digit:]]+)} $geom] -> x y
+    if {$geom ne {}} {
+      if {$x in {"" 0} || [catch {expr {$x+0}}]} {set x $X}
+      if {$y in {"" 0} || [catch {expr {$y+0}}]} {set y $Y}
+    }
+    if {$x ne {}} {set x +[expr {max(0,$x)}]}
+    if {$y ne {}} {set y +[expr {max(0,$y)}]}
+    return [list $w $h $x $y]
+  }
+  #_______________________
+
+  proc focusFirst {w {dofocus yes} {res {}}} {
+    # Sets a focus on a first widget of a parent widget.
+    #  w - the parent widget
+    #  dofocus - if no, means "only return the widget's path"
+    #  res - used for recursive call
+    # Returns a path to a focused widget or "".
+
+    if {$w ne {}} {
+      foreach w [winfo children $w] {
+        if {[focusedWidget $w]} {
+          if {$dofocus} {after 200 "catch {focus -force $w}"}
+          return $w
+        } else {
+          if {[set res [focusFirst $w $dofocus]] ne {}} break
+        }
+      }
+    }
+    return $res
+  }
+  #_______________________
+
+  proc focusedWidget {w} {
+    # Gets a flag "is a widget can be focused".
+    #   w - widget's path
+
+    set wclass [string tolower [winfo class $w]]
+    foreach c [list entry text button box list view] {
+      if {[string match *$c $wclass]} {
+        if {[catch {set state [$w cget -state]}]} {set state normal}
+        if {$state ne {disabled}} {
+          if {[catch {set focus [$w cget -takefocus]}]} {set focus no}
+          return [expr {![string is boolean -strict $focus] || $focus}]
+        }
+        break
+      }
+    }
+    return no
+  }
+  #_______________________
+
   proc MouseOnWidget {w1} {
     # Places the mouse pointer on a widget.
     #   w1 - the widget's path
@@ -145,32 +379,6 @@ namespace eval ::apave {
   }
   #_______________________
 
-  proc UnixPath {path} {
-    # Makes a path "unix-like" to be good for Tcl.
-    #   path - the path
-
-    set path [string trim $path "\{\}"]  ;# possibly braced if contains spaces
-    set path [string map [list \\ / %H [::apave::HomeDir]] $path]
-    return [::apave::checkHomeDir $path]
-  }
-  #_______________________
-
-  proc PushInList {listName item {pos 0} {max 16}} {
-    # Pushes an item in a list: deletes an old instance, inserts a new one.
-    #   listName - the list's variable name
-    #   item - item to push
-    #   pos - position in the list to push in
-    #   max - maximum length of the list
-
-    upvar $listName ln
-    if {[set i [lsearch -exact $ln $item]]>-1} {
-      set ln [lreplace $ln $i $i]
-    }
-    set ln [linsert $ln $pos $item]
-    catch {set ln [lreplace $ln $max end]}
-  }
-  #_______________________
-
   proc FocusByForce {foc {cnt 10}} {
     # Focuses a widget.
     #   foc - widget's path
@@ -181,7 +389,58 @@ namespace eval ::apave {
       catch {focus -force [winfo toplevel $foc]; focus $foc}
     }
   }
+
+  ### ________________________ Blinking widgets _________________________ ###
+
+  proc blinkWidget {w {fg #000} {bg #fff} {fg2 {}} {bg2 red} \
+    {pause 1000} {count -1} {mode 1}} {
+    # Makes a widget blink.
+    #   w - the widget's path
+    #   fg - normal foreground color
+    #   bg - normal background color
+    #   fg2 - blinking foreground color (if {}, stops the blinking)
+    #   bg2 - blinking background color
+    #   pause - pause in millisec between blinkings
+    #   count - means how many times do blinking
+    #   mode - for recursive calls
+
+    if {![winfo exists $w]} return
+    if {$count==0 || $fg2 eq {}} {
+      catch {after cancel $::apave::BLINKWIDGET1}
+      catch {after cancel $::apave::BLINKWIDGET2}
+      after idle "$w configure -foreground $fg; $w configure -background $bg"
+    } elseif {$mode==1} {
+      incr count -1
+      $w configure -foreground $fg2
+      $w configure -background $bg2
+      set ::apave::BLINKWIDGET1 [after \
+        $pause ::apave::blinkWidget $w $fg $bg $fg2 $bg2 $pause $count 2]
+    } elseif {$mode==2} {
+      $w configure -foreground $fg
+      $w configure -background $bg
+      set ::apave::BLINKWIDGET2 [after \
+        $pause ::apave::blinkWidget $w $fg $bg $fg2 $bg2 $pause $count 1]
+    }
+  }
   #_______________________
+
+  proc blinkWidgetImage {w img1 {img2 alimg_none} {cnt 6} {ms 100}} {
+    # Makes a widget's image blink.
+    #   w - widget's path
+    #   img1 - main image
+    #   img2 - flashed image
+    #   cnt - count of flashes
+    #   ms - millisec between flashes
+
+    set imgcur $img1
+    if {$cnt>0} {
+      if {$cnt % 2} {set imgcur $img2}
+      after $ms "::apave::blinkWidgetImage $w $img1 $img2 [incr cnt -1] $ms"
+    }
+    $w configure -image $imgcur
+  }
+
+  ## ________________________ File names _________________________ ##
 
   proc HomeDir {} {
     # For Tcl 9.0 & Windows: gets a home directory ("~").
@@ -201,7 +460,35 @@ namespace eval ::apave {
     if {[string match ~/* $com]} {set com $hd[string range $com 1 end]}
     return $com
   }
+  #_______________________
 
+  proc UnixPath {path} {
+    # Makes a path "unix-like" to be good for Tcl.
+    #   path - the path
+
+    set path [string trim $path "\{\}"]  ;# possibly braced if contains spaces
+    set path [string map [list \\ / %H [HomeDir]] $path]
+    return [checkHomeDir $path]
+  }
+  #_______________________
+
+  proc NormalizeName {name} {
+    # Removes spec.characters from a name (sort of normalizing it).
+    #   name - the name
+
+    return [string map [list \\ {} \{ {} \} {} \[ {} \] {} \t {} \n {} \r {} \" {}] $name]
+  }
+  #_______________________
+
+  proc NormalizeFileName {name} {
+    # Removes spec.characters from a file/dir name (sort of normalizing it).
+    #   name - the name of file/dir
+
+    set name [string trim $name]
+    return [string map [list \
+      * _ ? _ ~ _ / _ \\ _ \{ _ \} _ \[ _ \] _ \t _ \n _ \r _ \
+      | _ < _ > _ & _ , _ : _ \; _ \" _ ' _ ` _] $name]
+  }
   #_______________________
 
   proc FileTail {basepath fullpath} {
@@ -218,6 +505,7 @@ namespace eval ::apave {
     }
     return {}
   }
+  #_______________________
 
   proc FileRelativeTail {basepath fullpath} {
     # Gets a base relative path.
@@ -230,6 +518,187 @@ namespace eval ::apave {
     set base {}
     for {set i 1} {$i<$lev} {incr i} {append base ../}
     append base [file tail $tail]
+  }
+
+  ## ________________________ Borrowed from BWidget _________________________ ##
+
+  #  Command BWidget::place ----> apave::place
+  #
+  # Notes:
+  #  For Windows systems with more than one monitor the available screen area may
+  #  have negative positions. Geometry settings with negative numbers are used
+  #  under X to place wrt the right or bottom of the screen. On windows, Tk
+  #  continues to do this. However, a geometry such as 100x100+-200-100 can be
+  #  used to place a window onto a secondary monitor. Passing the + gets Tk
+  #  to pass the remainder unchanged so the Windows manager then handles -200
+  #  which is a position on the left hand monitor.
+  #  I've tested this for left, right, above and below the primary monitor.
+  #  Currently there is no way to ask Tk the extent of the Windows desktop in
+  #  a multi monitor system. Nor what the legal co-ordinate range might be.
+  #
+
+  proc place { path w h args } {
+
+    update idletasks
+
+    # If the window is not mapped, it may have any current size.
+    # Then use required size, but bound it to the screen width.
+    # This is mostly inexact, because any toolbars will still be removed
+    # which may reduce size.
+    if { $w == 0 && [winfo ismapped $path] } {
+      set w [winfo width $path]
+    } else {
+      if { $w == 0 } {
+        set w [winfo reqwidth $path]
+      }
+      set vsw [winfo vrootwidth  $path]
+      if { $w > $vsw } { set w $vsw }
+    }
+
+    if { $h == 0 && [winfo ismapped $path] } {
+      set h [winfo height $path]
+    } else {
+      if { $h == 0 } {
+        set h [winfo reqheight $path]
+      }
+      set vsh [winfo vrootheight $path]
+      if { $h > $vsh } { set h $vsh }
+    }
+
+    set arglen [llength $args]
+    if { $arglen > 3 } {
+      return -code error "apave::place: bad number of argument"
+    }
+
+    if { $arglen > 0 } {
+      set where [lindex $args 0]
+      set list  [list at center left right above below]
+      set idx   [lsearch $list $where]
+      if { $idx == -1 } {
+        return -code error "apave::place: bad position: $where $list"
+      }
+      if { $idx == 0 } {
+        set err [catch {
+          # purposely removed the {} around these expressions - [PT]
+          set x [expr int([lindex $args 1])]
+          set y [expr int([lindex $args 2])]
+        } e]
+        if { $err } {
+          return -code error "apave::place: bad position: $e"
+        }
+        if {$::tcl_platform(platform) eq {windows}} {
+          # handle windows multi-screen. -100 != +-100
+          if {[string index [lindex $args 1] 0] ne {-}} {
+            set x +$x
+          }
+          if {[string index [lindex $args 2] 0] ne {-}} {
+            set y +$y
+          }
+        } else {
+          if { $x >= 0 } {
+            set x +$x
+          }
+          if { $y >= 0 } {
+            set y +$y
+          }
+        }
+      } else {
+        if { $arglen == 2 } {
+          set widget [lindex $args 1]
+          if { ![winfo exists $widget] } {
+            return -code error "apave::place: \"$widget\" does not exist"
+          }
+        } else {
+          set widget .
+        }
+        set sw [winfo screenwidth  $path]
+        set sh [winfo screenheight $path]
+        if { $idx == 1 } {
+          if { $arglen == 2 } {
+            # center to widget
+            set x0 [expr {[winfo rootx $widget] + ([winfo width  $widget] - $w)/2}]
+            set y0 [expr {[winfo rooty $widget] + ([winfo height $widget] - $h)/2}]
+          } else {
+            # center to screen
+            set x0 [expr {($sw - $w)/2 - [winfo vrootx $path]}]
+            set y0 [expr {($sh - $h)/2 - [winfo vrooty $path]}]
+          }
+          set x +$x0
+          set y +$y0
+          if {$::tcl_platform(platform) ne {windows}} {
+            if { $x0+$w > $sw } {set x {-0}; set x0 [expr {$sw-$w}]}
+            if { $x0 < 0 }      {set x {+0}}
+            if { $y0+$h > $sh } {set y {-0}; set y0 [expr {$sh-$h}]}
+            if { $y0 < 0 }      {set y {+0}}
+          }
+        } else {
+          set x0 [winfo rootx $widget]
+          set y0 [winfo rooty $widget]
+          set x1 [expr {$x0 + [winfo width  $widget]}]
+          set y1 [expr {$y0 + [winfo height $widget]}]
+          if { $idx == 2 || $idx == 3 } {
+            set y +$y0
+            if {$::tcl_platform(platform) ne {windows}} {
+              if { $y0+$h > $sh } {set y {-0}; set y0 [expr {$sh-$h}]}
+              if { $y0 < 0 }      {set y {+0}}
+            }
+            if { $idx == 2 } {
+              # try left, then right if out, then 0 if out
+              if { $x0 >= $w } {
+                set x [expr {$x0-$w}]
+              } elseif { $x1+$w <= $sw } {
+                set x +$x1
+              } else {
+                set x {+0}
+              }
+            } else {
+              # try right, then left if out, then 0 if out
+              if { $x1+$w <= $sw } {
+                set x +$x1
+              } elseif { $x0 >= $w } {
+                set x [expr {$x0-$w}]
+              } else {
+                set x {-0}
+              }
+            }
+          } else {
+            set x +$x0
+            if {$::tcl_platform(platform) ne {windows}} {
+              if { $x0+$w > $sw } {set x {-0}; set x0 [expr {$sw-$w}]}
+              if { $x0 < 0 }      {set x {+0}}
+            }
+            if { $idx == 4 } {
+              # try top, then bottom, then 0
+              if { $h <= $y0 } {
+                set y [expr {$y0-$h}]
+              } elseif { $y1+$h <= $sh } {
+                set y +$y1
+              } else {
+                set y {+0}
+              }
+            } else {
+              # try bottom, then top, then 0
+              if { $y1+$h <= $sh } {
+                set y +$y1
+              } elseif { $h <= $y0 } {
+                set y [expr {$y0-$h}]
+              } else {
+                set y {-0}
+              }
+            }
+          }
+        }
+      }
+
+      ## If there's not a + or - in front of the number, we need to add one.
+      if {[string is integer [string index $x 0]]} { set x +$x }
+      if {[string is integer [string index $y 0]]} { set y +$y }
+
+      wm geometry $path "${w}x${h}${x}${y}"
+    } else {
+      wm geometry $path "${w}x${h}"
+    }
+    update idletasks
   }
 
   ## ________________________ EONS apave _________________________ ##

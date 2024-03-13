@@ -405,7 +405,12 @@ namespace eval ::alited {
     {Authors:} {Autores:}
     {License:} {Licencia:}
     {Acknowledgements} {Agradecimientos}
-    "Many thanks to the following people\n who have contributed to this project\n with their participation, advice and code" "Muchas gracias a las siguientes personas\n que han contribuido a este proyecto\n con su participación, consejos y código"
+    "Many thanks to the following people \
+    \n who have contributed to this project \
+    \n with their participation, advice and code"
+    "Muchas gracias a las siguientes personas \
+    \n que han contribuido a este proyecto \
+    \n con su participación, consejos y código"
     {Special thanks also to} {Un agradecimiento especial también a}
     {Packages} {Paquetes}
     {Packages used by <red>alited %ver</red>:} {Paquetes usados por <red>alited %ver</red>:}
@@ -715,6 +720,27 @@ namespace eval ::alited {
     {Applied to one selection only!} {¡Aplicada a una selección solamente!}
     "Incorrect mapped 'from-to' in: %l" "Mapa incorrecto 'desde-hacia' dentro: %l"
     "'from' refers to previous 'to' in: %l (see: %n)" "'desde' se refiere a anteriores 'hacia' dentro: %l (ve: %n)"
+  }
+
+  ## ________________________ Project printer _________________________ ##
+
+  ::msgcat::mcmset es {
+    {Project Printer} {Impresora del Proyecto}
+    {Project Printer...} {Impresora del Proyecto...}
+    {Output directory:} {Directorio de resultados:}
+    {Markdown processor:} {Procesador de markdown:}
+    {Directory title colors} {Colores del título del directorio}
+    {Foreground:} {Texto:}
+    {Background:} {Fondo:}
+    {File title colors} {Colores del título del archivo}
+    {Syntax colors:} {Colores de sintaxis:}
+    {Width of contents:} {Ancho del contenido:}
+    {Final processor:} {Procesador final:}
+    {Output directory cannot be cleared: alien files} {Directorio de resultados no se puede borrar: archivos alienígenas}
+    {Output directory cannot be cleared: alien %n} {Directorio de resultados no se puede borrar: alienígenas %n}
+    {Output directory cannot be cleared: alien directories} {Directorio de resultados no se puede borrar: directorios alienígenas}
+    "The output directory\n  %n\ncontains %c subdirectories.\n\nAll will be replaced with the new!" "Directorio de resultados\n  %n\contiene %c subdirectorios.\n\nTodos serán reemplazados por los nuevos!"
+    {Sort units:} {Ordenar unidades:}
   }
 
   ## ________________________ EONS alited _________________________ ##

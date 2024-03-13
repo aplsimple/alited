@@ -13,19 +13,27 @@ namespace eval printer {
   variable win $::alited::al(WIN).printer
   variable itemID1 {}
   variable inifile {} iniprjfile {}
-  variable tpldir {} cssdir {}
+  variable tpldir {} cssdir {} filesdir {}
   variable CSS css
+  variable FILES files
   variable indextpl {} indextpl2 {} csstpl {} titletpl {} csscont {}
   variable indexname index.html
   variable indexname2 index_2.html
   variable cssname style.css
   variable readmecont {}
+  variable indexcont {}
   variable markedIDs [list] markedfiles [list]
   variable copyleft {<!-- Made by alited -->}
+  variable copyright {<!-- Made by alited (END) -->}
   variable tmpC {}
+  variable colors {}
+  variable lastreadme {}
   # wildcards in templates
   variable wcalited ALITED_ ;# to avoid self-wildcarding
-  variable leafttl "<table border=0 cellPadding=4 cellSpacing=0 width=100%><td border=0 bgColor=${wcalited}BG><div style=text-align:center><a href=\"${wcalited}BACK_REF\"><font color=${wcalited}FG size=6><b>${wcalited}TITLE</b></font></div></td></table>"
+  variable leafttl "<table border=0 cellPadding=4 cellSpacing=0 width=100%> \
+    <td border=0 bgColor=${wcalited}BG><div style=text-align:center> \
+    <a href=\"${wcalited}BACK_REF\"><font color=${wcalited}FG size=6> \
+    <b>${wcalited}TITLE</b></font></div></td></table>"
   variable wcstyle ${wcalited}STYLE
   variable wctitle ${wcalited}TITLE
   variable wctoc   ${wcalited}TABLE_CONTENTS
@@ -40,17 +48,22 @@ namespace eval printer {
   variable wcbg    ${wcalited}BG
   variable wcleaft ${wcalited}LEAF_TITLE
   variable wctipw  ${wcalited}TIP_WIDTH
+  variable wclt    ${wcalited}LT
+  variable wcgt    ${wcalited}GT
   # saved options
   variable geometry root=$::alited::al(WIN)
   variable width1 {} width2 {}
   variable dir {}
   variable mdproc {pandoc}
   variable mdprocs [list pandoc alited]
-  variable ttlfg #fefefe ttlbg #0b3467
-  variable leaffg #1a1a1a leafbg #87bcd3
+  variable STDttlfg #fefefe STDttlbg #0b3467
+  variable STDleaffg #1a1a1a STDleafbg #bdd7e7
+  variable ttlfg $STDttlfg ttlbg $STDttlbg
+  variable leaffg $STDleaffg leafbg $STDleafbg
   variable cwidth 10
   variable cs 1
   variable final {"%D"}
+  variable dosort 0
 }
 #_______________________
 
@@ -62,8 +75,9 @@ proc printer::fetchVars {} {
     foreach _ {win itemID1 inifile iniprjfile tpldir cssdir CSS indextpl indextpl2 csstpl \
     titletpl csscont indexname indexname2 cssname readmecont markedIDs markedfiles copyleft \
     wcbttl wcstyle wctitle wctoc wclink wcrmcon wcbody wcwidth wcback wcfg wcbg tmpC cs \
-    geometry width1 width2 dir mdproc mdprocs ttlfg ttlbg leaffg leafbg cwidth final \
-    leafttl wcleaft wctipw wcrmttl} {
+    geometry width1 width2 dir mdproc mdprocs ttlfg ttlbg leaffg leafbg cwidth indexcont \
+    final leafttl wcleaft wctipw wcrmttl dosort wclt wcgt copyright colors lastreadme \
+    filesdir FILES} {
       variable $_
     }
   }
@@ -84,7 +98,7 @@ proc printer::ReadIni {} {
       lappend markedfiles $val
     } else {
       foreach opt {geometry width1 width2 dir mdproc mdprocs \
-      ttlfg ttlbg leaffg leafbg cwidth cs final} {
+      ttlfg ttlbg leaffg leafbg cwidth cs final dosort} {
         if {[set val [alited::edit::IniParameter $opt $line]] ne {}} {
           set $opt $val
         }
@@ -115,7 +129,8 @@ proc printer::SaveIni {} {
   apave::writeTextFile $inifile ::alited::printer::tmpC
   set    tmpC {}
   append tmpC "dir=$dir" \n
-  append tmpC "final=$final"
+  append tmpC "final=$final" \n
+  append tmpC "dosort=$dosort" \n
   foreach item [alited::tree::GetTree {} {} $wtree] {
     lassign [lindex $item 4] - fname leaf itemID
     if {$itemID in $markedIDs} {
@@ -133,11 +148,13 @@ proc printer::ExpandMarked {} {
   fetchVars
   ExpandContract no
   set wtree [$obDl2 Tree]
-  set taghas -1
+  set parent {}
   foreach itemID $markedIDs {
-    set th [$wtree tag has tagBranch $itemID]
-    if {$taghas != $th} {$wtree see $itemID}
-    set taghas $th
+    set itemParent [$wtree parent $itemID]
+    if {$itemParent ne {} && $parent ne $itemParent} {
+      $wtree see $itemID
+      set parent $itemParent
+    }
   }
   TryFocusTree $wtree
 }
@@ -317,6 +334,106 @@ proc printer::FocusOut {wtree} {
   catch {$wtree selection remove [$wtree focus]}
 }
 
+# ________________________ alited's md processor _________________________ #
+
+proc printer::MdInit {} {
+  # Initializes a text widget for md syntax.
+
+  fetchVars
+  set wtxt [$obDl2 TexTmp2]
+  set plcom [alited::HighlightAddon $wtxt .md $colors]
+  ::hl_tcl::hl_init $wtxt -plaincom $plcom
+}
+#_______________________
+
+proc printer::MdProc {fin fout} {
+  # Makes .html version of .md file.
+  #   fin - input .md file name
+  #   fout - output .html file name
+  # First, puts the .md file to a text widget and highlights it.
+  # Then scans the text for highlighting tags to make their html counterparts.
+  # See also: hl_md::init
+
+  fetchVars
+  set wtxt [$obDl2 TexTmp2]
+  set cont [apave::readTextFile $fin {} 1]
+  $wtxt replace 1.0 end $cont
+  ::hl_tcl::hl_text $wtxt
+  lassign $colors clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT
+  foreach tag [$wtxt tag names] {
+    if {![string match md* $tag]} continue
+    set parts [lsort -dictionary -decreasing -stride 2 [$wtxt tag ranges $tag]]
+    foreach {p1 p2} $parts {
+      switch -exact $tag {
+        mdCMNT {  ;# comment tag for "invisible" parts
+          $wtxt replace $p1 $p2 {}
+        }
+        mdAPOS {  ;# apostrophe
+          $wtxt insert $p2 </font>
+          $wtxt insert $p1 "<font color=$clrVAR>"
+        }
+        mdBOIT {  ;# bold italic
+          $wtxt insert $p2 </font></i></b>
+          $wtxt insert $p1 "<b><i><font color=$clrVAR>"
+        }
+        mdITAL {  ;# italic
+          $wtxt insert $p2 </font></i>
+          $wtxt insert $p1 "<i><font color=$clrVAR>"
+        }
+        mdBOLD {  ;# bold
+          $wtxt insert $p2 </font></b>
+          $wtxt insert $p1 "<b><font color=$clrVAR>"
+        }
+        mdLIST {  ;# list
+          $wtxt insert [expr {int($p2)}].end </li>
+          $wtxt replace $p1 $p2 <li>
+        }
+        mdLINK {  ;# link
+          set link [$wtxt get $p1 $p2]
+          lassign [split $link \[\]()] a1 a2 a3 a4
+          if {$a1 ne {}} {
+            set link "<a href=\"$link\">$link"
+          } else {
+            set link "<a href=\"$a4\">$a2"
+          }
+          $wtxt replace $p1 $p2 $link</a>
+        }
+        mdHEAD1 - mdHEAD2 - mdHEAD3 - mdHEAD4 - mdHEAD5 - mdHEAD6 {  ;# headers
+          set h h[string index $tag end]
+          $wtxt insert $p2 </font></$h>
+          $wtxt insert $p1 "<$h><font color=$clrPROC>"
+        }
+      }
+    }
+  }
+  MdOutput $wtxt $fout
+}
+#_______________________
+
+proc printer::MdOutput {wtxt fout} {
+  # Puts out the .html made from .md (in a text buffer).
+  #   wtxt - text's path
+  #   fout - output file name
+
+  fetchVars
+  set tmpC {}
+  set par 1
+  foreach line [split [$wtxt get 1.0 end] \n] {
+    set line [string trimright $line]
+    if {$line eq {}} {
+      if {!$par} {
+        append line </p><p>
+      }
+      incr par
+    } elseif {$par} {
+      set par 0
+    }
+    append tmpC $line \n
+  }
+  append tmpC </p>
+  apave::writeTextFile $fout ::alited::printer::tmpC
+}
+
 # ________________________ Processing _________________________ #
 
 proc printer::Message {msg {mode 1}} {
@@ -344,6 +461,14 @@ proc printer::CheckData {} {
     ::apave::FocusByForce $errfoc
     return no
   }
+  foreach {fld var} {Clr1 ttlfg Clr2 ttlbg Clr3 leaffg Clr4 leafbg} {
+    set val [set $var]
+    if {![regexp "^#\[0-9a-fA-F\]{6}\$" $val]} {
+      bell
+      focus [$obDl2 chooserPath $fld]
+      return no
+    }
+  }
   return yes
 }
 #_______________________
@@ -368,7 +493,7 @@ proc printer::CheckDir {} {
   set err1 {Output directory cannot be cleared: alien files}
   set err2 [msgcat::mc {Output directory cannot be cleared: alien %n}]
   set err3 {Output directory cannot be cleared: alien directories}
-  set cntdir [set cntfile 0]
+  set cntdir [set cntfile [set aliendir 0]]
   foreach fn $dircont {
     set ftail [file tail $fn]
     if {[file isfile $fn]} {
@@ -381,11 +506,13 @@ proc printer::CheckDir {} {
         Message [string map [list %n $indexname] $err2] 4
         return no  ;# alien content file
       }
-    } elseif {$ftail ne $CSS} {
+    } elseif {$ftail in [list $FILES $CSS]} {
       incr cntdir
+    } else {
+      incr aliendir
     }
   }
-  if {$cntdir && $cntfile!=1} {
+  if {$aliendir} {
     Message $err3 4  ;# only 1 content file with subdirectories
     return no
   }
@@ -410,15 +537,6 @@ proc printer::CheckTemplates {} {
     Message "No template file for $cssname found: alited broken?" 4
     return no
   }
-  set indexcont [apave::readTextFile $indextpl]
-  set readmecont [string map [list $wcrmcon $readmecont $wcbody {}] $indexcont]
-  set cssdir_to  [file join $dir $CSS]
-  catch {file mkdir $cssdir_to}
-  set tipw [expr {$cwidth*20}]
-  set csscont [string map \
-    [list $wcwidth $cwidth $wctipw $tipw $wcfg $ttlfg $wcbg $ttlbg] $csscont]
-  set css_to [file join $cssdir_to $cssname]
-  apave::writeTextFile $css_to ::alited::printer::csscont 1
   return yes
 }
 #_______________________
@@ -427,7 +545,7 @@ proc printer::GetReadme {dirfrom} {
   # Create html version of readme.md.
   #   dirfrom - directory name where to get the source readme.md
 
-  variable mdproc
+  fetchVars
   if {$mdproc eq {}} {return {}}
   if {[set fname [glob -nocomplain [file join $dirfrom README*]]] eq {}} {
     if {[set fname [glob -nocomplain [file join $dirfrom ReadMe*]]] eq {}} {
@@ -439,19 +557,36 @@ proc printer::GetReadme {dirfrom} {
     }
   }
   set fname [lindex $fname 0]
+  Message $fname 3
   set tmpname [alited::TmpFile PRINTER~.html]
-  if {$mdproc eq {pandoc}} {
-    set com [list [apave::autoexec $mdproc] -o $tmpname $fname]
-  } elseif {$mdproc eq {alited}} {
-    # TODO
-    return {}
-  } else {
-    set com [string map [list %i $fname %o $tmpname] $mdproc]
+  if {$lastreadme ne $fname} {
+    set lastreadme $fname
+    set com {}
+    if {$mdproc eq {pandoc}} {
+      set com [list [apave::autoexec $mdproc] -o $tmpname $fname]
+    } elseif {$mdproc eq {alited}} {
+      MdProc $fname $tmpname
+    } else {
+      set com [string map [list %i $fname %o $tmpname] $mdproc]
+    }
+    if {$com ne {}} {exec -- {*}$com}
   }
-  exec -- {*}$com
   set res [apave::readTextFile $tmpname]
-  catch {file delete $tmpname}
   return [list $res $fname]
+}
+#_______________________
+
+proc printer::GetCss {} {
+  # Create style.css.
+
+  fetchVars
+  set cssdir_to  [file join $dir $CSS]
+  catch {file mkdir $cssdir_to}
+  set tipw [expr {$cwidth*20}]
+  set csscont [string map \
+    [list $wcwidth $cwidth $wctipw $tipw $wcfg $ttlfg $wcbg $ttlbg] $csscont]
+  set css_to [file join $cssdir_to $cssname]
+  apave::writeTextFile $css_to ::alited::printer::csscont 1
 }
 #_______________________
 
@@ -472,7 +607,8 @@ proc printer::GetDirLink {dir} {
 
   namespace upvar ::alited al al
   set dirtail [::apave::FileTail $al(prjroot) $dir]
-  return [list $dirtail [GetBranchLink # $dirtail]]
+  if {$dirtail eq {}} {set branch <hr>} {set branch $dirtail}
+  return [list $dirtail [GetBranchLink # $branch]]
 }
 #_______________________
 
@@ -485,12 +621,16 @@ proc printer::GetBranchLink {link title} {
 }
 #_______________________
 
-proc printer::GetLeafLink {link title {tip ""}} {
+proc printer::GetLeafLink {link title {tip ""} {basepath ""}} {
   # Gets a contents leaf link for index.html.
   #   link - link address
   #   title - link title
   #   tip - tooltip's text
+  #   basepath - base path for file links
 
+  if {$basepath ne {}} {
+    set link [::apave::FileTail $basepath $link]
+  }
   set title [lindex [split $title :] end]
   if {$tip eq {}} {
     return "<ul class=toc><li><a href='$link'>$title</a></li></ul>"
@@ -510,11 +650,30 @@ proc printer::UnitTooltip {wtxt l1 l2} {
   for {incr l1} {$l1<=$l2} {incr l1} {
     set line [string trimleft [$wtxt get $l1.0 $l1.end]]
     if {[string match #* $line]} {
-      set tip [string trimleft $line {#! }]
+      append tip [string trimleft $line {#! }] \n
+    } elseif {$line ne {}} {
+      break
     }
-    if {$line ne {}} break
   }
+  set tip [string trimright $tip]
+  if {$tip ne {}} {set tip " : $tip"}
   return $tip
+}
+#_______________________
+
+proc printer::CompareUnits {item1 item2} {
+  # Compares the unit tree items by their titles. Useful for trees without branches.
+  #   item1 - 1st item
+  #   item2 - 2nd item
+
+  set title1 [lindex $item1 3]
+  set title2 [lindex $item2 3]
+  if {$title1 < $title2} {
+    return -1
+  } elseif {$title1 > $title2} {
+    return 1
+  }
+  return 0
 }
 #_______________________
 
@@ -548,12 +707,18 @@ proc printer::MakeFile {fname fname2} {
     set tpl [apave::readTextFile $indextpl]
     set tpl [string map [list $wctoc $ftail] $tpl]
     set contlist [split $cont \n]
-    foreach item $al(_unittree,$TID) {
+    if {$dosort} {
+      set items [lsort -command alited::printer::CompareUnits $al(_unittree,$TID)]
+    } else {
+      set items $al(_unittree,$TID)
+    }
+    foreach item $items {
       if {[llength $item]<3} continue
       lassign $item lev leaf fl1 title l1 l2
       set ttl [string map {" " _} [::apave::NormalizeName $title]]
+      if {$ttl eq {}} {set ttl $ftail; set leaf 0}
       if {$leaf} {
-        set tip " $title - [UnitTooltip $wtxt $l1 $l2]"
+        set tip " $title[UnitTooltip $wtxt $l1 $l2]"
         set link [GetLeafLink #$ttl $ttl $tip]
       } else {
         set link [GetBranchLink #$ttl $ttl]
@@ -562,7 +727,7 @@ proc printer::MakeFile {fname fname2} {
       set tpl [string map [list $wclink $link] $tpl]
       set l1 [expr {max(0,$l1-2)}]
       set line [lindex $contlist $l1]
-      set contlist [lreplace $contlist $l1 $l1 "$line<a id=$ttl></a>"]
+      set contlist [lreplace $contlist $l1 $l1 "$line${wclt}a id=$ttl${wcgt}${wclt}/a${wcgt}"]
     }
     set cont {}
     foreach line $contlist {append cont $line\n}
@@ -582,13 +747,19 @@ proc printer::MakeFile {fname fname2} {
   set tpl [string map [list $wctitle $ftail $wcstyle $csspath] $tpl]
   set tpl [string map [list $wcfg $leaffg $wcbg $leafbg] $tpl]
   set tpl [string map [list $wcback [file join $rootpath $indexname]] $tpl]
-  set tmpC [string map [list $wcbody "<pre class=\"code\">$cont</pre>"] $tpl]
+  set tmpC "<pre class"
+  append tmpC "=\"code\">$cont</"  ;# to avoid fooling self with tcl_html.tcl
+  append tmpC "pre>"
+  set tmpC [string map [list $wcbody $tmpC] $tpl]
   set fname2 [file rootname $fname2].html
   apave::writeTextFile $fname2 ::alited::printer::tmpC
-  set clrvals [::hl_tcl::hl_colors $cs 0]
   set cset cs=
-  foreach val $clrvals {append cset $val,}
+  foreach val $colors {append cset $val,}
   Hl_html $fname2 $cset
+  set tmpC [apave::readTextFile $fname2]
+  set tmpC [string map [list ${wclt} < ${wcgt} >] $tmpC]
+  append tmpC \n$copyright
+  apave::writeTextFile $fname2 ::alited::printer::tmpC
   return $fname2
 }
 #_______________________
@@ -609,16 +780,22 @@ proc printer::Process {wtree} {
   #   wtree - tree's path
 
   fetchVars
+  set colors [::hl_tcl::hl_colors $cs 0]
+  if {$mdproc eq {alited}} MdInit
   set index_to [file join $dir $indexname]
+  set filesdir [file join $dir $FILES]
   if {![file exists $index_to]} {
     # make empty index.html, to get rid of possible error messages
     set readmecont $copyleft
     apave::writeTextFile $index_to ::alited::printer::readmecont
   }
-  lassign [GetReadme $al(prjroot)] readmecont rmname
   if {![CheckData]} {return no}
   if {![CheckDir]} {return no}
   if {![CheckTemplates]} {return no}
+  lassign [GetReadme $al(prjroot)] readmecont rmname
+  set indexcont [apave::readTextFile $indextpl]
+  set indexcont [string map [list $wcrmcon $readmecont $wcbody {}] $indexcont]
+  GetCss
   set curdir {}
   set fcnt [set dcnt 0]
   foreach itemID [lsort -dictionary $markedIDs] {
@@ -634,19 +811,19 @@ proc printer::Process {wtree} {
       set curdir $cdir
       lassign [GetDirLink $cdir] cdir2 link
       append link \n$wclink
-      set readmecont [string map [list $wclink $link] $readmecont]
+      set indexcont [string map [list $wclink $link] $indexcont]
       Message $cdir 3
       update
     }
     set fname2 [GetFileName $cdir2 $fname]
-    set fname2 [file join $dir $fname2]
+    set fname2 [file join $filesdir $fname2]
     if {$dodir} {
       catch {file mkdir [file dirname $fname2]}
     }
     set fname [MakeFile $fname $fname2]
-    set link [GetLeafLink $fname [file tail $fname2]]
+    set link [GetLeafLink $fname [file tail $fname2] {} $dir]
     append link \n$wclink
-    set readmecont [string map [list $wclink $link] $readmecont]
+    set indexcont [string map [list $wclink $link] $indexcont]
     incr fcnt
   }
   if {$rmname eq {}} {
@@ -655,12 +832,13 @@ proc printer::Process {wtree} {
     set rmttl [string map [list $wctitle [file tail $rmname]] $leafttl]
   }
   set csspath [file join $CSS $cssname]
-  set readmecont [string map [list $wcleaft $leafttl $wcrmttl $leafttl] $readmecont]
+  set indexcont [string map [list $wcleaft $leafttl $wcrmttl $leafttl] $indexcont]
   set ttl ":: $al(prjname) ::"
-  set readmecont [string map [list $wctitle $ttl $wctoc $ttl] $readmecont]
-  set readmecont [string map [list $wclink {} $wcback {} $wcstyle $csspath] $readmecont]
-  set readmecont [string map [list $wcfg $ttlfg $wcbg $ttlbg $wcbttl {}] $readmecont]
-  apave::writeTextFile $index_to ::alited::printer::readmecont 1
+  set indexcont [string map [list $wctitle $ttl $wctoc $ttl] $indexcont]
+  set indexcont [string map [list $wclink {} $wcback {} $wcstyle $csspath] $indexcont]
+  set indexcont [string map [list $wcfg $ttlfg $wcbg $ttlbg $wcbttl {}] $indexcont]
+  append indexcont \n$copyright
+  apave::writeTextFile $index_to ::alited::printer::indexcont 1
   set msg [msgcat::mc {Processed: %d directories, %f files}]
   set msg [string map [list %d $dcnt %f $fcnt] $msg]
   Message $msg
@@ -670,13 +848,30 @@ proc printer::Process {wtree} {
       ::apave::openDoc [file join $dir $indexname]
     } else {
       set com [string map [list %D $dir] $final]
-      exec -- {*}$com
+      set com [alited::MapWildCards $com]
+      exec -- {*}$com &
     }
   }
   return yes
 }
 
 # ________________________ Buttons _________________________ #
+
+proc printer::StdClr {fld1 var1 fld2 var2} {
+  # Sets standard colors.
+  #   fld1 - 1st color field (and color field to focus)
+  #   var1 - 1st color variable name
+  #   fld2 - 2nd color field
+  #   var2 - 2nd color variable name
+
+  fetchVars
+  set $var1 [set ::alited::printer::STD$var1]
+  set $var2 [set ::alited::printer::STD$var2]
+  set lab1 [$obDl2 chooserPath $fld1 lab]; $lab1 configure -background [set $var1]
+  set lab2 [$obDl2 chooserPath $fld2 lab]; $lab2 configure -background [set $var2]
+  focus [$obDl2 chooserPath $fld1]
+}
+#_______________________
 
 proc printer::Help {} {
   # Handles "Help" button.
@@ -759,47 +954,63 @@ proc printer::_create  {} {
   fetchVars
   set tipmark "[msgcat::mc (Un)Select]\nSpace"
   lassign [alited::FgFgBold] -> fgbold
+  set wden 44
   $obDl2 makeWindow $win.fra [msgcat::mc {Project Printer}]
   $obDl2 paveWindow $win.fra {
     {labh - - 1 3 {} {-t {Project Printer} -foreground $fgbold -font {$::apave::FONTMAINBOLD}}}
     {fraTop labh L 1 3 {-st ew}}
-    {.btTmark - - - - {pack -padx 4 -side left} {-image alimg_ok -com alited::printer::MarkUnmarkFile  -tip {$tipmark}}}
+    {.btTmark - - - - {pack -padx 4 -side left} \
+      {-image alimg_ok -com alited::printer::MarkUnmarkFile  -tip {$tipmark}}}
     {.sev2 - - - - {pack -side left -fill y -padx 5}}
-    {.btTCtr - - - - {pack -side left -padx 4} {-image alimg_minus -com {alited::printer::ExpandContract no} -tip "Contract All"}}
-    {.btTExp - - - - {pack -side left} {-image alimg_plus -com {alited::printer::ExpandContract} -tip "Expand All"}}
-    {.btTExp2 - - - - {pack -side left -padx 4} {-image alimg_add -com {alited::printer::ExpandMarked} -tip "Expand Selected"}}
+    {.btTCtr - - - - {pack -side left -padx 4} \
+      {-image alimg_minus -com {alited::printer::ExpandContract no} -tip "Contract All"}}
+    {.btTExp - - - - {pack -side left} \
+      {-image alimg_plus -com {alited::printer::ExpandContract} -tip "Expand All"}}
+    {.btTExp2 - - - - {pack -side left -padx 4} \
+      {-image alimg_add -com {alited::printer::ExpandMarked} -tip "Expand Selected"}}
     {fraBody labh T 1 3 {-st news}}
-    {.v_0 - - 1 1 {-pady 8}}
-    {.lab1 .v_0 T 1 1 {-st nw} {-t {Output directory:}}}
-    {.Dir + T 1 3 {-st new} {-tvar ::alited::printer::dir -w 40}}
+    {.lab1 - - 1 1 {-st nw} {-t {Output directory:}}}
+    {.Dir + T 1 3 {-st new} {-tvar ::alited::printer::dir -w $wden}}
     {.v_1 + T 1 1 {-pady 8}}
     {.lab2 + T 1 1 {-st nw} {-t {Markdown processor:}}}
-    {.cbx + T 1 3 {-st nw} {-tvar ::alited::printer::mdproc -value {$::alited::printer::mdprocs} -w 40}}
+    {.cbx + T 1 3 {-st nw} {-tvar ::alited::printer::mdproc \
+      -value {$::alited::printer::mdprocs} -w $wden}}
     {.v_2 + T 1 3 {-pady 8}}
-    {.lfr + T 1 2 {-st nwe} {-t {Directory title colors}}}
+    {.lfr + T 1 3 {-st nwe} {-t {Directory title colors}}}
     {.lfr.lab1 - - 1 1 {-st ne} {-t {Foreground:}}}
-    {.lfr.clr1 + L 1 3 {-st nw} {-tvar ::alited::printer::ttlfg}}
+    {.lfr.Clr1 + L 1 1 {-st new} {-tvar ::alited::printer::ttlfg}}
+    {.lfr.butClr1 + L 1 1 {-st new} {-t Standard -takefocus 0 \
+      -com {alited::printer::StdClr Clr1 ttlfg Clr2 ttlbg}}}
     {.lfr.lab2 .lfr.lab1 T 1 1 {-st ne} {-t {Background:}}}
-    {.lfr.clr2 + L 1 3 {-st nw} {-tvar ::alited::printer::ttlbg}}
+    {.lfr.Clr2 + L 1 1 {-st new} {-tvar ::alited::printer::ttlbg}}
     {.v_3 .lfr T 1 1 {-pady 8}}
-    {.lfr2 + T 1 2 {-st nwe} {-t {File title colors}}}
+    {.lfr2 + T 1 3 {-st nwe} {-t {File title colors}}}
     {.lfr2.lab1 - - 1 1 {-st ne} {-t {Foreground:}}}
-    {.lfr2.clr3 + L 1 3 {-st nw} {-tvar ::alited::printer::leaffg}}
+    {.lfr2.Clr3 + L 1 3 {-st nw} {-tvar ::alited::printer::leaffg}}
+    {.lfr2.butClr3 + L 1 1 {-st new} {-t Standard -takefocus 0 \
+      -com {alited::printer::StdClr Clr3 leaffg Clr4 leafbg}}}
     {.lfr2.lab2 .lfr2.lab1 T 1 1 {-st ne} {-t {Background:}}}
-    {.lfr2.clr4 + L 1 3 {-st nw} {-tvar ::alited::printer::leafbg}}
+    {.lfr2.Clr4 + L 1 3 {-st nw} {-tvar ::alited::printer::leafbg}}
     {.fraw .lfr2 T 1 3 {-st nw -pady 6}}
     {.fraw.labcs - - 1 1 {-st ne -pady 4} {-t {Syntax colors:}}}
     {.fraw.rad1 + L 1 1 {-st nsw -padx 4} {-var ::alited::printer::cs -value 1 -t 1}}
     {.fraw.rad2 + L 1 1 {-st nsw -padx 9} {-var ::alited::printer::cs -value 2 -t 2}}
     {.fraw.rad3 + L 1 1 {-st nsw -padx 4} {-var ::alited::printer::cs -value 3 -t 3}}
     {.fraw.rad4 + L 1 1 {-st nsw -padx 9} {-var ::alited::printer::cs -value 4 -t 4}}
-    {.fraw.labwc .fraw.labcs T 1 1 {-st nse} {-t {Width of contents:}}}
-    {.fraw.SpxCwidth + L 1 4 {-st nsw -padx 4} {-tvar ::alited::printer::cwidth -from 5 -to 99 -w 4 -justify center}}
+    {.fraw.labst .fraw.labcs T 1 1 {-st nse} {-t {Sort units:}}}
+    {.fraw.swist + L 1 1 {-st nsw -padx 4} {-var alited::printer::dosort}}
+    {.fraw.labwc .fraw.labst T 1 1 {-st nse} {-t {Width of contents:}}}
+    {.fraw.SpxCwidth + L 1 4 {-st nsw -padx 4} \
+      {-tvar ::alited::printer::cwidth -from 5 -to 99 -w 4 -justify center}}
     {.seh .fraw T 1 3 {-pady 8}}
     {.lab4 + T 1 1 {-st nw} {-t {Final processor:}}}
-    {.fil + T 1 3 {-st new} {-tvar ::alited::printer::final -w 40}}
+    {.fil + T 1 3 {-st new} {-tvar ::alited::printer::final -w $wden}}
     {fraTree fraTop T 2 1 {-st news -cw 1}}
-    {.Tree - - - - {pack -side left -fill both -expand 1} {-height 20 -columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 {-width $width1} L1 {-width $width2 -anchor e}" -style TreeNoHL -selectmode browse -tip {-BALTIP {alited::tree::GetTooltip %i %c} -SHIFTX 10}}}
+    {.Tree - - - - {pack -side left -fill both -expand 1} \
+      {-height 20 -columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} \
+      -columnoptions "#0 {-width $width1} L1 {-width $width2 -anchor e}" \
+      -style TreeNoHL -selectmode browse -tip {-BALTIP {alited::tree::GetTooltip %i %c} \
+      -SHIFTX 10}}}
     {.SbvTree fraTree.Tree L - - {pack -side right -fill both}}
     {fraMid fraBody T 1 3 {-st wes -rw 1 -padx 2}}
     {.seh1 - - - - {pack -side top -expand 1 -fill both -pady 4}}
@@ -808,6 +1019,7 @@ proc printer::_create  {} {
     {.butOK - - - - {pack -side left} {-t OK -com alited::printer::Ok}}
     {.butCancel - - - - {pack -side left -padx 2} {-t Cancel -com alited::printer::Cancel}}
     {.TexTmp - - - - {pack forget -side left}}
+    {.TexTmp2 - - - - {pack forget -side left}}
     {fraBot fraMid T 1 4 {-st we}}
     {.stat - - - - {pack -side bottom} {-array {
       {{} -anchor w -expand 1} 30
@@ -842,3 +1054,6 @@ proc printer::_run  {} {
   ReadIni
   _create
 }
+
+
+  # ________________________ EOF _________________________ #

@@ -11,12 +11,15 @@ in=1.0
 %C if {![info exist ::EMENUDIR1]} {set ::EMENUDIR1 "%PD"}
 %C if {![info exist ::EMENUDIR2]} {set ::EMENUDIR2 \
   [file normalize "%PD/../release/[file tail {%PD}]"]}
+%C if {![info exist ::EMENUDIR3]} {set ::EMENUDIR3 %H/TMP/alited}
 ::EMENUOPTS=-r -f
 ::EMENUMULSTER=1
 ::EMENUMULSTERDIR=%H/PG/github/mulster
 ::EMENUMULSTRES1=%H/PG/github/aplsimple.github.io/en/tcl/
 ::EMENUMULSTRES2=%H/PG/github/aplsimple.github.io/en/tcl/alited
-::EMENUMULSTRES3=/home/apl/PG/github/aplsimple.github.io/en/tcl
+::EMENUMULSTRES3=%H/PG/github/aplsimple.github.io/en/tcl
+::EMENUMULSTRES4=%H/PG/github/aplsimple.github.io/en/tcl/printer/
+::EMENUMULSTRES5=%H/PG/github/aplsimple.github.io/en/tcl/printer/alited
 ::EMENURUFFDIR=%H/PG/github/apave pave\n%H/PG/github/hl_tcl\n%H/PG/github/klnd\n%H/PG/github/bartabs\n%H/PG/github/trimmer\n%H/PG/github/mulster\n%H/PG/github/transpops\n%H/PG/github/screenshooter\n%H/PG/github/baltip\n%H/PG/github/aloupe\n%H/PG/github/playtkl
 ::EMENURUFFIT=%H/PG/github/aplsimple.github.io/en/tcl/bartabs/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/booksum/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/doctest/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/pave/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/alited/index.html
 ::EMENU7ZCNT=0
@@ -30,7 +33,7 @@ in=1.0
 ::EMENU_MULST1=%H/TMP/em_mulst.ini
 ::EMENU_MULST2=%H/TMP/em_mulst.txt
 ::EMENU_MULST5=regexp--
-pos=110.0
+pos=84.41
 
 [MENU]
 
@@ -204,3 +207,34 @@ R: %C set ch [open $::EMENU_MULST1 w] ; \
   puts $ch "OUT=END" ; \
   close $ch
 SW: tclsh %H/PG/github/mulster/mulster.tcl -backup 0 -mode $::EMENU_MULST5 -infile "%f" -outfile "$::EMENU_MULST2" $::EMENU_MULST1
+
+SEP = 3
+
+ITEM = Doc of Printer: $::EMENUP2 ...
+R: cd $::EMENUDIR3
+R: %I {} "PROJECT NAME" { \
+   v_ {{} {-pady 4}} {} \
+   dir1 {{ Printer directory:} {} {-w 50 -validate all -validatecommand { \
+     set ::EMENUP2 \[::em::get_PD {%P}\]; \
+     set ::EMENUMULSTRES5 $::EMENUMULSTRES4\[file tail {%P}\]; \
+     return 1}}} {"$::EMENUDIR3/$::EMENUP2"} \
+   ent1 {{      Project name:} {} {-tvar ::EMENUP2}} {"$::EMENUP2"} \
+   v_2 {{} {-pady 6}} {} \
+   dirM {{ Mulster directory:} {} {-tvar ::EMENUMULSTERDIR}} {"$::EMENUMULSTERDIR"} \
+   v_3 {{} {-pady 6}} {} \
+   dir2 {{ Copy to directory:} {} {-tvar ::EMENUMULSTRES5}} {"$::EMENUMULSTRES5"} \
+   seh {{} {-pady 3} {}} {} \
+   } -head {\n This creates alited Printer documentation of Tcl files. \
+   } -weight bold == ::EMENUDIR0 ::EMENUP2 EMENUMULSTERDIR ::EMENUMULSTRES5
+S: %C  \
+   set ::EMENUMULSTERDIR2 [file join $::EMENUMULSTERDIR tasks printer src] ; \
+   set ::EMTMP1 [file join [file dirname [file dirname [file dirname $::EMENUMULSTRES5]]] zoo] ; \
+   set ::EMTMP2 "cp -f -r $::EMENUDIR0/* $::EMENUMULSTERDIR2 ; \
+     cp -f $::EMENUMULSTERDIR2/css/style.css $::EMTMP1 ; \
+     rm -f $::EMENUMULSTERDIR2/css ; \
+     rm -f tasks/printer/mulstered/* ; \
+     cd $::EMENUMULSTERDIR ; tclsh mulster.tcl -b 0 tasks/mulster-alitedprinter ; \
+     cp -f -r tasks/printer/mulstered/* $::EMENUMULSTRES5" ; \
+   set ::EMENUP2html [file normalize [file join $::EMENUMULSTRES5 index.html]]
+SW: $::EMTMP2
+R: %B $::EMENUP2html

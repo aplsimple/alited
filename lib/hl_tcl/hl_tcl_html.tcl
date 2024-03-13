@@ -59,11 +59,11 @@ proc ::hl_tcl_html::highlight {htmlfile darkedit args} {
         set ic2 [string first $tag2 $text $ic]
         if {$ic2>=0} {
           set code [string range $text $ic $ic2-1]
-          if {[string first "<font" $code]>-1} {
+          if {[regexp "<font color=#\[0-9a-fA-F\]{6}>" $code]} {
             set ic [expr {$ic2+[string length $tag2]}]
             continue  ;# already processed
           }
-          set code [string map [list "&quot;" \" "&amp;" &] $code]
+          set code [string map [list "&quot;" \" "&amp;" & < "&lt;" > "&gt;"] $code]
           ::hl_tcl::hl_init $txt -dark $darkedit -seen 99999999
           $txt replace 1.0 end $code
           ::hl_tcl::hl_text $txt

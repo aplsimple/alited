@@ -2203,7 +2203,8 @@ oo::class create ::apave::APaveBase {
     }
     return [set $tvar] ;#$font
   }
-  #_______________________
+
+  ## ________________________ Widget names & methods _________________________ ##
 
   method chooserPath {W {w ent}} {
     # Gets a path to chooser's entry or label.
@@ -2212,8 +2213,7 @@ oo::class create ::apave::APaveBase {
 
     return [::apave::precedeWidgetName [my $W] $w]
   }
-
-  ## ________________________ Widget names & methods _________________________ ##
+  #_______________________
 
   method Transname {typ name} {
     # Transforms *name* by adding *typ* (its type).

@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide playtkl 1.4.1
+package provide playtkl 1.4.2
 
 # _________________________ playtkl ________________________ #
 
@@ -58,12 +58,13 @@ proc playtkl::Recording {win ev args} {
       if {[string is integer -strict $t] && $t>0} {
         set t %t=[expr {[Data %t $args]-1}]
         set ifound -1
+        set s [Data %s $args]
         if {$key in {Tab Return}} {
           if {$ev eq {KeyRelease} && $dd(prevev) ne {KeyPress}} {
             lappend dd(fcont) "KeyPress $win $args $t"
           }
-        } elseif {$ev eq {KeyRelease} && ([string length $key]==1 || \
-        $key in {Left Right Up Down Home End Next Prior \
+        } elseif {$ev eq {KeyRelease} && $s%16 ni {0 2} && \
+        ([string length $key]==1 || $key in {Left Right Up Down Home End Next Prior \
         F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12})} {
           # KeyRelease of "Ctrl/Alt/Shift + char/navigating/function key" sets the problem:
           #   the previous KeyPress can be not registered by Tk (only Control's etc.)
@@ -193,14 +194,18 @@ proc playtkl::Playing {} {
   } else {
     GenerateEvent $win $ev {*}$opts
   }
-  set line [lindex $dd(fcont) $dd(idx)+1]
-  set time1 [Data %t [lrange $line 2 end]]
-  if {!$time || ![string is integer -strict $time1] || $dd(ismacro)} {
-    set aft idle
+  if {$dd(ismacro)} {
+    after idle ::playtkl::Playing
   } else {
-    set aft [expr {max(0,$time1-$time)}]
+    set line [lindex $dd(fcont) $dd(idx)+1]
+    set time1 [Data %t [lrange $line 2 end]]
+    if {!$time || ![string is integer -strict $time1]} {
+      set aft idle
+    } else {
+      set aft [expr {max(0,$time1-$time)}]
+    }
+    after $aft ::playtkl::Playing
   }
-  after $aft ::playtkl::Playing
 }
 #_______________________
 
@@ -321,7 +326,7 @@ proc playtkl::replay {{fname ""} {cbreplay ""} {mappings {}} {ismacro yes} {wfoc
   set dd(wfocus) $wfocus
   set dd(ismacro) $ismacro
   if {$fname ne {}} {readcontents $fname}
-  set line [lindex $dd(fcont) 0]
+  if {[catch {set line [lindex $dd(fcont) 0]}]} return
   lassign $line dd(prevev) dd(win)
   set dd(data) [lrange $line 2 end]
   set dd(idx) -1

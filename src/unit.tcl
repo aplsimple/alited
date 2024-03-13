@@ -305,7 +305,7 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
     %f [file tail $fname] \
     %n [file rootname [file tail $fname]] \
     %A $DIR \
-    %M $MNUDIR \
+    %M $al(EM,mnudir) \
     ] $tex]
   # get a list of proc/method's arguments:
   # from "proc pr {ar1 ar2 ar3} " and a template "  # %a -\n"
@@ -639,7 +639,9 @@ proc unit::MoveL1L2 {wtxt i1 i2 io {dosep yes}} {
     set io [expr {$io+$i1-$i2-1}]
   }
   if {$io == int([$wtxt index end])} {
-    # "If index refers to the end of the text (the character after the last newline) then the new text is inserted just before the last newline instead." (The text manual page)
+    # "If index refers to the end of the text (the character after the last newline)
+    # then the new text is inserted just before the last newline instead."
+    # (The text manual page)
     $wtxt insert "end" \n$linesmoved
     $wtxt delete [$wtxt index "end -1 char"] end
   } else {

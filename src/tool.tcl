@@ -22,11 +22,35 @@ proc tool::ToolButName {img} {
 # ________________________ Edit functions _________________________ #
 
 proc tool::Undo {} {
-  catch {event generate [alited::main::CurrentWTXT] <<Undo>>}
+  # Undoes a change.
+
+  return [catch {event generate [alited::main::CurrentWTXT] <<Undo>>}]
 }
 
 proc tool::Redo {} {
-  catch {event generate [alited::main::CurrentWTXT] <<Redo>>}
+  # Redoes a change.
+
+  return [catch {event generate [alited::main::CurrentWTXT] <<Redo>>}]
+}
+#_______________________
+
+proc tool::undoAll {} {
+  # Undoes all changes.
+  
+  set wtxt [alited::main::CurrentWTXT]
+  while {[$wtxt edit canundo]} {
+    if {[Undo]} break
+  }
+}
+#_______________________
+
+proc tool::redoAll {} {
+  # Redoes all changes.
+  
+  set wtxt [alited::main::CurrentWTXT]
+  while {[$wtxt edit canredo]} {
+    if {[Redo]} break
+  }
 }
 #_______________________
 
@@ -609,7 +633,7 @@ proc tool::CheckTcl {} {
   # Check a current unit for errors, before running Tcl file.
 
   lassign [alited::tree::CurrentItemByLine {} 1] - - leaf - name l1 l2
-  if {[string is true -strict $leaf]} {
+  if {[string is true -strict $leaf] && $name ne {}} {
     alited::CheckSource
     alited::info::ClearRed
     set wtxt [alited::main::CurrentWTXT]
