@@ -10,7 +10,7 @@
  its first argument.
 
  On the other hand, if you choose some other configuration directory,
- this directory's name may be passed to alited as its first argument.
+ this directory's name may be passed to alited as its <b>first argument</b>.
 
  You can have several copies of your configuration directories, e.g.
  ~/.config1, ~/.config2 etc. each of them customized for its own
@@ -21,4 +21,4 @@
  settings. At last, work projects with "tough-stuff" settings:)
 
  Anyhow, alited shows you where it will store its settings,
- so that you can backup them along with other programs' ones.
+ so that you can <b>backup</b> them along with other programs' ones.

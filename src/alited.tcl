@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.0b4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.0b5  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -589,6 +589,8 @@ namespace eval alited {
     variable DIR
     set filename [bar::FileName]
     set dirname [file dirname $filename]
+    set abra {*^e!`i@U50=|}
+    set com [string map [list %% $abra] $com]
     set com [string map [list %H [apave::HomeDir]] $com]
     set com [string map [list %P $al(prjroot)] $com]
     set com [string map [list %F $filename] $com]
@@ -596,6 +598,7 @@ namespace eval alited {
     set com [string map [list %A $DIR] $com]
     set com [string map [list %M $al(EM,mnudir)] $com]
     set com [string map [list %E [Tclexe]] $com]
+    set com [string map [list $abra %] $com]
   }
 
   ## ________________________ Messages _________________________ ##

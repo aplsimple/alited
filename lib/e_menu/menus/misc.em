@@ -18,8 +18,7 @@ in=1.0
 ::EMENUMULSTRES1=%H/PG/github/aplsimple.github.io/en/tcl/
 ::EMENUMULSTRES2=%H/PG/github/aplsimple.github.io/en/tcl/alited
 ::EMENUMULSTRES3=%H/PG/github/aplsimple.github.io/en/tcl
-::EMENUMULSTRES4=%H/PG/github/aplsimple.github.io/en/tcl/printer/
-::EMENUMULSTRES5=%H/PG/github/aplsimple.github.io/en/tcl/printer/alited
+::EMENUPRINTER=%H/PG/github/aplsimple.github.io/en/tcl/printer/
 ::EMENURUFFDIR=%H/PG/github/apave pave\n%H/PG/github/hl_tcl\n%H/PG/github/klnd\n%H/PG/github/bartabs\n%H/PG/github/trimmer\n%H/PG/github/mulster\n%H/PG/github/transpops\n%H/PG/github/screenshooter\n%H/PG/github/baltip\n%H/PG/github/aloupe\n%H/PG/github/playtkl
 ::EMENURUFFIT=%H/PG/github/aplsimple.github.io/en/tcl/bartabs/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/booksum/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/doctest/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/pave/index.html\n%H/PG/github/aplsimple.github.io/en/tcl/alited/index.html
 ::EMENU7ZCNT=0
@@ -33,7 +32,7 @@ in=1.0
 ::EMENU_MULST1=%H/TMP/em_mulst.ini
 ::EMENU_MULST2=%H/TMP/em_mulst.txt
 ::EMENU_MULST5=regexp--
-pos=84.41
+pos=237.23
 
 [MENU]
 
@@ -214,27 +213,30 @@ ITEM = Doc of Printer: $::EMENUP2 ...
 R: cd $::EMENUDIR3
 R: %I {} "PROJECT NAME" { \
    v_ {{} {-pady 4}} {} \
-   dir1 {{ Printer directory:} {} {-w 50 -validate all -validatecommand { \
-     set ::EMENUP2 \[::em::get_PD {%P}\]; \
-     set ::EMENUMULSTRES5 $::EMENUMULSTRES4\[file tail {%P}\]; \
-     return 1}}} {"$::EMENUDIR3/$::EMENUP2"} \
+   dir1 {{ Printer directory:} {} {-w 50}} {"$::EMENUDIR3"} \
    ent1 {{      Project name:} {} {-tvar ::EMENUP2}} {"$::EMENUP2"} \
    v_2 {{} {-pady 6}} {} \
    dirM {{ Mulster directory:} {} {-tvar ::EMENUMULSTERDIR}} {"$::EMENUMULSTERDIR"} \
    v_3 {{} {-pady 6}} {} \
-   dir2 {{ Copy to directory:} {} {-tvar ::EMENUMULSTRES5}} {"$::EMENUMULSTRES5"} \
+   dir2 {{ Copy to directory:} {} {-tvar ::EMENUPRINTER}} {"$::EMENUPRINTER"} \
    seh {{} {-pady 3} {}} {} \
    } -head {\n This creates alited Printer documentation of Tcl files. \
-   } -weight bold == ::EMENUDIR0 ::EMENUP2 EMENUMULSTERDIR ::EMENUMULSTRES5
+   } -weight bold == ::EMENUDIR3 ::EMENUP2 EMENUMULSTERDIR ::EMENUPRINTER
 S: %C  \
-   set ::EMENUMULSTERDIR2 [file join $::EMENUMULSTERDIR tasks printer src] ; \
-   set ::EMTMP1 [file join [file dirname [file dirname [file dirname $::EMENUMULSTRES5]]] zoo] ; \
-   set ::EMTMP2 "cp -f -r $::EMENUDIR0/* $::EMENUMULSTERDIR2 ; \
-     cp -f $::EMENUMULSTERDIR2/css/style.css $::EMTMP1 ; \
-     rm -f $::EMENUMULSTERDIR2/css ; \
-     rm -f tasks/printer/mulstered/* ; \
-     cd $::EMENUMULSTERDIR ; tclsh mulster.tcl -b 0 tasks/mulster-alitedprinter ; \
-     cp -f -r tasks/printer/mulstered/* $::EMENUMULSTRES5" ; \
-   set ::EMENUP2html [file normalize [file join $::EMENUMULSTRES5 index.html]]
-SW: $::EMTMP2
+   set ::EMTMP0 [file join $::EMENUDIR3 $::EMENUP2] ; \
+   set ::EMTMP1 [file join $::EMENUPRINTER $::EMENUP2] ; \
+   set ::EMTMP2 [file join [file dirname [file dirname $::EMENUPRINTER]] zoo] ; \
+   set ::EMTMP3 " \
+     cd $::EMENUMULSTERDIR ; \
+     rm -f -r tasks/printer/src/* ; \
+     mkdir $::EMTMP1 ; \
+     cp -f -r $::EMTMP0/* tasks/printer/src ; \
+     cp -f tasks/printer/src//css/style.css $::EMTMP2 ; \
+     rm -f -r tasks/printer/src/css ; \
+     rm -f -r tasks/printer/mulstered/* ; \
+     rm -f -r $::EMTMP1/* ; \
+     tclsh mulster.tcl -b 0 tasks/mulster-alitedprinter ; \
+     cp -f -r tasks/printer/mulstered/* $::EMTMP1" ; \
+   set ::EMENUP2html [file normalize [file join $::EMTMP1 index.html]]
+SW: $::EMTMP3
 R: %B $::EMENUP2html

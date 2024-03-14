@@ -19,10 +19,10 @@ The original code has been modified to make the tip:
   * be displayed with a shift (on X and Y) relative to the mouse pointer
   * be displayed as a stand-alone balloon message at given coordinates
   * be displayed with given font, colors, paddings, border, relief, opacity, bell
-  * have -image and -compound options to display images
-  * have -command option to be displayed in a status bar instead of a balloon
-  * have -command option to be changed dynamically, with each tip's exposition
-  * have -maxexp option to limit the number of tip's expositions
+  * have `-image` and `-compound` options to display images
+  * have `-command` option to be displayed in a status bar instead of a balloon
+  * have `-command` option to be changed dynamically, with each tip's exposition
+  * have `-maxexp` option to limit the number of tip's expositions
   * have configure/cget etc. wrapped in Tcl ensemble for convenience
 
 The video introduction to *baltip* is presented by
@@ -63,21 +63,21 @@ The *tabs of notebook* are also supplied with tips.
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip13.png" class="media" alt="">
 
-The *listbox* can have tips per item as well as for a whole listbox widget.
+The `listbox` can have tips per item as well as for a whole listbox widget.
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip14.png" class="media" alt="">
 
-The *treeview* can have tips per item and/or column as well as for a whole treeview widget.
+The `ttk::treeview` can have tips per item and/or column as well as for a whole treeview widget.
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip15.png" class="media" alt="">
 
-The *-command* option allows to display tips in a status bar instead of a balloon.
+The `-command` option allows to display tips in a status bar instead of a balloon.
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip16.png" class="media" alt="">
 
 *Configurable tips*. The tip configuration can be global or local (for a specific tip).
 
-The configuring can include: font, colors, paddings, border, relief, exposition time, opacity, image (with -compound), bell.
+The configuring can include: font, colors, paddings, border, relief, exposition time, opacity, image (with `-compound` option), bell.
 
  <img src="https://aplsimple.github.io/en/tcl/baltip/files/btip9.png" class="media" alt="">
 
@@ -91,105 +91,105 @@ The configuring can include: font, colors, paddings, border, relief, exposition 
 
 The *baltip* usage is rather straightforward. Firstly we need `package require`:
 
-      lappend auto_path "dir_of_baltip"
-      package require baltip
+    lappend auto_path "dir_of_baltip"
+    package require baltip
 
 Then we set tips with `::baltip::tip` command for each appropriate widget:
 
-      ::baltip::tip widgetpath text ?-option value?
-      # or this way:
-      ::baltip tip widgetpath text ?-option value?
+    ::baltip::tip widgetpath text ?-option value?
+    # or this way:
+    ::baltip tip widgetpath text ?-option value?
 
-For example, having a button *.win.but1*, we can set its tip this way:
+For example, having a button `.win.but1`, we can set its tip this way:
 
-      ::baltip tip .win.but1 "It's a tip.\n2nd line of it.\n3rd."
+    ::baltip tip .win.but1 "It's a tip.\n2nd line of it.\n3rd."
 
 To get all or specific settings of *baltip*:
 
-      ::baltip::cget ?-option?
-      # or this way:
-      ::baltip cget ?-option?
+    ::baltip::cget ?-option?
+    # or this way:
+    ::baltip cget ?-option?
 
 To get a specific widget's tip option:
 
-      ::baltip::cget widgetpath -option
-      # or this way:
-      ::baltip cget widgetpath -option
+    ::baltip::cget widgetpath -option
+    # or this way:
+    ::baltip cget widgetpath -option
 
 To set some options:
 
-      ::baltip::configure -option value ?-option value?
-      # or this way:
-      ::baltip config -option value ?-option value?
+    ::baltip::configure -option value ?-option value?
+    # or this way:
+    ::baltip config -option value ?-option value?
 
 To set a specific widget's tip option:
 
-      ::baltip::configure widgetpath -option value ?-option value?
-      # or this way:
-      ::baltip config widgetpath -option value ?-option value?
+    ::baltip::configure widgetpath -option value ?-option value?
+    # or this way:
+    ::baltip config widgetpath -option value ?-option value?
 
 **Note**: the options set with `configure` command are *global*, i.e. active for all tips.
 The options set with `tip` command are *local*, i.e. active for the specific tip.
 
 To disable all tips:
 
-      ::baltip::configure -on false
+    ::baltip::configure -on false
 
 To disable some specific tip:
 
-      ::baltip::tip widgetpath ""
-      # or this way:
-      ::baltip::tip widgetpath "old tip" -on false
+    ::baltip::tip widgetpath ""
+    # or this way:
+    ::baltip::tip widgetpath "old tip" -on false
 
 To hide some specific (suspended) tip forcedly:
 
-      ::baltip::hide widgetpath
+    ::baltip::hide widgetpath
 
 To update a tip's text and options:
 
-      ::baltip::update widgetpath text ?options?
+    ::baltip::update widgetpath text ?options?
 
 To show a tip for a widget that has no "normal" tip, still needs a tip (e.g. on clicking):
 
-      ::baltip::showTip path text ?options?
+    ::baltip::showTip path text ?options?
 
 By default, `::baltip::showTip` displays the tip under the mouse pointer. At that it regards `-geometry` option and ignores `-under, -shiftX, -shiftY` options.
 
 When you click on a widget with its tip being displayed, the tip is hidden. It is the default behavior of *baltip*, but sometimes you need to re-display the hidden tip. If the widget is a button, you can include the following command in `-command` of the button:
 
-      ::baltip::repaint widgetpath
+    ::baltip::repaint widgetpath
 
 ## Some special tips
 
-The "text" for *listbox* can contain %i wildcard - and in such cases the text means a callback receiving a current index of item to tip:
+The "text" for `listbox` can contain `%i` wildcard - and in such cases the text means a callback receiving a current index of item to tip:
 
-      proc ::lbxTip {idx} {
-        set item [lindex $::lbxlist $idx]
-        return "Tip for \"$item\"\nindex=$idx"
-      }
-      ::baltip tip .listbox {::lbxTip %i}
+    proc ::lbxTip {idx} {
+      set item [lindex $::lbxlist $idx]
+      return "Tip for \"$item\"\nindex=$idx"
+    }
+    ::baltip tip .listbox {::lbxTip %i}
 
-The "text" for *treeview* can contain %i and/or %c wildcards - and in such cases the text means a callback receiving ID of item and/or column of item to tip:
+The "text" for `ttk::treeview` can contain `%i` and/or `%c` wildcards - and in such cases the text means a callback receiving ID of item and/or column of item to tip:
 
-      proc ::treTip {id c} {
-        set item [.treeview item $id -text]
-        return "Tip for \"$item\"\nID=$id, column=$c"
-      }
-      ::baltip::tip .treeview {::treTip %i %c}
+    proc ::treTip {id c} {
+      set item [.treeview item $id -text]
+      return "Tip for \"$item\"\nID=$id, column=$c"
+    }
+    ::baltip::tip .treeview {::treTip %i %c}
 
-If a tip for listbox and treeview widgets doesn't contain %i nor %c, it means a usual tip for a whole widget. At that, if those wildcards still need to be displayed, use %%i and %%c instead.
+If a tip for listbox and treeview widgets doesn't contain `%i` nor `%c`, it means a usual tip for a whole widget. At that, if those wildcards still need to be displayed, use `%%i` and `%%c` instead.
 
 If you need to switch between "per item" and "per widget" tip of listbox and treeview , use `::baltip::tip` with `-reset yes` option:
 
-      ::baltip::tip .treeview {Common tip} -reset yes      ;# sets a usual tip
-      ::baltip::tip .treeview {::treTip %i %c} -reset yes  ;# sets a callback
+    ::baltip::tip .treeview {Common tip} -reset yes      ;# sets a usual tip
+    ::baltip::tip .treeview {::treTip %i %c} -reset yes  ;# sets a callback
 
-Some GUI objects (notebook tabs, listbox items, treeview items) have not &lt;Enter&gt; nor &lt;Leave&gt; event bindings, so that those bindings are imitated by *baltip*. Hence a problem with popup menus: when you right-click those GUI objects, *baltip::tip* and *tk_popup* might both fire, which results in a mess.
+Some GUI objects (notebook tabs, listbox items, treeview items) have not &lt;Enter&gt; nor &lt;Leave&gt; event bindings, so that those bindings are imitated by *baltip*. Hence a problem with popup menus: when you right-click those GUI objects, `baltip::tip` and `tk_popup` might both fire, which results in a mess.
 
-To avoid this, use *::baltip::sleep* before *tk_popup*, for example:
+To avoid this, use `::baltip::sleep` before `tk_popup`, for example:
 
-      ::baltip::sleep 1000        ;# disables tips for 1000 milliseconds
-      tk_popup $popupmenu $X $Y   ;# calls a popup menu at $X $Y coordinates
+    ::baltip::sleep 1000        ;# disables tips for 1000 milliseconds
+    tk_popup $popupmenu $X $Y   ;# calls a popup menu at $X $Y coordinates
 
 As for [tablelist](https://wiki.tcl-lang.org/page/tablelist) widget, I would like to cite an advice by [Csaba Nemethi](https://www.nemethi.de/) :
 
@@ -208,9 +208,9 @@ By means of `-geometry` option you get a balloon message unrelated to any visibl
 
 For example:
 
-      ::baltip::tip .win "It's a balloon at +1+100 (+X+Y) coordinates" \
-        -geometry +1+100 -font {-weight bold -size 12} \
-        -alpha 0.8 -fg white -bg black -per10 3000 -pause 1500 -fade 1500
+    ::baltip::tip .win "It's a balloon at +1+100 (+X+Y) coordinates" \
+      -geometry +1+100 -font {-weight bold -size 12} \
+      -alpha 0.8 -fg white -bg black -per10 3000 -pause 1500 -fade 1500
 
 The `-pause` and `-fade` options make the balloon fade at appearing and disappearing.
 
@@ -222,21 +222,21 @@ The `-geometry` value can include `W` and `H` *wildcards* meaning the width and 
 
 For example:
 
-      lassign [split [winfo geometry .win] x+] w h x y
-      set geom "+([expr {$w+$x}]-W-4)+$y"
-      set text "The balloon at the right edge of the window"
-      ::baltip tip .win $text -geometry $geom -pause 2000 -fade 2000
+    lassign [split [winfo geometry .win] x+] w h x y
+    set geom "+([expr {$w+$x}]-W-4)+$y"
+    set text "The balloon at the right edge of the window"
+    ::baltip tip .win $text -geometry $geom -pause 2000 -fade 2000
 
 To show a balloon under the mouse pointer, e.g. on clicking, timeout, processing etc., the following call is used:
 
-      ::baltip::showBalloon text ?options?
+    ::baltip::showBalloon text ?options?
 
 By default, `::baltip::showBalloon` displays the balloon under the mouse pointer. At that it regards `-geometry` option and ignores `-under, -shiftX, -shiftY` options.
 
 
 ## Command
 
-The "-command" option allows to display tips in other places, for example in a status bar. At that, the command can include %t and %w wildcards, meaning "text" and "widget path". Such tips are well fit for menu items, as seen in *test.tcl*.
+The `-command` option allows to display tips in other places, for example in a status bar. At that, the command can include `%t` and `%w` wildcards, meaning "text" and "widget path". Such tips are well fit for menu items, as seen in *test.tcl*.
 
 The command of this option must return {}, if no tips should be displayed.
 
@@ -244,12 +244,12 @@ Also, it can return a new tip to display as a usual balloon tip, which fits for 
 
 For example:
 
-      proc ::Status {tip} {
-        .labelstatus configure -text $tip
-        return {}  ;# no redefining the tip
-      }
-      ::baltip::tip .menu "File actions" -index 0 -command {::Status %t}
-      ::baltip::tip .menu "Help, hints, Q&A, about etc." -index 1 -command {::Status %t}
+    proc ::Status {tip} {
+      .labelstatus configure -text $tip
+      return {}  ;# no redefining the tip
+    }
+    ::baltip::tip .menu "File actions" -index 0 -command {::Status %t}
+    ::baltip::tip .menu "Help, hints, Q&A, about etc." -index 1 -command {::Status %t}
 
 Also, this option can be used if you need to fire some code when the mouse pointer enters or leaves a GUI object.
 
@@ -257,27 +257,26 @@ Also, this option can be used if you need to fire some code when the mouse point
 
 The only line
 
-      baltip::tip $w $tip -command $command
+    baltip::tip $w $tip -command $command
 
 might save you other lines to fire the command at entering/leaving a GUI object. E.g. the command might highlight a GUI object entered, save its ID and unhighlight the object at leaving it.
 
 For example:
 
-      proc ::SomeProc {tip} {
-        lassign [split $tip] obj ID column
-        if {[info exists ::OBJsaved]} {
-          puts "$::OBJsaved object ID=[set ::IDsaved] is left... unhighlighted..."
-          unset ::OBJsaved
-        }
-        if {$obj eq {}} return
-        set ::OBJsaved $obj
-        set ::IDsaved $ID
-        puts "Now processing $obj object with ID=$ID column=$column"
+    proc ::SomeProc {tip} {
+      lassign [split $tip] obj ID column
+      if {[info exists ::OBJsaved]} {
+        puts "$::OBJsaved object ID=[set ::IDsaved] is left... unhighlighted..."
+        unset ::OBJsaved
       }
-      ::baltip::tip .listbox {Listbox %i} -command {::SomeProc {%t}}
-      ::baltip::tip .treeview {Treeview %i %c} -command {::SomeProc {%t}}
+      if {$obj eq {}} return
+      set ::OBJsaved $obj
+      set ::IDsaved $ID
+      puts "Now processing $obj object with ID=$ID column=$column"
       return {}  ;# means the proc executed and no tip needed
-
+    }
+    ::baltip::tip .listbox {Listbox %i} -command {::SomeProc {%t}}
+    ::baltip::tip .treeview {Treeview %i %c} -command {::SomeProc {%t}}
 
 ## Options
 
@@ -314,26 +313,26 @@ The following options are special:
  * `-nbktab` - path to ttk::notebook tab to tip;
  * `-geometry` - geometry (+X+Y) of the balloon;
  * `-reset` - "-reset true" may be useful to set a new tip (callback or text) for listbox and treeview;
- * `-command` - a command to be executed, with %t (tip's text) and %w (widget's path) wildcards;
+ * `-command` - a command to be executed, with `%t` (tip's text) and `%w` (widget's path) wildcards;
  * `-maxexp` - maximum number of tip's expositions.
 
 If `-global yes` option is used alone, it applies all global options to all registered tips. If `-global yes` option is used along with other options, only those options are applied to all registered tips.
 
 Of course, all global options will be applied to all tips to be created after `::baltip configuration`. For example:
 
-      ::baltip config -global yes  ;# applies all global options to all registered and to-be-created tips
-      ::baltip config -global yes -per10 2000  ;# applies `-per10` to all registered and to-be-created tips
+    ::baltip config -global yes  ;# applies all global options to all registered and to-be-created tips
+    ::baltip config -global yes -per10 2000  ;# applies `-per10` to all registered and to-be-created tips
 
 The `-index` option may have numeric (0, 1, 2...) or symbolic form (active, end, none) to indicate a menu entry, e.g. in `-command` option. For example:
 
-      ::baltip repaint .win.popupMenu -index active
-      ::baltip::tip .menu "File actions" -index 0
+    ::baltip repaint .win.popupMenu -index active
+    ::baltip::tip .menu "File actions" -index 0
 
 There may be useful to define options in *text* argument of *::baltip::tip*.
 
 For this, provide the *text* argument as a list of pairs of uppercased options' name / value including *-BALTIP* option for *tip*. For example:
 
-      ::baltip tip .text "-BALTIP {Sort of diary, todos etc.} -MAXEXP 1"
+    ::baltip tip .text "-BALTIP {Sort of diary, todos etc.} -MAXEXP 1"
 
 As seen in the above examples, *baltip* can be used as Tcl ensemble, so that the commands may be shortened.
 
@@ -358,7 +357,7 @@ The *baltip* package has been developed with help of these kind people:
   * [Reference](https://aplsimple.github.io/en/tcl/baltip/baltip.html)
 
   * [Demo of baltip v1.3.1](https://github.com/aplsimple/baltip/releases/download/baltip-1.3.1/baltip-1.3.1.mp4)
-}
+  }
 }
 
 namespace eval ::baltip::my {

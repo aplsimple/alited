@@ -44,6 +44,8 @@
    <b>%M</b> - directory of <b>e_menu</b>'s menus
    <b>%E</b> - Tcl/Tk executable as set in Preferences/Tools
         (or one executing <b>alited</b>)
+   <b>%%</b> - %
+
  E.g.
    %E %A/lib/e_menu/e_menu.tcl m=%M/misc ex=7
  runs 7th <b>e_menu</b> item of <b>misc.em</b> menu.

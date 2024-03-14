@@ -294,6 +294,8 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
   set sec [clock seconds]
   set fname [alited::bar::FileName]
   # fill the common wildcards
+  set abra {*^e!`i@U50=|}
+  set tex [string map [list %% $abra] $tex]
   set tex [string map [list \
     %d [alited::tool::FormatDate $sec] \
     %t [clock format $sec -format $al(TPL,%t) -locale $::alited::al(LOCAL)] \
@@ -307,6 +309,7 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
     %A $DIR \
     %M $al(EM,mnudir) \
     ] $tex]
+  set tex [string map [list $abra %] $tex]
   # get a list of proc/method's arguments:
   # from "proc pr {ar1 ar2 ar3} " and a template "  # %a -\n"
   # to get

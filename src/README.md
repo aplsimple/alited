@@ -2,9 +2,7 @@
 
 The [alited/src](about.html) directory contains alited's own source files.
 
-Some additional alited's files are also contained in [alited/lib/addon](../lib/addon/hl_alm.html) directory.
-
-The library files are contained in alited/lib** directory.
+Some additional alited's files are also contained in [alited/lib/addon](../lib/addon/hl_alm.html) directory (*alited/lib* directory contains all library files).
 
   * [about.tcl](about.html) - "About alited" dialogue.
   * [alited.tcl](alited.html) - The alited's main script to start.

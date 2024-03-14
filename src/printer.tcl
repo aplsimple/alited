@@ -28,6 +28,9 @@ namespace eval printer {
   variable tmpC {}
   variable colors {}
   variable lastreadme {}
+  variable prebeg "<pre class=\"code\">"
+  variable preend "</pre>"
+  variable paragr "</p><p>"
   # wildcards in templates
   variable wcalited ALITED_ ;# to avoid self-wildcarding
   variable leafttl "<table border=0 cellPadding=4 cellSpacing=0 width=100%> \
@@ -77,7 +80,7 @@ proc printer::fetchVars {} {
     wcbttl wcstyle wctitle wctoc wclink wcrmcon wcbody wcwidth wcback wcfg wcbg tmpC cs \
     geometry width1 width2 dir mdproc mdprocs ttlfg ttlbg leaffg leafbg cwidth indexcont \
     final leafttl wcleaft wctipw wcrmttl dosort wclt wcgt copyright colors lastreadme \
-    filesdir FILES} {
+    filesdir FILES prebeg preend paragr} {
       variable $_
     }
   }
@@ -368,9 +371,14 @@ proc printer::MdProc {fin fout} {
         mdCMNT {  ;# comment tag for "invisible" parts
           $wtxt replace $p1 $p2 {}
         }
-        mdAPOS {  ;# apostrophe
-          $wtxt insert $p2 </font>
-          $wtxt insert $p1 "<font color=$clrVAR>"
+        mdAPOS {  ;# apostrophe is for <code> tag
+          set cont [$wtxt get $p1 $p2]
+          set cont2 [Off_Html_tags $cont]
+          $wtxt replace $p1 $p2 $cont2
+          set addch [expr {[string length $cont2]-[string length $cont]}]
+          set p2 [$wtxt index "$p2 +$addch char"]
+          $wtxt insert $p2 </code>
+          $wtxt insert $p1 "<code class=\"tcl\">"
         }
         mdBOIT {  ;# bold italic
           $wtxt insert $p2 </font></i></b>
@@ -421,9 +429,7 @@ proc printer::MdOutput {wtxt fout} {
   foreach line [split [$wtxt get 1.0 end] \n] {
     set line [string trimright $line]
     if {$line eq {}} {
-      if {!$par} {
-        append line </p><p>
-      }
+      if {!$par} {append line $paragr}
       incr par
     } elseif {$par} {
       set par 0
@@ -432,6 +438,14 @@ proc printer::MdOutput {wtxt fout} {
   }
   append tmpC </p>
   apave::writeTextFile $fout ::alited::printer::tmpC
+}
+#_______________________
+
+proc printer::Off_Html_tags {cont} {
+  # Disables html tags in a code snippet.
+  #   cont - the code snippet
+
+  return [string map [list < "&lt;" > "&gt;"] $cont]
 }
 
 # ________________________ Processing _________________________ #
@@ -571,8 +585,38 @@ proc printer::GetReadme {dirfrom} {
     }
     if {$com ne {}} {exec -- {*}$com}
   }
-  set res [apave::readTextFile $tmpname]
-  return [list $res $fname]
+  set cont {}
+  set iscode no
+  set lsp1 0
+  set lpr1 [string length $paragr]
+  set lpr2 [expr {$lpr1+1}]
+  # wrap the code snippets with <pre code ... /pre>
+  foreach line [split [apave::readTextFile $tmpname {} 1] \n] {
+    set line [string trimright $line]
+    set lsp [$obDl2 leadingSpaces $line]
+    if {$lsp>3} {
+      set line [Off_Html_tags $line]
+      if {!$iscode} {set lsp1 $lsp}
+      set line [string range $line $lsp1 end]
+      if {!$iscode} {
+        if {[string range $cont end-$lpr1 end] eq "$paragr\n"} {
+           set cont [string range $cont 0 end-$lpr2]
+        }
+        set line "$prebeg$line"
+      }
+      set iscode yes
+    } elseif {$iscode && $line ne {}} {
+      if {$line eq $paragr} {
+        append cont \n
+        continue
+      }
+      set cont [string trimright $cont]
+      set line "$preend$line"
+      set iscode no
+    }
+    append cont $line \n
+  }
+  return [list $cont $fname]
 }
 #_______________________
 
@@ -747,9 +791,8 @@ proc printer::MakeFile {fname fname2} {
   set tpl [string map [list $wctitle $ftail $wcstyle $csspath] $tpl]
   set tpl [string map [list $wcfg $leaffg $wcbg $leafbg] $tpl]
   set tpl [string map [list $wcback [file join $rootpath $indexname]] $tpl]
-  set tmpC "<pre class"
-  append tmpC "=\"code\">$cont</"  ;# to avoid fooling self with tcl_html.tcl
-  append tmpC "pre>"
+  set cont [Off_Html_tags $cont]
+  set tmpC "$prebeg$cont$preend"
   set tmpC [string map [list $wcbody $tmpC] $tpl]
   set fname2 [file rootname $fname2].html
   apave::writeTextFile $fname2 ::alited::printer::tmpC
@@ -1055,5 +1098,4 @@ proc printer::_run  {} {
   _create
 }
 
-
-  # ________________________ EOF _________________________ #
+# ________________________ EOF _________________________ #

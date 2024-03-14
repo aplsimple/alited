@@ -1,11 +1,11 @@
 # LAST CHANGES:
 
-Version `v1.8.0b4 (13 Mar'24)`
+Version `v1.8.0b5 (14 Mar'24)`
 
   - BUGFIX: Moving unit descriptions: processed tabs in tabbar not marked as modified
   - BUGFIX: false checking Tcl at Tools/Run with cursor being in no unit
   - BUGFIX: Edit/Play macro (issues with activating & some keys)
-  - DRAFT : Tools/Project printer
+  - NEW   : Tools/Project printer
   - DRAFT : "Project printer" in [alited's demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
   - NEW   : Ctrl+click on Undo/Redo tool buttons: "all in text"
   - NEW   : Saved favorites: "Add session files as favorites" button
@@ -22,6 +22,7 @@ Version `v1.8.0b4 (13 Mar'24)`
   - CHANGE: Moving unit descriptions: "All in session" instead of "All open"
   - CHANGE: Moving unit descriptions: intro lines ("All of...") skipped
   - CHANGE: Edit/Rectangular selection/Paste: cursor set after 1st line pasted position
+  - CHANGE: docs
   - CHANGE: packages: e_menu/apave 4.4.0, bartabs 1.6.8, playtkl 1.4.2
 
 

@@ -18,8 +18,9 @@ foreach ghtml $::argv {
   } else {
     foreach fhtml [glob $ghtml] {
       ::hl_tcl_html::highlight $fhtml no {*}$cs \
-        {<code class="tcl">} {</code>} \
-        {<pre class="code">} {</pre>}
+        {<code class="tcl">} </code> \
+        {<pre class="code">} </pre> \
+        <code> </code>
     }
   }
 }

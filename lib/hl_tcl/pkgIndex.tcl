@@ -54,7 +54,7 @@ There are "tricky" highlighters (like <a href="https://wiki.gnome.org/Apps/Gedit
    * doesn't highlight `${var}` in contrast with `$var`
    * tries to highlight any (even hexidecimal) number it encounters, thus `set a 1fix` or `set b #abxxx` looks a bit peculiar
    * `set c {{#000} #FFF}` is quite a legal Tcl command as well as `set c {#000 #FFF}`, not for Geany
-   * no highlighting TclOO (`method, mixin, my` etc.)
+   * no highlighting TclOO (`method`, `my`, `mixin` etc.)
 
 <a href="http://www.vim.org/" title="Vim editor">Vim</a>. Probably, the fastest Tcl highlighter. Great and awful. Nonetheless:
 
@@ -69,7 +69,7 @@ There are "tricky" highlighters (like <a href="https://wiki.gnome.org/Apps/Gedit
 
 <a href="http://mate-desktop.org" title="Pluma editor">Pluma</a> and <a href="https://wiki.gnome.org/Apps/Gedit" title="Gedit editor">Gedit</a> seem to use the same Tcl highlighting engine that gives rather good results. Still, the mentioned above drawbacks are here too. And no highlighting of tk, ttk, TclOO.
 
-<a href="https://notepad-plus-plus.org/" title="Notepad++ official site">Notepad++</a>. Very fast Tcl highlighter. And very basic. All the same drawbacks. No highlighting of tk, ttk, TclOO. *Plus* an obsolete version of Tcl, i.e. no highlighting `lset, lassign` etc.
+<a href="https://notepad-plus-plus.org/" title="Notepad++ official site">Notepad++</a>. Very fast Tcl highlighter. And very basic. All the same drawbacks. No highlighting of tk, ttk, TclOO. *Plus* an obsolete version of Tcl, i.e. no highlighting `lset`, `lassign` etc.
 
 ## What can we do?
 
@@ -82,7 +82,7 @@ It seems *hl_tcl* got close to this compromise. Specifically, it provides:
   * special highlighting for Tcl and TclOO commands
   * special highlighting for Tk and ttk commands
   * allowing additional commands to highlight (as Tk ones)
-  * special highlighting for declarations `proc, method, oo::class` etc. as well as `return, yield`
+  * special highlighting for declarations `proc`, `method`, `oo::class` etc. as well as `return`, `yield`
   * special highlighting for `#comments`, `$variables`, `"strings"`, `-options`
   * in-line comments being recognized and thus highlighted only after `;#`
   * proper handling of most `regexp` and `regsub` expressions containing a quote
@@ -117,42 +117,42 @@ The code below:
 
 sets an example of *hl_tcl* usage. Here are the details:
 
-  * **::stub** is a procedure to watch the text editing; here it simply puts out the text's last index;
+  * *::stub* is a procedure to watch the text editing; here it simply puts out the text's last index;
 
-  * **hl_init** is called *before* filling the text widget with a Tcl code; it sets the highlighting options and disables the highlighting till *hl_text* runs;
+  * *hl_init* is called *before* filling the text widget with a Tcl code; it sets the highlighting options and disables the highlighting till *hl_text* runs;
 
-  * **hl_text** runs to highlight the Tcl code of the text widget and to view/edit it.
+  * *hl_text* runs to highlight the Tcl code of the text widget and to view/edit it.
 
-The **hl_init** takes arguments:
+The *hl_init* takes arguments:
 
    * *txt* is the text widget's path
    * *args* contains options of text widget (omittable)
 
-The *args* is a list of *-option "value"* where *-option* may be:
+The *args* is a list of `-option "value"` where `-option` may be:
 
-   * *-colors* - list of colors: clrCOM, clrCOMTK, clrSTR, clrVAR, clrCMN, clrPROC, clrOPT
-   * *-dark* - flag "dark background of text", i.e. simplified *-colors* (default "no")
-   * *-font* - attributes of text font
-   * *-readonly* - flag "text is read-only" (default "no")
-   * *-multiline* - flag "multi-line strings" (default "yes")
-   * *-cmd* - command to watch editing/viewing (default "")
-   * *-cmdpos* - command to watch cursor positioning (default "")
-   * *-seen* - number of first lines seen at start (default 500)
-   * *-optRE* - flag "use a regular expression to highlight options" (default "yes")
-   * *-keywords* - additional commands to highlight (as Tk ones)
-   * *-dobind* - if `true`, forces keys binding at repeating calls of hl_init
-   * *-plaintext* - `true` for plain texts with no highlighting
-   * *-plaincom* - a command for plain highlighting line by line
+   * `-colors` - list of colors: clrCOM, clrCOMTK, clrSTR, clrVAR, clrCMN, clrPROC, clrOPT
+   * `-dark` - flag "dark background of text", i.e. simplified `-colors` (default "no")
+   * `-font` - attributes of text font
+   * `-readonly` - flag "text is read-only" (default "no")
+   * `-multiline` - flag "multi-line strings" (default "yes")
+   * `-cmd` - command to watch editing/viewing (default "")
+   * `-cmdpos` - command to watch cursor positioning (default "")
+   * `-seen` - number of first lines seen at start (default 500)
+   * `-optRE` - flag "use a regular expression to highlight options" (default "yes")
+   * `-keywords` - additional commands to highlight (as Tk ones)
+   * `-dobind` - if `true`, forces keys binding at repeating calls of hl_init
+   * `-plaintext` - `true` for plain texts with no highlighting
+   * `-plaincom` - a command for plain highlighting line by line
 
 **Note**: `-seen 500` and `-multiline no` can improve the performance a lot. It's recommended to use `-seen 500` (or any other reasonable limit, e.g. `-seen 200`) at any rate, except for static html pages.
 
-A command for *-plaincom* option has two arguments: a current text's path and a current line's number. It should highlight the current line and return `true`, otherwise (if the current line is Tcl code) it returns `false`. An example of its usage is presented by [alited editor](https://github.com/aplsimple/alited) (`lib/addon` directory).
+A command for `-plaincom` option has two arguments: a current text's path and a current line's number. It should highlight the current line and return `true`, otherwise (if the current line is Tcl code) it returns `false`. An example of its usage is presented by [alited editor](https://github.com/aplsimple/alited) (**lib/addon** directory).
 
 The rest of *hl_tcl* procedures are:
 
-   *  **hl_all** updates all highlighted existing text widgets, e.g. at changing a color scheme of application
-   *  **hl_readonly** gets/sets a read-only mode and/or a command to watch a text widget at viewing/editing it
-   *  **hl_colors** gets a list of colors for highlighting
+   *  `hl_all` updates all highlighted existing text widgets, e.g. at changing a color scheme of application
+   *  `hl_readonly` gets/sets a read-only mode and/or a command to watch a text widget at viewing/editing it
+   *  `hl_colors` gets a list of colors for highlighting
 
 See details in [Reference](https://aplsimple.github.io/en/tcl/hl_tcl/hl_tcl.html).
 
