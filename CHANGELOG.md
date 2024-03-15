@@ -1,6 +1,6 @@
 # LAST CHANGES:
 
-Version `v1.8.0b5 (14 Mar'24)`
+Version `v1.8.0b6 (15 Mar'24)`
 
   - BUGFIX: Moving unit descriptions: processed tabs in tabbar not marked as modified
   - BUGFIX: false checking Tcl at Tools/Run with cursor being in no unit
@@ -13,8 +13,9 @@ Version `v1.8.0b5 (14 Mar'24)`
   - NEW   : Edit/Formats: "HTML chars" & "Various chars" (Mode=5)
   - NEW   : Edit/Formats: backslashes to continue commands
   - NEW   : Find/Replace dialogue: Ctrl+T to enter the text
-  - CHANGE: project file tree: got quicker
-  - CHANGE: %M wildcard in templates refering to user's menus directory, not alited's
+  - CHANGE: quicker reading the project file tree
+  - CHANGE: %M wildcard in templates referring to user's menus directory (not alited's)
+  - CHANGE: hl_md.tcl: "-" and "1. 2. 3. .." lists
   - CHANGE: file::DisplayFile: added "doErr" argument to show Tcl errors
   - CHANGE: some long lines wrapped, esp. in apave layouts
   - CHANGE: playing macros from "Macro" dialogue: wait a little before playing

@@ -6,8 +6,9 @@ package ifneeded bartabs 1.6.8 [list source [file join $dir bartabs.tcl]]
 namespace eval bartabs {
 
   set _ruff_preamble {
+## What's that
 
-The *bartabs* package provides a bar widget containing tabs that are
+The *bartabs* Tcl/Tk package provides a bar widget containing tabs that are
 
   - scrollable
   - markable
@@ -30,7 +31,7 @@ The *Bar* does not create a real TclOO object, rather it provides *syntax sugar*
 
 The *Tab* does not create a real TclOO object as well. It serves actually for structuring *bartabs* code as for tab methods. Thus, its methods are accessible through the *Bars* ("real" TclOO) and *Bar* ("sugar") objects.
 
-<hr>
+## Work flow
 
 A common work flow with *bartabs* looks like this:
 
@@ -68,7 +69,7 @@ The rest actions include:
   - redrawing bars at some events
   - removing and creating as much bars as required
 
-<hr>
+## Tab class
 
 The methods of *Tab* class are called from *Bars* or *Bar* object
  and are passed: *tab ID (TID), method name, arguments*. Syntax:
@@ -77,7 +78,7 @@ The methods of *Tab* class are called from *Bars* or *Bar* object
 
 For example: `NS::bars $TID close` or `NS::bar $TID show false`
 
-<hr>
+## Bar class
 
 The methods of *Bar* class are called from *Bar* object or (more wordy) from *Bars* object. Syntax:
 
@@ -87,7 +88,7 @@ The methods of *Bar* class are called from *Bar* object or (more wordy) from *Ba
 
 For example: `NS::bar popList $X $Y` or `NS::bars $BID popList $X $Y`
 
-<hr>
+## Bars class
 
 The methods of *Bars* class need no TID nor BID, though not protesting them passed before method name. Syntax:
 
@@ -101,7 +102,7 @@ For example:
 
 `NS::bars bar1 drawAll   ;# bad boy's BID is useless as well`
 
-<hr>
+## Virtual methods
 
 There are three "virtual" methods:
 
@@ -111,7 +112,7 @@ There are three "virtual" methods:
 
 * `NS::tab configure $option $value` sets an option of tab, e.g. `NS::tab configure -text "new label"`
 
-<hr>
+## BID and TID
 
 Few words about *BID* and *TID* mentioned throughout the *bartabs*.
 
@@ -125,9 +126,7 @@ instead of
 
   `NS::bar [NS::bar tabID "some tab"] show ;# find and show the tab by its name`
 
-<hr>
-
-Links:
+## Links
 
 [Documentation](https://aplsimple.github.io/en/tcl/bartabs)
 

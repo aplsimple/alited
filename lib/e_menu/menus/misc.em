@@ -32,7 +32,7 @@ in=1.0
 ::EMENU_MULST1=%H/TMP/em_mulst.ini
 ::EMENU_MULST2=%H/TMP/em_mulst.txt
 ::EMENU_MULST5=regexp--
-pos=237.23
+pos=228.42
 
 [MENU]
 
@@ -225,13 +225,13 @@ R: %I {} "PROJECT NAME" { \
 S: %C  \
    set ::EMTMP0 [file join $::EMENUDIR3 $::EMENUP2] ; \
    set ::EMTMP1 [file join $::EMENUPRINTER $::EMENUP2] ; \
-   set ::EMTMP2 [file join [file dirname [file dirname $::EMENUPRINTER]] zoo] ; \
+   set ::EMTMP2 [file join $::EMENUPRINTER zoo] ; \
    set ::EMTMP3 " \
      cd $::EMENUMULSTERDIR ; \
      rm -f -r tasks/printer/src/* ; \
      mkdir $::EMTMP1 ; \
      cp -f -r $::EMTMP0/* tasks/printer/src ; \
-     cp -f tasks/printer/src//css/style.css $::EMTMP2 ; \
+     cp -f tasks/printer/src/css/style.css $::EMTMP2 ; \
      rm -f -r tasks/printer/src/css ; \
      rm -f -r tasks/printer/mulstered/* ; \
      rm -f -r $::EMTMP1/* ; \

@@ -393,8 +393,17 @@ proc printer::MdProc {fin fout} {
           $wtxt insert $p1 "<b><font color=$clrVAR>"
         }
         mdLIST {  ;# list
-          $wtxt insert [expr {int($p2)}].end </li>
-          $wtxt replace $p1 $p2 <li>
+          set link [$wtxt get $p1 $p2]
+          if {[set lre [lindex [regexp -inline {^\s*(\d+).\s} $link] 0]] ne {}} {
+            # numbered list
+            $wtxt replace $p1 $p2 "<ol start=\"$lre\"><li>"
+            set endtag </li></ol>
+          } else {
+            # usual list
+            $wtxt replace $p1 $p2 <li>
+            set endtag </li>
+          }
+          $wtxt insert [expr {int($p2)}].end $endtag
         }
         mdLINK {  ;# link
           set link [$wtxt get $p1 $p2]
@@ -419,16 +428,25 @@ proc printer::MdProc {fin fout} {
 #_______________________
 
 proc printer::MdOutput {wtxt fout} {
-  # Puts out the .html made from .md (in a text buffer).
+  # Puts out the .html made from .md (in a text buffer): final processings.
   #   wtxt - text's path
   #   fout - output file name
 
   fetchVars
   set tmpC {}
   set par 1
+  set code 0
   foreach line [split [$wtxt get 1.0 end] \n] {
     set line [string trimright $line]
-    if {$line eq {}} {
+    if {$line eq {```}} {
+      # code snippet's start-end
+      if {[set code [expr {!$code}]]} {
+        set line {<pre class="code">}
+      } else {
+        set line </pre>
+      }
+    } elseif {$line eq {}} {
+      # paragraph's start-end
       if {!$par} {append line $paragr}
       incr par
     } elseif {$par} {
@@ -436,6 +454,7 @@ proc printer::MdOutput {wtxt fout} {
     }
     append tmpC $line \n
   }
+  # paragraph's end
   append tmpC </p>
   apave::writeTextFile $fout ::alited::printer::tmpC
 }

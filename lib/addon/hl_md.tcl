@@ -56,6 +56,7 @@ proc hl_md::line {w {pos ""} {prevQtd 0}} {
   if {[string match "    *" $line] || [string match "\t*" $line]} {
     return no ;# Tcl code to be processed by hl_tcl.tcl
   }
+  # header
   lassign [regexp -inline "^#{1,6}\[^#\]" $line] lre
   if {$lre ne {}} {
     set p1 [expr {min(6,max(1,[string length $lre]-1))}]
@@ -63,12 +64,14 @@ proc hl_md::line {w {pos ""} {prevQtd 0}} {
     $w tag add mdCMNT $il.0 $il.$p1
     return yes
   }
-  lassign [regexp -inline {^(\s*[*+-]\s)} $line] lre
+  # list beginning with *, -, 1. 2. ..
+  lassign [regexp -inline {^(\s*(([*+-])|(\d+\.))\s)} $line] lre
   if {$lre ne {}} {
     set p1 [string length $lre]
     $w tag add mdLIST $il.0 $il.$p1
     set line [string replace $line [incr p1 -2] $p1 { }]
   }
+  # back apostrophes for code snippets
   set apos [regexp -inline -all -indices {(^|[^`])+(`[^`]+`)+([^`]|$)} $line]
   foreach {- - l2 -} $apos {
     lassign $l2 p1 p2
@@ -78,6 +81,7 @@ proc hl_md::line {w {pos ""} {prevQtd 0}} {
       $w tag add mdCMNT $il.$p2 $il.[incr p2]
     }
   }
+  # font highlightings: italic, bold, bold italic
   set italic [regexp -inline -all -indices {(^|[^*])+(\*[^*]+\*)+([^*]|$)} $line]
   foreach {- - l2 -} $italic {
     lassign $l2 p1 p2
@@ -105,13 +109,15 @@ proc hl_md::line {w {pos ""} {prevQtd 0}} {
       $w tag add mdCMNT $il.$p2 $il.[incr p2 3]
     }
   }
-  set links [regexp -inline -all -indices {(\[{1}[^\(\)]+\]{1}\({1}[^\(\)]+\){1})||(&[a-zA-Z]+;)} $line]
+  # html link
+  set links [regexp -inline -all -indices {(\[{1}[^\(\)]*\]{1}\({1}[^\(\)]+\){1})||(&[a-zA-Z]+;)} $line]
   foreach l2 $links {
     lassign $l2 p1 p2
     if {$p1<$p2} {
       $w tag add mdLINK $il.$p1 $il.[incr p2]
     }
   }
+  # html tag
   set tags [regexp -inline -all -indices {<{1}/?\w+[^>]*>{1}} $line]
   foreach l2 $tags {
     lassign $l2 p1 p2
