@@ -676,6 +676,11 @@ proc edit::InputMacro {idx} {
 
   namespace upvar ::alited al al obDl2 obDl2
   variable macrosmode
+  set win $al(WIN).macro
+  if {[winfo exists $win]} {
+    ::apave::FocusByForce [$obDl2 chooserPath Fil]
+    return
+  }
   set m $al(MENUEDIT).playtkl
   incr idx ;# for -tearoff menu
   set al(macromouse) no
@@ -683,13 +688,12 @@ proc edit::InputMacro {idx} {
   set al(_macroDir) {}
   set dir [MacroDir]
   ReadMacroComment $al(_macro)
-  set win $al(WIN).macro
   set head [msgcat::mc "The macro is updated at its recording.\nPress %s to play it."]
   set head [string map [list %s $al(acc_16)] $head]
   $obDl2 makeWindow $win.fra $al(MC,playtkl)
   $obDl2 paveWindow $win.fra { \
     {lab - - 1 4 {-padx 4} {-t {$head}}} \
-    {fil + T 1 4 {-pady 4 -padx 4 -st ew} \
+    {Fil + T 1 4 {-pady 4 -padx 4 -st ew} \
       "-tvar ::alited::al(_macro) -validate all \
       -validatecommand alited::edit::ValidMacro -w 30 -initialdir {$dir} \
       -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"} \
@@ -896,17 +900,11 @@ proc edit::OpenMacroFile {} {
 }
 #_______________________
 
-proc edit::HelpOnMacro {{modal yes}} {
+proc edit::HelpOnMacro {} {
   # Shows Play Macro help.
-  #   modal - yes if run from the dialogue
 
   namespace upvar ::alited al al DATADIR DATADIR
-  set foc [focus]
-  alited::HelpFile $al(WIN) [file join $DATADIR help macro.txt] -head $al(MC,playtkl) -weight bold -modal $modal
-  if {$modal} {
-    focus $al(WIN).macro
-    focus -force $foc
-  }
+  alited::HelpFile $al(WIN) [file join $DATADIR help macro.txt] -head $al(MC,playtkl) -weight bold
 }
 
 # ________________________ Rectangular selection _________________________ #
@@ -1204,7 +1202,7 @@ proc edit::SqueezeString {str} {
 #_______________________
 
 proc edit::ReverseString {str} {
-  # The same as [string reverse], but counts escaping braces made in format::Mode2.
+  # The same as "string reverse", but counts escaping braces made in format::Mode2.
   #   str - the string to reverse
   # See also: format::Mode2
 

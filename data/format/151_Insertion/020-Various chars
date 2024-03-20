@@ -22,3 +22,6 @@ command = set _ {©®™} ; \
 
 # arrows
 command = set _ {←↑→↓}
+
+# misc
+command = set _ {⁂∿⊍⋀⋁⋈⋒⌗⌚⌛⌬⏏}

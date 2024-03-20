@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.0b6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.0  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -31,7 +31,7 @@ namespace eval alited {
   variable al2; array set al2 [list] ;# alternative array, just to not touch "al"
 
   # versions of mnu/ini to update to
-  set al(MNUversion) 1.6.0a1
+  set al(MNUversion) 1.8.0
   set al(INIversion) 1.4.7
 
   # previous version of alited to update from
@@ -443,14 +443,8 @@ namespace eval alited {
     #   ico - picture or character
     #   to - "in" gets in-chars, "out" gets out-chars
 
-    variable isTcl90
     set in [list 0 1 2 3 4 5 6 7 8 9 & ~ = @]
-    if {$isTcl90} {  ;# codes instead of pictures available in Tcl 9.0
-      set out [list \U0001f4a5 \U0001f4bb \U0001f3d7 \U0001f4f6 \U0001f4e1 \U0001f4d6 \
-        \U0001f300 \U0001f4f7 \U0001f4d0 \U0001f426 \U0001f381 \U0001f3c1 \U0001f511 \U0001f4be]
-    } else {
-      set out [list 💥 💻 🏗 📶 📡 📖 🌀 📷 📐 🐦 🎁 🏁 🔑 💾]
-    }
+    set out [list ∀ ∃ ∏ ∑ ⁂ ⊍ ⋀ ⋁ ⋈ ⋒ ⌗ ⌛ ⌬ ⏏]
     if {$to eq {out}} {
       set lfrom $in
       set lto $out

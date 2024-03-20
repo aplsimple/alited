@@ -110,7 +110,7 @@ proc hl_md::line {w {pos ""} {prevQtd 0}} {
     }
   }
   # html link
-  set links [regexp -inline -all -indices {(\[{1}[^\(\)]*\]{1}\({1}[^\(\)]+\){1})||(&[a-zA-Z]+;)} $line]
+  set links [regexp -inline -all -indices {(!{0,1}\[{1}[^\(\)]*\]{1}\({1}[^\(\)]+\){1})||(&[a-zA-Z]+;)} $line]
   foreach l2 $links {
     lassign $l2 p1 p2
     if {$p1<$p2} {

@@ -225,7 +225,7 @@ proc menu::FillMacroItems {} {
   $m add command {*}[MacroOptions quickrec $al(MC,quickmacro)]
   $m add command -label $al(MC,open...) -command alited::edit::OpenMacroFile
   $m add separator
-  $m add command -label $al(MC,help) -command {alited::edit::HelpOnMacro no}
+  $m add command -label $al(MC,help) -command alited::edit::HelpOnMacro
 }
 #_______________________
 
@@ -654,6 +654,7 @@ proc menu::HelpFiles {} {
     - - \
     tool2.txt {Tools\Run...} \
     check.txt {Tools\Check Tcl...} \
+    printer.txt {Tools\Project Printer...} \
     paver.txt {Tools\Paver} \
     - - \
     unit_tpl.txt {Setup\Templates...} \

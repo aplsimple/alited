@@ -63,7 +63,6 @@ KTCp4rURAEWmB5A5tzUJAAAAAElFTkSuQmCC}
 
 }
 
-
 # ____________ bartabs class hierarchy ____________ #
 
 oo::class create ::bartabs::Tab {
@@ -91,23 +90,23 @@ method My {ID} {
   oo::objdefine [self] "method $ID {args} { \
     set m \[lindex \$args 0\] ; \
     if {\$m in {{} -1}} {return {}} ; \
-    if {\$m in {create} && {$t} eq {bar} || \$m in {cget configure} && {$t} eq {tab}} { \
+    if {\$m eq {create} && {$t} eq {bar} || \$m in {cget configure} && {$t} eq {tab}} { \
     set args \[lreplace \$args 0 0 Tab_\$m\]} ; \
     return \[my {*}\$args\]}"
 }
 #_______________________
 
 method ID {} {
-# Gets ID of caller.
+# Returns ID of caller.
 
-  return [lindex [uplevel 1 {self caller}] 2]
+  lindex [uplevel 1 {self caller}] 2
 }
 #_______________________
 
 method IDs {TID} {
 # Returns a pair of TID and BID.
 
-  return [list $TID [my $TID cget -BID]]
+  list $TID [my $TID cget -BID]
 }
 #_______________________
 
@@ -189,7 +188,6 @@ method Tab_cget {args} {
   variable btData
   lassign [my Tab_BID [set TID [my ID]]] BID i tab
   lassign $tab tID tdata
-  set llen [dict get $btData $BID -LLEN]
   set res [list]
   foreach opt $args {
     switch -- $opt {
@@ -199,7 +197,13 @@ method Tab_cget {args} {
           lappend res {}
         }
       }
-      -index {if {$i<($llen-1)} {lappend res $i} {lappend res end}}
+      -index {
+        if {$i<([dict get $btData $BID -LLEN]-1)} {
+          lappend res $i
+        } else {
+          lappend res end
+        }
+      }
       -width {  ;# width of tab widget
         lassign [my Tab_DictItem $tab] tID text wb wb1 wb2
         if {![my Tab_Is $wb]} {
@@ -270,15 +274,14 @@ method Tab_DictItem {TID {data ""}} {
 #_______________________
 
 method Tab_ItemDict {TID text {wb ""} {wb1 ""} {wb2 ""} {pf ""}} {
-# Gets a tab item (ID + data) from item data.
+# Returns a tab item (ID + data) from item data.
 #   text - tab's text;
 #   wb - tab's frame widget
 #   wb1 - tab's label widget
 #   wb2 - tab's button widget
 #   pf - "p" for tab packed, "" for tab forgotten
-# Returns a tab item (ID + data).
 
-  return [list $TID [list -text $text -wb $wb -wb1 $wb1 -wb2 $wb2 -pf $pf]]
+  list $TID [list -text $text -wb $wb -wb1 $wb1 -wb2 $wb2 -pf $pf]
 }
 #_______________________
 
@@ -291,7 +294,7 @@ method Tab_Data {BID text} {
   variable btData
   if {[dict exists $btData $BID] && [my $BID tabID $text] ne {}} {return {}}
   my My tab[incr ::bartabs::NewTabID]
-  return [my Tab_ItemDict tab$::bartabs::NewTabID $text]
+  my Tab_ItemDict tab$::bartabs::NewTabID $text
 }
 #_______________________
 
@@ -314,7 +317,7 @@ method Tab_BID {TID {act ""}} {
   if {$BID eq {}} {
     return -code error "bartabs: tab ID $TID not found in the bars"
   }
-  return [list $BID $i [lindex $tabs $i]]
+  list $BID $i [lindex $tabs $i]
 }
 #_______________________
 
@@ -468,10 +471,9 @@ method Tab_MarkBars {{BID -1} {TID -1}} {
 #_______________________
 
 method Tab_TextEllipsed {BID text {lneed -1}} {
-# Gets a tab's label and tip
+# Returns a tab's label and tip.
 #   text - label
 #   lneed - label length anyway
-# Returns a pair "label tip".
 
   lassign [my $BID cget -lablen -ELLIPSE] lablen ellipse
   if {$lneed ne -1} {set lablen $lneed}
@@ -482,7 +484,7 @@ method Tab_TextEllipsed {BID text {lneed -1}} {
   } else {
     set ttip {}
   }
-  return [list $text $ttip]
+  list $text $ttip
 }
 #_______________________
 
@@ -490,7 +492,7 @@ method Tab_Iconic {BID} {
 # Gets a flag "tabs with icons".
 # Returns "yes", if tabs are supplied with icons.
 
-  return [expr {![my $BID cget -static]}]
+  expr {![my $BID cget -static]}
 }
 #_______________________
 
@@ -536,7 +538,7 @@ method Tab_Is {wb} {
 # Checks if 'wb' is an existing tab widget.
 #   wb - path
 
-  return [expr {$wb ne {} && [winfo exists $wb]}]
+  expr {$wb ne {} && [winfo exists $wb]}
 }
 #_______________________
 
@@ -637,7 +639,7 @@ method Disabled {TID} {
   # Checks if the tab is disabled.
 
   set dsbltabs [my [my $TID cget -BID] cget -disable]
-  return [expr {[lsearch $dsbltabs $TID]>-1}]
+  expr {[lsearch $dsbltabs $TID]>-1}
 }
 
 ## ____________ Event handlers ____________ ##
@@ -1191,8 +1193,7 @@ method InitColors {} {
   if {[catch {set bgdsbl [dict get [ttk::style map . -background] disabled]}]} {
     set bgdsbl $bgmain
   }
-  if {[catch { \
-
+  if {[catch {
     set fgo [ttk::style map TButton -foreground]
     if {[dict exists $fgo active]} {
       set fgo [dict get $fgo active]
@@ -1484,7 +1485,7 @@ method FillFromRight {tleft tright behind} {
 method Locked {BID} {
 # Checks for "draw locked" mode: protects the menu.
 
-  return [expr {[my $BID cget -LOCKDRAW] ne {}}]
+  expr {[my $BID cget -LOCKDRAW] ne {}}
 }
 #_______________________
 
@@ -1589,6 +1590,7 @@ method Aux_WidgetWidth {w} {
 
 method Aux_InitDraw {BID {clearpf yes}} {
 # Auxiliary method used before cycles drawing tabs.
+# Returns a list of main options of drawing tabs.
 
   my $BID InitColors
   lassign [my $BID cget \
@@ -1603,7 +1605,7 @@ method Aux_InitDraw {BID {clearpf yes}} {
   set vislen [expr {$tleft || !$hidearr ? $arrlen : 0}]
   set tabs [my $BID cget -TABS]
   if {$clearpf} {foreach tab $tabs {my [lindex $tab 0] configure -pf {}}}
-  return [list $bwidth $vislen $bd $arrlen $llen $tleft $hidearr $tabs $wframe]
+  list $bwidth $vislen $bd $arrlen $llen $tleft $hidearr $tabs $wframe
 }
 #_______________________
 
@@ -1620,7 +1622,7 @@ method Aux_CheckTabVisible {wb wb1 wb2 i tleft trightN vislenN llen hidearr arrl
     set pf p
   }
   my $TID configure -wb $wb -wb1 $wb1 -wb2 $wb2 -pf $pf
-  return [string length $pf]
+  string length $pf
 }
 #_______________________
 
@@ -1796,7 +1798,7 @@ method comparetext {it1 it2} {
 
   catch {set it1 [dict get $it1 -text]}
   catch {set it2 [dict get $it2 -text]}
-  return [string compare -nocase $it1 $it2]
+  string compare -nocase $it1 $it2
 }
 #_______________________
 
@@ -1866,7 +1868,7 @@ method insertTab {txt {pos "end"} {img ""}} {
   }
   my $BID configure -TABS $tabs
   my $BID Refill $pos [expr {$pos ne "end"}]
-  return [lindex $tab 0]
+  lindex $tab 0
 }
 #_______________________
 
@@ -1966,7 +1968,7 @@ method checkDisabledMenu {BID TID func} {
     3 {set item $closeright}
     default {set item $close}
   }
-  return [my CheckDsblPopup $BID $TID $item]
+  my CheckDsblPopup $BID $TID $item
 }
 #_______________________
 
@@ -2076,7 +2078,7 @@ method UnmarkTab {opt args} {
 method TtkTheme {} {
   # Checks if a standard ttk theme is used.
 
-  return [expr {[ttk::style theme use] in {clam alt classic default awdark awlight}}]
+  expr {[ttk::style theme use] in {clam alt classic default awdark awlight}}
 }
 
 ## ____________ Public methods of Bars ____________ ##
@@ -2234,7 +2236,7 @@ method isTab {TID} {
 #   TID - tab ID
 # Returns true if the tab exists.
 
-  return [expr {[my Tab_BID $TID check] ne {}}]
+  expr {[my Tab_BID $TID check] ne {}}
 }
 #_______________________
 
@@ -2289,6 +2291,3 @@ method moveSelTab {TID1 TID2} {
 }
 
 # ________________________________ EOF __________________________________ #
-#RUNF1: ../../src/alited.tcl LOG=~/TMP/alited-DEBUG.log DEBUG
-#RUNF0: test.tcl
-#RUNF1: ../tests/test2_pave.tcl

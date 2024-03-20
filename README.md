@@ -49,6 +49,7 @@ For a quick installation of [alited](https://github.com/aplsimple/alited), just 
 
    * [Description](https://aplsimple.github.io/en/tcl/alited/index.html)
    * [Reference](https://aplsimple.github.io/en/tcl/alited/alited.html)
+   * [Project printer](https://aplsimple.github.io/en/tcl/printer/alited/index.html)
    * [Demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
 
 # Inevitable blah-blah

@@ -626,7 +626,7 @@ proc format::Mode1 {cont args} {
   AfterFormatting $wtxt $pos1 $pos2 $value
 }
 
-## ________________________ command(s) _________________________ ##
+## ________________________ commands _________________________ ##
 
 proc format::Mode2 {cont args} {
   # Applies a command to selection/current line.
@@ -650,7 +650,7 @@ proc format::Mode2 {cont args} {
   if {!$err} {AfterFormatting $wtxt $pos1 $pos2 $value}
 }
 
-## ________________________ command(s) to line list _________________________ ##
+## ________________________ on line list _________________________ ##
 
 proc format::Mode3 {cont args} {
   # Applies command(s) to lines of selection.
@@ -682,7 +682,7 @@ proc format::Mode3 {cont args} {
   }
 }
 
-# ________________________ external command(s) _________________________ #
+## ________________________ externals _________________________ ##
 
 proc format::Mode4 {cont args} {
   # Applies external command(s) to selection or lines of selection.
@@ -732,7 +732,7 @@ proc format::Mode4 {cont args} {
   }
 }
 
-# ________________________ inserting at cursor _________________________ #
+## ________________________ insertions _________________________ ##
 
 proc format::Mode5 {cont args} {
   # Inserts a string at the current cursor position.

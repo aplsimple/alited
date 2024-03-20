@@ -352,7 +352,7 @@ proc main::HighlightText {TID curfile wtxt} {
     if {$itwas} {
       # remove old syntax
       foreach tag [$wtxt tag names] {
-        if {![string match hil* $tag] && $tag ne {sel}} {
+        if {![string match hil* $tag] && $tag ni {sel fndTag}} {
           $wtxt tag delete $tag
         }
       }

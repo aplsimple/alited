@@ -954,13 +954,14 @@ proc find::Next {} {
 #_______________________
 
 proc find::ClearTags {} {
-  # Clears all find tags in a current text, if Find dialogues are closed.
+  # Clears find tags in all texts, if Find dialogues are closed.
 
   variable win
   variable win2
-  catch {
-    if {![winfo exists $win] && ![winfo exists $win2]} {
-      UnsetTags
+  if {![winfo exists $win] && ![winfo exists $win2]} {
+    foreach tab [alited::bar::BAR listTab] {
+      set TID [lindex $tab 0]
+      catch {UnsetTags [alited::main::GetWTXT $TID]}
     }
   }
 }
@@ -1099,10 +1100,11 @@ proc find::SearchByList_Do {{show yes}} {
       break
     }
     if {[llength $fnd]} {
-      set i 0
+      set i [set wasfound 0]
       foreach index1 $fnd {
         set index2 [$wtxt index "$index1 + [lindex $counts $i]c"]
         if {[CheckWord $wtxt $index1 $index2 $al(wordonlySBL)]} {
+          set wasfound 1
           set word [$wtxt get $index1 $index2]
           if {[lsearch -exact $found $word]==-1} {
             lappend found $word
@@ -1111,6 +1113,7 @@ proc find::SearchByList_Do {{show yes}} {
         }
         incr i
       }
+      if {!$wasfound} {lappend notfound $findword}
     } else {
       lappend notfound $findword
     }

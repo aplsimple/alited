@@ -21,19 +21,19 @@ rt=2/5
 
 ITEM = Doctest Safe: $::FILETMPTAIL
 R: cd %d
-S: tclsh %m/src/doctest_of_emenu.tcl -DTv 0 %TF
+S: "tclsh" %m/src/doctest_of_emenu.tcl -DTv 0 %TF
 
 ITEM = Doctest Safe verbose: $::FILETMPTAIL
 R: cd %d
-S: tclsh %m/src/doctest_of_emenu.tcl -DTv 1 %TF
+S: "tclsh" %m/src/doctest_of_emenu.tcl -DTv 1 %TF
 
 ITEM = Doctest: $::FILETMPTAIL
 R: cd %d
-S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 0 %TF
+S: "tclsh" %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 0 %TF
 
 ITEM = Doctest verbose: $::FILETMPTAIL
 R: cd %d
-S: tclsh %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 1 %TF
+S: "tclsh" %m/src/doctest_of_emenu.tcl -DTs 0 -DTv 1 %TF
 
 SEP = 3
 

@@ -36,7 +36,7 @@ proc tool::Redo {} {
 
 proc tool::undoAll {} {
   # Undoes all changes.
-  
+
   set wtxt [alited::main::CurrentWTXT]
   while {[$wtxt edit canundo]} {
     if {[Undo]} break
@@ -46,7 +46,7 @@ proc tool::undoAll {} {
 
 proc tool::redoAll {} {
   # Redoes all changes.
-  
+
   set wtxt [alited::main::CurrentWTXT]
   while {[$wtxt edit canredo]} {
     if {[Redo]} break
@@ -779,6 +779,7 @@ proc tool::e_menu {args} {
   } elseif {$itc==-1 && $iee==-1 && $al(prjincons)} {
     lappend args tc=[alited::Tclexe]  ;# for console - set "path to tclsh" argument
   }
+  append args " PN=$al(prjname)"
   if {$::alited::al(EM,exec)} {
     e_menu1 $args
   } else {

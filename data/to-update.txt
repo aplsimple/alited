@@ -1,4 +1,28 @@
-=== 2023-11-26 ===
+=== 2024-03-16 ===
+   EDITED lib/e_menu/menus/misc.em
+   EDITED lib/e_menu/menus/tests.em
+
+=== 2024-03-12 ===
+   EDITED lib/e_menu/menus/misc.em
+
+=== 2024-03-11 ===
+   EDITED lib/e_menu/menus/misc.em
+
+=== 2024-01-02 ===
+   EDITED lib/e_menu/menus/fossil.em
+   EDITED lib/e_menu/menus/fossil2.em
+
+=== 2023-12-30 ===
+   EDITED lib/e_menu/menus/fossil.em
+   EDITED lib/e_menu/menus/fossil2.em
+
+=== 2023-12-20 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2023-12-04 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2023-11-29 ===
    EDITED lib/e_menu/menus/fossil.em
    EDITED lib/e_menu/menus/fossil2.em
    EDITED lib/e_menu/menus/git2.em

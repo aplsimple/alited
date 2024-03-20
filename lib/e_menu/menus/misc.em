@@ -7,7 +7,7 @@ b3=1
 w=30
 u=%s
 in=1.0
-%C if {![info exist ::EMENUP2]} {set ::EMENUP2 "%P2"}
+%C if {![info exist ::EMENUP2]} {set ::EMENUP2 "%PN"}
 %C if {![info exist ::EMENUDIR1]} {set ::EMENUDIR1 "%PD"}
 %C if {![info exist ::EMENUDIR2]} {set ::EMENUDIR2 \
   [file normalize "%PD/../release/[file tail {%PD}]"]}
@@ -32,7 +32,7 @@ in=1.0
 ::EMENU_MULST1=%H/TMP/em_mulst.ini
 ::EMENU_MULST2=%H/TMP/em_mulst.txt
 ::EMENU_MULST5=regexp--
-pos=228.42
+pos=214.0
 
 [MENU]
 
@@ -214,11 +214,11 @@ R: cd $::EMENUDIR3
 R: %I {} "PROJECT NAME" { \
    v_ {{} {-pady 4}} {} \
    dir1 {{ Printer directory:} {} {-w 50}} {"$::EMENUDIR3"} \
-   ent1 {{      Project name:} {} {-tvar ::EMENUP2}} {"$::EMENUP2"} \
+   ent1 {{      Project name:} {} {}} {"$::EMENUP2"} \
    v_2 {{} {-pady 6}} {} \
-   dirM {{ Mulster directory:} {} {-tvar ::EMENUMULSTERDIR}} {"$::EMENUMULSTERDIR"} \
+   dirM {{ Mulster directory:} {} {}} {"$::EMENUMULSTERDIR"} \
    v_3 {{} {-pady 6}} {} \
-   dir2 {{ Copy to directory:} {} {-tvar ::EMENUPRINTER}} {"$::EMENUPRINTER"} \
+   dir2 {{ Copy to directory:} {} {}} {"$::EMENUPRINTER"} \
    seh {{} {-pady 3} {}} {} \
    } -head {\n This creates alited Printer documentation of Tcl files. \
    } -weight bold == ::EMENUDIR3 ::EMENUP2 EMENUMULSTERDIR ::EMENUPRINTER

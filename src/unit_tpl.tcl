@@ -22,11 +22,11 @@ namespace eval ::alited::unit_tpl {
   variable tplpla  [list]  ;# list of "where to place" of templates
   variable tplid   [list]  ;# list of IDs of templates (in treeview)
   variable tplkeys [list]  ;# list of keys of templates
-  variable tplinds [list]  ;# list of indent flags
+  variable tplinds [list]  ;# list of indent flags (NOT USED)
   variable tplkey {}       ;# current template's keys
   variable tpl {}          ;# current template's name
   variable place 1         ;# current template's "where to place"
-  variable indent {}       ;# current indent flag
+  variable indent {}       ;# current indent flag (NOT USED)
   variable dosel yes       ;# if yes, enables "Select" action
 }
 
@@ -559,8 +559,8 @@ proc unit_tpl::_create {{geom ""}} {
     {.radD - - - - {pack -side left -padx 8} \
       {-t "file's beginning" -var ::alited::unit_tpl::place -value 4 \
       -tip {-BALTIP {$al(MC,tplaft4)} -UNDER 4}}}
-    {.sev - - - - {pack -side left -padx 20 -fill y}}
-    {.chb - - - - {pack -side left} \
+    {#.sev - - - - {pack -side left -padx 20 -fill y}}
+    {#.chb - - - - {pack -side left} \
       {-t "Indent" -var ::alited::unit_tpl::indent \
       -tip {-BALTIP {$al(MC,tplinds)} -UNDER 4}}}
     {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}

@@ -1,24 +1,38 @@
-# LAST CHANGES:
+# ANNOUNCEMENT
 
-Version `v1.8.0b6 (15 Mar'24)`
+The *alited v1.8* is supposedly the final version in the sense that there will be no 1.9 nor 2.0 versions. Only bug fixings and polishings.
+
+The *alited* has acquired the rich and comprehensive set of features, some are unique. It needs no *multiplying the entities without necessity*.
+
+
+# LAST CHANGES
+
+
+Version `v1.8.0 (20 Mar'24)`
 
   - BUGFIX: Moving unit descriptions: processed tabs in tabbar not marked as modified
   - BUGFIX: false checking Tcl at Tools/Run with cursor being in no unit
   - BUGFIX: Edit/Play macro (issues with activating & some keys)
+  - BUGFIX: Find in session: highlight the found strings in texts not viewed yet
+  - BUGFIX: Find by List: if "word only", not found items absent in "NOT FOUND" list
   - NEW   : Tools/Project printer
-  - DRAFT : "Project printer" in [alited's demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
+  - NEW   : "Little things v1.8" in [alited's demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
   - NEW   : Ctrl+click on Undo/Redo tool buttons: "all in text"
   - NEW   : Saved favorites: "Add session files as favorites" button
   - NEW   : Rectangular selection: equal columns => selecting to line ends
   - NEW   : Edit/Formats: "HTML chars" & "Various chars" (Mode=5)
   - NEW   : Edit/Formats: backslashes to continue commands
   - NEW   : Find/Replace dialogue: Ctrl+T to enter the text
+  - DELETE: "Indent" checkbutton of Templates dialogue (all are indented)
+  - CHANGE: clear find tags in all texts, if Find dialogues are closed
+  - CHANGE: e_menu/tests/doctest: quoted "tclsh" to run a deployed tclsh instead of tclkit
   - CHANGE: quicker reading the project file tree
   - CHANGE: %M wildcard in templates referring to user's menus directory (not alited's)
   - CHANGE: hl_md.tcl: "-" and "1. 2. 3. .." lists
   - CHANGE: file::DisplayFile: added "doErr" argument to show Tcl errors
   - CHANGE: some long lines wrapped, esp. in apave layouts
-  - CHANGE: playing macros from "Macro" dialogue: wait a little before playing
+  - CHANGE: handling F1 (Help) of Play Macro dialogue
+  - CHANGE: playing macros from Play Macro dialogue: wait a little before playing
   - CHANGE: tabs moving from tabbar's popup menu: stay at neighbor tab, not at moved one
   - CHANGE: Moving unit descriptions: "All in session" instead of "All open"
   - CHANGE: Moving unit descriptions: intro lines ("All of...") skipped

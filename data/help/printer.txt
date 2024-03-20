@@ -35,7 +35,8 @@
  <b>hard copy</b>, e.g. to embed it in a reference guide or just to
  browse the <b>output directory</b>. Use <b>%D</b> wildcard for its name.
  Alone <b>%D</b> or <b>"%D"</b> means opening <b>index.html</b> in a browser.
-
+ Alone <b>%e</b> means opening <b>index.html</b> in <b>alited</b>.
+ 
  Other wildcards for the <b>final processor</b>:
    <b>%H</b> - home directory
    <b>%P</b> - directory of current project

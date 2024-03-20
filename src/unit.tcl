@@ -317,7 +317,8 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
   #   # ar2 -
   #   # ar3 -
   set unithead [GetDeclaration $wtxt {} $l1 $l2]
-  set pad1 [string repeat " " [::apave::obj leadingSpaces $unithead]]
+#!  set pad1 [string repeat " " [::apave::obj leadingSpaces $unithead]]
+  set pad1 {}
   set unithead [string trim $unithead "\{ "]
   lassign [split $unithead "\{"] proc
   set iarg [string range $unithead [string length $proc] end]
@@ -475,7 +476,8 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi tplind} {
   }
   # indent the template
   Source_unit_tpl
-  if {$indent1<$indent2 && [alited::unit_tpl::IsIndented $tplind $tex]} {
+#!  if #\{$indent1<$indent2 && [alited::unit_tpl::IsIndented $tplind $tex]#\} #\{
+  if {$indent1<$indent2} {
     set indent [string repeat { } [incr indent2 -$indent1]]
     set tlist [split $tex \n]
     set tex {}

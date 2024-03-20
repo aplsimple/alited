@@ -85,6 +85,16 @@ proc printer::fetchVars {} {
     }
   }
 }
+#_______________________
+
+proc printer::Message {msg {mode 1}} {
+  # Displays a message in statusbar of the dialogue.
+  #   msg - message
+  #   mode - mode of Message
+
+  namespace upvar ::alited obDl2 obDl2
+  alited::Message $msg $mode [$obDl2 Labstat1]
+}
 
 # ________________________ Ini file _________________________ #
 
@@ -378,7 +388,7 @@ proc printer::MdProc {fin fout} {
           set addch [expr {[string length $cont2]-[string length $cont]}]
           set p2 [$wtxt index "$p2 +$addch char"]
           $wtxt insert $p2 </code>
-          $wtxt insert $p1 "<code class=\"tcl\">"
+          $wtxt insert $p1 "<code>"
         }
         mdBOIT {  ;# bold italic
           $wtxt insert $p2 </font></i></b>
@@ -406,14 +416,24 @@ proc printer::MdProc {fin fout} {
           $wtxt insert [expr {int($p2)}].end $endtag
         }
         mdLINK {  ;# link
+          set tag1 {<a href=}
+          set tag2 </a>
+          set tag3 >
           set link [$wtxt get $p1 $p2]
           lassign [split $link \[\]()] a1 a2 a3 a4
-          if {$a1 ne {}} {
-            set link "<a href=\"$link\">$link"
-          } else {
-            set link "<a href=\"$a4\">$a2"
+          if {$a1 eq {!}} {
+            # <img src="https://wiki.tcl-lang.org/Tcl+Editors" alt="Tcl Editors" />,
+            set tag1 "<img alt=\"$a2\" src="
+            set tag2 {}
+            set tag3 " />"
+            set a1 [set a2 {}]
           }
-          $wtxt replace $p1 $p2 $link</a>
+          if {$a1 ne {}} {
+            set link "$tag1\"$link\">$link"
+          } else {
+            set link "$tag1\"$a4\"$tag3$a2"
+          }
+          $wtxt replace $p1 $p2 $link$tag2
         }
         mdHEAD1 - mdHEAD2 - mdHEAD3 - mdHEAD4 - mdHEAD5 - mdHEAD6 {  ;# headers
           set h h[string index $tag end]
@@ -438,6 +458,9 @@ proc printer::MdOutput {wtxt fout} {
   set code 0
   foreach line [split [$wtxt get 1.0 end] \n] {
     set line [string trimright $line]
+    if {[regexp "^\\s{0,3}>{1}" $line]} {
+      set line <blockquote>[string trimleft $line { >}]</blockquote>
+    }
     if {$line eq {```}} {
       # code snippet's start-end
       if {[set code [expr {!$code}]]} {
@@ -460,6 +483,19 @@ proc printer::MdOutput {wtxt fout} {
 }
 #_______________________
 
+proc printer::Hl_html {fname} {
+  # Highlights Tcl code in html file
+  #   fname - file name
+
+  fetchVars
+  set cset cs=
+  foreach val $colors {append cset $val,}
+  set hl_tcl [file join $::alited::LIBDIR hl_tcl tcl_html.tcl]
+  set com [list [alited::Tclexe] $hl_tcl $cset $fname]
+  exec -- {*}$com
+}
+#_______________________
+
 proc printer::Off_Html_tags {cont} {
   # Disables html tags in a code snippet.
   #   cont - the code snippet
@@ -469,15 +505,8 @@ proc printer::Off_Html_tags {cont} {
 
 # ________________________ Processing _________________________ #
 
-proc printer::Message {msg {mode 1}} {
-  # Displays a message in statusbar of the dialogue.
-  #   msg - message
-  #   mode - mode of Message
 
-  namespace upvar ::alited obDl2 obDl2
-  alited::Message $msg $mode [$obDl2 Labstat1]
-}
-#_______________________
+## ________________________ Checks _________________________ ##
 
 proc printer::CheckData {} {
   # Check for correctness of the dialog's data.
@@ -553,6 +582,8 @@ proc printer::CheckDir {} {
     set msg [msgcat::mc "The output directory\n  %n\ncontains %c subdirectories.\n\nAll will be replaced with the new!"]
     set msg [string map [list %n $dir %c $cntdir] $msg]
     if {![alited::msg okcancel warn $msg OK -title $al(MC,warning)]} {
+      set fname [file join $dir $indexname]
+      if {[file exists $fname]} {::apave::openDoc $fname}
       return no
     }
   }
@@ -572,7 +603,8 @@ proc printer::CheckTemplates {} {
   }
   return yes
 }
-#_______________________
+
+## ________________________ Data _________________________ ##
 
 proc printer::GetReadme {dirfrom} {
   # Create html version of readme.md.
@@ -701,7 +733,7 @@ proc printer::GetLeafLink {link title {tip ""} {basepath ""}} {
   return "<ul class=toc><li><div class=tooltip><a href=\"$link\">$title</a><span class=tooltiptext>$tip</span></div></li></ul>"
 }
 
-#_______________________
+## ________________________ Make .html _________________________ ##
 
 proc printer::UnitTooltip {wtxt l1 l2} {
   # Gets unit's tooltip.
@@ -729,8 +761,12 @@ proc printer::CompareUnits {item1 item2} {
   #   item1 - 1st item
   #   item2 - 2nd item
 
-  set title1 [lindex $item1 3]
-  set title2 [lindex $item2 3]
+  lassign $item1 lev1 leaf1 - title1
+  lassign $item2 lev2 leaf2 - title2
+  set leaf1 [expr {$title1 ne {} && $leaf1}]
+  set leaf2 [expr {$title2 ne {} && $leaf2}]
+  set title1 "$leaf1 [string toupper [string trimleft $title1]]"
+  set title2 "$leaf2 [string toupper [string trimleft $title2]]"
   if {$title1 < $title2} {
     return -1
   } elseif {$title1 > $title2} {
@@ -778,13 +814,22 @@ proc printer::MakeFile {fname fname2} {
     foreach item $items {
       if {[llength $item]<3} continue
       lassign $item lev leaf fl1 title l1 l2
-      set ttl [string map {" " _} [::apave::NormalizeName $title]]
-      if {$ttl eq {}} {set ttl $ftail; set leaf 0}
+      set title [::apave::NormalizeName $title]
+      if {$title eq {}} {
+        set title $ftail
+        set leaf 0
+      }
+      set ttl [string map {" " _} $title]
       if {$leaf} {
         set tip " $title[UnitTooltip $wtxt $l1 $l2]"
-        set link [GetLeafLink #$ttl $ttl $tip]
+        set link [GetLeafLink #$ttl $title $tip]
       } else {
-        set link [GetBranchLink #$ttl $ttl]
+        if {$dosort} {
+          set title [string trimleft $title]
+        } else {
+          set title [string repeat {&nbsp;} [expr {$lev*2}]]$title
+        }
+        set link [GetBranchLink #$ttl $title]
       }
       append link \n$wclink
       set tpl [string map [list $wclink $link] $tpl]
@@ -815,25 +860,12 @@ proc printer::MakeFile {fname fname2} {
   set tmpC [string map [list $wcbody $tmpC] $tpl]
   set fname2 [file rootname $fname2].html
   apave::writeTextFile $fname2 ::alited::printer::tmpC
-  set cset cs=
-  foreach val $colors {append cset $val,}
-  Hl_html $fname2 $cset
+  Hl_html $fname2
   set tmpC [apave::readTextFile $fname2]
   set tmpC [string map [list ${wclt} < ${wcgt} >] $tmpC]
   append tmpC \n$copyright
   apave::writeTextFile $fname2 ::alited::printer::tmpC
   return $fname2
-}
-#_______________________
-
-proc printer::Hl_html {fname cset} {
-  # Highlights Tcl code in html file
-  #   fname - file name
-  #   cset - colors
-
-  namespace upvar ::alited LIBDIR LIBDIR
-  set com [list [alited::Tclexe] [file join $LIBDIR hl_tcl tcl_html.tcl] $cset $fname]
-  exec -- {*}$com
 }
 #_______________________
 
@@ -901,20 +933,29 @@ proc printer::Process {wtree} {
   set indexcont [string map [list $wcfg $ttlfg $wcbg $ttlbg $wcbttl {}] $indexcont]
   append indexcont \n$copyright
   apave::writeTextFile $index_to ::alited::printer::indexcont 1
+  Hl_html $index_to
   set msg [msgcat::mc {Processed: %d directories, %f files}]
   set msg [string map [list %d $dcnt %f $fcnt] $msg]
   Message $msg
   bell
   if {$final ne {}} {
+    set fname [file join $dir $indexname]
     if {$final eq {%D} || $final eq {"%D"}} {
-      ::apave::openDoc [file join $dir $indexname]
+      ::apave::openDoc $fname
+    } elseif {$final eq {%e}} {
+      alited::file::OpenFile $fname
+      return yes
     } else {
       set com [string map [list %D $dir] $final]
+      if {[string first e_menu.tcl $com]>0 && [string first m=%M $com]>0} {
+        # e_menu items require project name & Linux/Windows terminals
+        append com " PN=$al(prjname) \"tt=$al(EM,tt=)\" \"wt=$al(EM,wt=)\""
+      }
       set com [alited::MapWildCards $com]
       exec -- {*}$com &
     }
   }
-  return yes
+  return no
 }
 
 # ________________________ Buttons _________________________ #
@@ -950,7 +991,7 @@ proc printer::Ok {} {
   set width1 [$wtree column #0 -width]
   set width2 [$wtree column #1 -width]
   SaveIni
-  Process $wtree
+  if {[Process $wtree]} {$obDl2 res $win 1}
 }
 #_______________________
 
@@ -968,7 +1009,7 @@ proc printer::FillTree {wtree} {
   #   wtree - tree's path
 
   fetchVars
-  $wtree heading #0 -text ":: [file tail $al(prjroot)] ::"
+  $wtree heading #0 -text ":: $al(prjname) ::"
   $wtree heading #1 -text $al(MC,files)
   alited::tree::PrepareDirectoryContents
   set markedIDs [list]

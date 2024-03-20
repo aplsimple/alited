@@ -434,7 +434,7 @@ proc tree::CreateFilesTree {wtree} {
   baltip::tip [$obPav BtTDelT] $al(MC,filesdel)\nDelete
   baltip::tip [$obPav BtTUp] $al(MC,moveupF)
   baltip::tip [$obPav BtTDown] $al(MC,movedownF)
-  $wtree heading #0 -text ":: [file tail $al(prjroot)] ::"
+  $wtree heading #0 -text ":: $al(prjname) ::"
   $wtree heading #1 -text $al(MC,files)
   bind $wtree <Return> {::alited::tree::OpenFile}
   set selID ""
