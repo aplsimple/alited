@@ -86,7 +86,6 @@ namespace eval ::alited {
     set al(MC,openofdir)   [msgcat::mc "Open All Tcl Files of \"%n\""]
     set al(MC,delitem)     [msgcat::mc "Remove \"%n\"\nfrom \"%f\"?"]
     set al(MC,delfile)     [msgcat::mc "Delete \"%f\"?"]
-    set al(MC,nodelopen)   [msgcat::mc {An open file can not be deleted:}]
     set al(MC,modiffile)   [msgcat::mc "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?"]
     set al(MC,wasdelfile)  [msgcat::mc "File \"%f\" was deleted by some application.\n\nSave the file?"]
     set al(MC,Row:)        [msgcat::mc {Row }]
@@ -148,7 +147,6 @@ namespace eval ::alited {
     set al(MC,tplaft2)     [msgcat::mc "Inserts a template\nbelow a current unit"]
     set al(MC,tplaft3)     [msgcat::mc "Inserts a template at the cursor\n(good for one-liners)"]
     set al(MC,tplaft4)     [msgcat::mc "Inserts a template after 1st line of a file\n(License, Introduction etc.)"]
-    set al(MC,tplinds)     [msgcat::mc "Indents a template at inserting,\nby an insertion line's indentation."]
     set al(MC,tplexists)   [msgcat::mc {A template with the attribute(s) already exists.}]
     set al(MC,tpldelq)     [msgcat::mc {Delete a template #%n ?}]
 

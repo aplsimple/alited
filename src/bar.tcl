@@ -73,6 +73,7 @@ proc bar::FillBar {wframe {newproject no}} {
     -csel3 alited::bar::OnControlClick \
     -cdel {alited::file::CloseFile %t yes} \
     -cmov2 alited::bar::OnTabMove \
+    -cmov3 {alited::bar::OnTabMove3 %t} \
     -title $al(MC,filelist) \
     -expand 9 -padx 0 {*}$bd]
   set tabs [set files [set posis [set wraps [list]]]]
@@ -479,6 +480,20 @@ proc bar::OnTabMove {} {
 
   namespace upvar ::alited al al
   alited::ini::SaveCurrentIni $al(INI,save_onmove)
+}
+#_______________________
+
+proc bar::OnTabMove3 {{TID ""}} {
+  # Handles moving selected tab(s) in the bar.
+  #   TID - if empty, the selected tabs are moved
+
+  namespace upvar ::alited al al
+  alited::ini::SaveCurrentIni $al(INI,save_onmove)
+  if {$TID eq {}} {
+    # no selection of tabs after moving
+    BAR unselectTab
+    OnControlClick
+  }
 }
 #_______________________
 

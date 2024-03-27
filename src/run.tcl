@@ -90,9 +90,7 @@ proc run::Cancel {args} {
 proc run::Help {} {
   # Shows Run's help.
 
-  variable win
-  wm attributes $win -topmost 1  ;# let Run dialogue be not hidden
-  alited::tool::HelpTool %w 2 -ontop 1
+  alited::HelpAlited #runme
 }
 
 # ________________________ GUI _________________________ #
@@ -225,6 +223,22 @@ proc run::DeleteForcedRun {} {
 }
 #_______________________
 
+proc run::ValidatePath {} {
+  # Validates a path chosen from the file picker.
+
+  namespace upvar ::alited al al obRun obRun
+  set cbx [$obRun CbxfiL]
+  set com [string trim [$cbx get]]
+  if {[file exists $com]} {
+    if {[llength [split $com]]>1} {
+      set com "\"$com\""
+    }
+    $cbx set [file nativename $com]
+  }
+  return 1
+}
+#_______________________
+
 proc run::ChbForced {} {
   # Check buttons' value for RunDialogue.
 
@@ -281,7 +295,7 @@ proc run::RunDialogue {} {
     {rad3 + T 1 1 {-st w -padx 4} {-t {By command #RUNF:} -value 0 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
     {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar ::alited::run::vent}} \
     {rad4 rad3 T 1 1 {-st w -padx 4} {-t {By command:} -value 1 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
-    {fiL + L 1 4 {-st ew} {-h 12 -cbxsel "$al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$al(comForceLs)"}} \
+    {fiL + L 1 4 {-st ew} {-h 12 -cbxsel "$al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$al(comForceLs)" -validate focusin -validatecommand alited::run::ValidatePath}} \
     {fra1 rad4 T 1 5 {-st nsew -cw 1 -rw 1}} \
     {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 9 -afteridle alited::run::FillTex1 -tabnext *tex2}} \
     {.sbv + L - - {pack -side left}} \

@@ -22,11 +22,9 @@ namespace eval ::alited::unit_tpl {
   variable tplpla  [list]  ;# list of "where to place" of templates
   variable tplid   [list]  ;# list of IDs of templates (in treeview)
   variable tplkeys [list]  ;# list of keys of templates
-  variable tplinds [list]  ;# list of indent flags (NOT USED)
   variable tplkey {}       ;# current template's keys
   variable tpl {}          ;# current template's name
   variable place 1         ;# current template's "where to place"
-  variable indent {}       ;# current indent flag (NOT USED)
   variable dosel yes       ;# if yes, enables "Select" action
 }
 
@@ -36,12 +34,12 @@ proc unit_tpl::ReadIni {} {
   # Gets templates' data from al(TPL,list) saved in alited.ini.
 
   namespace upvar ::alited al al
-  foreach tv {tpllist tplcont tplkeys tplpos tplpla tplinds} {
+  foreach tv {tpllist tplcont tplkeys tplpos tplpla} {
     variable $tv
     set $tv [list]
   }
   foreach lst $al(TPL,list) {
-    if {![catch {lassign $lst tpl key cont pos pla indent}]} {
+    if {![catch {lassign $lst tpl key cont pos pla}]} {
       set cont [::alited::ProcEOL $cont in]
       if {$tpl ne {} && $cont ne {} && $pos ne {}} {
         if {![string is double -strict $pos]} {set pos 1.0}
@@ -50,7 +48,6 @@ proc unit_tpl::ReadIni {} {
         lappend tplkeys $key
         lappend tplpos $pos
         lappend tplpla $pla
-        lappend tplinds [IsIndented $indent $cont]
       }
     }
   }
@@ -76,13 +73,12 @@ proc unit_tpl::RegisterKeys {} {
   variable tplkeys
   variable tplpos
   variable tplpla
-  variable tplinds
   alited::keys::Delete template
   set al(TPL,list) [list]
-  foreach tpl $tpllist key $tplkeys cont $tplcont pos $tplpos pla $tplpla ind $tplinds {
+  foreach tpl $tpllist key $tplkeys cont $tplcont pos $tplpos pla $tplpla {
     set cont [::alited::ProcEOL $cont out]
-    lappend al(TPL,list) [list $tpl $key $cont $pos $pla $ind]
-    alited::keys::Add template $tpl $key [list $cont $pos $pla $ind]
+    lappend al(TPL,list) [list $tpl $key $cont $pos $pla]
+    alited::keys::Add template $tpl $key [list $cont $pos $pla]
   }
 }
 #_______________________
@@ -144,10 +140,8 @@ proc unit_tpl::Select {{item ""}} {
   variable tplcont
   variable tplid
   variable tplpla
-  variable tplinds
   variable tpl
   variable place
-  variable indent
   if {$item eq {}} {set item [Selected item no]}
   if {$item ne {}} {
     if {[string is digit $item]} {  ;# the item is an index
@@ -160,7 +154,6 @@ proc unit_tpl::Select {{item ""}} {
       set tplkey [lindex $tplkeys $isel]
       set place [lindex $tplpla $isel]
       set cont [lindex $tplcont $isel]
-      set indent [IsIndented [lindex $tplinds $isel] $cont]
       set wtxt [$obTpl TexTpl]
       ::hl_tcl::iscurline $wtxt no
       $wtxt delete 1.0 end
@@ -239,25 +232,6 @@ proc unit_tpl::SyntaxText {wtxt} {
 
   alited::SyntaxHighlight tcl $wtxt [alited::SyntaxColors]
 }
-#_______________________
-
-proc unit_tpl::IsIndented {indent cont} {
-  # Gets a "normal" value of indentation flag, given that it can be an empty string.
-  #   indent - indentation flag of template
-  #   cont - contents of template
-
-  if {$indent eq {}} {
-    # TODEL means flag=no
-    if {[string first TODEL $cont]>-1} {return 0}
-    # underlines mean flag=yes
-    foreach u {_ - = * #} {
-      if {[string first [string repeat $u 10] $cont]>-1} {
-        return 1
-      }
-    }
-  }
-  return [string is true -strict $indent]
-}
 
 # ________________________ GUI Handlers _________________________ #
 
@@ -269,7 +243,6 @@ proc unit_tpl::Ok {args} {
   variable tplpos
   variable tplcont
   variable tplpla
-  variable tplinds
   variable dosel
   alited::CloseDlg
   if {!$dosel || [set isel [Selected index]] eq {}} {
@@ -279,9 +252,8 @@ proc unit_tpl::Ok {args} {
   set tex [lindex $tplcont $isel]
   set pos [lindex $tplpos $isel]
   set pla [lindex $tplpla $isel]
-  set ind [IsIndented [lindex $tplinds $isel] $tex]
   SaveIni
-  $obTpl res $win [list $tex $pos $pla $ind]
+  $obTpl res $win [list $tex $pos $pla]
 }
 #_______________________
 
@@ -333,9 +305,7 @@ proc unit_tpl::Add {{inpos ""}} {
   variable tplcont
   variable tplpos
   variable tplpla
-  variable tplinds
   variable place
-  variable indent
   variable tplkeys
   variable tplkey
   variable tplid
@@ -376,7 +346,6 @@ proc unit_tpl::Add {{inpos ""}} {
   lappend tplcont $txt
   lappend tplpos $inpos
   lappend tplpla $place
-  lappend tplinds $indent
   set msg [string map [list %n [llength $tpllist]] $al(MC,tplnew)]
   set item [$tree insert {} end -values [list $tpl $tplkey]]
   lappend tplkeys $tplkey
@@ -397,9 +366,7 @@ proc unit_tpl::Change {} {
   variable tplcont
   variable tplpos
   variable tplpla
-  variable tplinds
   variable place
-  variable indent
   variable tplkeys
   variable tplkey
   variable tpl
@@ -408,7 +375,6 @@ proc unit_tpl::Change {} {
   set tplcont [lreplace $tplcont $isel $isel [Text]]
   set tplpos [lreplace $tplpos $isel $isel [Pos [lindex $tplpos $isel]]]
   set tplpla [lreplace $tplpla $isel $isel $place]
-  set tplinds [lreplace $tplinds $isel $isel $indent]
   set tplkeys [lreplace $tplkeys $isel $isel $tplkey]
   UpdateTree
   after idle "::alited::unit_tpl::Select $isel"
@@ -425,7 +391,6 @@ proc unit_tpl::Delete {} {
   variable tplcont
   variable tplpos
   variable tplpla
-  variable tplinds
   variable tplkeys
   variable tplid
   variable win
@@ -435,7 +400,7 @@ proc unit_tpl::Delete {} {
   if {![alited::msg yesno warn $msg NO -centerme $win]} {
     return
   }
-  foreach tl {tpllist tplcont tplpos tplpla tplid tplkeys tplinds} {
+  foreach tl {tpllist tplcont tplpos tplpla tplid tplkeys} {
     set $tl [lreplace [set $tl] $isel $isel]
   }
   set llen [expr {[llength $tpllist]-1}]
@@ -455,7 +420,6 @@ proc unit_tpl::Import {} {
   variable tpl
   variable tplkey
   variable place
-  variable indent
   variable win
   set al(TMPfname) alited.ini
   set fname [$obTpl chooser tk_getOpenFile ::alited::al(TMPfname) \
@@ -468,9 +432,8 @@ proc unit_tpl::Import {} {
   foreach line [split $filecont \n] {
     if {[string match tpl=* $line]} {
       set line [string range $line 4 end]
-      if {![catch {lassign $line tpl tplkey cont pos place indent}]} {
+      if {![catch {lassign $line tpl tplkey cont pos place}]} {
         set cont [::alited::ProcEOL $cont in]
-        set indent [IsIndented $indent $cont]
         if {$tpl ne {} && $cont ne {} && $pos ne {}} {
           if {![string is double -strict $pos]} {set pos 1.0}
           $wtxt delete 1.0 end
@@ -559,10 +522,6 @@ proc unit_tpl::_create {{geom ""}} {
     {.radD - - - - {pack -side left -padx 8} \
       {-t "file's beginning" -var ::alited::unit_tpl::place -value 4 \
       -tip {-BALTIP {$al(MC,tplaft4)} -UNDER 4}}}
-    {#.sev - - - - {pack -side left -padx 20 -fill y}}
-    {#.chb - - - - {pack -side left} \
-      {-t "Indent" -var ::alited::unit_tpl::indent \
-      -tip {-BALTIP {$al(MC,tplinds)} -UNDER 4}}}
     {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 + T 1 10 {-st nsew}}
     {.ButHelp - - - - {pack -side left} \

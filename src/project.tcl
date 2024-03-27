@@ -13,19 +13,19 @@ namespace eval project {
   # apave object of Projects
   variable obPrj pavedProject
 
-  # "Projects" dialogue's path
+  # Projects dialogue's path
   variable win $::alited::al(WIN).diaPrj
 
   # list of projects
   variable prjlist [list]
 
-  # initial geometry of "Projects" dialogue (centered in the main form)
+  # initial geometry of Projects dialogue (centered in the main form)
   variable geo root=$::alited::al(WIN)
 
   # saved index of last selected project
   variable ilast -1
 
-  # saved tab of "Projects" dialogue
+  # saved tab of Projects dialogue
   variable oldTab {}
 
   # data of projects
@@ -60,6 +60,8 @@ namespace eval project {
   variable savedfilefilter $filefilter
   variable savedcasefilter $casefilter
 
+  # flag "save alited.ini"
+  variable saveini no
 }
 
 # ________________________ Common _________________________ #
@@ -626,7 +628,7 @@ proc project::CheckNewDir {} {
   if {![file exists $al(prjroot)]} {
     FocusInTab f1 [$obPrj chooserPath Dir]
     set msg [string map [list %d $al(prjroot)] $al(makeroot)]
-    if {![alited::msg yesno ques $msg NO -geometry root=$win]} {
+    if {![alited::msg yesno ques $msg YES -geometry root=$win]} {
       return no
     }
     if {[catch {file mkdir $al(prjroot)} err]} {
@@ -779,6 +781,20 @@ proc project::focusTree {} {
   variable obPrj
   focus $win
   focus [$obPrj TreePrj]
+}
+#_______________________
+
+proc project::ValidateIni {V} {
+  # Validates values of alited.ini.
+  #   V - %V wildcard of -validatecommand
+
+  variable saveini
+  set saveini yes
+  if {$V eq {focusout}} {
+    alited::ini::SaveIni
+    set saveini no
+  }
+  return 1
 }
 
 # ________________________ Files tab's procs _________________________ #
@@ -1998,7 +2014,8 @@ proc project::Tab1 {} {
     {.lab - - - - {pack -side left} {-t {TODO days ahead:}}}
     {.spx - - - - {pack -side left -padx 8} \
       {-tvar ::alited::al(todoahead) -from 0 -to 365 -w 5 -justify center \
-      -com alited::project::Select}}
+      -com alited::project::Select -validate all \
+      -validatecommand {alited::project::ValidateIni %V}}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
     {.daT - - - - {pack -fill both} \
@@ -2167,7 +2184,7 @@ proc project::Tab5 {} {
 # ________________________ Main _________________________ #
 
 proc project::_create {} {
-  # Creates and opens "Projects" dialogue.
+  # Creates and opens Projects dialogue.
 
   namespace upvar ::alited al al
   variable obPrj
@@ -2243,15 +2260,16 @@ proc project::_create {} {
 #_______________________
 
 proc project::_run {{checktodo yes}} {
-  # Runs "Projects" dialogue.
+  # Runs Projects dialogue.
   #   checktodo - if yes, checks for outdated TODOs
 
   namespace upvar ::alited al al
   variable win
   variable msgtodo
   variable updateGUI
-  set updateGUI no
-  if {[winfo exists $win]} {return {}}
+  variable saveini
+  if {[winfo exists $win]} return
+  set updateGUI [set saveini no]
   set msgtodo {}
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   SaveSettings
@@ -2265,10 +2283,8 @@ proc project::_run {{checktodo yes}} {
   }
   after 200 alited::project::OnProjectEnter
   set res [_create]
-  if {$updateGUI} {
-    alited::main::UpdateAll ;# settings may be changed as for GUI
-  }
-  return $res
+  if {$updateGUI} alited::main::UpdateAll ;# settings may be changed as for GUI
+  if {$saveini} alited::ini::SaveIni
 }
 
 # _________________________________ EOF _________________________________ #

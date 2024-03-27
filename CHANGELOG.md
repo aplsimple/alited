@@ -8,6 +8,25 @@ The *alited* has acquired the rich and comprehensive set of features, some are u
 # LAST CHANGES
 
 
+Version `v1.8.1 (27 Mar'24)`
+
+  - BUGFIX: rename file in tab bar after changing its upper directory name
+  - DELETE: prohibition from renaming currently edited file
+  - DELETE: prohibition from deleting currently edited file
+  - DELETE: some data/help files (obsolete or duplicated in Help/alited)
+  - DELETE: some pkgIndex files (no need due to `source`)
+  - NEW   : bar of 24 green & red (book)marks
+  - CHANGE: "Little things v1.8" in [alited's demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
+  - CHANGE: Tools/Run dialogue: validate file name chosen from file picker
+  - CHANGE: better search for cloned file's name
+  - CHANGE: error message at renaming file to existing one
+  - CHANGE: after moving selected tab "behind": eliminate selection
+  - CHANGE: revised default "NO" answer of some question boxes
+  - CHANGE: clearances & docs
+  - CHANGE: Templates: indentation 0 for TODEL's & count the current line's; clearance
+  - CHANGE: packages: bartabs 1.6.9, baltip 1.6.2, hl_tcl 1.1.3
+
+
 Version `v1.8.0 (20 Mar'24)`
 
   - BUGFIX: Moving unit descriptions: processed tabs in tabbar not marked as modified
@@ -24,6 +43,7 @@ Version `v1.8.0 (20 Mar'24)`
   - NEW   : Edit/Formats: backslashes to continue commands
   - NEW   : Find/Replace dialogue: Ctrl+T to enter the text
   - DELETE: "Indent" checkbutton of Templates dialogue (all are indented)
+  - CHANGE: "character icons" for Preference/Tools/bar-menu
   - CHANGE: clear find tags in all texts, if Find dialogues are closed
   - CHANGE: e_menu/tests/doctest: quoted "tclsh" to run a deployed tclsh instead of tclkit
   - CHANGE: quicker reading the project file tree

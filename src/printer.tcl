@@ -869,6 +869,36 @@ proc printer::MakeFile {fname fname2} {
 }
 #_______________________
 
+proc printer::RunFinal {{check no}} {
+  # Runs final processor.
+  #   check - if yes, beeps at empty final processor.
+
+  fetchVars
+  if {$final ne {}} {
+    set fname [file join $dir $indexname]
+    if {$final eq {%D} || $final eq {"%D"}} {
+      ::apave::openDoc $fname
+    } elseif {$final eq {%e}} {
+      alited::file::OpenFile $fname
+      return yes
+    } else {
+      set com [string map [list %D $dir] $final]
+      if {[string first e_menu.tcl $com]>0 && [string first m=%M $com]>0} {
+        # e_menu items require project name & Linux/Windows terminals
+        append com " PN=$al(prjname) \"tt=$al(EM,tt=)\" \"wt=$al(EM,wt=)\""
+      }
+      set com [alited::MapWildCards $com]
+      exec -- {*}$com &
+    }
+  } elseif {$check} {
+    set final {"%D"}
+    ::apave::FocusByForce [$obDl2 chooserPath Fil]
+    bell
+  }
+  return no
+}
+#_______________________
+
 proc printer::Process {wtree} {
   # Processes files to make the resulting .html.
   #   wtree - tree's path
@@ -938,24 +968,7 @@ proc printer::Process {wtree} {
   set msg [string map [list %d $dcnt %f $fcnt] $msg]
   Message $msg
   bell
-  if {$final ne {}} {
-    set fname [file join $dir $indexname]
-    if {$final eq {%D} || $final eq {"%D"}} {
-      ::apave::openDoc $fname
-    } elseif {$final eq {%e}} {
-      alited::file::OpenFile $fname
-      return yes
-    } else {
-      set com [string map [list %D $dir] $final]
-      if {[string first e_menu.tcl $com]>0 && [string first m=%M $com]>0} {
-        # e_menu items require project name & Linux/Windows terminals
-        append com " PN=$al(prjname) \"tt=$al(EM,tt=)\" \"wt=$al(EM,wt=)\""
-      }
-      set com [alited::MapWildCards $com]
-      exec -- {*}$com &
-    }
-  }
-  return no
+  return [RunFinal]
 }
 
 # ________________________ Buttons _________________________ #
@@ -979,7 +992,7 @@ proc printer::StdClr {fld1 var1 fld2 var2} {
 proc printer::Help {} {
   # Handles "Help" button.
 
-  alited::Help $::alited::printer::win
+  alited::HelpAlited #printer
 }
 #_______________________
 
@@ -1106,8 +1119,10 @@ proc printer::_create  {} {
     {.fraw.SpxCwidth + L 1 4 {-st nsw -padx 4} \
       {-tvar ::alited::printer::cwidth -from 5 -to 99 -w 4 -justify center}}
     {.seh .fraw T 1 3 {-pady 8}}
-    {.lab4 + T 1 1 {-st nw} {-t {Final processor:}}}
-    {.fil + T 1 3 {-st new} {-tvar ::alited::printer::final -w $wden}}
+    {.lab4 + T 1 2 {-st nw} {-t {Final processor:}}}
+    {.btT + L 1 1 {-st e -padx 3} {-image alimg_run \
+      -com {::alited::printer::RunFinal 1} -tip {Runs the final processor.}}}
+    {.Fil .lab4 T 1 3 {-st new} {-tvar ::alited::printer::final -w $wden}}
     {fraTree fraTop T 2 1 {-st news -cw 1}}
     {.Tree - - - - {pack -side left -fill both -expand 1} \
       {-height 20 -columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} \

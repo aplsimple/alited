@@ -477,7 +477,7 @@ proc favor::Delete {{undermouse yes}} {
   }
   set msg [string map [list %n $name %f $sname] $al(MC,delfavor)]
   set geo [GeoForQuery $undermouse]
-  if {!$al(FAV,IsFavor) || [alited::msg yesno warn $msg NO {*}$geo]} {
+  if {!$al(FAV,IsFavor) || [alited::msg yesno warn $msg YES {*}$geo]} {
     DeleteLastVisited $favID
   }
 }
@@ -498,7 +498,7 @@ proc favor::DeleteAll {{undermouse yes}} {
   }
   set favlist [alited::tree::GetTree {} TreeFavor]
   if {$favlist eq {}} {bell; return}
-  if {[alited::msg yesno warn [msgcat::mc $msg] NO {*}$geo -title $al(MC,favordelall)]} {
+  if {[alited::msg yesno warn [msgcat::mc $msg] YES {*}$geo -title $al(MC,favordelall)]} {
     foreach curfav $favlist {
       [$obPav TreeFavor] delete [lindex $curfav 2]
     }

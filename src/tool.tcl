@@ -24,13 +24,30 @@ proc tool::ToolButName {img} {
 proc tool::Undo {} {
   # Undoes a change.
 
-  return [catch {event generate [alited::main::CurrentWTXT] <<Undo>>}]
+  return [catch {[alited::main::CurrentWTXT] edit undo}]
 }
 
 proc tool::Redo {} {
   # Redoes a change.
 
-  return [catch {event generate [alited::main::CurrentWTXT] <<Redo>>}]
+  return [catch {[alited::main::CurrentWTXT] edit redo}]
+}
+#_______________________
+
+proc tool::SetPlainText {wtxt val} {
+  # Set the flag "plain text".
+  #   wtxt - text path
+  #   val - value of the flag
+  # Returns old value of the flag.
+
+  if {[alited::file::IsClang [alited::bar::FileName]]} {
+    set oldval [::hl_c::cget $wtxt -plaintext]
+    ::hl_c::configure $wtxt -plaintext $val
+  } else {
+    set oldval [::hl_tcl::cget $wtxt -plaintext]
+    ::hl_tcl::configure $wtxt -plaintext $val
+  }
+  return $oldval
 }
 #_______________________
 
@@ -38,9 +55,11 @@ proc tool::undoAll {} {
   # Undoes all changes.
 
   set wtxt [alited::main::CurrentWTXT]
+  set plaintext [SetPlainText $wtxt yes]
   while {[$wtxt edit canundo]} {
     if {[Undo]} break
   }
+  SetPlainText $wtxt $plaintext
 }
 #_______________________
 
@@ -48,9 +67,11 @@ proc tool::redoAll {} {
   # Redoes all changes.
 
   set wtxt [alited::main::CurrentWTXT]
+  set plaintext [SetPlainText $wtxt yes]
   while {[$wtxt edit canredo]} {
     if {[Redo]} break
   }
+  SetPlainText $wtxt $plaintext
 }
 #_______________________
 

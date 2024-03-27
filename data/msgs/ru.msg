@@ -143,6 +143,10 @@ namespace eval ::alited {
     {check RE in Find/Replace box} {включите RE в окошке Поиск/Замена}
     {Context} {Контекстная}
     {Changes will be lost!} {Изменения будут потеряны!}
+    {Mark} {Метка}
+    "Left click sets / goes to a mark.\nRight click clears it." "Левый клик ставит / идет на метку.\nПравый клик очищает ее."
+    {Clear All} {Очистить все}
+    {Width} {Ширина}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -159,8 +163,6 @@ namespace eval ::alited {
     "Remove \"%n\"\nfrom \"%f\"?" "Удалить \"%n\"\nиз \"%f\"?"
     "Delete \"%f\"?" "Удалить \"%f\"?"
     {Rewrite} {Перезаписать}
-    {An open file can not be deleted:} {Нельзя удалять открытый файл:}
-    {An open file can not be renamed:} {Нельзя переименовывать открытый файл:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" был изменен другим приложением.\n\nОтменить вашу редакцию и перезагрузить файл?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" был удален другим приложением.\n\nСохранить файл?"
     {Tip File Info} {Данные о файлах}
@@ -206,7 +208,6 @@ namespace eval ::alited {
     {Delete a template #%n ?} {Удалить шаблон #%n ?}
     "Import templates\nfrom external alited.ini" "Импортировать шаблоны\nиз внешнего alited.ini"
     {Number of imported templates: %n} {Число импортированных шаблонов: %n}
-    "Indents a template at inserting,\nby an insertion line's indentation." "При вставке шаблона создает\nотступы согласно строке вставки."
   }
 
   ## ________________________ Projects ________________________ ##
@@ -741,6 +742,7 @@ namespace eval ::alited {
     {Output directory cannot be cleared: alien directories} {Невозможно очистить каталог назначения: чужие каталоги}
     "The output directory\n  %n\ncontains %c subdirectories.\n\nAll will be replaced with the new!" "Каталог назначения\n  %n\nсодержит %c подкаталогов.\n\nВсе они будут замещены новыми!"
     {Sort units:} {Сортировать юниты:}
+    {Runs the final processor.} {Запуск окончательного обработчика.}
   }
 
   ## ________________________ EONS alited _________________________ ##

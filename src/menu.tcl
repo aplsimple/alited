@@ -108,6 +108,7 @@ proc menu::SetTint {tint} {
 
   namespace upvar ::alited al al obPav obPav
   $obPav csToned $al(INI,CS) $tint yes
+  alited::main::UpdateMarkBar
   alited::file::MakeThemHighlighted
   alited::main::ShowText
   alited::bar::BAR update
@@ -650,20 +651,13 @@ proc menu::HelpFiles {} {
     project4.txt {Projects\Commands} \
     project5.txt {Projects\Files} \
     - - \
-    find2.txt {Search\Find by List} \
-    - - \
-    tool2.txt {Tools\Run...} \
-    check.txt {Tools\Check Tcl...} \
-    printer.txt {Tools\Project Printer...} \
-    paver.txt {Tools\Paver} \
-    - - \
     unit_tpl.txt {Setup\Templates...} \
     favor_ls.txt {Setup\Favorites Lists...} \
     tool1.txt {Setup\For Start...} \
     ini.txt {Setup\Configurations...} \
     format1.txt {Setup\Moving Unit Descriptions...} \
     - - \
-    alited-trans.txt Translation \
+    find2.txt {Search\Find by List} \
   ]
 
 }

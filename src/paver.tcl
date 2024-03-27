@@ -48,8 +48,7 @@ proc paver::Destroy {args} {
 proc paver::Help {args} {
   # Handles hitting Help button.
 
-  namespace upvar ::alited al al
-  alited::Help $al(WIN) {} -w 80 -minsize {200 100} -resizable 1
+  alited::HelpAlited #paver
 }
 
 # ________________________ Function _________________________ #

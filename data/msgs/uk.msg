@@ -146,7 +146,11 @@ namespace eval ::alited {
     {Display colors in the whole text?} {Відобразити кольори в усьому тексті?}
     {check RE in Find/Replace box} {включіть RE у віконці Пошук/Заміна}
     {Context} {Контекстна}
+    {Mark} {Мітка}
     {Changes will be lost!} {Зміни будуть втрачені!}
+    "Left click sets / goes to a mark.\nRight click clears it." "Лівий клік ставить / йде на мітку.\nПравий клік вичищає її."
+    {Clear All} {Вичистити усе}
+    {Width} {Ширина}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -163,8 +167,6 @@ namespace eval ::alited {
     "Remove \"%n\"\nfrom \"%f\"?" "Видалити \"%n\"\nз \"%f\"?"
     "Delete \"%f\"?" "Видалити \"%f\"?"
     {Rewrite} {Перезаписати}
-    {An open file can not be deleted:} {Неможливо видалити відкритий файл:}
-    {An open file can not be renamed:} {Неможливо перейменувати відкритий файл:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Файл \"%f\" був змінений іншою програмою.\n\nВідмінити вашу редакцію та завантажити файл знову?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Файл \"%f\" був видалений іншою програмою.\n\nЗберігти файл?"
     {Tip File Info} {Дані про файли}
@@ -210,7 +212,6 @@ namespace eval ::alited {
     {Delete a template #%n ?} {Видалити шаблон #%n ?}
     "Import templates\nfrom external alited.ini" "Імпортувати шаблони\nз зовнiшнього alited.ini"
     {Number of imported templates: %n} {Кiлькiсть iмпортованих шаблонiв: %n}
-    "Indents a template at inserting,\nby an insertion line's indentation." "При вставцi шаблону створює\nвiдступи згiдно з рядком вставки."
 
   }
 
@@ -746,6 +747,7 @@ namespace eval ::alited {
     {Output directory cannot be cleared: alien directories} {Каталог призначення неможливо вичистити: чужі каталоги}
     "The output directory\n  %n\ncontains %c subdirectories.\n\nAll will be replaced with the new!" "Каталог призначення\n  %n\nмає %c підкаталогів.\n\nВсі вони будуть заміщені новими!"
     {Sort units:} {Сортувати юніти:}
+    {Runs the final processor.} {Запуск остаточного обробника.}
   }
 
   ## ________________________ EONS alited _________________________ ##

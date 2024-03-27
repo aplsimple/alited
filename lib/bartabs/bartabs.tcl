@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide bartabs 1.6.8
+package provide bartabs 1.6.9
 
 # ________________________ NS bartabs _________________________ #
 
@@ -2270,6 +2270,7 @@ method moveSelTab {TID1 TID2} {
 #   TID2 - TID of a tab to move TID1 behind
 # TID1 and TID2 must be of the same bar.
 
+  if {[my $TID1 Tab_Cmd -cmov] ni {"1" "yes" "true"}} return ;# chosen to not move
   set BID [my Tab_BID $TID1 check]
   # -lifo option prevents moving, so it has to be temporarily disabled
   set lifo [my $BID cget -lifo]
@@ -2280,8 +2281,10 @@ method moveSelTab {TID1 TID2} {
       set tid [lindex $seltabs $i]
       if {$tid ne $TID2} {my MoveTab $tid $TID2}
     }
+    my $BID Bar_Cmd2 -cmov3
   } else {
     my MoveTab $TID1 $TID2
+    my $BID Bar_Cmd2 -cmov3 $TID1 ;# command after the action
   }
   my $BID configure -lifo $lifo  ;# restore -lifo option
 }

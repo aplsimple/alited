@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.0  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -241,8 +241,8 @@ namespace eval alited {
 
 lappend auto_path $::alited::LIBDIR $::alited::PAVEDIR
 
-source [file join $::alited::BARSDIR bartabs.tcl]
 source [file join $::alited::PAVEDIR apave.tcl]
+source [file join $::alited::BARSDIR bartabs.tcl]
 source [file join $::alited::HLDIR  hl_tcl.tcl]
 source [file join $::alited::HLDIR  hl_c.tcl]
 

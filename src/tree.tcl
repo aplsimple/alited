@@ -689,15 +689,17 @@ proc tree::ButtonPress {but x y X Y} {
       set al(movID) $ID
       set al(movWin) .tritem_move
       set msec [clock milliseconds]
+      set doubleclick [expr {[info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<400}]}]
+      set al(_MSEC) $msec
+      if {$doubleclick} {     ;# at double click:
+        DestroyMoveWindow yes ;# disable any drag-drop
+      }
       if {$al(TREE,isunits)} {
         NewSelection $ID
         alited::main::SaveVisitInfo
-      } else {
-        if {[info exists al(_MSEC)] && [expr {($msec-$al(_MSEC))<400}]} {
-          OpenFile $ID
-        }
+      } elseif {$doubleclick} {
+        OpenFile $ID
       }
-      set al(_MSEC) $msec
     }
   }
 }

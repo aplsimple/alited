@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.6.0
+package provide baltip 1.6.2
 
 # ________________________ Variables _________________________ #
 
@@ -59,7 +59,7 @@ proc ::baltip::configure {args} {
   }
   set force no
   set index -1
-  lassign {} geometry tag ctag nbktab reset command maxexp
+  lassign {} geometry tag ctag nbktab reset command maxexp focus
   set global [expr {[dict exists $args -global] && [dict get $args -global]}]
   foreach {n v} $args {
     set n1 [string range $n 1 end]
@@ -71,7 +71,7 @@ proc ::baltip::configure {args} {
         set my::ttdata($n1) $v
       }
       -force - -geometry - -index - -tag - -global - -ctag - -nbktab - -reset - \
-      -command - -maxexp {
+      -command - -maxexp - -focus {
         set $n1 $v
       }
       default {return -code error "baltip: invalid option \"$n\""}
@@ -83,7 +83,8 @@ proc ::baltip::configure {args} {
       }
     }
   }
-  return [list $force $geometry $index $tag $ctag $nbktab $reset $command $maxexp]
+  return [list \
+    $force $geometry $index $tag $ctag $nbktab $reset $command $maxexp $focus]
 }
 #_______________________
 
@@ -123,9 +124,9 @@ proc ::baltip::cget {args} {
 proc ::baltip::optionlist {} {
   # All options of baltip.
 
-  return [list -on -per10 -fade -pause -fg -bg -bd -padx -pady -padding \
-      -font -alpha -text -index -tag -bell -under -image -compound -relief \
-      -ctag -nbktab -reset -command -maxexp -shiftX -shiftY -ontop -eternal]
+  return [list -on -per10 -fade -pause -fg -bg -bd -padx -pady -padding -font \
+    -alpha -text -index -tag -bell -under -image -compound -relief -ctag \
+    -nbktab -reset -command -maxexp -focus -shiftX -shiftY -ontop -eternal]
 }
 #_______________________
 
@@ -165,8 +166,9 @@ proc ::baltip::tip {w {text "-BALTIPGET"} args} {
     set arrsaved [array get my::ttdata]
     set optvals [::baltip::my::CGet {*}$args]
     # block of related lines for special options
-    lassign $optvals forced geo index ttag ctag nbktab reset command maxexp
-    set optArgs [lrange $optvals 9 end]  ;# get rid of special options
+    set specopt {forced geo index ttag ctag nbktab reset command maxexp focus}
+    lassign $optvals {*}$specopt
+    set optArgs [lrange $optvals [llength $specopt] end] ;# get rid of spec.options
     if {[catch {set optvals $my::ttdata(optvals,$w)}]} {
       set optvals $optArgs
     }
@@ -182,8 +184,12 @@ proc ::baltip::tip {w {text "-BALTIPGET"} args} {
     if {![info exists my::ttdata(maxexp,$w)]} {
       set my::ttdata(maxexp,$w) $maxexp
     }
+    if {[winfo exists $focus]} {
+      set my::ttdata(focus,$w) $focus
+    }
     set text [my::OptionsFromText $w $text]  ;# may reset -command and -maxexp
-    set onopt [expr {[string length $text] && $my::ttdata(on)}]
+    set ontags [string length $nbktab$ctag$ttag]
+    set onopt [expr {[string length $text] && $my::ttdata(on) || $ontags}]
     set optArgs [dict replace $optArgs -text $text]
     set optvals [dict replace $optvals -text $text]
     set et 0
@@ -191,7 +197,7 @@ proc ::baltip::tip {w {text "-BALTIPGET"} args} {
     if {[set my::ttdata(eternal,$w) $et]} {lappend optvals -per10 1}
     set my::ttdata(optvals,$w) $optvals
     set my::ttdata(on,$w) $onopt
-    if {$text ne {}} {
+    if {$text ne {} || $ontags} {
       if {$forced || $geo ne {}} {::baltip::my::Show $w $text yes $geo $optvals}
       if {$geo ne {}} {
         # balloon popup message
@@ -697,6 +703,10 @@ proc ::baltip::my::Show {w text force geo optvals} {
     -bd $data(-bd) -bg $data(-bg) -fg $data(-fg) -font $data(-font) \
     {*}$imgoptions {*}$cmpdoptions -padx $data(-padx) -pady $data(-pady)] \
     -padx $data(-padding) -pady $data(-padding)
+  if {[info exists ttdata(focus,$w)]} {
+    set foc $ttdata(focus,$w)
+    after idle "catch {focus -force \[winfo toplevel $foc\]}; catch {focus $foc}"
+  }
   # defeat rare artifact by passing mouse over a tip to destroy it
   bindtags $win "Tooltip$win"
   if {$geo eq {}} {
@@ -709,7 +719,7 @@ proc ::baltip::my::Show {w text force geo optvals} {
   set aint 20
   set fint [expr {int($data(-fade)/$aint)}]
   set icount [expr {int($data(-per10)/$aint*$icount/10.0)}]
-  set icount [expr {$data(-per10) ? max(1000/$aint+1,$icount) : 0}] ;# 1 sec. be minimal
+  set icount [expr {$data(-per10) ? max(1000/$aint+1,$icount) : 0}] ;# 1 sec. minimum
   set ttdata(winGEO,$win) $geo
   set ttdata(winUNDER,$win) $data(-under)
   set ttdata(winSHIFTX,$win) $data(-shiftX)
@@ -1177,8 +1187,3 @@ proc ::baltip::my::PrepareTreTip {w x y} {
 }
 
 # ________________________________ EOF __________________________________ #
-
-#RUNF1: ./test.tcl
-#RUNF2: ../tests/test2_pave.tcl
-#EXEC1: ~/PG/github/freewrap/tclkit-8.6.11 /home/apl/PG/github/baltip/test.tcl
-#EXEC2: ~/PG/github/freewrap/tclkit-8.6.11 /home/apl/PG/github/pave/tests/test2_pave.tcl

@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.1.2
+package provide hl_tcl 1.1.3
 
 # ______________________ Common data ____________________ #
 
@@ -1348,6 +1348,32 @@ proc ::hl_tcl::clearup {txt} {
   foreach i [lsearch -all -exact -index 0 $my::data(LIST_TXT) $txt] {
     set my::data(LIST_TXT) [lreplace $my::data(LIST_TXT) $i $i]
   }
+}
+#_______________________
+
+proc ::hl_tcl::cget {txt opt} {
+  # Gets a highlighting option's value.
+  #   txt - text's path
+  #   opt - option's name
+
+  variable my::data
+  set opt [string toupper [string trimleft $opt -]]
+  if {[info exists my::data($opt,$txt)]} {
+    return $my::data($opt,$txt)
+  }
+  return {}
+}
+#_______________________
+
+proc ::hl_tcl::configure {txt opt val} {
+  # Sets a highlighting option's value.
+  #   txt - text's path
+  #   opt - option's name
+  #   val - option's value
+
+  variable my::data
+  set opt [string toupper [string trimleft $opt -]]
+  set my::data($opt,$txt) $val
 }
 
 # _________________________________ EOF _________________________________ #

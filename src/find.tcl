@@ -1146,16 +1146,16 @@ proc find::SearchByList {} {
     {.Text + L - - {pack -side left -expand 1 -fill both} {-w 30 -h 5 -tabnext {*rad1 *CANCEL}}} \
     {.sbvText + L - - {pack}} \
     {seh1 lab1 T 1 5} \
-    {lab2 + T 1 1 {-st en -padx 5} {-t "$al(MC,frMatch)"}} \
+    {lab2 + T 1 1 {-st e -padx 5} {-t "$al(MC,frMatch)"}} \
     {fra2 + L 1 4 {-st w}} \
     {.rad1 - - 1 1 {} {-var ::alited::al(matchSBL) -value "$al(MC,frExact)" -t "$al(MC,frExact)"}} \
     {.rad2 + L 1 1 {-padx 10} {-var ::alited::al(matchSBL) -value Glob -t Glob}} \
     {.rad3 + L 1 1 {} {-var ::alited::al(matchSBL) -value RE -t RE}} \
     {seh2 lab2 T 1 5} \
-    {lab3 + T 1 1 {-st en -padx 5} {-t "$al(MC,frWord):"}} \
+    {lab3 + T 1 1 {-st e -padx 5} {-t "$al(MC,frWord):"}} \
     {fra3 + L 1 3 {-st we}} \
     {.chb1 - - 1 1 {-st w} {-var ::alited::al(wordonlySBL)}} \
-    {.lab4 + L 1 1 {-st en -padx 5} {-t "$al(MC,frCase):"}} \
+    {.lab4 + L 1 1 {-st e -padx 5} {-t "$al(MC,frCase):"}} \
     {.chb2 + L 1 1 {-st w} {-var ::alited::al(caseSBL)}} \
     {seh3 lab3 T 1 5} \
     {butHelp + T 1 1 {-st w} {-t Help -com {alited::find::HelpFind 2}}} \

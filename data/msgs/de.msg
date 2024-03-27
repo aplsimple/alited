@@ -143,6 +143,10 @@ namespace eval ::alited {
     {check RE in Find/Replace box} {aktivieren Sie RE im Suchen/Ersetzen}
     {Context} {Kontext}
     {Changes will be lost!} {Änderungen werden verloren gehen!}
+    {Mark} {Markierung}
+    "Left click sets / goes to a mark.\nRight click clears it." "Linksklick setzt / geht zu eine Markierung.\nRechtsklick löscht es."
+    {Clear All} {Alles löschen}
+    {Width} {Breite}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -159,8 +163,6 @@ namespace eval ::alited {
     "Remove \"%n\"\nfrom \"%f\"?" "Entferne \"%n\"\nvon \"%f\"?"
     "Delete \"%f\"?" "Lösche \"%f\"?"
     {Rewrite} {Überschreiben}
-    {An open file can not be deleted:} {Eine offene Datei kann nicht gelöscht werden:}
-    {An open file can not be renamed:} {Eine offene Datei kann nicht umbenannt werden:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "Datei \"%f\" wurde durch eine Applikation geändert.\n\nBearbeitung beenden und Datei neu laden?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "Datei \"%f\" wurde durch eine Applikation gelöscht.\n\nDatei speichern?"
     {Tip File Info} {Tip-Datei Info}
@@ -206,7 +208,6 @@ namespace eval ::alited {
     {Delete a template #%n ?} {Eine Vorlage #%n löschen ?}
     "Import templates\nfrom external alited.ini" "Importieren die Vorlagen\nvon extern alited.ini"
     {Number of imported templates: %n} {Anzahl der importierten Vorlagen: %n}
-    "Indents a template at inserting,\nby an insertion line's indentation." "Rückt eine Vorlage beim Einfügen ein,\ndurch den Einzug einer Einfügenzeile."
   }
 
   ## ________________________ Projects ________________________ ##
@@ -743,6 +744,7 @@ namespace eval ::alited {
     {Output directory cannot be cleared: alien directories} {Ausgabeverzeichnis kann nicht gelöscht werden: fremde Verzeichnisse}
     "The output directory\n  %n\ncontains %c subdirectories.\n\nAll will be replaced with the new!" "Ausgabeverzeichnis\n  %n\nenthält %c Unterverzeichnisse.\n\nAlle werden durch die neuen ersetzt!"
     {Sort units:} {Sortieren Einheiten:}
+    {Runs the final processor.} {Führt den Endverarbeiter aus.}
   }
 
   ## ________________________ EONS alited _________________________ ##

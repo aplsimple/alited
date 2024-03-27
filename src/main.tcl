@@ -13,6 +13,8 @@ namespace eval main {
   variable gotoline1 {}    ;# line number of "Go to Line" dialogue
   variable gotoline2 {}    ;# units list of "Go to Line" dialogue
   variable gotolineTID {}  ;# tab ID last used in "Go to Line" dialogue
+  variable wcan {} fgcan {} bgcan {}   ;# canvas' path and its colors
+  variable saveini no      ;# flag "save alited.ini"
 }
 
 # ________________________ Common _________________________ #
@@ -135,6 +137,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
       alited::main::SetTabs $wtxt $al(prjindent)
     }
     alited::file::DisplayFile $TID $curfile $wtxt $doreload
+    RestoreMarks $curfile $wtxt
     if {$al(prjindentAuto)} {
       alited::main::SetTabs $wtxt [lindex [CalcIndentation $wtxt] 0]
     }
@@ -269,6 +272,257 @@ proc main::UpdateTextGutterTreeIcons {} {
 
   UpdateTextGutterTree
   UpdateIcons
+}
+
+# ________________________ Mark bar _________________________ #
+
+proc main::FillMarkBar {args} {
+  # Fills the mark bar, makes bindings for its tags.
+  #   args - if set, contains canvas' path
+  # It's run from InitActions without *args*.
+  # See also: InitActions
+
+  namespace upvar ::alited al al obPav obPav
+  variable wcan
+  variable fgcan
+  variable bgcan
+  lassign [MarkOptions] N
+  if {[llength $args]} {
+    lassign $args wcan
+    $wcan create rectangle "0 0 99 9999" -fill $bgcan -outline $bgcan
+    return
+  }
+  lassign [split [winfo geometry [$obPav Text]] x+] -> h
+  set hp [expr {int($h/$N-0.5)}]
+  $wcan configure -highlightbackground $bgcan -highlightthickness 0
+  for {set i 0; set y 1} {$i<($N+1)} {incr i} {
+    lassign [MarkOptions $i] -> tip mark
+    set y2 [expr {$y+$hp}]
+    if {$i==$N} {incr y2 9999}
+    set al($mark) [$wcan create rectangle "1 $y 99 $y2" -fill $bgcan -outline $fgcan]
+    if {$i<$N} {
+      $wcan bind $al($mark) <ButtonPress-1> "alited::main::SetMark $i"
+      $wcan bind $al($mark) <ButtonPress-3> "alited::main::UnsetMark $i %X %Y"
+      UnsetOneMark $i
+    }
+    incr y $hp
+  }
+}
+#_______________________
+
+proc main::UpdateMarkBar {} {
+  # Updates mark bar at changing -bg color.
+
+  namespace upvar ::alited al al
+  lassign [MarkOptions] N
+  for {set i 0} {$i<$N} {incr i} {
+    lassign [MarkOptions $i] - - - markdata
+    if {![info exists al($markdata)]} {UnsetOneMark $i}
+  }
+}
+#_______________________
+
+proc main::SetMark {idx} {
+  # Sets a mark in the mark bar.
+  #   idx - index of tag used as the mark
+
+  namespace upvar ::alited al al
+  variable wcan
+  lassign [MarkOptions $idx] -> tip mark markdata colors
+  $wcan itemconfigure $al($mark) -fill [lindex $colors $idx]
+  set tag MARK$idx
+  if {[info exists al($markdata)]} {
+    lassign $al($markdata) fname pos
+    set TID [alited::file::OpenFile $fname]
+    if {$TID ne {}} {
+      set wtxt [GetWTXT $TID]
+      lassign [$wtxt tag ranges $tag] pos2
+      if {[string is double -strict $pos2]} {set pos $pos2}
+      after idle "::tk::TextSetCursor $wtxt $pos ; alited::main::UpdateAll"
+    }
+  } else {
+    set fname [alited::bar::FileName]
+    set wtxt [CurrentWTXT]
+    set pos [$wtxt index insert]
+    set nl [expr {int($pos)}]
+    set al($markdata) [list $fname $pos $wtxt $tag]
+    set line [string trim [$wtxt get $nl.0 $nl.end]]
+    set lmax 50
+    if {[string length $line]>$lmax} {
+      set line [string range $line 0 $lmax]...
+    }
+    set tip [string trim "[file tail $fname] $nl:\n$line"]
+    ::baltip::tip $wcan $tip -ctag $al($mark) -shiftX 10 -pause 0
+    ::baltip repaint $wcan
+  }
+  catch {$wtxt tag delete $tag}
+  $wtxt tag add $tag $pos
+}
+#_______________________
+
+proc main::UnsetMark {idx X Y} {
+  # Unsets a mark in the mark bar or call a popup menu.
+  #   idx - index of tag used as the mark
+  #   X - X-coordinate of pointer
+  #   Y - Y-coordinate of pointer
+
+  namespace upvar ::alited al al
+  variable wcan
+  set disabletips no
+  lassign [MarkOptions $idx] N tip mark markdata
+  if {[info exists al($markdata)]} {
+    set disabletips yes
+    UnsetOneMark $idx
+  } else {
+    set disabletips yes
+    set popm $al(WIN).popmMARK
+    catch {destroy $popm}
+    menu $popm -tearoff 1 -title [msgcat::mc Mark]
+    $popm add command -label [msgcat::mc {Clear All}] \
+      -command "alited::main::UnsetAllMarks"
+    $popm add separator
+    set lab [msgcat::mc Width]
+    $popm add command -label "$lab +" -command "alited::main::MarkWidth 1"
+    $popm add command -label "$lab -" -command "alited::main::MarkWidth -1"
+    $popm add separator
+    $popm add command -label $al(MC,help) -command {alited::HelpAlited #bookmark}
+    tk_popup $popm $X $Y
+  }
+  if {$disabletips && ![info exists al(MARK_TIPOFF)]} {
+    # disable all default tips on empty marks
+    set al(MARK_TIPOFF) 1
+    for {set i 0} {$i<$N} {incr i} {
+      lassign [MarkOptions $i] - - - data
+      if {![info exists al($data)]} {
+        UnsetOneMark $i
+      }
+    }
+  }
+}
+#_______________________
+
+proc main::MarkWidth {i} {
+  # Change the mark bar's width.
+  #   i - 1/-1 to increment/decrement
+
+  namespace upvar ::alited al al
+  variable wcan
+  variable saveini
+  set width [$wcan cget -width]
+  incr width $i
+  if {$width>=5 && $width<=99} {
+    $wcan configure -width $width
+    set al(markwidth) $width
+    set saveini yes
+    after 3000 alited::main::MarkWidthSave
+  } else {
+    bell
+  }
+}
+#_______________________
+
+proc main::MarkWidthSave {} {
+  # Saves alited.ini at need.
+
+  variable saveini
+  if {$saveini} {
+    set saveini no
+    alited::ini::SaveIni
+  }
+}
+#_______________________
+
+proc main::UnsetOneMark {idx} {
+  # Unsets one mark in the mark bar.
+  #   idx - index of tag used as the mark
+
+  namespace upvar ::alited al al
+  variable wcan
+  variable bgcan
+  lassign [MarkOptions $idx] N tip mark markdata
+  $wcan itemconfigure $al($mark) -fill $bgcan
+  ::baltip::tip $wcan $tip -ctag $al($mark) -shiftX 10
+  catch {
+    lassign $al($markdata) fname pos wtxt tag
+    unset al($markdata)
+    $wtxt tag delete $tag
+  }
+}
+#_______________________
+
+proc main::UnsetAllMarks {} {
+  # Unsets all marks in the mark bar.
+
+  variable wcan
+  variable bgcan
+  lassign [MarkOptions] N
+  for {set i 0} {$i<$N} {incr i} {
+    UnsetOneMark $i
+  }
+}
+#_______________________
+
+proc main::SaveMarks {wtxt} {
+  # Saves mark data for a text to be closed.
+  #   wtxt - text's path
+
+  namespace upvar ::alited al al
+  foreach tag [$wtxt tag names] {
+    if {[string match MARK* $tag]} {
+      set idx [string range $tag 4 end]
+      lassign [MarkOptions $idx] -> tip mark markdata
+      catch {
+        lassign $al($markdata) fname pos
+        lassign [$wtxt tag ranges $tag] pos
+        set al($markdata) [list $fname $pos $wtxt $tag]
+      }
+    }
+  }
+}
+#_______________________
+
+proc main::RestoreMarks {fname wtxt} {
+  # Restores mark data for a text to be shown.
+  #   fname - file name
+  #   wtxt - text's path
+
+  namespace upvar ::alited al al
+  lassign [MarkOptions] N
+  for {set i 0} {$i<$N} {incr i} {
+    lassign [MarkOptions $i] N tip mark markdata
+    if {[info exists al($markdata)]} {
+      lassign $al($markdata) fname2 pos
+      if {$fname eq $fname2} {
+        set tag MARK$i
+        set al($markdata) [list $fname $pos $wtxt $tag]
+        catch {$wtxt tag delete $tag}
+        $wtxt tag add $tag $pos
+      }
+    }
+  }
+}
+#_______________________
+
+proc main::MarkOptions {{idx 0}} {
+  # Returns options for marks.
+  #   idx - index of tag
+
+  namespace upvar ::alited al al obPav obPav
+  variable fgcan
+  variable bgcan
+  lassign [$obPav csGet] - - - bgcan - - - - fgcan
+  if {[info exists al(MARK_TIPOFF)]} {
+    set tip {}
+  } else {
+    set tip [msgcat::mc "Left click sets / goes to a mark.\nRight click clears it."]
+  }
+  # 12 greenish
+  lappend colors #00ff00 #00f500 #00eb00 #00e100 #00d700 #00cd00
+  lappend colors #00c300 #00b900 #00af00 #00a500 #009b00 #009100
+  # 12 reddish
+  lappend colors #910000 #9b0000 #a50000 #af0000 #b90000 #c30000
+  lappend colors #cd0000 #d70000 #e10000 #eb0000 #f50000 #ff0000
+  list [llength $colors] $tip MARK,$idx MARKDATA,$idx $colors
 }
 
 # ________________________ Focus _________________________ #
@@ -793,8 +1047,9 @@ proc main::InitActions {} {
   # Initializes working with a main form of alited.
 
   namespace upvar ::alited al al obPav obPav
-  # fill the tab bar of alited
+  # fill the bars waiting for full size of text widget
   alited::bar::FillBar [$obPav BtsBar]
+  FillMarkBar
   # check for outdated TODOs for current project
   lassign [alited::project::IsOutdated $al(prjname) yes] is date todo
   if {$is} {
@@ -953,11 +1208,14 @@ proc main::_create {} {
     {.fraTop - - - - {add}}
     {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$::alited::PanTop_wh}}
     {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3}}
+    {.fraTop.panTop.canmark - - - - {pack -side left -expand 0 -fill both \
+      -padx 0 -pady 0 -ipadx 0 -ipady 0} {-w $al(markwidth) \
+      -afteridle {alited::main::FillMarkBar %w}}}
     {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both \
       -padx 0 -pady 0 -ipadx 0 -ipady 0} {-background $::apave::BGMAIN2}}
     {.fraTop.panTop.frAText.Text - - - - {pack -expand 1 -fill both} \
-      {-bd 0 -w 80 -h 20 -gutter GutText -gutterwidth $al(ED,gutterwidth) \
+      {-bd 0 -w 80 -h 30 -gutter GutText -gutterwidth $al(ED,gutterwidth) \
       -guttershift $al(ED,guttershift) $al(TEXT,opts)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
 {#
@@ -997,7 +1255,8 @@ proc main::_create {} {
   }
   UpdateProjectInfo
   # a pause (and cycles) must be enough for FillBar to have proper -wbar option
-  after 50 {after 30 {after 10 {after 10 {after idle alited::main::InitActions}}}}
+  after idle after 50 after idle after 50 after idle after 50 after idle after 50 \
+    alited::main::InitActions
   bind [$obPav Pan] <ButtonRelease> ::alited::tree::AdjustWidth
   set sbhi [$obPav SbhInfo]
   set lbxi [$obPav LbxInfo]

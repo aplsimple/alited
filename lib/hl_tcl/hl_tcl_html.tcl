@@ -7,8 +7,7 @@
 # _______________________________________________________________________ #
 
 package require Tk
-lappend auto_path [file dirname [info script]]
-package require hl_tcl
+source [file join [file dirname [info script]] hl_tcl.tcl]
 
 namespace eval ::hl_tcl_html {
 }

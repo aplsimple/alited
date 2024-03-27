@@ -1007,7 +1007,7 @@ oo::class create ::apave::APaveBase {
     switch -glob -- $nam3 {
       bts {
         set widget ttk::frame
-        if {![info exists ::bartabs::NewBarID]} {package require bartabs}
+        if {![namespace exists ::bartabs]} {package require bartabs}
         set attrs "-bartabs {$attrs}"
       }
       but {
@@ -3987,14 +3987,14 @@ oo::class create ::apave::APaveBase {
           lassign $tagi tag
           if {[string first <$tag> $line]==0} {
             if {$pos ne {0}} {
-              error "\napaveme.tcl: mismatched <$tag> in line $irow.\n"
+              error "\napave: mismatched <$tag> in line $irow.\n"
             }
             lset tagpos $i $nrnc
             set line [string range $line $len+2 end]
             break
           } elseif {[string first </$tag> $line]==0} {
             if {$pos eq {0}} {
-              error "\napaveme.tcl: mismatched </$tag> in line $irow.\n"
+              error "\napave: mismatched </$tag> in line $irow.\n"
             }
             lappend taglist [list $i $pos $nrnc]
             lset tagpos $i 0

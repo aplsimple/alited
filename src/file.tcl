@@ -402,7 +402,11 @@ proc file::CommandForFile2 {comm fname fname2} {
   #   fname2 - 2nd file name
   # Returns yes, if success.
 
-  if {[catch {file $comm $fname $fname2} err]} {
+  if {$comm in {copy rename} && [file exists $fname2]} {
+    alited::msg ok err "$fname2\nalready exists."
+    return no
+  }
+  if {[catch {file $comm -- $fname $fname2} err]} {
     alited::msg ok err $err -text 1 -w 60 -h {5 9}
     return no
   }
@@ -430,13 +434,15 @@ proc file::RenameFile {TID fname {doshow yes}} {
   #   fname - file name
   #   doshow - flag "show the file's text"
 
-  alited::bar::SetTabState $TID --fname $fname
-  alited::bar::BAR $TID configure -text {} -tip {}
-  set tab [alited::bar::UniqueListTab $fname]
-  set sname [file tail $fname]
-  alited::bar::BAR $TID configure -text $sname -tip [FileStat $fname]
-  if {$doshow} {
-    alited::bar::BAR $TID show yes
+  if {[file exists $fname]} {
+    alited::bar::SetTabState $TID --fname $fname
+    alited::bar::BAR $TID configure -text {} -tip {}
+    set tab [alited::bar::UniqueListTab $fname]
+    set sname [file tail $fname]
+    alited::bar::BAR $TID configure -text $sname -tip [FileStat $fname]
+    if {$doshow} {
+      alited::bar::BAR $TID show yes
+    }
   }
 }
 #_______________________
@@ -449,6 +455,8 @@ proc file::DoRenameFileInTree {wtree ID fname fname2} {
   #   fname2 - new file name (full)
 
   set fsplit [file split $fname]
+  set lfnam0 [llength $fsplit]
+  set lfnam1 [expr {$lfnam0-1}]
   if {![CommandForFile2 rename $fname $fname2]} return
   foreach tab [alited::bar::BAR listTab] {
     set TID [lindex $tab 0]
@@ -458,8 +466,9 @@ proc file::DoRenameFileInTree {wtree ID fname fname2} {
       break
     }
     set fsplit1 [file split $fname1]
-    if {[string first $fsplit $fsplit1]==0} {
-      set fname1 [file join $fname2 {*}[lrange $fsplit1 [llength $fsplit] end]]
+    if {[lrange $fsplit1 0 $lfnam1] == $fsplit} {
+      # directory is renamed
+      set fname1 [file join $fname2 {*}[lrange $fsplit1 $lfnam0 end]]
       RenameFile $TID $fname1 no
     }
   }
@@ -476,11 +485,6 @@ proc file::RenameFileInTree {{undermouse yes} args} {
   namespace upvar ::alited al al obPav obPav obDl2 obDl2
   lassign [TreeFilename] wtree name fname ID TID
   if {$fname eq {}} return
-  if {$TID ne ""} {
-    bell
-    alited::msg ok warn [msgcat::mc {An open file can not be renamed:}]\n$fname
-    return 0
-  }
   lassign [InputFileName $al(MC,renamefile) $name $undermouse {*}$args] res name2
   set name2 [string trim $name2]
   if {$res && $name2 ne {} && $name2 ne $name} {
@@ -565,21 +569,18 @@ proc file::CloneFileName {fname} {
   set tailname [file tail $fname]
   set ext [file extension $tailname]
   set root [file rootname $tailname]
-  # remove possibly existing suffix from the filename
+  # possibly existing suffix in the filename
   set suffix {_\d+$}
   set suff [regexp -inline $suffix $root]
+  set root [string range $root 0 end-[string length $suff]]
   set i1 2
   set i2 99
-  if {$suff ne {}} {
-    set root [string range $root 0 end-[string length $suff]]
-    # find a free number for the clone
-    for {set i $i1} {$i<=$i2} {incr i} {
-      set suff [string map [list {\d+} $i \$ {}] $suffix]
-      set fname2 [file join [file dirname $fname] $root$suff$ext]
-      if {![file exists $fname2]} break
-    }
-  } else {
-    set fname2 [file join [file dirname $fname] ${root}_$i1$ext]
+  if {$suff eq {}} {set suff _$i1}
+  # find the free suffix for the clone
+  for {set i $i1} {$i<=$i2} {incr i} {
+    set suff [string map [list {\d+} $i \$ {}] $suffix]
+    set fname2 [file join [file dirname $fname] $root$suff$ext]
+    if {![file exists $fname2]} break
   }
   return $fname2
 }
@@ -824,14 +825,16 @@ proc file::SaveFileAs {{TID ""}} {
 }
 #_______________________
 
-proc file::SaveAndClose {} {
-  # Saves and closes the current file.
+proc file::SaveAndClose {{TID ""}} {
+  # Saves and closes a file.
+  #   TID - tab's ID
   # This handles pressing Ctrl+W.
   # Returns yes if the file was closed.
 
-  if {[IsModified] && ![SaveFile]} {return no}
   set fname [lindex $::alited::bar::ctrltablist 1]
-  alited::bar::BAR [alited::bar::CurrentTabID] close
+  if {[IsModified $TID] && ![SaveFile $TID]} {return no}
+  if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
+  alited::bar::BAR $TID close
   # go to a previously viewed file
   if {[set TID [alited::bar::FileTID $fname]] ne {}} {
     alited::bar::BAR $TID show
@@ -840,26 +843,30 @@ proc file::SaveAndClose {} {
 }
 #_______________________
 
-proc file::CloseAndDelete {} {
-  # Closes and deletes the current file.
+proc file::CloseAndDelete {{TID ""}} {
+  # Closes and deletes a file.
+  #   TID - tab's ID
+  # Returns 1 for deleted, 0 for error/cancel.
 
   namespace upvar ::alited al al
-  set fname [alited::bar::FileName]
+  set fname [alited::bar::FileName $TID]
   if {[IsNoName $fname]} {
     # for a new file: to save first if modified (to think twice)
-    if {[IsModified]} {SaveFile} else {SaveAndClose}
-    return
+    if {[IsModified $TID]} {SaveFile $TID} else {SaveAndClose $TID}
+    return 0
   }
   set msg [string map [list %f [file tail $fname]] $al(MC,delfile)]
   if {[alited::msg yesno warn $msg NO]} {
     # to save first (for normal closing only)
-    if {[SaveAndClose]} {
+    if {[SaveAndClose $TID]} {
       DeleteFile $fname
       FillRecent $fname
       if {!$al(TREE,isunits)} {alited::tree::RecreateTree {} {} yes}
       alited::edit::MacroUpdate $fname
+      return 1
     }
   }
+  return 0
 }
 #_______________________
 
@@ -997,6 +1004,7 @@ proc file::CloseFile {TID checknew args} {
         set res [SaveFile $TID]
       }
     }
+    alited::main::SaveMarks $wtxt
     if {$wtxt ne [$obPav Text]} { ;# let [$obPav Text] be alive, as needed by 'pack'
       destroy $wtxt $wsbv
     }
@@ -1004,11 +1012,12 @@ proc file::CloseFile {TID checknew args} {
     alited::ini::SaveCurrentIni $al(INI,save_onclose)
     after 9999 [list alited::file::ClearupOnClose $TID $wtxt $fname]
   }
-  alited::tree::UpdateFileTree
   if {$al(closefunc) != 1} {  ;# close func = 1 means "close all"
     AddRecent $fname
   }
   after idle [list alited::bar::RenameTitles $TID]
+  after idle after 50 after idle after 50 after idle after 50 \
+    after idle after 50 alited::tree::UpdateFileTree
   return $res
 }
 #_______________________
@@ -1395,10 +1404,7 @@ proc file::DeleteOne {ID wtree dlg dlgopts res} {
   set fname [lindex [$wtree item $ID -values] 1]
   set TID [alited::bar::FileTID $fname]
   if {$TID ne ""} {
-    bell
-    alited::bar::BAR $TID show no no
-    alited::msg ok warn "$al(MC,nodelopen)\n$fname"
-    return 0
+    return [alited::file::CloseAndDelete $TID]
   }
   set msg [string map [list %f $name] $al(MC,delfile)]
   if {$res<11} {

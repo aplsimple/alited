@@ -241,6 +241,8 @@ namespace eval ::alited {
   set al(format_separ1) $al(format_separ1DEF)
   set al(format_separ2) $al(format_separ2DEF)
 
+  # width of mark bar
+  set al(markwidth) 8
 }
 
 # ________________________ Variables _________________________ #
@@ -612,7 +614,7 @@ proc ini::ReadIniMisc {nam val} {
     showinfo {set al(TREE,showinfo) $val}
     listSBL - HelpedMe - checkgeo - tonemoves - moveall - chosencolor \
     - sortList - activemacro - commentmode - format_separ1 - format_separ2 \
-    - TIPS,* - MNUGEO,* {
+    - TIPS,* - MNUGEO,* - markwidth {
       set al($nam) $val
     }
     tplilast {set ::alited::unit::ilast $val}
@@ -805,6 +807,7 @@ proc ini::SaveIni {{newproject no}} {
   namespace upvar ::alited::project prjlist prjlist prjinfo prjinfo
   puts "alited storing: $al(INI)"
   set chan [open $::alited::al(INI) w]
+  chan configure $chan -buffering full -buffersize 131072
   puts $chan {[Options]}
   puts $chan "comm_port=$al(comm_port)"
   puts $chan "comm_port_list=$al(comm_port_list)"
@@ -946,6 +949,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "commentmode=$al(commentmode)"
   puts $chan "format_separ1=$al(format_separ1)"
   puts $chan "format_separ2=$al(format_separ2)"
+  puts $chan "markwidth=$al(markwidth)"
   # save the geometry options
   puts $chan {}
   puts $chan {[Geometry]}
@@ -991,6 +995,7 @@ proc ini::SaveIniPrj {{newproject no}} {
   set al(tabs) [list]
   puts "alited storing: $al(prjfile)"
   set chan [open $al(prjfile) w]
+  chan configure $chan -buffering full -buffersize 262144
   puts $chan {[Tabs]}
   lassign [alited::bar::GetBarState] TIDcur - wtxt
   if {!$newproject} {

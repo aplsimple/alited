@@ -903,8 +903,7 @@ proc edit::OpenMacroFile {} {
 proc edit::HelpOnMacro {} {
   # Shows Play Macro help.
 
-  namespace upvar ::alited al al DATADIR DATADIR
-  alited::HelpFile $al(WIN) [file join $DATADIR help macro.txt] -head $al(MC,playtkl) -weight bold
+  alited::HelpAlited #macros
 }
 
 # ________________________ Rectangular selection _________________________ #
@@ -975,6 +974,7 @@ proc edit::saveRect {mode wtxt} {
   namespace upvar ::alited al al
   set selection [$wtxt tag ranges sel]
   if {[llength $selection]} {
+    ::apave::undoIn $wtxt
     set ln1 999999999
     set al(rectSel,text) [list]
     foreach {from to} $selection {
@@ -989,6 +989,7 @@ proc edit::saveRect {mode wtxt} {
     if {$mode==2} {
       catch {::tk::TextSetCursor $wtxt [lindex $selection 0 0]}
     }
+    ::apave::undoOut $wtxt
   }
   set al(rectSel) 0
 }
@@ -1002,6 +1003,7 @@ proc edit::pasteRect {wtxt nl nc} {
 
   namespace upvar ::alited al al
   if {[llength $al(rectSel,text)]} {
+    ::apave::undoIn $wtxt
     $wtxt tag remove sel 1.0 end
     set sels [list]
     foreach line $al(rectSel,text) {
@@ -1015,6 +1017,7 @@ proc edit::pasteRect {wtxt nl nc} {
     }
     catch {::tk::TextSetCursor $wtxt $pos1}
     catch {$wtxt tag add sel {*}$sels}
+    ::apave::undoOut $wtxt
   }
 }
 

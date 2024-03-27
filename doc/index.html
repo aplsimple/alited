@@ -67,6 +67,7 @@
 <li class="level3"><div class="li"><a href="#search1">Find / Replace</a></div></li>
 <li class="level3"><div class="li"><a href="#search2">Other search tools</a></div></li>
 <li class="level3"><div class="li"><a href="#completion">Command / variable completion</a></div></li>
+<li class="level3"><div class="li"><a href="#bookmark">Book-marks</a></div></li>
 </ul>
 </li>
 <li class="level2"><div class="li"><a href="#tools">Tools</a></div>
@@ -95,12 +96,10 @@
 <li class="level3"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
 <li class="level3"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
 <li class="level2"><div class="li"><a href="#formats">Formatting</a></div></li>
+<li class="level3"><div class="li"><a href="#transl">Language translation</a></div></li>
 <li class="level2"><div class="li"><a href="#macros">Macros</a></div></li>
 </ul></li>
-<li class="level2"><div class="li"><a href="#usersynt">User syntax</a></div>
-<ul>
-<li class="level3"><div class="li"><a href="#transl">Language translation</a></div></li>
-</ul></li>
+<li class="level2"><div class="li"><a href="#usersynt">User syntax</a></div></li>
 <li class="level2"><div class="li"><a href="#options">Options</a></div></li>
 <li class="level2"><div class="li"><a href="#links">Links</a></div></li>
 </div>
@@ -1585,6 +1584,36 @@ Thus, if you use your own <i>leaf's regexp</i> of Preferences/Units, then all le
 The <code>myProc</code> of the <code># ======== myProc ========</code> line will be taken to the unit tree and as such used at the command completion.
 </p>
 
+<br><p>
+<h3 id="bookmark"><i>Book-marks</i></h3>
+</p>
+
+<p>
+The book-marks are especially useful to navigate over a document without much of structure. Though, sometimes even a well structured Tcl script may require book-marking.
+</p>
+
+<p>
+The book-marks are set in the mark bar at left side of the text box's line numbers.
+There are 24 book-marks of different colors, from bright green to bright red.
+</p>
+
+<p>
+To set a book-mark, click any of the mark bar cell with the mouse <i>left button</i>.
+After that, you can click the cell to go to the mark, i.e. to the book-marked text position.
+</p>
+
+<p>
+The book-marks are active during the current session of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>. Still, even if you close a file, its book-marks remain active in the session.
+</p>
+
+<p>
+To clear a book-mark, click it with the mouse <i>right button</i>. The right button clicking an empty mark cell will bring out the popup menu which allows you:
+<ul>
+<li>to clear all book-marks</li>
+<li>to change the mark bar's width</li>
+</ul>
+</p>
+
 <p>
 <br>
 
@@ -1691,20 +1720,7 @@ On MS Windows, if you have a fully deployed Tcl/Tk 8.6.10+, the default path to 
 <h3 id=runme><i>"Tools / Run..." menu item</i></h3>
 </p>
 <p>
-In this dialogue, <i>Run</i> button runs a selected command. Sort of "run it on fly".
-The command is active all the time when "Run" dialogue is open. It's also run with F5 key.
-</p>
-<p>
-The dialogue isn't closed with <i>Run</i> button, so that you can customize commands before saving them. Also, <i>while "Run" dialogue is open</i>, you can modify your scripts (the dialogue is non-modal).
-</p>
-<p>
-After customizing all commands, press <i>Save</i> button: it saves the dialogue's current settings and closes it.
-</p>
-<p>
-<i>Cancel</i> button dismisses all changes made in the dialogue.
-</p>
-<p>
-A current Tcl script (file.tcl) can be run in <i>console</i> or <i>Tkcon</i>.
+In this dialogue, a current Tcl script (file.tcl) can be run in <i>console</i> or <i>Tkcon</i>. Both modes have their pros and contras - mostly pros, if properly used.
 </p>
 
 <p>
@@ -1729,7 +1745,10 @@ If a Tcl file has to be run, you can set the command with or without
 /home/me/myPG/src/file.tcl LOG=~/TMP/log.txt
 </pre>
 </p>
-
+<p>
+If your Tcl executable command includes spaces (not pretty nice case though), quote it. For example:
+<pre class="code"><font color=#8b2a0e>&quot;C:\Tcl 64\bin\wish.exe&quot;</font> myproj3.tcl arg1 arg2...</pre>
+</p>
 <p>
 The command can include wildcards:
 <ul>
@@ -1767,6 +1786,20 @@ It can be necessary <i>for a specific project</i>, sort of initialization.
 rm log.txt
 </pre>
 </p>
+<p>
+<i>Run</i> button runs a selected command. Sort of "run it on fly".
+The command is active all the time when "Run" dialogue is open. It's also run with F5 key.
+</p>
+<p>
+The dialogue isn't closed with <i>Run</i> button, so that you can customize commands before saving them. Also, <i>while "Run" dialogue is open</i>, you can modify your scripts (the dialogue is non-modal).
+</p>
+<p>
+After customizing all commands, press <i>Save</i> button: it saves the dialogue's current settings and closes it.
+</p>
+<p>
+<i>Cancel</i> button dismisses all changes made in the dialogue.
+</p>
+<p>
 <p>All of the "Run" settings are per project.
 </p>
 
@@ -1943,6 +1976,10 @@ Other wildcards for the <i>final processor</i>:
 E.g.
 <pre class="code">%E %A/lib/e_menu/e_menu.tcl m=%M/misc ex=7</pre>
 runs 7th <i>e_menu</i> item of <i>misc.em</i> menu. In fact, it embeds the created hard copy into <a href="https://aplsimple.github.io/en/tcl/printer/alited/index.html">https://aplsimple.github.io</a>.
+</p>
+
+<p>
+The <i>final processor</i> can be run separately, with its tool button.
 </p>
 
 <p>
@@ -2600,7 +2637,45 @@ The <i>Edit / Formats / External</i> submenu contains not the text handlers but 
 <b>Note #2</b>: the <i>Edit / Formats</i> submenus are good candidates to "freeze" them with their dotted items and move them to convenient places of the screen, perhaps changing their sizes. So that they will be at hand in the next sessions of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>. An example of this is presented in <A href="https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6">"Little things" demo</A>.
 </p>
 
+<br>
 <p>
+<h3 id="transl"><i>Language translation</i></h3>
+</p>
+
+<p>
+<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is a multilingual program and as such it provides a translation facility (for example, to add new .msg files to <i>alited/data/msgs</i> of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s source :)
+</p>
+<p>
+The translation is provided by <i>Edit/Formats/Translation</i> menu which can be customized and added (with <i>Edit/Formats/Open...</i>).
+</p>
+
+<p>
+You need an access to <b>Internet</b> to translate the files.
+</p>
+
+<p>
+To translate a text, select it and choose its appropriate translator, e.g. <i>De-En</i> translates from Deutsch to English.
+</p>
+
+<p>
+Though, there is a limit of translation length. On September 2023 it is 1000 characters. The current line's length is seen in the "Col:" field of alited's status bar. If a line is too long, split it with Enter key and translate its parts.
+</p>
+
+<p>
+The slowness of the translation is a cost of its "freedomness". After acquiring API key of LibreTranslate, you'll get the quick translation as well. At that <i>lib/addon/hl_trans.tcl</i> should be modified.
+</p>
+
+<p>
+The translation options can be customized in "Preferences":
+<i>Preferences / Editor / Plain text</i>.
+</p>
+
+<p>
+See details at:
+ <ul>
+ <li><a href=https://github.com/LibreTranslate/LibreTranslate>github.com/LibreTranslate/LibreTranslate</a></li>
+ <li><a href=https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>en.wikipedia.org/wiki/List_of_ISO_639-1_codes</a></li>
+ </ul>
 </p>
 
 <br>
@@ -2614,7 +2689,7 @@ The macros are available in "Edit / Play Macro" submenu.
 </p>
 
 <p>
-To create a temporary macro, choose "Edit / Play Macro / Quick macro" menu item. This allows recording a macro just to "run and forget". Another run of this menu item will rewrite a previous quick macro.
+To create a temporary macro, choose "Edit / Play Macro / Quick macro" menu item, then press a key sequence, finishing it with F12 key. This allows recording a macro just to "run and forget". Another run of this menu item will rewrite a previous quick macro.
 </p>
 
 <p>
@@ -2638,11 +2713,26 @@ To create a saved macro, choose any saved macro, change its name to a new one an
 </p>
 
 <p>
+The saved macros can be <i>played, recorded, deleted</i>. All actions are available at choosing a saved macro from <i>Play macro</i> menu, with the appropriate tool buttons.
+</p>
+
+<p>
+To record the new macro, choose any macro from "Edit / Play Macro" menu (except "Quick macro") and enter a new name of macro. Check <i>Record mouse</i> to record the mouse actions along with the keys.
+</p>
+<p>
+After clicking <i>Record Macro</i> button for an existing macro, you can:
+<ul>
+<li><i>rewrite it</i> (pressing a new sequence of keys, ended with <i>F12</i>)</li>
+<li><i>edit it</i> (open the macro's file in <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>)</li>
+</ul>
+</p>
+
+<p>
 The "Comment" field is useful to remind how the macro should be used. The comment is updated after recording a new or rewriting an existing macro. The playing doesn't update the comment. In a macro file, the comment lines are marked with "#". Any macro file can be edited with "Edit / Play Macro / Open..." menu item.
 </p>
 
 <p>
-If a macro is active, it's run through F12 hot key. Though the macros' maximum number is 97, only one macro may be active.
+If a macro is active, it's run with F12 hot key. Though the macros' maximum number is 97, only one macro may be active.
 </p>
 
 <p>
@@ -2699,86 +2789,6 @@ First, the <i>init</i> makes initial settings, then it returns a full name of th
 
 <p>
 The <i>lib/addon/hl_*.tcl</i> files are easy to implement. Any of existing ones can serve as a sample.
-</p>
-
-<br>
-<p>
-<h3 id="transl"><i>Language translation</i></h3>
-</p>
-
-<p>
-<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is a multilingual program and as such it provides a translation facility (for example, to add new .msg files to <i>alited/data/msgs</i> of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s source :)
-</p>
-<p>
-The translation is available for a specific type of files, i.e. having the extension <i>.l1-l2</i> which means translating from <i>l1</i> language to <i>l2</i> language.
-</p>
-
-<p>
-Also <i>l2.msg</i> files can be translated from English to <i>l2</i>.
-</p>
-
-<p>
-For example:
-<br><i>*.en-de</i> files are for English-Deutsch translations
-<br><i>ru.msg</i> files are for English-Russian translations
-</p>
-
-<p>
-You need an access to <b>Internet</b> to translate the files.
-</p>
-
-<p>
-How it works? When you open/create this type of file, you run the line
-by line translation with just pressing F5 key (of <i>Tools/Run</i>)
-while the caret is set on the appropriate lines. You can get the translation together with or instead of the original line.
-</p>
-
-<p>
-Say, you open <i>trans.en-ru</i> with "Hello, world!" line and press F5 on the line - and you get "Привет, мир!".
-</p>
-
-<p>
-So, after entering a line, press F5 key and after a pause you'll get
-the translation of the line. The response time doesn't depend greatly
-on the length of the line, so that you can compose a rather lengthy
-line and then press F5 on it.
-</p>
-
-<p>
-Though, there is a limit of translation length. On September 2023 it is
-1000 characters. The current line's length is seen in the "Col:" field
-of alited's status bar. If a line is too long, split it with Enter key
-and translate its parts.
-</p>
-
-<p>
-The slowness of the translation is a cost of its "freedomness". After
-acquiring API key of LibreTranslate, you'll get the quick translation
-as well. At that <i>lib/addon/hl_trans.tcl</i> should be modified.
-The alited's author will be grateful to you for this modification.
-</p>
-
-<p>
-The translation options can be customized in "Preferences":
-<i>Preferences / Editor / Plain text</i>.
-</p>
-
-<p>
-Note that <i>l1</i> and <i>l2</i> are the language (not country) codes.
-E.g. <i>uk</i> means Ukrainian language, not United Kingdom country.
-</p>
-
-<p>
-See details at:
- <ul>
- <li><a href=https://github.com/LibreTranslate/LibreTranslate>github.com/LibreTranslate/LibreTranslate</a></li>
- <li><a href=https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>en.wikipedia.org/wiki/List_of_ISO_639-1_codes</a></li>
- </ul>
-</p>
-
-<p>
-How to run other stuff and overcome F5 key translating the files?
-Click <i>Run</i> toolbar icon or run <i>"Tools/Run..."</i> menu item.
 </p>
 
 <p>

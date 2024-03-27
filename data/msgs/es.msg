@@ -143,6 +143,10 @@ namespace eval ::alited {
     {check RE in Find/Replace box} {marque RE en Buscar/Reemplazar}
     {Context} {Contexto}
     {Changes will be lost!} {¡Los cambios se perderán!}
+    {Mark} {Marca}
+    "Left click sets / goes to a mark.\nRight click clears it." "El clic izquierdo establece / va a una marca.\nAl hacer clic con el botón derecho, se borra."
+    {Clear All} {Borrar todo}
+    {Width} {Ancho}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
@@ -159,8 +163,6 @@ namespace eval ::alited {
     "Remove \"%n\"\nfrom \"%f\"?" "¿Borrar \"%n\"\nde \"%f\"?"
     "Delete \"%f\"?" "¿Borrar \"%f\"?"
     {Rewrite} {Reescribir}
-    {An open file can not be deleted:} {Un archivo abierto no se puede borrar:}
-    {An open file can not be renamed:} {Un archivo abierto no puede ser renombrado:}
     "File \"%f\" was modified by some application.\n\nCancel your edition and reload the file?" "El archivo \"%f\" fue modificado por alguna aplicación.\n\n¿Cancelar la edición y recargar el archivo?"
     "File \"%f\" was deleted by some application.\n\nSave the file?" "El archivo \"%f\" fue borrado por alguna aplicación.\n\n¿Guardar el archivo?"
     {Tip File Info} {Información del archivo}
@@ -206,7 +208,6 @@ namespace eval ::alited {
     {Delete a template #%n ?} {¿Borrar una plantilla #%n ?}
     "Import templates\nfrom external alited.ini" "Importar plantillas desde alited.ini externo"
     {Number of imported templates: %n} {Número de plantillas importadas: %n}
-    "Indents a template at inserting,\nby an insertion line's indentation." "Indénta una plantilla al insertar,\npor la sangría de una línea de inserción."
   }
 
   ## ________________________ Projects ________________________ ##
@@ -741,6 +742,7 @@ namespace eval ::alited {
     {Output directory cannot be cleared: alien directories} {Directorio de resultados no se puede borrar: directorios alienígenas}
     "The output directory\n  %n\ncontains %c subdirectories.\n\nAll will be replaced with the new!" "Directorio de resultados\n  %n\contiene %c subdirectorios.\n\nTodos serán reemplazados por los nuevos!"
     {Sort units:} {Ordenar unidades:}
+    {Runs the final processor.} {Ejecuta el procesador final.}
   }
 
   ## ________________________ EONS alited _________________________ ##

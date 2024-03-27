@@ -8,6 +8,7 @@
 
 namespace eval unit {
   variable ilast -1  ;# last selection in the list of templates
+  variable REtodel {#!*\s*TODEL}
 }
 
 # ________________________ Common _________________________ #
@@ -290,7 +291,7 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
   #   tpldata - template
 
   namespace upvar ::alited al al DIR DIR MNUDIR MNUDIR
-  lassign $tpldata tex pos place tplind
+  lassign $tpldata tex pos place
   set sec [clock seconds]
   set fname [alited::bar::FileName]
   # fill the common wildcards
@@ -317,15 +318,12 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
   #   # ar2 -
   #   # ar3 -
   set unithead [GetDeclaration $wtxt {} $l1 $l2]
-#!  set pad1 [string repeat " " [::apave::obj leadingSpaces $unithead]]
-  set pad1 {}
   set unithead [string trim $unithead "\{ "]
   lassign [split $unithead "\{"] proc
   set iarg [string range $unithead [string length $proc] end]
-  if {[IsLeafRegexp]} {set tex [string trim $tex]}
-  set pad2 [string repeat " " [::apave::obj leadingSpaces $tex]]
+  set pad [string repeat " " [::apave::obj leadingSpaces $tex]]
   catch {
-    set tpla $pad2[string map [list \\n \n] $al(TPL,%a)]
+    set tpla $pad[string map [list \\n \n] $al(TPL,%a)]
     set oarg [set st1 ""]
     if {[string match \{*\} $iarg]} {set iarg [string range $iarg 1 end-1]}
     foreach a [list {*}$iarg] {
@@ -334,14 +332,14 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
       if {$a ne {}} {
         set st [string map [list %a $a] $tpla]
         if {$st1 eq ""} {set st1 $st}
-        append oarg $pad1$st
+        append oarg $st
       }
     }
     if {[string first %a $tex]>-1} {
       set place 0
       set pos 1.[string length $st1]
     }
-    set tex $pad1[string map [list \\n \n %a $oarg] $tex]
+    set tex [string map [list \\n \n %a $oarg] $tex]
   }
   set ll1 [string length $tex]
   set tex [string map [list %p [lindex $proc 1]] $tex]
@@ -352,7 +350,7 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
       set pos $r.[expr {$c+$ll}]
     }
   }
-  return [list $tex $pos $place $tplind]
+  return [list $tex $pos $place]
 }
 #_______________________
 
@@ -370,7 +368,7 @@ proc unit::InsertTemplate {tpldata {dobreak yes}} {
   }
   set wtxt [alited::main::CurrentWTXT]
   lassign [alited::tree::CurrentItemByLine "" 1] itemID - - - - l1 l2
-  lassign [TemplateData $wtxt $l1 $l2 $tpldata] tex posc place tplind
+  lassign [TemplateData $wtxt $l1 $l2 $tpldata] tex posc place
   lassign [split $posc .] -> col0
   switch $place {
     0 { ;# returned by TemplateData: after a declaration
@@ -386,7 +384,7 @@ proc unit::InsertTemplate {tpldata {dobreak yes}} {
       if {$l2 ne ""} {
         set pos0 [$wtxt index "$l2.0 +1 line linestart"]
         if {[string index $tex end] ne "\n"} {append tex \n}
-        lassign [CorrectPos $wtxt $tex $posc $pos0 {} $tplind] tex pos0 posc
+        lassign [CorrectPos $wtxt $tex $posc $pos0 {}] tex pos0 posc
         lassign [split $posc .] -> col0
       } else {
         set place 1
@@ -399,7 +397,7 @@ proc unit::InsertTemplate {tpldata {dobreak yes}} {
   if {$place == 1} {
     set pos0 [$wtxt index "insert +1 line linestart"]
     set posi [$wtxt index "insert linestart"]
-    lassign [CorrectPos $wtxt $tex $posc $pos0 $posi $tplind] tex pos0 posc
+    lassign [CorrectPos $wtxt $tex $posc $pos0 $posi] tex pos0 posc
     lassign [split $posc .] -> col0
     if {[string index $tex end] ne "\n"} {append tex \n}
   }
@@ -413,23 +411,24 @@ proc unit::InsertTemplate {tpldata {dobreak yes}} {
 }
 #_______________________
 
-proc unit::CorrectPos {wtxt tex posc pos0 posi tplind} {
-  # Corrects an insert position at "after unit insert" specifically and only
-  # for this type of underlining: #______. Also, corrects the indentation
-  # of the template, counting the insertion point's indentation.
+proc unit::CorrectPos {wtxt tex posc pos0 posi} {
+  # Corrects an insert position, counting the insertion point's indentation.
   #   wtxt - current text widget
   #   tex - template's text
   #   posc - relative position of cursor
   #   pos0 - position of insertion
-  #   tplind - "indent" flag of the template
-  # If 1st line of the template is underlined, we place it under a previous
-  # unit's closing brace. But if the insertion point is already underlined
-  # or is a branch, we move 1st line of the template to its end.
+  #   posi - cursor position
 
   namespace upvar ::alited al al
+  variable REtodel
   set tlist [split $tex \n]
-  set line1 [lindex $tlist 0]
-  set indent1 [::apave::obj leadingSpaces $line1]  ;# indentation of the template
+  set indent1 0
+  foreach t $tlist {
+    if {[set t [string trim $t]] ne {}} {
+      set indent1 [::apave::obj leadingSpaces $t]  ;# indentation of the template
+      break
+    }
+  }
   set pos1 [expr {int([$wtxt index $pos0])}]
   set line2 [$wtxt get $pos1.0 $pos1.end]
   if {$posi eq {}} {
@@ -439,9 +438,9 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi tplind} {
     set linei [string trimright [$wtxt get $posi.0 $posi.end]]
     set indent2 [::apave::obj leadingSpaces $linei]
     if {$linei eq {}} {
-      foreach i {+1 +2 -1 -2} {
+      foreach i {+0 +1 +2 -1 -2} {
         set i [expr $posi$i]
-        set ind [::apave::obj leadingSpaces [$wtxt get $i.0 $i.end]]
+        set ind [::apave::obj leadingSpaces [$wtxt get $i.0 $i.end]=]
         if {$ind} {
           set indent2 $ind
           break
@@ -450,8 +449,12 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi tplind} {
     }
   }
   lassign [split $posc .] pl pc
+  # If 1st line of the template is underlined, we place it under a previous
+  # unit's closing brace. But if the insertion point is already underlined
+  # or is a branch, we move 1st line of the template to its end.
+  # Or remove it at all, at the end of branch.
+  set line1 [lindex $tlist 0]
   set under {^\s*#\s?_+$}
-  # move underline to the end or remove it at all
   if {[regexp $under $line1]} {
     set isund [expr {[regexp $under $line2] || [regexp $al(RE,leaf2) $line2]}]
     while {[incr pos1 -1]>1} {
@@ -474,21 +477,18 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi tplind} {
       }
     }
   }
-  # indent the template
   Source_unit_tpl
-#!  if #\{$indent1<$indent2 && [alited::unit_tpl::IsIndented $tplind $tex]#\} #\{
-  if {$indent1<$indent2} {
-    set indent [string repeat { } [incr indent2 -$indent1]]
-    set tlist [split $tex \n]
-    set tex {}
-    foreach t $tlist {
+  # indent the template & increment the cursor position
+  if {![regexp $REtodel $tex] && $indent1<$indent2} {
+    incr indent2 -$indent1
+    set indent [string repeat { } $indent2]
+    lassign [split $posc .] pl pc
+    set posc $pl.[incr pc $indent2]
+    foreach t [split $tex \n] {
+      if {[incr _cnt]==1} {set tex {}} {append tex \n}
       if {$t ne {}} {set t $indent$t}
-      if {[incr pos2]==$pl} {
-        set posc $pl.[incr pc $indent2]  ;# increment the cursor position
-      }
-      append tex $t\n
+      append tex $t
     }
-    set tex [string range $tex 0 end-1] ;# remove the last linefeed
   }
   return [list $tex $pos0 $posc]
 }
@@ -548,7 +548,7 @@ proc unit::Delete {wtree fname sy} {
     set name [$wtree item $ID -text]
     set msg [string map [list %n $name %f [file tail $fname]] $al(MC,delitem)]
     if {$ans<11} {
-      set ans [alited::msg $dlg ques $msg NO {*}$dlgopts]
+      set ans [alited::msg $dlg ques $msg YES {*}$dlgopts]
     }
     switch $ans {
       0 - 12 break
