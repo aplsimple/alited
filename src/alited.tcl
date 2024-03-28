@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.1.1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -386,12 +386,20 @@ if {[package versions alited] eq {}} {
 
 namespace eval alited {
 
+  proc FgAdditional {} {
+    # Gets the list of additional colors: branch, red, todo.
+
+    lassign [::hl_tcl::addingColors {} -AddTags] - - fgbr - - fgred - - - fgtodo
+    list  $fgbr $fgred $fgtodo
+  }
+  #_______________________
+
   proc FgFgBold {} {
     # Gets foregrounds of normal and colored text of current color scheme
     # and red color of TODOs.
 
     variable obPav
-    lassign [::hl_tcl::addingColors] -> fgred
+    lassign [FgAdditional] -> fgred
     if {[catch {set lst [$obPav csGet]}]} {
       set fg [ttk::style lookup "." -foreground]
       set bg [ttk::style lookup "." -background]
@@ -399,7 +407,7 @@ namespace eval alited {
     } else {
       lassign $lst - fg - bg fgbold
     }
-    return [list $fg $fgbold $fgred $bg]
+    list $fg $fgbold $fgred $bg
   }
   #_______________________
 

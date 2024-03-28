@@ -738,10 +738,11 @@ proc format::Mode5 {cont args} {
   # Inserts a string at the current cursor position.
   #   cont - list of config.file's lines
 
-  lassign [BeforeFormatting] wtxt
+  lassign [BeforeFormatting] wtxt value
   foreach line $cont {
     set pos [$wtxt index insert]
     if {[set com [alited::edit::IniParameter command $line]] ne {}} {
+      set com [string map [list %w $wtxt %v $value] $com]
       if {[catch {set value [eval $com]} e]} {
         alited::Message $e 4
         set err 1

@@ -8,6 +8,12 @@ The *alited* has acquired the rich and comprehensive set of features, some are u
 # LAST CHANGES
 
 
+Version `v1.8.1.1 (28 Mar'24)`
+
+  - CHANGE: infobar: colors of resuls and found unit names (branches)
+  - CHANGE: Edit/Formats: mode=5: %w (text path) and %v (selection) wildcards
+  - CHANGE: packages: e_menu/apave 4.4.1
+
 Version `v1.8.1 (27 Mar'24)`
 
   - BUGFIX: rename file in tab bar after changing its upper directory name

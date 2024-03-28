@@ -276,17 +276,20 @@ proc find::DoFindUnit {} {
   foreach tab $tabs {
     set TID [lindex $tab 0]
     alited::main::GetText $TID no no
+    lassign [alited::FgAdditional] fgbr
     foreach it $al(_unittree,$TID) {
       lassign $it lev leaf fl1 title l1 l2
       set ttl [string range $title [string last : $title]+1 end] ;# pure name, no NS
       if {[string match -nocase "*$what*" $ttl]} {
         set fname [alited::bar::BAR $TID cget -text]
-        PutInfo $fname $l1 $title $TID
+        if {$leaf} {set fg {}} {set fg $fgbr}
+        PutInfo $fname $l1 $title $TID $fg
         incr n
       }
     }
   }
-  ShowResults [string map [list %n $n %s $what] $al(MC,frres1)]
+  lassign [alited::FgAdditional] -> fg
+  ShowResults [string map [list %n $n %s $what] $al(MC,frres1)] {} $fg
 }
 #_______________________
 
@@ -425,19 +428,19 @@ proc find::FindOptions {wtxt} {
 
 # ________________________ Show results _________________________ #
 
-proc find::ShowResults {msg {mode 3} {TID ""}} {
+proc find::ShowResults {msg {TID ""} {fg ""}} {
   # Shows a message containing results of a search.
   #   msg - the message
-  #   mode - mode for alited::Message
   #   TID - tab's ID where the searches were performed in
+  #   fg - color for infobar
 
   if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
   set fname [alited::bar::BAR $TID cget -text]
   set msg [string map [list %f $fname] $msg]
   # results in info list:
-  alited::info::Put $msg {} yes
+  alited::info::Put $msg {} yes no no $fg
   # results in status bar:
-  alited::Message "$msg [string repeat { } 40]" $mode
+  alited::Message "$msg [string repeat { } 40]" 3
   # update line numbers of current file, as they are gone after the search
   after idle " \
     alited::main::CursorPos [alited::main::CurrentWTXT] ; \
@@ -476,17 +479,18 @@ proc find::InitShowResults {} {
 }
 #_______________________
 
-proc find::PutInfo {fname line info TID} {
+proc find::PutInfo {fname line info TID {fg ""}} {
   # Puts a message to the info listbox widget, about a line found in a file.
   #   fname - the file's name
   #   line - the line's number
   #   info - found info
   #   TID - tab's ID of the file
+  #   fg - color of the message
   # See also: info::Put
 
   set msg "$fname  $line:  $info"
   set dat [list $TID $line]
-  alited::info::Put $msg $dat
+  alited::info::Put $msg $dat no no no $fg
 }
 
 # ________________________ Do search _________________________ #

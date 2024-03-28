@@ -1390,7 +1390,7 @@ proc ini::InitGUI {} {
     }
   }
   if {[llength $clrvals]==[llength $clrnams]} {
-    ::hl_tcl::hl_colors {-AddTags} $Dark {*}$clrvals
+    ::hl_tcl::hl_colors -AddTags $Dark {*}$clrvals
   }
   ::hl_tcl::hl_colors . $Dark {*}$clrvals ;# default Tcl syntax colors
   if {!$al(ED,BlinkCurs)} {

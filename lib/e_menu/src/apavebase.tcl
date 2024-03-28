@@ -1584,13 +1584,13 @@ oo::class create ::apave::APaveBase {
       # chooser's default geometry centered in parent
       if {![winfo exists $wp]} {set wp .}
       set geom [set W 640]x[set H 470]
-      append geom [my CenteredXY {*}[split [wm geometry $wp] x+] $W $H]
+      catch {append geom [my CenteredXY {*}[split [wm geometry $wp] x+] $W $H]}
     }
     if {[::isunix]} {
       # the below equilibristics provides the smooth display
       after idle "catch {wm withdraw $wchooser; wm geometry $wchooser 1x1}"
       after 0 [list after idle \
-        "catch {wm withdraw $wchooser; wm geometry $wchooser $geom; wm deiconify $wchooser}; wm geometry $wchooser $geom"]
+        "catch {wm withdraw $wchooser; wm geometry $wchooser $geom; wm deiconify $wchooser; wm geometry $wchooser $geom}"]
     }
     return $wchooser
   }
@@ -1738,7 +1738,7 @@ oo::class create ::apave::APaveBase {
         focus $bname
       }
       focus $tname
-      after idle "$tname selection range 0 end ; $tname icursor end"
+      after idle "catch {$tname selection range 0 end ; $tname icursor end}"
     }
     return $res
   }
