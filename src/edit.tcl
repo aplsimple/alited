@@ -1086,16 +1086,18 @@ proc edit::ControlLeft {txt s} {
 
 # ________________________ Formats _________________________ #
 
-proc edit::IniParameter {parname line {case -nocase}} {
+proc edit::IniParameter {parname line {case -nocase} {defval ""}} {
   # Gets parameter value from a line of ini-file.
   #   parname - parameter name (can contain several names separated with comma)
   #   line - line content
   #   case - option "-nocase" for regexp (default) or any other option
+  #   defval - default value
 
   foreach pname [split $parname ,] {
     if {[regexp {*}$case "^\\s*$pname\\s*=\\s*" $line]} {
       set i [string first = $line]
       set res [string range $line [incr i] end]
+      if {[string trim $res] eq {}} {set res -}
       return [string trim $res]
     }
   }
@@ -1125,8 +1127,11 @@ proc edit::RunFormat {fname} {
   # Does format according to a format file.
   #   fname - format file's name
 
+  namespace upvar ::alited al al
   SourceFormatTcl
   set fcont [split [::apave::readTextFile $fname] \n]
+  set fform [file tail $fname]
+  unset -nocomplain al(FORMATS,$fform)
   set mode 0
   set cont [list]
   set backslashed {}
@@ -1144,8 +1149,9 @@ proc edit::RunFormat {fname} {
   foreach line $cont {
     incr iline
     set mode [IniParameter mode $line]
-    if {$mode in {1 2 3 4 5}} {
-      alited::format::Mode$mode [lrange $cont $iline end]
+    if {$mode in {1 2 3 4 5 6}} {
+      alited::format::Mode$mode \
+        [lrange $cont $iline end] $fname [alited::bar::FileName]
       break
     }
   }
@@ -1254,6 +1260,31 @@ proc edit::UnEscapeValue {value} {
   #   value - the value
 
   return [string map [list \\\\ \\ \\\}  \} \\\{ \{] $value]
+}
+#_______________________
+
+proc edit::BindPluginables {wtxt} {
+  # Binds pluginable formatters to the edited text.
+  #   wtxt - text's path
+
+  namespace upvar ::alited al al
+  set lformat [array names al -glob FORMATS,*]
+  if {[llength $lformat]} {
+    SourceFormatTcl
+    foreach n $lformat {
+      lassign $al($n) fullformname ev
+      set fform [file tail $fullformname]
+      if {[info exists ::alited::format::bind6($fform)] && \
+      [llength $::alited::format::bind6($fform)]} {
+        foreach b $::alited::format::bind6($fform) {
+          lassign $b ev com
+          catch {bind $wtxt $ev $com}
+        }
+      } else {
+        RunFormat $fullformname
+      }
+    }
+  }
 }
 
 # _________________________________ EOF _________________________________ #

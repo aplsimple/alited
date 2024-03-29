@@ -288,8 +288,7 @@ proc find::DoFindUnit {} {
       }
     }
   }
-  lassign [alited::FgAdditional] -> fg
-  ShowResults [string map [list %n $n %s $what] $al(MC,frres1)] {} $fg
+  ShowResults [string map [list %n $n %s $what] $al(MC,frres1)] {} -fg
 }
 #_______________________
 
@@ -458,14 +457,15 @@ proc find::ShowResults1 {allfnd} {
 #_______________________
 
 proc find::ShowResults2 {rn msg {TID ""}} {
-  # Shows a message of number of found strings.
+  # Shows a message of number of found strings (e.g. in a tab).
   #   rn - number of found strings
-  #   msg - messsage's template
+  #   msg - message's template
   #   TID - tab's ID where the searches were performed in
 
   namespace upvar ::alited al al
   variable data
-  ShowResults [string map [list %n $rn %s $data(en1) %r $data(en2)] $msg] 3 $TID
+  set tn [alited::bar::BAR $TID cget -text]
+  ShowResults [string map [list %n $rn %s $data(en1) %r $data(en2) %f $tn] $msg] 3
 }
 #_______________________
 

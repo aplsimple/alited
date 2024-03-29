@@ -12,12 +12,14 @@
 namespace eval format {
   variable win $::alited::al(WIN).formats
   variable da
-  array set da {dir 2 what 1 bgRE "" geo ""}
+  array set da [list dir 2 what 1 bgRE "" geo ""]
   set da(separSav1) $::alited::al(format_separ1)
   set da(separSav2) $::alited::al(format_separ2)
-  variable valueOrig
-  variable valueSel
-  variable valueLines
+  variable valueOrig {}
+  variable valueSel {}
+  variable valueLines {}
+  variable cont6; array set cont6 [list]
+  variable bind6; array set bind6 [list]
 }
 
 # ________________________ Move unit descriptions _________________________ #
@@ -638,7 +640,7 @@ proc format::Mode2 {cont args} {
   foreach line $cont {
     if {[set com [alited::edit::IniParameter command $line]] ne {}} {
       set value [alited::edit::EscapeValue $value]
-      set com [string map [list %v $value] $com]
+      set com [alited::Map -nocase $com %v $value]
       if {[catch {set value [eval $com]} e]} {
         alited::Message $e 4
         set err 1
@@ -662,7 +664,7 @@ proc format::Mode3 {cont args} {
   set err 0
   foreach line $cont {
     if {[set com [alited::edit::IniParameter command $line]] ne {}} {
-      set com [string map [list %v $value] $com]
+      set com [alited::Map {} $com %v $value]
       if {[catch {set value [eval $com]} e]} {
         alited::Message $e 4
         set err 1
@@ -697,7 +699,6 @@ proc format::Mode4 {cont args} {
   if {$wtxt eq {}} return
   lassign [BeforeFormatting yes] wtxt valueLines
   set comcount 0
-  set err 0
   set tmpname [alited::TmpFile FORMAT~]
   foreach line $cont {
     set com {}
@@ -715,8 +716,6 @@ proc format::Mode4 {cont args} {
       if {$comcount} break
     }
     if {$com ne {}} {
-      set abracadabra {*@&D34oP`G-}
-      set com [string map [list %% $abracadabra] $com]
       set com [alited::MapWildCards $com]
       #   %S - file name for saved selection
       #   %L - file name for saved lines of selection
@@ -725,8 +724,7 @@ proc format::Mode4 {cont args} {
       } elseif {[string first %L $com]>=0 && $valueLines ne {}} {
         apave::writeTextFile $tmpname ::alited::format::valueLines
       }
-      set com [string map -nocase [list %S $tmpname %L $tmpname] $com]
-      set com [string map [list $abracadabra %] $com]
+      set com [alited::Map -nocase $com %S $tmpname %L $tmpname]
       alited::tool::Run_in_e_menu $com
     }
   }
@@ -736,19 +734,134 @@ proc format::Mode4 {cont args} {
 
 proc format::Mode5 {cont args} {
   # Inserts a string at the current cursor position.
-  #   cont - list of config.file's lines
+  # Or does something without changing the text (if commands return "").
+  #   cont - list of config.file's lines or variable name containing it
+  #   args - contains the edited file name etc. (-mode6 means mode=6)
 
   lassign [BeforeFormatting] wtxt value
+  lassign $args -> fname
+  if {[info exists $cont]} {
+    set cont [set $cont]
+  }
   foreach line $cont {
+    incr il
     set pos [$wtxt index insert]
-    if {[set com [alited::edit::IniParameter command $line]] ne {}} {
-      set com [string map [list %w $wtxt %v $value] $com]
+    set com [alited::edit::IniParameter command $line -nocase -]
+    if {$com ne {}} {
+      set ending [expr {$com eq "-"}]
+      if {$ending} {
+        set com [join [lrange $cont $il end] \n]
+      }
+      set com [alited::Map {} $com %w $wtxt %v $value %f $fname]
       if {[catch {set value [eval $com]} e]} {
         alited::Message $e 4
-        set err 1
         break
       }
-      $wtxt insert $pos $value
+      if {$value ne {} && {-mode6} ni $args} {
+        $wtxt insert $pos $value
+      }
+      if {$ending} break
+    }
+  }
+}
+
+## ________________________ pluginable _________________________ ##
+
+proc format::Mode6 {cont args} {
+  # Runs a pluginable formatter.
+  #   cont - list of config.file's lines
+  #   args - formatter's file name etc.
+
+  namespace upvar ::alited al al
+  variable cont6
+  variable bind6
+  lassign $args fullformname
+  set fform [file tail $fullformname]
+  lappend args -mode6
+  set wtxt [alited::main::CurrentWTXT]
+  set bind6($fform) [list]
+  foreach line $cont {
+    incr il
+    set events [alited::edit::IniParameter events $line -nocase]
+    if {$events ne {}} {
+      set com [list alited::format::Mode5 ::alited::format::cont6($fform) {*}$args]
+      foreach ev [split $events { ,}] {
+        if {$ev ne {}} {
+          set wasacc [info exist cont6($fform)]
+          if {[EventOK $fullformname $fform $ev $wasacc]} {
+            catch {bind $wtxt $ev $com}
+            lappend bind6($fform) [list $ev $com]
+          }
+        }
+        set cont6($fform) [lrange $cont $il end]
+      }
+      return
+    }
+  }
+  # no event encountered - run the formatter once
+  Mode5 $cont {*}$args
+}
+#_______________________
+
+proc format::EventOK {fullformname fform ev wasacc} {
+  # Checks if an event is correct (not overlap alited key mapping).
+  #   fullformname - full path to formatter
+  #   fform - formatter's name
+  #   ev - the event
+  #   wasacc - if true, -accelerator of $fform menu item was made
+
+  namespace upvar ::alited al al
+  variable cont6
+  set ev2 [string trim $ev <>]
+  set keys [alited::keys::EngagedList]
+  lappend keys {*}[alited::keys::ReservedList]
+  foreach key $keys {
+    lassign $key ev1
+    if {$ev1 eq $ev2} {
+      set msg [msgcat::mc {Event %e is overlapped by formatter "%f"}]
+      set msg [string map [list %e $ev %f $fform] $msg]
+      alited::info::Put $msg {} yes no no -fg
+      alited::Message $msg 3
+      return no
+    }
+  }
+  if {!$wasacc} {
+    # add -accelerator to Formats menu item of $fform
+    set mnu $al(MENUFORMATS)
+    set itemttl [alited::menu::FormatsItemName $fform]
+    AddAccelerator $mnu $itemttl $ev2
+  }
+  set al(FORMATS,$fform,$ev2) [list $fullformname $ev2]
+  return yes
+}
+#_______________________
+
+proc format::AddAccelerator {mnu itemttl ev} {
+  # Adds -accelerator to Formats menu item.
+  #   mnu - menu path
+  #   itemttl - item's title
+  #   ev - event
+
+  set nitems [$mnu index end]
+  for {set i 0} {$i<=$nitems} {incr i} {
+    set typ [$mnu type $i]
+    if {[catch {set ttl [$mnu entrycget $i -label]}]} {set ttl {}}
+    switch $typ {
+      command {
+        if {$itemttl eq $ttl} {
+          $mnu entryconfigure $i -accelerator [::apave::KeyAccelerator $ev]
+          return
+        }
+      }
+      cascade {
+        set cascade [$mnu entrycget $i -menu]
+        if {$cascade ne {}} {
+          AddAccelerator $cascade $itemttl $ev
+          continue
+        }
+      }
+      separator - tearoff {}
+      default {break}
     }
   }
 }

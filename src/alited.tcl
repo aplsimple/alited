@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.1.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.2a1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -575,6 +575,21 @@ namespace eval alited {
   }
   #_______________________
 
+  proc Map {opts str args} {
+  # Maps wildcards and %% in a string.
+  #   opts - options of "string map" command
+  #   str - string
+  #   args - list of wildcards and values: {%w1 $val1 %w2 $val2 ...}
+
+    set abra {*^e!`i@U50=|}
+    set str [string map [list %% $abra] $str]
+    foreach {wc val} $args {
+      set str [string map {*}$opts [list $wc $val] $str]
+    }
+    set str [string map [list $abra %] $str]
+}
+  #_______________________
+
   proc MapWildCards {com} {
     # Maps some common wildcards in a command
     #   com - the command
@@ -591,16 +606,14 @@ namespace eval alited {
     variable DIR
     set filename [bar::FileName]
     set dirname [file dirname $filename]
-    set abra {*^e!`i@U50=|}
-    set com [string map [list %% $abra] $com]
-    set com [string map [list %H [apave::HomeDir]] $com]
-    set com [string map [list %P $al(prjroot)] $com]
-    set com [string map [list %F $filename] $com]
-    set com [string map [list %D $dirname] $com]
-    set com [string map [list %A $DIR] $com]
-    set com [string map [list %M $al(EM,mnudir)] $com]
-    set com [string map [list %E [Tclexe]] $com]
-    set com [string map [list $abra %] $com]
+    set com [Map {} $com \
+      %H [apave::HomeDir] \
+      %P $al(prjroot) \
+      %F $filename \
+      %D $dirname \
+      %A $DIR \
+      %M $al(EM,mnudir) \
+      %E [Tclexe]]
   }
 
   ## ________________________ Messages _________________________ ##

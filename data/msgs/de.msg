@@ -720,6 +720,9 @@ namespace eval ::alited {
     {Strings} {Zeichenketten}
     {Keyboard} {Schlüsselanhänger}
     {Sorting lines} {Sortieren der Zeilen}
+    {Misc} {Diverses}
+    {External} {Extern}
+    {Pluginable} {Steckbar}
     {Applied to one selection only!} {Nur auf eine Auswahl angewendet!}
     "Incorrect mapped 'from-to' in: %l" "Inkorrekt kartiert 'von-zu' in: %l"
     "'from' refers to previous 'to' in: %l (see: %n)" "'von' bezieht sich auf vorherige 'zu' in: %l (siehe: %n)"

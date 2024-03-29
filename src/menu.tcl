@@ -248,6 +248,14 @@ proc menu::Paver {mode} {
 }
 #_______________________
 
+proc menu::FormatsItemName {fname} {
+  # Gets a Formats item's name.
+  #   fname - formatter file's name
+
+  return [file rootname [string range [file tail $fname] 4 end]]
+}
+#_______________________
+
 proc menu::FillFormatItems {mnu {dir ""} {lev 0} {mnuID 0}} {
   # Fills Edit/Format submenu with items taken from "alited/data/format" directory.
   #   mnu - submenu's path
@@ -261,7 +269,8 @@ proc menu::FillFormatItems {mnu {dir ""} {lev 0} {mnuID 0}} {
   }
   set fnames [glob -nocomplain -directory $dir *]
   foreach fn [lsort -dictionary $fnames] {
-    set it [string range [file tail $fn] 4 end] ;# first 4 chars for sorting
+    # first 4 chars for sorting
+    set it [FormatsItemName $fn]
     set it [string map [list _ { }] $it]
     if {[file isdirectory $fn]} {
       if {$lev<3} {  ;# prohibit too deep diving
@@ -442,7 +451,8 @@ proc menu::FillMenu {} {
   ### ________________________ Formats _________________________ ###
 
   MenuCascade $m format [msgcat::mc Formats]
-  FillFormatItems $m.format
+  set al(MENUFORMATS) $m.format
+  FillFormatItems $al(MENUFORMATS)
   $m add separator
 
   $m add command -label [msgcat::mc {Put New Line}] -command alited::main::InsertLine -accelerator $al(acc_18)

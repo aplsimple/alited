@@ -718,6 +718,9 @@ namespace eval ::alited {
     {Strings} {Cadenas}
     {Keyboard} {Teclado}
     {Sorting lines} {Ordenar líneas}
+    {Misc} {Varios}
+    {External} {Externo}
+    {Pluginable} {Conectable}
     {Applied to one selection only!} {¡Aplicada a una selección solamente!}
     "Incorrect mapped 'from-to' in: %l" "Mapa incorrecto 'desde-hacia' dentro: %l"
     "'from' refers to previous 'to' in: %l (see: %n)" "'desde' se refiere a anteriores 'hacia' dentro: %l (ve: %n)"

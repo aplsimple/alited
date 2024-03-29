@@ -280,7 +280,7 @@ proc ini::ReadIni {{projectfile ""}} {
   set mode ""
   foreach stini $al(ini_file) {
     switch -exact $stini {
-      {[Geometry]} - {[Options]} - {[Projects]} - {[Templates]} - {[Keys]} - {[EM]} - {[Tkcon]} - {[Misc]} {
+      {[Geometry]} - {[Options]} - {[Projects]} - {[Templates]} - {[Keys]} - {[EM]} - {[Tkcon]} - {[Misc]} - {[Formats]} {
         set mode $stini
         continue
       }
@@ -298,6 +298,7 @@ proc ini::ReadIni {{projectfile ""}} {
           {[EM]}        {ReadIniEM $nam $val em_i}
           {[Tkcon]}     {ReadIniTkcon $nam $val}
           {[Misc]}      {ReadIniMisc $nam $val}
+          {[Formats]}   {ReadIniFormats $nam $val}
         }
       }
     }
@@ -629,6 +630,22 @@ proc ini::ReadIniMisc {nam val} {
 }
 #_______________________
 
+proc ini::ReadIniFormats {nam val} {
+  # Gets pluginable formatters of alited.
+  #   nam - name of option
+  #   val - value of option
+
+  namespace upvar ::alited al al
+  switch -exact -- $nam {
+    pluginable {
+      lassign $val fullformname ev
+      set fform [file tail $fullformname]
+      set al(FORMATS,$fform,$ev) $val
+    }
+  }
+}
+#_______________________
+
 proc ini::Em_Number {em_N} {
   # Gets a real number of e_menu items counting non-empty ones only.
   #   em_N - current number of e_menu items
@@ -950,6 +967,12 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "format_separ1=$al(format_separ1)"
   puts $chan "format_separ2=$al(format_separ2)"
   puts $chan "markwidth=$al(markwidth)"
+  # save the Edit/Formats pluginables
+  puts $chan {}
+  puts $chan {[Formats]}
+  foreach n [array names al -glob FORMATS,*] {
+    puts $chan "pluginable=$al($n)"
+  }
   # save the geometry options
   puts $chan {}
   puts $chan {[Geometry]}

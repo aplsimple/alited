@@ -723,6 +723,9 @@ namespace eval ::alited {
     {Strings} {Стрічки}
     {Keyboard} {Клавіатура}
     {Sorting lines} {Сортування рядків}
+    {Misc} {Різне}
+    {External} {Зовнішній}
+    {Pluginable} {Підмикний}
     {Applied to one selection only!} {Припустиме тільки одне виділення!}
     "Incorrect mapped 'from-to' in: %l" "Некоректне відображення 'з-на' у: %l"
     "'from' refers to previous 'to' in: %l (see: %n)" "'з' посилається на попереднє 'на' у: %l (див.: %n)"

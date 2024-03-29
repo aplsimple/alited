@@ -2,7 +2,17 @@
 # The mode=5 means that the result of Tcl command(s) will be inserted at the
 # current cursor position.
 #
+# The command can include wildcards:
+#   %w for current text's path
+#   %v for selected text (or current line)
+#
 # The command can use "_", "__", "_1", "_2" and similar names of variables.
+#
+# If empty "command=" is set, the rest of file is treated as Tcl code block
+# to be executed.
+#
+# If not empty, the result of last command is inserted at the current text
+# position.
 
 # ===========================================================================
 

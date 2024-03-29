@@ -38,7 +38,7 @@ proc info::Put {msg {inf ""} {bold no} {red no} {see no} {fg ""}} {
   #   bold - if yes, displays the message bolded
   #   red - if yes, makes the message seen in red color
   #   see - if yes, makes the message seen
-  #   fg - foreground color
+  #   fg - {} or foreground color or -fg
 
   namespace upvar ::alited obPav obPav
   variable list
@@ -60,7 +60,12 @@ proc info::Put {msg {inf ""} {bold no} {red no} {see no} {fg ""}} {
   } elseif {!$bold && $fg eq {}} {
     return
   }
-  if {$fg ne {}} {set fgbold $fg}
+  if {$fg ne {}} {
+    if {$fg eq "-fg"} {
+      lassign [alited::FgAdditional] -> fg
+    }
+    set fgbold $fg
+  }
   $lbx itemconfigure end -foreground $fgbold
 }
 #_______________________

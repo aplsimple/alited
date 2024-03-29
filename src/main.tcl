@@ -996,6 +996,7 @@ proc main::BindsForText {TID wtxt} {
   ::apave::bindToEvent $wtxt <<Cut>> after 50 {after 50 alited::main::AfterCut}
   alited::keys::ReservedAdd
   alited::keys::BindAllKeys $wtxt no
+  alited::edit::BindPluginables $wtxt
 }
 #_______________________
 
