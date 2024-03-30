@@ -51,7 +51,7 @@ proc file::IsSaved {TID args} {
   variable firstSave
   namespace upvar ::alited al al
   if {[IsModified $TID]} {
-    set fname [alited::bar::BAR $TID cget -text]
+    set tname [alited::bar::TabName $TID]
     if {$ansSave<10} {
       if {$firstSave==-1} {
         set ch {}
@@ -59,7 +59,7 @@ proc file::IsSaved {TID args} {
         # the option for "save/not save other changed files, without further questions"
         set ch [list -ch $al(MC,noask)]
       }
-      set ansSave [alited::msg yesnocancel warn [string map [list %f $fname] \
+      set ansSave [alited::msg yesnocancel warn [string map [list %f $tname] \
         $al(MC,notsaved)] YES -title $al(MC,saving) {*}$ch {*}$args]
     }
     return $ansSave

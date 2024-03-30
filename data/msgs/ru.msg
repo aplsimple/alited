@@ -724,6 +724,8 @@ namespace eval ::alited {
     {Applied to one selection only!} {Разрешено только одно выделение!}
     "Incorrect mapped 'from-to' in: %l" "Некорректное отображение 'с-на' в: %l"
     "'from' refers to previous 'to' in: %l (see: %n)" "'с' ссылается на предыдущее 'на' в: %l (см.: %n)"
+    {Use %e to run "%m"} {Пользуйтесь %e для запуска "%m"}
+    {%e is overlapped by formatter "%f"} {%e перекрывается форматером "%f"}
   }
 
   ## ________________________ Project printer _________________________ ##

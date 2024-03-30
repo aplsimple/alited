@@ -281,9 +281,9 @@ proc find::DoFindUnit {} {
       lassign $it lev leaf fl1 title l1 l2
       set ttl [string range $title [string last : $title]+1 end] ;# pure name, no NS
       if {[string match -nocase "*$what*" $ttl]} {
-        set fname [alited::bar::BAR $TID cget -text]
+        set tname [alited::bar::TabName $TID]
         if {$leaf} {set fg {}} {set fg $fgbr}
-        PutInfo $fname $l1 $title $TID $fg
+        PutInfo $tname $l1 $title $TID $fg
         incr n
       }
     }
@@ -433,9 +433,8 @@ proc find::ShowResults {msg {TID ""} {fg ""}} {
   #   TID - tab's ID where the searches were performed in
   #   fg - color for infobar
 
-  if {$TID eq {}} {set TID [alited::bar::CurrentTabID]}
-  set fname [alited::bar::BAR $TID cget -text]
-  set msg [string map [list %f $fname] $msg]
+  set tname [alited::bar::TabName $TID]
+  set msg [string map [list %f $tname] $msg]
   # results in info list:
   alited::info::Put $msg {} yes no no $fg
   # results in status bar:
@@ -464,7 +463,7 @@ proc find::ShowResults2 {rn msg {TID ""}} {
 
   namespace upvar ::alited al al
   variable data
-  set tn [alited::bar::BAR $TID cget -text]
+  set tn [alited::bar::TabName $TID]
   ShowResults [string map [list %n $rn %s $data(en1) %r $data(en2) %f $tn] $msg] 3
 }
 #_______________________
@@ -679,7 +678,7 @@ proc find::FindAll {wtxt TID {tagme "add"}} {
   #   TID - tab's ID
   #   tagme - if "add", means "add find tag to the found strings of the text"
 
-  set fname [alited::bar::BAR $TID cget -text]
+  set tname [alited::bar::TabName $TID]
   set l1 -1
   set allfnd [Search $wtxt]
   foreach idx12 $allfnd {
@@ -688,7 +687,7 @@ proc find::FindAll {wtxt TID {tagme "add"}} {
     set l2 [expr {int($index1)}]
     if {$l1 != $l2} {
       set line [$wtxt get "$index1 linestart" "$index1 lineend"]
-      PutInfo $fname $l2 [string trim $line] $TID
+      PutInfo $tname $l2 [string trim $line] $TID
       set l1 $l2
     }
   }

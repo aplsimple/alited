@@ -580,20 +580,17 @@ proc ::tk::dialog::color::CreateSelector {w sel c } {
   EnterLeaveColorBar $w $c $data(cbc2)
 }
 
-# Inverts colors from light to dark and vice versa to get "fg" from "bg".
-# It's simplified way, just to not include the bulky HSV code.
-#  r - red component
-#  g - green component
-#  b - blue component
-# Returns {R G B} list of inverted colors.
+# Gets fg color (white/black) for a bg color.
+#  color - bg color
 
-proc ::tk::dialog::color::InvertBg {r g b} {
-  set c [expr {$r<100 && $g<100 || $r<100 && $b<100 || $b<100 && $g<100 ||
-    ($r+$g+$b)<300 ? 255 : 0}]
-  set res [string toupper [format "#%02x%02x%02x" $c $c $c]]
-  switch -exact $res {
-    {#000000} {set res black}
-    {#FFFFFF} {set res white}
+proc ::tk::dialog::color::InvertBg {color} {
+  lassign [winfo rgb . $color] r g b
+  if {($r%256+$b%256)<15 && ($g%256)>180} {
+    set res black
+  } elseif {$r+1.5*$g+0.5*$b > 100000} {
+    set res black
+  } else {
+    set res white
   }
   return $res
 }
@@ -618,7 +615,7 @@ proc ::tk::dialog::color::RedrawFinalColor {w} {
     $data(green,intensity) $data(blue,intensity)]
 
   #$data(finalCanvas) configure -bg $color
-  set fg [InvertBg $data(red,intensity) $data(green,intensity) $data(blue,intensity)]
+  set fg [InvertBg $color]
   $data(finalCanvas) configure -bg $color -fg $fg -text $fg -font {-weight bold}
   set data(idxFinalColor) [expr {$fg ne "#000000"}]
   set data(finalColor) $color

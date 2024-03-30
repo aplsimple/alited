@@ -434,6 +434,15 @@ proc bar::FilesTIDs {} {
   }
   return $filesTIDs
 }
+#_______________________
+
+proc bar::TabName {{TID ""}} {
+  # Gets a tab's title.
+  #   TID - tab's ID
+
+  if {$TID eq {}} {set TID [CurrentTabID]}
+  return [BAR $TID cget -text]
+}
 
 # ________________________ State of bar / tab _________________________ #
 

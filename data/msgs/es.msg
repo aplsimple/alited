@@ -724,6 +724,8 @@ namespace eval ::alited {
     {Applied to one selection only!} {¡Aplicada a una selección solamente!}
     "Incorrect mapped 'from-to' in: %l" "Mapa incorrecto 'desde-hacia' dentro: %l"
     "'from' refers to previous 'to' in: %l (see: %n)" "'desde' se refiere a anteriores 'hacia' dentro: %l (ve: %n)"
+    {Use %e to run "%m"} {Usa %e para ejecutar "%m"}
+    {%e is overlapped by formatter "%f"} {El formateador "%f" superpone %e}
   }
 
   ## ________________________ Project printer _________________________ ##

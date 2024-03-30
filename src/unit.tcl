@@ -283,19 +283,14 @@ proc unit::UnitRegexp {} {
 
 # ________________________ Templates _________________________ #
 
-proc unit::TemplateData {wtxt l1 l2 tpldata} {
-  # Replaces the template wildcards with data of current text and unit.
-  #   wtxt - text's path
-  #   l1 - 1st line of current unit
-  #   l2 - last line of current unit
-  #   tpldata - template
+proc unit::TemplateMap {str} {
+  # Maps a string using template wildcards.
+  #   str - string to map
 
-  namespace upvar ::alited al al DIR DIR MNUDIR MNUDIR
-  lassign $tpldata tex pos place
+  namespace upvar ::alited al al DIR DIR
   set sec [clock seconds]
   set fname [alited::bar::FileName]
-  # fill the common wildcards
-  set tex [alited::Map {} $tex \
+  return [alited::Map {} $str \
     %d [alited::tool::FormatDate $sec] \
     %t [clock format $sec -format $al(TPL,%t) -locale $::alited::al(LOCAL)] \
     %u $al(TPL,%u) \
@@ -308,6 +303,21 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
     %A $DIR \
     %M $al(EM,mnudir) \
     ]
+}
+#_______________________
+
+proc unit::TemplateData {wtxt l1 l2 tpldata} {
+  # Replaces the template wildcards with data of current text and unit.
+  #   wtxt - text's path
+  #   l1 - 1st line of current unit
+  #   l2 - last line of current unit
+  #   tpldata - template
+
+  namespace upvar ::alited al al DIR DIR MNUDIR MNUDIR
+  lassign $tpldata tex pos place
+  set sec [clock seconds]
+  set fname [alited::bar::FileName]
+  set tex [TemplateMap $tex]
   # get a list of proc/method's arguments:
   # from "proc pr {ar1 ar2 ar3} " and a template "  # %a -\n"
   # to get

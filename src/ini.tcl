@@ -639,7 +639,7 @@ proc ini::ReadIniFormats {nam val} {
   switch -exact -- $nam {
     pluginable {
       lassign $val fullformname ev
-      set fform [file tail $fullformname]
+      set fform [alited::edit::FormatterName $fullformname]
       set al(FORMATS,$fform,$ev) $val
     }
   }

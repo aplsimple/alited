@@ -1,16 +1,19 @@
+# ________________________ help _________________________ #
 
 # The mode=6 means that the formatter can be run by events.
 #
 # The "events=..." line sets a list of events which triggers the formatter.
 #
-# The events are separated with commas and/or spaces, e.g.:
-# events = <Control-Q>, <Control-q>
+# The events are separated with commas and/or spaces. At that, if present,
+# 1st event's letter is recommended to be in upper case which is
+# only used at getting accelerators and engaged keys, e.g.:
+#   events = <Control-Q>, <Control-q>
 #
 # The events must not overlap the alited's key mappings (as set in
 # Preferences/Keys and Templates).
 #
 # The command can include wildcards:
-#   %w for current text's path
+#   %W for current text's path
 #   %f for current edited file
 #   %v for selected text (or current line)
 #
@@ -24,26 +27,28 @@
 # namespace. Details in alited's Reference:
 #   https://aplsimple.github.io/en/tcl/alited/alited.html
 #
-# The result of commands is ignored.
+# If not empty, the result of last command is inserted at the current text
+# position or replaces selected text.
 
-# ===========================================================================
+# ________________________ settings _________________________ #
 
-# Shows information about the current text.
+# Shows information about the current text & platform.
 #
 # Also demonstrates, how to use
-#   command= to treat the rest of file as Tcl code block
-#   proc
-#   alited::Msg
+#   "command=" line to treat the rest of file as Tcl code block
+#   "proc" commands creating procedures in alited::format namespace
+#   alited::Msg to show messages
 
 Mode = 6
 
-events = <Control-Q>, <Control-q>
+events = <Alt-I>, <Alt-i>
 
 command =
-#_______________________
+
+# ________________________ procs _________________________ #
 
 proc MAXARRNAME {arrvarname} {
-  # Gets a maximum length of array keys.
+  # Gets a maximum length of array names.
   #   arrvarname - array variable's name
 
   upvar $arrvarname arrvar
@@ -58,15 +63,13 @@ proc MAXARRNAME {arrvarname} {
 #_______________________
 
 proc INFO {} {
-  # Returns longest and shortest lines.
-  #
-  # Created in alited::format namespace that doesn't contain UPPERCASE proc names.
+  # Gets longest and shortest lines' numbers.
 
   set ilong 0
   set ishort 0
   set maxlen 0
   set minlen 9999999999
-  set cont [split [%w get 1.0 end] \n]
+  set cont [split [%W get 1.0 end] \n]
   foreach line $cont {
     incr il
     if {[set len [string length $line]]} {
@@ -86,20 +89,27 @@ proc INFO {} {
   set ilong [string range $ilong$pad 0 $ll]
   list $ishort $ilong $minlen $maxlen
 }
-#_______________________
 
+# ________________________ main _________________________ #
+
+# current file info
 lassign [INFO] ishort ilong minlen maxlen
 set lin(1) "Shortest line :  $ishort (length: $minlen)"
 set lin(2) "Longest line  :  $ilong (length: $maxlen)"
+
+# misc info
 set lin(3) "Locale          : [msgcat::mclocale]"
 set lin(4) "MC preferences  : [msgcat::mcpreferences]"
 set lin(5) "Encoding system : [encoding system]"
 set lin(6) "File volumes    : [file volumes]"
 set ln 6
+
+# platform info
 set tclver "Tcl v[info patchlevel]"
 set tclexn [info nameofexecutable]
 set platfinfo [lsort [array names ::tcl_platform]]
 set platfinfo [linsert $platfinfo 0 $tclver]
+# align prompts
 set maxl 0
 foreach nam $platfinfo {
   if {[set ll [string length $nam]] > $maxl} {
@@ -117,12 +127,9 @@ foreach pn $platfinfo {
   set pn [string range $pn$pad 0 $maxl]
   set lin($ln) "$pn: $val"
 }
-set maxl 0
-foreach n [array names lin] {
-  if {[set ll [string length $lin($n)]] > $maxl} {
-    set maxl $ll
-  }
-}
+
+# format info message
+set maxl [MAXARRNAME lin]
 set maxl [expr {min($maxl,99)}]
 set under_ [string repeat _ $maxl]
 set message "\
@@ -139,8 +146,6 @@ for {set i 0} {$i<[llength $platfinfo]} {incr i} {
   append message " $lin($idx) \n"
 }
 set message [string trimright $message \n]
-# show message with icon=info in text mode
-alited::Msg $message info -text 1 -width [incr maxl 2]
 
-# returned value (meaning "no insertion in current text")
-set _ {}
+# message with icon=info in text mode
+alited::Msg $message info -text 1 -width [incr maxl 2]

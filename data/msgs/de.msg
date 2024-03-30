@@ -726,6 +726,8 @@ namespace eval ::alited {
     {Applied to one selection only!} {Nur auf eine Auswahl angewendet!}
     "Incorrect mapped 'from-to' in: %l" "Inkorrekt kartiert 'von-zu' in: %l"
     "'from' refers to previous 'to' in: %l (see: %n)" "'von' bezieht sich auf vorherige 'zu' in: %l (siehe: %n)"
+    {Use %e to run "%m"} {Benutze %e um "%m" auszuführen}
+    {%e is overlapped by formatter "%f"} {%e wird vom Formatierer "%f" überlappt}
   }
 
   ## ________________________ Project printer _________________________ ##

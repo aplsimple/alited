@@ -736,9 +736,11 @@ proc format::Mode5 {cont args} {
   # Inserts a string at the current cursor position.
   # Or does something without changing the text (if commands return "").
   #   cont - list of config.file's lines or variable name containing it
-  #   args - contains the edited file name etc. (-mode6 means mode=6)
+  #   args - contains the edited file name etc.
 
+  namespace upvar ::alited al al DIR DIR
   lassign [BeforeFormatting] wtxt value
+  set value [alited::edit::EscapeValue $value]
   lassign $args -> fname
   if {[info exists $cont]} {
     set cont [set $cont]
@@ -752,13 +754,29 @@ proc format::Mode5 {cont args} {
       if {$ending} {
         set com [join [lrange $cont $il end] \n]
       }
-      set com [alited::Map {} $com %w $wtxt %v $value %f $fname]
-      if {[catch {set value [eval $com]} e]} {
-        alited::Message $e 4
-        break
+      set selection [$wtxt tag ranges sel]
+      set lsel [llength $selection]
+      if {!$lsel} {
+        set value {}
       }
-      if {$value ne {} && {-mode6} ni $args} {
-        $wtxt insert $pos $value
+      # map format's own and template's woildcards
+      set com [alited::Map {} \
+        $com %W $wtxt %v $value %f $fname \
+        %d $al(TPL,%d) \
+        %t $al(TPL,%t) \
+        %u $al(TPL,%u) \
+        %U $al(TPL,%U) \
+        %w $al(TPL,%w) \
+        %A $DIR \
+        %M $al(EM,mnudir)]
+      set value [eval $com]
+      if {$value ne {}} {
+        if {$lsel} {
+          lassign $selection pos1 pos2
+          $wtxt replace $pos1 $pos2 $value
+        } else {
+          $wtxt insert $pos $value
+        }
       }
       if {$ending} break
     }
@@ -771,15 +789,16 @@ proc format::Mode6 {cont args} {
   # Runs a pluginable formatter.
   #   cont - list of config.file's lines
   #   args - formatter's file name etc.
+  # Returns 1st event to run the formatter or {}.
 
   namespace upvar ::alited al al
   variable cont6
   variable bind6
   lassign $args fullformname
-  set fform [file tail $fullformname]
-  lappend args -mode6
+  set fform [alited::edit::FormatterName $fullformname]
   set wtxt [alited::main::CurrentWTXT]
   set bind6($fform) [list]
+  set res {}
   foreach line $cont {
     incr il
     set events [alited::edit::IniParameter events $line -nocase]
@@ -790,16 +809,21 @@ proc format::Mode6 {cont args} {
           set wasacc [info exist cont6($fform)]
           if {[EventOK $fullformname $fform $ev $wasacc]} {
             catch {bind $wtxt $ev $com}
+            if {![llength $bind6($fform)]} {set res $ev}
             lappend bind6($fform) [list $ev $com]
+          } else {
+            set res {}
+            break
           }
         }
         set cont6($fform) [lrange $cont $il end]
       }
-      return
+      return $res
     }
   }
   # no event encountered - run the formatter once
   Mode5 $cont {*}$args
+  return $res
 }
 #_______________________
 
@@ -818,10 +842,10 @@ proc format::EventOK {fullformname fform ev wasacc} {
   foreach key $keys {
     lassign $key ev1
     if {$ev1 eq $ev2} {
-      set msg [msgcat::mc {Event %e is overlapped by formatter "%f"}]
-      set msg [string map [list %e $ev %f $fform] $msg]
-      alited::info::Put $msg {} yes no no -fg
-      alited::Message $msg 3
+      set mitem [alited::menu::FormatsItemName $fform]
+      set msg [msgcat::mc {%e is overlapped by formatter "%f"}]
+      set msg [string map [list %e $ev %f $mitem] $msg]
+      alited::MessageError $msg
       return no
     }
   }
@@ -829,41 +853,10 @@ proc format::EventOK {fullformname fform ev wasacc} {
     # add -accelerator to Formats menu item of $fform
     set mnu $al(MENUFORMATS)
     set itemttl [alited::menu::FormatsItemName $fform]
-    AddAccelerator $mnu $itemttl $ev2
+    alited::edit::PluginAccelerator $mnu $itemttl $ev2
   }
   set al(FORMATS,$fform,$ev2) [list $fullformname $ev2]
   return yes
-}
-#_______________________
-
-proc format::AddAccelerator {mnu itemttl ev} {
-  # Adds -accelerator to Formats menu item.
-  #   mnu - menu path
-  #   itemttl - item's title
-  #   ev - event
-
-  set nitems [$mnu index end]
-  for {set i 0} {$i<=$nitems} {incr i} {
-    set typ [$mnu type $i]
-    if {[catch {set ttl [$mnu entrycget $i -label]}]} {set ttl {}}
-    switch $typ {
-      command {
-        if {$itemttl eq $ttl} {
-          $mnu entryconfigure $i -accelerator [::apave::KeyAccelerator $ev]
-          return
-        }
-      }
-      cascade {
-        set cascade [$mnu entrycget $i -menu]
-        if {$cascade ne {}} {
-          AddAccelerator $cascade $itemttl $ev
-          continue
-        }
-      }
-      separator - tearoff {}
-      default {break}
-    }
-  }
 }
 
 # ________________________ EOF _________________________ #

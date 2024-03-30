@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.2a1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.2a2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -615,6 +615,14 @@ namespace eval alited {
       %M $al(EM,mnudir) \
       %E [Tclexe]]
   }
+  #_______________________
+
+  proc Font {} {
+    # Gets editor's font.
+
+    variable al
+    return $al(FONT,txt)
+  }
 
   ## ________________________ Messages _________________________ ##
 
@@ -758,7 +766,7 @@ namespace eval alited {
   #_______________________
 
   proc MessageNotDisturb {} {
-    # Show "Don't disturb" message.
+    # Shows "Don't disturb" message.
 
     variable al
     lassign [alited::complete::TextCursorCoordinates] X Y
@@ -766,6 +774,15 @@ namespace eval alited {
     Message $msg 3
     ::baltip::showBalloon $msg \
       -geometry "+$X+$Y" -fg $al(MOVEFG) -bg $al(MOVEBG)
+  }
+  #_______________________
+
+  proc MessageError {msg} {
+  # Doubles error message: in infobar and in status bar.
+  #   msg - error message
+
+    info::Put $msg {} yes yes yes -fg
+    Message $msg 4
   }
   #_______________________
 
@@ -1153,7 +1170,10 @@ namespace eval alited {
       if {[file::AllSaved]} {
         alited::menu::SaveCascadeMenuGeo
         catch {find::CloseFind}  ;# save Find/Replace geometry
-        catch {ini::SaveIni}     ;# save alited's settings
+        if {$res eq {2}} {
+          # save alited's settings: in main::_run not saved yet
+          catch {ini::SaveIni}
+        }
         tool::_close                     ;# close all of the
         catch {run::Cancel}              ;# possibly open
         catch {check::Cancel}            ;# non-modal

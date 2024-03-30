@@ -291,10 +291,14 @@ proc edit::InvertBg {clr} {
     lassign [split $clr {}] -> r g b
     set clr #$r$r$g$g$b$b
   }
-  scan $clr "#%02x%02x%02x" r g b
-  set c [expr {$r<100 && $g<100 || $r<100 && $b<100 || $b<100 && $g<100 ||
-    ($r+$g+$b)<300 ? 255 : 0}]
-  set res [string toupper [format "#%02x%02x%02x" $c $c $c]]
+  lassign [winfo rgb . $clr] r g b
+  if {($r%256+$b%256)<15 && ($g%256)>180} {
+    set res #000000
+  } elseif {$r+1.5*$g+0.5*$b > 100000} {
+    set res #000000
+  } else {
+    set res #FFFFFF
+  }
   return [list $res $clr]
 }
 
@@ -1123,14 +1127,15 @@ proc edit::FormatUnitDesc {} {
 }
 #_______________________
 
-proc edit::RunFormat {fname} {
+proc edit::RunFormat {fname {forbind no}} {
   # Does format according to a format file.
   #   fname - format file's name
+  #   forbind - if no, called from menu
 
   namespace upvar ::alited al al
   SourceFormatTcl
   set fcont [split [::apave::readTextFile $fname] \n]
-  set fform [file tail $fname]
+  set fform [FormatterName $fname]
   unset -nocomplain al(FORMATS,$fform)
   set mode 0
   set cont [list]
@@ -1150,8 +1155,16 @@ proc edit::RunFormat {fname} {
     incr iline
     set mode [IniParameter mode $line]
     if {$mode in {1 2 3 4 5 6}} {
-      alited::format::Mode$mode \
-        [lrange $cont $iline end] $fname [alited::bar::FileName]
+      set ev [alited::format::Mode$mode \
+        [lrange $cont $iline end] $fname [alited::bar::FileName]]
+      if {!$forbind && $mode==6 && $ev ne {}} {
+        set ev [string trim $ev <>]
+        set mitem [alited::menu::FormatsItemName $fform]
+        set msg [msgcat::mc {Use %e to run "%m"}]
+        set msg [string map [list %e $ev %m $mitem] $msg]
+        alited::Message $msg 3
+        alited::ini::SaveIni
+      }
       break
     }
   }
@@ -1273,18 +1286,65 @@ proc edit::BindPluginables {wtxt} {
     SourceFormatTcl
     foreach n $lformat {
       lassign $al($n) fullformname ev
-      set fform [file tail $fullformname]
+      set fform [FormatterName $fullformname]
       if {[info exists ::alited::format::bind6($fform)] && \
       [llength $::alited::format::bind6($fform)]} {
         foreach b $::alited::format::bind6($fform) {
           lassign $b ev com
-          catch {bind $wtxt $ev $com}
+          catch {
+            bind $wtxt $ev $com
+          }
         }
       } else {
-        RunFormat $fullformname
+        RunFormat $fullformname yes
       }
     }
   }
+}
+#_______________________
+
+proc edit::PluginAccelerator {mnu {itemttl ""} {ev ""} {retlist ""}} {
+  # Adds -accelerator to Formats menu item or returns a list of
+  # accelerators used by pluginables.
+  #   mnu - menu path
+  #   itemttl - item's title
+  #   ev - event
+
+  set nitems [$mnu index end]
+  for {set i 0} {$i<=$nitems} {incr i} {
+    set typ [$mnu type $i]
+    if {[catch {set ttl [$mnu entrycget $i -label]}]} {set ttl {}}
+    switch $typ {
+      command {
+        if {$itemttl ne {} && $itemttl eq $ttl} {
+          $mnu entryconfigure $i -accelerator [::apave::KeyAccelerator $ev]
+          break ;# it's call to set an accelerator
+        }
+        set acc [$mnu entrycget $i -accelerator]
+        if {$acc ne {}} {
+          set acc [string map {+ - Ctrl Control} $acc]
+          lappend retlist $acc
+        }
+      }
+      cascade {
+        set cascade [$mnu entrycget $i -menu]
+        if {$cascade ne {}} {
+          set retlist [PluginAccelerator $cascade $itemttl $ev $retlist]
+          continue
+        }
+      }
+      separator - tearoff {}
+    }
+  }
+  return $retlist
+}
+#_______________________
+
+proc edit::FormatterName {fname} {
+  # Gets formatter's file name from its full name.
+  #   fname - full name of formatter file
+
+  file tail $fname
 }
 
 # _________________________________ EOF _________________________________ #
