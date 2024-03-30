@@ -149,3 +149,4 @@ set message [string trimright $message \n]
 
 # message with icon=info in text mode
 alited::Msg $message info -text 1 -width [incr maxl 2]
+set _ ""
