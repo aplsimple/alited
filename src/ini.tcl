@@ -243,6 +243,9 @@ namespace eval ::alited {
 
   # width of mark bar
   set al(markwidth) 8
+
+  # switch "show week numbers in calendar"
+  set al(klndweeks) 0
 }
 
 # ________________________ Variables _________________________ #
@@ -615,7 +618,7 @@ proc ini::ReadIniMisc {nam val} {
     showinfo {set al(TREE,showinfo) $val}
     listSBL - HelpedMe - checkgeo - tonemoves - moveall - chosencolor \
     - sortList - activemacro - commentmode - format_separ1 - format_separ2 \
-    - TIPS,* - MNUGEO,* - markwidth {
+    - TIPS,* - MNUGEO,* - markwidth - klndweeks {
       set al($nam) $val
     }
     tplilast {set ::alited::unit::ilast $val}
@@ -967,6 +970,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "format_separ1=$al(format_separ1)"
   puts $chan "format_separ2=$al(format_separ2)"
   puts $chan "markwidth=$al(markwidth)"
+  puts $chan "klndweeks=$al(klndweeks)"
   # save the Edit/Formats pluginables
   puts $chan {}
   puts $chan {[Formats]}

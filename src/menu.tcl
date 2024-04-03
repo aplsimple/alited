@@ -532,7 +532,7 @@ proc menu::FillMenu {} {
   menu $m.filelist -tearoff 0
   $m add cascade -label $al(MC,filelist) -menu $m.filelist
   $m.filelist add command -label $al(MC,filelist) -command {alited::bar::BAR popList} -accelerator $al(acc_21)
-  $m.filelist add checkbutton -label [msgcat::mc {Sorted}] -variable ::alited::al(sortList)
+  $m.filelist add checkbutton -label [msgcat::mc {Sorted}] -variable ::alited::al(sortList) -command alited::ini::SaveIni
   $m add command -label $al(MC,checktcl...) -command alited::CheckRun
   $m add command -label [msgcat::mc {Project Printer...}] -command alited::PrinterRun
 
@@ -568,16 +568,7 @@ proc menu::FillMenu {} {
     -variable ::alited::al(wrapwords) -command alited::file::WrapLines
   $m add checkbutton -label [msgcat::mc {Tip File Info}] \
     -variable ::alited::al(TREE,showinfo) -command alited::file::UpdateFileStat
-
-  menu $m.tipson -tearoff 1
-  $m add cascade -label [msgcat::mc {Tips on / off}] -menu $m.tipson
-  $m.tipson add checkbutton -label $al(MC,projects) -variable ::alited::al(TIPS,Projects) -command alited::ini::SaveIni
-  $m.tipson add checkbutton -label $al(MC,tpl) -variable ::alited::al(TIPS,Templates) -command alited::ini::SaveIni
-  $m.tipson add checkbutton -label $al(MC,pref) -variable ::alited::al(TIPS,Preferences) -command alited::ini::SaveIni
-  $m.tipson add checkbutton -label $al(MC,FavLists) -variable ::alited::al(TIPS,SavedFavorites) -command alited::ini::SaveIni
-  $m.tipson add separator
-  $m.tipson add checkbutton -label [msgcat::mc Units] -variable ::alited::al(TIPS,Tree) -command alited::ini::SaveIni
-  $m.tipson add checkbutton -label $al(MC,favorites) -variable ::alited::al(TIPS,TreeFavor) -command alited::ini::SaveIni
+  $m add separator
 
   MenuCascade $m tint [msgcat::mc Tint]
   lassign [TintRange] max min
@@ -593,12 +584,31 @@ proc menu::FillMenu {} {
     $m.tint add checkbutton -label $ti2 -command "alited::menu::SetTint $ti" -variable alited::menu::tint($ti)
   }
   CheckTint
+
+  menu $m.tipson -tearoff 1
+  $m add cascade -label [msgcat::mc {Tips on / off}] -menu $m.tipson
+  $m.tipson add checkbutton -label $al(MC,projects) -variable ::alited::al(TIPS,Projects) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,tpl) -variable ::alited::al(TIPS,Templates) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,pref) -variable ::alited::al(TIPS,Preferences) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,FavLists) -variable ::alited::al(TIPS,SavedFavorites) -command alited::ini::SaveIni
+  $m.tipson add separator
+  $m.tipson add checkbutton -label [msgcat::mc Units] -variable ::alited::al(TIPS,Tree) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,favorites) -variable ::alited::al(TIPS,TreeFavor) -command alited::ini::SaveIni
+
+  menu $m.weekcal -tearoff 0
+  $m add cascade -label [msgcat::mc {Weeks in Calendar}] -menu $m.weekcal
+  $m.weekcal add radiobutton -value 0 -label None \
+    -variable ::alited::al(klndweeks) -command alited::ini::SaveIni
+  $m.weekcal add radiobutton -value 1 -label Classic \
+    -variable ::alited::al(klndweeks) -command alited::ini::SaveIni
+  $m.weekcal add radiobutton -value 2 -label Sticky \
+    -variable ::alited::al(klndweeks) -command alited::ini::SaveIni
+
   $m add separator
   $m add command -label $al(MC,formatdesc...) -command alited::edit::FormatUnitDesc
   $m add separator
 
   $m add command -label [msgcat::mc {For Start...}] -command alited::tool::AfterStartDlg
-  $m add separator
   $m add command -label [msgcat::mc Configurations...] -command alited::menu::Configurations
   $m add separator
   $m add command -label $al(MC,pref...) -command alited::pref::_run

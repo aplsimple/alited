@@ -2022,7 +2022,7 @@ proc project::Tab1 {} {
       {-tvar ::alited::project::klnddata(date) \
       -com {alited::project::KlndUpdate; alited::project::KlndBorderText} \
       -dateformat "$::alited::al(TPL,%d)" \
-      -tip {alited::project::KlndText %D} \
+      -tip {alited::project::KlndText %D} -weeks $::alited::al(klndweeks) \
       -popup {alited::project::KlndPopup %W %y %m %d %X %Y} -width 3}}
     {fra3.fra - - - - {pack -fill both -expand 1}}
     {.seh2 - - - - {pack -side top -fill x}}

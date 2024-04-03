@@ -81,6 +81,44 @@ proc ::klnd::my::GoMonth {i {dobreak no}} {
 }
 #_______________________
 
+proc ::klnd::my::WeekNumbers {day1st ttls} {
+  # Gets the list of week numbers for a month.
+  #   day1st - 1st day of months
+  #   ttls - list of calender button's titles
+
+  variable p
+  set res [list]
+  set secw $day1st
+  set incd 0
+  for {set i 1} {$i<7} {incr i} {
+    set dtext [clock format $secw -format %V]
+    if {$p(weeks)==2} {
+      # 2nd (vulgar) mode of week numeration
+      set month [clock format $secw -format %m]
+      if {[clock format $secw -format %Y]>[clock format $day1st -format %Y]} {
+        set dtext {}
+      } elseif {$i==1 && $month eq {01} && $dtext ne {01}} {
+        set dtext {01}
+        set incd 1
+      } elseif {$month==12 && $dtext eq {01}} {
+        set dtext [incr dtextprev]
+      } else {
+        set dtext [string range 0[expr {[string trimleft $dtext 0]+$incd}] end-1 end]
+      }
+      set dtextprev $dtext
+    }
+    if {$i==5 && [lindex $ttls 28] eq {} || $i==6 && [lindex $ttls 35] eq {}} {
+      set dtext {}
+    }
+    lappend res $dtext
+    set w [clock format $secw -format %w]
+    if {$w} {set w [expr {8-$w}]} {set w 1}
+    set secw [clock add $secw $w days]
+  }
+  return $res
+}
+#_______________________
+
 proc ::klnd::my::ShowMonth {m y {dopopup no}} {
   # Displays a month's days.
   #   m - month
@@ -100,7 +138,8 @@ proc ::klnd::my::ShowMonth {m y {dopopup no}} {
     [$p(obj) LabDay$i] configure -text " [lindex $p(days) $i-1] "
   }
   # 1st day of the month's first week:
-  set i0 [clock format [clock scan "$m/1/$y" -format %D] -format %w]
+  set day1st [clock scan "$m/1/$y" -format %D]
+  set i0 [clock format $day1st -format %w]
   if {$p(weekday) eq "%u"} {if {$i0} {incr i0 -1} {set i0 6}}
   # get the last day of month
   if {[set yl $y] && [set ml $m]==12} {set ml 1; incr yl}
@@ -108,10 +147,12 @@ proc ::klnd::my::ShowMonth {m y {dopopup no}} {
   set iday [set p(icurr) 0]
   for {set i 1} {$i<38} {incr i} {
     if {$i<=$i0 || $iday>=$lday} {
-      set att "-takefocus 0 -text {    } -activebackground $p(bg1) -overrelief flat"
+      set ttl {    }
+      set att "-takefocus 0 -activebackground $p(bg1) -overrelief flat"
       set script {}
     } else {
-      set att "-takefocus 1 -text {[incr iday]} -activeforeground $p(fg0) -activebackground $p(bg0) -overrelief raised"
+      set ttl [incr iday]
+      set att "-takefocus 1 -activeforeground $p(fg0) -activebackground $p(bg0) -overrelief raised"
       if {$iday==$p(dvis) || ($iday==$lday && $iday<$p(dvis))} {
         if {[info exists p(after)]} {set af 20} {set af 200} ;# less at key pressing tight
         catch {after cancel $p(after)}
@@ -125,11 +166,18 @@ proc ::klnd::my::ShowMonth {m y {dopopup no}} {
         set script [MapYMD $p(popup) $y $m $iday]
       }
     }
+    lappend ttls [string trim $ttl]
     set wbut [$p(obj) BuT_KLNDSTD$i]
-    $wbut configure {*}$att -fg $p(fg1) -bg $p(bg1) -relief flat
+    $wbut configure {*}$att -fg $p(fg1) -bg $p(bg1) -relief flat -text $ttl
     if {$dopopup && $p(popup) ne {}} {
       bind $wbut <Button-3> $script
     }
+  }
+  set wnums [WeekNumbers $day1st $ttls]
+  for {set i 0} {$i<6} {} {
+    set wnum [lindex $wnums $i]
+    set wbut [$p(obj) BuTW[incr i]]
+    $wbut configure {*}$::klnd::TMPATTW -text $wnum
   }
   set p(mvis) $m  ;# month & year currently visible
   set p(yvis) $y
@@ -299,10 +347,10 @@ proc ::klnd::my::InitCalendar {args} {
   variable locales
   InitSettings
   lassign [::apave::parseOptions $args -locale [::msgcat::mclocale] \
-  -title {} -value {} -tvar {} -parent {} -dateformat %D \
+  -title {} -value {} -tvar {} -parent {} -dateformat %D -weeks 0 \
   -weekday {} -centerme {} -geometry {} -entry {} -com {} -command {} \
   -currentmonth {} -united no -daylist {-} -hllist {} -popup {} -tip {} -width 2] \
-    loc title datevalue tvar parent p(dformat) \
+    loc title datevalue tvar parent p(dformat) p(weeks) \
     p(weekday) centerme geo entry com1 com2 \
     p(currentmonth) p(united) p(daylist) p(hllist) p(popup) p(tip) p(width)
   if {$com2 eq {}} {set p(com) $com1} {set p(com) $com2}
@@ -346,6 +394,11 @@ proc ::klnd::my::MainWidgets {} {
     set tip [string map [list \{ ( \} )] $p(tip)] ;# for a possible bad list
     set ::klnd::TMPTIP "-tip {$tip}"
   }
+  if {$p(weeks)} {set ::klnd::TMPPACKW {}} {set ::klnd::TMPPACKW forget}
+  if {[::iswindows]} {set pady 2} {set pady 1}
+  set ::klnd::TMPATTW "-font {$::apave::FONTMAIN} -padx 0 -pady $pady \
+    -activeforeground $p(fgh) -activebackground $p(bg1) -foreground $p(fgh) \
+    -relief flat -overrelief flat -takefocus 0 -highlightthickness 0 -width 2"
   return {
     {fra - - 1 7 {-st new} {}} \
     {.frATool - - 1 7 {-st new} {-bg $::klnd::my::p(bg1)}}
@@ -357,7 +410,15 @@ proc ::klnd::my::MainWidgets {} {
       IM_KLND_3 {{::klnd::my::GoMonth 1} -tip "$::klnd::my::nextM\n(PageDown)@@-under 5"} h_ 2
       IM_KLND_4 {{::klnd::my::GoYear 1} -tip "$::klnd::my::nextY\n(End)@@-under 5"}
       }}}
-    {.frADays .frATool T - - {-st nsew} {-bg $::klnd::my::p(bg1)}}
+    {.frAW .frATool T - - {-padx 0} {-bg $::klnd::my::p(bg1) -w 0 -borderwidth 0}}
+    {.frAW.labw - - 1 1 {pack -pady 1}}
+    {.frAW.BuTW1 + T 1 1 {pack $::klnd::TMPPACKW -pady 1} {$::klnd::TMPATTW}}
+    {.frAW.BuTW2 + T 1 1 {pack $::klnd::TMPPACKW -pady 1} {$::klnd::TMPATTW}}
+    {.frAW.BuTW3 + T 1 1 {pack $::klnd::TMPPACKW -pady 1} {$::klnd::TMPATTW}}
+    {.frAW.BuTW4 + T 1 1 {pack $::klnd::TMPPACKW -pady 1} {$::klnd::TMPATTW}}
+    {.frAW.BuTW5 + T 1 1 {pack $::klnd::TMPPACKW -pady 1} {$::klnd::TMPATTW}}
+    {.frAW.BuTW6 + T 1 1 {pack $::klnd::TMPPACKW -pady 1} {$::klnd::TMPATTW}}
+    {.frADays .frAW L 1 1 {-st nsew} {-bg $::klnd::my::p(bg1)}}
     {.frADays.tcl {
       # make headers and buttons of days
       if {$::tcl_platform(platform) eq {windows}} {
@@ -468,7 +529,7 @@ proc ::klnd::clearArgs {args} {
   # Removes specific options from args.
   #   args - list of options
 
-  return [::apave::removeOptions $args -title -value -tvar -locale -parent -dateformat -weekday -com -command -currentmonth -united -daylist -hllist -popup -tip]
+  return [::apave::removeOptions $args -title -value -tvar -locale -parent -dateformat -weekday -com -command -currentmonth -united -daylist -hllist -popup -tip -weeks]
 }
 #_______________________
 
@@ -510,6 +571,8 @@ proc ::klnd::calendar {args} {
     {fraBottom.ButOK - - - - {pack -side left} {-t OK -com ::klnd::my::PickDay}} \
     {fraBottom.ButClose - - - - {pack -side left} {-t "$my::Close" -com "$my::p(obj) res $win 0"}} \
   ]
+  unset -nocomplain ::klnd::TMPTIP
+  unset -nocomplain ::klnd::TMPPACKW
   # binds for day buttons and 'Close'
   foreach {ev prc} { <Home> "::klnd::my::GoYear -1 yes" <End> "::klnd::my::GoYear 1 yes" \
   <Prior> "::klnd::my::GoMonth -1 yes" <Next> "::klnd::my::GoMonth 1 yes"} {

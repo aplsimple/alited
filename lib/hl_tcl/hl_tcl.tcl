@@ -158,7 +158,6 @@ proc ::hl_tcl::my::RemoveTags {txt from to} {
   foreach tag {tagCOM tagCOMTK tagSTR tagVAR tagCMN tagCMN2 tagPROC tagOPT} {
     $txt tag remove $tag $from $to
   }
-  return
 }
 #_______________________
 
@@ -256,7 +255,6 @@ proc ::hl_tcl::my::HighlightCmd {txt line ln pri i} {
       set dl $dl2
     }
   }
-  return
 }
 #_______________________
 
@@ -283,7 +281,6 @@ proc ::hl_tcl::my::HighlightStr {txt p1 p2} {
       }
     }
   }
-  return
 }
 #_______________________
 
@@ -341,7 +338,6 @@ proc ::hl_tcl::my::HighlightComment {txt line ln k} {
   } else {
     $txt tag add tagCMN $ln.$k $ln.end
   }
-  return
 }
 #_______________________
 
@@ -423,7 +419,6 @@ proc ::hl_tcl::my::HighlightAll {txt} {
   # let them work one by one:
   set coroNo [expr {[incr ::hl_tcl::my::data(CORALL)] % 10000000}]
   coroutine co_HlAll$coroNo ::hl_tcl::my::CoroHighlightAll $txt
-  return
 }
 #_______________________
 
@@ -451,7 +446,6 @@ proc ::hl_tcl::my::CoroHighlightAll {txt} {
     }
   }
   set data(REG_TXT,$txt) {1}
-  return
 }
 #_______________________
 
@@ -576,21 +570,22 @@ proc ::hl_tcl::my::MemPos {txt {doit no}} {
   # See also: ShowCurrentLine
 
   variable data
-  set data(_INSPOS_,$txt) [MemPos1 $txt no]
-  set ln [ShowCurrentLine $txt $doit]
-  set data(CUR_LEN,$txt) [$txt index {end -1 char}]
-  lassign [CountQSH $txt $ln] \
-    data(CNT_QUOTE,$txt) data(CNT_SLASH,$txt) data(CNT_COMMENT,$txt)
-  if {[$txt tag ranges tagBRACKET] ne {}}    {$txt tag remove tagBRACKET 1.0 end}
-  if {[$txt tag ranges tagBRACKETERR] ne {}} {$txt tag remove tagBRACKETERR 1.0 end}
-  if {[set cmd $data(CMDPOS,$txt)] ne {}} {
-    # run a command after changing position (with the state as arguments)
-    append cmd " $txt $data(CUR_LEN,$txt) $ln $data(CNT_QUOTE,$txt) \
-      $data(CNT_SLASH,$txt) $data(CNT_COMMENT,$txt)"
-    catch {after cancel $data(CMDATFER,$txt)}
-    set data(CMDATFER,$txt) [after idle $cmd]
+  catch {
+    set data(_INSPOS_,$txt) [MemPos1 $txt no]
+    set ln [ShowCurrentLine $txt $doit]
+    set data(CUR_LEN,$txt) [$txt index {end -1 char}]
+    lassign [CountQSH $txt $ln] \
+      data(CNT_QUOTE,$txt) data(CNT_SLASH,$txt) data(CNT_COMMENT,$txt)
+    if {[$txt tag ranges tagBRACKET] ne {}}    {$txt tag remove tagBRACKET 1.0 end}
+    if {[$txt tag ranges tagBRACKETERR] ne {}} {$txt tag remove tagBRACKETERR 1.0 end}
+    if {[set cmd $data(CMDPOS,$txt)] ne {}} {
+      # run a command after changing position (with the state as arguments)
+      append cmd " $txt $data(CUR_LEN,$txt) $ln $data(CNT_QUOTE,$txt) \
+        $data(CNT_SLASH,$txt) $data(CNT_COMMENT,$txt)"
+      catch {after cancel $data(CMDATFER,$txt)}
+      set data(CMDATFER,$txt) [after idle $cmd]
+    }
   }
-  return
 }
 #_______________________
 
@@ -608,7 +603,6 @@ proc ::hl_tcl::my::RunCoroAfterIdle {txt pos1 pos2 wait args} {
     set data(COROPOS2,$txt) $pos2
   }
   set data(COROAFTER,$txt) [after idle "::hl_tcl::my::CoroRun $txt $pos1 $pos2 $args"]
-  return
 }
 #_______________________
 
@@ -635,7 +629,6 @@ proc ::hl_tcl::my::Modified {txt oper pos1 args} {
     }
   }
   RunCoroAfterIdle $txt $pos1 $pos2 no {*}$args
-  return
 }
 #_______________________
 
@@ -653,7 +646,6 @@ proc ::hl_tcl::my::CoroRun {txt pos1 pos2 args} {
   set i2 [expr {int($pos2)}]
   set coroNo [expr {[incr data(CORMOD)] % 10000000}]
   coroutine CoModified$coroNo ::hl_tcl::my::CoroModified $txt $i1 $i2 {*}$args
-  return
 }
 #_______________________
 
@@ -735,7 +727,6 @@ proc ::hl_tcl::my::CoroModified {txt {i1 -1} {i2 -1} args} {
     }
     MemPos $txt
   }
-  return
 }
 #_______________________
 
@@ -1076,7 +1067,6 @@ proc ::hl_tcl::hl_readonly {txt {ro -1} {com2 ""}} {
     set _res_ \[eval $newcom \$args\] ; \
     return \$_res_"
   }
-  return
 }
 #_______________________
 
@@ -1151,7 +1141,6 @@ proc ::hl_tcl::hl_init {txt args} {
   }
   set ::hl_tcl::my::data(_INSPOS_,$txt) {}
   my::MemPos $txt
-  return
 }
 #_______________________
 
@@ -1203,7 +1192,6 @@ proc ::hl_tcl::hl_text {txt} {
     set ::hl_tcl::my::data(LIST_TXT) [lreplace $::hl_tcl::my::data(LIST_TXT) $i $i $txtattrs]
   }
   hl_readonly $txt $ro $com2
-  return
 }
 #_______________________
 
@@ -1225,7 +1213,6 @@ proc ::hl_tcl::hl_all {args} {
       }
     }
   }
-  return
 }
 #_______________________
 
@@ -1273,7 +1260,6 @@ proc ::hl_tcl::hl_line {txt} {
   }
   ::hl_tcl::my::MemPos $txt yes
   $txt configure -insertwidth $::hl_tcl::my::data(INSERTWIDTH,$txt)
-  return
 }
 #_______________________
 

@@ -260,6 +260,7 @@ proc file::UpdateFileStat {} {
     set fname [alited::bar::FileName $TID]
     alited::bar::BAR $TID configure -tip [FileStat $fname]
   }
+  alited::ini::SaveIni
 }
 #_______________________
 
@@ -307,6 +308,7 @@ proc file::WrapLines {{wrapnone no}} {
   }
   if {![info exist al(isSbhText)]} {set al(isSbhText) no}
   SbhText
+  alited::ini::SaveIni
 }
 #_______________________
 

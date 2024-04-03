@@ -72,9 +72,11 @@ proc dateChooser {tvar args} {
   if {$lng ni {de en es fr gr he it ja sv pl pt zh fi tr nl ru}} {
     set lng en
   }
-  set wcal %W.calendarTk
+  set wpar [winfo toplevel %W]
+  set wcal $wpar.calendarTk
   catch {destroy $wcal}
   wm title [toplevel $wcal] $ttl
+  wm transient $wcal $wpar
   wm protocol $wcal WM_DELETE_WINDOW [list set $tvar ""]
   bind $wcal <Escape> [list set $tvar ""]
   after idle focus $wcal.c
@@ -82,7 +84,7 @@ proc dateChooser {tvar args} {
     [list set $tvar] -textvariable $tvar -language $lng -font [alited::Font]
   pack $wcal.c -fill both -expand 0
   grab set $wcal
-  vwait $tvar
+  tkwait variable $tvar
   update
   destroy $wcal
   return [set $tvar]

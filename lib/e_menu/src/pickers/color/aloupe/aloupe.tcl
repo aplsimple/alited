@@ -11,7 +11,7 @@
 
 package require Tk
 
-package provide aloupe 1.4
+package provide aloupe 1.6
 
 namespace eval ::aloupe {
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]}]
@@ -374,7 +374,7 @@ proc ::aloupe::my::Refresh {} {
   # Refreshes the loupe image without mouse click.
 
   variable data
-  ::aloupe::my::DisplayImage $data(WLOUP)
+  DragEnd $data(WLOUP)
 }
 
 # ________________________ Geometry _________________________ #

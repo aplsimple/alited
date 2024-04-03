@@ -354,6 +354,19 @@ namespace eval ::apave {
       }
     }
   }
+  #_______________________
+
+  proc focusApp {} {
+    # Restores app's focus: if app loses focus, restoring it
+    # focuses main window, ignores modal toplevel, locks keyboard.
+
+    catch {
+      focus -force $::apave::FOCUSED
+      if {[focus] eq $::apave::FOCUSED} {
+        event generate $::apave::FOCUSED <Tab> ;# enter a field
+      }
+    }
+  }
 
   ## _______________________ Text little procs _________________________ ##
 
@@ -3774,6 +3787,10 @@ oo::class create ::apave::APaveBase {
       append opt(-onclose) "; ::apave::obj EXPORT CleanUps $win"
     }
     wm protocol $win WM_DELETE_WINDOW $opt(-onclose)
+    if {$modal} {
+      set ::apave::FOCUSED $win
+      wm protocol $win WM_TAKE_FOCUS ::apave::focusApp
+    }
     # get the window's geometry from its requested sizes
     set inpgeom $opt(-geometry)
     if {$inpgeom eq {}} {

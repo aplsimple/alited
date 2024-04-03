@@ -149,7 +149,8 @@ proc tool::DatePicker {} {
   lassign [alited::complete::TextCursorCoordinates] X Y
   incr Y 10
   set res [::apave::obj chooser dateChooser ::alited::al(klnddate) \
-    -parent $al(WIN) -geometry +$X+$Y -dateformat $al(TPL,%d)]
+    -parent $al(WIN) -geometry +$X+$Y -dateformat $al(TPL,%d) \
+    -weeks $al(klndweeks)]
   if {$res ne {}} {
     set al(klnddate) $res
     InsertInText $res

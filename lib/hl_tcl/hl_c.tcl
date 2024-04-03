@@ -91,7 +91,6 @@ proc ::hl_c::my::HighlightCmd {txt line ln pri i} {
     lassign $lc i1 i2
     $txt tag add tagVAR "$ln.$pri +$i1 char" "$ln.$pri +[incr i2] char"
   }
-  return
 }
 #_______________________
 
@@ -230,7 +229,6 @@ proc ::hl_c::my::RemoveTags {txt from to} {
   foreach tag {tagCOM tagCOMTK tagSTR tagVAR tagCMN tagCMN1 tagCMN2 tagPROC tagOPT} {
     $txt tag remove $tag $from $to
   }
-  return
 }
 #_______________________
 

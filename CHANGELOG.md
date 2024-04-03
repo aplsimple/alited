@@ -8,12 +8,12 @@ The *alited* has acquired the rich and comprehensive set of features, some are u
 # LAST CHANGES
 
 
-Version `v1.8.2a2 (30 Mar'24)`
+Version `v1.8.2 (3 Apr'24)`
 
   - NEW   : Edit/Formats: mode=6 pluginables: "Info" & "Calendar" as samples
+  - CHANGE: Edit/Formats: mode=5: %W (text path) and %v (selection) wildcards
   - CHANGE: infobar: colors of results and found unit names (branches)
-  - CHANGE: Edit/Formats: mode=5: %w (text path) and %v (selection) wildcards
-  - CHANGE: packages: e_menu/apave 4.4.1
+  - CHANGE: packages: e_menu/apave 4.4.1, aloupe 1.6
 
 Version `v1.8.1 (27 Mar'24)`
 

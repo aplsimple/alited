@@ -147,6 +147,7 @@ namespace eval ::alited {
     "Left click sets / goes to a mark.\nRight click clears it." "El clic izquierdo establece / va a una marca.\nAl hacer clic con el botón derecho, se borra."
     {Clear All} {Borrar todo}
     {Width} {Ancho}
+    {Weeks in Calendar} {Semanas en Calendario}
   }
 
   ## ________________________ Moving a first unit up ________________________ ##

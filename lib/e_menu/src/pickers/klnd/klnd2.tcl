@@ -99,7 +99,8 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
     [$p($obj) LabDay$obj$i] configure -text " [lindex $p(days$obj) $i-1]"
   }
   # 1st day of the month's first week:
-  set i0 [clock format [clock scan "$m/1/$y" -format %D] -format %w]
+  set day1st [clock scan "$m/1/$y" -format %D]
+  set i0 [clock format $day1st -format %w]
   if {$p(weekday$obj) eq {%u}} {if {$i0} {incr i0 -1} {set i0 6}}
   # get the last day of month
   if {[set yl $y] && [set ml $m]==12} {set ml 1; incr yl}
@@ -110,10 +111,12 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
     set bg $p(bg1)
     set wbut [$p($obj) BuT$obj-${i}KLND]
     if {$i<=$i0 || $iday>=$lday} {
-      set att "-takefocus 0 -text {   } -activebackground $p(bg1) -overrelief flat"
+      set ttl {   }
+      set att "-takefocus 0 -activebackground $p(bg1) -overrelief flat"
       set script {}
     } else {
-      set att "-takefocus 0 -text {[incr iday]} -activeforeground $p(fg0) -activebackground $p(bg0) -overrelief raised"
+      set ttl [incr iday]
+      set att "-takefocus 0 -activeforeground $p(fg0) -activebackground $p(bg0) -overrelief raised"
       if {$doenter && ($iday==$p(dvis$obj) || ($iday==$lday && $iday<$p(dvis$obj)))} {
         catch {after cancel $p(after$obj)}
         set p(after$obj) [after idle "::klnd::my::Enter2 $obj $i"]
@@ -137,9 +140,16 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
     if {$dopopup && $p(popup$obj) ne {}} {
       bind $wbut <Button-3> $script
     }
+    lappend ttls [string trim $ttl]
     # as last refuge: highlighting fg by hllist
     set fg [fgMayHL $obj $fg $y $m $iday]
-    $wbut configure {*}$att -relief flat -fg $fg -bg $bg
+    $wbut configure {*}$att -relief flat -fg $fg -bg $bg -text $ttl
+  }
+  set wnums [WeekNumbers $day1st $ttls]
+  for {set i 0} {$i<6} {} {
+    set wnum [lindex $wnums $i]
+    set wbut [$p($obj) BuTW[incr i]]
+    $wbut configure {*}$::klnd::TMPATTW -text $wnum
   }
   set p(mvis$obj) $m  ;# month & year currently visible
   set p(yvis$obj) $y
@@ -276,7 +286,7 @@ proc ::klnd::my::BindButtons2 {obj} {
 
   variable p
   for {set i 1} {$i<38} {incr i} {
-    set but [$::klnd::my::p($obj) BuT$obj-${i}KLND]
+    set but [$p($obj) BuT$obj-${i}KLND]
     bind $but <Button-1> "::klnd::my::Enter2 $obj $i 1"
   }
 }
@@ -303,6 +313,17 @@ proc ::klnd::my::ButtonTip {obj tipcom w} {
   }
   return $res
 }
+#_______________________
+
+proc ::klnd::my::SwitchWeeks2 {obj} {
+
+  variable p
+  if {$p(weeks)} {set forget {}} {set forget forget}
+  for {set i 1} {$i<7} {incr i} {
+    set wbut [$p($obj) BuTW$i]
+    pack {*}$forget $wbut
+  }
+}
 
 ## ________________________ Widgets _________________________ ##
 
@@ -323,7 +344,7 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
   set p(tipF3$obj) \
     "[::msgcat::mc {Current date}]: \
       [clock format [CurrentDate] -format $p(dformat$obj) -locale $p(loc$obj)]"
-  set res [list "$ownname.laB - - 1 10 {-st nsew} {-bg $::klnd::my::p(bg1)}"]
+  set res [list "$ownname.laB - - 1 10 {-st nsew} {-bg $p(bg1)}"]
   # if calendars are united, no display of tool bar
   if {$p(united$obj)} {
     lappend res \
@@ -331,7 +352,7 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
   } else {
     lappend res \
     "$ownname.laB.tool - - - - {pack -side top} {-array { \
-      IM_KLND_0 {{::klnd::my::SetCurrentDay2 $obj} -tip {$::klnd::my::p(tipF3$obj)@@-under 5}} sev 3 \
+      IM_KLND_0 {{::klnd::my::SetCurrentDay2 $obj} -tip {$p(tipF3$obj)@@-under 5}} sev 3 \
       IM_KLND_1 {{::klnd::my::GoYear2 $obj -1} -tip {$::klnd::my::prevY\n(Home)@@-under 5}} h_ 1 \
       IM_KLND_2 {{::klnd::my::GoMonth2 $obj -1} -tip {$::klnd::my::prevM\n(PageUp)@@-under 5}} h_ 2 \
       LabMonth$obj {{} {-fill x -expand 1} {-anchor center -w 18}} h_ 1 \
@@ -339,7 +360,17 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
       IM_KLND_4 {{::klnd::my::GoYear2 $obj 1} -tip {$::klnd::my::nextY\n(End)@@-under 5}} \
     }}"
   }
-  lappend res "$ownname.laBDays $ownname.laB T - - {-st nsew} {-bg $::klnd::my::p(bg1)}"
+  set ::klnd::TMPATTW "-font {$::apave::FONTMAIN} -padx 0 -pady 0 \
+    -activeforeground $p(fgh) -activebackground $p(bg1) -foreground $p(fgh) \
+    -relief flat -overrelief flat -takefocus 0 -highlightthickness 0 -width 2"
+  if {$p(weeks)} {set ::klnd::TMPPACKW {}} {set ::klnd::TMPPACKW forget}
+  lappend res "$ownname.frAW $ownname.laB T - - {-padx 0} {-bg $p(bg1) -w 0 -borderwidth 0}"
+  lappend res "$ownname.frAW.labw - - 1 1 {pack $::klnd::TMPPACKW -pady 0}"
+  # 1st day of the month's first week:
+  for {set i 1} {$i<7} {incr i} {
+    lappend res "$ownname.frAW.BuTW$i + T 1 1 {pack $::klnd::TMPPACKW -pady 1} {$::klnd::TMPATTW}"
+  }
+  lappend res "$ownname.laBDays $ownname.frAW L - - {-st nsew} {-bg $p(bg1)}"
   lappend res \
     [list $ownname.laBDays.tcl " \
       set wt - ; \
@@ -347,9 +378,9 @@ proc ::klnd::my::MainWidgets2 {obj ownname} {
         if {\$i<8} {set cur $ownname.laBDays.LabDay$obj\$i} {set cur $ownname.laBDays.BuT$obj-\[expr {\$i-7}\]KLND} ; \
         if {(\$i%7)!=1} {set p L; set pw \$pr} {set p T; set pw \$wt; set wt \$cur} ; \
         if {\$i<8} { \
-          set lwid \"\$cur \$pw \$p 1 1 {-st ew} {-anchor center -foreground $::klnd::my::p(fgh) -background $::klnd::my::p(bg1)}\" \
+          set lwid \"\$cur \$pw \$p 1 1 {-st ew -pady 0} {-anchor center -foreground $p(fgh) -background $p(bg1)}\" \
         } else { \
-          set lwid \"\$cur \$pw \$p 1 1 {-st ew -pady 1} {-relief flat -overrelief raised -takefocus 0  -padx 8 -pady 0 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w $p(width) -background $::klnd::my::p(bg1)}\" \
+          set lwid \"\$cur \$pw \$p 1 1 {-st ew -pady 1} {-relief flat -overrelief raised -takefocus 0  -padx 8 -pady 0 -font {$::apave::FONTMAIN} -com {::klnd::my::Enter2 $obj \[expr {\$i-7}\]} $::klnd::TMPTIP -highlightthickness 0 -w $p(width) -background $p(bg1)}\" \
         } ; \
         %C \$lwid ; \
         set pr \$cur \
