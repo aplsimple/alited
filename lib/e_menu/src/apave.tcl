@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.4.1
+package provide apave 4.4.2
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -34,7 +34,35 @@ proc ::isKDE {} {
 # ________________________ apave NS _________________________ #
 
 namespace eval ::apave {
+
+  namespace export obj openDoc
+
   mainWindowOfApp .
+
+  variable _OBJ_ {}
+
+  proc obj {com args} {
+    # Calls a method of APave class.
+    #   com - a method
+    #   args - arguments of the method
+    # It can (and must) be used only for temporary tasks.
+    # For persistent tasks, use a "normal" apave object.
+    # Returns the command's result.
+
+    variable _OBJ_
+    if {$_OBJ_ eq {}} {set _OBJ_ [::apave::APave new]}
+    if {[set exported [expr {$com eq "EXPORT"}]]} {
+      set com [lindex $args 0]
+      set args [lrange $args 1 end]
+      oo::objdefine $_OBJ_ "export $com"
+    }
+    set res [$_OBJ_ $com {*}$args]
+    if {$exported} {
+      oo::objdefine $_OBJ_ "unexport $com"
+    }
+    return $res
+  }
+  #_______________________
 
   proc None {args} {
     # Useful when to do nothing is better than to do something.
@@ -118,6 +146,31 @@ namespace eval ::apave {
     foreach t [trace info variable $v] {
       lassign $t o c
       trace remove variable $v $o $c
+    }
+  }
+  #_______________________
+
+  proc initBaltip {} {
+    # Initializes baltip package.
+
+    if {[info command ::baltip] eq {}} {
+      if {$::apave::ISBALTIP} {
+        source [file join $::apave::SRCDIR baltip baltip.tcl]
+      } else {
+        # disabling baltip facilities with stub proc (no source "baltip.src")
+        namespace eval ::baltip {
+          variable expproc [list configure cget tip update hide repaint \
+            optionlist tippath clear sleep showBalloon showTip]
+          foreach _ $expproc {
+          ; proc $_ {args} {return {}}
+            namespace export $_
+          }
+          namespace ensemble create
+          namespace eval my {
+          ; proc BindToEvent {args} {}
+          }
+        }
+      }
     }
   }
 
@@ -257,6 +310,19 @@ namespace eval ::apave {
 
   ## ________________________ Widgets _________________________ ##
 
+  proc checkGeometry {geo} {
+    # Checks a window's geometry.
+    #   geo - the geometry
+    # Returns a "normalized" geometry (+0+0 if input not correct).
+
+    if {![regexp {^\d+x\d+$} $geo] && ![regexp {^\+\d+\+\d+$} $geo] \
+    && ![regexp {^\d+x\d+\+\d+\+\d+$} $geo]} {
+      set geo +0+0
+    }
+    return $geo
+  }
+  #_______________________
+
   proc repaintWindow {win {wfoc ""}} {
     # Shows a window and, optionally, focuses on a widget of it.
     #   win - the window's path
@@ -388,6 +454,15 @@ namespace eval ::apave {
     } else {
       catch {focus -force [winfo toplevel $foc]; focus $foc}
     }
+  }
+  #_______________________
+
+  proc KeyAccelerator {acc} {
+    # Returns a key accelerator.
+    #   acc - key name, may contain 2 items (e.g. Control-D Control-d)
+
+    set acc [lindex $acc 0]
+    return [string map {Control Ctrl - + bracketleft [ bracketright ]} $acc]
   }
 
   ### ________________________ Blinking widgets _________________________ ###

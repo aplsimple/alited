@@ -286,19 +286,16 @@ proc ::em::menuTextModified {w bfont} {
   after idle [list ::em::LineView $w]
   set curpos [$w index insert]
   set text [$w get 1.0 end]
-  lassign [split $::em::HC ,] fg1 fg2 bg2 fg3
-  if {$fg3 eq {}} {
-    if {[::apave::obj csDark]} {
-      set fg1 orange
-      set fg2 black
-      set bg2 #84e284
-      set fg3 #848484
-    } else {
-      set fg1 #923B23
-      set fg2 white
-      set bg2 #0c560c
-      set fg3 #606060
-    }
+  if {[::apave::obj csDark]} {
+    set fg1 orange
+    set fg2 black
+    set bg2 #84e284
+    set fg3 #848484
+  } else {
+    set fg1 #923B23
+    set fg2 white
+    set bg2 #0c560c
+    set fg3 #606060
   }
   $w tag config tagRSIM -font $bfont -foreground $fg1
   $w tag config tagMARK -font $bfont -foreground $bg2
@@ -500,7 +497,7 @@ proc ::em::edit_menu {} {
 proc ::em::is_s_menu {} {
   # Checks if it is s_menu (stand-alone e_menu).
 
-  return [expr {[file rootname [file tail $::em::Argv0]] eq "s_menu"}]
+  expr {[file rootname [file tail $::em::Argv0]] eq "s_menu"}
 }
 #_______________________
 
@@ -770,7 +767,6 @@ proc ::em::change_PD {} {
       reread_menu $::em::lasti
       # this takes up e_menu's arguments e.g. fS=white bS=green (as part of CS)
       initcolorscheme
-      set ::em::HC {}  ;# turn to "standard" highlighting colors at editing menu
     }
   } else {
     set ::em::ncolor $ncolorsav
@@ -778,7 +774,6 @@ proc ::em::change_PD {} {
   }
   ::em::dialog destroy
   repaintForWindows
-  return
 }
 
 # ________________________ Input data dialogue _________________________ #
@@ -924,7 +919,7 @@ proc ::em::start_sub {ind istart ipos sub typ c1 sel} {
 proc ::em::get_subtask {linf ipos} {
   # Get a timed subtask info.
 
-  return [split [lindex $linf $ipos] :]
+  split [lindex $linf $ipos] :
 }
 #_______________________
 
@@ -1012,7 +1007,7 @@ proc ::em::ttask {oper ind {inf 0} {typ 0} {c1 0} {sel 0} {tsec 0} {ipos 0} {iN 
       set ::em::taski [lreplace $::em::taski $ind $ind]
     }
   }
-  return [list $ind $started]
+  list $ind $started
 }
 #_______________________
 
@@ -1032,7 +1027,7 @@ proc ::em::set_timed {from inf typ c1 inpsel} {
     }
     return false
   }
-  return [expr !$started && $startnow]  ;# true if start now, repeat after
+  expr {!$started && $startnow}  ;# true if start now, repeat after
 }
 
 # ________________________ Template _________________________ #

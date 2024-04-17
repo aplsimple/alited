@@ -96,6 +96,7 @@
 <li class="level3"><div class="li"><a href="#keyssetup">Keys setup</a></div></li>
 <li class="level3"><div class="li"><a href="#misckeys">Miscellaneous keys</a></div></li>
 <li class="level2"><div class="li"><a href="#formats">Formatting</a></div></li>
+<li class="level3"><div class="li"><a href="#plugins">Pluginables</a></div></li>
 <li class="level3"><div class="li"><a href="#transl">Language translation</a></div></li>
 <li class="level2"><div class="li"><a href="#macros">Macros</a></div></li>
 </ul></li>
@@ -183,6 +184,14 @@ Below is a screenshot of <span class="curid"><a href="#" class="wikilink1" title
 </p>
 <p>
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited_in_debian6.png" class="media" alt="">
+</p>
+<p>
+
+<br>
+... and its localized variant running <a href="https://www.winehq.org/">under Wine</a> of <a href="https://linuxmint.com/download_lmde.php">Linux Mint DE</a> on x86 machine (with Windows console started by <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>, Linux console started by <a href="https://linuxmint.com/">Linux Mint</a>):
+</p>
+<p>
+<img src="https://aplsimple.github.io/en/tcl/alited/files/alited-wine.png" class="media" alt="">
 </p>
 
 <p>
@@ -1863,27 +1872,27 @@ It's very useful at getting an obscure Tcl error.
 The results contain general info about a file and specific data on its <i>leaves</i> (procedures and methods). The <i>branches</i> are not checked.
 </p>
 <p>
-The <i>file results</i> cover the whole file. There might be inconsistencies in some specific leaves and seemingly good results for the file as whole.
+The <i>file results</i> cover the whole file. There might be inconsistencies in some specific leaves and seemingly good results for the file as whole. And vice versa.
 </p>
 <p>
 The file results include <i>(a/b/c/d)</i> data meaning inconsistencies found
  for {}, [], () and "".
 </p>
 <p>
-The clicking on a result line would open its appropriate unit.
+The clicking on a result line will open its appropriate unit.
 </p>
 <p>
 An inconsistency for {} may occur if a procedure is located at edges of a namespace or a
  class - in such cases the unit may include its finishing braces. Another case of inconsistency is when some procedure declares a procedure inside itself.
 </p>
 <p>
-To get rid of these "inconsistencies" you can insert branches named like "End of class/NS so and so". Or use a trick with semicolon before <i>proc</i> command, this way:
+To get rid of these "inconsistencies" you can insert branches named like "End of class/NS so and so". Or use a trick with semicolon before <i>proc</i> command to hide it in the unit tree, this way:
 <pre class="code"><i><font color=#4b5d50># ________________________ NS fooNS _________________________ #</font></i>
 <b><font color=#ca14ca>namespace</font></b> eval fooNS {
   <i><font color=#4b5d50>## ________________________ Procedures _________________________ ##</font></i>
   <b><font color=#ca14ca>proc</font></b> foo {} {
       some_command
-      <i><font color=#4b5d50># a proc inside another proc: good to mark and skip in the unit tree</font></i>
+      <i><font color=#4b5d50># a proc inside another proc: good to mark and skip in the unit tree, as well as to search these types</font></i>
     ; <b><font color=#ca14ca>proc</font></b> foo2 {} {
           some_command2
       }
@@ -1893,7 +1902,7 @@ To get rid of these "inconsistencies" you can insert branches named like "End of
 </pre>
 </p>
 <p>
-There may be inconsistencies of "", when the double quotes are used in regular expressions. Also, some procedures or methods may be rather voluminous (though mostly uniform, like a creation of menu items), so that they are divided into components with <a href=#units1> alited's branches</a>. As a result, their units become "inconsistent".
+There may be inconsistencies of "", when the double quotes are used in regular expressions. Also, some procedures or methods may be rather voluminous (though mostly uniform, like a creation of menu items), so that they are divided into components with <a href=#units1> alited's branches</a>. As a result, their units become "inconsistent" from <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s viewpoint.
 </p>
 <p>
 To overcome these false inconsistencies, you can use special comments meaning "this unit is checked and proved normal", setting in comments <i>alited</i> and <i>check</i> (or <i>check</i> and <i>alited</i>) all case insensitive:
@@ -1905,7 +1914,7 @@ or this way:
 </p>
 
 <p>
-<b>Note</b>: At opening "Check Tcl" dialogue, the checking for consistencies is executed for a <i>current file</i> automatically! Also, the checking for consistencies is executed for a <i>current proc / method</i> before "Run the file" automatically! If found, errors are reported about in the status bar, with a bell.
+<b>Note</b>: At opening "Check Tcl" dialogue, the checking for consistencies is executed for a <i>current file</i> automatically! Also, the checking for consistencies is executed for a <i>current proc / method</i> before "Tools / Run" automatically! If found, errors are reported about in the status bar, with a bell.
 </p>
 
 <p>
@@ -2630,11 +2639,102 @@ The <i>Edit / Formats / External</i> submenu contains not the text handlers but 
 </p>
 
 <p>
+If a directory of formatters contains <i>init.tcl</i> file, it is <i>sourced</i> for all formatters of the directory. See, for example, <i>Translation</i> formatters.
+</p>
+
+<p>
+The <i>init.tcl</i> file can include:
+<ul>
+<li>default values of variables</li>
+<li>common procs</li>
+<li>initializing code</li>
+</ul>
+</p>
+
+<p>
 <b>Note #1</b>: if you decide to create a subdirectory of <i>format</i> directory, don't use spaces in its name. Use "_" or "-" instead.
 </p>
 
 <p>
 <b>Note #2</b>: the <i>Edit / Formats</i> submenus are good candidates to "freeze" them with their dotted items and move them to convenient places of the screen, perhaps changing their sizes. So that they will be at hand in the next sessions of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>. An example of this is presented in <A href="https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6">"Little things" demo</A>.
+</p>
+
+<br>
+<p>
+<h3 id="plugins"><i>Pluginables</i></h3>
+</p>
+
+<p>
+The <i>Edit / Formats</i> menu includes also <i>Pluginable</i> submenu. Its formatters are run by events (keyboard pressings).
+</p>
+
+<p>
+The <i>pluginables</i> have the following structure:
+<pre class="code">mode = 6
+sep = 1
+icon = icon name
+events = &lt;event&gt; ?&lt;event&gt;?
+command =
+<i><font color=#4b5d50># below is Tcl code of formatter</font></i>
+<i><font color=#4b5d50># ...</font></i>
+</pre>
+</p>
+
+<p>
+The <code>mode=6</code> line sets the formatter's mode ("pluginable").
+<br>
+The <code>sep=</code> line is optional, it sets the separator in the tool bar.
+<br>
+The <code>icon=</code> line is optional, it sets the icon in the tool bar. The icon names are the same as in <i>Preferences/Tools/bar-menu</i>.
+</p>
+
+<p>
+The <code>events=...</code> line sets a list of events which will trigger the formatter.
+</p>
+
+<p>
+The events are separated with commas and/or spaces. At that, if present,
+1st event's letter is recommended to be in upper case which is
+only used at getting accelerators and engaged keys, e.g.:
+<pre class="code">events = &lt;Control-Q&gt;,&nbsp;&lt;Control-q&gt;
+</pre>
+</p>
+
+<p>
+The events must not overlap the <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s key mappings (as set in
+<i>Preferences/Keys</i> and <i>Templates</i>).
+</p>
+
+<p>
+After <code>events=...</code> line, there follows <code>command=</code> line meaning that
+the rest of file is treated as Tcl code block.
+</p>
+
+<p>
+The <i>Tcl code block</i> can include wildcards:
+<ul>
+<li><code>%W</code> for current text's path</li>
+<li><code>%f</code> for current edited file name</li>
+<li><code>%v</code> for selected text (or current line)</li>
+</ul>
+</p>
+
+<p>
+The commands may include calls to <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> procedures, mostly of <code>alited::</code>
+namespace. Details are in <A href="https://aplsimple.github.io/en/tcl/alited/alited.html">Reference</a>.
+</p>
+
+<p>
+This is the regular usage of <code>mode=6</code>, so the <i>pluginables</i> have normally
+<i>.tcl</i> extension.
+</p>
+
+<p>
+If not empty, the result of last command is inserted at the current text
+position or replaces selected text.
+</p>
+
+<p>The call of a pluginable from <i>Edit / Formats</i> menu will register its hot key bindings, so that it can be run with pressing the hot keys. If you change the hot keys, just rerun the pluginable from <i>Edit / Formats</i> menu.
 </p>
 
 <br>
@@ -2666,8 +2766,7 @@ The slowness of the translation is a cost of its "freedomness". After acquiring 
 </p>
 
 <p>
-The translation options can be customized in "Preferences":
-<i>Preferences / Editor / Plain text</i>.
+The translation options can be customized in <i>data/format/Translation/init.tcl</i>.
 </p>
 
 <p>

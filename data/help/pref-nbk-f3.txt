@@ -32,11 +32,3 @@
    - <b>Remove trailing whitespaces</b> - if set ON, the trailing
      whitespaces of all texts' lines are removed at saving. Otherwise,
      "Edit" menu item can be used to do this for a current text.
-
- The <b>Translation link</b> means a link to the translation service used in
- <b>Edit/Formats/Translation</b>.
-
- These translation links were active on September 2023:
-   https://libretranslate.de/translate
-   https://translate.argosopentech.com/translate
-   https://translate.terraprint.co/translate

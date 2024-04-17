@@ -1,4 +1,4 @@
-package ifneeded alited 1.8.2 [list source [file join $dir alited.tcl]]
+package ifneeded alited 1.8.3 [list source [file join $dir alited.tcl]]
 
 namespace eval ::alited {
 
@@ -110,5 +110,9 @@ and its dark theme on Windows 10:
 and its 1.6.5 version installed 24.01.2024 on x86 machine with Debian v6.0 (Linux core v2.6.32) and GNOME v2.30.2, deployed far back in 2010:
 
 <img src="https://aplsimple.github.io/en/tcl/alited/files/alited_in_debian6.png" class="media" alt="">
+
+and its localized variant running [under Wine](https://www.winehq.org) of [Linux Mint DE](https://linuxmint.com/download_lmde.php) on x86 machine (with Windows console started by [alited](https://github.com/aplsimple/alited), Linux console started by [Linux Mint](https://linuxmint.com/)):
+
+<img src="https://aplsimple.github.io/en/tcl/alited/files/alited-wine.png" class="media" alt="">
   }
 }

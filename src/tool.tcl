@@ -113,9 +113,8 @@ proc tool::ColorPicker {} {
     catch {source [SrcPath [file join $PAVEDIR pickers color aloupe aloupe.tcl]]}
   }
   if {![string is boolean -strict $al(moveall)]} {set al(moveall) 0}
-  lassign [alited::complete::TextCursorCoordinates] X Y
-  incr Y 10
-  set res [::apave::obj chooser colorChooser ::alited::al(chosencolor) \
+  lassign [LineCoordinates] X Y
+  set res [obj chooser colorChooser ::alited::al(chosencolor) \
     -moveall $al(moveall) -parent $al(WIN) -geometry +$X+$Y -inifile [aloupePath]]
   catch {lassign [::tk::dialog::color::GetOptions] al(moveall)}
   if {$res ne {}} {
@@ -146,15 +145,23 @@ proc tool::DatePicker {} {
   } elseif {![info exists al(klnddate)]} {
     set al(klnddate) [FormatDate]
   }
-  lassign [alited::complete::TextCursorCoordinates] X Y
-  incr Y 10
-  set res [::apave::obj chooser dateChooser ::alited::al(klnddate) \
+  lassign [LineCoordinates] X Y
+  set res [obj chooser dateChooser ::alited::al(klnddate) \
     -parent $al(WIN) -geometry +$X+$Y -dateformat $al(TPL,%d) \
     -weeks $al(klndweeks)]
   if {$res ne {}} {
     set al(klnddate) $res
     InsertInText $res
   }
+}
+#_______________________
+
+proc tool::LineCoordinates {} {
+  # Gets X, Y screen coordinates of current line.
+
+  lassign [alited::complete::CursorCoordsChar {} linestart] X Y
+  if {[::iswindows]} {incr Y 50} {incr Y 10}
+  list $X $Y
 }
 #_______________________
 
@@ -267,7 +274,7 @@ proc tool::Translate {from to what} {
   #   what - what to translate
 
   namespace upvar ::alited al al LIBDIR LIBDIR
-  if {[info command ::alited::hl_trans::translateLine] eq {}} {
+  if {[info command ::alited::hl_trans::TranslateText] eq {}} {
     namespace eval ::alited {
       source [file join $LIBDIR addon hl_trans.tcl]
     }
@@ -340,7 +347,7 @@ proc tool::EM_Options {opts} {
   if {$al(EM,geometry) eq {}} {
     # at 1st exposition, center e_menu approximately
     lassign [split [wm geometry $al(WIN)] x+] w h x y
-    set al(EM,geometry) [apave::obj EXPORT CenteredXY $w $h $x $y 300 [expr {$h/2}]]
+    set al(EM,geometry) [obj EXPORT CenteredXY $w $h $x $y 300 [expr {$h/2}]]
   }
   set ed [info nameofexecutable]\ $SCRIPTNORMAL\ $CONFIGDIR
 
@@ -779,14 +786,6 @@ proc tool::e_menu {args} {
   if {{EX=1} ni $args} {
     append args { AL=1}  ;# to read a current file only at "Run me"
   }
-  set wtxt [alited::main::CurrentWTXT]
-  lassign [::hl_tcl::hl_colors .] - - clrSTR clrVAR clrCMN clrPROC
-  if {$clrSTR eq {lightgreen}} {set clrSTR #90ee90}
-  if {![string match #* $clrSTR]} {set clrSTR $clrVAR}
-  if {[string match #* $clrSTR]} {
-    lassign [alited::edit::InvertBg $clrSTR] fg2
-    append args " HC=$clrPROC,$fg2,$clrSTR,$clrCMN"
-  }
   if {[set i [lsearch $args {SH=1}]]>-1} {
     set args [lreplace $args $i $i [SHarg]]
   }
@@ -891,11 +890,6 @@ proc tool::_run {{what ""} {runmode ""} args} {
   set opts "EX=$what"
   if {$what eq {}} {
     set doit [::apave::extractOptions args -doit 0]
-#!    lassign [alited::ExtTrans] ext istrans from to
-#!    if #\{!$doit && $istrans#\} #\{
-#!      alited::hl_trans::translateLine $from $to
-#!      return
-#!    #\}
     if {!$::alited::DEBUG} {
       if {$al(EM,exec)} {
         set fpid [alited::TmpFile .pid~]

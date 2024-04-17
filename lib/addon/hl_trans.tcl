@@ -47,7 +47,6 @@ proc hl_trans::init {w font szfont args} {
   #   args - highlighting colors
 
   namespace upvar ::alited al al
-  variable postUrl $al(ED,tran)
   lassign $args clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC
   $w tag config iniPROC -font $font -foreground $clrPROC
   dict set font -slant italic
@@ -94,7 +93,7 @@ proc hl_trans::TranslateText {txt {src en} {dest de} args} {
   variable postUrl
   set query [http::formatQuery q $txt source $src target $dest format text api_key {}]
   if {[catch {
-      set post [http::geturl $postUrl -query $query -method POST {*}$args]
+    set post [http::geturl $postUrl -query $query -method POST {*}$args]
   } err]} {
     return [list 0 $err]
   }
@@ -110,49 +109,5 @@ proc hl_trans::TranslateText {txt {src en} {dest de} args} {
   set translation [encoding convertfrom utf-8 $translation]
   return [list 1 [htmlparse::mapEscapes $translation]]
 }
-#_______________________
 
-proc hl_trans::translateLine {from to} {
-  # Translates a current line of the text.
-  #   from - source language code
-  #   to - destination language code
-
-if 0 {  ;# obsolete
-  namespace upvar ::alited al al
-  variable errmsg
-  set wtxt [alited::main::CurrentWTXT]
-  set nl [expr {int([$wtxt index insert])}]
-  set line [$wtxt get $nl.0 $nl.end]
-  if {[string trim $line] eq {}} {
-    bell
-    return
-  }
-  alited::MessageNotDisturb
-  lassign [TranslateText $line $from $to] ok translation
-  ::baltip hide
-  if {$ok} {
-    set nchars [::apave::obj leadingSpaces $line]
-    set indent [string range $line 0 $nchars-1]
-    set translation "$indent[string trimleft $translation]"
-    if {$al(ED,transadd)} {
-      $wtxt insert $nl.end \n$translation
-      incr nl
-    } else {
-      $wtxt replace $nl.0 $nl.end $translation
-    }
-    update
-    after idle [list $wtxt tag add iniPROC $nl.0 $nl.end]
-    for {incr nl} {$nl<=[$wtxt index end]} {incr nl} {
-      set line [string trim [$wtxt get $nl.0 $nl.end]]
-      if {$line ne {}} {
-        ::tk::TextSetCursor $wtxt [$wtxt index $nl.0]
-        break
-      }
-    }
-    alited::main::HighlightLine
-  } else {
-    alited::Message $translation 4
-  }
-}
-}
 # ________________________ EOF _________________________ #

@@ -583,7 +583,7 @@ proc printer::CheckDir {} {
     set msg [string map [list %n $dir %c $cntdir] $msg]
     if {![alited::msg okcancel warn $msg OK -title $al(MC,warning)]} {
       set fname [file join $dir $indexname]
-      if {[file exists $fname]} {::apave::openDoc $fname}
+      if {[file exists $fname]} {openDoc $fname}
       return no
     }
   }
@@ -877,7 +877,7 @@ proc printer::RunFinal {{check no}} {
   if {$final ne {}} {
     set fname [file join $dir $indexname]
     if {$final eq {%D} || $final eq {"%D"}} {
-      ::apave::openDoc $fname
+      openDoc $fname
     } elseif {$final eq {%e}} {
       alited::file::OpenFile $fname
       return yes

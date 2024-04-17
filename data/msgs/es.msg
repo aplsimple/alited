@@ -143,7 +143,7 @@ namespace eval ::alited {
     {check RE in Find/Replace box} {marque RE en Buscar/Reemplazar}
     {Context} {Contexto}
     {Changes will be lost!} {¡Los cambios se perderán!}
-    {Mark} {Marca}
+    {Marks} {Marcas}
     "Left click sets / goes to a mark.\nRight click clears it." "El clic izquierdo establece / va a una marca.\nAl hacer clic con el botón derecho, se borra."
     {Clear All} {Borrar todo}
     {Width} {Ancho}

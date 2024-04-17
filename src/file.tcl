@@ -1357,7 +1357,7 @@ proc file::Add {ID} {
       seh {{} {-pady 10}} {} \
       ent {{File name:} {} {-w 40}} "{$fname}" \
       chb [list {} {-padx 5} [list -toprev 1 -t Directory]] {0} ] \
-      -head $head -family "{[::apave::obj basicTextFont]}"]
+      -head $head -family "{[obj basicTextFont]}"]
     lassign $res res fname isdir
     if {$res && $fname eq {}} bell else break
   }

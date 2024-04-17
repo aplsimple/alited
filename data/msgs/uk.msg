@@ -146,7 +146,7 @@ namespace eval ::alited {
     {Display colors in the whole text?} {Відобразити кольори в усьому тексті?}
     {check RE in Find/Replace box} {включіть RE у віконці Пошук/Заміна}
     {Context} {Контекстна}
-    {Mark} {Мітка}
+    {Marks} {Мітки}
     {Changes will be lost!} {Зміни будуть втрачені!}
     "Left click sets / goes to a mark.\nRight click clears it." "Лівий клік ставить / йде на мітку.\nПравий клік вичищає її."
     {Clear All} {Вичистити усе}

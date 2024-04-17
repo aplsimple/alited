@@ -1,11 +1,26 @@
-# ANNOUNCEMENT
-
 The *alited v1.8* is supposedly the final version in the sense that there will be no 1.9 nor 2.0 versions. Only bug fixings and polishings.
 
-The *alited* has acquired the rich and comprehensive set of features, some are unique. It needs no *multiplying the entities without necessity*.
+The *alited* provides the rich and comprehensive set of features, some are unique. It needs no *multiplying the entities without necessity*.
 
 
 # LAST CHANGES
+
+
+Version `v1.8.3 (17 Apr'24)`
+
+  - BUGFIX: if "Help/Context" open, "Find/Replace" (or similar) closed
+  - BUGFIX: Projects: change default project in 1st session of alited
+  - NEW   : optional init.tcl in Edit/Formats items (data/format directories)
+  - NEW   : Edit/Formats: mode=6: possible icon= (tool icon), sep= (tool separator)
+  - DELETE: Preferences & Projects: translation options (moved to init.tcl)
+  - CHANGE: Edit/Insert Line (Ctrl+P): at line of closing brace
+  - CHANGE: highlight Preferences' notes as .md
+  - CHANGE: highlight Projects' texts as .md
+  - CHANGE: date & color pickers aligned to current line's start
+  - CHANGE: start smoother due to `-waitme` option of apave
+  - CHANGE: Preferences/Tools: keep geometry of e_menu & Tkcon for "Standard"
+  - CHANGE: clearances & docs
+  - CHANGE: packages: e_menu/apave 4.4.2
 
 
 Version `v1.8.2 (3 Apr'24)`
@@ -18,11 +33,11 @@ Version `v1.8.2 (3 Apr'24)`
 Version `v1.8.1 (27 Mar'24)`
 
   - BUGFIX: rename file in tab bar after changing its upper directory name
+  - NEW   : bar of 24 green & red (book)marks
   - DELETE: prohibition from renaming currently edited file
   - DELETE: prohibition from deleting currently edited file
   - DELETE: some data/help files (obsolete or duplicated in Help/alited)
   - DELETE: some pkgIndex files (no need due to `source`)
-  - NEW   : bar of 24 green & red (book)marks
   - CHANGE: "Little things v1.8" in [alited's demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
   - CHANGE: Tools/Run dialogue: validate file name chosen from file picker
   - CHANGE: better search for cloned file's name

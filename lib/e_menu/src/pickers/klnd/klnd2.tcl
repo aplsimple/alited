@@ -313,17 +313,6 @@ proc ::klnd::my::ButtonTip {obj tipcom w} {
   }
   return $res
 }
-#_______________________
-
-proc ::klnd::my::SwitchWeeks2 {obj} {
-
-  variable p
-  if {$p(weeks)} {set forget {}} {set forget forget}
-  for {set i 1} {$i<7} {incr i} {
-    set wbut [$p($obj) BuTW$i]
-    pack {*}$forget $wbut
-  }
-}
 
 ## ________________________ Widgets _________________________ ##
 

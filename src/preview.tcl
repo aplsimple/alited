@@ -32,6 +32,7 @@ namespace eval :: {
     source [file join $::preview::LIBDIR hl_tcl hl_tcl.tcl]
   }
 }
+namespace import ::apave::obj
 # ________________________ Procedures _________________________ #
 
 proc ::tracer {args} {
@@ -83,9 +84,9 @@ proc ::preview::SyntaxHighlight {} {
   # Makes a text being syntax highlighted.
 
   variable curswidth
-  set cs [::apave::obj csCurrent]
+  set cs [obj csCurrent]
   set wtxt .win.fra.nbk.f1.texftx1
-  ::hl_tcl::hl_init $wtxt -dark [::apave::obj csDark $cs] -multiline 1 -insertwidth $curswidth
+  ::hl_tcl::hl_init $wtxt -dark [obj csDark $cs] -multiline 1 -insertwidth $curswidth
   ::hl_tcl::hl_text $wtxt
 }
 #_______________________
@@ -105,14 +106,14 @@ proc ::preview::Run {} {
   variable cursblink
   ::apave::InitTheme $theme $LIBDIR
   if {$cursclr eq {}} {
-    set cursclr [lindex [::apave::obj csGet $CS] 7]
+    set cursclr [lindex [obj csGet $CS] 7]
   }
   ::apave::initWM -theme $theme -cs $CS -cursorwidth $curswidth
-  ::apave::obj csSet $CS . -clrcurs $cursclr
-  ::apave::obj csToned $CS $tint yes
+  obj csSet $CS . -clrcurs $cursclr
+  obj csToned $CS $tint yes
   if {!$cursblink} {
-    lassign [::apave::obj defaultATTRS tex] texopts texattrs
-    ::apave::obj defaultATTRS tex $texopts [dict set texattrs -insertofftime 0]
+    lassign [obj defaultATTRS tex] texopts texattrs
+    obj defaultATTRS tex $texopts [dict set texattrs -insertofftime 0]
   }
   set ::tclversion "Tcl [package require Tcl] : [info nameofexecutable]"
   set obj previewobj

@@ -59,7 +59,7 @@ proc edit::Indent {} {
       if {[string trim $line] eq {}} {
         $wtxt replace $l.0 $l.end {}
       } else {
-        set leadsp [::apave::obj leadingSpaces $line]
+        set leadsp [obj leadingSpaces $line]
         set sp [expr {$leadsp % $len}]
         # align by the indent edge
         if {$sp==0} {
@@ -90,7 +90,7 @@ proc edit::UnIndent {} {
       if {[string trim $line] eq {}} {
         $wtxt replace $l.0 $l.end {}
       } elseif {[string index $line 0] in $spaces} {
-        set leadsp [::apave::obj leadingSpaces $line]
+        set leadsp [obj leadingSpaces $line]
         # align by the indent edge
         set sp [expr {$leadsp % $len}]
         if {$sp==0} {set sp $len}
@@ -706,7 +706,7 @@ proc edit::InputMacro {idx} {
     {lab2 + T 1 4 {} {-t Comment:}} \
     {fra0 + T 1 4 {-rw 1 -st nsew}} \
     {.TexCmn L + - - {pack -side left -expand 1 -fill both -padx 3} \
-      {-h 4 -w 40 -wrap word -tabnext *.but1 -rotext ::alited::al(macrocomment) -ro 0}} \
+      {-h 4 -w 40 -wrap word -tabnext *.buth -rotext ::alited::al(macrocomment) -ro 0}} \
     {.sbvText + L - - {pack}} \
     {seh2 fra0 T 1 4 {-pady 4}} \
     {fra + T 1 1 {-st w}} \
@@ -1134,6 +1134,8 @@ proc edit::RunFormat {fname {forbind no}} {
 
   namespace upvar ::alited al al
   SourceFormatTcl
+  set initfile [file join [file dirname $fname] init.tcl]
+  if {[file exists $initfile]} {catch {source $initfile}}
   set fcont [split [::apave::readTextFile $fname] \n]
   set fform [FormatterName $fname]
   unset -nocomplain al(FORMATS,$fform)
@@ -1211,7 +1213,7 @@ proc edit::SqueezeString {str} {
   # and removes tailing spaces, e.g. "   a  b   c " => "   a b c".
   #   str - the string
 
-  set isp [apave::obj leadingSpaces $str]
+  set isp [obj leadingSpaces $str]
   set substring [string range $str $isp end]
   set splist [regexp -inline -all {[ ]+} $substring]
   set splist [lsort -decreasing -command alited::edit::CompareByLength $splist]

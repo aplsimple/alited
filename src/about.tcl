@@ -18,7 +18,7 @@ proc about::textImaged {w} {
   # Makes the feather blink.
   #  w - window's path
 
-  ::apave::obj labelFlashing [::apave::obj textLink $w 5] "" 1 \
+  obj labelFlashing [obj textLink $w 5] "" 1 \
     -data $::alited::img::_AL_IMG(feather) -pause 0.5 -incr 0.1 -after 40
 }
 #_______________________
@@ -35,7 +35,7 @@ proc about::About {} {
 
   ::alited::Source_e_menu
   ::alited::edit::MacroInit
-  lassign [::apave::obj csGet] fg fg2 bg bg2 - bS fS
+  lassign [obj csGet] fg fg2 bg bg2 - bS fS
   ::apave::InitAwThemesPath $::alited::LIBDIR
   foreach _ {alited apave bartabs baltip hl_tcl playtkl} {
     if {[set v$_ v[package versions $_]] eq {v} \
@@ -43,71 +43,71 @@ proc about::About {} {
       set v$_ {}
     }
   }
-  set font [::apave::obj csFontDef]
-  ::apave::obj initLinkFont {*}$font -underline 1 -foreground $fg2 -background $bg2
+  set font [obj csFontDef]
+  obj initLinkFont {*}$font -underline 1 -foreground $fg2 -background $bg2
   append font " -weight bold"
 
   ### ________________________ Tags and links _________________________ ###
 
   set textTags [list \
     [list "red" "-font {$font} -foreground $fS -background $bS"] \
-    [list "link1" "::apave::openDoc %t@@https://%l@@"] \
-    [list "link2" "::apave::openDoc %t@@https://wiki.tcl-lang.org/recent@@"] \
-    [list "linkapl" "::apave::openDoc %t@@https://github.com/aplsimple/@@"] \
-    [list "linkCN" "::apave::openDoc %t@@https://www.nemethi.de/@@"] \
-    [list "linkSH" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Steve+Huntley@@"] \
-    [list "linkHE" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/HE@@"] \
-    [list "linkRD" "::apave::openDoc %t@@https://github.com/rdbende@@"] \
-    [list "linkPO" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Paul+Obermeier@@"] \
-    [list "linkPW" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/PW@@"] \
-    [list "linkRK" "::apave::openDoc %t@@https://rkeene.org/projects/info@@"] \
-    [list "linkMIT" "::apave::openDoc %t@@https://en.wikipedia.org/wiki/MIT_License@@"] \
-    [list "linkJS" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Jeff+Smith@@"] \
-    [list "linkRS" "::apave::openDoc %t@@http://wiki.tcl-lang.org/page/Richard+Suchenwirth@@"] \
-    [list "linkAN" "::apave::openDoc %t@@https://www.magicsplat.com/@@"] \
-    [list "linkDF" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Donal+Fellows@@"] \
-    [list "linkJO" "::apave::openDoc %t@@https://www.johann-oberdorfer.eu/@@"] \
-    [list "linkTW" "::apave::openDoc %t@@https://github.com/phase1geo@@"] \
-    [list "linkCM" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Colin+Macleod@@"] \
-    [list "linkDB" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/dbohdan"] \
-    [list "linkDG" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Detlef+Groth"] \
-    [list "linkPY" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Poor+Yorick"] \
-    [list "linkMH" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Matthias+Hoffmann"] \
-    [list "linkNB" "::apave::openDoc %t@@https://github.com/sl1200mk2@@"] \
-    [list "linkTZ" "::apave::openDoc %t@@https://github.com/thanoulis@@"] \
-    [list "linkCW" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/chw@@"] \
-    [list "linkAK" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Andreas+Kupries@@"] \
-    [list "linkAG" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Andy+Goth@@"] \
-    [list "linkDA" "::apave::openDoc %t@@https://github.com/ray2501@@"] \
-    [list "linkET" "::apave::openDoc %t@@https://github.com/eht16"] \
-    [list "link-apave" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/pave"] \
-    [list "link-e_menu" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/e_menu"] \
-    [list "link-baltip" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/baltip/baltip.html"] \
-    [list "link-bartabs" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/bartabs"] \
-    [list "link-hl_tcl" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/hl_tcl/hl_tcl.html"] \
-    [list "link-aloupe" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/aloupe/aloupe.html"] \
-    [list "link-playtkl" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/playtkl/playtkl.html"] \
-    [list "link-tkcc" "::apave::openDoc %t@@https://aplsimple.github.io/en/tcl/tkcc"] \
-    [list "link-repl" "::apave::openDoc %t@@https://github.com/apnadkarni/tcl-repl"] \
-    [list "link-ale_themes" "::apave::openDoc %t@@https://github.com/aplsimple/ale_themes"] \
-    [list "link-tkcon" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Tkcon"] \
-    [list "link_" "::apave::openDoc %t@@https://aplsimple.github.io/en/misc/links/links.html@@"] \
-    [list "linkRH" "::apave::openDoc %t@@http://www.hwaci.com/drh/@@"] \
-    [list "linkBL" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/bll@@"] \
-    [list "linkFF" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/FF@@"] \
-    [list "linkSS" "::apave::openDoc %t@@https://github.com/antirez@@"] \
-    [list "linkML" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Martin+Lemburg@@"] \
-    [list "linkDN" "::apave::openDoc %t@@https://github.com/par7133@@"] \
-    [list "linkAM" "::apave::openDoc %t@@https://en.wikipedia.org/wiki/Argentina@@"] \
-    [list "linkHO" "::apave::openDoc %t@@https://wiki.tcl-lang.org/page/Harald+Oehlmann@@"] \
-    [list "linkJM" "::apave::openDoc %t@@https://github.com/jgm@@"] \
+    [list "link1" "openDoc %t@@https://%l@@"] \
+    [list "link2" "openDoc %t@@https://wiki.tcl-lang.org/recent@@"] \
+    [list "linkapl" "openDoc %t@@https://github.com/aplsimple/@@"] \
+    [list "linkCN" "openDoc %t@@https://www.nemethi.de/@@"] \
+    [list "linkSH" "openDoc %t@@https://wiki.tcl-lang.org/page/Steve+Huntley@@"] \
+    [list "linkHE" "openDoc %t@@https://wiki.tcl-lang.org/page/HE@@"] \
+    [list "linkRD" "openDoc %t@@https://github.com/rdbende@@"] \
+    [list "linkPO" "openDoc %t@@https://wiki.tcl-lang.org/page/Paul+Obermeier@@"] \
+    [list "linkPW" "openDoc %t@@https://wiki.tcl-lang.org/page/PW@@"] \
+    [list "linkRK" "openDoc %t@@https://rkeene.org/projects/info@@"] \
+    [list "linkMIT" "openDoc %t@@https://en.wikipedia.org/wiki/MIT_License@@"] \
+    [list "linkJS" "openDoc %t@@https://wiki.tcl-lang.org/page/Jeff+Smith@@"] \
+    [list "linkRS" "openDoc %t@@http://wiki.tcl-lang.org/page/Richard+Suchenwirth@@"] \
+    [list "linkAN" "openDoc %t@@https://www.magicsplat.com/@@"] \
+    [list "linkDF" "openDoc %t@@https://wiki.tcl-lang.org/page/Donal+Fellows@@"] \
+    [list "linkJO" "openDoc %t@@https://www.johann-oberdorfer.eu/@@"] \
+    [list "linkTW" "openDoc %t@@https://github.com/phase1geo@@"] \
+    [list "linkCM" "openDoc %t@@https://wiki.tcl-lang.org/page/Colin+Macleod@@"] \
+    [list "linkDB" "openDoc %t@@https://wiki.tcl-lang.org/page/dbohdan"] \
+    [list "linkDG" "openDoc %t@@https://wiki.tcl-lang.org/page/Detlef+Groth"] \
+    [list "linkPY" "openDoc %t@@https://wiki.tcl-lang.org/page/Poor+Yorick"] \
+    [list "linkMH" "openDoc %t@@https://wiki.tcl-lang.org/page/Matthias+Hoffmann"] \
+    [list "linkNB" "openDoc %t@@https://github.com/sl1200mk2@@"] \
+    [list "linkTZ" "openDoc %t@@https://github.com/thanoulis@@"] \
+    [list "linkCW" "openDoc %t@@https://wiki.tcl-lang.org/page/chw@@"] \
+    [list "linkAK" "openDoc %t@@https://wiki.tcl-lang.org/page/Andreas+Kupries@@"] \
+    [list "linkAG" "openDoc %t@@https://wiki.tcl-lang.org/page/Andy+Goth@@"] \
+    [list "linkDA" "openDoc %t@@https://github.com/ray2501@@"] \
+    [list "linkET" "openDoc %t@@https://github.com/eht16"] \
+    [list "link-apave" "openDoc %t@@https://aplsimple.github.io/en/tcl/pave"] \
+    [list "link-e_menu" "openDoc %t@@https://aplsimple.github.io/en/tcl/e_menu"] \
+    [list "link-baltip" "openDoc %t@@https://aplsimple.github.io/en/tcl/baltip/baltip.html"] \
+    [list "link-bartabs" "openDoc %t@@https://aplsimple.github.io/en/tcl/bartabs"] \
+    [list "link-hl_tcl" "openDoc %t@@https://aplsimple.github.io/en/tcl/hl_tcl/hl_tcl.html"] \
+    [list "link-aloupe" "openDoc %t@@https://aplsimple.github.io/en/tcl/aloupe/aloupe.html"] \
+    [list "link-playtkl" "openDoc %t@@https://aplsimple.github.io/en/tcl/playtkl/playtkl.html"] \
+    [list "link-tkcc" "openDoc %t@@https://aplsimple.github.io/en/tcl/tkcc"] \
+    [list "link-repl" "openDoc %t@@https://github.com/apnadkarni/tcl-repl"] \
+    [list "link-ale_themes" "openDoc %t@@https://github.com/aplsimple/ale_themes"] \
+    [list "link-tkcon" "openDoc %t@@https://wiki.tcl-lang.org/page/Tkcon"] \
+    [list "link_" "openDoc %t@@https://aplsimple.github.io/en/misc/links/links.html@@"] \
+    [list "linkRH" "openDoc %t@@http://www.hwaci.com/drh/@@"] \
+    [list "linkBL" "openDoc %t@@https://wiki.tcl-lang.org/page/bll@@"] \
+    [list "linkFF" "openDoc %t@@https://wiki.tcl-lang.org/page/FF@@"] \
+    [list "linkSS" "openDoc %t@@https://github.com/antirez@@"] \
+    [list "linkML" "openDoc %t@@https://wiki.tcl-lang.org/page/Martin+Lemburg@@"] \
+    [list "linkDN" "openDoc %t@@https://github.com/par7133@@"] \
+    [list "linkAM" "openDoc %t@@https://en.wikipedia.org/wiki/Argentina@@"] \
+    [list "linkHO" "openDoc %t@@https://wiki.tcl-lang.org/page/Harald+Oehlmann@@"] \
+    [list "linkJM" "openDoc %t@@https://github.com/jgm@@"] \
     ]
 
   ### ________________________ "General" tab _________________________ ###
 
   set long1 [msgcat::mc {And well fit for programming with it.}]
   set long2 __________________________________________
-  set long3 [info nameofexecutable]
+  set long3 [file nativename [info nameofexecutable]]
   set msg "  <red>alited $valited</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
     [msgcat::mc {Written in pure Tcl/Tk.}] \n \
     $long1\n\n \
@@ -206,8 +206,8 @@ proc about::About {} {
 
   # invert link colors
   set aopts "{-fg $::apave::FGMAIN -bg $::apave::BGMAIN}"
-  apave::obj untouchWidgets "*.texM $aopts" "*.texPack $aopts" "*.texAckn $aopts"
-  lassign [apave::obj csGet] fg fg2 bg bg2
+  obj untouchWidgets "*.texM $aopts" "*.texPack $aopts" "*.texAckn $aopts"
+  lassign [obj csGet] fg fg2 bg bg2
   lappend textTags "FG $fg2" "FG2 $fg" "BG $bg2" "BG2 $bg"
 
   # tooltips to show in the left & bottom point from the mouse pointer
@@ -224,7 +224,7 @@ proc about::About {} {
   ## ________________________ Restore defaults _________________________ ##
 
   ::baltip configure -shiftX $shiftX
-  apave::obj touchWidgets *.texM *.texPack *.texAckn
+  obj touchWidgets *.texM *.texPack *.texAckn
   unset -nocomplain ::alited::AboutAckn
   unset -nocomplain ::alited::AboutPack
 }

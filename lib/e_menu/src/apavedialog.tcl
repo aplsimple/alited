@@ -133,7 +133,7 @@ oo::class create ::apave::APaveDialog {
     } else {
       set com $comOK
     }
-    return [list [list $args] $com]
+    list [list $args] $com
   }
   #_______________________
 
@@ -145,7 +145,7 @@ oo::class create ::apave::APaveDialog {
     #   args - options
 
     lassign [my PrepArgs {*}$args] args comOK
-    return [my Query $icon $ttl $msg "ButOK OK $comOK" ButOK {} $args]
+    my Query $icon $ttl $msg "ButOK OK $comOK" ButOK {} $args
   }
   #_______________________
 
@@ -158,8 +158,8 @@ oo::class create ::apave::APaveDialog {
     #   args - options
 
     lassign [my PrepArgs {*}$args] args
-    return [my Query $icon $ttl $msg \
-      {ButOK OK 1 ButCANCEL Cancel 0} But$defb {} $args]
+    my Query $icon $ttl $msg \
+      {ButOK OK 1 ButCANCEL Cancel 0} But$defb {} $args
   }
   #_______________________
 
@@ -172,8 +172,8 @@ oo::class create ::apave::APaveDialog {
     #   args - options
 
     lassign [my PrepArgs {*}$args] args
-    return [my Query $icon $ttl $msg \
-      {ButYES Yes 1 ButNO No 0} But$defb {} $args]
+    my Query $icon $ttl $msg \
+      {ButYES Yes 1 ButNO No 0} But$defb {} $args
   }
   #_______________________
 
@@ -186,8 +186,8 @@ oo::class create ::apave::APaveDialog {
     #   args - options
 
     lassign [my PrepArgs {*}$args] args
-    return [my Query $icon $ttl $msg \
-      {ButYES Yes 1 ButNO No 2 ButCANCEL Cancel 0} But$defb {} $args]
+    my Query $icon $ttl $msg \
+      {ButYES Yes 1 ButNO No 2 ButCANCEL Cancel 0} But$defb {} $args
   }
   #_______________________
 
@@ -200,8 +200,8 @@ oo::class create ::apave::APaveDialog {
     #   args - options
 
     lassign [my PrepArgs {*}$args] args
-    return [my Query $icon $ttl $msg \
-      {ButRETRY Retry 1 ButCANCEL Cancel 0} But$defb {} $args]
+    my Query $icon $ttl $msg \
+      {ButRETRY Retry 1 ButCANCEL Cancel 0} But$defb {} $args
   }
   #_______________________
 
@@ -214,9 +214,9 @@ oo::class create ::apave::APaveDialog {
     #   args - options
 
     lassign [my PrepArgs {*}$args] args
-    return [my Query $icon $ttl $msg \
+    my Query $icon $ttl $msg \
       {ButABORT Abort 1 ButRETRY Retry 2 ButCANCEL \
-      Cancel 0} But$defb {} $args]
+      Cancel 0} But$defb {} $args
   }
   #_______________________
 
@@ -238,7 +238,7 @@ oo::class create ::apave::APaveDialog {
       }
     }
     lassign [my PrepArgs {*}$args] args
-    return [my Query $icon $ttl $msg $apave_msc_bttns But$defb {} $args]
+    my Query $icon $ttl $msg $apave_msc_bttns But$defb {} $args
   }
 
   ## ________________________ Progress for splash _________________________ ##
@@ -392,7 +392,6 @@ oo::class create ::apave::APaveDialog {
     }
     $txt insert $pos3 $duptext
     if {$dobreak} {return -code break}
-    return
   }
   #_______________________
 
@@ -408,7 +407,6 @@ oo::class create ::apave::APaveDialog {
     lassign [my GetLinePosition $txt insert] linestart lineend
     $txt delete $linestart $lineend
     if {$dobreak} {return -code break}
-    return
   }
   #_______________________
 
@@ -460,7 +458,6 @@ oo::class create ::apave::APaveDialog {
       ::apave::undoOut $txt
       if {$dobreak} {return -code break}
     }
-    return
   }
   #_______________________
 
@@ -505,7 +502,6 @@ oo::class create ::apave::APaveDialog {
     if {[set seltxt [my selectedWordText $txt]] ne {}} {
       set Foundstr $seltxt
     }
-    return
   }
   #_______________________
 
@@ -550,7 +546,7 @@ oo::class create ::apave::APaveDialog {
       if {$dobell} bell
       set res no
     }
-    return [list $res $sel]
+    list $res $sel
   }
   #_______________________
 
@@ -565,7 +561,7 @@ oo::class create ::apave::APaveDialog {
     set i2 [string first "</link>" $m]
     set link [string range $m $i1+6 $i2-1]
     set m [string range $m 0 $i1-1][string range $m $i2+7 end]
-    return [list $m [list -link $link]]
+    list $m [list -link $link]
   }
   #_______________________
 
@@ -714,7 +710,7 @@ oo::class create ::apave::APaveDialog {
         set sel [string trim [$txt get $pos $pos2]]
       }
     }
-    return [list $sel $pos $pos2]
+    list $sel $pos $pos2
   }
   #_______________________
 
@@ -872,7 +868,6 @@ oo::class create ::apave::APaveDialog {
         }
       }
     }
-    return
   }
   #_______________________
 
@@ -884,7 +879,7 @@ oo::class create ::apave::APaveDialog {
 
     set linestart [$txt index "$ind linestart"]
     set lineend   [expr {$linestart + 1.0}]
-    return [list $linestart $lineend]
+    list $linestart $lineend
   }
   #_______________________
 

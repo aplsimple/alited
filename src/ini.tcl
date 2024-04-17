@@ -20,9 +20,6 @@ namespace eval ::alited {
   set al(ED,guttershift) 3  ;# space between gutter and text
   set al(ED,btsbd) 0        ;# borderwidth for bartabs
   set al(ED,BlinkCurs) 1    ;# blinking cursor
-  set al(ED,tran) $al(ED,TRAN)   ;# translation site
-  set al(ED,trans) $al(ED,TRANS) ;# list of translation sites
-  set al(ED,transadd) $al(ED,TRANSADD) ;# if 0, replaces the translated text
   set al(TREE,isunits) yes  ;# current mode of tree: units/files
   set al(TREE,units) no     ;# flag "is a unit tree created"
   set al(TREE,files) no     ;# flag "is a file tree created"
@@ -199,6 +196,7 @@ namespace eval ::alited {
   set al(TIPS,Preferences) 1
   set al(TIPS,Templates) 1
   set al(TIPS,SavedFavorites) 1
+  set al(TIPS,Marks) 1
 
   # flag "sorted file list"
   set al(sortList) 0
@@ -271,7 +269,7 @@ proc ini::ReadIni {{projectfile ""}} {
   set al(KEYS,bind) [list]
   set em_i 0
   set fontsize [expr {$al(FONTSIZE,std)+1}]
-  set al(FONT,txt) "-family {[::apave::obj basicTextFont]} -size $fontsize"
+  set al(FONT,txt) "-family {[obj basicTextFont]} -size $fontsize"
   lassign "" ::alited::Pan_wh ::alited::PanL_wh ::alited::PanR_wh \
     ::alited::PanBM_wh ::alited::PanTop_wh ::alited::al(GEOM)
   puts "alited pwd    : [pwd]"
@@ -450,8 +448,6 @@ proc ini::ReadIniOptions {nam val} {
     guttershift   {set al(ED,guttershift) $val}
     btsbd         {set al(ED,btsbd) $val}
     BlinkCurs     {set al(ED,BlinkCurs) $val}
-    EDtran        {set al(ED,tran) $val}
-    EDtrans       {set al(ED,trans) $val}
     ClrCurs       {set al(CURSORCOLOR) $val}
     cursorwidth   {set al(CURSORWIDTH) $val}
     prjdefault    {set al(PRJDEFAULT) $val}
@@ -461,7 +457,6 @@ proc ini::ReadIniOptions {nam val} {
     ALEversion    {set al(ALEversion) $val}
     todoahead     {set al(todoahead) $val}
   }
-#    EDtransadd    {set al(ED,transadd) $val} obsolete
 }
 #_______________________
 
@@ -734,7 +729,12 @@ proc ini::ReadPrjTabs {nam val} {
   namespace upvar ::alited al al
   if {[string trim $val] ne {}} {
     switch -exact -- $nam {
-      tab {lappend al(tabs) $val}
+      tab {
+        set fname [lindex $val 0]
+        if {[lsearch -exact -index 0 $al(tabs) $fname]<0} {
+          lappend al(tabs) $val
+        }
+      }
       recent {alited::file::InsertRecent $val end}
       encode - eol {
         lassign [split $val \t] k v
@@ -880,9 +880,6 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "guttershift=$al(ED,guttershift)"
   puts $chan "btsbd=$al(ED,btsbd)"
   puts $chan "BlinkCurs=$al(ED,BlinkCurs)"
-  puts $chan "EDtran=$al(ED,tran)"
-  puts $chan "EDtrans=$al(ED,trans)"
-#  puts $chan "EDtransadd=$al(ED,transadd)"
   puts $chan "ClrCurs=$al(CURSORCOLOR)"
   puts $chan "prjdefault=$al(PRJDEFAULT)"
   foreach k [array names al DEFAULT,*] {
@@ -1112,7 +1109,7 @@ proc ini::ViewUpdates {} {
   # Views changes for updating.
 
   namespace upvar ::alited DATADIR DATADIR
-  ::apave::obj vieweditFile [file join $DATADIR to-update.txt] {} -rotext 1 -h 25
+  obj vieweditFile [file join $DATADIR to-update.txt] {} -rotext 1 -h 25
 }
 #_______________________
 
@@ -1372,22 +1369,28 @@ proc ini::EditSettings {} {
   # Displays the settings file, just to look behind the wall.
 
   namespace upvar ::alited al al obPav obPav
-  after idle alited::ini::HighlightEditSettings
+  after idle alited::ini::HighlightFileText
   $obPav vieweditFile $al(INI) {} -rotext 1 -h 25
 }
 #_______________________
 
-proc ini::HighlightEditSettings {} {
-  # Highlights the settings file.
+proc ini::HighlightFileText {{wtxt ""} {fname ""} {ro 1} args} {
+  # Highlights a text of a file.
+  #   wtxt - the text's path
+  #   fname - the file name (extension)
+  #   ro - flag "readonly text"
+  #   args - additional options
 
   namespace upvar ::alited al al obPav obPav
   set colors [alited::Hl_Colors]
-  set wtxt [$obPav TexM]
-  set plcom [alited::HighlightAddon $wtxt $al(INI) $colors]
+  if {$wtxt eq {}} {set wtxt [$obPav TexM]}
+  if {$fname eq {}} {set fname $al(INI)}
+  set plcom [alited::HighlightAddon $wtxt $fname $colors]
   ::hl_tcl::hl_init $wtxt -font $al(FONT,txt) -dark [$obPav csDark] \
     -multiline 1 -colors $colors -insertwidth $al(CURSORWIDTH) \
-    -readonly 1 -plaintext 0 -plaincom $plcom
+    -readonly $ro -plaintext 0 -plaincom $plcom {*}$args
   ::hl_tcl::hl_text $wtxt
+  alited::main::SetTabs $wtxt [lindex [alited::main::CalcIndentation] 0]
 }
 
 # ________________________ Main (+ tool bar) _________________________ #
@@ -1396,14 +1399,14 @@ proc ini::InitGUI {} {
   # Initializes GUI.
 
   namespace upvar ::alited al al
-  ::apave::obj basicFontSize $al(FONTSIZE,std)
-  if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE)}
+  obj basicFontSize $al(FONTSIZE,std)
+  if {$al(INI,HUE)} {obj csToned $al(INI,CS) $al(INI,HUE)}
   if {$al(CURSORCOLOR) eq {}} {
-    set al(CURSORCOLOR) [lindex [::apave::obj csGet $al(INI,CS)] 7]
+    set al(CURSORCOLOR) [lindex [obj csGet $al(INI,CS)] 7]
   }
-  ::apave::obj csSet $al(INI,CS) . -doit -clrcurs $al(CURSORCOLOR)
-  if {$al(INI,HUE)} {::apave::obj csToned $al(INI,CS) $al(INI,HUE) yes}
-  set Dark [::apave::obj csDark]
+  obj csSet $al(INI,CS) . -doit -clrcurs $al(CURSORCOLOR)
+  if {$al(INI,HUE)} {obj csToned $al(INI,CS) $al(INI,HUE) yes}
+  set Dark [obj csDark]
   if {![info exists al(ED,clrCOM)] || ![info exists al(ED,CclrCOM)] || \
   ![info exists al(ED,Dark)] || $al(ED,Dark) != $Dark} {
     alited::pref::Tcl_Default $al(syntaxidx) yes
@@ -1421,13 +1424,13 @@ proc ini::InitGUI {} {
   }
   ::hl_tcl::hl_colors . $Dark {*}$clrvals ;# default Tcl syntax colors
   if {!$al(ED,BlinkCurs)} {
-    lassign [::apave::obj defaultATTRS tex] texopts texattrs
-    ::apave::obj defaultATTRS tex $texopts [dict set texattrs -insertofftime 0]
+    lassign [obj defaultATTRS tex] texopts texattrs
+    obj defaultATTRS tex $texopts [dict set texattrs -insertofftime 0]
   }
-  ::apave::obj setShowOption -resizable 0
+  obj setShowOption -resizable 0
   if {[::isKDE]} {  ;# esp. for KDE:
     # dialogue windows should be topmost, otherwise KDE hides them at losing focus
-    ::apave::obj setShowOption -ontop yes
+    obj setShowOption -ontop yes
   }
   lassign [::apave::defaultAttrs spx] opts atrs
   ::apave::defaultAttrs spx $opts "$atrs -justify center -w 9"
@@ -1441,7 +1444,7 @@ proc ini::InitFonts {} {
 
   if {$al(FONT) ne {}} {
     catch {
-      ::apave::obj basicDefFont [dict get $al(FONT) -family]
+      obj basicDefFont [dict get $al(FONT) -family]
     }
     set smallfont $al(FONT)
     catch {
@@ -1455,12 +1458,12 @@ proc ini::InitFonts {} {
     }
     ::baltip::configure -font $smallfont
   }
-  set statusfont [::apave::obj basicSmallFont]
+  set statusfont [obj basicSmallFont]
   catch {
     set statusfont [dict set statusfont -size $al(FONTSIZE,small)]
   }
-  ::apave::obj basicSmallFont $statusfont
-  ::apave::obj basicFontSize $al(FONTSIZE,std)
+  obj basicSmallFont $statusfont
+  obj basicFontSize $al(FONTSIZE,std)
   set gl [file join $MSGSDIR $al(LOCAL)]
   if {[catch {set flist [glob "$gl.msg"]}] || $flist eq {}} {
     set al(LOCAL) en
@@ -1503,7 +1506,7 @@ proc ini::_init {} {
   namespace upvar ::alited::pref em_Num em_Num em_ico em_ico em_inf em_inf em_mnu em_mnu
 
   ::apave::initBaltip
-  ::apave::obj chooserGeomVars ::alited::DirGeometry ::alited::FilGeometry
+  obj chooserGeomVars ::alited::DirGeometry ::alited::FilGeometry
   GetUserDirs
   CheckIni
   ReadIni
@@ -1638,7 +1641,7 @@ proc ini::_init {} {
   image create photo alimg_kbd -data [set ::alited::img::_AL_IMG(kbd)]
   # styles & fonts used in "small" dialogues
   initStyles
-  lassign [::apave::obj create_FontsType small -size $al(FONTSIZE,small)] \
+  lassign [obj create_FontsType small -size $al(FONTSIZE,small)] \
      al(FONT,defsmall) al(FONT,monosmall)
   lassign [alited::FgFgBold] -> al(FG,Bold)
 }

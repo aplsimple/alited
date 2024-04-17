@@ -16,8 +16,8 @@ namespace eval pref {
   # "Preferences" dialogue's path
   variable win $::alited::al(WIN).diaPref
 
-  # geometry for message boxes: to center in "Preferences" dialogue
-  variable geo root=$::alited::al(WIN)
+  # geometry
+  variable geo {}
 
   # saved data of settings
   variable data; array set data [list]
@@ -363,8 +363,6 @@ proc pref::Ok {args} {
       if {[llength $al(comm_port_list)]>32} break
     }
     set al(EM,DiffTool) [file join {*}[file split $al(EM,DiffTool)]]
-    set al(ED,trans) [[$obPrf CbxTrans] cget -values]
-    ::apave::PushInList al(ED,trans) $al(ED,tran)
     set al(RE,proc) [string trimright $al(RE,proc)]
     $obPrf res $win 1
     alited::Exit - 1 no
@@ -670,12 +668,6 @@ proc pref::General_Tab3 {} {
     {.labTrWs .labMult T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,trailwhite)}}}
     {.SwiTrWs + L 1 1 {-st sw -pady 1 -padx 3} \
       {-var ::alited::al(DEFAULT,prjtrailwhite) -tabnext alited::Tnext}}
-    {.labTrans .labTrWs T 1 1 {-st e -pady 5 -padx 3} {-t {Translation link:}}}
-    {.CbxTrans + L 1 9 {-st ew -pady 5} {-h 12 -cbxsel {$al(ED,tran)} \
-      -tvar ::alited::al(ED,tran) -values {$al(ED,trans)} \
-      -clearcom {alited::main::ClearCbx %w ::alited::al(ED,tran)}}}
-    {#.labSwTrans .labTrans T 1 1 {-st e -pady 5 -padx 3} {-t {Adding translations:}}}
-    {#.SwiTrans + L 1 1 {-st sw -pady 1 -padx 3} {-var ::alited::al(ED,transadd) -tip {If OFF, replaces the original text.}}}
   }
 }
 #_______________________
@@ -687,7 +679,7 @@ proc pref::opcToolPre {args} {
   lassign $args a
   set a [string trim $a :]
   if {[string is integer $a]} {
-    lassign [::apave::obj csGet $a] - fg - bg
+    lassign [obj csGet $a] - fg - bg
     return "-background $bg -foreground $fg"
   } else {
     return {}
@@ -717,8 +709,7 @@ proc pref::CheckUseDef {} {
     set state disabled
     [$obPrf CbxEOL] configure -state $state
   }
-  # SwiTrans obsolete
-  foreach w {EntIgn SpxIndent SpxRedunit SwiMult ChbIndAuto SwiTrWs CbxTrans} {
+  foreach w {EntIgn SpxIndent SpxRedunit SwiMult ChbIndAuto SwiTrWs} {
     [$obPrf $w] configure -state $state
   }
 }
@@ -738,7 +729,7 @@ proc pref::CsDark {{cs ""}} {
   #   cs - the color scheme's index (if omitted, the chosen one's)
 
   if {$cs eq {}} {set cs [GetCS]}
-  return [::apave::obj csDark $cs]
+  return [obj csDark $cs]
 }
 #_______________________
 
@@ -782,7 +773,7 @@ proc pref::CheckCS {} {
 
   fetchVars
   set cs [GetCS]
-  set cclr [lindex [::apave::obj csGet $cs] 7]
+  set cclr [lindex [obj csGet $cs] 7]
   if {$al(CURSORCOLOR) ne $cclr} {
     catch {
       .alwin.diaPref.fra.fraR.nbk.f1.fra1.labclrCC configure -background $cclr
@@ -1392,7 +1383,6 @@ proc pref::Default_e_menu {} {
   fetchVars
   set al(EM,exec) yes
   set al(EM,ownCS) no
-  set al(EM,geometry) {}
   set emdir [file join $::alited::USERDIR e_menu]
   set al(EM,mnudir) [file join $emdir menus]
   set al(EM,mnu) [file join $al(EM,mnudir) menu.em]
@@ -1467,8 +1457,15 @@ proc pref::UpdateTkconTab {} {
 proc pref::Tkcon_Default {} {
   # Sets defaults for "Tools/Tkcon" tab.
 
-  fetchVars
-  set al(tkcon,options) {-rows 24 -cols 80 -fontsize 13 -geometry {} -showmenu 1 -topmost 0}
+  namespace upvar ::alited al al
+  set g "{}"
+  catch {
+    set ls [split $al(tkcon,options)]
+    if {[set i [lsearch $ls -geometry]]>-1} {
+      set g [lindex $ls [incr i]]
+    }
+  }
+  set al(tkcon,options) "-rows 24 -cols 80 -fontsize 13 -geometry $g -showmenu 1 -topmost 0"
 }
 #_______________________
 
@@ -1776,6 +1773,7 @@ proc pref::_create {tab} {
   if {[file exists $fnotes]} {
     $wtxt insert end [::apave::readTextFile $fnotes]
   }
+  after idle "alited::ini::HighlightFileText $wtxt .md 0"
   $wtxt edit reset; $wtxt edit modified no
   [$obPrf TexTclKeys] insert end $al(ED,TclKeyWords)
   [$obPrf TexCKeys] insert end $al(ED,CKeyWords)
@@ -1785,17 +1783,18 @@ proc pref::_create {tab} {
       Emenu_Tab {
         set nbk nbk6
         set nt $win.fra.fraR.nbk6.f3
+        after idle "$1st ; ::alited::pref::Tab $nbk $nt yes"
       }
     }
-    after idle "$1st ; ::alited::pref::Tab $nbk $nt yes"
   } elseif {$oldTab ne {}} {
-    after idle "$1st ; ::alited::pref::Tab $oldTab"
+    after idle "$1st ; ::alited::pref::Tab $oldTab {} yes"
   } else {
     after idle "::alited::pref::Tab nbk" ;# first entering
   }
   foreach o {o O} {bind $win <Control-$o> alited::ini::EditSettings}
   bind $win <F1> "[$obPrf ButHelp] invoke"
   $obPrf untouchWidgets *.texSample *.texCSample
+  if {$geo in [list {} "{}"]} {set geo root=$al(WIN)}
   set res [$obPrf showModal $win -geometry $geo -minsize {800 600} -resizable 1 \
     -onclose ::alited::pref::Cancel]
   set fcont [$wtxt get 1.0 {end -1c}]

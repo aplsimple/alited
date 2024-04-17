@@ -65,8 +65,7 @@ namespace eval ::apave {
   variable _AP_VISITED;  array set _AP_VISITED [list]
   set _AP_VISITED(ALL) [list]
   variable UFF "\uFFFF"
-  variable _OBJ_ {}
-  variable MC_NS {}
+  variable MC_NS {} FOCUSED {}
 
   ## _ default options & attributes of widgets _ ##
 
@@ -137,29 +136,6 @@ namespace eval ::apave {
 
   ## _______________________ Helpers _____________________ ##
 
-  proc obj {com args} {
-    # Calls a method of APave class.
-    #   com - a method
-    #   args - arguments of the method
-    # It can (and must) be used only for temporary tasks.
-    # For persistent tasks, use a "normal" apave object.
-    # Returns the command's result.
-
-    variable _OBJ_
-    if {$_OBJ_ eq {}} {set _OBJ_ [::apave::APave new]}
-    if {[set exported [expr {$com eq "EXPORT"}]]} {
-      set com [lindex $args 0]
-      set args [lrange $args 1 end]
-      oo::objdefine $_OBJ_ "export $com"
-    }
-    set res [$_OBJ_ $com {*}$args]
-    if {$exported} {
-      oo::objdefine $_OBJ_ "unexport $com"
-    }
-    return $res
-  }
-  #_______________________
-
   proc WindowStatus {w name {val ""} {defval ""}} {
     # Sets/gets a status of window. The status is a value assigned to a name.
     #   w - window's path
@@ -176,7 +152,7 @@ namespace eval ::apave {
       }
       return $defval
     }
-    return [set _AP_VARS($w,$name) $val]  ;# setting
+    set _AP_VARS($w,$name) $val  ;# setting
   }
   #_______________________
 
@@ -185,7 +161,7 @@ namespace eval ::apave {
     #   win - window's path
     # This should be run at application start, before opening any window.
 
-    return [WindowStatus . MAIN_WINDOW_OF_APP $win]
+    WindowStatus . MAIN_WINDOW_OF_APP $win
   }
   #_______________________
 
@@ -262,7 +238,7 @@ namespace eval ::apave {
     if {$iconset ne {} && "_AP_IMG(img$icon-$iconset)" in [image names]} {
       return [set _AP_IMG($icon-$iconset)]
     }
-    return [set _AP_IMG($icon)]
+    set _AP_IMG($icon)
   }
   #_______________________
 
@@ -310,15 +286,6 @@ namespace eval ::apave {
   }
   #_______________________
 
-  proc KeyAccelerator {acc} {
-    # Returns a key accelerator.
-    #   acc - key name, may contain 2 items (e.g. Control-D Control-d)
-
-    set acc [lindex $acc 0]
-    return [string map {Control Ctrl - + bracketleft [ bracketright ]} $acc]
-  }
-  #_______________________
-
   proc defaultAttrs {{type ""} {opts ""} {atrs ""} {widget ""}} {
     # Sets, gets or registers default options and attributes for widget type.
     #   type - widget type
@@ -327,43 +294,46 @@ namespace eval ::apave {
     #   widget - Tcl/Tk command for the new registered widget type
     # See also: APaveBase::defaultATTRS
 
-    return [obj defaultATTRS $type $opts $atrs $widget]
+    obj defaultATTRS $type $opts $atrs $widget
   }
   #_______________________
 
-  proc initBaltip {} {
-    # Initializes baltip package.
+  proc focusApp {{win ""}} {
+    # Saves (if *win* is set) or restores app's focus.
+    #   win - focused window's path
+    # In some DE, if app loses focus, restoring it
+    # focuses main window, ignores modal toplevel, locks keyboard.
+    # focusApp tries to focus on last modal window.
 
-    if {[info command ::baltip] eq {}} {
-      if {$::apave::ISBALTIP} {
-        source [file join $::apave::SRCDIR baltip baltip.tcl]
-      } else {
-        # disabling baltip facilities with stub proc (no source "baltip.src")
-        namespace eval ::baltip {
-          variable expproc [list configure cget tip update hide repaint \
-            optionlist tippath clear sleep showBalloon showTip]
-          foreach _ $expproc {
-          ; proc $_ {args} {return {}}
-            namespace export $_
-          }
-          namespace ensemble create
-          namespace eval my {
-          ; proc BindToEvent {args} {}
-          }
+    variable FOCUSED
+    if {$win ne {}} {
+      setProperty FOCW_$win [focus]
+      return
+    }
+    catch {
+      if {[set foc [focus]] ne {}} {
+        set foc [winfo toplevel $foc]
+        set modal 0
+        foreach fw $FOCUSED {
+          if {$fw eq $foc} {set modal 1; break}
+        }
+        # if non-modal is currently focused, let it be so
+        if {!$modal} {
+          if {[focus] eq $foc} {catch {focus [getProperty FOCW_$foc]}}
+          return
         }
       }
-    }
-  }
-  #_______________________
-
-  proc focusApp {} {
-    # Restores app's focus: if app loses focus, restoring it
-    # focuses main window, ignores modal toplevel, locks keyboard.
-
-    catch {
-      focus -force $::apave::FOCUSED
-      if {[focus] eq $::apave::FOCUSED} {
-        event generate $::apave::FOCUSED <Tab> ;# enter a field
+      # find and focus last open modal
+      for {set i [llength $FOCUSED]} {$i} {} {
+        set fw [lindex $FOCUSED [incr i -1]]
+        if {[winfo exists $fw]} {
+          if {$fw ne $foc} {
+            focus -force $fw
+            catch {focus [getProperty FOCW_$fw]}
+          }
+          break
+        }
+        set FOCUSED [lreplace $FOCUSED $i $i]
       }
     }
   }
@@ -557,14 +527,14 @@ oo::class create ::apave::APaveBase {
     # Applies a color scheme to a popup menu.
     #   mnu - name of popup menu
     # The method is to be redefined in descendants/mixins.
-    return
+
   }
 
   method NonTtkTheme {win} {
     # Applies a current color scheme for non-ttk widgets.
     #   win - path to a window to be colored.
     # Method to be redefined in descendants/mixins.
-    return
+
   }
 
   method NonTtkStyle {typ {dsbl 0}} {
@@ -573,7 +543,7 @@ oo::class create ::apave::APaveBase {
     #   dsbl - a mode to get style of disabled (1) or readonly (2) widgets
     # See also: widgetType
     # Method to be redefined in descendants/mixins.
-    return
+
   }
 
   ## _______________________ Helpers for APaveBase ________________________ ##
@@ -626,7 +596,7 @@ oo::class create ::apave::APaveBase {
 
     set x [expr {max(0, $rx + ($rw - $w) / 2)}]
     set y [expr {max(0,$ry + ($rh - $h) / 2)}]
-    return [my checkXY $w $h $x $y]
+    my checkXY $w $h $x $y
   }
   #_______________________
 
@@ -634,7 +604,7 @@ oo::class create ::apave::APaveBase {
     # Gets a tail (last part) of widget's name
     #   name - name (path) of the widget
 
-    return [lindex [split $name .] end]
+    lindex [split $name .] end
   }
   #_______________________
 
@@ -642,7 +612,7 @@ oo::class create ::apave::APaveBase {
     # Gets parent name of widget.
     #   name - name (path) of the widget
 
-    return [string range $name 0 [string last . $name]-1]
+    string range $name 0 [string last . $name]-1
   }
   #_______________________
 
@@ -664,7 +634,6 @@ oo::class create ::apave::APaveBase {
     #     pobj configure edge "@@"
 
     foreach {optnam optval} $args {set $optnam $optval}
-    return
   }
   #_______________________
 
@@ -722,7 +691,6 @@ oo::class create ::apave::APaveBase {
         break
       }
     }
-    return
   }
   #_______________________
 
@@ -967,7 +935,6 @@ oo::class create ::apave::APaveBase {
       return
     }
     if {[winfo exist $w]} {$w invoke}
-    return
   }
   #_______________________
 
@@ -987,7 +954,6 @@ oo::class create ::apave::APaveBase {
         $lbl configure -text $lbltext
       }
     }
-
   }
 
   ## ________________________ Making widgets _________________________ ##
@@ -1020,7 +986,9 @@ oo::class create ::apave::APaveBase {
     switch -glob -- $nam3 {
       bts {
         set widget ttk::frame
-        if {![namespace exists ::bartabs]} {package require bartabs}
+        if {![namespace exists ::bartabs]} {
+          source [file join $::apave::SRCDIR bartabs bartabs.tcl]
+        }
         set attrs "-bartabs {$attrs}"
       }
       but {
@@ -1225,7 +1193,7 @@ oo::class create ::apave::APaveBase {
     }
     set options [string trim $options]
     set attrs   [list {*}$attrs]
-    return [list $widget $options $attrs $nam3 $disabled]
+    list $widget $options $attrs $nam3 $disabled
   }
   #_______________________
 
@@ -1309,7 +1277,6 @@ oo::class create ::apave::APaveBase {
     for {set i $rc} {$i < ($rc + $rcspan)} {incr i} {
       eval [grid ${rcnam}configure $w $i $opt $val]
     }
-    return
   }
   #_______________________
 
@@ -1450,7 +1417,7 @@ oo::class create ::apave::APaveBase {
     ttk::menubutton $w -menu $win -text [set $vname] -style TMenuButtonWest {*}$mbopts
     menu $win -tearoff 0
     my menuTips $win $tip $w
-    my OptionCascade_add $win $vname $items $precom {*}$args
+    after idle [list after 0 [list [self] optionCascade_add $win $vname $items $precom {*}$args]]
     trace add variable $vname write \
       "$w config -text \"\[[self] optionCascadeText \${$vname}\]\" ;\#"
     lappend ::apave::_AP_VARS(_TRACED_$w) $vname
@@ -1459,7 +1426,7 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
-  method OptionCascade_add {w vname argl precom args} {
+  method optionCascade_add {w vname argl precom args} {
     # Adds tk_optionCascade items recursively.
     #   w      - tk_optionCascade widget's name
     #   vname  - variable name for current selection
@@ -1486,7 +1453,7 @@ oo::class create ::apave::APaveBase {
       } else {
         set child [menu $w.[incr n] -tearoff 0]
         $w add cascade -label [lindex $arg 0] -menu $child
-        my OptionCascade_add $child $vname [lrange $arg 1 end] $precom {*}$args
+        my optionCascade_add $child $vname [lrange $arg 1 end] $precom {*}$args
       }
       if $colbreak {
         $w entryconfigure end -columnbreak 1
@@ -2091,6 +2058,9 @@ oo::class create ::apave::APaveBase {
       }
       lset lwidgets $i $args
     }
+    lassign [my csGet] fga fg bga bg
+    set fontB [my boldTextFont 16]
+    set fontS [my basicSmallFont]
     set itmp $i
     set k [set j [set j2 [set wasmenu 0]]]
     foreach {nam v1 v2} $namvar {
@@ -2111,7 +2081,7 @@ oo::class create ::apave::APaveBase {
         } else {
           set expand {}
         }
-        set font " -font {[my basicSmallFont]}"
+        set font " -font {$fontS}"
         # status prompt
         set wid1 [list .[my ownWName [my Transname Lab ${name}_[incr j]]] - - - - "pack -side left -in $w.$name" "-t {[lindex $v1 0]} $font $dattr"]
         # status value
@@ -2136,14 +2106,9 @@ oo::class create ::apave::APaveBase {
             } else {
               set but BuT
             }
-            lassign [my csGet] fga fg bga bg
-            if {[string match _* $v1]} {
-              set font [my boldTextFont 16]
-              set img "-font {$font} -foreground $fg -background $bg -width 2 -pady 0 -padx 2"
-            } else {
-              set img "-image $v1 -background $bg"
-            }
-            set v2 "$img -command $v2 -relief flat -overrelief raised -activeforeground $fga -activebackground $bga -highlightthickness 0 -takefocus 0"
+            set v2 "-command $v2 "
+            append v2 [my toolbarItem_Attrs [string match _* $v1] $v1 $fontB \
+              $fg $bg $fga $bga]
             lassign [::apave::extractOptions v2 -method {}] ismeth
             set v1 [my Transname $but _$v1]
             if {[string is true -strict $ismeth]} {
@@ -2214,7 +2179,27 @@ oo::class create ::apave::APaveBase {
     if {[set foc [info commands *__tk__fontchooser.ok]] ne {}} {
       after idle [list after 0 [list catch "focus -force $foc"]]
     }
-    return [set $tvar] ;#$font
+    set $tvar
+  }
+  #_______________________
+
+  method toolbarItem_Attrs {istext img fontB fg bg fga bga} {
+    # Gets attributes of toolbar button.
+    #   istext - true if textual button
+    #   img - image of button
+    #   fontB - bold font
+    #   fg - foreground
+    #   bg - background
+    #   fga - active foreground
+    #   bga - active background
+
+    if {$istext} {
+      set img "-font {$fontB} -foreground $fg -background $bg -width 2 -pady 0 -padx 2"
+    } else {
+      set img "-image $img -background $bg"
+    }
+    append img " -relief flat -overrelief raised -activeforeground $fga \
+      -activebackground $bga -highlightthickness 0 -takefocus 0"
   }
 
   ## ________________________ Widget names & methods _________________________ ##
@@ -2224,7 +2209,7 @@ oo::class create ::apave::APaveBase {
     #   W - widget/method name (e.g. Fil, Dir)
     #   w - ent / lab for entry / label
 
-    return [::apave::precedeWidgetName [my $W] $w]
+    ::apave::precedeWidgetName [my $W] $w
   }
   #_______________________
 
@@ -2253,7 +2238,7 @@ oo::class create ::apave::APaveBase {
     # See also: MakeWidgetName
 
     set root [my ownWName $name]
-    return [list [string range $name 0 [string last . $name]][string tolower $root 0 0] $root]
+    list [string range $name 0 [string last . $name]][string tolower $root 0 0] $root
   }
   #_______________________
 
@@ -2282,7 +2267,7 @@ oo::class create ::apave::APaveBase {
         }
       }
     }
-    return [list $name $wname]
+    list $name $wname
   }
   #_______________________
 
@@ -2376,7 +2361,6 @@ oo::class create ::apave::APaveBase {
     }
     if {$isRO} {append atRO RO}
     append attrs " $atRO $w"
-    return
   }
   #_______________________
 
@@ -2462,7 +2446,6 @@ oo::class create ::apave::APaveBase {
       bind $w <Control-a> "$w tag add sel 1.0 end; break"
     }
     bind $w <Button-3> "[self] themePopup $w.popupMenu; tk_popup $w.popupMenu %X %Y"
-    return
   }
   #_______________________
 
@@ -2505,7 +2488,6 @@ oo::class create ::apave::APaveBase {
       }
     }
     set attrs $attrs_ret
-    return
   }
   #_______________________
 
@@ -2697,7 +2679,6 @@ oo::class create ::apave::APaveBase {
         }
       }
     }
-    return
   }
   #_______________________
 
@@ -2894,7 +2875,6 @@ oo::class create ::apave::APaveBase {
     } else {
       my VisitedLab $w $cmd {} $fg $bg
     }
-    return
   }
   #_______________________
 
@@ -2951,7 +2931,7 @@ oo::class create ::apave::APaveBase {
     # Returns a number of leading spaces of a line
     #   line - the line
 
-    return [expr {[string length $line]-[string length [string trimleft $line]]}]
+    expr {[string length $line]-[string length [string trimleft $line]]}
   }
 
   ## ________________________ Text methods _________________________ ##
@@ -2964,7 +2944,7 @@ oo::class create ::apave::APaveBase {
     # The tricky thing is for further access to all of the text.
     # See also: GetContentVariable
 
-    return [set PV(textcont,$tvar) $tvar*$txtnam*$name]
+    set PV(textcont,$tvar) $tvar*$txtnam*$name
   }
   #_______________________
 
@@ -2980,7 +2960,7 @@ oo::class create ::apave::APaveBase {
     # Gets parts of an internal text variable.
     # See also: SetContentVariable
 
-    return [split $ftxvar *]
+    split $ftxvar *
   }
   #_______________________
 
@@ -2992,7 +2972,7 @@ oo::class create ::apave::APaveBase {
 
     lassign [my SplitContentVariable [my GetContentVariable $tvar]] \
       -> txtnam wid
-    return [string trimright [$txtnam get 1.0 end]]
+    string trimright [$txtnam get 1.0 end]
   }
   #_______________________
 
@@ -3116,7 +3096,6 @@ oo::class create ::apave::APaveBase {
     append res " ;\
       ::apave::bindToEvent $wt <Alt-Up> [self] linesMove $wt -1 ;\
       ::apave::bindToEvent $wt <Alt-Down> [self] linesMove $wt +1"
-    return $res
   }
   #_______________________
 
@@ -3174,7 +3153,6 @@ oo::class create ::apave::APaveBase {
 
     my TextCommandForChange $w {} $on
     if {$popup} {my makePopup $w $on yes}
-    return
   }
   #_______________________
 
@@ -3225,7 +3203,6 @@ oo::class create ::apave::APaveBase {
         }
       }
     }
-    return
   }
   #_______________________
 
@@ -3259,7 +3236,6 @@ oo::class create ::apave::APaveBase {
         return
       }
     }
-    return
   }
   #_______________________
 
@@ -3414,7 +3390,7 @@ oo::class create ::apave::APaveBase {
   method pavedPath {} {
     # Gets the currently paved window's path.
 
-    return $::apave::_AP_VARS(WPAVE)
+    return $Modalwin
   }
   #_______________________
 
@@ -3667,7 +3643,7 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
-  method showWindow {win modal ontop {var ""} {minsize ""} {waitvar 1}} {
+  method showWindow {win modal ontop {var ""} {minsize ""} {waitvar 1} {waitme {}}} {
     # Displays a windows and goes in tkwait cycle to interact with a user.
     #   win - the window's path
     #   modal - yes at showing the window as modal
@@ -3675,9 +3651,20 @@ oo::class create ::apave::APaveBase {
     #   var - variable's name to receive a result (tkwait's variable)
     #   minsize - list {minwidth minheight} or {}
     #   waitvar - if yes, force tkwait variable (mostly for non-modal windows)
+    #   waitme - if empty, deiconify immediately, otherwise after waiting a variable or "timeout and/or idle"
 
     ::apave::InfoWindow [expr {[::apave::InfoWindow] + 1}] $win $modal $var yes
-    ::apave::deiconify $win
+    if {$waitme ne {}} {
+      if {[info exists $waitme]} {
+        vwait $waitme
+        ::apave::deiconify $win
+        catch {incr $waitme} ;# used to trigger chained events
+      } else {
+        after {*}$waitme ::apave::deiconify $win
+      }
+    } else {
+      ::apave::deiconify $win
+    }
     if {$minsize eq {}} {
       set minsize [list [winfo width $win] [winfo height $win]]
     }
@@ -3706,11 +3693,13 @@ oo::class create ::apave::APaveBase {
     #   win - window's name
     #   args - attributes of window ("-name value" pairs)
 
-    set ::apave::MODALWINDOW [set Modalwin $win]
+    set ::apave::MODALWINDOW $win
     ::apave::setAppIcon $win
-    lassign [::apave::extractOptions args -centerme {} -ontop 0 -modal yes -minsize {} \
-      -themed {} -input 0 -variable {} -waitvar {} -transient {-} -root {} -parent {}] \
-      centerme ontop modal minsize themed input varname waitvar transient root parent
+    lassign [::apave::extractOptions args -centerme {} -ontop 0 -modal yes \
+      -minsize {} -themed {} -input 0 -variable {} -waitvar {} -transient {-} \
+      -root {} -parent {} -waitme {}] \
+      centerme ontop modal minsize themed input varname waitvar transient \
+      root parent waitme
     $win configure -bg [lindex [my csGet] 3]  ;# removes blinking by default bg
     if {$themed in {{} {0}} && [my csCurrent] != [apave::cs_Non]} {
       my colorWindow $win
@@ -3786,11 +3775,12 @@ oo::class create ::apave::APaveBase {
     if {!($modal || $waitvar)} {
       append opt(-onclose) "; ::apave::obj EXPORT CleanUps $win"
     }
-    wm protocol $win WM_DELETE_WINDOW $opt(-onclose)
-    if {$modal} {
-      set ::apave::FOCUSED $win
-      wm protocol $win WM_TAKE_FOCUS ::apave::focusApp
+    foreach ev {KeyRelease ButtonRelease} {
+      after idle [list bind $Modalwin <$ev> "::apave::focusApp $Modalwin"]
     }
+    if {$modal} {lappend ::apave::FOCUSED $win}
+    wm protocol $win WM_TAKE_FOCUS {after idle ::apave::focusApp}
+    wm protocol $win WM_DELETE_WINDOW $opt(-onclose)
     # get the window's geometry from its requested sizes
     set inpgeom $opt(-geometry)
     if {$inpgeom eq {}} {
@@ -3839,18 +3829,19 @@ oo::class create ::apave::APaveBase {
         lassign [split [my CenteredXY $rw $rh $rx $ry $w $h] +] -> x y
         set inpgeom ${w}x$h+$x+$y
       }
+      set inpgeom [::apave::checkGeometry $inpgeom]
       wm geometry $win $inpgeom
     }
     if {$opt(-focus) eq {Tab}} {
       after 100 "catch {focus $win; event generate $win <Tab>}" ;# to focus on 1st
     } else {
-      after 100 "catch {focus -force $opt(-focus)}"
+      after 100 "catch {focus -force $opt(-focus); apave::setProperty FOCW_$win $opt(-focus)}"
     }
     if {[info exists ::transpops::my::cntwait]} {
       # this specific bind - for transpops package (to hide a demo message by keys)
       bind $win <Control-Alt-0> {set ::transpops::my::cntwait 0}
     }
-    my showWindow $win $modal $ontop $varname $minsize $waitvar
+    my showWindow $win $modal $ontop $varname $minsize $waitvar $waitme
     set res 0
     catch {
       if {$modal || $waitvar} {my CleanUps $win}
@@ -3901,7 +3892,7 @@ oo::class create ::apave::APaveBase {
     }
     catch {destroy $wtop}
     lassign [::apave::extractOptions args -type {}] type
-    toplevel $wtop {*}$args
+    set Modalwin [toplevel $wtop {*}$args]
     ::apave::withdraw $wtop ;# nice to hide all gui manipulations
     if {$type ne {} && [tk windowingsystem] eq {x11}} {
       wm attributes $wtop -type $type
@@ -3929,7 +3920,6 @@ oo::class create ::apave::APaveBase {
     } else {
       $w configure -state $state
     }
-    return
   }
   #_______________________
 
@@ -4053,7 +4043,6 @@ oo::class create ::apave::APaveBase {
       }
     }
     my resetText $w $state
-    return
   }
 
 # ________________________ EOC ::apave::APaveBase _________________________ #

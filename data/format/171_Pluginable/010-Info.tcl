@@ -2,7 +2,7 @@
 
 # The mode=6 means that the formatter can be run by events.
 #
-# The "events=..." line sets a list of events which triggers the formatter.
+# The "events=..." line sets a list of events which will trigger the formatter.
 #
 # The events are separated with commas and/or spaces. At that, if present,
 # 1st event's letter is recommended to be in upper case which is
@@ -12,20 +12,20 @@
 # The events must not overlap the alited's key mappings (as set in
 # Preferences/Keys and Templates).
 #
-# The command can include wildcards:
-#   %W for current text's path
-#   %f for current edited file
-#   %v for selected text (or current line)
-#
 # After "events=..." line, there follows "command=" line meaning that
 # the rest of file is treated as Tcl code block.
 #
-# It's the regular usage of mode=6, so the formatter files have normally
-# .tcl extension.
+# The code block can include wildcards:
+#   %W for current text's path
+#   %f for current edited file name
+#   %v for selected text (or current line)
 #
 # The commands may include calls to alited procedures, mostly of alited::
 # namespace. Details in alited's Reference:
 #   https://aplsimple.github.io/en/tcl/alited/alited.html
+#
+# This is the regular usage of mode=6, so the pluginables have normally
+# .tcl extension.
 #
 # If not empty, the result of last command is inserted at the current text
 # position or replaces selected text.
@@ -35,11 +35,19 @@
 # Shows information about the current text & platform.
 #
 # Also demonstrates, how to use
-#   "command=" line to treat the rest of file as Tcl code block
-#   "proc" commands creating procedures in alited::format namespace
-#   alited::Msg to show messages
+#   - "command=" line to treat the rest of file as Tcl code block
+#   - "proc" commands creating procedures in alited::format namespace
+#   - alited::Msg to show messages
+#   - separator for tool bar
+#   - icon for tool bar
 
 Mode = 6
+
+#! comment "sep=" to be inactive
+sep = 1
+
+#! comment "icon=" to be inactive
+icon = info
 
 events = <Alt-I>, <Alt-i>
 

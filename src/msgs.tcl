@@ -234,9 +234,7 @@ namespace eval ::alited {
     set al(MC,checktcl...) [msgcat::mc {Check Tcl...}]
     set al(MC,colorpicker) [msgcat::mc {Color Picker}]
     set al(MC,datepicker)  [msgcat::mc {Date Picker}]
-    set al(checkroot)      [msgcat::mc {Checking %d. Wait a little...}]
-    set al(badroot)        [msgcat::mc {Too big directory for a project: %n files or more.}]
-    set al(makeroot)       [msgcat::mc "Directory \"%d\"\ndoesn't exist.\n\nCreate it?"]
+    set al(MC,marks)       [msgcat::mc Marks]
 
     ## _ icons of toolbar _ ##
     set al(MC,icofile)     [msgcat::mc "Create a file\nCtrl+N"]

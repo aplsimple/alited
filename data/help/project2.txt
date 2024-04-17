@@ -29,14 +29,5 @@
      "Edit" menu item can be used to do this for a current text.
  ______________________________________________________________________
 
- The <b>Translation link</b> means a link to the translation service used in
- <b>Edit/Formats/Translation</b>.
-
- These translation links were active on September 2023:
-   https://libretranslate.de/translate
-   https://translate.argosopentech.com/translate
-   https://translate.terraprint.co/translate
- ______________________________________________________________________
-
  <r>Note</r>: for new projects (if this mode is checked), these options
  may be defined by "Preferences/General/Projects".

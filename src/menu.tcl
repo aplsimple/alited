@@ -269,6 +269,7 @@ proc menu::FillFormatItems {mnu {dir ""} {lev 0} {mnuID 0}} {
   }
   set fnames [glob -nocomplain -directory $dir *]
   foreach fn [lsort -dictionary $fnames] {
+    if {[string tolower [file tail $fn]] eq {init.tcl}} continue
     # first 4 chars for sorting
     set it [FormatsItemName $fn]
     set it [string map [list _ { }] $it]
@@ -594,6 +595,7 @@ proc menu::FillMenu {} {
   $m.tipson add separator
   $m.tipson add checkbutton -label [msgcat::mc Units] -variable ::alited::al(TIPS,Tree) -command alited::ini::SaveIni
   $m.tipson add checkbutton -label $al(MC,favorites) -variable ::alited::al(TIPS,TreeFavor) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,marks) -variable ::alited::al(TIPS,Marks) -command {alited::main::UpdateMarkBar; alited::ini::SaveIni}
 
   menu $m.weekcal -tearoff 0
   $m add cascade -label [msgcat::mc {Weeks in Calendar}] -menu $m.weekcal

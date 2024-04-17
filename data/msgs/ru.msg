@@ -143,7 +143,7 @@ namespace eval ::alited {
     {check RE in Find/Replace box} {включите RE в окошке Поиск/Замена}
     {Context} {Контекстная}
     {Changes will be lost!} {Изменения будут потеряны!}
-    {Mark} {Метка}
+    {Marks} {Метки}
     "Left click sets / goes to a mark.\nRight click clears it." "Левый клик ставит / идет на метку.\nПравый клик очищает ее."
     {Clear All} {Очистить все}
     {Width} {Ширина}

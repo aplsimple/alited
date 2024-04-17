@@ -269,6 +269,10 @@ proc project::PutProjectOpts {fname oldname dorename} {
   namespace upvar ::alited al al OPTS OPTS
   variable prjinfo
   set filecont [::apave::readTextFile $oldname]
+  if {![llength $filecont]} {
+    alited::ini::SaveIniPrj
+    set filecont [::apave::readTextFile $oldname]
+  }
   set newcont {}
   foreach line [::apave::textsplit $filecont] {
     lassign [GetOptVal $line] opt val
@@ -450,11 +454,8 @@ proc project::Klnd_save {} {
     lappend prjinfo($prjname,prjrem) $info
   }
   ::klnd::update {} {} {} $prjinfo($prjname,prjrem)
-  set frems [RemsFile $prjname]
-  if {$frems ne {}} {
-    set fcont $prjinfo($prjname,prjrem)
-    ::apave::writeTextFile $frems fcont 0 0
-  }
+  set fcont $prjinfo($prjname,prjrem)
+  ::apave::writeTextFile [RemsFile $prjname] fcont 0 0
 }
 #_______________________
 
@@ -463,7 +464,7 @@ proc project::KlndBorderText {{clr {}}} {
   #   clr - color of border
 
   variable obPrj
-  if {$clr eq {}} {set clr [lindex [::apave::obj csGet] 8]}
+  if {$clr eq {}} {set clr [lindex [obj csGet] 8]}
   [$obPrj TexKlnd] configure -highlightbackground $clr
 }
 
@@ -568,7 +569,6 @@ proc project::Select {{item ""}} {
     [$obPrj Labprj] configure -text [msgcat::mc {For project}]\ $al(prjname)
     set tip [string map [list %f "$al(MC,prjName) $al(prjname)"] $al(MC,alloffile)]
     ::baltip tip [$obPrj ChbClearRun] $tip
-    [$obPrj CbxTrans] configure -values $al(prjtrans)
     after 200 "$tree see $item; $tree focus $item"
     CheckPrjUseLeaf
   }
@@ -627,7 +627,8 @@ proc project::CheckNewDir {} {
   variable win
   if {![file exists $al(prjroot)]} {
     FocusInTab f1 [$obPrj chooserPath Dir]
-    set msg [string map [list %d $al(prjroot)] $al(makeroot)]
+    set msg [string map [list %d $al(prjroot)] \
+      [msgcat::mc "Directory \"%d\"\ndoesn't exist.\n\nCreate it?"]]
     if {![alited::msg yesno ques $msg YES -geometry root=$win]} {
       return no
     }
@@ -697,12 +698,14 @@ proc project::ValidProject {} {
   if {![CheckNewDir]} {return no}
   if {$al(prjindent)<0 || $al(prjindent)>8} {set al(prjindent) 2}
   if {$al(prjredunit)<$al(minredunit) || $al(prjredunit)>100} {set al(prjredunit) 20}
-  set msg [string map [list %d $al(prjroot)] $al(checkroot)]
+  set msg [string map [list %d $al(prjroot)] \
+    [msgcat::mc {Checking %d. Wait a little...}]]
   Message $msg 5
   alited::tree::PrepareDirectoryContents
   set totalfiles [llength [alited::tree::GetDirectoryContents $al(prjroot)]]
   if {$totalfiles >= $al(MAXFILES)} {
-    set msg [string map [list %n $al(MAXFILES)] $al(badroot)]
+    set msg [string map [list %n $al(MAXFILES)] \
+      [msgcat::mc {Too big directory for a project: %n files or more.}]]
     Message $msg 4
     set res no
   } else {
@@ -1181,8 +1184,6 @@ proc project::Change {} {
     set curinfo(prjfile) $fname
   }
   set prjinfo($newprj,prjrem) $prjinfo($oldprj,prjrem) ;# reminders
-  set al(prjtrans) [[$obPrj CbxTrans] cget -values]
-  ::apave::PushInList al(prjtrans) $al(prjtran)
   PutProjectOpts $fname $oldname yes
   GetProjects
   UpdateTree
@@ -1898,7 +1899,10 @@ proc project::KlndClick {y m d} {
   set klnddata(SAVEDATE) $klnddata(date)
   set klnddata(SAVEPRJ) [CurrProject]
   # then display a new reminder's text
-  $obPrj displayText [$obPrj TexKlnd] [KlndText $klnddata(date)]
+  set klndtex [$obPrj TexKlnd]
+  $obPrj displayText $klndtex [KlndText $klnddata(date)]
+  alited::ini::HighlightFileText $klndtex .md 0  -dobind 1 -cmdpos ::apave::None \
+    -cmd ::alited::project::KlndTextModified
   [$obPrj LabKlndDate] configure -text [KlndDate $klnddata(date)]
 }
 #_______________________
@@ -2077,14 +2081,6 @@ proc project::Tab2 {} {
     {.butStd + L 1 7 {-st e} {-t Standard -com alited::project::StdLeafRE}}
     {.labLf .labUself T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,leafRE)}}}
     {.EntLf + L 1 8 {-st sew -pady 1} {-tvar ::alited::al(prjleafRE)}}
-    {.seh2 .labLf T 1 9}
-    {.labTrans + T 1 1 {-st e -pady 5 -padx 3} {-t {Translation link:}}}
-    {.CbxTrans + L 1 8 {-st ew -pady 5} \
-      {-h 12 -cbxsel {$al(prjtran)} -tvar ::alited::al(prjtran) \
-      -values {$al(prjtrans)} -clearcom {alited::main::ClearCbx %w ::alited::al(prjtran)}}}
-    {#.labSwTrans .labTrans T 1 1 {-st e -pady 5 -padx 3} {-t {Adding translations:}}}
-    {#.swiTrans + L 1 1 {-st sw -pady 1 -padx 3} \
-      {-var ::alited::al(prjtransadd) -tip {If OFF, replaces the original text.}}}
   }
 }
 #_______________________
@@ -2229,19 +2225,10 @@ proc project::_create {} {
   ::baltip tip $lbx {::alited::project::TipOnFile %i} -shiftX 10
   after 500 ::alited::project::HelpMe ;# show an introduction after a short pause
   set prjtex [$obPrj TexPrj]
-  set klndtex [$obPrj TexKlnd]
   bind $prjtex <FocusOut> alited::project::SaveNotes
   if {$ilast>-1} {Select $ilast}
   $obPrj displayText [$obPrj TexTemplate] $al(PTP,text)
-  ::hl_tcl::hl_init $prjtex -dark [$obPrj csDark] -plaintext 1 \
-    -cmdpos ::apave::None -dobind yes \
-    -font $al(FONT) -insertwidth $al(CURSORWIDTH)
-  ::hl_tcl::hl_text $prjtex
-  ::hl_tcl::hl_init $klndtex -dark [$obPrj csDark] -plaintext 1 \
-    -cmd ::alited::project::KlndTextModified \
-    -cmdpos ::apave::None -dobind yes \
-    -font $al(FONT) -insertwidth $al(CURSORWIDTH)
-  ::hl_tcl::hl_text $klndtex
+  alited::ini::HighlightFileText $prjtex .md 0  -dobind 1 -cmdpos ::apave::None
   set res [$obPrj showModal $win -geometry $geo -minsize {600 400} -resizable 1 \
     -onclose ::alited::project::Cancel -focus [$obPrj TreePrj]]
   set oldTab [$win.fra.fraR.nbk select]

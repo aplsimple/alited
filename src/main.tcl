@@ -134,12 +134,12 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
   if {$doinit} {
     # if the file isn't read yet, read it and initialize its highlighting
     if {$al(prjindent)>1 && $al(prjindent)<9 && !$al(prjindentAuto)} {
-      alited::main::SetTabs $wtxt $al(prjindent)
+      SetTabs $wtxt $al(prjindent)
     }
     alited::file::DisplayFile $TID $curfile $wtxt $doreload
     RestoreMarks $curfile $wtxt
     if {$al(prjindentAuto)} {
-      alited::main::SetTabs $wtxt [lindex [CalcIndentation $wtxt] 0]
+      SetTabs $wtxt [lindex [CalcIndentation $wtxt] 0]
     }
     if {$doshow} {
       HighlightText $TID $curfile $wtxt
@@ -377,7 +377,7 @@ proc main::UnsetMark {idx X Y} {
     set disabletips yes
     set popm $al(WIN).popmMARK
     catch {destroy $popm}
-    menu $popm -tearoff 1 -title [msgcat::mc Mark]
+    menu $popm -tearoff 1 -title $al(MC,marks)
     $popm add command -label [msgcat::mc {Clear All}] \
       -command "alited::main::UnsetAllMarks"
     $popm add separator
@@ -511,7 +511,7 @@ proc main::MarkOptions {{idx 0}} {
   variable fgcan
   variable bgcan
   lassign [$obPav csGet] - - - bgcan - - - - fgcan
-  if {[info exists al(MARK_TIPOFF)]} {
+  if {!$al(TIPS,Marks) || [info exists al(MARK_TIPOFF)]} {
     set tip {}
   } else {
     set tip [msgcat::mc "Left click sets / goes to a mark.\nRight click clears it."]
@@ -583,7 +583,7 @@ proc main::FocusInText {TID wtxt} {
   namespace upvar ::alited obPav obPav
   if {![alited::bar::BAR isTab $TID]} return
   catch {
-    ::alited::main::CursorPos $wtxt
+    CursorPos $wtxt
     [$obPav TreeFavor] selection set {}
     alited::file::OutwardChange $TID
   }
@@ -656,7 +656,7 @@ proc main::HighlightText {TID curfile wtxt} {
 proc main::HighlightLine {} {
   # Highlights a current line of a current text.
 
-  set wtxt [alited::main::CurrentWTXT]
+  set wtxt [CurrentWTXT]
   if {[alited::file::IsClang [alited::bar::FileName]]} {
     ::hl_c::hl_line $wtxt
   } else {
@@ -697,16 +697,13 @@ proc main::InsertLine {} {
 
   set wtxt [CurrentWTXT]
   set ln [expr {int([$wtxt index insert])}]
-  if {$ln==1} {
-    $wtxt insert $ln.0 \n
-    set pos 1.0
-  } else {
-    set ln0 [expr {$ln-1}]
-    set line [$wtxt get $ln0.0 $ln0.end]
-    set leadsp [::apave::obj leadingSpaces $line]
-    $wtxt insert $ln.0 "[string repeat { } $leadsp]\n"
-    set pos $ln.$leadsp
+  set line [$wtxt get $ln.0 $ln.end]
+  set leadsp [obj leadingSpaces $line]
+  if {[string index [string trimleft $line] 0] eq "\}"} {
+    incr leadsp [lindex [CalcIndentation] 0]
   }
+  $wtxt insert $ln.0 "[string repeat { } $leadsp]\n"
+  set pos $ln.$leadsp
   ::tk::TextSetCursor $wtxt $pos
 }
 #_______________________
@@ -723,7 +720,7 @@ proc main::GotoBracket {{frommenu no}} {
     set p2 [$wtxt index "$p -1c"]
     foreach {pos1 pos2} $tagged {
       if {[incr -]==2 || ($pos1!=$p && $pos1!=$p1 && $pos1!=$p2)} {
-        alited::main::FocusText [alited::bar::CurrentTabID] $pos1
+        FocusText [alited::bar::CurrentTabID] $pos1
         if {$frommenu} SaveVisitInfo
         break
       }
@@ -898,7 +895,7 @@ proc main::CalcIndentation {{wtxt ""} {doit no}} {
     }
     if {!$doit && [info exists al(_INDENT_,$wtxt)]} {return $al(_INDENT_,$wtxt)}
     foreach line [split [$wtxt get 1.0 end] \n] {
-      if {[set lsp [::apave::obj leadingSpaces $line]]>0} {
+      if {[set lsp [obj leadingSpaces $line]]>0} {
         # check if the indentation is homogeneous
         if {[string first [string repeat { } $lsp] $line]==0} {
           set res [list $lsp { }]
@@ -1095,6 +1092,7 @@ proc main::_create {} {
   # Creates a main form of the alited.
 
   namespace upvar ::alited al al obPav obPav
+  set al(AU!) 0
   $obPav untouchWidgets *.frAText *.lbxInfo *.lbxFlist *.too*
   # make the main apave object and populate it
   $obPav makeWindow $al(WIN).fra alited
@@ -1280,10 +1278,12 @@ proc main::_run {} {
 
   namespace upvar ::alited al al obPav obPav
   ::apave::setAppIcon $al(WIN) $::alited::img::_AL_IMG(ale)
-  after 1000 {alited::ini::CheckUpdates no}
+  after idle after 8 after idle after 8 after idle after 8 {incr ::alited::al(AU!)}
+  after 3000 {incr ::alited::al(AU!)} ;# control shot
   after 2000 [list wm iconphoto $al(WIN) -default [::apave::getAppIcon]]
+  after 1000 {alited::ini::CheckUpdates no}
   set ans [$obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
-    -onclose alited::Exit {*}$al(GEOM) -resizable 1 -ontop no]
+    -onclose alited::Exit {*}$al(GEOM) -resizable 1 -waitme ::alited::al(AU!)]
   # ans==2 means 'no saves of settings' (imaginary mode)
   if {$ans ne {2}} {alited::ini::SaveIni}
   destroy $al(WIN)

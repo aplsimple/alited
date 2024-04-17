@@ -94,11 +94,11 @@ R: %B $::EMENUP2html
 ITEM = Ruff! all
 R: %I {} "PROJECT DIRECTORIES TO BE PROCESSED" { \
    v_ {{} {-pady 4}} {} \
-   tex1 {{ Projects to Ruff!:} {} {-h 8 -w 60 -tabnext chb1}} {$::EMENURUFFDIR} \
+   tex1 {{ Projects to Ruff!:} {} {-h 8 -w 70 -tabnext chb1}} {$::EMENURUFFDIR} \
    chb1 {{Mulster afterwards:}} {$::EMENUMULSTER} \
    dir2 {{ Copy to directory:}} {"$::EMENUMULSTRES3"} \
    seh {{} {-pady 5} {}} {} \
-   tex2 {{   Ruff! the files:} {} {-h 8 -tabnext butOK}} {$::EMENURUFFIT} \
+   tex2 {{   Ruff! the files:} {} {-h 8 -w 70 -tabnext butOK}} {$::EMENURUFFIT} \
    } -head {\n This creates Ruff! documentation of Tcl files. \
    \n Customize ruff.tcl at need. } -focus butOK -weight bold == ::EMENURUFFDIR ::EMENUMULSTER ::EMENUMULSTRES3 ::EMENURUFFIT
 SW: %C \

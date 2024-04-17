@@ -2,7 +2,7 @@
 
 # The mode=6 means that the formatter can be run by events.
 #
-# The "events=..." line sets a list of events which triggers the formatter.
+# The "events=..." line sets a list of events which will trigger the formatter.
 #
 # The events are separated with commas and/or spaces. At that, if present,
 # 1st event's letter is recommended to be in upper case which is
@@ -12,20 +12,20 @@
 # The events must not overlap the alited's key mappings (as set in
 # Preferences/Keys and Templates).
 #
-# The command can include wildcards:
-#   %W for current text's path
-#   %f for current edited file
-#   %v for selected text (or current line)
-#
 # After "events=..." line, there follows "command=" line meaning that
 # the rest of file is treated as Tcl code block.
 #
-# It's the regular usage of mode=6, so the formatter files have normally
-# .tcl extension.
+# The code block can include wildcards:
+#   %W for current text's path
+#   %f for current edited file name
+#   %v for selected text (or current line)
 #
 # The commands may include calls to alited procedures, mostly of alited::
 # namespace. Details in alited's Reference:
 #   https://aplsimple.github.io/en/tcl/alited/alited.html
+#
+# This is the regular usage of mode=6, so the pluginables have normally
+# .tcl extension.
 #
 # If not empty, the result of last command is inserted at the current text
 # position or replaces selected text.
@@ -45,6 +45,9 @@
 # ________________________ settings _________________________ #
 
 Mode = 6
+
+#! uncomment "icon=" to be active
+#! icon = C
 
 events = <Alt-T>, <Alt-t>
 

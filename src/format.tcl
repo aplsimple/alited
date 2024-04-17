@@ -20,6 +20,7 @@ namespace eval format {
   variable valueLines {}
   variable cont6; array set cont6 [list]
   variable bind6; array set bind6 [list]
+  variable icon6; array set icon6 [list]
 }
 
 # ________________________ Move unit descriptions _________________________ #
@@ -235,7 +236,7 @@ proc format::MoveOut {cont title l1 l2} {
     return [list $cont 0]  ;# already processed?
   }
   # padding (indentation) of unit's declaration
-  set pad [::apave::obj leadingSpaces $line]
+  set pad [obj leadingSpaces $line]
   set pad [string repeat { } $pad]
   set replcont [set replln [list]]
   # find the inside description
@@ -284,7 +285,7 @@ proc format::MoveInside {cont l1 l2 pad} {
   if {![regexp [LeafRE] $line]} {
     return [list $cont 0]  ;# not unit's declaraion - already processed?
   }
-  set pad0 [::apave::obj leadingSpaces $line]
+  set pad0 [obj leadingSpaces $line]
   set pad0 [string repeat { } $pad0]
   # get the outside description
   set replln 0
@@ -796,14 +797,19 @@ proc format::Mode6 {cont args} {
   variable bind6
   lassign $args fullformname
   set fform [alited::edit::FormatterName $fullformname]
+  set com [list alited::format::Mode5 ::alited::format::cont6($fform) {*}$args]
   set wtxt [alited::main::CurrentWTXT]
   set bind6($fform) [list]
-  set res {}
+  set res [set icon {}]
+  set sep 0
   foreach line $cont {
     incr il
+    set sp [alited::edit::IniParameter sep $line -nocase]
+    if {[string is true -strict $sp]} {set sep 1}
+    set ic [alited::edit::IniParameter icon $line -nocase]
+    if {$ic ne {}} {set icon $ic}
     set events [alited::edit::IniParameter events $line -nocase]
     if {$events ne {}} {
-      set com [list alited::format::Mode5 ::alited::format::cont6($fform) {*}$args]
       foreach ev [split $events { ,}] {
         if {$ev ne {}} {
           set wasacc [info exist cont6($fform)]
@@ -818,11 +824,15 @@ proc format::Mode6 {cont args} {
         }
         set cont6($fform) [lrange $cont $il end]
       }
-      return $res
+      break
     }
   }
-  # no event encountered - run the formatter once
-  Mode5 $cont {*}$args
+  if {$icon ne {}} {
+    CreateFormatIcon $icon $sep $com $fform
+  } elseif {$res eq {}} {
+    # no event encountered - run the formatter once
+    Mode5 $cont {*}$args
+  }
   return $res
 }
 #_______________________
@@ -857,6 +867,38 @@ proc format::EventOK {fullformname fform ev wasacc} {
   }
   set al(FORMATS,$fform,$ev2) [list $fullformname $ev2]
   return yes
+}
+#_______________________
+
+proc format::CreateFormatIcon {icon sep com fform} {
+  # Create icon of formatter in toolbar.
+  #   icon - icon name
+  #   sep - true if separated
+  #   com - command
+  #   fform - formatter file name
+
+  variable icon6
+  if {[info exists icon6($icon)]} return
+  set icon6($icon) 1
+  set but [alited::tool::ToolButName $icon]_2
+  if {$sep} {
+    set separ [ttk::separator ${but}_sep -orient vertical]
+    pack $separ -side left -fill y -padx 6
+  }
+  lassign [obj csGet] fga fg bga bg
+  set fontB [obj boldTextFont 16]
+  if {[catch {set img [alited::ini::CreateIcon $icon]-big; image inuse $img}]} {
+    set txt $icon
+    set istext 1
+  } else {
+    set txt {}
+    set istext 0
+  }
+  set attrs [obj toolbarItem_Attrs $istext $img $fontB $fg $bg $fga $bga]
+  button $but -text $txt -command $com {*}$attrs
+  ::baltip tip $but [msgcat::mc Pluginable]\n[alited::menu::FormatsItemName $fform]
+  bind $but <Button-3> {alited::tool::PopupBar %X %Y}
+  pack $but -side left
 }
 
 # ________________________ EOF _________________________ #

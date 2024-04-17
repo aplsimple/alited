@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.3  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -134,9 +134,8 @@ namespace eval alited {
 
   # project options' names
   variable OPTS [list \
-    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit \
-    prjmultiline prjbeforerun prjtrailwhite prjincons prjmaxcoms prjtran \
-    prjtrans prjtransadd prjuseleafRE prjleafRE]
+    prjname prjroot prjdirign prjEOL prjindent prjindentAuto prjredunit prjmaxcoms \
+    prjmultiline prjbeforerun prjtrailwhite prjincons prjuseleafRE prjleafRE]
 
   # directory tree's content
   variable _dirtree [list]
@@ -159,14 +158,6 @@ namespace eval alited {
   set al(prjmaxcoms) 20   ;# maximum of "Run..." commands
   set al(prjuseleafRE) 0  ;# "use leaf's RE"
   set al(prjleafRE) {}    ;# "leaf's RE"
-  set al(ED,TRAN) https://libretranslate.de/translate
-  set al(ED,TRANS) [list $al(ED,TRAN) \
-    https://translate.argosopentech.com/translate \
-    https://translate.terraprint.co/translate]
-  set al(ED,TRANSADD) 1
-  set al(prjtran) $al(ED,TRAN)   ;# current translation site
-  set al(prjtrans) $al(ED,TRANS) ;# list of translation sites
-  set al(prjtransadd) $al(ED,TRANSADD)   ;#
   foreach _ $OPTS {set al(DEFAULT,$_) $al($_)}
 
   set al(TITLE) {%f :: %d :: %p}           ;# alited title's template
@@ -178,7 +169,6 @@ namespace eval alited {
   set al(TextExts) $al(TextExtsDef)
   set al(MOVEFG) black
   set al(MOVEBG) #7eeeee
-
 
   ## __________________ Procs to raise the alited app ___________________ ##
 
@@ -245,6 +235,8 @@ source [file join $::alited::PAVEDIR apave.tcl]
 source [file join $::alited::BARSDIR bartabs.tcl]
 source [file join $::alited::HLDIR  hl_tcl.tcl]
 source [file join $::alited::HLDIR  hl_c.tcl]
+
+namespace import ::apave::obj ::apave::openDoc
 
 ::apave::mainWindowOfApp $::alited::al(WIN)
 
@@ -412,9 +404,9 @@ namespace eval alited {
   #_______________________
 
   proc ListPaved {} {
-    # Return a list of apave objects for dialogues.
+    # Returns a list of apave objects for dialogues.
 
-    return [list obDlg obDl2 obFND obFN2 obCHK obRun]
+    list obDlg obDl2 obFND obFN2 obCHK obRun
   }
   #_______________________
 
@@ -438,8 +430,8 @@ namespace eval alited {
     #   args - other options
 
     variable al
-    if {$cs eq {}} {set cs [::apave::obj csCurrent]}
-    ::hl_${lng}::hl_init $wtxt -dark [::apave::obj csDark $cs] -colors $colors \
+    if {$cs eq {}} {set cs [obj csCurrent]}
+    ::hl_${lng}::hl_init $wtxt -dark [obj csDark $cs] -colors $colors \
       -multiline 1 -font $al(FONT,txt) -insertwidth $al(CURSORWIDTH) \
       -cmdpos ::apave::None -dobind yes {*}$args
     ::hl_${lng}::hl_text $wtxt
@@ -634,7 +626,7 @@ namespace eval alited {
     set ::alited::textTags [list \
       [list "r" "-font {$::apave::FONTMAINBOLD} -foreground $fS"] \
       [list "b" "-foreground $fS"] \
-      [list "link" "::apave::openDoc %t@@https://%l@@"] \
+      [list "link" "openDoc %t@@https://%l@@"] \
       ]
     return "-tags ::alited::textTags"
   }
@@ -847,7 +839,7 @@ namespace eval alited {
     # Shows a main help of alited.
     #   ilink - internal link
 
-    ::apave::openDoc file://[file join $::alited::DIR doc index.html]$ilink
+    openDoc file://[file join $::alited::DIR doc index.html]$ilink
   }
   #_______________________
 
@@ -892,8 +884,10 @@ namespace eval alited {
       set args [linsert $args 0 -h 30 -scroll 1]
     }
     after 200 [list alited::HelpOnce 0 $fname]
-    if {$ale1Help && [set dlg [$pobj dlgPath]] ne $al(WIN)} {
-      destroy $dlg  ;# -ale1Help option permits the only Help window
+    if {$ale1Help} {
+      # if run from "Help/Context", remove its predecessor
+      catch {destroy $al(DLGPREV)}
+      after idle "set ::alited::al(DLGPREV) \[$pobj dlgPath\]"
     }
     set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no \
       -onclose "alited::destroyWindow %w [focus]" -centerme $win -text 1 -scroll no \
@@ -1052,7 +1046,7 @@ namespace eval alited {
           set fsz $al(FONTSIZE,std)
         }
         set res [${addon}::init $wtxt $al(FONT,txt) $fsz {*}$colors]
-        ::apave::obj set_highlight_matches $wtxt
+        obj set_highlight_matches $wtxt
         foreach tag {sel hilited hilited2} {after idle $wtxt tag raise $tag}
       }
     }

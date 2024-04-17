@@ -21,12 +21,14 @@ namespace eval complete {
 
 # ________________________ Common _________________________ #
 
-proc complete::CursorCoordsChar {wtxt shift} {
+proc complete::CursorCoordsChar {{wtxt ""} {shift ""}} {
   # Gets cursor's screen coordinates and a character under cursor in a text.
   #   wtxt - text's path
   #   shift - shift from the cursor where to get non-empty char
   # Returns a list of X, Y coordinates and a character under the cursor.
 
+  if {$wtxt eq {}} {set wtxt [alited::main::CurrentWTXT]}
+  focus $wtxt
   set poi [$wtxt index insert]
   set ch [$wtxt get $poi [$wtxt index {insert +1c}]]
   set nl [expr {int($poi)}]
@@ -35,7 +37,11 @@ proc complete::CursorCoordsChar {wtxt shift} {
     set w 0
     set ch -
   } else {
-    if {[string trim $ch] eq {}} {set pos "insert $shift"} {set pos insert}
+    if {[string trim $ch] eq {} || $shift eq {linestart}} {
+      set pos "insert $shift"
+    } else {
+      set pos insert
+    }
     set pos [$wtxt index $pos]
     lassign [$wtxt bbox $pos] X Y w h
   }
@@ -59,11 +65,7 @@ proc complete::TextCursorCoordinates {{wtxt ""}} {
   #   wtxt - text's path
   # Returns a list of X and Y coordinates.
 
-  if {$wtxt eq {}} {
-    set wtxt [alited::main::CurrentWTXT]
-  }
-  focus $wtxt
-  set res [CursorCoordsChar $wtxt {}]
+  set res [CursorCoordsChar $wtxt]
   lassign $res X Y ch
   if {$ch eq {} || $ch eq "\n"} {
     # EOL => get a previous char's coordinates

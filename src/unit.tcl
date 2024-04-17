@@ -328,7 +328,7 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
   set unithead [string trim $unithead "\{ "]
   lassign [split $unithead "\{"] proc
   set iarg [string range $unithead [string length $proc] end]
-  set pad [string repeat " " [::apave::obj leadingSpaces $tex]]
+  set pad [string repeat " " [obj leadingSpaces $tex]]
   catch {
     set tpla $pad[string map [list \\n \n] $al(TPL,%a)]
     set oarg [set st1 ""]
@@ -432,22 +432,22 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi} {
   set indent1 0
   foreach t $tlist {
     if {[set t [string trim $t]] ne {}} {
-      set indent1 [::apave::obj leadingSpaces $t]  ;# indentation of the template
+      set indent1 [obj leadingSpaces $t]  ;# indentation of the template
       break
     }
   }
   set pos1 [expr {int([$wtxt index $pos0])}]
   set line2 [$wtxt get $pos1.0 $pos1.end]
   if {$posi eq {}} {
-    set indent2 [::apave::obj leadingSpaces $line2]  ;# indentation of the insert point
+    set indent2 [obj leadingSpaces $line2]  ;# indentation of the insert point
   } else {
     set posi [expr {int($posi)}]
     set linei [string trimright [$wtxt get $posi.0 $posi.end]]
-    set indent2 [::apave::obj leadingSpaces $linei]
+    set indent2 [obj leadingSpaces $linei]
     if {$linei eq {}} {
       foreach i {+0 +1 +2 -1 -2} {
         set i [expr $posi$i]
-        set ind [::apave::obj leadingSpaces [$wtxt get $i.0 $i.end]=]
+        set ind [obj leadingSpaces [$wtxt get $i.0 $i.end]=]
         if {$ind} {
           set indent2 $ind
           break
