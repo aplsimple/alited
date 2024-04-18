@@ -24,13 +24,13 @@ proc tool::ToolButName {img} {
 proc tool::Undo {} {
   # Undoes a change.
 
-  return [catch {[alited::main::CurrentWTXT] edit undo}]
+  catch {event generate [alited::main::CurrentWTXT] <<Undo>>}
 }
 
 proc tool::Redo {} {
   # Redoes a change.
 
-  return [catch {[alited::main::CurrentWTXT] edit redo}]
+  catch {event generate [alited::main::CurrentWTXT] <<Redo>>}
 }
 #_______________________
 
@@ -57,7 +57,7 @@ proc tool::undoAll {} {
   set wtxt [alited::main::CurrentWTXT]
   set plaintext [SetPlainText $wtxt yes]
   while {[$wtxt edit canundo]} {
-    if {[Undo]} break
+    if {[catch {$wtxt edit undo}]} break
   }
   SetPlainText $wtxt $plaintext
 }
@@ -69,7 +69,7 @@ proc tool::redoAll {} {
   set wtxt [alited::main::CurrentWTXT]
   set plaintext [SetPlainText $wtxt yes]
   while {[$wtxt edit canredo]} {
-    if {[Redo]} break
+    if {[catch {$wtxt edit redo}]} break
   }
   SetPlainText $wtxt $plaintext
 }
