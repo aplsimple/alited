@@ -315,8 +315,8 @@ namespace eval ::apave {
     #   geo - the geometry
     # Returns a "normalized" geometry (+0+0 if input not correct).
 
-    if {![regexp {^\d+x\d+$} $geo] && ![regexp {^\+\d+\+\d+$} $geo] \
-    && ![regexp {^\d+x\d+\+\d+\+\d+$} $geo]} {
+    if {![regexp {^\d+x\d+$} $geo] && ![regexp {^\+-?\d+\+-?\d+$} $geo] \
+    && ![regexp {^\d+x\d+\+-?\d+\+-?\d+$} $geo]} {
       set geo +0+0
     }
     return $geo

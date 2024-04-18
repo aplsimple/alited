@@ -6,10 +6,11 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.3 (17 Apr'24)`
+Version `v1.8.3 (18 Apr'24)`
 
   - BUGFIX: if "Help/Context" open, "Find/Replace" (or similar) closed
   - BUGFIX: Projects: change default project in 1st session of alited
+  - BUGFIX: https://core.tcl-lang.org/tk/tktview/ab839efc5
   - NEW   : optional init.tcl in Edit/Formats items (data/format directories)
   - NEW   : Edit/Formats: mode=6: possible icon= (tool icon), sep= (tool separator)
   - DELETE: Preferences & Projects: translation options (moved to init.tcl)

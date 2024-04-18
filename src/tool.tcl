@@ -57,7 +57,7 @@ proc tool::undoAll {} {
   set wtxt [alited::main::CurrentWTXT]
   set plaintext [SetPlainText $wtxt yes]
   while {[$wtxt edit canundo]} {
-    if {[catch {$wtxt edit undo}]} break
+    if {[Undo]} break
   }
   SetPlainText $wtxt $plaintext
 }
@@ -69,7 +69,7 @@ proc tool::redoAll {} {
   set wtxt [alited::main::CurrentWTXT]
   set plaintext [SetPlainText $wtxt yes]
   while {[$wtxt edit canredo]} {
-    if {[catch {$wtxt edit redo}]} break
+    if {[Redo]} break
   }
   SetPlainText $wtxt $plaintext
 }
