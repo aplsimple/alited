@@ -782,7 +782,7 @@ oo::class create ::apave::APaveBase {
         set retval {{}}
       } else {
         set retval {}
-        foreach ln [split [::apave::readTextFile $fname {} 1] \n] {
+        foreach ln [::apave::textsplit [::apave::readTextFile $fname {} 1]] {
           # probably, it's bad idea to have braces in the file of contents
           set ln [string map [list \\ \\\\ \{ \\\{ \} \\\}] $ln]
           if {$ln ne {}} {lappend retval $ln}
@@ -1417,7 +1417,7 @@ oo::class create ::apave::APaveBase {
     ttk::menubutton $w -menu $win -text [set $vname] -style TMenuButtonWest {*}$mbopts
     menu $win -tearoff 0
     my menuTips $win $tip $w
-    after idle [list after 0 [list [self] optionCascade_add $win $vname $items $precom {*}$args]]
+    my OptionCascade_add $win $vname $items $precom {*}$args
     trace add variable $vname write \
       "$w config -text \"\[[self] optionCascadeText \${$vname}\]\" ;\#"
     lappend ::apave::_AP_VARS(_TRACED_$w) $vname
@@ -1426,7 +1426,7 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
-  method optionCascade_add {w vname argl precom args} {
+  method OptionCascade_add {w vname argl precom args} {
     # Adds tk_optionCascade items recursively.
     #   w      - tk_optionCascade widget's name
     #   vname  - variable name for current selection
@@ -1453,7 +1453,7 @@ oo::class create ::apave::APaveBase {
       } else {
         set child [menu $w.[incr n] -tearoff 0]
         $w add cascade -label [lindex $arg 0] -menu $child
-        my optionCascade_add $child $vname [lrange $arg 1 end] $precom {*}$args
+        my OptionCascade_add $child $vname [lrange $arg 1 end] $precom {*}$args
       }
       if $colbreak {
         $w entryconfigure end -columnbreak 1
@@ -3490,12 +3490,6 @@ oo::class create ::apave::APaveBase {
           }
           set options [string map [list %w $wneigb] $options]
         }
-        #% doctest 1
-        #%   set a "123 \\\\\\\\ 45"
-        #%   eval append b {*}$a
-        #%   set b
-        #>   123\45
-        #> doctest
         my Pre attrs
         set addcomms [my AdditionalCommands $w $wname attrs]
         eval $widget $wname {*}$attrs
@@ -3712,7 +3706,7 @@ oo::class create ::apave::APaveBase {
     set rooted 1
     if {$centerme ne {}} {
       ;# forced centering relative to a caller's window
-      lassign [split $centerme x+-] rw rh rx ry
+      lassign [::apave::splitGeometry $centerme] rw rh rx ry
       set rooted [expr {![regexp {[+|-]+\d+\++} $centerme]}]
       if {$rooted && [winfo exist $centerme]} {
         set root $centerme
@@ -3830,7 +3824,7 @@ oo::class create ::apave::APaveBase {
         set inpgeom ${w}x$h+$x+$y
       }
       set inpgeom [::apave::checkGeometry $inpgeom]
-      wm geometry $win $inpgeom
+      catch {wm geometry $win $inpgeom}
     }
     if {$opt(-focus) eq {Tab}} {
       after 100 "catch {focus $win; event generate $win <Tab>}" ;# to focus on 1st

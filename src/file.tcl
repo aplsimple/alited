@@ -599,7 +599,7 @@ proc file::ReadFile {TID fname {doErr 0}} {
   namespace upvar ::alited al al
   set enc [Encoding $fname]
   append enc { } [EOL $fname]
-  set filecont [::apave::readTextFile $fname {} $doErr {*}$enc]
+  set filecont [readTextFile $fname {} $doErr {*}$enc]
   set al(_unittree,$TID) [alited::unit::GetUnits $TID $filecont]
   return $filecont
 }
@@ -649,7 +649,7 @@ proc file::NewFile {{fname ""}} {
 }
 #_______________________
 
-proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
+proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message ""}} {
   # Handles "Open file" menu item.
   #   fnames - file name (if not set, asks for it)
   #   reload - if yes, loads the file even if it has a "strange" extension
@@ -659,10 +659,8 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
 
   namespace upvar ::alited al al obPav obPav
   variable ansOpen
-  set chosen no
   if {$fnames eq {}} {
     set al(TMPfname) {}
-    set chosen yes
     set fnames [$obPav chooser tk_getOpenFile ::alited::al(TMPfname) -multiple 1 \
       -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
     if {$al(lifo)} {set fnames [lsort -decreasing $fnames]}
@@ -722,9 +720,7 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message {}}} {
     alited::bar::BAR $TID show $many $many
   }
   RecreateFileTree
-  if {$chosen} {
-    after idle {focus -force [alited::main::CurrentWTXT]}
-  }
+  alited::FocusText
   return $TID
 }
 #_______________________
@@ -751,7 +747,7 @@ proc file::SaveFileByName {TID fname {doit no}} {
   set wtxt [alited::main::GetWTXT $TID]
   if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $TID yes $doit}
   set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
-  if {![::apave::writeTextFile $fname fcont 0 1 {*}$enc]} {
+  if {![writeTextFile $fname fcont 0 1 {*}$enc]} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1
     unset al(_NO_OUTWARD_)
     return 0

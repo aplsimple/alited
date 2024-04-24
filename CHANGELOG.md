@@ -6,7 +6,22 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.3 (18 Apr'24)`
+Version `v1.8.4b1 (24 Apr'24)`
+
+  - BUGFIX: repeated Help in Templates called from Preferences
+  - BUGFIX: Delete key in Templates called from Preferences
+  - BUGFIX: Projects: changing project
+  - NEW   : Projects: selecting projects by initial letter
+  - DELETE: klnd/README.md, playtkl/pkgIndex.tcl, docs.html, doctest_README.md (not used)
+  - CHANGE: completion at stand-alone "$"
+  - CHANGE: args template (Alt-a) counts 1st line's indentation
+  - CHANGE: focusing text after pickers & formatters
+  - CHANGE: clearings & renamings (after apave)
+  - CHANGE: About dialog: alited's line
+  - CHANGE: packages: e_menu/apave 4.4.4
+
+
+Version `v1.8.3 (20 Apr'24)`
 
   - BUGFIX: if "Help/Context" open, "Find/Replace" (or similar) closed
   - BUGFIX: Projects: change default project in 1st session of alited

@@ -405,7 +405,6 @@ namespace eval ::alited {
 
   ## ________________________ "About" dialogue ________________________ ##
   ::msgcat::mcmset uk {
-    {stands for} {значить}
     {Written in pure Tcl/Tk.} {Зроблений на чистому Tcl/Tk.}
     {And well fit for programming with it.} {Та гідний для програмування на ньому.}
     {Details:} {Підробиці:}

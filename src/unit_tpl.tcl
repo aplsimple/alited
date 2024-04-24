@@ -394,7 +394,8 @@ proc unit_tpl::Delete {} {
   variable tplkeys
   variable tplid
   variable win
-  if {[set isel [Selected index]] eq {}} return
+  variable dosel
+  if {!$dosel || [set isel [Selected index]] eq {}} return
   set nsel [expr {$isel+1}]
   set msg [string map [list %n $nsel] $al(MC,tpldelq)]
   if {![alited::msg yesno warn $msg NO -centerme $win]} {
@@ -428,8 +429,7 @@ proc unit_tpl::Import {} {
   if {$fname eq {}} return
   set imported 0
   set wtxt [$obTpl TexTpl]
-  set filecont [::apave::readTextFile $fname]
-  foreach line [split $filecont \n] {
+  foreach line [textsplit [readTextFile $fname]] {
     if {[string match tpl=* $line]} {
       set line [string range $line 4 end]
       if {![catch {lassign $line tpl tplkey cont pos place}]} {
@@ -443,7 +443,8 @@ proc unit_tpl::Import {} {
       }
     }
   }
-  Message [string map "%n $imported" [msgcat::mc "Number of imported templates: %n"]] 3
+  set msg [string map "%n $imported" [msgcat::mc "Number of imported templates: %n"]]
+  Message $msg 3
 }
 #_______________________
 

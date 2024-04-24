@@ -745,24 +745,6 @@ proc ::hl_tcl::my::InRange {p1 p2 l {c -1}} {
     ($l>=$l1 && $l<$l2 && $c>=$c1) || ($l>$l1 && $l<=$l2 && $c<=$c2) ||
     ($l==$l1 && $l1==$l2 && $c>=$c1 && $c<=$c2) || ($l>$l1 && $l<$l2)}]
 }
-# doctest:
-#% ::hl_tcl::my::InRange 9.0 9.20 9.0
-#> 1
-#% ::hl_tcl::my::InRange 9.1 9.20 9.0
-#> 0
-#% ::hl_tcl::my::InRange 9.0 9.20 9.19
-#> 1
-#% ::hl_tcl::my::InRange 9.0 9.20 9.20
-#> 0
-#% ::hl_tcl::my::InRange 9.0 9.20 8.19
-#> 0
-#% ::hl_tcl::my::InRange 9.0 9.20 10.0
-#> 0
-#% ::hl_tcl::my::InRange 9.10 11.2 10.0
-#> 1
-#% ::hl_tcl::my::InRange 9.0 10.0 9 9999
-#> 1
-#% puts InRange:[time {::hl_tcl::my::InRange 9.0 9.20 8.20} 10000]
 #_______________________
 
 proc ::hl_tcl::my::SearchTag {tagpos l1} {
@@ -884,14 +866,6 @@ proc ::hl_tcl::my::MergePosList {none args} {
   }
   return $lout
 }
-# doctest:
-#% ::hl_tcl::my::MergePosList -1 {11 12} 13
-#> {0 11} {0 12} {1 13}
-#% ::hl_tcl::my::MergePosList -1 {1 8} {2 3}
-#> {0 1} {1 2} {1 3} {0 8}
-#% ::hl_tcl::my::MergePosList -1 {1 5 8} {2 3 9 12} {0 6 10}
-#> {2 0} {0 1} {1 2} {1 3} {0 5} {2 6} {0 8} {1 9} {2 10} {1 12}
-#% puts MergePosList:[time {::hl_tcl::my::MergePosList -1 {11 12} 13} 10000]
 #_______________________
 
 proc ::hl_tcl::my::CountChar {str ch {plistName ""} {escaped yes}} {

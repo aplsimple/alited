@@ -582,6 +582,7 @@ proc format::AfterFormatting {wtxt pos1 pos2 value} {
     $wtxt replace $pos1 $pos2 $value
   }
   alited::main::UpdateAll
+  focusByForce $wtxt
   $wtxt tag remove sel 1.0
   set nch [string length $value]
   $wtxt tag add sel $pos1 "$pos1 +$nch chars"
@@ -721,14 +722,15 @@ proc format::Mode4 {cont args} {
       #   %S - file name for saved selection
       #   %L - file name for saved lines of selection
       if {[string first %S $com]>=0 && $valueSel ne {}} {
-        apave::writeTextFile $tmpname ::alited::format::valueSel
+        writeTextFile $tmpname ::alited::format::valueSel
       } elseif {[string first %L $com]>=0 && $valueLines ne {}} {
-        apave::writeTextFile $tmpname ::alited::format::valueLines
+        writeTextFile $tmpname ::alited::format::valueLines
       }
       set com [alited::Map -nocase $com %S $tmpname %L $tmpname]
       alited::tool::Run_in_e_menu $com
     }
   }
+  alited::FocusText
 }
 
 ## ________________________ insertions _________________________ ##
@@ -782,6 +784,7 @@ proc format::Mode5 {cont args} {
       if {$ending} break
     }
   }
+  alited::FocusText
 }
 
 ## ________________________ pluginable _________________________ ##

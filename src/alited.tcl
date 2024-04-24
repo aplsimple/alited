@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.4b1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -141,6 +141,9 @@ namespace eval alited {
   variable _dirtree [list]
   set al(_dirignore) [list]
 
+  # list of helped windows shown by HelpMe proc
+  variable helpedMe {}
+
   # project options' values
   set al(prjname) {}      ;# current project's name
   set al(prjfile) {}      ;# current project's file name
@@ -236,7 +239,7 @@ source [file join $::alited::BARSDIR bartabs.tcl]
 source [file join $::alited::HLDIR  hl_tcl.tcl]
 source [file join $::alited::HLDIR  hl_c.tcl]
 
-namespace import ::apave::obj ::apave::openDoc
+namespace import ::apave::*
 
 ::apave::mainWindowOfApp $::alited::al(WIN)
 
@@ -289,7 +292,7 @@ if {[package versions alited] eq {}} {
     if {(![file exists $::alited::INIDIR] || ![file exists $::alited::PRJDIR]) && \
     $isalitedCONFIGS} {
       # read INIDIR & PRJDIR that were last entered
-      lassign [split [::apave::readTextFile $::alited::USERLASTINI] \n] \
+      lassign [textsplit [readTextFile $::alited::USERLASTINI]] \
         ::alited::INIDIR ::alited::PRJDIR ::alited::CONFIGS
       set ::alited::CONFIGDIR [file dirname [file dirname $::alited::INIDIR]]
       set readalitedCONFIGS yes
@@ -311,7 +314,8 @@ if {[package versions alited] eq {}} {
   }
   if {!$readalitedCONFIGS && $isalitedCONFIGS} {
     # read configurations used
-    set ::alited::CONFIGS [lindex [split [::apave::readTextFile $::alited::USERLASTINI] \n] 2]
+    set fcont [textsplit [readTextFile $::alited::USERLASTINI]]
+    set ::alited::CONFIGS [lindex $fcont 2]
   }
   unset -nocomplain readalitedCONFIGS
   unset -nocomplain isalitedCONFIGS
@@ -546,14 +550,14 @@ namespace eval alited {
   }
   #_______________________
 
-  proc EnsureArray {arName args} {
+  proc EnsureAlArray {arName args} {
     # Ensures restoring an array at calling a proc.
     #   arName - fully qualified array name
     #   args - proc name & arguments
 
     set foc [focus]
     ::apave::EnsureArray $arName {*}$args
-    after 100 "::apave::FocusByForce $foc"
+   focusByForce $foc 20
   }
   #_______________________
 
@@ -614,6 +618,13 @@ namespace eval alited {
 
     variable al
     return $al(FONT,txt)
+  }
+  #_______________________
+
+  proc FocusText {} {
+    # Focuses a current text.
+
+    after idle after 100 {focusByForce [alited::main::CurrentWTXT]}
   }
 
   ## ________________________ Messages _________________________ ##
@@ -855,7 +866,7 @@ namespace eval alited {
     lassign [::apave::extractOptions args -ale1Help no -ontop 0] ale1Help ontop
     set tags [MessageTags]
     if {[file exists $fname]} {
-      set msg [::apave::readTextFile $fname]
+      set msg [readTextFile $fname]
     } else {
       set msg "Here should be a text of\n\"$fname\""
     }
@@ -933,10 +944,11 @@ namespace eval alited {
     #   suff - suffix for a help file's name
 
     variable al
-    if {[lsearch -exact $al(HelpedMe) $win]>-1} return
+    variable helpedMe
+    if {[lsearch -exact $helpedMe $win]>-1} return
     set ans [HelpFile $win [HelpFname $win $suff] -ch $al(MC,noask)]
     if {[lindex $ans 0]==11} {
-      lappend al(HelpedMe) $win
+      lappend helpedMe $win
     }
   }
   #_______________________
@@ -957,9 +969,7 @@ namespace eval alited {
     #   foc - previously focused widget
 
     catch {destroy $win}
-    catch {
-      after idle "after 100 {::apave::FocusByForce $foc}"
-    }
+    after idle after 100 "focusByForce $foc"
   }
 
   ## ________________________ Runs & exits _________________________ ##

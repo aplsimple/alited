@@ -28,7 +28,7 @@ proc about::About {} {
 
   # alited_checked
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al DIR DIR
   variable textTags
 
   ## ________________________ Preparing tabs _________________________ ##
@@ -105,10 +105,20 @@ proc about::About {} {
 
   ### ________________________ "General" tab _________________________ ###
 
+  set head "alited $valited"
+  set clog [readTextFile [file join $DIR CHANGELOG.md]]
+  foreach line [textsplit $clog] {
+    lassign [regexp -inline {Version `.+(\(.+\))`} $line] -> line
+    if {$line ne {}} {
+      append head " $line"
+      break
+    }
+  }
+
   set long1 [msgcat::mc {And well fit for programming with it.}]
   set long2 __________________________________________
   set long3 [file nativename [info nameofexecutable]]
-  set msg "  <red>alited $valited</red> [msgcat::mc {stands for}] \"a lite editor\".\n\n \
+  set msg "  <red>$head</red>, a lite editor.\n\n \
     [msgcat::mc {Written in pure Tcl/Tk.}] \n \
     $long1\n\n \
     [msgcat::mc {Details:}] \n\n \

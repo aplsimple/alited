@@ -1109,7 +1109,7 @@ proc pref::Template_Tab {} {
     {.entt + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(TPL,%t) -w 30}}
     {.seh .labt T 1 2 {-pady 3}}
     {.but + T 1 1 {-st w} {-t {$al(MC,tpl)} \
-      -com {alited::EnsureArray ::alited::al alited::unit::Run_unit_tpl no \
+      -com {alited::EnsureAlArray ::alited::al alited::unit::Run_unit_tpl no \
       "-centerme $::alited::pref::win"} -tabnext alited::Tnext}}
   }
 }
@@ -1771,7 +1771,7 @@ proc pref::_create {tab} {
   set wtxt [$obPrf TexNotes]
   set fnotes [file join $::alited::USERDIR notes.txt]
   if {[file exists $fnotes]} {
-    $wtxt insert end [::apave::readTextFile $fnotes]
+    $wtxt insert end [readTextFile $fnotes]
   }
   after idle "alited::ini::HighlightFileText $wtxt .md 0"
   $wtxt edit reset; $wtxt edit modified no
@@ -1798,7 +1798,7 @@ proc pref::_create {tab} {
   set res [$obPrf showModal $win -geometry $geo -minsize {800 600} -resizable 1 \
     -onclose ::alited::pref::Cancel]
   set fcont [$wtxt get 1.0 {end -1c}]
-  ::apave::writeTextFile $fnotes fcont
+  writeTextFile $fnotes fcont
   if {[llength $res] < 2} {set res ""}
   set geo [wm geometry $win] ;# save the new geometry of the dialogue
   set oldTab $curTab

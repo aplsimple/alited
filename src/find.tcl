@@ -820,7 +820,7 @@ proc find::ReplaceAll {TID wtxt allfnd} {
   #   wtxt - text's path
   #   allfnd - list of found strings data (index1, index2)
 
-  ::apave::undoIn $wtxt
+  undoIn $wtxt
   set rn 0
   for {set i [llength $allfnd]} {$i} {} {
     if {!$rn} {
@@ -834,7 +834,7 @@ proc find::ReplaceAll {TID wtxt allfnd} {
     incr rn
   }
   if {$rn} {SetCursor $wtxt [lindex $allfnd end 0]}
-  ::apave::undoOut $wtxt
+  undoOut $wtxt
   return $rn
 }
 #_______________________
@@ -1428,7 +1428,7 @@ proc find::_create {} {
   bind $w.cbx2 <Return> "$w.but4 invoke"
   foreach k {f F} {bind $win <Control-$k> {::alited::find::LastInvoke; break}}
   foreach k {r R} {bind $win <Control-$k> {::alited::find::btTPaste; break}}
-  foreach k {t T} {bind $win <Control-$k> "apave::FocusByForce $wtxt"}
+  foreach k {t T} {bind $win <Control-$k> "focusByForce $wtxt"}
   FocusCbx
   set but [$obFND But1]
   lassign [split [winfo geometry $but] x+] w h

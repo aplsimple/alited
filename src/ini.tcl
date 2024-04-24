@@ -54,7 +54,6 @@ namespace eval ::alited {
   set al(moveall) 1            ;# "move all" of color chooser
   set al(tonemoves) 1          ;# "tone moves" of color chooser
   set al(checkgeo) {}          ;# geometry of "Check Tcl" window
-  set al(HelpedMe) {}          ;# list of helped windows shown by HelpMe proc
   set al(cmdNum) 6             ;# number of commands on Commands tab
 
   # flag "use special RE for leafs of unit tree"
@@ -276,7 +275,7 @@ proc ini::ReadIni {{projectfile ""}} {
   puts "alited reading: $al(INI)"
   if {$al(ini_file) eq {}} {
     # al(ini_file) may be already filled (see alited.tcl)
-    set al(ini_file) [split [::apave::readTextFile $::alited::al(INI)] \n]
+    set al(ini_file) [split [readTextFile $::alited::al(INI)] \n]
   }
   set mode ""
   foreach stini $al(ini_file) {
@@ -611,7 +610,8 @@ proc ini::ReadIniMisc {nam val} {
   switch -glob -- $nam {
     isfavor {set al(FAV,IsFavor) $val}
     showinfo {set al(TREE,showinfo) $val}
-    listSBL - HelpedMe - checkgeo - tonemoves - moveall - chosencolor \
+    HelpedMe {set ::alited::helpedMe $val}
+    listSBL - checkgeo - tonemoves - moveall - chosencolor \
     - sortList - activemacro - commentmode - format_separ1 - format_separ2 \
     - TIPS,* - MNUGEO,* - markwidth - klndweeks {
       set al($nam) $val
@@ -946,7 +946,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "moveall=$al(moveall)"
   puts $chan "tonemoves=$al(tonemoves)"
   puts $chan "checkgeo=$al(checkgeo)"
-  puts $chan "HelpedMe=$al(HelpedMe)"
+  puts $chan "HelpedMe=$::alited::helpedMe"
   foreach k [array names al -glob TIPS,*] {
     puts $chan "$k=$al($k)"
   }
@@ -1005,7 +1005,7 @@ proc ini::SaveIni {{newproject no}} {
   # save last directories entered
   set lastini \
     [file dirname $::alited::al(INI)]\n[file dirname $al(prjfile)]\n$::alited::CONFIGS
-  ::apave::writeTextFile $::alited::USERLASTINI lastini
+  writeTextFile $::alited::USERLASTINI lastini
 }
 #_______________________
 
@@ -1119,7 +1119,7 @@ proc ini::UpdateTemplates {inideffile} {
 
   set tplmode 0
   # read new templates: from [Templates] to [Keys]
-  foreach stini [split [::apave::readTextFile $inideffile {} 1] \n] {
+  foreach stini [split [readTextFile $inideffile {} 1] \n] {
     switch -exact $stini {
       {[Templates]} {set tplmode 1}
       {[Keys]} break

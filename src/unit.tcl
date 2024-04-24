@@ -328,7 +328,11 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
   set unithead [string trim $unithead "\{ "]
   lassign [split $unithead "\{"] proc
   set iarg [string range $unithead [string length $proc] end]
-  set pad [string repeat " " [obj leadingSpaces $tex]]
+  set ipad [obj leadingSpaces [$wtxt get $l1.0 $l1.end]]
+  if {![IsLeafRegexp]} {
+    incr ipad [obj leadingSpaces $tex]
+  }
+  set pad [string repeat " " $ipad]
   catch {
     set tpla $pad[string map [list \\n \n] $al(TPL,%a)]
     set oarg [set st1 ""]
@@ -343,6 +347,7 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
       }
     }
     if {[string first %a $tex]>-1} {
+      set tex $pad[string trimleft $tex]
       set place 0
       set pos 1.[string length $st1]
     }
@@ -581,7 +586,7 @@ proc unit::DropUnits {wtree fromIDs toID} {
   set tree [alited::tree::GetTree]
   set wtxt [alited::main::CurrentWTXT]
   set wtree [$obPav Tree]
-  ::apave::undoIn $wtxt
+  undoIn $wtxt
   # firstly, cut all moved lines
   set ijust 0
   set movedlines [list]
@@ -623,7 +628,7 @@ proc unit::DropUnits {wtree fromIDs toID} {
     alited::main::UpdateAll $headers
     alited::main::FocusText
   }
-  ::apave::undoOut $wtxt
+  undoOut $wtxt
 }
 #_______________________
 
@@ -641,7 +646,7 @@ proc unit::MoveL1L2 {wtxt i1 i2 io {dosep yes}} {
   [set linesmoved [$wtxt get $i1.0 $ind2]] eq ""} {
     return "" ;# nothing to do
   }
-  if {$dosep} {::apave::undoIn $wtxt}
+  if {$dosep} {undoIn $wtxt}
   $wtxt delete $i1.0 $ind2
   if {$io>$i2} {
     # 3. i1    if moved below, the moved (deleted) lines change 'io', so
@@ -659,7 +664,7 @@ proc unit::MoveL1L2 {wtxt i1 i2 io {dosep yes}} {
   } else {
     $wtxt insert $io.0 $linesmoved
   }
-  if {$dosep} {::apave::undoOut $wtxt}
+  if {$dosep} {undoOut $wtxt}
   return $io
 }
 #_______________________
@@ -751,13 +756,13 @@ proc unit::MoveUnits {wtree to itemIDs f1112} {
     }
   }
   # move items one by one, by their headers
-  ::apave::undoIn $wtxt
+  undoIn $wtxt
   foreach hd $headers {
     if {![MoveUnit $wtree $to $hd $headers $f1112 no]} {
       break
     }
   }
-  ::apave::undoOut $wtxt
+  undoOut $wtxt
   set com "set ::alited::al(RECREATE) 1; alited::tree::RecreateTree"
   if {[set sel [$wtree selection]] ne {}} {
     append com "; $wtree selection set {$sel}"

@@ -121,6 +121,7 @@ proc tool::ColorPicker {} {
     set al(chosencolor) $res
     InsertInText $res $pos1 $pos2
   }
+  alited::FocusText
 }
 #_______________________
 
@@ -153,6 +154,7 @@ proc tool::DatePicker {} {
     set al(klnddate) $res
     InsertInText $res
   }
+  alited::FocusText
 }
 #_______________________
 
@@ -380,7 +382,7 @@ proc tool::EM_Structure {mnu} {
   namespace upvar ::alited al al
   set mnu [string trim $mnu "\" "]
   set fname [file join [EM_dir] [file tail $mnu]]
-  if {[catch {set fcont [::apave::readTextFile $fname {} 1]}]} {
+  if {[catch {set fcont [readTextFile $fname {} 1]}]} {
     return [list]
   }
   set res [list]
@@ -388,7 +390,7 @@ proc tool::EM_Structure {mnu} {
   set mmarks [list S: R: M: S/ R/ M/ SE: RE: ME: SE/ RE/ ME/ SW: RW: MW: SW/ RW/ MW/ I:]
   set ismenu yes
   set isitem no
-  foreach line [::apave::textsplit $fcont] {
+  foreach line [textsplit $fcont] {
     set line [string trimleft $line]
     switch $line {
       {[MENU]} {
@@ -560,7 +562,7 @@ proc tool::EM_optionTF {args} {
     set tmpname [alited::bar::FileName]
   } else {
     set tmpname [alited::TmpFile SELECTION~]
-    ::apave::writeTextFile $tmpname sel
+    writeTextFile $tmpname sel
   }
   return TF=$tmpname
 }
@@ -893,7 +895,7 @@ proc tool::_run {{what ""} {runmode ""} args} {
     if {!$::alited::DEBUG} {
       if {$al(EM,exec)} {
         set fpid [alited::TmpFile .pid~]
-        set pid [::apave::readTextFile $fpid]
+        set pid [readTextFile $fpid]
       } else {
         ::alited::Source_e_menu ;# e_menu is "internal"
         set pid [::em::pID]

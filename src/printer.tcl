@@ -102,8 +102,8 @@ proc printer::ReadIni {} {
   # Reads ini data.
 
   fetchVars
-  set cont [apave::readTextFile $inifile]
-  append cont \n [apave::readTextFile $iniprjfile]
+  set cont [readTextFile $inifile]
+  append cont \n [readTextFile $iniprjfile]
   set markedfiles [list]
   foreach line [split $cont \n] {
     set line [string trim $line]
@@ -139,7 +139,7 @@ proc printer::SaveIni {} {
   append tmpC "leafbg=$leafbg" \n
   append tmpC "cwidth=$cwidth" \n
   append tmpC "cs=$cs" \n
-  apave::writeTextFile $inifile ::alited::printer::tmpC
+  writeTextFile $inifile ::alited::printer::tmpC
   set    tmpC {}
   append tmpC "dir=$dir" \n
   append tmpC "final=$final" \n
@@ -150,7 +150,7 @@ proc printer::SaveIni {} {
       append tmpC \nfile=$fname
     }
   }
-  apave::writeTextFile $iniprjfile ::alited::printer::tmpC
+  writeTextFile $iniprjfile ::alited::printer::tmpC
 }
 
 # ________________________ Expand / Contract _________________________ #
@@ -369,7 +369,7 @@ proc printer::MdProc {fin fout} {
 
   fetchVars
   set wtxt [$obDl2 TexTmp2]
-  set cont [apave::readTextFile $fin {} 1]
+  set cont [readTextFile $fin {} 1]
   $wtxt replace 1.0 end $cont
   ::hl_tcl::hl_text $wtxt
   lassign $colors clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT
@@ -479,7 +479,7 @@ proc printer::MdOutput {wtxt fout} {
   }
   # paragraph's end
   append tmpC </p>
-  apave::writeTextFile $fout ::alited::printer::tmpC
+  writeTextFile $fout ::alited::printer::tmpC
 }
 #_______________________
 
@@ -520,7 +520,7 @@ proc printer::CheckData {} {
   }
   if {[info exists errfoc]} {
     bell
-    ::apave::FocusByForce $errfoc
+    focusByForce $errfoc
     return no
   }
   foreach {fld var} {Clr1 ttlfg Clr2 ttlbg Clr3 leaffg Clr4 leafbg} {
@@ -540,7 +540,7 @@ proc printer::CheckFile {fname} {
   #   fname - the file name
 
   variable copyleft
-  set fcont [apave::readTextFile $fname]
+  set fcont [readTextFile $fname]
   expr {[string first $copyleft $fcont]>=0}
 }
 #_______________________
@@ -596,7 +596,7 @@ proc printer::CheckTemplates {} {
   # Checks alited's templates for .html files.
 
   fetchVars
-  set csscont [apave::readTextFile $csstpl]
+  set csscont [readTextFile $csstpl]
   if {$csscont eq {}} {
     Message "No template file for $cssname found: alited broken?" 4
     return no
@@ -642,7 +642,7 @@ proc printer::GetReadme {dirfrom} {
   set lpr1 [string length $paragr]
   set lpr2 [expr {$lpr1+1}]
   # wrap the code snippets with <pre code ... /pre>
-  foreach line [split [apave::readTextFile $tmpname {} 1] \n] {
+  foreach line [split [readTextFile $tmpname {} 1] \n] {
     set line [string trimright $line]
     set lsp [$obDl2 leadingSpaces $line]
     if {$lsp>3} {
@@ -681,7 +681,7 @@ proc printer::GetCss {} {
   set csscont [string map \
     [list $wcwidth $cwidth $wctipw $tipw $wcfg $ttlfg $wcbg $ttlbg] $csscont]
   set css_to [file join $cssdir_to $cssname]
-  apave::writeTextFile $css_to ::alited::printer::csscont 1
+  writeTextFile $css_to ::alited::printer::csscont 1
 }
 #_______________________
 
@@ -789,7 +789,7 @@ proc printer::MakeFile {fname fname2} {
     file copy $fname $fname2
     return $fname2
   }
-  set cont [apave::readTextFile $fname]
+  set cont [readTextFile $fname]
   set TID  [alited::bar::FileTID $fname]
   set wtxt [alited::main::GetWTXT $TID]
   if {$TID ne {} && $wtxt ne {}} {
@@ -801,9 +801,9 @@ proc printer::MakeFile {fname fname2} {
     alited::unit::RecreateUnits $TID $wtxt  ;# to get unit tree
   }
   if {[llength $al(_unittree,$TID)]<2} {
-    set tpl [apave::readTextFile $indextpl2]  ;# no units
+    set tpl [readTextFile $indextpl2]  ;# no units
   } else {
-    set tpl [apave::readTextFile $indextpl]
+    set tpl [readTextFile $indextpl]
     set tpl [string map [list $wctoc $ftail] $tpl]
     set contlist [split $cont \n]
     if {$dosort} {
@@ -859,12 +859,12 @@ proc printer::MakeFile {fname fname2} {
   set tmpC "$prebeg$cont$preend"
   set tmpC [string map [list $wcbody $tmpC] $tpl]
   set fname2 [file rootname $fname2].html
-  apave::writeTextFile $fname2 ::alited::printer::tmpC
+  writeTextFile $fname2 ::alited::printer::tmpC
   Hl_html $fname2
-  set tmpC [apave::readTextFile $fname2]
+  set tmpC [readTextFile $fname2]
   set tmpC [string map [list ${wclt} < ${wcgt} >] $tmpC]
   append tmpC \n$copyright
-  apave::writeTextFile $fname2 ::alited::printer::tmpC
+  writeTextFile $fname2 ::alited::printer::tmpC
   return $fname2
 }
 #_______________________
@@ -892,7 +892,7 @@ proc printer::RunFinal {{check no}} {
     }
   } elseif {$check} {
     set final {"%D"}
-    ::apave::FocusByForce [$obDl2 chooserPath Fil]
+    focusByForce [$obDl2 chooserPath Fil]
     bell
   }
   return no
@@ -911,13 +911,13 @@ proc printer::Process {wtree} {
   if {![file exists $index_to]} {
     # make empty index.html, to get rid of possible error messages
     set readmecont $copyleft
-    apave::writeTextFile $index_to ::alited::printer::readmecont
+    writeTextFile $index_to ::alited::printer::readmecont
   }
   if {![CheckData]} {return no}
   if {![CheckDir]} {return no}
   if {![CheckTemplates]} {return no}
   lassign [GetReadme $al(prjroot)] readmecont rmname
-  set indexcont [apave::readTextFile $indextpl]
+  set indexcont [readTextFile $indextpl]
   set indexcont [string map [list $wcrmcon $readmecont $wcbody {}] $indexcont]
   GetCss
   set curdir {}
@@ -962,7 +962,7 @@ proc printer::Process {wtree} {
   set indexcont [string map [list $wclink {} $wcback {} $wcstyle $csspath] $indexcont]
   set indexcont [string map [list $wcfg $ttlfg $wcbg $ttlbg $wcbttl {}] $indexcont]
   append indexcont \n$copyright
-  apave::writeTextFile $index_to ::alited::printer::indexcont 1
+  writeTextFile $index_to ::alited::printer::indexcont 1
   Hl_html $index_to
   set msg [msgcat::mc {Processed: %d directories, %f files}]
   set msg [string map [list %d $dcnt %f $fcnt] $msg]

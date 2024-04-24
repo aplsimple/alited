@@ -231,7 +231,7 @@ proc project::GetProjectOpts {fname} {
   # save project names to 'prjlist' variable to display it by treeview widget
   lappend prjlist $pname
   # save project files' settings in prjinfo array
-  set filecont [::apave::readTextFile $fname]
+  set filecont [readTextFile $fname]
   foreach opt $OPTS {
     catch {set prjinfo($pname,$opt) $prjinfo(*DEFAULT*,$opt)}  ;#defaults
   }
@@ -245,7 +245,7 @@ proc project::GetProjectOpts {fname} {
     }
   }
   set prjinfo($pname,prjroot) $DIR
-  foreach line [::apave::textsplit $filecont] {
+  foreach line [textsplit $filecont] {
     lassign [GetOptVal $line] opt val
     if {[lsearch $OPTS $opt]>-1} {
       set prjinfo($pname,$opt) [::alited::ProcEOL $val in]
@@ -268,13 +268,13 @@ proc project::PutProjectOpts {fname oldname dorename} {
 
   namespace upvar ::alited al al OPTS OPTS
   variable prjinfo
-  set filecont [::apave::readTextFile $oldname]
-  if {![llength $filecont]} {
+  set filecont [readTextFile $oldname]
+  if {$filecont eq {}} {
     alited::ini::SaveIniPrj
-    set filecont [::apave::readTextFile $oldname]
+    set filecont [readTextFile $oldname]
   }
   set newcont {}
-  foreach line [::apave::textsplit $filecont] {
+  foreach line [textsplit $filecont] {
     lassign [GetOptVal $line] opt val
     if {$line eq {[Tabs]}} {
       foreach tab $al(tablist) {
@@ -295,7 +295,7 @@ proc project::PutProjectOpts {fname oldname dorename} {
     }
     append newcont $line \n
   }
-  ::apave::writeTextFile $fname newcont
+  writeTextFile $fname newcont
   if {$oldname ne $fname} {
     catch {file delete $oldname}
     if {$dorename} {
@@ -362,7 +362,7 @@ proc project::SaveNotes {{prj ""}} {
     if {$fcontOrig eq {} && $fcont ne {}} {
       set fcont __$al(MC,coms)__$fcont
     }
-    ::apave::writeTextFile $fnotes fcont 0 0
+    writeTextFile $fnotes fcont 0 0
   }
 }
 #_______________________
@@ -388,7 +388,7 @@ proc project::ReadRems {prj} {
   variable klnddata
   set frems [RemsFile $prj]
   if {[file exists $frems]} {
-    set res [::apave::readTextFile $frems]
+    set res [readTextFile $frems]
   } else {
     set res [list]
   }
@@ -455,7 +455,7 @@ proc project::Klnd_save {} {
   }
   ::klnd::update {} {} {} $prjinfo($prjname,prjrem)
   set fcont $prjinfo($prjname,prjrem)
-  ::apave::writeTextFile [RemsFile $prjname] fcont 0 0
+  writeTextFile [RemsFile $prjname] fcont 0 0
 }
 #_______________________
 
@@ -488,7 +488,7 @@ proc project::ReadNotes {prj} {
   $wtxt delete 1.0 end
   set fnotes [NotesFile $prj]
   if {[file exists $fnotes]} {
-    set cont [::apave::readTextFile $fnotes]
+    set cont [readTextFile $fnotes]
     if {[set ir [string first run1$COMSEP $cont]]>-1} {
       # get commands for Commands tab (project's and common)
       foreach com [split [string range $cont $i end] \n] {
@@ -774,6 +774,27 @@ proc project::Message {msg {mode 1}} {
 
   variable obPrj
   alited::Message $msg $mode [$obPrj LabMess]
+}
+#_______________________
+
+proc project::KeyOnTree {K} {
+  # Handles key press on the tree.
+  #   K - key
+  
+  variable prjlist
+  Message {}
+  if {[regexp {^[a-zA-Z]$} $K]} {
+    set icur [Selected index no]
+    foreach pos [list [incr icur] 0] {
+      for {set i $pos} {$i<[llength $prjlist]} {incr i} {
+        set k [string index [lindex $prjlist $i] 0]
+        if {[string compare -nocase $k $K]==0} {
+          Select $i
+          return
+        }
+      }
+    }
+  }
 }
 #_______________________
 
@@ -1294,14 +1315,14 @@ proc project::Template {} {
     set fname [file join $al(prjroot) $fn]
     switch -glob -nocase -- [file tail $fn] {
       README* - CHANGELOG* {
-        set err [catch {::apave::writeTextFile $fname {} 1} errmess]
+        set err [catch {writeTextFile $fname {} 1} errmess]
       }
       LICENCE* - LICENSE* {
         set fname0 [file join $curinfo(prjroot) $fn]
         if {[file exists $fname0]} {
           set err [catch {file copy $fname0 $fname} errmess]
         } else {
-          set err [catch {::apave::writeTextFile $fname {} 1} errmess]
+          set err [catch {writeTextFile $fname {} 1} errmess]
         }
       }
       default {
@@ -2213,7 +2234,7 @@ proc project::_create {} {
   bind $tree <Double-Button-1> ::alited::project::ProjectEnter
   bind $tree <Return> ::alited::project::ProjectEnter
   foreach ev {KeyPress ButtonPress} {
-    bind $tree <$ev> {+ ::alited::project::Message {}}
+    bind $tree <$ev> {+ ::alited::project::KeyOnTree %K}
   }
   bind $win <F1> "[$obPrj ButHelp] invoke"
   bind [$obPrj LabMess] <Button-1> ::alited::project::ProcMessage

@@ -52,7 +52,7 @@ proc edit::Indent {} {
   set len [string length $::apave::_AP_VARS(INDENT)]
   set sels [SelectedLines]
   set wtxt [lindex $sels 0]
-  ::apave::undoIn $wtxt
+  undoIn $wtxt
   foreach {l1 l2} [lrange $sels 1 end] {
     for {set l $l1} {$l<=$l2} {incr l} {
       set line [$wtxt get $l.0 $l.end]
@@ -71,7 +71,7 @@ proc edit::Indent {} {
       }
     }
   }
-  ::apave::undoOut $wtxt
+  undoOut $wtxt
   alited::main::HighlightLine
 }
 #_______________________
@@ -83,7 +83,7 @@ proc edit::UnIndent {} {
   set spaces [list { } \t]
   set sels [SelectedLines]
   set wtxt [lindex $sels 0]
-  ::apave::undoIn $wtxt
+  undoIn $wtxt
   foreach {l1 l2} [lrange $sels 1 end] {
     for {set l $l1} {$l<=$l2} {incr l} {
       set line [$wtxt get $l.0 $l.end]
@@ -98,7 +98,7 @@ proc edit::UnIndent {} {
       }
     }
   }
-  ::apave::undoOut $wtxt
+  undoOut $wtxt
 }
 #_______________________
 
@@ -147,7 +147,7 @@ proc edit::Comment {} {
   set ch [CommentChar]
   set sels [SelectedLines]
   set wtxt [lindex $sels 0]
-  ::apave::undoIn $wtxt
+  undoIn $wtxt
   foreach {l1 l2} [lrange $sels 1 end] {
     for {set l $l1} {$l<=$l2} {incr l} {
       set line [$wtxt get $l.0 $l.end]
@@ -166,7 +166,7 @@ proc edit::Comment {} {
       }
     }
   }
-  ::apave::undoOut $wtxt
+  undoOut $wtxt
   SelectLines $wtxt $l1 $l2
   after idle alited::tree::RecreateTree
 }
@@ -182,7 +182,7 @@ proc edit::UnComment {} {
   set lch0 [expr {$lch-1}]
   set sels [SelectedLines]
   set wtxt [lindex $sels 0]
-  ::apave::undoIn $wtxt
+  undoIn $wtxt
   foreach {l1 l2} [lrange $sels 1 end] {
     for {set l $l1} {$l<=$l2} {incr l} {
       set line [$wtxt get $l.0 $l.end]
@@ -199,7 +199,7 @@ proc edit::UnComment {} {
       }
     }
   }
-  ::apave::undoOut $wtxt
+  undoOut $wtxt
   SelectLines $wtxt $l1 $l2
   after idle alited::tree::RecreateTree
 }
@@ -513,13 +513,13 @@ proc edit::RemoveTrailWhites {{TID ""} {doit no} {skipGUI no}} {
       for {set l $l1} {$l<=$l2} {incr l} {
         set line [$wtxt get $l.0 $l.end]
         if {[set trimmed [string trimright $line]] ne $line && $curt && $l!=$curl} {
-          if {!$wasedit} {::apave::undoIn $wtxt}
+          if {!$wasedit} {undoIn $wtxt}
           set wasedit yes
           $wtxt replace $l.0 $l.end $trimmed
         }
       }
       if {$wasedit} {
-        ::apave::undoOut $wtxt
+        undoOut $wtxt
         alited::bar::BAR markTab $tid
         if {$wtxt eq [alited::main::CurrentWTXT]} {
           set waseditcurr yes  ;# update the current text's view only
@@ -666,7 +666,7 @@ proc edit::DoMacro {mode {fname ""}} {
         alited::Message {}
       }
       focus $wtxt
-      ::apave::undoIn $wtxt
+      undoIn $wtxt
       ::playtkl::replay $fname "::apave::undoOut $wtxt" [list *frAText.text* $wtxt] yes $wtxt
     }
   }
@@ -682,7 +682,7 @@ proc edit::InputMacro {idx} {
   variable macrosmode
   set win $al(WIN).macro
   if {[winfo exists $win]} {
-    ::apave::FocusByForce [$obDl2 chooserPath Fil]
+    focusByForce [$obDl2 chooserPath Fil]
     return
   }
   set m $al(MENUEDIT).playtkl
@@ -880,7 +880,7 @@ proc edit::ReadMacroComment {fname} {
   #  fname - the macro's file name
 
   namespace upvar ::alited al al
-  set fcont [::apave::readTextFile [MacroFileName $fname]]
+  set fcont [readTextFile [MacroFileName $fname]]
   set al(macrocomment) {}
   foreach ln [split $fcont \n] {
     set ln [string trim $ln]
@@ -978,7 +978,7 @@ proc edit::saveRect {mode wtxt} {
   namespace upvar ::alited al al
   set selection [$wtxt tag ranges sel]
   if {[llength $selection]} {
-    ::apave::undoIn $wtxt
+    undoIn $wtxt
     set ln1 999999999
     set al(rectSel,text) [list]
     foreach {from to} $selection {
@@ -993,7 +993,7 @@ proc edit::saveRect {mode wtxt} {
     if {$mode==2} {
       catch {::tk::TextSetCursor $wtxt [lindex $selection 0 0]}
     }
-    ::apave::undoOut $wtxt
+    undoOut $wtxt
   }
   set al(rectSel) 0
 }
@@ -1007,7 +1007,7 @@ proc edit::pasteRect {wtxt nl nc} {
 
   namespace upvar ::alited al al
   if {[llength $al(rectSel,text)]} {
-    ::apave::undoIn $wtxt
+    undoIn $wtxt
     $wtxt tag remove sel 1.0 end
     set sels [list]
     foreach line $al(rectSel,text) {
@@ -1021,7 +1021,7 @@ proc edit::pasteRect {wtxt nl nc} {
     }
     catch {::tk::TextSetCursor $wtxt $pos1}
     catch {$wtxt tag add sel {*}$sels}
-    ::apave::undoOut $wtxt
+    undoOut $wtxt
   }
 }
 
@@ -1136,7 +1136,7 @@ proc edit::RunFormat {fname {forbind no}} {
   SourceFormatTcl
   set initfile [file join [file dirname $fname] init.tcl]
   if {[file exists $initfile]} {catch {source $initfile}}
-  set fcont [split [::apave::readTextFile $fname] \n]
+  set fcont [split [readTextFile $fname] \n]
   set fform [FormatterName $fname]
   unset -nocomplain al(FORMATS,$fform)
   set mode 0

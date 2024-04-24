@@ -131,7 +131,7 @@ proc paver::HandleViewer {{act 1} args} {
       set code [string trim [$tex get 1.0 end]]\n
       set viewpos [$tex index insert]
       after idle [list alited::paver::_create $code]
-      after idle [list after 100 [list ::apave::FocusByForce $tex]]
+      after idle after 100 "focusByForce $tex"
     } else {
       $obDl2 res $win2 0
       destroy $win2

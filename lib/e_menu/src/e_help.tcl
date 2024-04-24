@@ -16,7 +16,10 @@
 package require Tk
 
 # for better performance, try to 'source' directly, not 'package require apave'
-if {![namespace exists ::apave]} {source [file join [file normalize [file dirname [info script]]] apave.tcl]}
+if {![namespace exists ::apave]} {
+  source [file join [file normalize [file dirname [info script]]] apave.tcl]
+  namespace import ::apave::*
+}
 
 namespace eval ::eh {
 
@@ -38,7 +41,7 @@ namespace eval ::eh {
   variable pID 0
 }
 #=== own message/question box
-proc ::eh::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {
+proc ::eh::dialogBox {ttl mes {typ ok} {icon info} {defb OK} args} {
   set opts [list -t 1 -w 80]
   lappend opts {*}$args
   switch -glob -- $typ {
@@ -46,10 +49,10 @@ proc ::eh::dialog_box {ttl mes {typ ok} {icon info} {defb OK} args} {
       if {$defb eq {OK} && $typ ne {okcancel} } {
         set defb YES
       }
-      set ans [::apave::obj $typ $icon $ttl \n$mes\n $defb {*}$opts]
+      set ans [obj $typ $icon $ttl \n$mes\n $defb {*}$opts]
     }
     default {
-      set ans [::apave::obj ok $icon $ttl \n$mes\n {*}$opts]
+      set ans [obj ok $icon $ttl \n$mes\n {*}$opts]
     }
   }
   return $ans
@@ -83,7 +86,7 @@ proc ::eh::get_language {} {
 #=== check and correct (if necessary) the geometry of window
 proc ::eh::checkgeometry {{win .}} {
   lassign [split [winfo geometry $win] x+] w h x y
-  set newgeo [::apave::obj checkXY $w $h $x $y]
+  set newgeo [obj checkXY $w $h $x $y]
   if {$newgeo ne "+$x+$y"} {wm geometry $win $newgeo}
 }
 #=== off ctrl/alt modificators of keystrokes
@@ -251,7 +254,7 @@ proc ::eh::browse { {help ""} } {
     # my_browser may contain options, e.g. "chromium --no-sandbox" for root
     exec {*}$::eh::my_browser $help &
   } else {
-    ::apave::openDoc $help
+    openDoc $help
   }
 }
 # _______________________________________________________________________ #

@@ -160,7 +160,7 @@ proc ::em::IF {sel {callcommName ""}} {
     if {$pelse < 0} {set pelse 1000000}
     set ifcond [string trim [string range $sel 0 $pthen-1]]
     if {[catch {set res [expr $ifcond]} e]} {
-      em_message "ERROR: incorrect condition of IF:\n$ifcond\n\n($e)"
+      emMessage "ERROR: incorrect condition of IF:\n$ifcond\n\n($e)"
       return false
     }
     set thencomm [string trim [string range $sel $pthen+6 $pelse-1]]
@@ -202,7 +202,7 @@ proc ::em::IF {sel {callcommName ""}} {
                 set comm $::em::windowsconsole\ $comm
               }
               if {[catch {exec -- {*}$comm &} e]} {
-                em_message "ERROR: incorrect command of IF:\n$comm\n\n($e)"
+                emMessage "ERROR: incorrect command of IF:\n$comm\n\n($e)"
               }
             }
           }
@@ -230,34 +230,34 @@ proc ::em::createpopup {} {
   menu .em.emPopupMenu
   if {$::eh::pk ne {}} {
     .em.emPopupMenu add command {*}[iconA ok] \
-      -label Select -command {::em::Select_Item}
+      -label Select -command {::em::SelectItem}
   } else {
     .em.emPopupMenu add command {*}[iconA folder] -accelerator Ctrl+P \
-      -label Project... -command {::em::change_PD}
+      -label Project... -command ::em::changePD
   }
   .em.emPopupMenu add separator
   .em.emPopupMenu add command {*}[iconA change] -accelerator Ctrl+E \
-    -label {Edit the menu} -command {after 50 ::em::edit_menu}
-  if {($::em::solo || [is_s_menu]) && ![is_child]} {
+    -label {Edit the menu} -command {after 50 ::em::editMenu}
+  if {($::em::solo || [isSMenu]) && ![isChild]} {
     .em.emPopupMenu add command {*}[iconA retry] -accelerator Ctrl+R \
-      -label {Restart e_menu} -command ::em::restart_e_menu
+      -label {Restart e_menu} -command ::em::restartEMenu
   } else {
     .em.emPopupMenu add command {*}[iconA retry] -accelerator Ctrl+R \
-      -label {Reread the menu} -command ::em::reread_init
+      -label {Reread the menu} -command ::em::rereadInit
   }
   .em.emPopupMenu add command {*}[iconA delete] -accelerator Ctrl+D \
-    -label {Destroy other menus} -command ::em::destroy_emenus
+    -label {Destroy other menus} -command ::em::destroyEMenus
   .em.emPopupMenu add separator
   .em.emPopupMenu add command {*}[iconA plus] -accelerator Ctrl+> \
-    -label {Increase the menu's width} -command {::em::win_width 1}
+    -label {Increase the menu's width} -command {::em::winWidth 1}
   .em.emPopupMenu add command {*}[iconA minus] -accelerator Ctrl+< \
-    -label {Decrease the menu's width} -command  {::em::win_width -1}
+    -label {Decrease the menu's width} -command  {::em::winWidth -1}
   .em.emPopupMenu add separator
   .em.emPopupMenu add command {*}[iconA info] -accelerator F1 \
     -label About... -command ::em::about
   .em.emPopupMenu add separator
   .em.emPopupMenu add command {*}[iconA exit] -accelerator Esc \
-    -label Close -command ::em::on_exit
+    -label Close -command ::em::onExit
   .em.emPopupMenu configure -tearoff 0
 }
 #_______________________
@@ -268,7 +268,7 @@ proc ::em::popup {X Y} {
   set ::em::skipfocused 1
   if {[winfo exist .em.emPopupMenu]} {destroy .em.emPopupMenu}
   ::em::createpopup
-  ::apave::obj themePopup .em.emPopupMenu
+  obj themePopup .em.emPopupMenu
   tk_popup .em.emPopupMenu $X $Y
 }
 
@@ -286,7 +286,7 @@ proc ::em::menuTextModified {w bfont} {
   after idle [list ::em::LineView $w]
   set curpos [$w index insert]
   set text [$w get 1.0 end]
-  if {[::apave::obj csDark]} {
+  if {[obj csDark]} {
     set fg1 orange
     set fg2 black
     set bg2 #84e284
@@ -297,6 +297,8 @@ proc ::em::menuTextModified {w bfont} {
     set bg2 #0c560c
     set fg3 #606060
   }
+  $w tag config tagNORM -font "-family {[obj basicTextFont]} -size [obj basicFontSize]"
+  $w tag add tagNORM 1.0 end
   $w tag config tagRSIM -font $bfont -foreground $fg1
   $w tag config tagMARK -font $bfont -foreground $bg2
   $w tag config tagSECT -font $bfont -foreground $fg2 -background $bg2
@@ -344,7 +346,7 @@ proc ::em::LineView {{w ""}} {
   set ln [expr {int($pos)}]
   if {![info exists ::em::lnTextView] || $ln!=$::em::lnTextView} {
     set ::em::lnTextView $ln
-    $w tag config tagCURLINE -background [lindex [::apave::obj csGet] 16]
+    $w tag config tagCURLINE -background [lindex [obj csGet] 16]
     $w tag lower tagCURLINE
     $w tag remove tagCURLINE 1.0 end
     $w tag add tagCURLINE [list $pos linestart] [list $pos lineend]+1displayindices
@@ -418,7 +420,7 @@ proc ::em::edit {fname {prepost ""} {istpl yes}} {
   }
   if {$::em::editor eq {} || $prepost ne {}} {
     ::em::LineView
-    set bfont [::apave::obj boldTextFont [::apave::obj basicFontSize]]
+    set bfont [obj boldTextFont [obj basicFontSize]]
     set dialog [::apave::APave new]
     set res [$dialog editfile $fname {} {} {} \
       $prepost -w {80 100} -h {10 24} -ro 0 -centerme .em \
@@ -429,7 +431,7 @@ proc ::em::edit {fname {prepost ""} {istpl yes}} {
     return $res
   } else {
     if {[catch {exec -- {*}$::em::editor {*}$fname &} e]} {
-      em_message "ERROR: couldn't call $::em::editor'\n
+      emMessage "ERROR: couldn't call $::em::editor'\n
 to edit $fname.\n\nCurrent directory is [pwd]\n\nMaybe $::em::editor\n is worth including in PATH?"
       return false
     }
@@ -438,7 +440,7 @@ to edit $fname.\n\nCurrent directory is [pwd]\n\nMaybe $::em::editor\n is worth 
 }
 #_______________________
 
-proc ::em::prepost_edit {refdata {txt ""}} {
+proc ::em::prepostEdit {refdata {txt ""}} {
   # Pre and post actions for edit (e.g. get/set position of cursor).
 
   upvar 1 $refdata data
@@ -474,11 +476,11 @@ proc ::em::prepost_edit {refdata {txt ""}} {
 }
 #_______________________
 
-proc ::em::edit_menu {} {
+proc ::em::editMenu {} {
   # Edits the current menu.
 
-  if {[::em::edit $::em::menufilename ::em::prepost_edit]} {
-    # colors can be changed, so "reread_menu" with setting colors
+  if {[::em::edit $::em::menufilename ::em::prepostEdit]} {
+    # colors can be changed, so "rereadMenu" with setting colors
     foreach w [winfo children .em] {  ;# remove Tcl/Tk menu items
       destroy $w
     }
@@ -486,7 +488,7 @@ proc ::em::edit_menu {} {
     initcomm
     ::em::initcolorscheme
     initmenu
-    mouse_button $::em::lasti
+    mouseButton $::em::lasti
   } else {
     repaintForWindows
   }
@@ -494,35 +496,35 @@ proc ::em::edit_menu {} {
 
 # ________________________ Environment _________________________ #
 
-proc ::em::is_s_menu {} {
+proc ::em::isSMenu {} {
   # Checks if it is s_menu (stand-alone e_menu).
 
   expr {[file rootname [file tail $::em::Argv0]] eq "s_menu"}
 }
 #_______________________
 
-proc ::em::restart_e_menu {} {
+proc ::em::restartEMenu {} {
   # Restarts the e_menu app.
 
-  if {[is_s_menu] && [file extension $::em::Argv0] ne ".tcl"} {
+  if {[isSMenu] && [file extension $::em::Argv0] ne ".tcl"} {
     exec -- $::em::Argv0 {*}$::em::Argv &
   } else {
     exec -- [::em::Tclexe] $::em::Argv0 {*}$::em::Argv &
   }
-  on_exit
+  onExit
 }
 #_______________________
 
-proc ::em::reread_init {} {
+proc ::em::rereadInit {} {
   # Rereads a menu and autorun.
 
-  reread_menu $::em::lasti
+  rereadMenu $::em::lasti
   set ::em::filecontent {}
   initauto
 }
 #_______________________
 
-proc ::em::win_width {inc} {
+proc ::em::winWidth {inc} {
   # Increments / decrements window width.
 
   set inc [expr $inc*$::em::incwidth]
@@ -534,10 +536,10 @@ proc ::em::win_width {inc} {
 }
 #_______________________
 
-proc ::em::destroy_emenus {} {
+proc ::em::destroyEMenus {} {
   # Destroys all e_menu apps.
 
-  if {[em_question "Clearance - $::em::appname" \
+  if {[emQuestion "Clearance - $::em::appname" \
   "\n  Destroy all e_menu applications?  \n" yesno ques NO -text 0 -ontop $::em::ontop]} {
     for {set i 0} {$i < 3} {incr i} {
       for {set nap 1} {$nap <= 64} {incr nap} {
@@ -553,7 +555,7 @@ proc ::em::destroy_emenus {} {
 }
 #_______________________
 
-proc ::em::create_em {mnuname} {
+proc ::em::createEm {mnuname} {
   # Checks if a menu has to be converted for .em extension of the menu.
   #   mnuname - menu file name
   # Returns: yes, if the conversion done.
@@ -602,7 +604,7 @@ proc ::em::about {} {
     <link>chiselapp.com/user/aplsimple</link> \n\n" "{Help:: $doc } 1 Close 0" \
     0 -t 1 -w $width -scroll 0 -tags textTags -head \
     "\n Menu system for editors and file managers. \n" \
-    -ontop $::em::ontop -centerme .em {*}[theming_pave]]
+    -ontop $::em::ontop -centerme .em {*}[themingPave]]
   $dialog destroy
   if {[lindex $res 0]} {::eh::browse $doc}
   repaintForWindows
@@ -610,14 +612,14 @@ proc ::em::about {} {
 
 # ________________________ Project... _________________________ #
 
-proc ::em::change_PD_Spx {} {
+proc ::em::changePDspx {} {
   # Gets a color scheme's attributes for 'Project...' dialogue.
 
-  lassign [::apave::obj csGet $::em::ncolor] - fg - bg
+  lassign [obj csGet $::em::ncolor] - fg - bg
   set labmsg [::em::dialog LabMsg]
   set font [font configure TkFixedFont]
   set font [dict set font -size $::em::fs]
-  set txt [::apave::obj csGetName $::em::ncolor]
+  set txt [obj csGetName $::em::ncolor]
   set txt [string range [append txt [string repeat " " 20]] 0 20]
   $labmsg configure -foreground $fg -background $bg -font $font \
     -padding {16 5 16 5} -text $txt
@@ -631,21 +633,21 @@ proc ::em::none {args} {
 }
 #_______________________
 
-proc ::em::change_PD {} {
+proc ::em::changePD {} {
   # Changes a project's directory and other parameters.
 
   if {![file isfile $::em::PD]} {
-    set em_message " WARNING:\n\
-      \"$::em::PD\" isn't a file.\n\
+    set message " WARNING:\n\
+      '$::em::PD' isn't a file.\n\
       \n\
-      \"PD=file of project directories\"\n\
+      'PD=file of project directories'\n\
       should be an argument of e_menu to use %PD in menus. \n"
     set fco1 {}
   } else {
-    set em_message "\n Select a project directory from the list of file:\n $::em::PD  \n"
+    set message "\n Select a project directory from the list of file:\n $::em::PD  \n"
     set fco1 [list \
       fco1 [list {Project:} {} \
-      [list -h 10 -state readonly -inpval [get_PD]]] \
+      [list -h 10 -state readonly -inpval [getPD]]] \
       "@@-RE {^(\\s*)(\[^#\]+)\$} {$::em::PD}@@" \
       btTChange [list {} {-padx 5} "-com {::em::edit {$::em::PD} ::em::none no; \
         ::em::dialog res {} -1} -tip {Click to edit\n$::em::PD} -toprev 1"] {}]
@@ -656,7 +658,7 @@ proc ::em::change_PD {} {
   } else {
     set dkst "normal"
   }
-  append em_message \
+  append message \
     "\n 'Color scheme' is -1 .. [::apave::cs_Max] selected with Up/Down key.  \n"
   set ncolorsav $::em::ncolor
   set fssav $::em::fs
@@ -669,7 +671,7 @@ proc ::em::change_PD {} {
   ::apave::APave create ::em::dialog .em
   set r -1
   while {$r == -1} {
-    after 0 {after idle ::em::change_PD_Spx}
+    after 0 {after idle ::em::changePDspx}
     set tip1 "Applied anyhow\nexcept for Default CS"
     set res [::em::dialog input {} Project... [list \
       {*}$fco1 \
@@ -678,11 +680,11 @@ proc ::em::change_PD {} {
         [list -tvar ::em::ncolor -from -2 -to [::apave::cs_Max] -w 5 \
         -justify center -state $::em::noCS -msgLab {LabMsg {                     } \
         {-padding {16 5 16 5} -font {-family {$::apave::_CS_(textFont)} -size $::em::fs}}} \
-        -command ::em::change_PD_Spx -tooltip $tip1]] {} \
+        -command ::em::changePDspx -tooltip $tip1]] {} \
       chb1 {{} {-padx 5} {-toprev 1 -state $::em::noCS -t "Use it"}} {0} \
       spx2 [list "       Font size:" {} \
         [list -tvar ::em::fs -from 6 -to 32 -w 5 -justify center -msgLab {Lab_ {}} \
-        -command ::em::change_PD_Spx -tooltip $tip1]] {} \
+        -command ::em::changePDspx -tooltip $tip1]] {} \
       chb12 {{} {-padx 5} {-toprev 1 -t "Use it"}} {0} \
       seh_22 {{} {-pady 10}} {} \
       cbx1 [list {        Ornament:} {} \
@@ -696,8 +698,8 @@ proc ::em::change_PD {} {
       rad3 [list "                 " {-fill x -expand 1} "-state $dkst"] \
         [list "$::em::dk" dialog dock desktop] \
       chb3 {{} {-padx 5} {-toprev 1 -t "Use it"}} {0} \
-    ] -head $em_message -weight bold -family "{[::apave::obj basicTextFont]}" \
-    -centerme .em {*}[theming_pave]]
+    ] -head $message -weight bold -family "{[obj basicTextFont]}" \
+    -centerme .em {*}[themingPave]]
     set r [lindex $res 0]
   }
   set ::em::ncolor [::apave::getN $::em::ncolor $ncolorsav -2 [::apave::cs_Max]]
@@ -710,15 +712,15 @@ proc ::em::change_PD {} {
     }
     set orn [string trim [string range $orn 0 1]]
     # save options to menu's file
-    if {$chb1} {::em::save_options c= $::em::ncolor}
-    if {$chb12} {::em::save_options fs= $::em::fs}
-    if {$chb2} {::em::save_options g= $geo}
-    if {$chb22} {::em::save_options o= $orn}
+    if {$chb1} {saveOptions c= $::em::ncolor}
+    if {$chb12} {saveOptions fs= $::em::fs}
+    if {$chb2} {saveOptions g= $geo}
+    if {$chb22} {saveOptions o= $orn}
     if {$chb3} {
-      ::em::save_options dk= $dk
-      ::em::save_options t= $chbT
+      saveOptions dk= $dk
+      saveOptions t= $chbT
     }
-    if {($fco1 ne {}) && ([get_PD] ne $PD)} {
+    if {($fco1 ne {}) && ([getPD] ne $PD)} {
       set ::em::prjname [file tail $PD]
       set ::em::Argv [::apave::removeOptions $::em::Argv d=* f=*]
       foreach {o v} [list d $PD f "$PD/*"] {lappend ::em::Argv "$o=\"$v\""}
@@ -758,13 +760,13 @@ proc ::em::change_PD {} {
       set ::em::Argc [llength $::em::Argv]
       initcolorscheme true
       # this reads and shows the menu, with the new CS
-      reread_menu $::em::lasti
+      rereadMenu $::em::lasti
     } else {
       set ::em::Argc [llength $::em::Argv]
       unsetdefaultcolors
       initdefaultcolors
       initcolorscheme
-      reread_menu $::em::lasti
+      rereadMenu $::em::lasti
       # this takes up e_menu's arguments e.g. fS=white bS=green (as part of CS)
       initcolorscheme
     }
@@ -785,19 +787,18 @@ proc ::em::input {cmd} {
   set dp [string last { == } $cmd]
   if {$dp < 0} {set dp 999999}
   set data [string range $cmd $dp+4 end]
-  set geo [::em::centerme]
+  set geo [centerme]
   set ontop $::em::ontop
   if {[info exists ::em::inputStay] && $::em::inputStay} {
-    # formerly, the dialog was set topmost manually
-    set ontop 1
+    set ontop 1  ;# dialog was set topmost manually
   }
   set cmd "$dialog input [string range $cmd 2 $dp-1] $geo -ontop $ontop -stay 1"
   catch {set cmd [subst $cmd]}
   if {[set lb [countCh $cmd \{]] != [set rb [countCh $cmd \}]]} {
-    dialog_box ERROR " Number of left braces : $lb\n Number of right braces: $rb \
-      \n\n     are not equal!" ok err OK {*}$geo -ontop $ontop
+    dialogBox ERROR " Number of left braces : $lb\n Number of right braces: $rb \
+      \n\n not equal!" ok err OK {*}$geo -ontop $ontop
   }
-  set res [eval $cmd [::em::theming_pave]]
+  set res [eval $cmd [themingPave]]
   set win [$dialog dlgPath]
   set r [lindex $res 0]
   # is the dialog set topmost manually? if yes, let it remain (with em::inputStay=1)
@@ -815,7 +816,7 @@ proc ::em::input {cmd} {
         set ::em::saveddata($n) $value ;# for next possible input dialogue
       }
     }
-    ::em::save_menuvars
+    saveMenuVars
   }
   set ::em::inputResult $r
   repaintForWindows
@@ -823,7 +824,7 @@ proc ::em::input {cmd} {
 }
 #_______________________
 
-proc ::em::writeable_command {cmd} {
+proc ::em::writeableCmd {cmd} {
   # Gets and saves a writeable command.
   # cmd's contents:
   #   0 .. 2   - a unique mark (e.g. %#A for 'A' mark)
@@ -834,7 +835,7 @@ proc ::em::writeable_command {cmd} {
   set cmd  [string range $cmd [set posc 4] end]
   set pos "1.0"
   set geo +100+100
-  set menudata [::em::read_menufile]
+  set menudata [readMenuFile]
   for {set i [set iw [set iwd [set opt 0]]]} {$i<[llength $menudata]} {incr i} {
     set line [lindex $menudata $i]
     if {$line eq {[DATA]}} {
@@ -866,7 +867,7 @@ proc ::em::writeable_command {cmd} {
   } else {
     set dialog [::apave::APave new]
     set res [$dialog misc {} "EDIT: $mark" "$cmd" {"Save & Run" yes Cancel 0} TEXT \
-      -text 1 -ro 0 -w 70 -h 10 -pos $pos {*}[::em::theming_pave] -ontop $::em::ontop \
+      -text 1 -ro 0 -w 70 -h 10 -pos $pos {*}[themingPave] -ontop $::em::ontop \
       -head "UNCOMMENT usable commands, COMMENT unusable ones.\nUse  \\\\\\\\ \
       instead of  \\\\  in patterns." -family Times -hsz 14 -size 12 -g $geo]
     $dialog destroy
@@ -886,44 +887,71 @@ proc ::em::writeable_command {cmd} {
         lappend menudata {[DATA]} "$data"
       }
     }
-    if {$res ne {true}} {::em::write_menufile $menudata}
+    if {$res ne {true}} {::em::writeMenuFile $menudata}
     if {$res in {true yes}} {
       set cmd [string map {"\n" "\\n"} $cmd]
-      prepr_name cmd
+      preprPN cmd
     } else {
       set cmd {}  ;# saving only: after Ctrl+W or "Save & Close" of popup menu
     }
   } else {
     set cmd {}
   }
-  ::em::focused_win 1
+  focusWin yes
   return $cmd
 }
 
 # ________________________ Timed tasks _________________________ #
 
-proc ::em::start_sub {ind istart ipos sub typ c1 sel} {
+proc ::em::Task {oper ind {inf 0} {typ 0} {c1 0} {sel 0} {tsec 0} {ipos 0} {iN 0}
+{started 0}} {
+  # Timed task.
+
+  set task [list $inf $typ $c1 $sel]
+  set it [list [expr [clock seconds] + abs(int($tsec))] $ipos $iN]
+  switch -exact -- $oper {
+    add {
+      set i [lsearch -exact $::em::tasks $task]
+      if {$i >= 0} {return [list $i 0]}  ;# already exists, no new adding
+      lappend ::em::tasks $task
+      lappend ::em::taski $it
+      set started [startTasks [expr {[llength $::em::tasks] - 1}]]
+    }
+    upd {
+      set ::em::tasks [lreplace $::em::tasks $ind $ind $task]
+      set ::em::taski [lreplace $::em::taski $ind $ind $it]
+    }
+    del {
+      set ::em::tasks [lreplace $::em::tasks $ind $ind]
+      set ::em::taski [lreplace $::em::taski $ind $ind]
+    }
+  }
+  list $ind $started
+}
+#_______________________
+
+proc ::em::startSub {ind istart ipos sub typ c1 sel} {
   # Start timed subtask(s) with interval.
 
   set ::em::ipos $ipos
   if {$ipos == 0 || $sub eq {}} {
-    shell_run "Nobutt" $typ $c1 - "&" $sel  ;# this task is current menu item
+    shellrun "Nobutt" $typ $c1 - "&" $sel  ;# this task is current menu item
     if {$ind == $istart} {return true}  ;# safeguard from double start
   } else {
-    run_a_ah $sub
+    runAH $sub
   }
   return false
 }
 #_______________________
 
-proc ::em::get_subtask {linf ipos} {
+proc ::em::getSub {linf ipos} {
   # Get a timed subtask info.
 
   split [lindex $linf $ipos] :
 }
 #_______________________
 
-proc ::em::start_timed {{istart -1}} {
+proc ::em::startTasks {{istart -1}} {
   # Start timed task(s).
 
   set istarted 0
@@ -943,19 +971,19 @@ proc ::em::start_timed {{istart -1}} {
         set inf [string trim $inf /]
         set linf [split $inf /]   ;# subtasks are devided with "/"
         set ll [llength $linf]    ;# ipos is position of current subtask
-        lassign [get_subtask $linf $ipos] isec sub ;# current subtask
-        if {[start_sub $ind $istart $ipos $sub $typ $c1 $sel]} {
+        lassign [getSub $linf $ipos] isec sub ;# current subtask
+        if {[startSub $ind $istart $ipos $sub $typ $c1 $sel]} {
           set istarted 1
         }
         if {[incr ipos] >= $ll} {
           set ipos 0
-          lassign [get_subtask $linf $ipos] isec sub ;# 1st subtask
+          lassign [getSub $linf $ipos] isec sub ;# 1st subtask
         } else {  ;# process subtask
-          lassign [get_subtask $linf $ipos] isec sub ;# new subtask
+          lassign [getSub $linf $ipos] isec sub ;# new subtask
           if {[string first TN= $isec]==0} {
             if {$iN >= [::apave::getN [string range $isec 3 end]]} {
-              run_a_ah $sub
-              ttask del $ind  ;# end of task if TN of cycles
+              runAH $sub
+              Task del $ind  ;# end of task if TN of cycles
               set repeat 1      ;# are completed
               break
             }
@@ -963,55 +991,28 @@ proc ::em::start_timed {{istart -1}} {
               set ipos 0
               set isec 0
             } else {
-              lassign [get_subtask $linf $ipos] isec sub
+              lassign [getSub $linf $ipos] isec sub
             }
           } else {  ;# if interval>0, run now
             if {$isec ne {} && [string range $isec 0 0] ne {-}} {
-              if {[start_sub $ind $istart $ipos $sub $typ $c1 $sel]} {
+              if {[startSub $ind $istart $ipos $sub $typ $c1 $sel]} {
                 set istarted 1
               }
             }
           }
         }
           # update the current task
-        ttask upd $ind $inf $typ $c1 $sel $isec $ipos $iN
+        Task upd $ind $inf $typ $c1 $sel $isec $ipos $iN
       }
       incr ind
     }
   }
-  after [expr $::em::inttimer * 1000] ::em::start_timed
+  after [expr $::em::inttimer * 1000] ::em::startTasks
   return $istarted
 }
 #_______________________
 
-proc ::em::ttask {oper ind {inf 0} {typ 0} {c1 0} {sel 0} {tsec 0} {ipos 0} {iN 0}
-{started 0}} {
-  # Timed task.
-
-  set task [list $inf $typ $c1 $sel]
-  set it [list [expr [clock seconds] + abs(int($tsec))] $ipos $iN]
-  switch -exact -- $oper {
-    add {
-      set i [lsearch -exact $::em::tasks $task]
-      if {$i >= 0} {return [list $i 0]}  ;# already exists, no new adding
-      lappend ::em::tasks $task
-      lappend ::em::taski $it
-      set started [start_timed [expr {[llength $::em::tasks] - 1}]]
-    }
-    upd {
-      set ::em::tasks [lreplace $::em::tasks $ind $ind $task]
-      set ::em::taski [lreplace $::em::taski $ind $ind $it]
-    }
-    del {
-      set ::em::tasks [lreplace $::em::tasks $ind $ind]
-      set ::em::taski [lreplace $::em::taski $ind $ind]
-    }
-  }
-  list $ind $started
-}
-#_______________________
-
-proc ::em::set_timed {from inf typ c1 inpsel} {
+proc ::em::setTask {from inf typ c1 inpsel} {
   # Push/pops timed task.
 
   set ::em::TN 1
@@ -1019,11 +1020,11 @@ proc ::em::set_timed {from inf typ c1 inpsel} {
   set timer [::apave::getN $timer]
   if {$timer == 0} {return 1}  ;# run once
   if {$timer>0} {set startnow 1} {set startnow 0}
-  lassign [ttask "add" -1 $inf $typ $c1 $inpsel $timer] ind started
+  lassign [Task "add" -1 $inf $typ $c1 $inpsel $timer] ind started
   if {$from eq "button" && $ind >= 0} {
-    if {[em_question "Stop timed task" "Stop the task\n\n\
+    if {[emQuestion "Stop timed task" "Stop the task\n\n\
         [.em.fr.win.fr$::em::lasti.butt cget -text] ?"]} {
-      ttask "del" $ind
+      Task "del" $ind
     }
     return false
   }
@@ -1038,7 +1039,7 @@ proc ::em::template::create {fname} {
   # Creates file.em template
 
   set res no
-  if {[::em::em_question "Menu isn't open" \
+  if {[::em::emQuestion "Menu isn't open" \
   "ERROR of opening\n$fname\n\nCreate it?"]} {
     set dir [file dirname $fname]
     if {[file tail $dir] eq $::em::prjname} {
@@ -1064,7 +1065,7 @@ ITEM = menu name
 
 M: m=$menu o=1
 "
-    if {[set res [::apave::writeTextFile $fname fcont]]} {
+    if {[set res [writeTextFile $fname fcont]]} {
       set res [::em::addon edit $fname]
       if {!$res} {file delete $fname}
     }
@@ -1076,7 +1077,7 @@ M: m=$menu o=1
 proc ::em::template::help {} {
   # view template.em
 
-  ::apave::obj vieweditFile [file join $::em::exedir src template.em] "" -rotext 0 -ontop $::em::ontop
+  obj vieweditFile [file join $::em::exedir src template.em] "" -rotext 0 -ontop $::em::ontop
 }
 
 # ________________________ EOF _________________________ #
