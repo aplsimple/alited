@@ -675,8 +675,6 @@ proc menu::HelpFiles {} {
     - - \
     unit_tpl.txt {Setup\Templates...} \
     favor_ls.txt {Setup\Favorites Lists...} \
-    tool1.txt {Setup\For Start...} \
-    ini.txt {Setup\Configurations...} \
     format1.txt {Setup\Moving Unit Descriptions...} \
     - - \
     find2.txt {Search\Find by List} \

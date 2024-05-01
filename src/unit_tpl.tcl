@@ -508,7 +508,7 @@ proc unit_tpl::_create {{geom ""}} {
     {fratex fra1 T 10 10 {-st nsew -rw 1 -cw 1} {}}
     {.TexTpl - - - - {pack -side left -expand 1 -fill both} \
     {-h 10 -w 80 -tip  {-BALTIP {$al(MC,tplent2)} -MAXEXP 1}}}
-    {.sbvTpl + L - - {pack} {}}
+    {.sbvTpl + L - - pack {}}
     {fra2 fratex T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Place after:"}}
     {.radA - - - - {pack -side left -padx 8} \

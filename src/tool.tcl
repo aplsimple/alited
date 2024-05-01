@@ -115,7 +115,8 @@ proc tool::ColorPicker {} {
   if {![string is boolean -strict $al(moveall)]} {set al(moveall) 0}
   lassign [LineCoordinates] X Y
   set res [obj chooser colorChooser ::alited::al(chosencolor) \
-    -moveall $al(moveall) -parent $al(WIN) -geometry +$X+$Y -inifile [aloupePath]]
+    -moveall $al(moveall) -parent $al(WIN) -geometry +$X+$Y \
+    -inifile [aloupePath] -ontop [::asKDE]]
   catch {lassign [::tk::dialog::color::GetOptions] al(moveall)}
   if {$res ne {}} {
     set al(chosencolor) $res
@@ -215,10 +216,12 @@ proc tool::tkconOptions {} {
 
   namespace upvar ::alited al al
   foreach opt [array names al tkcon,clr*] {
-    lappend opts -color-[string range $opt 9 end] $al($opt)
+    lappend opts -color-[string range $opt 9 end] [string trimleft $al($opt) #]
   }
   foreach {opt val} $al(tkcon,options) {
-    lappend opts -apl$opt $val
+    if {[string trim $val] ne {}} {
+      lappend opts -apl$opt $val
+    }
   }
   return $opts
 }
@@ -240,16 +243,6 @@ proc tool::Help {} {
 }
 #_______________________
 
-proc tool::HelpTool {win hidx args} {
-  # Handles hitting "Help" button in dialogues.
-  #   win - dialogue's window name
-  #   hidx - help's index
-  #   args - options of Help
-
-  alited::Help $win $hidx {*}$args
-}
-#_______________________
-
 proc tool::AddTooltipRun {} {
   # Addition to Run's tooltip.
 
@@ -266,30 +259,6 @@ proc tool::TooltipRun {} {
     set res $al(comForce)\n[lindex [split $res \n] 1]
   }
   append res [AddTooltipRun]
-}
-#_______________________
-
-proc tool::Translate {from to what} {
-  # Translates 'what' from a language to a language.
-  #   from - source language code
-  #   to - destination language code
-  #   what - what to translate
-
-  namespace upvar ::alited al al LIBDIR LIBDIR
-  if {[info command ::alited::hl_trans::TranslateText] eq {}} {
-    namespace eval ::alited {
-      source [file join $LIBDIR addon hl_trans.tcl]
-    }
-  }
-  alited::MessageNotDisturb
-  lassign [alited::hl_trans::TranslateText $what $from $to] ok translation
-  ::baltip hide
-  if {$ok} {
-    set what $translation
-  } else {
-    alited::Message $translation 4
-  }
-  return $what
 }
 
 # ________________________ emenu support _________________________ #
@@ -326,12 +295,6 @@ proc tool::EM_Options {opts} {
     }
     append z7 z7=[alited::bar::FileName [lindex $tabs $i+1 0]]
   }
-  set srcdir [file join $::alited::FILEDIR src]
-  if {[file exists [file join $srcdir e_menu.png]]} {
-    set srcdir "\"SD=$srcdir\""
-  } else {
-    set srcdir {}
-  }
   if {$al(EM,DiffTool) ne {}} {set df DF=$al(EM,DiffTool)} {set df {}}
   set l [[alited::main::CurrentWTXT] index insert]
   set l [expr {int($l)}]
@@ -355,7 +318,7 @@ proc tool::EM_Options {opts} {
 
   set R [list md=$al(EM,mnudir) m=$al(EM,mnu) f=$f d=$d l=$l \
     PD=$al(EM,PD=) pd=$al(prjroot) h=$al(EM,h=) tt=$al(EM,tt=) s=$sel \
-    o=-1 om=0 {*}g=$al(EM,geometry) $z6 $z7 {*}$ls $df {*}$opts {*}$srcdir \
+    o=-1 om=0 {*}g=$al(EM,geometry) $z6 $z7 {*}$ls $df {*}$opts \
     {*}$dirvar {*}$filvar td=$tdir ed=$ed wt=$al(EM,wt=) mp=1]
   if {[lsearch -glob $R th=*]<0} {lappend R th=$al(THEME)}
   set res {}
@@ -551,6 +514,9 @@ proc tool::EM_optionTF {args} {
   # TF= is a name of file that contains a current text's selection.
   # If there is no selection, TF= option is a current file's name.
 
+  if {[lsearch -glob $args TF=*]>-1} {
+    return {}
+  }
   set sels [alited::edit::SelectedLines {} yes]
   set wtxt [lindex $sels 0]
   set sel {}
@@ -609,7 +575,7 @@ proc tool::AfterStartDlg {} {
   lassign [$obDl2 input {} $al(MC,afterstart) [list \
     lab [list {} {-pady 8} [list -t $lab]] {} \
     tex "{} {} {-w 80 -h 16 -tabnext {butOK butCANCEL} -afteridle {alited::tool::AfterStartSyntax %w}}" "$run" ] \
-    -help {alited::tool::HelpTool %w 1}] res run
+    -help {alited::HelpAlited #forstart}] res run
   if {$res} {
     set al(afterstart) [::alited::ProcEOL [string trim $run] out]
     alited::ini::SaveIni
@@ -717,7 +683,7 @@ proc tool::RunMode {} {
       source [file join $::alited::SRCDIR run.tcl]
     }
   }
-  alited::run::RunDlg
+  alited::run::_run
 }
 #_______________________
 
@@ -763,7 +729,7 @@ proc tool::e_menu {args} {
   # depending on e_menu's preferences.
 
   namespace upvar ::alited al al
-  lappend args [EM_optionTF {*}$args]
+  lappend args {*}[EM_optionTF {*}$args]
   if {{EX=Help} ni $args} {
     EM_SaveFiles
     if {![is_mainmenu $args]} {
@@ -863,7 +829,7 @@ proc tool::e_menu2 {opts} {
 proc tool::e_menu3 {} {
   # Prepares TF= argument for e_menu and runs e_menu's main menu.
 
-  e_menu o=0 [EM_optionTF]
+  e_menu o=0 {*}[EM_optionTF]
 }
 #_______________________
 
@@ -886,6 +852,7 @@ proc tool::_run {{what ""} {runmode ""} args} {
   # Runs e_menu's item of menu.em.
   #   what - the item (by default, "Run me")
   #   runmode - mode of running (in console or in tkcon)
+  #   args - additional options
 
   namespace upvar ::alited al al
   if {[is_emenu]} return
@@ -921,7 +888,7 @@ proc tool::_run {{what ""} {runmode ""} args} {
     if {[RunTcl $runmode]} return
     set opts "EX=1 PI=1 [SHarg]"
   }
-  e_menu {*}$opts tc=[alited::Tclexe]
+  e_menu {*}$opts tc=[alited::Tclexe] {*}$args
 }
 #_______________________
 
@@ -939,12 +906,15 @@ proc tool::Run_in_e_menu {com {fnameCur ""}} {
       set fname $fnameCur
     }
     if {[alited::file::IsTcl $fname]} {
+      set tkconcall " [alited::tool::tkconPath] [alited::tool::tkconOptions] "
       if {!$al(prjincons)} {
-        set tc \
-          "tc=[alited::Tclexe] [alited::tool::tkconPath] [alited::tool::tkconOptions]"
+        set tc "tc=[alited::Tclexe] $tkconcall"
         set tw {}
       } else {
         set tw "%t [alited::Tclexe] "
+        if {$al(prjincons)==2} {
+          append tw $tkconcall ;# combined
+        }
       }
     }
   }

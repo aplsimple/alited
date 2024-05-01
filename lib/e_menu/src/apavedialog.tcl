@@ -260,9 +260,9 @@ oo::class create ::apave::APaveDialog {
     set qdlg $::apave::_AP_VARS(win)
     set atr1 "-maximum 100 -value 0 -mode determinate -length 300 -orient horizontal"
     set widlist [list \
-      "fra - - - - {pack} {-h 10}" \
-      ".Lab1SplashScreen - - - - {pack} {-t {$msg1}}" \
-      ".ProgSplashScreen - - - - {pack} {$atr1 $args}" \
+      "fra - - - - pack {-h 10}" \
+      ".Lab1SplashScreen - - - - pack {-t {$msg1}}" \
+      ".ProgSplashScreen - - - - pack {$atr1 $args}" \
       ".Lab2SplashScreen - - - - {pack -anchor w} {-t {$msg2}}" \
       ]
     set win [my makeWindow $qdlg.fra $ttl]

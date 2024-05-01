@@ -10,4 +10,4 @@
 
 Mode=2
 
-Command = alited::tool::Translate en es {%v}
+Command = alited::translator::Translate en es {%v}

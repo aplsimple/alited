@@ -16,7 +16,7 @@ R: %IF "%z7"=="%%z7" %THEN %M "No right tab available." %ELSE "%DF" "%f" "%z7"
 SEP = 3
 
 ITEM = poApps
-RE: tclsh /home/apl/PG/github/poApps/poApps.tcl --dirdiff
+RE: "tclsh" /home/apl/PG/github/poApps/poApps.tcl --dirdiff
 ITEM = ruler
 RE: tclsh /usr/share/tcltk/tklib0.7/widget/ruler.tcl
 ITEM = screenshooter

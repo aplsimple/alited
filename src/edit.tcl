@@ -707,7 +707,7 @@ proc edit::InputMacro {idx} {
     {fra0 + T 1 4 {-rw 1 -st nsew}} \
     {.TexCmn L + - - {pack -side left -expand 1 -fill both -padx 3} \
       {-h 4 -w 40 -wrap word -tabnext *.buth -rotext ::alited::al(macrocomment) -ro 0}} \
-    {.sbvText + L - - {pack}} \
+    {.sbvText + L - - pack} \
     {seh2 fra0 T 1 4 {-pady 4}} \
     {fra + T 1 1 {-st w}} \
     {.ButPlay - - 1 1 {-padx 4} {-com 1 -tip "Play Macro" -image alimg_run}} \

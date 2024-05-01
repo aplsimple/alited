@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.4.4
+package provide apave 4.4.5
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -31,6 +31,12 @@ proc ::isKDE {} {
   expr {[info exists ::env(XDG_CURRENT_DESKTOP)] && $::env(XDG_CURRENT_DESKTOP) eq {KDE}}
 }
 
+proc ::asKDE {} {
+  # Checks for DE behaving as weird as KDE.
+
+#  expr {[::isKDE]}
+  expr {[::isKDE] && ![package vsatisfies [package require Tcl] 8.6.12-]}
+}
 # ________________________ apave NS _________________________ #
 
 namespace eval ::apave {
@@ -1124,6 +1130,30 @@ oo::class create ::apave::APave {
       set res [::apave::writeTextFile $fname data]
     } elseif {$newfile} {
       file delete $fname
+    }
+    return $res
+  }
+  #_______________________
+
+  method onTop {wpar top {wtoplist -} {res ""}} {
+    # Sets -topmost attribute for windows or gets a list of topmost windows.
+    #   wpar - parent window's path
+    #   top - -topmost attribute's value
+    #   wtoplist - list of windows to process
+    #   res - used to get the result
+    # Returns a list of "topmost=$top" windows found on $wpar path.
+
+    if {$wtoplist ne "-"} {
+      # sets the attribute
+      foreach w $wtoplist {wm attributes $w -topmost $top}
+    } else {
+      # gets a list of topmost windows
+      if {$wpar ne {}} {
+        set res [my onTop [winfo parent $wpar] $top - $res]
+        catch {
+          if {[wm attributes $wpar -topmost]==$top} {lappend res $wpar}
+        }
+      }
     }
     return $res
   }

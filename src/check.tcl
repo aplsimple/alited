@@ -287,7 +287,7 @@ proc check::_create {} {
     set geo "-geometry $geo"
   }
   $obCHK showModal $win -modal no -waitvar no -onclose alited::check::Cancel \
-    -focus [$obCHK ButOK] {*}$geo -ontop [::isKDE]
+    -focus [$obCHK ButOK] {*}$geo
 }
 
 proc check::_run {} {

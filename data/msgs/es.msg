@@ -60,6 +60,7 @@ namespace eval ::alited {
     {Run as Is} {Ejecutar como es}
     {in console} {en terminal}
     {in Tkcon} {en Tkcon}
+    {combined} {combinado}
     {Moving} {Mudanza}
     {Color Picker} {Selector de color}
     {Date Picker} {Selector de fecha}

@@ -1729,7 +1729,7 @@ On MS Windows, if you have a fully deployed Tcl/Tk 8.6.10+, the default path to 
 <h3 id=runme><i>"Tools / Run..." menu item</i></h3>
 </p>
 <p>
-In this dialogue, a current Tcl script (file.tcl) can be run in <i>console</i> or <i>Tkcon</i>. Both modes have their pros and contras - mostly pros, if properly used.
+In this dialogue, a current Tcl script (file.tcl) can be run in <i>console</i> or <i>Tkcon</i>. Both modes have their pros and contras - mostly pros, if properly used. <br>There is also <i>combined</i> mode that runs tkcon in console (only available if <i>by command</i> entry contains a Tcl file name).
 </p>
 
 <p>
@@ -2737,6 +2737,14 @@ position or replaces selected text.
 <p>The call of a pluginable from <i>Edit / Formats</i> menu will register its hot key bindings, so that it can be run with pressing the hot keys. If you change the hot keys, just rerun the pluginable from <i>Edit / Formats</i> menu.
 </p>
 
+<p><b>Note</b>: the pluginable formatters and <a href=#tools>bar-menu tools</a> are somewhat alike, but unlike <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a>'s items the pluginables can employ the internals of <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>:
+<ul>
+<li>text buffers (the current is available through <i>%W</i> wildcard)</li>
+<li><span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>'s procs (documented in <A href="https://aplsimple.github.io/en/tcl/alited/alited.html">Reference</A>)</li>
+</ul>
+On the other hand, <a href="https://aplsimple.github.io/en/tcl/e_menu/index.html" title="Description of e_menu" rel="nofollow">e_menu</a> can handle any of project files and even external files, while the pluginables deal normally with the current edited text only.
+</p>
+
 <br>
 <p>
 <h3 id="transl"><i>Language translation</i></h3>
@@ -2762,7 +2770,7 @@ Though, there is a limit of translation length. On September 2023 it is 1000 cha
 </p>
 
 <p>
-The slowness of the translation is a cost of its "freedomness". After acquiring API key of LibreTranslate, you'll get the quick translation as well. At that <i>lib/addon/hl_trans.tcl</i> should be modified.
+The slowness of the translation is a cost of its "freedomness". After acquiring API key of LibreTranslate, you'll get the quick translation as well.
 </p>
 
 <p>
@@ -2940,16 +2948,31 @@ This option allows to change a tint of a current color scheme. It's per a sessio
 When all of sudden you get a feeling that too much of light / darkness is around, this option might help.
 </p>
 
+<div id="forstart"></div>
 <i><b>For Start</b></i>
 <p>
 This option allows to set command(s) that would be executed just after starting <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span>.
-<br>
-You can set as many commands as you like, one command per a line. The commands may be Tcl/Tk commands or external executables.
-<br>
-These commands are sort of initialization depending on a type of projects, i.e. on a configuration described in <a href="#start">First start</a> section.
-<br>
+</p>
+<p>
+You can set as many commands as you like, one command per a line.
+</p>
+<p>
+The commands may be Tcl/Tk commands or external executables, e.g.
+<pre class="code">
+cd ~/TMP
+rm log.txt
+package require fsdialog
+after 1000 ::alited::raise_window
+</pre>
+</p>
+<p>
+These commands are sort of initialization depending on a type of projects (i.e. on a configuration described in <a href="#start">First start</a> section).
+</p>
+<p>
+Or, as in the example above, you might prefer <code>fsdialog</code> instead of Tk's file/dir choosers used in Linux.
 </p>
 
+<div id="configs"></div>
 <i><b>Configurations</b></i>
 <p>
 In <i>Setup / Configurations</i> dialogue, you are offered to choose a configuration directory where <span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> stores its settings.

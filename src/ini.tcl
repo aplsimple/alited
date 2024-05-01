@@ -243,6 +243,10 @@ namespace eval ::alited {
 
   # switch "show week numbers in calendar"
   set al(klndweeks) 0
+
+  # -topmost attribute of Find/Replace dialog
+  set al(topFindRepl) [::asKDE]
+
 }
 
 # ________________________ Variables _________________________ #
@@ -613,7 +617,7 @@ proc ini::ReadIniMisc {nam val} {
     HelpedMe {set ::alited::helpedMe $val}
     listSBL - checkgeo - tonemoves - moveall - chosencolor \
     - sortList - activemacro - commentmode - format_separ1 - format_separ2 \
-    - TIPS,* - MNUGEO,* - markwidth - klndweeks {
+    - TIPS,* - MNUGEO,* - markwidth - klndweeks - topFindRepl {
       set al($nam) $val
     }
     tplilast {set ::alited::unit::ilast $val}
@@ -968,6 +972,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "format_separ2=$al(format_separ2)"
   puts $chan "markwidth=$al(markwidth)"
   puts $chan "klndweeks=$al(klndweeks)"
+  puts $chan "topFindRepl=$al(topFindRepl)"
   # save the Edit/Formats pluginables
   puts $chan {}
   puts $chan {[Formats]}
@@ -1002,10 +1007,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "GEOM=[wm geometry $al(WIN)]"
   close $chan
   SaveIniPrj $newproject
-  # save last directories entered
-  set lastini \
-    [file dirname $::alited::al(INI)]\n[file dirname $al(prjfile)]\n$::alited::CONFIGS
-  writeTextFile $::alited::USERLASTINI lastini
+  SaveIniGlob
 }
 #_______________________
 
@@ -1094,6 +1096,16 @@ proc ini::SaveIniPrj {{newproject no}} {
   }
   puts \n
   close $chan
+}
+#_______________________
+
+proc ini::SaveIniGlob {} {
+  # Save 3 lines of global configuration of alited:
+  # current .ini file, current project's path, list of config dirs
+
+  namespace upvar ::alited al al
+  set cont [file dirname $al(INI)]\n[file dirname $al(prjfile)]\n$::alited::CONFIGS
+  writeTextFile $::alited::USERLASTINI cont
 }
 
 # ______________________ Updating alited's data ______________________ #
@@ -1242,7 +1254,7 @@ proc ini::GetConfiguration {} {
       diR1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50 \
         -values $configs -clearcom {alited::main::ClearCbx %w ::alited::ini::configs}]] \
         "{$::alited::CONFIGDIR}" \
-    ] -head $head -help alited::ini::HelpConfiguration -resizable no]
+    ] -head $head -help {alited::HelpAlited #configs} -resizable no]
   catch {alitedObjToDel destroy}
   lassign $res ok confdir
   if {$ok} {
@@ -1250,39 +1262,46 @@ proc ini::GetConfiguration {} {
     if {$confdir eq {}} {
       set ok no
     } else {
-      set ::alited::CONFIGDIR $confdir
-      if {[set i [::apave::lsearchFile $configs $confdir]]>-1} {
-        set configs [lreplace $configs $i $i]
-      }
-      set ::alited::CONFIGS [linsert $configs 0 $confdir]
+      AddConfigDir $confdir $configs
     }
   }
   return $ok
 }
 #_______________________
 
-proc ini::HelpConfiguration {} {
-  # Shows a help on Configurations dialogue.
+proc ini::AddConfigDir {confdir configs} {
+  # Adds a config directory to the list of all config dirs.
+  #   confdir - config directory
+  #   configs - list of config dirs
+  # Returns -1, if *confdir* was absent in *configs*.
 
-  alited::Help [apave::dlgPath]
+  set ::alited::CONFIGDIR $confdir
+  if {[set res [::apave::lsearchFile $configs $confdir]]>-1} {
+    set configs [lreplace $configs $res $res]
+  }
+  set ::alited::CONFIGS [linsert $configs 0 $confdir]
+  return $res
 }
+
 # ______________________ Initializing alited app ______________________ #
 
 proc ini::CheckIni {} {
   # Checks if the configuration directory exists and if not asks for it.
 
   namespace upvar ::alited al al
-  if {[file exists $::alited::INIDIR] && [file exists $::alited::PRJDIR]} {
-    return
+  if {![file exists $::alited::INIDIR] || ![file exists $::alited::PRJDIR]} {
+    ::apave::initWM
+    InitGUI
+    catch {destroy .tex}
+    if {![GetConfiguration]} exit
+    ::alited::main_user_dirs
+    GetUserDirs yes
+    CreateUserDirs
+    set al(ALEversion) [AlitedVersion]
   }
-  ::apave::initWM
-  InitGUI
-  catch {destroy .tex}
-  if {![GetConfiguration]} exit
-  ::alited::main_user_dirs
-  GetUserDirs yes
-  CreateUserDirs
-  set al(ALEversion) [AlitedVersion]
+  if {[AddConfigDir $::alited::CONFIGDIR $::alited::CONFIGS]<0} {
+    SaveIniGlob
+  }
 }
 #_______________________
 
@@ -1428,7 +1447,7 @@ proc ini::InitGUI {} {
     obj defaultATTRS tex $texopts [dict set texattrs -insertofftime 0]
   }
   obj setShowOption -resizable 0
-  if {[::isKDE]} {  ;# esp. for KDE:
+  if {[::asKDE]} {  ;# esp. for KDE:
     # dialogue windows should be topmost, otherwise KDE hides them at losing focus
     obj setShowOption -ontop yes
   }
@@ -1654,4 +1673,144 @@ proc ini::ToolbarTip {i} {
   set maplist [alited::menu::MapRunItems [alited::bar::FileName]]
   return [string map $maplist $::alited::pref::em_mnu($i)]
 }
+
+# ________________________ Projects' toolbar _________________________ #
+
+# This branch contains procedures for project::Tab5 (Projects' tab of Files).
+# It uses much of the stuff found in this script.
+
+proc ini::ProjectsToolbar {} {
+  # Tool bar for Projects (subset of main toolbar).
+  # See also: _init, project::Tab5
+
+  namespace upvar ::alited al al
+  namespace upvar ::alited::pref em_Num em_Num em_ico em_ico em_inf em_inf em_mnu em_mnu
+  set e_menu_icon {iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEUAAAAASZL///8Atv8UVAVH
+AAAAAXRSTlMAQObYZgAAACZJREFUCNdjYA0NDQAS9ReARN4FKDdr1QQGtvz/E8AsZLHUUAJiAI6+
+FtcEguWyAAAAAElFTkSuQmCC}
+  set al(atools) [list]
+  foreach {icon} {run e_menu other} {
+    set img [CreateIcon $icon]
+    if {$icon eq {run}} {
+      set com "-command alited::tool::TooltipPrjRun"
+    } else {
+      set com ""
+    }
+    append al(atools) " $img \{{} -tip {$::alited::al(MC,ico$icon)@@ -under 4 $com} "
+    switch $icon {
+      run {
+        append al(atools) "-com alited::ini::ToolPrjRun\}"
+      }
+      e_menu {
+        image create photo $img -data $e_menu_icon
+        append al(atools) "-com alited::ini::ToolPrjEM\}"
+      }
+      other {
+        append al(atools) "-com alited::ini::ToolPrjTkcon\}"
+      }
+    }
+  }
+  # e_menu items for the toolbar
+  set limgs [list]
+  set em_N [Em_Number $em_Num]
+  for {set i [set was 0]} {$i<$em_N} {incr i} {
+    if {[info exists em_ico($i)] && ($em_ico($i) ni {none {}} || $em_inf($i) eq {})} {
+      if {[incr was]==1 && $em_inf($i) ne {}} {
+        append al(atools) { sev 6}
+      }
+      if {$em_inf($i) eq {}} {
+        append al(atools) { sev 6}
+      } else {
+        set tico [alited::TextIcon $em_ico($i)]
+        if {[string length $tico]==1 || ![string is ascii $tico]} {
+          set em_ico($i) $tico
+          set img _$i
+          set txt "-t $tico -font {[obj boldTextFont 12]}"
+        } else {
+          set img [CreateIcon $tico]
+          set txt {}
+        }
+        lappend limgs $img
+        set tip $em_mnu($i)
+        append al(atools) " $img \{{} -tip {$tip@@ -under 4 \
+          -command {alited::ini::ToolPrjTip $i}} $txt \
+          -com {alited::ini::ToolPrjCommand $i}\}"
+      }
+    }
+  }
+}
+#_______________________
+
+proc ini::TooltipPrjRun {} {
+  # Gets a tip for "Projects' Run" tool.
+
+  namespace upvar ::alited al al
+  set res $al(MC,icorun)
+  append res [AddTooltipRun]
+}
+#_______________________
+
+proc ini::ToolPrjRun {} {
+  # Runs current file from toolbar.
+
+  alited::tool::_run 1 {} -doit yes f=[ToolPrjFilename]
+}
+#_______________________
+
+proc ini::ToolPrjEM {} {
+  # Calls e_menu from toolbar.
+
+  alited::tool::e_menu o=0 f=[ToolPrjFilename] d=[ToolPrjDirname]
+}
+#_______________________
+
+proc ini::ToolPrjTkcon {} {
+  # Runs tkcon from toolbar.
+
+  alited::tool::tkcon -dir [ToolPrjDirname]
+}
+#_______________________
+
+proc ini::ToolPrjFilename {} {
+  # Gets file name of current file.
+
+  alited::project::CurrentFile
+}
+#_______________________
+
+proc ini::ToolPrjDirname {} {
+  # Gets dir name of current file.
+
+  file dirname [ToolPrjFilename]
+}
+#_______________________
+
+proc ini::ToolPrjTip {i} {
+  # Gets a toolbar button's tip, mapping %f / %D to a current file / directory.
+  #   i - index of e_menu item
+
+  set maplist [alited::menu::MapRunItems [ToolPrjFilename]]
+  return [string map $maplist $::alited::pref::em_mnu($i)]
+}
+#_______________________
+
+proc ini::ToolPrjCommand {im} {
+  # Executes project toolbar's command.
+  #   im - index in toolbar
+
+  set com [alited::tool::EM_command $im]
+  append com " \"f=[ToolPrjFilename]\" \"d=[ToolPrjDirname]\" \"TF=[ToolPrjFilename]\""
+  {*}$com
+}
+#_______________________
+
+proc ini::ToolByKey {nbk com} {
+  # Runs a command after its hot key pressing in f5 tab of Projects.
+  #   nbk - notebook's path
+  #   com - command
+  # See also: project::_create
+
+  if {[$nbk select] eq "$nbk.f5"} $com
+}
+
 # _________________________________ EOF _________________________________ #

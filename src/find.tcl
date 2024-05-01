@@ -614,7 +614,6 @@ proc find::Find {{inv -1}} {
 
   namespace upvar ::alited obFND obFND
   variable data
-  if {$inv>-1} {set data(lastinvoke) $inv}  ;# save the hit button's index
   set wtxt [alited::main::CurrentWTXT]
   $wtxt tag remove sel 1.0 end
   set fndlist [Search $wtxt]
@@ -1034,8 +1033,11 @@ proc find::CloseFind {args} {
   variable win
   variable geo
   variable data
-  if {[string match root=* $geo] || $data(geoDefault)} {
-    set geo [wm geometry $win] ;# save the new geometry of the dialogue
+  catch {
+    if {[string match root=* $geo] || $data(geoDefault)} {
+      set geo [wm geometry $win] ;# save the new geometry of the dialogue
+    }
+    set ::alited::al(topFindRepl) [wm attributes $win -topmost]
   }
   catch {destroy $win}
   ClearTags
@@ -1147,7 +1149,7 @@ proc find::SearchByList {} {
     {lab1 + T 1 1 {-st en -padx 5} {-t List:}} \
     {fra1 + L 1 4 {-st nsew -rw 1}} \
     {.Text + L - - {pack -side left -expand 1 -fill both} {-w 30 -h 5 -tabnext {*rad1 *CANCEL}}} \
-    {.sbvText + L - - {pack}} \
+    {.sbvText + L - - pack} \
     {seh1 lab1 T 1 5} \
     {lab2 + T 1 1 {-st e -padx 5} {-t "$al(MC,frMatch)"}} \
     {fra2 + L 1 4 {-st w}} \
@@ -1172,7 +1174,7 @@ proc find::SearchByList {} {
   after 300 focus $wtxt
   bind $win2 <F3> "[$obFN2 ButDown] invoke"
   $obFN2 showModal $win2 -modal no -waitvar no -onclose alited::find::CloseFind2 \
-    -geometry $geo2 -ontop [::isKDE] -resizable 1 -minsize {200 200}
+    -geometry $geo2 -resizable 1 -minsize {200 200}
 }
 #_______________________
 
@@ -1248,12 +1250,13 @@ proc find::RE2 {} {
     {.TexEx - - - - {pack -side left -fill both -expand 1} {-w 40 -h 6 -afteridle {alited::find::FillRE2Tex Ex} -tabnext *OK}} \
     {.sbv + L - - {pack -side left}} \
     {seh2 fra2 T 1 5 {-pady 5}} \
-    {butHelp + T 1 1 {-st w -padx 2} {-t Help -com {alited::find::HelpFind 3}}} \
+    {ButHelp + T 1 1 {-st w -padx 2} {-t Help -com {alited::find::HelpFind 3}}} \
     {h_2 + L 1 2 {-st ew}} \
     {fra3 + L 1 2 {-st e}} \
     {.butOK - - 1 1 {-padx 2} {-t OK -com alited::find::OKRE2}} \
     {.butCancel + L 1 1 {-padx 2} {-t Cancel -com {$::alited::find::obRE2 res $::alited::find::winRE2 0}}} \
   }
+  bind $winRE2 <F1> "[$obRE2 ButHelp] invoke"
   if {$geoRE2 eq {}} {set geo "-parent $al(WIN)"} {set geo "-geometry $geoRE2"}
   set res [$obRE2 showModal $winRE2 -onclose destroy -focus [$obRE2 TexIn] \
     -resizable 1 -minsize {400 200} {*}$geo]
@@ -1379,7 +1382,7 @@ proc find::_create {} {
     {radC + L 1 1 {-st wns -ipadx 0 -padx 0 -ipady 0 -pady 0} \
       {-t "RE" -var ::alited::find::data(v1) -value 3 \
       -tip "Allows to use the regular expressions\nin \"find\" string." -style TRadiobuttonFS}}
-    {ButRE2 + L 1 1 {-st wns}  {-t "RE2" -w 3 -com ::alited::find::RE2 \
+    {ButRE2 + L 1 1 {-st wns}  {-t " RE2" -w 4 -com ::alited::find::RE2 \
       -tip "Including / excluding\nregular expressions." -style TButtonWestFS}}
     {BtTretry + L 1 1 {-st wns -ipady 0 -pady 0} {-com alited::find::btTRetry -tip "Resize"}}
     {h_2 labBm T 1 6 {-st es -rw 1 -ipadx 0 -padx 0 -ipady 0 -pady 0}}
@@ -1435,7 +1438,7 @@ proc find::_create {} {
   set minw [expr {([winfo reqwidth $but]+2)*3}]
   set minh [expr {([winfo reqheight $but]+2)*3}]
   $obFND showModal $win  -modal no -waitvar no -onclose alited::find::CloseFind \
-    -geometry $geo -resizable 1 -minsize "$minw $minh" -ontop no
+    -geometry $geo -resizable 1 -minsize "$minw $minh" -ontop $al(topFindRepl)
   ClearTags
 }
 #_______________________

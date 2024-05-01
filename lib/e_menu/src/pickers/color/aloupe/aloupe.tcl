@@ -11,7 +11,7 @@
 
 package require Tk
 
-package provide aloupe 1.6
+package provide aloupe 1.7
 
 namespace eval ::aloupe {
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]}]
@@ -215,7 +215,7 @@ proc ::aloupe::my::CreateLoupe {{geom ""}} {
   canvas $canvas -width 100 -height 100 -background $data(-background) \
     -relief flat -bd 0 -highlightthickness 1 -highlightbackground red
   pack $canvas -fill both -expand true
-  bind $canvas <ButtonPress-1>   {::aloupe::my::DragStart %W %X %Y}
+  bind $canvas <ButtonPress-1>   {::aloupe::my::DragStart %W %X %Y %x %y}
   bind $canvas <B1-Motion>       {::aloupe::my::Drag %W %X %Y}
   bind $canvas <ButtonRelease-1> {::aloupe::my::DragEnd %W}
   bind $canvas <Escape>          {::aloupe::my::Exit}
@@ -258,21 +258,21 @@ proc ::aloupe::my::Create {start} {
 
 # ________________________ Drag-n-drop _________________________ #
 
-proc ::aloupe::my::DragStart {w X Y} {
+proc ::aloupe::my::DragStart {w X Y x y} {
   # Initializes the frag-and-drop of the loupe.
   #   w - the loupe window's path
   #   X - X-coordinate of the mouse pointer
   #   Y - Y-coordinate of the mouse pointer
+  #   x - X-coordinate inside the loupe
+  #   y - Y-coordinate inside the loupe
 
   variable data
   variable size
   variable zoom
-  variable pause
   set data(FOCUS) [focus]
   focus -force $data(WDISP)
   set data(-size) $size
   set data(-zoom) $zoom
-  set data(-pause) $pause
   if {$data(PREVZOOM) != $data(-zoom) || $data(PREVSIZE) != $data(-size)} {
     SaveGeometry
     Create no
@@ -282,12 +282,12 @@ proc ::aloupe::my::DragStart {w X Y} {
   }
   set data(COLOR) [set data(CAPTURE) ""]
   StyleButton2 {*}$data(BUTCFG)
+  set data(x) $x
+  set data(y) $y
   InitGeometry
   update
   set data(dragX) [expr {$X - [winfo rootx $w]}]
   set data(dragY) [expr {$Y - [winfo rooty $w]}]
-  set data(dragw) [winfo width $w]
-  set data(dragh) [winfo height $w]
 }
 #_______________________
 
@@ -309,27 +309,28 @@ proc ::aloupe::my::DragEnd {w} {
   # Ends the frag-and-drop of the loupe and displays its magnified image.
   #   w - the loupe window's path
 
-  variable data
-  if {$data(-pause)} {
-    after 1000 [list ::aloupe::my::CountDownPause $data(-pause)]
-    after [expr {$data(-pause)*1000}] [list ::aloupe::my::DisplayImage $w]
+  variable pause
+  if {$pause} {
+    after 1000 [list ::aloupe::my::CountDownPause $pause $pause]
+    after [expr {$pause*1000}] [list ::aloupe::my::DisplayImage $w]
   } else {
     ::aloupe::my::DisplayImage $w
   }
 }
 #_______________________
 
-proc ::aloupe::my::CountDownPause {p} {
+proc ::aloupe::my::CountDownPause {pause p} {
   # Counts down a pause.
+  #   pause - seconds to count down
   #   p - remaining seconds to count down
 
   variable data
   if {$p} {
-    set ::aloupe::my::pause [incr p -1]
+    set ::aloupe::my::pause [incr p -1] ;# shows remaining seconds
     set msec [expr {$p ? 1000 : 200}]
-    after $msec [list ::aloupe::my::CountDownPause $p]
+    after $msec [list ::aloupe::my::CountDownPause $pause $p]
   } else {
-    set ::aloupe::my::pause $data(-pause)
+    set ::aloupe::my::pause $pause
   }
 }
 #_______________________
@@ -340,12 +341,10 @@ proc ::aloupe::my::DisplayImage {w} {
 
   variable data
   if {![info exists data(dragX)]} return
+  wm attributes $data(WLOUP) -topmost 1 -alpha 0.0
+  wm attributes $data(WDISP) -alpha 0.0
   wm withdraw $data(WLOUP)
-  if {!$data(-ontop) && ![string match $data(WDISP)* $data(FOCUS)] &&
-  $::tcl_platform(platform) eq "unix"} {
-    # the disp window can be overlapped by others => it should be deiconified
-    wm withdraw $data(WDISP)
-  }
+  wm withdraw $data(WDISP)
   set curX [winfo rootx $w]
   set curY [winfo rooty $w]
   set curW [winfo width $w]
@@ -366,6 +365,9 @@ proc ::aloupe::my::DisplayImage {w} {
   }
   wm deiconify $data(WDISP)
   wm deiconify $data(WLOUP)
+  after idle " \
+    wm attributes $data(WLOUP) -topmost 1 -alpha $data(-alpha);\
+    wm attributes $data(WDISP) -alpha 1.0"
   focus -force $data(WDISP).but2
 }
 #_______________________
@@ -401,8 +403,10 @@ proc ::aloupe::my::InitGeometry {{geom ""}} {
   if {$geom eq ""} {
     set sz [expr {2*$data(-size)}]
     lassign [winfo pointerxy .] x y
-    set x [expr {$x-$sz/2}]
-    set y [expr {$y-$sz/2}]
+    if {[info exists data(x)]} {set dx $data(x)} {set dx $sz/2}
+    if {[info exists data(y)]} {set dy $data(y)} {set dy $sz/2}
+    set x [expr $x-$dx]
+    set y [expr $y-$dy]
     set geom ${sz}x${sz}+$x+$y
   }
   wm geometry $data(WLOUP) $geom

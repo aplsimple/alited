@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.4b1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.4b4  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -864,6 +864,7 @@ namespace eval alited {
     variable al
     if {[HelpOnce 1 $fname]} return
     lassign [::apave::extractOptions args -ale1Help no -ontop 0] ale1Help ontop
+    if {[::asKDE]} {set ontop 1}
     set tags [MessageTags]
     if {[file exists $fname]} {
       set msg [readTextFile $fname]
@@ -1096,12 +1097,22 @@ namespace eval alited {
     # Runs Tcl/Tk script.
     #   args - script's name and arguments
 
+    variable al
     set com [string trimright "$args" &]
     if {{TEST_ALITED} in $args} {
       set com [string map [list { TEST_ALITED} {}] $com]
       puts [Tclexe]\ $com
     }
-    return [pid [open |[list [Tclexe] {*}$com]]]
+    if {[set i [lsearch $args -dir]]>=0} {
+      set dir [lindex $args [incr i]]
+    } else {
+      set dir $al(prjroot)
+    }
+    set curdir [pwd]
+    catch {cd $dir}
+    set res [pid [open |[list [Tclexe] {*}$com]]]
+    cd $curdir
+    return $res
   }
   #_______________________
 
@@ -1306,7 +1317,6 @@ if {[info exists ALITED_PORT]} {
     source [file join $::alited::LIBDIR addon hl_alm.tcl]
     source [file join $::alited::LIBDIR addon hl_ini.tcl]
     source [file join $::alited::LIBDIR addon hl_wiki.tcl]
-    source [file join $::alited::LIBDIR addon hl_trans.tcl]
   }
 }
 # _________________________________ EOF _________________________________ #

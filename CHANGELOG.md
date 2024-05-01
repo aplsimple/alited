@@ -6,19 +6,29 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.4b1 (24 Apr'24)`
+Version `v1.8.4b4 (1 May'24)`
 
   - BUGFIX: repeated Help in Templates called from Preferences
   - BUGFIX: Delete key in Templates called from Preferences
   - BUGFIX: Projects: changing project
+  - BUGFIX: completion window's geometry (esp. for KDE)
+  - BUGFIX: Tools/Loupe background (esp. for KDE)
   - NEW   : Projects: selecting projects by initial letter
-  - DELETE: klnd/README.md, playtkl/pkgIndex.tcl, docs.html, doctest_README.md (not used)
+  - NEW   : Tools/Run...: "combined" mode
+  - NEW   : Projects/Files: toolbar
+  - DELETE: as not used: klnd/README.md, playtkl/pkgIndex.tcl, docs.html, doctest_README.md, e_menu.png, e_menu.ico
+  - DELETE: help/ini.txt, help/tool1.txt (duplicated in Help/alited)
+  - DELETE: addon/hl_trans.tcl (moved to data/format/translation/init.tcl)
+  - CHANGE: Ctrl+F in Find/Replace - only for All's
   - CHANGE: completion at stand-alone "$"
   - CHANGE: args template (Alt-a) counts 1st line's indentation
   - CHANGE: focusing text after pickers & formatters
+  - CHANGE: for KDE & Tk version < 8.6.12: `-topmost 1` for all toplevels
+  - CHANGE: update .config/alited/last.ini at calling `alited config-dir`
+  - CHANGE: tkcon.tcl: for compatibility with various platforms
   - CHANGE: clearings & renamings (after apave)
   - CHANGE: About dialog: alited's line
-  - CHANGE: packages: e_menu/apave 4.4.4
+  - CHANGE: packages: e_menu/apave 4.4.4, aloupe 1.7
 
 
 Version `v1.8.3 (20 Apr'24)`

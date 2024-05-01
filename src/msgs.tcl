@@ -104,6 +104,7 @@ namespace eval ::alited {
     set al(MC,otherfiles)  [msgcat::mc {Do it in other files}]
     set al(MC,inconsole)   [msgcat::mc {in console}]
     set al(MC,intkcon)     [msgcat::mc {in Tkcon}]
+    set al(MC,combined)    [msgcat::mc combined]
     set al(MC,on)          [msgcat::mc on]
     set al(MC,test)        [msgcat::mc Test]
     set al(MC,restart)     [msgcat::mc "For the settings to be active,\nalited application should be restarted."]

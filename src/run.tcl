@@ -51,8 +51,10 @@ proc run::Run {} {
   RunOptions
   if {![alited::file::IsTcl [alited::bar::FileName]]} {
     set in {}
-  } elseif {$al(prjincons)} {
+  } elseif {$al(prjincons)==1} {
     set in terminal
+  } elseif {$al(prjincons)==2} {
+    set in combined
   } else {
     set in tkcon
   }
@@ -205,6 +207,7 @@ proc run::FillCbx {args} {
     $cbx selection range 0 end
   }
   RunOptions
+  ValidatePath
 }
 #_______________________
 
@@ -235,12 +238,14 @@ proc run::ValidatePath {} {
     }
     $cbx set [file nativename $com]
   }
+  if {$com eq {}} {set state disabled} {set state normal}
+  [$obRun Rad2] configure -state $state
   return 1
 }
 #_______________________
 
 proc run::ChbForced {} {
-  # Check buttons' value for RunDialogue.
+  # Check buttons' value for run::_create.
 
   namespace upvar ::alited al al obRun obRun
   set cbx [$obRun CbxfiL]
@@ -256,9 +261,9 @@ proc run::ChbForced {} {
   $tex configure -state [$cbx cget -state]
   FillTex1
 }
-#_______________________
+# ________________________ Main _________________________ #
 
-proc run::RunDialogue {} {
+proc run::_create {} {
   # Dialogue to define a command for "Tools/Run".
 
   namespace upvar ::alited al al obRun obRun
@@ -288,14 +293,15 @@ proc run::RunDialogue {} {
   $obRun makeWindow $win.fra $al(MC,run)
   $obRun paveWindow $win.fra {
     {h_ - - 1 5} \
-    {lab T + 1 1 {-st e -pady 5} {-t Run:}} \
-    {Rad1 + L 1 2 {} {-tvar ::alited::al(MC,inconsole) -value 1 -var ::alited::al(prjincons)}} \
-    {rad2 + L 1 1 {} {-tvar ::alited::al(MC,intkcon) -value 0 -var ::alited::al(prjincons)}} \
+    {lab T + 1 1 {-st e -pady 5 -padx 8} {-t Run:}} \
+    {Rad1 + L 1 1 {-st w} {-tvar ::alited::al(MC,inconsole) -value 1 -var ::alited::al(prjincons)}} \
+    {rad0 + L 1 1 {-st we} {-tvar ::alited::al(MC,intkcon) -value 0 -var ::alited::al(prjincons)}} \
+    {Rad2 + L 1 1 {-st w} {-tvar ::alited::al(MC,combined) -value 2 -var ::alited::al(prjincons)}} \
     {seh1 lab T 1 5 {-pady 5}} \
-    {rad3 + T 1 1 {-st w -padx 4} {-t {By command #RUNF:} -value 0 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
+    {rad3 + T 1 1 {-st w -padx 8} {-t {By command #RUNF:} -value 0 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
     {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar ::alited::run::vent}} \
-    {rad4 rad3 T 1 1 {-st w -padx 4} {-t {By command:} -value 1 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
-    {fiL + L 1 4 {-st ew} {-h 12 -cbxsel "$al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$al(comForceLs)" -validate focusin -validatecommand alited::run::ValidatePath}} \
+    {rad4 rad3 T 1 1 {-st w -padx 8} {-t {By command:} -value 1 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
+    {fiL + L 1 4 {-st ew} {-h 12 -cbxsel "$al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$al(comForceLs)" -validate focus -validatecommand alited::run::ValidatePath}} \
     {fra1 rad4 T 1 5 {-st nsew -cw 1 -rw 1}} \
     {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 9 -afteridle alited::run::FillTex1 -tabnext *tex2}} \
     {.sbv + L - - {pack -side left}} \
@@ -312,24 +318,25 @@ proc run::RunDialogue {} {
     {.butSave + L 1 1 {} {-t Save -com alited::run::Save}} \
     {.butCancel + L 1 1 {-padx 2} {-t Cancel -com alited::run::Cancel}} \
   }
+  ValidatePath
   bind $win <F1> alited::run::Help
   bind $win <F5> alited::run::Run
   set geo $al(runGeometry)
   if {$geo ne {}} {set geo "-geometry $geo"}
-  $obRun showModal $win -modal no -waitvar yes -onclose alited::run::Cancel -resizable 1 -focus [$obRun Rad1] -decor 1 -minsize {300 200} {*}$geo
+  $obRun showModal $win -modal no -waitvar yes -onclose alited::run::Cancel -resizable 1 -focus [$obRun Rad1] -decor 1 -minsize {300 200} {*}$geo -ontop 0
   catch {destroy $win}
   ::apave::deiconify $al(WIN)
 }
 #_______________________
 
-proc run::RunDlg {} {
+proc run::_run {} {
 
   variable win
   if {[winfo exists $win]} {
     ::apave::withdraw $win
     ::apave::deiconify $win
   } else {
-    RunDialogue
+    _create
   }
 }
 

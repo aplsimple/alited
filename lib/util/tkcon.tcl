@@ -326,7 +326,10 @@ proc ::tkcon::Init {args} {
 		    set ::argc [llength $::argv]
 		    break
 		}
-		-color-*	{ set COLOR([string range $arg 7 end]) $val }
+		-color-* {
+		    if {[regexp -nocase {^(\d|[a-f]){1,6}$} $val]} {set val #$val}
+		    set COLOR([string range $arg 7 end]) $val
+		}
 		-apl-*	{ set OPT([string range $arg 5 end]) $val }
 		-exec		{ set OPT(exec) $val }
 		-main - -e - -eval	{ append OPT(maineval) \n$val\n }
@@ -457,7 +460,9 @@ proc ::tkcon::Init {args} {
         }
     }
     foreach fn $slavefiles {
-	puts "slave sourcing \"$fn\""
+	set ::argv $slaveargs
+	set ::argc [llength $::argv]
+	puts "slave sourcing \"$fn\" $::argv"
 	if {[catch {EvalSlave uplevel \#0 [list source $fn]} fnerr]} {
 	    puts stderr " ==> error:\n$fnerr"
 	    append PRIV(errorInfo) $errorInfo\n

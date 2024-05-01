@@ -110,6 +110,7 @@ proc ::tk::dialog::color:: {args} {
     ::tk::PlaceWindow $w widget $data(-parent)
     wm deiconify $w
   }
+  if {$data(-ontop)} {wm attributes $w -topmost 1}
 
   # 6. Set a grab and claim the focus too.
 
@@ -242,6 +243,7 @@ proc ::tk::dialog::color::Config {dataName argList} {
     [list -parent {} {} .] \
     [list -title {} {} [mc "Color"]] \
     [list -inifile {} {} {}] \
+    [list -ontop {} {} 0] \
     ]
 
   # 2: parse the arguments

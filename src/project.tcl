@@ -248,7 +248,7 @@ proc project::GetProjectOpts {fname} {
   foreach line [textsplit $filecont] {
     lassign [GetOptVal $line] opt val
     if {[lsearch $OPTS $opt]>-1} {
-      set prjinfo($pname,$opt) [::alited::ProcEOL $val in]
+      set prjinfo($pname,$opt) [alited::ProcEOL $val in]
     } elseif {$opt eq {tab} && !$currentprj && $val ne {}} {
       lappend prjinfo($pname,tablist) $val
     }
@@ -289,7 +289,7 @@ proc project::PutProjectOpts {fname oldname dorename} {
         if {$opt ni {prjname tablist}} {
           set val [set al($opt)]
           append line \n $opt= $val
-          set prjinfo($al(prjname),$opt) [::alited::ProcEOL $val in]
+          set prjinfo($al(prjname),$opt) [alited::ProcEOL $val in]
         }
       }
     }
@@ -780,19 +780,18 @@ proc project::Message {msg {mode 1}} {
 proc project::KeyOnTree {K} {
   # Handles key press on the tree.
   #   K - key
-  
+
   variable prjlist
   Message {}
-  if {[regexp {^[a-zA-Z]$} $K]} {
-    set icur [Selected index no]
-    foreach pos [list [incr icur] 0] {
-      for {set i $pos} {$i<[llength $prjlist]} {incr i} {
-        set k [string index [lindex $prjlist $i] 0]
-        if {[string compare -nocase $k $K]==0} {
-          Select $i
-          return
-        }
+  set icur [Selected index no]
+  if {![string is integer -strict $icur]} return
+  foreach i [list [incr icur] 0] {
+    foreach pr [lrange $prjlist $i end] {
+      if {![string compare -nocase $K [string index $pr 0]]} {
+        Select $i
+        return
       }
+      incr i
     }
   }
 }
@@ -834,6 +833,26 @@ proc project::SelFiles {} {
     return {}
   }
   return [list $lbx $selidx]
+}
+#_______________________
+
+proc project::CurrentFile {} {
+  # Gets a current file of file listbox.
+  # Returns file name of first selected file or 1st in the list, if no selection.
+
+  variable obPrj
+  set lbx [$obPrj LbxFlist]
+  if {[catch {
+    if {[llength [set selidx [$lbx curselection]]]} {
+      set idx [lindex $selidx 0]
+    } else {
+      set idx 0
+    }
+    set res [$lbx get $idx]
+  }]} {
+    set res {}
+  }
+  return $res
 }
 #_______________________
 
@@ -1024,16 +1043,16 @@ proc project::PopupMenu {x y X Y} {
   catch {destroy $popm}
   menu $popm -tearoff 0
   $popm add command -label $al(MC,prjadd) \
-    -command ::alited::project::Add {*}[$obPrj iconA add]
+    -command alited::project::Add {*}[$obPrj iconA add]
   $popm add command -label $al(MC,prjchg) \
-    -command ::alited::project::Change {*}[$obPrj iconA change]
+    -command alited::project::Change {*}[$obPrj iconA change]
   $popm add command -label $al(MC,prjdel1) \
-    -command ::alited::project::Delete {*}[$obPrj iconA delete]
+    -command alited::project::Delete {*}[$obPrj iconA delete]
   $popm add separator
   $popm add command -label $al(MC,CrTemplPrj) \
-    -command ::alited::project::Template {*}[$obPrj iconA plus]
+    -command alited::project::Template {*}[$obPrj iconA plus]
   $popm add command -label $al(MC,ViewDir) \
-    -command ::alited::project::ViewDir {*}[$obPrj iconA OpenFile]
+    -command alited::project::ViewDir {*}[$obPrj iconA OpenFile]
   $obPrj themePopup $popm
   tk_popup $popm $X $Y
 }
@@ -1923,7 +1942,7 @@ proc project::KlndClick {y m d} {
   set klndtex [$obPrj TexKlnd]
   $obPrj displayText $klndtex [KlndText $klnddata(date)]
   alited::ini::HighlightFileText $klndtex .md 0  -dobind 1 -cmdpos ::apave::None \
-    -cmd ::alited::project::KlndTextModified
+    -cmd alited::project::KlndTextModified
   [$obPrj LabKlndDate] configure -text [KlndDate $klnddata(date)]
 }
 #_______________________
@@ -1950,7 +1969,7 @@ proc project::KlndTextModified {wtxt args} {
   namespace upvar ::alited al al
   set aft _KLND_TextModified
   catch {after cancel $al($aft)}
-  set al($aft) [after idle ::alited::project::Klnd_save]
+  set al($aft) [after idle alited::project::Klnd_save]
 }
 # ________________________ GUI _________________________ #
 
@@ -1974,15 +1993,15 @@ proc project::MainFrame {} {
     }}
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
     {.btTad - - - - {pack -side left -anchor n} \
-      {-com ::alited::project::Add -tip {$::alited::al(MC,prjadd)} -image alimg_add-big}}
+      {-com alited::project::Add -tip {$::alited::al(MC,prjadd)} -image alimg_add-big}}
     {.btTch - - - - {pack -side left} \
-      {-com ::alited::project::Change -tip {$::alited::al(MC,prjchg)} -image alimg_change-big}}
+      {-com alited::project::Change -tip {$::alited::al(MC,prjchg)} -image alimg_change-big}}
     {.btTdel - - - - {pack -side left} \
-      {-com ::alited::project::Delete -tip {$::alited::al(MC,prjdel1)} \
+      {-com alited::project::Delete -tip {$::alited::al(MC,prjdel1)} \
       -image alimg_delete-big}}
     {.h_ - - - - {pack -side left -expand 1}}
     {.btTtpl - - - - {pack -side left} \
-      {-com ::alited::project::Template -tip {$::alited::al(MC,CrTemplPrj)} \
+      {-com alited::project::Template -tip {$::alited::al(MC,CrTemplPrj)} \
       -image alimg_plus-big}}
     {.btTtview - - - - {pack -side left -padx 4} \
       {-image alimg_folder-big -com alited::project::ViewDir -tip {$::alited::al(MC,ViewDir)}}}
@@ -1990,11 +2009,11 @@ proc project::MainFrame {} {
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 + T 1 2 {-st nsew} {-padding {2 2}}}
     {.ButHelp - - - - {pack -side left -anchor s -padx 2} \
-      {-t {$::alited::al(MC,help)} -tip F1 -com ::alited::project::Help}}
+      {-t {$::alited::al(MC,help)} -tip F1 -com alited::project::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
     {.ButOK - - - - {pack -side left -anchor s -padx 2} \
-      {-t {$::alited::al(MC,select)} -com ::alited::project::Ok}}
-    {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -com ::alited::project::Cancel}}
+      {-t {$::alited::al(MC,select)} -com alited::project::Ok}}
+    {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -com alited::project::Cancel}}
   }
 }
 #_______________________
@@ -2137,7 +2156,7 @@ proc project::Tab4 {} {
   set al(PTP,chbClearTip) [string map [list %f [msgcat::mc General]] $al(MC,alloffile)]
   return {
     {v_ - - 1 3}
-    {Labprj - - 1 2 {} {-foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
+    {Labprj + T 1 2 {} {-foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {ChbClearRun labprj L 1 1 {-st w} \
       {-var ::alited::al(PTP,chbClearRun) -com alited::project::ChecksRun -takefocus 0}}
     {tcl {
@@ -2185,11 +2204,13 @@ proc project::Tab4 {} {
 proc project::Tab5 {} {
   # Creates Files tab of "Project".
 
+  alited::ini::ProjectsToolbar
   return {
-    {v_ - - 1 9}
-    {labFilter + T 1 1 {-st se -padx 1} {-t {All files filter:}}}
+    {frat - - 1 9 {-st ew}}
+    {frat.ToolTop + T - - pack {-array {$::alited::al(atools)} -relief groove -borderwidth 1}}
+    {labFilter frat T 1 1 {-st se -padx 1} {-t {All files filter:}}}
     {EntFilter + L 1 1 {-st swe -padx 1 -cw 1} {-tvar ::alited::project::filefilter -validate all -validatecommand alited::project::preValidateFilter}}
-    {chbFilter + L 1 1 {-st sw -padx 1} {-var ::alited::project::casefilter -t {Match case} -com alited::project::postValidateFilter}}
+    {ChbFilter + L 1 1 {-st sw -padx 1} {-var ::alited::project::casefilter -t {Match case} -com alited::project::postValidateFilter}}
     {seh_ labFilter T 1 3}
     {LabFlist + T 1 3 {-pady 3 -padx 3} {-foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fraFlist + T 1 3 {-st nswe -padx 3 -rw 1}}
@@ -2216,43 +2237,44 @@ proc project::_create {} {
   baltip::configure -on $al(TIPS,Projects)
   ::apave::APave create $obPrj $win
   $obPrj makeWindow $win.fra "$al(MC,projects) :: $::alited::PRJDIR"
+  set nbk $win.fra.fraR.nbk
   $obPrj paveWindow \
     $win.fra [MainFrame] \
-    $win.fra.fraR.nbk.f1 [Tab1] \
-    $win.fra.fraR.nbk.f2 [Tab2] \
-    $win.fra.fraR.nbk.f3 [Tab3] \
-    $win.fra.fraR.nbk.f4 [Tab4] \
-    $win.fra.fraR.nbk.f5 [Tab5]
+    $nbk.f1 [Tab1] \
+    $nbk.f2 [Tab2] \
+    $nbk.f3 [Tab3] \
+    $nbk.f4 [Tab4] \
+    $nbk.f5 [Tab5]
   set tree [$obPrj TreePrj]
   $tree heading C1 -text $al(MC,projects)
-  if {$oldTab ne {}} {
-    $win.fra.fraR.nbk select $oldTab
-  }
+  if {$oldTab ne {}} {$nbk select $oldTab}
   UpdateTree
-  ::apave::bindToEvent $tree <<TreeviewSelect>> ::alited::project::Select
-  bind $tree <Delete> ::alited::project::Delete
-  bind $tree <Double-Button-1> ::alited::project::ProjectEnter
-  bind $tree <Return> ::alited::project::ProjectEnter
+  ::apave::bindToEvent $tree <<TreeviewSelect>> alited::project::Select
+  bind $win <$al(acc_2)> "alited::ini::ToolByKey $nbk ToolPrjEM"
+  bind $win <$al(acc_3)> "alited::ini::ToolByKey $nbk ToolPrjRun"
+  bind $tree <Delete> alited::project::Delete
+  bind $tree <Double-Button-1> alited::project::ProjectEnter
+  bind $tree <Return> alited::project::ProjectEnter
   foreach ev {KeyPress ButtonPress} {
-    bind $tree <$ev> {+ ::alited::project::KeyOnTree %K}
+    bind $tree <$ev> {+ alited::project::KeyOnTree %K}
   }
   bind $win <F1> "[$obPrj ButHelp] invoke"
-  bind [$obPrj LabMess] <Button-1> ::alited::project::ProcMessage
+  bind [$obPrj LabMess] <Button-1> alited::project::ProcMessage
   set lbx [$obPrj LbxFlist]
   foreach a {a A} {
     bind $lbx <Control-$a> alited::project::SelectAllFiles
   }
-  bind $lbx <Double-Button-1> {::alited::project::OpenFile %y}
-  ::baltip tip $lbx {::alited::project::TipOnFile %i} -shiftX 10
-  after 500 ::alited::project::HelpMe ;# show an introduction after a short pause
+  bind $lbx <Double-Button-1> {alited::project::OpenFile %y}
+  ::baltip tip $lbx {alited::project::TipOnFile %i} -shiftX 10
+  after 500 alited::project::HelpMe ;# show an introduction after a short pause
   set prjtex [$obPrj TexPrj]
   bind $prjtex <FocusOut> alited::project::SaveNotes
   if {$ilast>-1} {Select $ilast}
   $obPrj displayText [$obPrj TexTemplate] $al(PTP,text)
   alited::ini::HighlightFileText $prjtex .md 0  -dobind 1 -cmdpos ::apave::None
   set res [$obPrj showModal $win -geometry $geo -minsize {600 400} -resizable 1 \
-    -onclose ::alited::project::Cancel -focus [$obPrj TreePrj]]
-  set oldTab [$win.fra.fraR.nbk select]
+    -onclose alited::project::Cancel -focus [$obPrj TreePrj]]
+  set oldTab [$nbk select]
   set al(PTP,text) [string trimright [[$obPrj TexTemplate] get 1.0 end]]
   if {[llength $res] < 2} {set res ""}
   # save the new geometry of the dialogue

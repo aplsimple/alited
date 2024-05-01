@@ -242,7 +242,10 @@ proc complete::WinGeometry {lht} {
 
   variable win
   update
-  lassign [split [wm geometry $win] x+] w h x y
+  lassign [split [wm geometry $win] x+] w h
+  lassign [TextCursorCoordinates] x y
+  set w2 [winfo reqwidth $win]
+  if {$w2>$w} {set w $w2}
   set h2 [winfo reqheight $win]
   if {$h2>20} {
     wm geometry $win ${w}x${h2}+${x}+${y}
@@ -285,6 +288,7 @@ proc complete::PickCommand {wtxt} {
   set lht [expr {max(min($llen,$mlen),1)}]
   set obj ::alited::pavedPickCommand
   catch {destroy $win}
+  catch {$obj destroy}
   if {$::alited::al(IsWindows)} {
     toplevel $win
   } else {
@@ -295,7 +299,6 @@ proc complete::PickCommand {wtxt} {
   }
   wm withdraw $win
   wm overrideredirect $win 1
-  catch {$obj destroy}
   ::apave::APave create $obj $win
   set lwidgets [list \
     "Ent - - - - {pack -expand 1 -fill x} {-w $::alited::complete::maxwidth \
@@ -324,12 +327,12 @@ proc complete::PickCommand {wtxt} {
     incr Y 40
     after 100 "wm deiconify $win"
   }
-  after idle "::apave::CursorAtEnd $ent"
+  after idle "wm withdraw $win; ::apave::CursorAtEnd $ent; wm deiconify $win"
   bind $ent <Return> {+ alited::complete::EntReturn}
   bind $win <FocusOut> {alited::complete::PickFocusOut %W}
   set res [$obj showModal $win -focus $ent -modal no -geometry +$X+$Y]
-  destroy $win
-  $obj destroy
+  catch {destroy $win}
+  catch {$obj destroy}
   if {$res ne "0"} {return $res}
   return {}
 }

@@ -96,14 +96,14 @@ namespace eval ::apave {
     daT {{} {}} \
     sta {{} {}} \
     too {{} {}} \
-    fra {{} {}} \
+    fra {{} {-takefocus 0}} \
+    frA {{} {-takefocus 0}} \
     ftx {{} {}} \
-    frA {{} {}} \
     gut {{} {-width 0 -highlightthickness 1}} \
-    lab {{-sticky w} {}} \
-    laB {{-sticky w} {}} \
-    lfr {{} {}} \
-    lfR {{} {-relief groove}} \
+    lab {{-sticky w} {-takefocus 0}} \
+    laB {{-sticky w} {-takefocus 0}} \
+    lfr {{} {-takefocus 0}} \
+    lfR {{} {-relief groove -takefocus 0}} \
     lbx {{} {-activestyle none -exportselection 0 -selectmode browse}} \
     flb {{} {}} \
     meb {{} {}} \
@@ -1636,13 +1636,16 @@ oo::class create ::apave::APaveBase {
     # Returns a selected value.
 
     set isfilename [set rootname 0]
-    lassign [::apave::extractOptions args \
+    lassign [apave::extractOptions args \
       -ftxvar {} -tname {} -bname {} -parent {}] ftxvar tname bname parent
     if {$parent ne {}} {
       set parent "-parent $parent"
     } else {
       set parent [my ParentOpt]
     }
+    lassign $parent -> wpar
+    set wtoplist [my onTop $wpar 1]
+    my onTop $wpar 0 $wtoplist ;# do not overlap choosers
     lassign [my chooserGeomVars] dirvar filvar
     if {$dirvar eq {}} {
       set [set dirvar ::apave::APaveDirVar] {}
@@ -1657,6 +1660,9 @@ oo::class create ::apave::APaveBase {
     set choosname $nchooser
     if {$choosname in {fontChooser colorChooser dateChooser}} {
       set nchooser "my $choosname $tvar $parent $args"
+      if {$choosname eq {fontChooser}} {
+        append nchooser " -topmost [llength $wtoplist]"
+      }
     } elseif {$choosname in {tk_getOpenFile tk_getSaveFile}} {
       set vargeo $filvar
       set widname [my AuxSetChooserGeometry $vargeo $dirvar $parent __tk_filedialog]
@@ -1666,7 +1672,7 @@ oo::class create ::apave::APaveBase {
         set dn [file dirname $fn]
         set fn [file tail $fn]
       }
-      lassign [::apave::extractOptions args -initialdir $dn] dn
+      lassign [apave::extractOptions args -initialdir $dn] dn
       if {[string match -* $dn]} {
         set rootname 1
         set dn [string range $dn 1 end]
@@ -1683,13 +1689,14 @@ oo::class create ::apave::APaveBase {
       my themeExternal *.foc.* *f1.demo  ;# don't touch tkcc's boxes
     }
     set res [{*}$nchooser {*}$args]
+    my onTop $wpar 1 $wtoplist
     if {"$res" ne {} && "$tvar" ne {}} {
       if {$rootname} {set res [file rootname [file tail $res]]}
       if {$isfilename} {
         lassign [my SplitContentVariable $ftxvar] -> txtnam wid
         if {[info exist $ftxvar] && \
         [file exist [set res [file nativename $res]]]} {
-          set $ftxvar [::apave::readTextFile $res]
+          set $ftxvar [apave::readTextFile $res]
           if {[winfo exist $txtnam]} {
             my readonlyWidget $txtnam no
             my displayTaggedText $txtnam $ftxvar
@@ -1735,7 +1742,7 @@ oo::class create ::apave::APaveBase {
     if {$Initialcolor eq {} && [::isunix]} {
       source [file join $::apave::apaveDir pickers color clrpick.tcl]
     }
-    lassign [::apave::extractOptions args -entry {} -inifile {}] ent ini
+    lassign [apave::extractOptions args -entry {} -inifile {} -ontop 0] ent ini top
     if {$ent ne {}} {
       set ent [my [my ownWName $ent]]
       set x [winfo rootx $ent]
@@ -1755,8 +1762,8 @@ oo::class create ::apave::APaveBase {
       set Initialcolor black
     }
     if {[catch {lassign [tk_chooseColor -moveall $Moveall \
-    -initialcolor $Initialcolor {*}$args -inifile $ini] res Moveall}]} {
-      set args [::apave::removeOptions $args -moveall -tonemoves -geometry]
+    -initialcolor $Initialcolor {*}$args -inifile $ini -ontop $top] res Moveall}]} {
+      set args [apave::removeOptions $args -moveall -tonemoves -geometry]
       set res [tk_chooseColor -initialcolor $Initialcolor {*}$args]
     }
     if {$res ne {}} {
@@ -1784,7 +1791,7 @@ oo::class create ::apave::APaveBase {
     # Returns a selected date.
 
     my sourceKlnd {}
-    if {![catch {set ent [my [my ownWName [::apave::getOption -entry {*}$args]]]}]} {
+    if {![catch {set ent [my [my ownWName [apave::getOption -entry {*}$args]]]}]} {
       dict set args -entry $ent
       set res [::klnd::calendar {*}$args -tvar $tvar -parent [winfo toplevel $ent]]
     } else {
@@ -2106,9 +2113,8 @@ oo::class create ::apave::APaveBase {
             } else {
               set but BuT
             }
-            set v2 "-command $v2 "
-            append v2 [my toolbarItem_Attrs [string match _* $v1] $v1 $fontB \
-              $fg $bg $fga $bga]
+            set v2 "[my toolbarItem_Attrs [string match _* $v1] $v1 $fontB \
+              $fg $bg $fga $bga] -command $v2"
             lassign [::apave::extractOptions v2 -method {}] ismeth
             set v1 [my Transname $but _$v1]
             if {[string is true -strict $ismeth]} {
@@ -2161,7 +2167,8 @@ oo::class create ::apave::APaveBase {
     # it gets a font selected in the chooser.
     # Returns a selected font.
 
-    set parw [::apave::parseOptions $args -parent [::apave::rootModalWindow .]]
+    set top [apave::extractOptions args -topmost 0]
+    set parw [apave::parseOptions $args -parent [::apave::rootModalWindow .]]
   ; proc [namespace current]::applyFont {font} " \
       set $tvar \[font actual \$font\]; \
       focus -force $parw"
@@ -2174,17 +2181,18 @@ oo::class create ::apave::APaveBase {
     }
     tk fontchooser configure -font fontchoose {*}[my ParentOpt] \
       {*}$args -command [namespace current]::applyFont
-    set res [tk fontchooser show]
+    tk fontchooser show
     # core Tk font chooser is bad with focusing in and out, it isn't modal
     if {[set foc [info commands *__tk__fontchooser.ok]] ne {}} {
       after idle [list after 0 [list catch "focus -force $foc"]]
+      catch {wm attributes [winfo toplevel $foc] -topmost $top}
     }
     set $tvar
   }
   #_______________________
 
   method toolbarItem_Attrs {istext img fontB fg bg fga bga} {
-    # Gets attributes of toolbar button.
+    # Gets default attributes of toolbar button.
     #   istext - true if textual button
     #   img - image of button
     #   fontB - bold font
@@ -2571,8 +2579,9 @@ oo::class create ::apave::APaveBase {
               set attr [my GetMC $attr]
               set attr [subst $attr]
               lassign [::apave::extractOptions attr -tip {} -tooltip {}] tip t2
-              set wt $w.$fr
+              set wt [my MakeWidgetName $w $fr]
               $w add [ttk::frame $wt] {*}$attr
+              catch {$wt config -takefocus 0}
               if {[append tip $t2] ne {}} {
                 set tip [my MC $tip]
                 ::baltip::tip $w $tip -nbktab $wt
@@ -3689,7 +3698,8 @@ oo::class create ::apave::APaveBase {
 
     set ::apave::MODALWINDOW $win
     ::apave::setAppIcon $win
-    lassign [::apave::extractOptions args -centerme {} -ontop 0 -modal yes \
+    set ontop [my getShowOption -ontop 0]
+    lassign [::apave::extractOptions args -centerme {} -ontop $ontop -modal yes \
       -minsize {} -themed {} -input 0 -variable {} -waitvar {} -transient {-} \
       -root {} -parent {} -waitme {}] \
       centerme ontop modal minsize themed input varname waitvar transient \
@@ -3714,8 +3724,10 @@ oo::class create ::apave::APaveBase {
     }
     set decor [expr {$root in {{} .}}]
     foreach {o v} [list -decor $decor -focus {} -onclose {} -geometry {} \
-    -resizable {} -ontop 0 -escape 1 -checkgeometry 1] {
-      lappend defargs $o [my getShowOption $o $v]
+    -resizable {} -escape 1 -checkgeometry 1] {
+      set v [my getShowOption $o $v]
+      lappend defargs $o $v
+      set [string range $o 1 end] $v
     }
     if {$varname ne {}} {
       set waitvar 1

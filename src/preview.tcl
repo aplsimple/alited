@@ -186,7 +186,7 @@ proc ::preview::Run {} {
   }
   after idle ::preview::SyntaxHighlight
   after 100 "preview::Rerun $obj $win"
-  $obj showModal $win -focus [$obj Ent1] -geometry $algeom
+  $obj showModal $win -focus [$obj Ent1] -geometry $algeom -ontop [::asKDE]
   destroy $win
   $obj destroy
   Exit

@@ -1396,7 +1396,7 @@ proc pref::Test_e_menu {} {
   fetchVars
   set cs $al(EM,CS)
   set al(EM,CS) [GetCS 2]
-  alited::tool::e_menu o=0 TEST_ALITED
+  alited::tool::e_menu o=0 t=[::asKDE] TEST_ALITED
   set al(EM,CS) $cs
 }
 
@@ -1430,7 +1430,7 @@ proc pref::Tkcon_Tab {} {
     {.clrstdout + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(tkcon,clrstdout) -w 20}}
     {.labstderr .labstdout T 1 1 {-st e -pady 1 -padx 3} {-t "stderr:"}}
     {.clrstderr + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(tkcon,clrstderr) -w 20}}
-    {fra.scf.v_ fra.scf.lfr T 1 1  {pack} {-h 10}}
+    {fra.scf.v_ fra.scf.lfr T 1 1  pack {-h 10}}
     {fra.scf.lfr2 - - - - {pack -fill x} {-t Options}}
     {.entopts - - 1 1 {-st sw -pady 1} {-tvar ::alited::al(tkcon,options) -w 80}}
     {fra.scf.frabuts - - - - {pack -fill x}}
@@ -1465,7 +1465,7 @@ proc pref::Tkcon_Default {} {
       set g [lindex $ls [incr i]]
     }
   }
-  set al(tkcon,options) "-rows 24 -cols 80 -fontsize 13 -geometry $g -showmenu 1 -topmost 0"
+  set al(tkcon,options) "-rows 24 -cols 80 -fontsize 13 -geometry $g -showmenu 1 -topmost [::asKDE]"
 }
 #_______________________
 

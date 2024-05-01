@@ -956,7 +956,7 @@ proc main::TipStatus {} {
     if {$al(IsWindows)} {set term $al(EM,wt=)} {set term $al(EM,tt=)}
     append run " Tcl: $al(MC,inconsole) $term\n"
   } else {
-    append run " Tcl: $al(MC,intkcon)\n" \
+    append run " Tcl: $al(MC,intkcon)\n"
   }
   set tip [[$obPav Labstat4] cget -text]
   set tip [string map [list \
@@ -1243,7 +1243,7 @@ proc main::_create {} {
     {.fraBot.fra - - - - {pack -fill both -expand 1}}
     {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1} \
       {-h 1 -w 40 -lvar ::alited::info::list -font $al(FONT,defsmall) -highlightthickness 0}}
-    {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - {pack}}
+    {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - pack}
     {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
       {{$al(MC,Row:)}} 12
@@ -1283,7 +1283,8 @@ proc main::_run {} {
   after 2000 [list wm iconphoto $al(WIN) -default [::apave::getAppIcon]]
   after 1000 {alited::ini::CheckUpdates no}
   set ans [$obPav showModal $al(WIN) -decor 1 -minsize {500 500} -escape no \
-    -onclose alited::Exit {*}$al(GEOM) -resizable 1 -waitme ::alited::al(AU!)]
+    -onclose alited::Exit {*}$al(GEOM) -resizable 1 -waitme ::alited::al(AU!) \
+    -ontop 0]
   # ans==2 means 'no saves of settings' (imaginary mode)
   if {$ans ne {2}} {alited::ini::SaveIni}
   destroy $al(WIN)
