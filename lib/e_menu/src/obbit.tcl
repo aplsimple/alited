@@ -126,7 +126,7 @@ namespace eval ::apave {
 
 {{22: Notebook3}      "#000000" #000000 #c2baa1 #a6a08c #793333 #cb9365 #000 #682800 #505050 #973d20 #000 #d59d6f - #b3ad99 #000 #dada76 #b2aa91 #7b1010 #76b2f1 #005 #006 #007}
 
-{{23: Dusk}           "#ececec" #ececec #1a1f21 #262b2d #9fc99f #217346 #FFF #f4f49f #585d5f #99c399 #fff #225c3b - #363b3d #000 #9d9d60 #23282a #ffc341 #99dd99 #005 #006 #007}
+{{23: Dusk}           "#ececec" #ececec #1a1f21 #262b2d #90afca #4a6984 #FFF #f4f49f #585d5f #7897b2 #fff #41607b - #363b3d #000 #9d9d60 #23282a #ffc341 #8cabc6 #005 #006 #007}
 
 {{24: SunValleyDeep} "#dfdfdf" #dddddd #131313 #323232 #aae2ff #2a627f #FFF #f4f49f #6f6f6f #7db5d2 #fff #245c79 - #3e3e3e #000 #9d9d60 #2a2a2a #efaf6f #4273eb #005 #006 #007}
 
@@ -1021,6 +1021,19 @@ proc ::apave::CursorToBEOL {wt where} {
 
   set idx [$wt index insert]
   ::tk::TextSetCursor $wt [$wt index "$idx $where"]
+}
+#_______________________
+
+proc ::apave::DefaultCS {} {
+  # Gets default color scheme counting current background of Tk root window.
+
+  if {[catch {set ib [ttk::style config . -background]}] ||
+  [lindex [InvertBg $ib B] 0] eq {B}} {
+    set res 5  ;# light
+  } else {
+    set res 23 ;# dark
+  }
+  return $res
 }
 
 # ________________________ ObjectProperty _________________________ #

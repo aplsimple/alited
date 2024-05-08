@@ -232,7 +232,7 @@ proc edit::FindColorValues {mode} {
     set pos2 [$txt index "$pos + $len char"]
     set hlc [$txt get $pos $pos2]
     catch {
-      lassign [InvertBg $hlc] fg bg
+      lassign [apave::InvertBg $hlc] fg bg
       $txt tag configure $hlc -foreground $fg -background $bg
       $txt tag add $hlc $pos $pos2
       lappend hlcolors $hlc
@@ -279,27 +279,6 @@ proc edit::HideColorValues {} {
       $txt tag remove $hlc 1.0 end
     }
   }
-}
-#_______________________
-
-proc edit::InvertBg {clr} {
-  # Gets a "inverted" color (white/black) for an color.
-  #   clr - color (#hhh or #hhhhhh)
-  # Returns a list of "inverted" color and "normalized" input color
-
-  if {[string length $clr]==4} {
-    lassign [split $clr {}] -> r g b
-    set clr #$r$r$g$g$b$b
-  }
-  lassign [winfo rgb . $clr] r g b
-  if {($r%256+$b%256)<15 && ($g%256)>180} {
-    set res #000000
-  } elseif {$r+1.5*$g+0.5*$b > 100000} {
-    set res #000000
-  } else {
-    set res #FFFFFF
-  }
-  return [list $res $clr]
 }
 
 # ________________________ At modifications _________________________ #

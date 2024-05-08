@@ -326,9 +326,9 @@ proc pref::Ok {args} {
     if {![::apave::intInRange $al(CURSORWIDTH) 1 8]} {set al(CURSORWIDTH) 2}
     set al(THEME) $opc1
     set al(INI,CS) [GetCS]
-    if {![string is integer -strict $al(INI,CS)]} {set al(INI,CS) -1}
+    if {![string is integer -strict $al(INI,CS)]} {set al(INI,CS) $al(defCS)}
     set al(EM,CS)  [GetCS 2]
-    if {![string is integer -strict $al(EM,CS)]} {set al(EM,CS) -1}
+    if {![string is integer -strict $al(EM,CS)]} {set al(EM,CS) $al(defCS)}
     set al(ED,TclKeyWords) [[$obPrf TexTclKeys] get 1.0 {end -1c}]
     set al(ED,TclKeyWords) [string map [list \n { }] $al(ED,TclKeyWords)]
     set al(ED,CKeyWords) [[$obPrf TexCKeys] get 1.0 {end -1c}]

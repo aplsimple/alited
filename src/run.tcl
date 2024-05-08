@@ -238,7 +238,14 @@ proc run::ValidatePath {} {
     }
     $cbx set [file nativename $com]
   }
-  if {$com eq {}} {set state disabled} {set state normal}
+  set fn1 [string trim $com \"]
+  set fn2 [string trim [lindex [split $com] 0] \"]
+  if {[alited::file::IsTcl $fn1] && [file exists $fn1] ||
+  [alited::file::IsTcl $fn2] && [file exists $fn2]} {
+    set state normal
+  } else {
+    set state disabled
+  }
   [$obRun Rad2] configure -state $state
   return 1
 }

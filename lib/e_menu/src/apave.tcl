@@ -34,8 +34,7 @@ proc ::isKDE {} {
 proc ::asKDE {} {
   # Checks for DE behaving as weird as KDE.
 
-#  expr {[::isKDE]}
-  expr {[::isKDE] && ![package vsatisfies [package require Tcl] 8.6.12-]}
+  expr {[::isKDE] && ![package vsatisfies [package require Tcl] 8.6.11-]}
 }
 # ________________________ apave NS _________________________ #
 
@@ -468,6 +467,27 @@ namespace eval ::apave {
 
     set acc [lindex $acc 0]
     string map {Control Ctrl - + bracketleft [ bracketright ]} $acc
+  }
+  #_______________________
+
+  proc InvertBg {clr {B #000000} {W #FFFFFF}} {
+    # Gets a "inverted" color (white/black) for an color.
+    #   clr - color (#hhh or #hhhhhh)
+    #   B - "black" color
+    #   W - "white" color
+    # Returns a list of "black/white" and normalized input color
+
+    if {[string length $clr]==4} {
+      lassign [split $clr {}] -> r g b
+      set clr #$r$r$g$g$b$b
+    }
+    lassign [winfo rgb . $clr] r g b
+    if {($r%256+$b%256)<15 && ($g%256)>180 || $r+1.5*$g+0.5*$b > 100000} {
+      set res $B
+    } else {
+      set res $W
+    }
+    return [list $res $clr]
   }
 
   ### ________________________ Blinking widgets _________________________ ###

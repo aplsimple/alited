@@ -81,7 +81,7 @@ proc dateChooser {tvar args} {
   wm title [toplevel $wcal] $ttl
   wm transient $wcal $wpar
   wm protocol $wcal WM_DELETE_WINDOW [list set $tvar ""]
-  if {[::isKDE]} {wm attributes $wcal -topmost 1}
+  if {[::asKDE]} {wm attributes $wcal -topmost 1}
   bind $wcal <Escape> [list set $tvar ""]
   after idle focus $wcal.c
   widget::calendar $wcal.c -dateformat $df -enablecmdonkey 0 -command \

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.4b4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.4  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -1082,7 +1082,9 @@ namespace eval alited {
       if {$al(IsWindows)} {
         # important: refer to tclsh (not wish), to run it in Windows console
         # though not good for deployed Tcl/Tk 8.6-
-        set tclexe [::apave::autoexec tclsh .exe]
+        if {[set tclexe [::apave::autoexec tclsh .exe]] eq {}} {
+          set tclexe [info nameofexecutable]
+        }
       } else {
         set tclexe [info nameofexecutable]
       }

@@ -233,9 +233,9 @@ proc paver::WidgetList {} {
       set gridpack [lrange $gridpack 0 $i-1]
       lappend gridpack {*}$opts
     }
-    foreach opt {-validate -validatecommand -foreground -background -fg -bg -from -to \
-    -variable -textvariable -listvariable -command -var -tvar -lvar -com -array -afteridle \
-    -ALL} {
+    foreach opt {-validate -validatecommand -foreground -background -fg -bg \
+    -from -to -variable -textvariable -listvariable -command -var -tvar -lvar \
+    -com -array -afteridle -ALL -dateformat} {
       ::apave::extractOptions attrs $opt {}
     }
     set font [::apave::extractOptions attrs -font {}]

@@ -11,7 +11,7 @@
 
 package require Tk
 
-package provide aloupe 1.7
+package provide aloupe 1.8
 
 namespace eval ::aloupe {
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]}]
@@ -58,11 +58,40 @@ proc ::aloupe::RunSolo {} {
   } else {
     puts "aloupe: $::aloupe::runerr"
   }
-
 }
+
+proc ::aloupe::GetPackages {{dir .}} {
+  # Gets required packages.
+  #   dir - supposed directory of packages
+
+  set dir [file normalize $dir]
+  set dir1 [lindex [glob -nocomplain [file join $dir treectrl*]] 0]
+  if {[info exists ::auto_path] && $dir1 ne {}} {
+    set dir2 [lindex [glob -nocomplain [file join $dir Img1.*]] 0]
+    if {$dir2 ne {}} {lappend ::auto_path $dir1 $dir2}
+  }
+  return [catch {package require treectrl; package require Img} ::aloupe::runerr]
+}
+
+proc ::aloupe::FindPackages {} {
+  # Tries to find required packages in an upper bin directory.
+
+  set dirs [file split [file dirname [file normalize $::aloupe::aloupescript]]]
+  while 1 {
+    set dir [file join {*}$dirs bin]
+    if {[file exists $dir]} {
+      if {![set ::aloupe::starterr [::aloupe::GetPackages $dir]]} {
+        return yes
+      }
+    }
+    if {[set dirs [lreplace $dirs end end]] eq {}} break
+  }
+  return no
+}
+
 set ::aloupe::aloupescript [info script]
-set ::aloupe::starterr [catch {package require treectrl; package require Img} ::aloupe::runerr]
-if {$::aloupe::solo && $::aloupe::starterr} {
+set ::aloupe::starterr [::aloupe::GetPackages]
+if {$::aloupe::solo && $::aloupe::starterr && ![::aloupe::FindPackages]} {
   ::aloupe::RunSolo
   exit
 }

@@ -11,9 +11,9 @@
 namespace eval ::alited {
 
   set al(MAXFILES) 5000     ;# maximum size of file tree (max size of project)
-  set al(ED,sp1) 1          ;# -spacing1 option of texts
-  set al(ED,sp2) 0          ;# -spacing2 option of texts
-  set al(ED,sp3) 0          ;# -spacing3 option of texts
+  set al(ED,sp1) 0          ;# -spacing1 option of texts
+  set al(ED,sp2) 1          ;# -spacing2 option of texts
+  set al(ED,sp3) 1          ;# -spacing3 option of texts
   set al(ED,TclKeyWords) {} ;# user's key words for Tcl
   set al(ED,CKeyWords) {}   ;# user's key words for C/C++
   set al(ED,gutterwidth) 5  ;# gutter's windth in chars
@@ -32,7 +32,8 @@ namespace eval ::alited {
   set al(FONTSIZE,small) 9  ;# small font size
   set al(FONTSIZE,std) 10   ;# middle font size
   set al(THEME) default     ;# ttk theme
-  set al(INI,CS) -1         ;# color scheme
+  set al(defCS) [::apave::DefaultCS]
+  set al(INI,CS) $al(defCS) ;# color scheme
   set al(INI,HUE) 0         ;# tint of color scheme
   set al(INI,ICONS) {middle icons} ;# sets tollbar icons' size as middle
   set al(INI,save_onselect) no ;# do saving alited configuration at tab selection
