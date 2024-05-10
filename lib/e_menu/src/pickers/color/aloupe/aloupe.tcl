@@ -11,7 +11,7 @@
 
 package require Tk
 
-package provide aloupe 1.8
+package provide aloupe 1.8.1
 
 namespace eval ::aloupe {
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]}]
@@ -191,25 +191,33 @@ proc ::aloupe::my::CreateDisplay {start} {
   grid [label $data(WDISP).l -fg $fg -bg $bg] -row 0 -columnspan 3 -sticky we
   pack [label $data(WDISP).l.lab1 -text " [::msgcat::mc Size]" -fg $fg -bg $bg] -side left -anchor e -expand 1
   pack [ttk::spinbox $data(WDISP).l.sp1 -from 8 -to 500 -justify center \
-    -width 4 -textvariable ::aloupe::my::size -command ::aloupe::my::ShowLoupe] -side left
+    -width 4 -textvariable ::aloupe::my::size -command ::aloupe::my::ShowLoupe \
+    -validate focus -validatecommand {::aloupe::my::Valid size 8 500 25}] -side left
   pack [label $data(WDISP).l.lab2 -text " [::msgcat::mc Zoom]" -fg $fg -bg $bg] -side left -anchor e -expand 1
   pack [ttk::spinbox $data(WDISP).l.sp2 -from 1 -to 50 -justify center \
-    -width 2 -textvariable ::aloupe::my::zoom] -side left
+    -width 2 -textvariable ::aloupe::my::zoom -validate focus \
+    -validatecommand {::aloupe::my::Valid zoom 1 50 10}] -side left
   pack [label $data(WDISP).l.lab3 -text " [::msgcat::mc Pause]" -fg $fg -bg $bg] -side left -anchor e -expand 1
   pack [ttk::spinbox $data(WDISP).l.sp3 -from 0 -to 60 -justify center \
-    -width 2 -textvariable ::aloupe::my::pause] -side left
+    -width 2 -textvariable ::aloupe::my::pause \
+    -validate focus -validatecommand {::aloupe::my::Valid pause 0 60 0}] -side left
   grid [ttk::separator $data(WDISP).sep1 -orient horizontal] -row 1 -columnspan 3 -sticky we -pady 2
   grid [ttk::label $data(LABEL) -image $data(IMAGE) -relief flat] -row 2 -columnspan 3 -padx 2
+  set data(BUT0) $data(WDISP).but0
+  set data(BUT1) $data(WDISP).but1
   set data(BUT2) $data(WDISP).but2
-  if {[set but2text $data(-commandname)] eq ""} {
-    set but2text [::msgcat::mc "To clipboard"]
+  if {[set but1text $data(-commandname)] eq ""} {
+    set but1text [::msgcat::mc "To clipboard"]
   }
-  grid [button $data(WDISP).but0 -text [::msgcat::mc "Refresh"] \
-    -command ::aloupe::my::Refresh -font TkFixedFont] -row 3 -column 0 -sticky ew
-  grid [button $data(BUT2) -text $but2text \
-    -command ::aloupe::my::Button2Click -font TkFixedFont] -row 3 -column 1 -sticky ew
-  grid [button $data(WDISP).but1 -text [::msgcat::mc Save] \
-    -command ::aloupe::my::Save -fg $fg -bg $bg -font TkFixedFont] -row 3 -column 2 -sticky ew
+  grid [button $data(BUT0) -text [::msgcat::mc "Refresh"] \
+    -command ::aloupe::my::Refresh -fg $fg -bg $bg -font TkFixedFont] \
+    -row 3 -column 0 -sticky ew
+  grid [button $data(BUT1) -text $but1text \
+    -command ::aloupe::my::Button2Click -font TkFixedFont] \
+    -row 3 -column 1 -sticky ew
+  grid [button $data(BUT2) -text [::msgcat::mc Save] \
+    -command ::aloupe::my::Save -fg $fg -bg $bg -font TkFixedFont] \
+    -row 3 -column 2 -sticky ew
   set data(-geometry) [regexp -inline \\+.* $data(-geometry)]
   if {$data(-geometry) ne ""} {
     wm geometry $data(WDISP) $data(-geometry)
@@ -221,7 +229,24 @@ proc ::aloupe::my::CreateDisplay {start} {
   if {$start} {
     set defargs [list -foreground $fg -background $bg]
     set data(BUTCFG) [StyleButton2 {*}$defargs]
-    lappend data(BUTCFG) {*}$defargs -text $but2text
+    lappend data(BUTCFG) {*}$defargs -text $but1text
+  }
+  foreach w {BUT0 BUT1 BUT2} {
+    set w $data($w)
+    foreach k {<Up> <Left>} {
+      bind $w $k "\
+        if {{$::tcl_platform(platform)} eq {windows}} { \
+          event generate $w <Shift-Tab> \
+        } else { \
+          event generate $w <Key> -keysym ISO_Left_Tab \
+        }"
+    }
+    foreach k {<Down> <Right>} {
+      bind $w $k "event generate $w <Key> -keysym Tab"
+    }
+    foreach k {<Return> <KP_Enter>} {
+      bind $w $k "event generate $w <Key> -keysym space"
+    }
   }
   bind $data(LABEL) <ButtonPress-1> {::aloupe::my::PickColor %W %X %Y}
   bind $data(WDISP) <Escape> ::aloupe::my::Exit
@@ -284,6 +309,22 @@ proc ::aloupe::my::Create {start} {
   set data(PREVSIZE) $data(-size)
   focus $data(WDISP)
 }
+#_______________________
+
+proc ::aloupe::my::Valid {vnam val1 val2 valdef} {
+  # Validates spinbox's value.
+  #   vnam - variable name
+  #   val1 - "from" value
+  #   val2 - "to" value
+  #   valdef - default value
+
+  set vnam ::aloupe::my::$vnam
+  set val [set $vnam]
+  if {$val<$val1 || $val>$val2} {
+    set $vnam $valdef
+  }
+  return 1
+}
 
 # ________________________ Drag-n-drop _________________________ #
 
@@ -309,14 +350,33 @@ proc ::aloupe::my::DragStart {w X Y x y} {
     update
     return
   }
-  set data(COLOR) [set data(CAPTURE) ""]
-  StyleButton2 {*}$data(BUTCFG)
+  InitButton2
   set data(x) $x
   set data(y) $y
   InitGeometry
   update
   set data(dragX) [expr {$X - [winfo rootx $w]}]
   set data(dragY) [expr {$Y - [winfo rooty $w]}]
+}
+#_______________________
+
+proc ::aloupe::my::InitButton2 {} {
+  # Initializes color ("to clipboard") button.
+
+  variable data
+  set data(COLOR) [set data(CAPTURE) ""]
+  StyleButton2 {*}$data(BUTCFG)
+}
+#_______________________
+
+proc ::aloupe::my::ColorButton2 {} {
+  # Colorizes color ("to clipboard") button.
+
+  variable data
+  if {$data(COLOR) ne ""} {
+    StyleButton2 -background $data(COLOR) -foreground $data(INVCOLOR) \
+      -text $data(COLOR)
+  }
 }
 #_______________________
 
@@ -397,7 +457,7 @@ proc ::aloupe::my::DisplayImage {w} {
   after idle " \
     wm attributes $data(WLOUP) -topmost 1 -alpha $data(-alpha);\
     wm attributes $data(WDISP) -alpha 1.0"
-  focus -force $data(WDISP).but2
+  focus -force $data(BUT0)
 }
 #_______________________
 
@@ -405,6 +465,7 @@ proc ::aloupe::my::Refresh {} {
   # Refreshes the loupe image without mouse click.
 
   variable data
+  InitButton2
   DragEnd $data(WLOUP)
 }
 
@@ -420,6 +481,7 @@ proc ::aloupe::my::ShowLoupe {} {
   set sz [expr {2*$size}]
   destroy $data(WLOUP)
   CreateLoupe ${sz}x${sz}+$x+$y
+  ColorButton2
 }
 #_______________________
 
@@ -459,12 +521,12 @@ proc ::aloupe::my::StyleButton2 {args} {
 
   variable data
   if {[dict exists $args -text]} {
-    $data(BUT2) configure -text [dict get $args -text]
+    $data(BUT1) configure -text [dict get $args -text]
     set args [dict remove $args -text]
   }
   set fg [dict get $args -foreground]
   set bg [dict get $args -background]
-  $data(BUT2) configure -foreground $fg -background $bg
+  $data(BUT1) configure -foreground $fg -background $bg
   return {}
 }
 
@@ -516,8 +578,7 @@ proc ::aloupe::my::HandleColor {{doclb yes}} {
         clipboard clear
         clipboard append -type STRING $data(COLOR)
       }
-      StyleButton2 -background $data(COLOR) -foreground $data(INVCOLOR) \
-        -text $data(COLOR)
+      ColorButton2
       set res yes
     }
   }

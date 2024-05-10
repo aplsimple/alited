@@ -6,7 +6,7 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.4 (8 May'24)`
+Version `v1.8.4 (10 May'24)`
 
   - BUGFIX: repeated Help in Templates called from Preferences
   - BUGFIX: Delete key in Templates called from Preferences
@@ -32,7 +32,7 @@ Version `v1.8.4 (8 May'24)`
   - CHANGE: tkcon.tcl: for compatibility with various platforms
   - CHANGE: clearings & renamings (after apave)
   - CHANGE: About dialog: alited's line
-  - CHANGE: packages: e_menu/apave 4.4.5, aloupe 1.8
+  - CHANGE: packages: e_menu/apave 4.4.5, aloupe 1.8.1
 
 
 Version `v1.8.3 (20 Apr'24)`
