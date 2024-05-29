@@ -104,7 +104,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
     lassign [GutterAttrs] canvas width shift
     set texopts [lindex [::apave::defaultAttrs tex] 1]
     lassign [::apave::extractOptions texopts -selborderwidth 1] selbw
-    text $wtxt {*}$texopts {*}$al(TEXT,opts) -bd 0
+    text $wtxt {*}$texopts
     $wtxt tag configure sel -borderwidth $selbw
     $obPav themeNonThemed [winfo parent $wtxt]
     set bind [list $obPav fillGutter $wtxt $canvas $width $shift]
@@ -627,8 +627,7 @@ proc main::HighlightText {TID curfile wtxt} {
         -multiline 1 -keywords $al(ED,CKeyWords) \
         -cmd "::alited::edit::Modified $TID" \
         -cmdpos ::alited::main::CursorPos \
-        -font $al(FONT,txt) -colors $Ccolors \
-        -insertwidth $al(CURSORWIDTH)
+        -font $al(FONT,txt) -colors $Ccolors
     } else {
       lassign [alited::ExtTrans $curfile] -> istrans
       set pltext [expr {$istrans || ![alited::file::IsTcl $curfile]}]
@@ -643,8 +642,7 @@ proc main::HighlightText {TID curfile wtxt} {
         -cmd "::alited::edit::Modified $TID" \
         -cmdpos ::alited::main::CursorPos \
         -plaintext $pltext -plaincom $plcom \
-        -font $al(FONT,txt) -colors $colors \
-        -insertwidth $al(CURSORWIDTH)
+        -font $al(FONT,txt) -colors $colors
     }
     UpdateText $wtxt $curfile
     BindsForCode $wtxt $curfile
@@ -1214,8 +1212,8 @@ proc main::_create {} {
     {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both \
       -padx 0 -pady 0 -ipadx 0 -ipady 0} {-background $::apave::BGMAIN2}}
     {.fraTop.panTop.frAText.Text - - - - {pack -expand 1 -fill both} \
-      {-bd 0 -w 80 -h 30 -gutter GutText -gutterwidth $al(ED,gutterwidth) \
-      -guttershift $al(ED,guttershift) $al(TEXT,opts)}}
+      {-w 80 -h 30 -gutter GutText -gutterwidth $al(ED,gutterwidth) \
+      -guttershift $al(ED,guttershift)}}
     {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
 {#
 ### ________________________ Find units _________________________ ###

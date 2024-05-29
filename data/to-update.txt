@@ -1,3 +1,21 @@
+=== 2024-05-27 ===
+   EDITED lib/e_menu/menus/menu.em
+
+=== 2024-05-01 ===
+   EDITED lib/e_menu/menus/utils.em
+
+=== 2024-05-03 ===
+   EDITED data/user/ini/alited.ini
+
+=== 2024-05-01 ===
+   EDITED lib/e_menu/menus/utils.em
+
+=== 2024-04-16 ===
+   EDITED lib/e_menu/menus/misc.em
+
+=== 2024-03-19 ===
+   EDITED lib/e_menu/menus/misc.em
+
 === 2024-03-16 ===
    EDITED lib/e_menu/menus/misc.em
    EDITED lib/e_menu/menus/tests.em

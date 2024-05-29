@@ -2,7 +2,7 @@
 
 in=1.0
 w=25
-pos=32.35
+pos=29.15
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENU_FOSGIT]} {set ::EMENU_FOSGIT Fossil}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE [set ::EMENURUNFILE "%f"] ; if {[::iswindows]} {set ::EMENURUNFILE [string map [list \\ \\\\] "%f"]; set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
@@ -25,8 +25,8 @@ R: %C set ::_EM_AR_ [string map {\\$ \$} {%AR}]
 R: %C set ::_EM_RF_ [string map {\\$ \$} {%RF}]
 R: %C set ::_EM_EE_ [string map {\\$ \$} {%EE}]
 SE: %IF {%EE} ne "" %THEN $::_EM_EE_
-RE: %IF "%x" eq ".tcl" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
-RE: %IF "%x" eq ".tcl" %THEN %T tclsh "$::EMENURUNFILE" $::_EM_AR_
+RE: %IF "%x" in ".tcl .tm .test" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
+RE: %IF "%x" in ".tcl .tm .test" %THEN %T tclsh "$::EMENURUNFILE" $::_EM_AR_
 RE: %IF "%x" eq ".py"  %THEN %t python3 "$::EMENURUNFILE" %AR
 RE: %IF "%x" eq ".sh"  %THEN %t "$::EMENURUNFILE"
 RE: %IF "%x" in {.htm .html} %THEN %b "$::EMENURUNFILE"

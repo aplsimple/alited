@@ -545,14 +545,29 @@ proc ::hl_c::hl_init {txt args} {
   set ::hl_c::my::data(REG_TXT,$txt) {}  ;# disables Modified at changing the text
   set ::hl_c::my::data(KEYWORDS,$txt) {}
   set ::hl_c::my::data(DOBIND,$txt) 0
+  # get default options from text's ones
+  set defopts [list -insertwidth]
+  foreach defopt $defopts {
+    set opt [::hl_tcl::OptName $txt $defopt]
+    if {![info exists ::hl_c::my::data($opt)]} {
+      set ::hl_c::my::data($opt,DEFAULT) [$txt cget $defopt]
+    }
+  }
   foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 -dobind 0 \
-  -multiline 1 -seen 500 -plaintext no -insertwidth 2 -keywords {}} {
+  -multiline 1 -seen 500 -plaintext no -insertwidth {} -keywords {}} {
     if {[dict exists $args $opt]} {
       set val [dict get $args $opt]
     } elseif {$setonly} {
       continue  ;# only those set in args are taken into account
     }
-    set ::hl_c::my::data([string toupper [string range $opt 1 end]],$txt) $val
+    set ::hl_c::my::data([::hl_tcl::OptName $txt $opt]) $val
+  }
+  # reget default options from text's ones
+  foreach defopt $defopts {
+    set opt [::hl_tcl::OptName $txt $defopt]
+    if {[info exists ::hl_c::my::data($opt)] && $::hl_c::my::data($opt) eq {}} {
+      set ::hl_c::my::data($opt) $::hl_c::my::data($opt,DEFAULT)
+    }
   }
   set ::hl_c::my::data(KEYWORDS,$txt) [lsort $::hl_c::my::data(KEYWORDS,$txt)]
   if {[dict exists $args -colors]} {

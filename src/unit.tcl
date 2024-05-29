@@ -63,8 +63,8 @@ proc unit::GetHeader {wtree ID {NC ""} {wtxt ""} {tip ""} {l1 0} {l2 0}} {
         set wtxt [alited::main::CurrentWTXT]
       }
       set tip2 [GetDeclaration $wtxt $tip $l1 $l2]
-      if {[string match "*\{" $tip2]} {
-        set tip [string trim $tip2 " \{"]
+      if {[string match "*\{" $tip2] || [string match "test *" $tip2]} {
+        set tip [string trim $tip2 " \{\\"]
       }
       if {$NC eq {}} {
         return $tip  ;# returns a declaration only

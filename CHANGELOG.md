@@ -6,6 +6,17 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
+Version `v1.8.5a3 (29 May'24)`
+
+  - BUGFIX: at 1st start: entries' cursorwidth = 1 instead of default 2
+  - BUGFIX: Preferences: cursor color unchangeable after starting "Test" ("Preview")
+  - NEW   : "test" command: highlighted & seen as leaf unit
+  - NEW   : Tools/Run: .tm & .test files run by tclsh
+  - CHANGE: text padding = cursor width + 2
+  - CHANGE: Preferences/Tools: fields' order
+  - CHANGE: packages: hl_tcl 1.1.4
+
+
 Version `v1.8.4 (10 May'24)`
 
   - BUGFIX: repeated Help in Templates called from Preferences

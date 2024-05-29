@@ -798,7 +798,7 @@ proc pref::CheckTheming {{doit yes} {force no}} {
     catch {unset al(checkTheming)}
     return
   }
-  set cs [CheckCS]
+  set cs [GetCS]
   if {$al(CURSORCOLOR) ne {}} {set cc $al(CURSORCOLOR)} {set cc "{}"}
   if {[string is double -strict $al(INI,HUE)]} {set hue $al(INI,HUE)} {set hue 0}
   if {[string is double -strict $al(CURSORWIDTH)]} {set cw $al(CURSORWIDTH)} {set cw 2}
@@ -1335,9 +1335,7 @@ proc pref::Common_Tab {} {
     {.fiLTcl + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(EM,Tcl) \
       -values {$al(TCLLIST)} -w 48 -initialdir $al(TCLINIDIR) \
       -clearcom {alited::main::ClearCbx %w ::alited::al(TCLLIST)}}}
-    {.labDoc .labTcl T 1 1 {-st e -pady 1 -padx 3} {-t "Path to man/tcl:"}}
-    {.dirDoc + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(EM,h=) -w 48}}
-    {.labTT .labDoc T 1 1 {-st e -pady 1 -padx 3} {-t "Linux terminal:"}}
+    {.labTT .labTcl T 1 1 {-st e -pady 1 -padx 3} {-t "Linux terminal:"}}
     {.cbxTT + L 1 1 {-st swe -pady 5} {-tvar ::alited::al(EM,tt=) -w 48 \
       -values {$al(TTLIST)} -clearcom {alited::main::ClearCbx %w ::alited::al(TTLIST)}}}
     {.labWT .labTT T 1 1 {-st e -pady 1 -padx 3} {-t "MS Windows shell:"}}
@@ -1345,6 +1343,8 @@ proc pref::Common_Tab {} {
     {.labDF .labWT T 1 1 {-st e -pady 1 -padx 3} {-t "Diff tool:"}}
     {.filDF + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(EM,DiffTool) \
       -w 48 -tabnext alited::Tnext}}
+    {.labDoc .labDF T 1 1 {-st e -pady 1 -padx 3} {-t "Path to man/tcl:"}}
+    {.dirDoc + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(EM,h=) -w 48}}
   }
 }
 

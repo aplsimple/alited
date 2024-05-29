@@ -343,7 +343,10 @@ proc ini::ReadIni {{projectfile ""}} {
   }
   if {$al(RE,leaf) eq {}} {set al(RE,leaf) $al(RE,leafDEF)}
   ReadIniPrj
-  set al(TEXT,opts) "-padx 3 -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3)"
+  lassign [::apave::defaultAttrs tex] - atrs
+  set pad [expr {$al(CURSORWIDTH) + 2}]
+  append atrs " -spacing1 $al(ED,sp1) -spacing2 $al(ED,sp2) -spacing3 $al(ED,sp3) -padx $pad -pady $pad -insertwidth $al(CURSORWIDTH) -bd 0"
+  ::apave::defaultAttrs tex "" $atrs
   if {!$al(INI,belltoll)} {
     ; proc ::bell args {}  ;# no bells
   }
@@ -1291,7 +1294,7 @@ proc ini::CheckIni {} {
 
   namespace upvar ::alited al al
   if {![file exists $::alited::INIDIR] || ![file exists $::alited::PRJDIR]} {
-    ::apave::initWM
+    ::apave::initWM -cursorwidth $al(CURSORWIDTH)
     InitGUI
     catch {destroy .tex}
     if {![GetConfiguration]} exit
@@ -1407,8 +1410,7 @@ proc ini::HighlightFileText {{wtxt ""} {fname ""} {ro 1} args} {
   if {$fname eq {}} {set fname $al(INI)}
   set plcom [alited::HighlightAddon $wtxt $fname $colors]
   ::hl_tcl::hl_init $wtxt -font $al(FONT,txt) -dark [$obPav csDark] \
-    -multiline 1 -colors $colors -insertwidth $al(CURSORWIDTH) \
-    -readonly $ro -plaintext 0 -plaincom $plcom {*}$args
+    -multiline 1 -colors $colors -readonly $ro -plaintext 0 -plaincom $plcom {*}$args
   ::hl_tcl::hl_text $wtxt
   alited::main::SetTabs $wtxt [lindex [alited::main::CalcIndentation] 0]
 }
