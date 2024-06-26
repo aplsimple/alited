@@ -28,7 +28,7 @@ package require Tk
 wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.4.5}
+  variable em_version {e_menu 4.4.6}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -843,12 +843,23 @@ proc ::em::term {sel amp {inconsole no}} {
       }
     }
     set term "$::em::lin_console $sel $amp"
+    set comt [checkXfce4 {*}$::em::linuxconsole -e]
     if {$inconsole} {
-      execWithPID $::em::linuxconsole\ -e\ $term
+      execWithPID $comt\ $term
     } else {
-      execcom {*}$::em::linuxconsole -e {*}$term
+      execcom {*}$comt {*}$term
     }
   }
+}
+#_______________________
+
+proc ::em::checkXfce4 {args} {
+  # xfce4-terminal treats -x option as others do -e => replace -e with -x for it.
+
+  if {[file tail [lindex $args 0]] eq {xfce4-terminal} && [lindex $args end] eq {-e}} {
+    set args [lreplace $args end end -x]
+  }
+  return $args
 }
 
 # ________________________ execute commands _________________________ #
@@ -965,6 +976,7 @@ proc ::em::execWithPID {com} {
 proc ::em::execcom {args} {
   # exec for ex= parameter
 
+  set args [checkXfce4 {*}$args]
   if {$::em::EX eq {} || [string is false $::em::PI]} {
     exec -ignorestderr -- {*}$args
   } else {

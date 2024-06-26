@@ -6,15 +6,18 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.5a3 (29 May'24)`
+Version `v1.8.5b1 (26 Jun'24)`
 
   - BUGFIX: at 1st start: entries' cursorwidth = 1 instead of default 2
   - BUGFIX: Preferences: cursor color unchangeable after starting "Test" ("Preview")
+  - BUGFIX: Preferences/Tools/Linux terminal: xfce4-terminal not working
   - NEW   : "test" command: highlighted & seen as leaf unit
   - NEW   : Tools/Run: .tm & .test files run by tclsh
+  - NEW   : Preferences/Tools: Test button for terminal setting
+  - CHANGE: Preferences/Tools/Linux terminal: xfce4-terminal instead of xterm
   - CHANGE: text padding = cursor width + 2
   - CHANGE: Preferences/Tools: fields' order
-  - CHANGE: packages: hl_tcl 1.1.4
+  - CHANGE: packages: e_menu 4.4.6, hl_tcl 1.1.4
 
 
 Version `v1.8.4 (10 May'24)`

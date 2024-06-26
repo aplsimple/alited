@@ -1327,25 +1327,31 @@ proc pref::Common_Tab {} {
   set al(TCLLIST) [split $al(EM,TclList) \t]
   set al(TTLIST) [split $al(EM,tt=List) \t]
   set al(WTLIST) [split $al(EM,wt=List) \t]
-  return {
+  set res {
     {v_ - - 1 1}
     {fra + T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode x}}
     {.labTcl - - 1 1 {-st e -pady 1 -padx 3} {-t "tclsh, wish or tclkit:"}}
-    {.fiLTcl + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(EM,Tcl) \
-      -values {$al(TCLLIST)} -w 48 -initialdir $al(TCLINIDIR) \
+    {.fiLTcl + L 1 2 {-st sw -pady 5} {-tvar ::alited::al(EM,Tcl) \
+      -values {$al(TCLLIST)} -w 45 -initialdir $al(TCLINIDIR) \
       -clearcom {alited::main::ClearCbx %w ::alited::al(TCLLIST)}}}
-    {.labTT .labTcl T 1 1 {-st e -pady 1 -padx 3} {-t "Linux terminal:"}}
-    {.cbxTT + L 1 1 {-st swe -pady 5} {-tvar ::alited::al(EM,tt=) -w 48 \
-      -values {$al(TTLIST)} -clearcom {alited::main::ClearCbx %w ::alited::al(TTLIST)}}}
-    {.labWT .labTT T 1 1 {-st e -pady 1 -padx 3} {-t "MS Windows shell:"}}
-    {.cbxWT + L 1 1 {-st swe -pady 5} {-tvar ::alited::al(EM,wt=) -w 48 -values {$al(WTLIST)}}}
-    {.labDF .labWT T 1 1 {-st e -pady 1 -padx 3} {-t "Diff tool:"}}
-    {.filDF + L 1 1 {-st sw -pady 1} {-tvar ::alited::al(EM,DiffTool) \
-      -w 48 -tabnext alited::Tnext}}
+    {.labDF .labTT T 1 1 {-st e -pady 1 -padx 3} {-t "Diff tool:"}}
+    {.filDF + L 1 2 {-st sw -pady 1} {-tvar ::alited::al(EM,DiffTool) \
+      -w 45 -tabnext alited::Tnext}}
     {.labDoc .labDF T 1 1 {-st e -pady 1 -padx 3} {-t "Path to man/tcl:"}}
-    {.dirDoc + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(EM,h=) -w 48}}
+    {.dirDoc + L 1 2 {-st sw -pady 5} {-tvar ::alited::al(EM,h=) -w 45}}
   }
+  if {$al(IsWindows)} {
+    set tt {{.labTT .labTcl T 1 1 {-st e -pady 1 -padx 3} {-t "MS Windows shell:"}}
+      {.cbxTT + L 1 1 {-st swe -pady 5} {-tvar ::alited::al(EM,wt=) -w 45 -values \
+      {$al(WTLIST)}}} {.butOK + L 1 1 {} {-t Test -com {alited::tool::_run 5}}}}
+  } else {
+    set tt {{.labTT .labTcl T 1 1 {-st e -pady 1 -padx 3} {-t "Linux terminal:"}}
+      {.cbxTT + L 1 1 {-st swe -pady 5} {-tvar ::alited::al(EM,tt=) -w 45 -values \
+      {$al(TTLIST)} -clearcom {alited::main::ClearCbx %w ::alited::al(TTLIST)}}} \
+      {.butOK + L 1 1 {-pady 5} {-t Test -com {alited::tool::_run 5}}}}
+  }
+  linsert $res 5 {*}$tt
 }
 
 ## ________________________ e_menu _________________________ ##
