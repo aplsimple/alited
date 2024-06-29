@@ -1162,7 +1162,9 @@ oo::class create ::apave::APaveBase {
       }
       tre {
         set widget ttk::treeview
-        foreach {ev com} {Home {::apave::TreSelect %w 0} End {::apave::TreSelect %w end}} {
+        set ec [list Home {::apave::TreSelect %w 0} End {::apave::TreSelect %w end}]
+        if {[::isunix]} {lappend ec KP_Enter {event generate %w <Return>}}
+        foreach {ev com} $ec {
           append attrs " -bindEC {<$ev> {$com}} "
         }
       }

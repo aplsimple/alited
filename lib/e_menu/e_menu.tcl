@@ -855,8 +855,10 @@ proc ::em::term {sel amp {inconsole no}} {
 
 proc ::em::checkXfce4 {args} {
   # xfce4-terminal treats -x option as others do -e => replace -e with -x for it.
+  # The same with gnome-terminal.
 
-  if {[file tail [lindex $args 0]] eq {xfce4-terminal} && [lindex $args end] eq {-e}} {
+  if {[file tail [lindex $args 0]] in {xfce4-terminal gnome-terminal} && \
+  [lindex $args end] eq {-e}} {
     set args [lreplace $args end end -x]
   }
   return $args

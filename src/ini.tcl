@@ -115,7 +115,7 @@ namespace eval ::alited {
   set al(EM,TclList) [list]
   set al(EM,h=) [file join $::alited::HOMEDIR DOC www.tcl.tk man tcl8.6]
   set al(EM,tt=) x-terminal-emulator
-  set al(EM,tt=List) "$al(EM,tt=)\tlxterminal --geometry=220x55\txfce4-terminal\tkonsole\tmlterm\tqterminal\tEterm\txgterm"
+  set al(EM,tt=List) "$al(EM,tt=)\txfce4-terminal\tlxterminal --geometry=220x55\tgnome-terminal --wait\tkonsole\tqterminal\tEterm\tmlterm\txgterm"
   set al(EM,wt=) cmd.exe
   set al(EM,wt=List) "$al(EM,wt=)\tpowershell.exe"
   set al(EM,mnu) menu.em
@@ -583,7 +583,14 @@ proc ini::ReadIniEM {nam val emiName} {
       ]
     }
     emtt       {set al(EM,tt=) $val}
-    emttList   {set al(EM,tt=List) $val}
+    emttList   {
+      foreach tt [split $al(EM,tt=List) \t] {
+        if {[string first \t$tt \t$val]<0} {
+          append val \t$tt  ;# let default items be in the list
+        }
+      }
+      set al(EM,tt=List) $val
+    }
     emwt       {set al(EM,wt=) $val}
     emmenu     {set al(EM,mnu) [::apave::UnixPath $val]}
     emmenudir  {
