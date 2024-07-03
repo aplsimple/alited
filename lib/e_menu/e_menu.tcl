@@ -1538,11 +1538,11 @@ proc ::em::getARE {} {
     set AR [set RF [set EE {}]]
     foreach st $::em::filecontent {
       if {[regexp $ar $st] && $AR eq {}} {
-        lassign [regexp -inline $ar $st] => AR
+        set AR [::em::wildcardComm [lindex [regexp -inline $ar $st] 1]]
       } elseif {[regexp $rf $st] && $RF eq {}} {
-        lassign [regexp -inline $rf $st] => RF
+        set RF [::em::wildcardComm [lindex [regexp -inline $rf $st] 1]]
       } elseif {[regexp $ee $st] && $EE eq {}} {
-        lassign [regexp -inline $ee $st] => EE
+        set EE [::em::wildcardComm [lindex [regexp -inline $ee $st] 1]]
       }
       if {$AR ne {} || $RF ne {} || $EE ne {}} {
         if {"$AR$RF$EE" ne {OFF}} {
@@ -2507,14 +2507,7 @@ proc ::em::initcomm {} {
   if {$::em::ee ne {}} {
     set cpwd [pwd]
     catch {cd $::em::arEM(d)}
-    set idiotic {~Fb^D~}
-    set com [string map [list %% $idiotic] $::em::ee]
-    set com [string map [list \
-      %f $::em::arEM(f) \
-      %d [file dirname $::em::arEM(f)] \
-      %pd $::em::pd \
-      ] $com]
-    set com [string map [list $idiotic %] $com]
+    set com [wildcardComm $::em::ee]
     if {[set inconsole [string match %t* $com]]} {
       set com [string range $com 2 end]
     }
@@ -2553,6 +2546,22 @@ proc ::em::initcomm {} {
     }
   }
   return yes
+}
+#_______________________
+
+proc ::em::wildcardComm {com} {
+  # Gets command counting wildcards.
+
+  set idiotic {~Fb^D~}
+  set com [string map [list %% $idiotic] $::em::ee]
+  set com [string map [list \
+    %f $::em::arEM(f) \
+    %d [file dirname $::em::arEM(f)] \
+    %pd $::em::pd \
+    %H [::apave::HomeDir] \
+    %s $::em::seltd \
+    ] $com]
+  string map [list $idiotic %] $com
 }
 #_______________________
 

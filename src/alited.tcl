@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.5b2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.5  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -704,7 +704,7 @@ namespace eval alited {
   }
   #_______________________
 
-  proc Message {msg {mode 1} {lab ""} {first yes}} {
+  proc Message {msg {mode 2} {lab ""} {first yes}} {
     # Displays a message in statusbar.
     #   msg - message
     #   mode - 1: simple; 2: bold; 3: bold color; 4: bold red bell; 5: static; 6: bold red
@@ -729,24 +729,24 @@ namespace eval alited {
     set slen [string length $msg]
     if {[catch {$lab configure -text $msg}] || !$slen} return
     $lab configure -font $font -foreground $fg
-    if {$mode in {2 3 4 5 6}} {
+    if {$mode > 1} {
       $lab configure -font $fontB
-      if {$mode eq {4}} {
+      if {$mode == 4} {
         $lab configure -foreground $fgred
         if {$first} bell
-      } elseif {$mode in {3 5}} {
+      } elseif {$mode == 3 || $mode == 5} {
         $lab configure -foreground $fgbold
-      } elseif {$mode eq {6}} {
+      } elseif {$mode == 6} {
         $lab configure -foreground $fgred
       }
     }
-    if {$mode eq {5}} {
+    if {$mode == 5} {
       update
       return
     }
     if {$first} {
       set msec [expr {200*$slen}]
-      if {$mode in {2 3 4 5}} {
+      if {$mode > 1} {
         set opts "-font {$fontB}"
       } else {
         set opts {}
@@ -804,6 +804,7 @@ namespace eval alited {
     lassign [split [winfo geometry $al(WIN)] x+] w h x y
     set geo "+([expr {$w+$x}]-W)+$y-60"
     set msg [string map [list \n "  \n  "] $msg]
+    if {[llength [split $msg \n]]==1} {set msg \n$msg\n}
     ::baltip clear $al(WIN)
     after $timo [list ::baltip tip $al(WIN) $msg -fg $fg -bg $bg -alpha 0.9 \
         -font {-weight bold -size 11} -pause 1000 -fade 1000 \

@@ -1083,6 +1083,16 @@ proc main::InitActions {} {
     after idle [list ::baltip::tip $but $tip]
   }
 }
+#_______________________
+
+proc main::ProcMessage {} {
+  # Handles clicking on message label.
+
+  namespace upvar ::alited obPav obPav
+  set lab [$obPav Labstat3]
+  set msg [baltip cget $lab -text]
+  alited::Message $msg 3 $lab
+}
 
 # ________________________ Main _create _________________________ #
 
@@ -1263,6 +1273,7 @@ proc main::_create {} {
   bind $lbxi <<ListboxSelect>> {alited::info::ListboxSelect %W}
   bind $lbxi <ButtonPress-3> {alited::info::PopupMenu %X %Y}
   bind [$obPav ToolTop] <ButtonPress-3> {::alited::tool::PopupBar %X %Y}
+  bind [$obPav Labstat3] <Button-1> alited::main::ProcMessage
   ::baltip tip [$obPav Labstat4] = -command ::alited::main::TipStatus -per10 0
 }
 # ________________________ Main _run _________________________ #

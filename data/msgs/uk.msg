@@ -586,7 +586,7 @@ namespace eval ::alited {
     {For Start...} {Для старту...}
     " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Введіть команди, що мають виконатися після старту alited,\n тобто команди Tcl або зовнішні команди:"
     {By command:} {Командою:}
-    {By command #RUNF:} {Командою #RUNF:}
+    {By #RUNF: / #EXEC:} {По #RUNF: / #EXEC:}
     {Run:} {Запуск:}
     {Run it} {Пуск}
     { OS or Tcl commands to be run before running a current file:} { Команди OS або Tcl, що мають виконуватися перед запуском поточного файлу:}
@@ -595,6 +595,7 @@ namespace eval ::alited {
     {e_menu's own} {своя в e_menu}
     {Select any of run item} {Виберіть яку-небудь команду}
     "Incorrect \"Preferences/Tools/tclsh...\"\nresults in the error:" "Некоректна настройка \"Настройки/Струменти/tclsh...\"\nпризводить до помилки:"
+    {Set a Linux terminal in Preferences/Tools} {Встановіть термінал Linux у "Настройки/Струменти"}
   }
 
   ## ________________________ Checks ________________________ ##

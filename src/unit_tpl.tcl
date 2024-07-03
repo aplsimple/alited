@@ -448,13 +448,22 @@ proc unit_tpl::Import {} {
 }
 #_______________________
 
-proc unit_tpl::Message {msg {mode 1}} {
+proc unit_tpl::Message {msg {mode 2}} {
   # Displays a message in statusbar of templates dialogue.
   #   msg - message
   #   mode - mode of Message
 
   variable obTpl
   alited::Message $msg $mode [$obTpl LabMess]
+}
+#_______________________
+
+proc unit_tpl::ProcMessage {} {
+  # Handles clicking on message label.
+
+  variable obTpl
+  set msg [baltip cget [$obTpl LabMess] -text]
+  Message $msg 3
 }
 
 # ________________________ Main _________________________ #
@@ -547,6 +556,7 @@ proc unit_tpl::_create {{geom ""}} {
   bind $wtxt <FocusIn> "::alited::unit_tpl::InText $wtxt"
   bind [$obTpl CbxKey] <FocusOut> ::alited::unit_tpl::ClearCbx
   bind $win <F1> "[$obTpl ButHelp] invoke"
+  bind [$obTpl LabMess] <Button-1> alited::unit_tpl::ProcMessage
   if {[llength $tpllist]} {set foc $tree} {set foc [$obTpl EntTpl]}
   if {[set il $::alited::unit::ilast] > -1} {
     Select $il

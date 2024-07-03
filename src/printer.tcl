@@ -87,13 +87,22 @@ proc printer::fetchVars {} {
 }
 #_______________________
 
-proc printer::Message {msg {mode 1}} {
+proc printer::Message {msg {mode 2}} {
   # Displays a message in statusbar of the dialogue.
   #   msg - message
   #   mode - mode of Message
 
   namespace upvar ::alited obDl2 obDl2
   alited::Message $msg $mode [$obDl2 Labstat1]
+}
+#_______________________
+
+proc printer::ProcMessage {} {
+  # Handles clicking on message label.
+
+  namespace upvar ::alited obDl2 obDl2
+  set msg [baltip cget [$obDl2 Labstat1] -text]
+  Message $msg 3
 }
 
 # ________________________ Ini file _________________________ #
@@ -1149,6 +1158,7 @@ proc printer::_create  {} {
   bind $wtree <FocusIn> "alited::printer::FocusIn $wtree"
   bind $wtree <FocusOut> "alited::printer::FocusOut $wtree"
   bind $win <F1> "alited::printer::Help"
+  bind [$obDl2 Labstat1] <Button-1> alited::printer::ProcMessage
   alited::tree::AddTags $wtree
   FillTree $wtree
   $obDl2 showModal $win -resizable 1 -minsize {500 400} -geometry $geometry -focus Tab

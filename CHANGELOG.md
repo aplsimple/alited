@@ -6,21 +6,27 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.5b2 (29 Jun'24)`
+Version `v1.8.5 (3 Jul'24)`
 
   - BUGFIX: at 1st start: entries' cursorwidth = 1 instead of default 2
   - BUGFIX: Preferences: cursor color unchangeable after starting "Test" ("Preview")
   - BUGFIX: Preferences/Tools/Linux terminal: xfce4-terminal not working
   - BUGFIX: Preferences/Tools/Linux terminal: gnome-terminal not working
+  - BUGFIX: Preferences/Tools/Linux terminal: x-terminal-emulator in non-Debian Linux
   - NEW   : "test" command: highlighted & seen as leaf unit
   - NEW   : Tools/Run: .tm & .test files run by tclsh
   - NEW   : Preferences/Tools: "Test" button for terminal setting
   - NEW   : Preferences/Tools/Linux terminal: xfce4-terminal added to default items
   - NEW   : Preferences/Tools/Linux terminal: gnome-terminal added to default items
   - NEW   : Preferences/Tools/Linux terminal: default items added at starting alited
+  - NEW   : message about incorrect terminal in Linux
+  - NEW   : #RUNF: / #EXEC: comments can include %f, %d, %pd, %s, %H, %% wildcards
   - DELETE: Preferences/Tools/Linux terminal: xterm deleted from default items
+  - CHANGE: Tools/Run...: now includes #EXEC: comment as well
+  - CHANGE: uniform statusbar messages (incl. clicking them) for 6 windows
   - CHANGE: text padding = cursor width + 2
   - CHANGE: Preferences/Tools: fields' order
+  - CHANGE: docs
   - CHANGE: packages: e_menu/apave 4.4.6, hl_tcl 1.1.4
 
 

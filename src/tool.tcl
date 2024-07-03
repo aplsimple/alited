@@ -314,10 +314,13 @@ proc tool::EM_Options {opts} {
     lassign [split [wm geometry $al(WIN)] x+] w h x y
     set al(EM,geometry) [obj EXPORT CenteredXY $w $h $x $y 300 [expr {$h/2}]]
   }
+  lassign [split $al(EM,tt)] tt
+  if {[::isunix] && [auto_execok $tt] eq {}} {
+    alited::Balloon [msgcat::mc {Set a Linux terminal in Preferences/Tools}] yes
+  }
   set ed [info nameofexecutable]\ $SCRIPTNORMAL\ $CONFIGDIR
-
   set R [list md=$al(EM,mnudir) m=$al(EM,mnu) f=$f d=$d l=$l \
-    PD=$al(EM,PD=) pd=$al(prjroot) h=$al(EM,h=) tt=$al(EM,tt=) s=$sel \
+    PD=$al(EM,PD=) pd=$al(prjroot) h=$al(EM,h=) tt=$al(EM,tt) s=$sel \
     o=-1 om=0 {*}g=$al(EM,geometry) $z6 $z7 {*}$ls $df {*}$opts \
     {*}$dirvar {*}$filvar td=$tdir ed=$ed wt=$al(EM,wt=) mp=1]
   if {[lsearch -glob $R th=*]<0} {lappend R th=$al(THEME)}
@@ -607,17 +610,20 @@ proc tool::RunArgs {} {
   set res {}
   set ar {^[[:space:]#/*]*#[ ]?ARGS[0-9]?:[ ]*(.*)}
   set rf {^[[:space:]#/*]*#[ ]?RUNF[0-9]?:[ ]*(.*)}
-  set AR [set RF {}]
+  set ex {^[[:space:]#/*]*#[ ]?EXEC[0-9]?:[ ]*(.*)}
+  set AR [set RF [set EX {}]]
   set filecontent [split [[alited::main::CurrentWTXT] get 1.0 end] \n]
   foreach st $filecontent {
     if {[regexp $ar $st] && $AR eq {}} {
       lassign [regexp -inline $ar $st] => AR
     } elseif {[regexp $rf $st] && $RF eq {}} {
       lassign [regexp -inline $rf $st] => RF
+    } elseif {[regexp $ex $st] && $EX eq {}} {
+      lassign [regexp -inline $ex $st] => EX
     }
-    if {$AR ne {} || $RF ne {}} {
-      if {"$AR$RF" ne {OFF}} {
-        set res [list $AR $RF]
+    if {"$AR$RF$EX" ne {}} {
+      if {"$AR$RF$EX" ne {OFF}} {
+        set res [list $AR $RF $EX]
       }
       break
     }
@@ -834,17 +840,14 @@ proc tool::e_menu3 {} {
 #_______________________
 
 proc tool::PrepareRunCommand {com fname} {
-  # prepares a command to run. The command can include wildcards.
+  # Prepares a command to run. The command can include wildcards.
   #   com - command
   #   fname - current file name
 
   namespace upvar ::alited al al
-  set idi Ns7!-=
   set sel [alited::find::GetWordOfText select]
-  set com [string map [list %% $idi] $com]
-  set com [string map [list $::alited::EOL \n %s $sel \
-    %f $fname %d [file dirname $fname] %pd $al(prjroot) %H [::apave::HomeDir]] $com]
-  return [string map [list $idi %] $com]
+  alited::Map {} $com $::alited::EOL \n %s $sel \
+    %f $fname %d [file dirname $fname] %pd $al(prjroot) %H [::apave::HomeDir]
 }
 #_______________________
 

@@ -293,8 +293,8 @@ proc run::_create {} {
   if {![llength $al(comForceLs)] && $fname ne $al(MC,nofile)} {
     set al(comForceLs) [list {} $fname]
   }
-  lassign [alited::tool::RunArgs] ar rf
-  set vent "$ar$rf"
+  lassign [alited::tool::RunArgs] ar rf ex
+  set vent "$ar$rf$ex"
   set run [::alited::ProcEOL $al(prjbeforerun) in]
   $obRun makeWindow $win.fra $al(MC,run)
   $obRun paveWindow $win.fra {
@@ -304,7 +304,7 @@ proc run::_create {} {
     {rad0 + L 1 1 {-st we} {-tvar ::alited::al(MC,intkcon) -value 0 -var ::alited::al(prjincons)}} \
     {Rad2 + L 1 1 {-st w} {-tvar ::alited::al(MC,combined) -value 2 -var ::alited::al(prjincons)}} \
     {seh1 lab T 1 5 {-pady 5}} \
-    {rad3 + T 1 1 {-st w -padx 8} {-t {By command #RUNF:} -value 0 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
+    {rad3 + T 1 1 {-st w -padx 8} {-t {By #RUNF: / #EXEC:} -value 0 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
     {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar ::alited::run::vent}} \
     {rad4 rad3 T 1 1 {-st w -padx 8} {-t {By command:} -value 1 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
     {fiL + L 1 4 {-st ew} {-h 12 -cbxsel "$al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$al(comForceLs)" -validate focus -validatecommand alited::run::ValidatePath}} \

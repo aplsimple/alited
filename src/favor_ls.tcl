@@ -389,13 +389,22 @@ proc favor_ls::Delete {} {
 }
 #_______________________
 
-proc favor_ls::Message {msg {mode 1}} {
+proc favor_ls::Message {msg {mode 2}} {
   # Displays a message in statusbar of favorites dialogue.
   #   msg - message
   #   mode - mode of Message
 
   variable obFav
   alited::Message $msg $mode [$obFav LabMess]
+}
+#_______________________
+
+proc favor_ls::ProcMessage {} {
+  # Handles clicking on message label.
+
+  variable obFav
+  set msg [baltip cget [$obFav LabMess] -text]
+  Message $msg 3
 }
 
 # ________________________ Ini data _________________________ #
@@ -533,6 +542,7 @@ proc favor_ls::_create {} {
   bind $lbx <Double-Button-1> ::alited::favor_ls::DoubleClick
   bind $lbx <Return> ::alited::favor_ls::DoubleClick
   bind $win <F1> "[$obFav ButHelp] invoke"
+  bind [$obFav LabMess] <Button-1> alited::favor_ls::ProcMessage
   after 500 ::alited::favor_ls::HelpMe ;# show an introduction after a short pause
   set geo {-resizable 1 -minsize {600 400}}
   if {$favgeometry ne {}} {append geo " -geometry $favgeometry"}

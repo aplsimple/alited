@@ -1733,7 +1733,7 @@ In this dialogue, a current Tcl script (file.tcl) can be run in <i>console</i> o
 </p>
 
 <p>
-With <i>"By command #RUNF:"</i> you write comments in a file, like:
+With <i>"By #RUNF: / #EXEC:"</i> you write comments in a file, like:
 <pre class="code"><i><font color=#4b5d50>#RUNF: file.tcl arg1 arg2 arg3</font></i>
 </pre>
 or
@@ -1759,7 +1759,12 @@ If your Tcl executable command includes spaces (not pretty nice case though), qu
 <pre class="code"><font color=#8b2a0e>&quot;C:\Tcl 64\bin\wish.exe&quot;</font> myproj3.tcl arg1 arg2...</pre>
 </p>
 <p>
-The command can include wildcards:
+The combobox's commands can be created and edited in the text box,
+at that the text's current line is highlighted and displayed in the combobox.
+</p>
+
+<p>
+The commands and #RUNF: / #EXEC: comments can include wildcards:
 <ul>
   <li><i>%f</i>  - current file's name</li>
   <li><i>%d</i>  - current file's directory</li>
@@ -1768,15 +1773,14 @@ The command can include wildcards:
   <li><i>%H</i> - home directory
   <li><i>%%</i> - %</li>
 </ul>
-The combobox's commands can be created and edited in the text box,
-at that the text's current line is highlighted and displayed in the combobox.
 </p>
 
 <p>
 These two ways of "Run" are useful for two different type of projects:
 <ul>
   <li> <i>heterogeneous</i>: a project contains a lot of files that need to
-    be tested and debugged with their own commands</li>
+    be tested and debugged with their own commands - then #RUNF: / #EXEC: will help</li>
+  <br>
   <li> <i>monolith</i>: you have a lot of files that need a list of commands to test
     and debug the whole application (<span class="curid"><a href="#" class="wikilink1" title="Table of Contents">alited</a></span> is an example)</li>
 </ul>

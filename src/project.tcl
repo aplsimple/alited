@@ -767,7 +767,7 @@ proc project::KlndDayRem {dmin} {
 }
 #_______________________
 
-proc project::Message {msg {mode 1}} {
+proc project::Message {msg {mode 2}} {
   # Displays a message in statusbar of projects dialogue.
   #   msg - message
   #   mode - mode of Message
@@ -1531,8 +1531,7 @@ proc project::ProcMessage {} {
   variable obPrj
   variable msgtodo
   variable itemtodo
-  set lab [$obPrj LabMess]
-  set msg [baltip cget $lab -text]
+  set msg [baltip cget [$obPrj LabMess] -text]
   if {$msgtodo eq $msg} {
     Message $msg 6
     Select $itemtodo

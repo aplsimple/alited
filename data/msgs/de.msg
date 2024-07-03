@@ -583,7 +583,7 @@ namespace eval ::alited {
     {For Start...} {Für dem Starten...}
     " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Geben Sie Befehle ein, die nach dem Starten von alited ausgeführt werden sollen,\n das heißt Tcl Befehle oder ausführbare Dateien:"
     {By command:} {Durch Befehl:}
-    {By command #RUNF:} {Durch Befehl #RUNF:}
+    {By #RUNF: / #EXEC:} {Durch #RUNF: / #EXEC:}
     {Run:} {Ausführe:}
     {Run it} {Ausführe}
     { OS or Tcl commands to be run before running a current file:} {OS oder Tcl Befehle, die ausgeführt werde bevor die aktuelle Datei ausgeführt wird:}
@@ -592,6 +592,7 @@ namespace eval ::alited {
     {e_menu's own} {e_menu eigen}
     {Select any of run item} {Wähle ein Ausführens Element}
     "Incorrect \"Preferences/Tools/tclsh...\"\nresults in the error:" "Falsche \"Einstellungen/Werkzeuge/tclsh...\"\nergibt den Fehler:"
+    {Set a Linux terminal in Preferences/Tools} {Legen Sie ein Linux Terminal in den Einstellungen/Werkzeuge fest}
   }
 
   ## ________________________ Checks ________________________ ##

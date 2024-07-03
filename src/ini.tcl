@@ -357,6 +357,7 @@ proc ini::ReadIni {{projectfile ""}} {
     alited::pref::Tkcon_Default
     alited::pref::Tkcon_Default1
   }
+  InitXterminal
   set al(ini_file) {}  ;# to reread alited.ini contents, at need in next time
 }
 #_______________________
@@ -672,6 +673,29 @@ proc ini::Em_Number {em_N} {
     }
   }
   return $em_N
+}
+#_______________________
+
+proc ini::InitXterminal {} {
+  # Gets Linux terminal called by x-terminal-emulator, saves the result to al(EM,tt).
+  # See also: tool::EM_Options
+
+  namespace upvar ::alited al al
+  set al(EM,tt) $al(EM,tt=)
+  set tty [lindex [split $al(EM,tt)] 0]
+  set xte x-terminal-emulator
+  if {[::isunix] && [file tail $tty] eq $xte} {
+    if {[auto_execok $tty] eq {} || [catch {set man [exec man $xte]}]} {
+      set al(EM,tt) {} ;# no x-terminal-emulator command
+      return
+    }
+    switch -glob $man {
+      GNOME-TERMINAL* {set tt {gnome-terminal --wait}}
+      XFCE4-TERMINAL* {set tt xfce4-terminal}
+      default {return}
+    }
+    set al(EM,tt) $tt[string range $al(EM,tt=) [string length $tty] end]
+  }
 }
 
 # _______________________ Reading project settings _________________________ #

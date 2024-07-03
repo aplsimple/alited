@@ -204,13 +204,22 @@ proc pref::ReservedIcons {} {
 }
 #_______________________
 
-proc pref::Message {msg {mode 1}} {
+proc pref::Message {msg {mode 2}} {
   # Displays a message in statusbar of preferences dialogue.
   #   msg - message
   #   mode - mode of Message
 
   fetchVars
   alited::Message $msg $mode [$obPrf LabMess]
+}
+#_______________________
+
+proc pref::ProcMessage {} {
+  # Handles clicking on message label.
+
+  fetchVars
+  set msg [baltip cget [$obPrf LabMess] -text]
+  Message $msg 3
 }
 
 # ________________________ Main Frame _________________________ #
@@ -1799,6 +1808,7 @@ proc pref::_create {tab} {
   }
   foreach o {o O} {bind $win <Control-$o> alited::ini::EditSettings}
   bind $win <F1> "[$obPrf ButHelp] invoke"
+  bind [$obPrf LabMess] <Button-1> alited::pref::ProcMessage
   $obPrf untouchWidgets *.texSample *.texCSample
   if {$geo in [list {} "{}"]} {set geo root=$al(WIN)}
   set res [$obPrf showModal $win -geometry $geo -minsize {800 600} -resizable 1 \
