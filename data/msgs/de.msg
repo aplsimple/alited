@@ -60,7 +60,7 @@ namespace eval ::alited {
     {Run as Is} {Ausführen wie ist}
     {in console} {in Konsole}
     {in Tkcon} {in Tkcon}
-    {combined} {kombinierte}
+    {as is} {wie es ist}
     {Moving} {Verschieben}
     {Color Picker} {Farbauswahl}
     {Date Picker} {Datumsausawahl}
@@ -582,6 +582,7 @@ namespace eval ::alited {
     {If 'yes', means a separator of the toolbar/menu.} {'ja' bedeutet Trennzeichen in der Werkzeugliste/Menü.}
     {For Start...} {Für dem Starten...}
     " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Geben Sie Befehle ein, die nach dem Starten von alited ausgeführt werden sollen,\n das heißt Tcl Befehle oder ausführbare Dateien:"
+    "Enter a command to be run!\nSee Tools/Run..." "Geben Sie einen ausgeführt Befehl ein!\nSiehe Werkzeuge/Ausführen..."
     {By command:} {Durch Befehl:}
     {By #RUNF: / #EXEC:} {Durch #RUNF: / #EXEC:}
     {Run:} {Ausführe:}

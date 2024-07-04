@@ -64,7 +64,7 @@ namespace eval ::alited {
     {Run as Is} {Запуск як є}
     {in console} {у консолі}
     {in Tkcon} {у Tkcon}
-    {combined} {спільно}
+    {as is} {як є}
     {Moving} {Переміщення}
     {Color Picker} {Вибір коліру}
     {Date Picker} {Вибір дати}
@@ -585,6 +585,7 @@ namespace eval ::alited {
     {If 'yes', means a separator of the toolbar/menu.} {Якщо включено, значить роздільник у тулбарі/меню.}
     {For Start...} {Для старту...}
     " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Введіть команди, що мають виконатися після старту alited,\n тобто команди Tcl або зовнішні команди:"
+    "Enter a command to be run!\nSee Tools/Run..." "Введіть виконувану команду!\nДив. Струменти/Запуск..." 
     {By command:} {Командою:}
     {By #RUNF: / #EXEC:} {По #RUNF: / #EXEC:}
     {Run:} {Запуск:}

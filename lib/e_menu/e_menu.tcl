@@ -2553,7 +2553,7 @@ proc ::em::wildcardComm {com} {
   # Gets command counting wildcards.
 
   set idiotic {~Fb^D~}
-  set com [string map [list %% $idiotic] $::em::ee]
+  set com [string map [list %% $idiotic] $com]
   set com [string map [list \
     %f $::em::arEM(f) \
     %d [file dirname $::em::arEM(f)] \

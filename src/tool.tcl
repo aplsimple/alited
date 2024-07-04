@@ -766,12 +766,12 @@ proc tool::e_menu {args} {
   # check options for compatibility
   set itc [lsearch -glob $args tc=*]
   set iee [lsearch -glob $args ee=*]
-  if {$itc>-1 && $iee>-1 && $al(prjincons)} {
+  if {$itc>-1 && $iee>-1 && $al(prjincons)==1} {
     set ee [string range [lindex $args $iee] 3 end]
     if {![alited::file::IsTcl $ee]} {
       set args [lreplace $args $itc $itc] ;# not a Tcl file - can't be run with tclsh
     }
-  } elseif {$itc==-1 && $iee==-1 && $al(prjincons)} {
+  } elseif {$itc==-1 && $iee==-1 && $al(prjincons)==1} {
     lappend args tc=[alited::Tclexe]  ;# for console - set "path to tclsh" argument
   }
   if {$::alited::al(EM,exec)} {
@@ -882,6 +882,24 @@ proc tool::_run {{what ""} {runmode ""} args} {
     set fnameCur [alited::bar::FileName]
     set com [PrepareRunCommand $al(prjbeforerun) $fnameCur]
     Runs {} $com
+    if {$al(prjincons)==2} {  ;# run "as is"
+      EM_SaveFiles
+      if {[ComForced]} {
+        set com $al(comForce)
+      } else {
+        lassign [alited::tool::RunArgs] ar rf ex
+        set com $ar$rf$ex
+      }
+      set com [PrepareRunCommand $com $fnameCur]
+      if {[string trim $com] eq {}} {
+        alited::msg ok err [msgcat::mc "Enter a command to be run!\nSee Tools/Run..."]
+        RunMode
+        return
+      }
+      if {[string index $com end] ne {&}} {append com { &}}
+      exec -- {*}$com
+      return
+    }
     if {[alited::file::IsTcl $fnameCur]} CheckTcl
     if {[ComForced]} {
       set com [PrepareRunCommand $al(comForce) $fnameCur]
@@ -915,9 +933,6 @@ proc tool::Run_in_e_menu {com {fnameCur ""}} {
         set tw {}
       } else {
         set tw "%t [alited::Tclexe] "
-        if {$al(prjincons)==2} {
-          append tw $tkconcall ;# combined
-        }
       }
     }
   }

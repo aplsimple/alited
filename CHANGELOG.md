@@ -6,6 +6,14 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
+Version `v1.8.6a1 (4 Jul'24)`
+
+  - BUGFIX: injected in 1.8.5 (in e_menu package)
+  - DELETE: Tools/Run...: "combined" mode
+  - NEW   : Tools/Run...: "as is" mode - thanks to Johann
+  - CHANGE: packages: e_menu
+
+
 Version `v1.8.5 (3 Jul'24)`
 
   - BUGFIX: at 1st start: entries' cursorwidth = 1 instead of default 2

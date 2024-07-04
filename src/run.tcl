@@ -54,7 +54,7 @@ proc run::Run {} {
   } elseif {$al(prjincons)==1} {
     set in terminal
   } elseif {$al(prjincons)==2} {
-    set in combined
+    set in {as is}
   } else {
     set in tkcon
   }
@@ -237,15 +237,6 @@ proc run::ValidatePath {} {
     }
     $cbx set [file nativename $com]
   }
-  set fn1 [string trim $com \"]
-  set fn2 [string trim [lindex [split $com] 0] \"]
-  if {[alited::file::IsTcl $fn1] && [file exists $fn1] ||
-  [alited::file::IsTcl $fn2] && [file exists $fn2]} {
-    set state normal
-  } else {
-    set state disabled
-  }
-  [$obRun Rad2] configure -state $state
   return 1
 }
 #_______________________
@@ -266,6 +257,7 @@ proc run::ChbForced {} {
   }
   $tex configure -state [$cbx cget -state]
   FillTex1
+  ValidatePath
 }
 # ________________________ Main _________________________ #
 
@@ -302,7 +294,7 @@ proc run::_create {} {
     {lab T + 1 1 {-st e -pady 5 -padx 8} {-t Run:}} \
     {Rad1 + L 1 1 {-st w} {-tvar ::alited::al(MC,inconsole) -value 1 -var ::alited::al(prjincons)}} \
     {rad0 + L 1 1 {-st we} {-tvar ::alited::al(MC,intkcon) -value 0 -var ::alited::al(prjincons)}} \
-    {Rad2 + L 1 1 {-st w} {-tvar ::alited::al(MC,combined) -value 2 -var ::alited::al(prjincons)}} \
+    {Rad2 + L 1 1 {-st w} {-tvar ::alited::al(MC,asis) -value 2 -var ::alited::al(prjincons)}} \
     {seh1 lab T 1 5 {-pady 5}} \
     {rad3 + T 1 1 {-st w -padx 8} {-t {By #RUNF: / #EXEC:} -value 0 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
     {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar ::alited::run::vent}} \
