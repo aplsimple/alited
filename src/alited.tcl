@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.6a1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.6b2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -157,7 +157,7 @@ namespace eval alited {
   set al(prjbeforerun) {} ;# a command to be run before "Tools/Run"
   set al(prjtrailwhite) 0 ;# "remove trailing whitespaces" flag
   set al(prjincons) 1     ;# "run Tcl scripts in console" flag
-  set al(prjdirign) {.git .bak} ;# ignored subdirectories of project
+  set al(prjdirign) {.git .bak .gitignore .fslckout} ;# ignored files of project
   set al(prjmaxcoms) 20   ;# maximum of "Run..." commands
   set al(prjuseleafRE) 0  ;# "use leaf's RE"
   set al(prjleafRE) {}    ;# "leaf's RE"

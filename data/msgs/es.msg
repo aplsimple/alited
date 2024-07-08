@@ -227,7 +227,7 @@ namespace eval ::alited {
     {Options} {Opciones}
     {Project:} {Proyecto:}
     {Root directory:} {Carpeta raíz:}
-    {Skip subdirectories:} {Omitir subcarpetas:}
+    {Skip files/directories:} {Omitir archivos/carpetas:}
     {Description:} {Descripción:}
     {Indentation:} {Sangría:}
     {Auto detection} {Detección automática}
@@ -580,7 +580,6 @@ namespace eval ::alited {
     {If 'yes', means a separator of the toolbar/menu.} {Si 'sí', significa un separador de la barra de herramientas / menú.}
     {For Start...} {Para inicio...}
     " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Introduzca los comandos que se ejecutarán después de inicio de alited.\n Pueden ser Tcl o ejecutables:"
-    "Enter a command to be run!\nSee Tools/Run..." "Ingrese un comando ejecutado!\nVer Herramientas/Ejecutar..."
     {By command:} {Por comando:}
     {By #RUNF: / #EXEC:} {Por #RUNF: / #EXEC:}
     {Run:} {Ejecutar:}

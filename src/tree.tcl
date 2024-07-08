@@ -905,7 +905,7 @@ proc tree::PrepareDirectoryContents {} {
       lappend al(_dirignore) [string toupper [string trim $d \"]]
     }
   }
-  lappend al(_dirignore) [string toupper [file tail [alited::Tclexe]]]
+  lappend al(_dirignore) [string toupper [file tail [alited::Tclexe]]] . ..
 }
 #_______________________
 
@@ -933,9 +933,14 @@ proc tree::DirContents {dirname {lev 0} {iroot -1} {globs "*"}} {
 
   namespace upvar ::alited al al _dirtree _dirtree
   incr lev
-  if {[catch {set dcont [lsort -dictionary [glob [file join $dirname *]]]}]} {
+  set tpl [file join $dirname *]
+  if {[catch {set dcont [glob $tpl]}]} {
     set dcont [list]
   }
+  catch {
+    lappend dcont {*}[glob -type hidden $tpl]
+  }
+  set dcont [lsort -dictionary $dcont]
   # firstly directories:
   # 1. skip the ignored ones
   for {set i [llength $dcont]} {$i} {} {

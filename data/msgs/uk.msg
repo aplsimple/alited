@@ -232,7 +232,7 @@ namespace eval ::alited {
     {Options} {Опції}
     {Project:} {Проект:}
     {Root directory:} {Коріневий каталог:}
-    {Skip subdirectories:} {Пропускати підкаталоги:}
+    {Skip files/directories:} {Пропускати файли/каталоги:}
     {Description:} {Опис:}
     {Indentation:} {Пробілів відступу:}
     {Auto detection} {Автовизначення}
@@ -585,7 +585,6 @@ namespace eval ::alited {
     {If 'yes', means a separator of the toolbar/menu.} {Якщо включено, значить роздільник у тулбарі/меню.}
     {For Start...} {Для старту...}
     " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Введіть команди, що мають виконатися після старту alited,\n тобто команди Tcl або зовнішні команди:"
-    "Enter a command to be run!\nSee Tools/Run..." "Введіть виконувану команду!\nДив. Струменти/Запуск..." 
     {By command:} {Командою:}
     {By #RUNF: / #EXEC:} {По #RUNF: / #EXEC:}
     {Run:} {Запуск:}

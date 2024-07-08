@@ -1733,13 +1733,16 @@ In this dialogue, a current Tcl script (file.tcl) can be run in <i>console</i> o
 </p>
 
 <p>
-With <i>"By #RUNF: / #EXEC:"</i> you write comments in a file, like:
-<pre class="code"><i><font color=#4b5d50>#RUNF: file.tcl arg1 arg2 arg3</font></i>
+With <i>"By #RUNF: / #EXEC:"</i> you write comments in a current file, like:
+<pre class="code"><i><font color=#4b5d50>#RUNF: afile.tcl arg1 arg2 arg3</font></i>
 </pre>
 or
-<pre class="code"><i><font color=#4b5d50>#EXEC: tclsh file.tcl arg1 arg2 arg3</font></i>
+<pre class="code"><i><font color=#4b5d50>#EXEC: tclsh afile.tcl arg1 arg2 arg3</font></i>
 </pre>
-meaning that "<i>tclsh file.tcl arg1 arg2 arg3</i>" will be run on the file. If there isn't this command, a current file is run by an associated application.
+or even
+<pre class="code"><i><font color=#4b5d50>#EXEC: xfce4-terminal --show-toolbar --hide-menubar -x tclsh afile.tcl arg1 arg2 arg3</font></i>
+</pre>
+meaning that "<i>tclsh afile.tcl arg1 arg2 arg3</i>" will be run at editing the current file. If there is no <i>#RUNF:</i> nor <i>#EXEC:</i> comment, the current file is run by an associated application.
 </p>
 
 <p>

@@ -604,7 +604,7 @@ proc tool::AfterStart {} {
 ## ________________________ run tcl source _________________________ ##
 
 proc tool::RunArgs {} {
-  # Gets ARGS/RUNF arguments (similar to ::em::get_AR of e_menu.tcl).
+  # Gets ARGS/RUNF/EXEC arguments (similar to ::em::get_AR of e_menu.tcl).
   # Returns a list of ARGS and RUNF arguments found in the current file.
 
   set res {}
@@ -658,17 +658,21 @@ proc tool::RunTcl {{runmode ""}} {
   if {($runmode eq {} && !$::alited::al(prjincons)) || $runmode eq {tkcon}} {
     lassign [RunArgs] ar rf
     set tclfile {}
-    catch {  ;# ar & rf can be badly formed => catch
-      set fname [alited::bar::FileName]
-      if {[llength $ar] || (![llength $rf] && [alited::file::IsTcl $fname])} {
-        set rf $fname
+    if {[catch {  ;# ar & rf can be badly formed => catch
+      set fnameCur [alited::bar::FileName]
+      if {[llength $ar] || (![llength $rf] && [alited::file::IsTcl $fnameCur])} {
+        set rf "\"$fnameCur\""
         append rf { } $ar
       }
-      if {[set tclfile [lindex $rf 0]] ne {}} {
-        cd [file dirname $fname]
+      set fname [lindex $rf 0]
+      set fname [PrepareRunCommand $fname $fnameCur]
+      if {[set tclfile $fname] ne {}} {
+        cd [file dirname $fnameCur]
         set tclfile [file normalize $tclfile]
         set rf [lreplace $rf 0 0]
       }
+    } err]} {
+      alited::Message $err 4
     }
     if {$tclfile ne {} && [file exists $tclfile]} {
       # run tkcon with file.tcl & argv
@@ -766,12 +770,12 @@ proc tool::e_menu {args} {
   # check options for compatibility
   set itc [lsearch -glob $args tc=*]
   set iee [lsearch -glob $args ee=*]
-  if {$itc>-1 && $iee>-1 && $al(prjincons)==1} {
+  if {$itc>-1 && $iee>-1 && $al(prjincons)} {
     set ee [string range [lindex $args $iee] 3 end]
     if {![alited::file::IsTcl $ee]} {
       set args [lreplace $args $itc $itc] ;# not a Tcl file - can't be run with tclsh
     }
-  } elseif {$itc==-1 && $iee==-1 && $al(prjincons)==1} {
+  } elseif {$itc==-1 && $iee==-1 && $al(prjincons)} {
     lappend args tc=[alited::Tclexe]  ;# for console - set "path to tclsh" argument
   }
   if {$::alited::al(EM,exec)} {
@@ -891,14 +895,11 @@ proc tool::_run {{what ""} {runmode ""} args} {
         set com $ar$rf$ex
       }
       set com [PrepareRunCommand $com $fnameCur]
-      if {[string trim $com] eq {}} {
-        alited::msg ok err [msgcat::mc "Enter a command to be run!\nSee Tools/Run..."]
-        RunMode
+      if {[string trim $com] ne {}} {
+        if {[string index $com end] ne {&}} {append com { &}}
+        exec -- {*}$com
         return
       }
-      if {[string index $com end] ne {&}} {append com { &}}
-      exec -- {*}$com
-      return
     }
     if {[alited::file::IsTcl $fnameCur]} CheckTcl
     if {[ComForced]} {

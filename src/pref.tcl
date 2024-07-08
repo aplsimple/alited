@@ -657,8 +657,8 @@ proc pref::General_Tab3 {} {
       {-var ::alited::al(PRJDEFAULT) -com alited::pref::CheckUseDef \
       -afteridle alited::pref::CheckUseDef}}
     {.seh .labDef T 1 10 {-st ew -pady 3 -padx 3}}
-    {.labIgn + T 1 1 {-st e -pady 8 -padx 3} {-t {$al(MC,Ign:)}}}
-    {.EntIgn + L 1 9 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(DEFAULT,prjdirign) -w 50}}
+    {.labIgn + T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,Ign:)}}}
+    {.EntIgn + L 1 9 {-st sw -pady 3 -padx 3} {-tvar ::alited::al(DEFAULT,prjdirign) -w 50}}
     {.labEOL .labIgn T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,EOL:)}}}
     {.CbxEOL + L 1 1 {-st sw -pady 3 -padx 3} \
       {-tvar ::alited::al(DEFAULT,prjEOL) -values {{} LF CR CRLF} -state readonly -w 9}}

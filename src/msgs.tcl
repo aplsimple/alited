@@ -125,7 +125,7 @@ namespace eval ::alited {
     set al(MC,formatdesc...) [msgcat::mc {Moving Unit Descriptions...}]
 
     ## _  project options _ ##
-    set al(MC,Ign:)        [msgcat::mc {Skip subdirectories:}]
+    set al(MC,Ign:)        [msgcat::mc {Skip files/directories:}]
     set al(MC,EOL:)        [msgcat::mc {End of line:}]
     set al(MC,indent:)     [msgcat::mc {Indentation:}]
     set al(MC,indentAuto)  [msgcat::mc {Auto detection}]

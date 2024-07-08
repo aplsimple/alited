@@ -5,10 +5,10 @@
  Otherwise, default options for new projects are set here, so that when
  you create a project, its options are taken from these defaults:
 
-   - <b>Skip subdirectories</b> - if the project directory contains some
-     subdirectories which should be ignored (most often, SCM ones like
-     ".git"), enter their tail names; separate them with spaces; use
-     double quotes if they include spaces.
+   - <b>Skip files/directories</b> - if the project directory contains some
+     files or directories which should be ignored (most often, SCM ones
+     like ".git"), enter their tail names; separate them with spaces;
+     use double quotes if they include spaces.
 
    - <b>End of line</b> - if this field is empty, the EOLs for saved files
      are defined by your platform; but if you have some projects with

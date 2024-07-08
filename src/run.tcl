@@ -242,20 +242,15 @@ proc run::ValidatePath {} {
 #_______________________
 
 proc run::ChbForced {} {
-  # Check buttons' value for run::_create.
+  # Checks states & values of widgets.
 
   namespace upvar ::alited al al obRun obRun
+  if {$al(comForceCh)} {set state normal} {set state disabled}
   set cbx [$obRun CbxfiL]
-  set tex [$obRun Tex1]
-  set ent [$obRun Ent]
-  if {$al(comForceCh)} {
-    $cbx configure -state normal
-    $ent configure -state disabled
-  } else {
-    $cbx configure -state disabled
-    $ent configure -state normal
-  }
-  $tex configure -state [$cbx cget -state]
+  set but [string map {.cbx .btT} $cbx] ;# path to combobox' button
+  $cbx configure -state $state
+  $but configure -state $state
+  [$obRun Tex1] configure -state $state
   FillTex1
   ValidatePath
 }
@@ -292,21 +287,23 @@ proc run::_create {} {
   $obRun paveWindow $win.fra {
     {h_ - - 1 5} \
     {lab T + 1 1 {-st e -pady 5 -padx 8} {-t Run:}} \
-    {Rad1 + L 1 1 {-st w} {-tvar ::alited::al(MC,inconsole) -value 1 -var ::alited::al(prjincons)}} \
-    {rad0 + L 1 1 {-st we} {-tvar ::alited::al(MC,intkcon) -value 0 -var ::alited::al(prjincons)}} \
-    {Rad2 + L 1 1 {-st w} {-tvar ::alited::al(MC,asis) -value 2 -var ::alited::al(prjincons)}} \
+    {fraIn + L 1 4 {-st ew}} \
+    {.Rad1 - - 1 1 {pack -side left} {-tvar ::alited::al(MC,inconsole) -value 1 -var ::alited::al(prjincons)}} \
+    {.rad0 + L 1 1 {pack -side left -expand 1} {-tvar ::alited::al(MC,intkcon) -value 0 -var ::alited::al(prjincons)}} \
+    {.Rad2 + L 1 1 {pack -side left} {-tvar ::alited::al(MC,asis) -value 2 -var ::alited::al(prjincons)}} \
+    {.h_ - - 1 1 {pack -side left -expand 1}} \
     {seh1 lab T 1 5 {-pady 5}} \
     {rad3 + T 1 1 {-st w -padx 8} {-t {By #RUNF: / #EXEC:} -value 0 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
     {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar ::alited::run::vent}} \
     {rad4 rad3 T 1 1 {-st w -padx 8} {-t {By command:} -value 1 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
     {fiL + L 1 4 {-st ew} {-h 12 -cbxsel "$al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$al(comForceLs)" -validate focus -validatecommand alited::run::ValidatePath}} \
     {fra1 rad4 T 1 5 {-st nsew -cw 1 -rw 1}} \
-    {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 9 -afteridle alited::run::FillTex1 -tabnext *tex2}} \
+    {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 50 -h 9 -afteridle alited::run::FillTex1 -tabnext *tex2}} \
     {.sbv + L - - {pack -side left}} \
     {seh3 fra1 T 1 5 {-pady 5}} \
     {lab2 + T 1 5 {} {-t { OS or Tcl commands to be run before running a current file:}}} \
     {fra2 + T 1 5 {-st nsew}} \
-    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 40 -h 4 -afteridle alited::run::FillTex2 -tabnext *butRun}} \
+    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 50 -h 4 -afteridle alited::run::FillTex2 -tabnext *butRun}} \
     {.sbv + L - - {pack -side left}} \
     {seh2 fra2 T 1 5 {-pady 5}} \
     {butHelp + T 1 1 {-st w -padx 2} {-t Help -com alited::run::Help}} \
@@ -321,7 +318,7 @@ proc run::_create {} {
   bind $win <F5> alited::run::Run
   set geo $al(runGeometry)
   if {$geo ne {}} {set geo "-geometry $geo"}
-  $obRun showModal $win -modal no -waitvar yes -onclose alited::run::Cancel -resizable 1 -focus [$obRun Rad1] -decor 1 -minsize {300 200} {*}$geo -ontop 0
+  $obRun showModal $win -modal no -waitvar yes -onclose alited::run::Cancel -resizable 1 -focus [$obRun Rad1] -decor 1 -minsize {400 300} {*}$geo -ontop 0
   catch {destroy $win}
   ::apave::deiconify $al(WIN)
 }

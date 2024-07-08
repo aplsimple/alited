@@ -947,14 +947,17 @@ proc main::TipStatus {} {
   # Gets a tip for a status bar's short info.
 
   namespace upvar ::alited al al obPav obPav
-  set run "$al(MC,run)"
+  set run "$al(MC,run) "
+  switch $al(prjincons) {
+    0 {append run $al(MC,intkcon)}
+    1 {append run $al(MC,inconsole)}
+    2 {append run $al(MC,asis)}
+  }
   if {[alited::tool::ComForced]} {
-    append run ": $al(comForce)\n"
-  } elseif {$al(prjincons)} {
-    if {$al(IsWindows)} {set term $al(EM,wt=)} {set term $al(EM,tt=)}
-    append run " Tcl: $al(MC,inconsole) $term\n"
+    append run :\ $al(comForce)
   } else {
-    append run " Tcl: $al(MC,intkcon)\n"
+    lassign [alited::tool::RunArgs] ar rf ex
+    append run :\ $ar$rf$ex
   }
   set tip [[$obPav Labstat4] cget -text]
   set tip [string map [list \
@@ -962,7 +965,7 @@ proc main::TipStatus {} {
     ind= "$al(MC,indent:) " \
     {, } \n \
     ] $tip]
-  return "$run\n[msgcat::mc Encoding]: $tip"
+  return "$run\n\n[msgcat::mc Encoding]: $tip"
 }
 #_______________________
 

@@ -6,11 +6,16 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.6a1 (4 Jul'24)`
+Version `v1.8.6b2 (8 Jul'24)`
 
-  - BUGFIX: injected in 1.8.5 (in e_menu package)
+  - BUGFIX: e_menu's bug injected in v1.8.5
+  - BUGFIX: in Linux: not seen .file in the file tree (thanks to George)
   - DELETE: Tools/Run...: "combined" mode
-  - NEW   : Tools/Run...: "as is" mode - thanks to Johann
+  - NEW   : Tools/Run...: "as is" mode (thanks to Johann)
+  - NEW   : status bar message for bad #RUNF: / #EXEC: command
+  - CHANGE: run by Tkcon for #RUNF: / #EXEC: when it begins with %f wildcard
+  - CHANGE: tip of status bar's right info
+  - CHANGE: Tools/Run...: appearance
   - CHANGE: packages: e_menu
 
 

@@ -227,7 +227,7 @@ namespace eval ::alited {
     {Options} {Optionen}
     {Project:} {Projekt:}
     {Root directory:} {Basisverzeichnis:}
-    {Skip subdirectories:} {Überspringe Unterverzeichnisse:}
+    {Skip files/directories:} {Überspringe Dateien/Verzeichnisse:}
     {Description:} {Beschreibung:}
     {Indentation:} {Einrücken:}
     {Auto detection} {Autoerkennung}
@@ -275,7 +275,7 @@ namespace eval ::alited {
     {Commands} {Befehle}
     {For project} {Für dem Project}
     {%n commands will be executed!} {%n Befehle werden ausgeführt!}
-    {Maximum commands reached: %n, current: %i (see Project/Options)} {Maximal Befehle erreicht: %n, aktuell: %i (siehe Projekt/Optionen)}
+    {Maximum commands reached: %n, current: %i (see Project/Options)} {Maximal Befehle erreicht: %n, aktuell: %i (sehen Sie Projekt/Optionen)}
     {Maximum Run commands} {Maximal Ausführen Befehle}
     {The project directory already exists! It isn't created with templates.} {Das Projektverzeichnis existiert bereits! Es wird nicht mit Vorlagen erstellt.}
     {All files filter:} {Alle Dateien filtern:}
@@ -582,7 +582,6 @@ namespace eval ::alited {
     {If 'yes', means a separator of the toolbar/menu.} {'ja' bedeutet Trennzeichen in der Werkzeugliste/Menü.}
     {For Start...} {Für dem Starten...}
     " Enter commands to be run after starting alited.\n They can be Tcl or executables:" " Geben Sie Befehle ein, die nach dem Starten von alited ausgeführt werden sollen,\n das heißt Tcl Befehle oder ausführbare Dateien:"
-    "Enter a command to be run!\nSee Tools/Run..." "Geben Sie einen ausgeführt Befehl ein!\nSiehe Werkzeuge/Ausführen..."
     {By command:} {Durch Befehl:}
     {By #RUNF: / #EXEC:} {Durch #RUNF: / #EXEC:}
     {Run:} {Ausführe:}
@@ -728,7 +727,7 @@ namespace eval ::alited {
     {Pluginable} {Steckbar}
     {Applied to one selection only!} {Nur auf eine Auswahl angewendet!}
     "Incorrect mapped 'from-to' in: %l" "Inkorrekt kartiert 'von-zu' in: %l"
-    "'from' refers to previous 'to' in: %l (see: %n)" "'von' bezieht sich auf vorherige 'zu' in: %l (siehe: %n)"
+    "'from' refers to previous 'to' in: %l (see: %n)" "'von' bezieht sich auf vorherige 'zu' in: %l (sehen Sie: %n)"
     {Use %e to run "%m"} {Benutze %e um "%m" auszuführen}
     {%e is overlapped by formatter "%f"} {%e wird vom Formatierer "%f" überlappt}
   }
