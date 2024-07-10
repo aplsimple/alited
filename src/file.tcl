@@ -660,11 +660,7 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message ""}} {
   namespace upvar ::alited al al obPav obPav
   variable ansOpen
   if {$fnames eq {}} {
-    set al(TMPfname) {}
-    set fnames [$obPav chooser tk_getOpenFile ::alited::al(TMPfname) -multiple 1 \
-      -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
-    if {$al(lifo)} {set fnames [lsort -decreasing $fnames]}
-    unset al(TMPfname)
+    set fnames [ChooseMultipleFiles]
   } elseif {!$islist} {
     set fnames [list $fnames]
   }
@@ -722,6 +718,20 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message ""}} {
   RecreateFileTree
   alited::FocusText
   return $TID
+}
+#_______________________
+
+proc file::ChooseMultipleFiles {{dosort yes}} {
+  # Choose miltiple files to open.
+  #   dosort - if yes, handles the result's sorting
+
+  namespace upvar ::alited al al obPav obPav
+  set al(TMPfname) {}
+  set fnames [$obPav chooser tk_getOpenFile ::alited::al(TMPfname) -multiple 1 \
+    -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
+  if {$dosort && $al(lifo)} {set fnames [lsort -decreasing $fnames]}
+  unset al(TMPfname)
+  return $fnames
 }
 #_______________________
 
@@ -1083,6 +1093,33 @@ proc file::OpenFiles {} {
   }
   OpenFile [lsort -decreasing -dictionary $fnames] no yes
 }
+
+# ________________________ Detach file _________________________ #
+
+proc file::Detach {} {
+
+  SourceDetach
+  alited::detached::_run [alited::bar::FileName]
+}
+#_______________________
+
+proc file::OpenDetach {} {
+
+  if {[set fnames [ChooseMultipleFiles no]] eq {}} return
+  SourceDetach
+  alited::detached::_run $fnames
+}
+#_______________________
+
+proc file::SourceDetach {} {
+
+  if {![namespace exists ::alited::detached]} {
+    namespace eval ::alited {
+      source [file join $SRCDIR detached.tcl]
+    }
+  }
+}
+
 
 # ________________________ File tree _________________________ #
 

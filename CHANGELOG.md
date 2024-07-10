@@ -6,8 +6,9 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.6b2 (8 Jul'24)`
+Version `v1.8.6b3 (10 Jul'24)`
 
+  - BUGFIX: Ctrl+N, Alt+H => bad text index ".0"
   - BUGFIX: e_menu's bug injected in v1.8.5
   - BUGFIX: in Linux: not seen .file in the file tree (thanks to George)
   - DELETE: Tools/Run...: "combined" mode

@@ -408,6 +408,14 @@ proc menu::FillMenu {} {
   $m add command -label [msgcat::mc {Close and Delete}] -command alited::file::CloseAndDelete -accelerator Ctrl+Alt+W
   $m add separator
 
+  ### ________________________ Detach _________________________ ###
+
+  menu $m.detach -tearoff 0 -title $al(MC,detach)
+  $m add cascade -label $al(MC,detach) -menu $m.detach
+  $m.detach add command -label $al(MC,detach) -command alited::file::Detach
+  $m.detach add command -label $al(MC,open...) -command alited::file::OpenDetach
+  $m add separator
+
   ### ________________________ Reload _________________________ ###
 
   menu $m.eol -tearoff 1 -title EOL

@@ -38,6 +38,7 @@ namespace eval ::alited {
     {Save All} {Alles speichern}
     {Save and Close} {Speichern und Schließen}
     {Close and Delete} {Schließen und Löschen}
+    {Detach} {Abtrennen}
     {Preferences} {Einstellungen}
     {Preferences...} {Einstellungen ...}
     {Quit} {Beenden}

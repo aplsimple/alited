@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.6b2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.6b3  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -1313,6 +1313,7 @@ if {[info exists ALITED_PORT]} {
     source [file join $::alited::SRCDIR unit_tpl.tcl]
     source [file join $::alited::SRCDIR format.tcl]
     source [file join $::alited::SRCDIR printer.tcl]
+    source [file join $::alited::SRCDIR detached.tcl]
     source [file join $::alited::LIBDIR addon hl_md.tcl]
     source [file join $::alited::LIBDIR addon hl_html.tcl]
     source [file join $::alited::LIBDIR addon hl_em.tcl]

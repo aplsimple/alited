@@ -328,12 +328,12 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
   set unithead [string trim $unithead "\{ "]
   lassign [split $unithead "\{"] proc
   set iarg [string range $unithead [string length $proc] end]
-  set ipad [obj leadingSpaces [$wtxt get $l1.0 $l1.end]]
-  if {![IsLeafRegexp]} {
-    incr ipad [obj leadingSpaces $tex]
-  }
-  set pad [string repeat " " $ipad]
   catch {
+    set ipad [obj leadingSpaces [$wtxt get $l1.0 $l1.end]]
+    if {![IsLeafRegexp]} {
+      incr ipad [obj leadingSpaces $tex]
+    }
+    set pad [string repeat " " $ipad]
     set tpla $pad[string map [list \\n \n] $al(TPL,%a)]
     set oarg [set st1 ""]
     if {[string match \{*\} $iarg]} {set iarg [string range $iarg 1 end-1]}
@@ -509,7 +509,6 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi} {
 proc unit::Source_unit_tpl {} {
   # Sources unit_tpl.tcl.
 
-  namespace upvar ::alited SRCDIR SRCDIR
   if {![namespace exists ::alited::unit_tpl]} {
     namespace eval ::alited {
       source [file join $SRCDIR unit_tpl.tcl]
