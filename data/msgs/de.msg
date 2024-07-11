@@ -256,6 +256,8 @@ namespace eval ::alited {
     {Paste a text} {Text einfügen}
     {Undo changes} {Änderungen zurücknehmen}
     {Redo changes} {Änderungen wiederherstellen}
+    {Undo} {Änderungen zurücknehmen}
+    {Redo} {Änderungen wiederherstellen}
     {Text of a reminder} {Text einer Erinnerung}
     {TODO reminders for the past: %d.} {TODO Erinnerungen an die Vergangenheit: %d.}
     {No selected files} {Keine ausgewählte(n) Datei(en)}

@@ -388,6 +388,10 @@ proc ini::ReadIniGeometry {nam val} {
     treecw0        {set al(TREE,cw0) $val}
     treecw1        {set al(TREE,cw1) $val}
     runGeometry    {set al(runGeometry) $val}
+    detach*        {
+      set id [string range $nam 6 end]
+      set al(detachedObj,$id,) $val
+    }
   }
 }
 #_______________________
@@ -1040,6 +1044,14 @@ proc ini::SaveIni {{newproject no}} {
     puts $chan $v=$w
   }
   puts $chan "GEOM=[wm geometry $al(WIN)]"
+  foreach id {1 2 3 4 5 6 7 8} {
+    set dgeo al(detachedObj,$id,)
+    if {[info exists $dgeo]} {
+      puts $chan "detach$id=[set $dgeo]"
+    } else {
+      break
+    }
+  }
   close $chan
   SaveIniPrj $newproject
   SaveIniGlob

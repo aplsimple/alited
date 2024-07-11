@@ -2106,7 +2106,7 @@ oo::class create ::apave::APaveBase {
           opc* { ;# tk_optionCascade
             lset v2 2 "[lindex $v2 2] -takefocus 0"
           }
-          spx* - chb* { ;# spinbox etc.
+          spx* - chb* - ent* - cbx* { ;# spinbox etc.
             set v2 "$v2 -takefocus 0"
           }
           default {

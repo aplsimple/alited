@@ -591,11 +591,13 @@ proc main::FocusInText {TID wtxt} {
 
 # ________________________ Highlight _________________________ #
 
-proc main::HighlightText {TID curfile wtxt} {
+proc main::HighlightText {TID curfile wtxt {cmd ""} {cmdpos ""}} {
   # Highlights a file's syntax constructs.
   #   TID - tab's ID
   #   curfile - file name
   #   wtxt - text widget's path
+  #   cmd - callback for modifying text
+  #   cmdpos - callback for changing cursor position
   # Depending on a file name, Tcl or C highlighter is called.
 
   namespace upvar ::alited al al obPav obPav
@@ -611,6 +613,10 @@ proc main::HighlightText {TID curfile wtxt} {
         }
       }
     }
+    if {$cmd eq {}} {
+      set cmd "::alited::edit::Modified $TID"
+      set cmdpos ::alited::main::CursorPos
+    }
     set clrnams [::hl_tcl::hl_colorNames]
     set clrCURL [lindex [$obPav csGet] 16]
     # get a color list for the highlighting Tcl and C
@@ -625,9 +631,7 @@ proc main::HighlightText {TID curfile wtxt} {
       lappend Ccolors $clrCMN2
       ::hl_c::hl_init $wtxt -dark [$obPav csDark] \
         -multiline 1 -keywords $al(ED,CKeyWords) \
-        -cmd "::alited::edit::Modified $TID" \
-        -cmdpos ::alited::main::CursorPos \
-        -font $al(FONT,txt) -colors $Ccolors
+        -cmd $cmd -cmdpos $cmdpos -font $al(FONT,txt) -colors $Ccolors
     } else {
       lassign [alited::ExtTrans $curfile] -> istrans
       set pltext [expr {$istrans || ![alited::file::IsTcl $curfile]}]
@@ -639,9 +643,7 @@ proc main::HighlightText {TID curfile wtxt} {
       }
       ::hl_tcl::hl_init $wtxt -dark [$obPav csDark] \
         -multiline $al(prjmultiline) -keywords $al(ED,TclKeyWords) \
-        -cmd "::alited::edit::Modified $TID" \
-        -cmdpos ::alited::main::CursorPos \
-        -plaintext $pltext -plaincom $plcom \
+        -cmd $cmd -cmdpos $cmdpos -plaintext $pltext -plaincom $plcom \
         -font $al(FONT,txt) -colors $colors
     }
     UpdateText $wtxt $curfile

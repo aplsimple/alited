@@ -68,20 +68,24 @@ proc file::IsSaved {TID args} {
 }
 #_______________________
 
-proc file::MakeThemHighlighted {{tabs ""}} {
+proc file::MakeThemHighlighted {{tabs ""} {wtxt ""}} {
   # Sets flag "highlight file(s) anyway".
   #   tabs - list of tabs to set the flag for
+  #   wtxt - text path (if set, it is flagged only)
   # Useful when you need update the files' highlightings.
 
   namespace upvar ::alited al al
-  if {$tabs eq {}} {
-    set tabs [alited::bar::BAR listTab]
-  }
-  foreach tab $tabs {
-    if {[set wtxt [alited::main::GetWTXT [lindex $tab 0]]] ne {}} {
-      set al(HL,$wtxt) {..}
+  if {$wtxt eq {}} {
+    if {$tabs eq {}} {
+      set tabs [alited::bar::BAR listTab]
+    }
+    foreach tab $tabs {
+      if {[set w [alited::main::GetWTXT [lindex $tab 0]]] ne {}} {
+        lappend wtxt $w
+      }
     }
   }
+  foreach w $wtxt {set al(HL,$w) ..}
 }
 
 #_______________________
@@ -735,6 +739,23 @@ proc file::ChooseMultipleFiles {{dosort yes}} {
 }
 #_______________________
 
+proc file::SaveText {wtxt fname {enc ""}} {
+  # Saves text buffer to file.
+  #   wtxt - text's path
+  #   fname - file name
+  #   enc - encoding options
+
+  namespace upvar ::alited al al
+  set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
+  if {![writeTextFile $fname fcont 0 1 {*}$enc]} {
+    alited::msg ok err [::apave::error $fname] -w 50 -text 1
+    unset -nocomplain al(_NO_OUTWARD_)
+    return 0
+  }
+  return 1
+}
+#_______________________
+
 proc file::SaveFileByName {TID fname {doit no}} {
   # Saves a file.
   #   TID - ID of tab
@@ -756,10 +777,7 @@ proc file::SaveFileByName {TID fname {doit no}} {
   set al(_NO_OUTWARD_) {}
   set wtxt [alited::main::GetWTXT $TID]
   if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $TID yes $doit}
-  set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
-  if {![writeTextFile $fname fcont 0 1 {*}$enc]} {
-    alited::msg ok err [::apave::error $fname] -w 50 -text 1
-    unset al(_NO_OUTWARD_)
+  if {![SaveText $wtxt $fname $enc]} {
     return 0
   }
   unset al(_NO_OUTWARD_)

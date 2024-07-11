@@ -6,13 +6,14 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.6b3 (10 Jul'24)`
+Version `v1.8.6b4 (11 Jul'24)`
 
   - BUGFIX: Ctrl+N, Alt+H => bad text index ".0"
   - BUGFIX: e_menu's bug injected in v1.8.5
   - BUGFIX: in Linux: not seen .file in the file tree (thanks to George)
   - DELETE: Tools/Run...: "combined" mode
   - NEW   : Tools/Run...: "as is" mode (thanks to Johann)
+  - NEW   : File/Detach menu items (thanks to George)
   - NEW   : status bar message for bad #RUNF: / #EXEC: command
   - CHANGE: run by Tkcon for #RUNF: / #EXEC: when it begins with %f wildcard
   - CHANGE: tip of status bar's right info
