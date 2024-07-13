@@ -1099,8 +1099,8 @@ proc file::CloseAll {func args} {
 }
 #_______________________
 
-proc file::OpenFiles {} {
-  # Opens files selected in the file tree.
+proc file::TreeFileList {} {
+  # Gets a list of file tree's selected files.
 
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav Tree]
@@ -1109,19 +1109,41 @@ proc file::OpenFiles {} {
     lassign [$wtree item $selID -values] - fname isfile
     if {$isfile} {lappend fnames $fname}
   }
-  OpenFile [lsort -decreasing -dictionary $fnames] no yes
+  return $fnames
+}
+#_______________________
+
+proc file::OpenFiles {} {
+  # Opens files selected in the file tree.
+
+  OpenFile [lsort -decreasing -dictionary [TreeFileList]] no yes
 }
 
 # ________________________ Detach file _________________________ #
 
-proc file::Detach {} {
+proc file::DetachedInfo {id} {
+  # Gets detached editor's object and window.
+  #   id - editor's index
+
+  namespace upvar ::alited al al
+  set pobj ::alited::al(detachedObj,$id,)
+  set win $al(WIN).detachedWin$id
+  list $pobj $win
+}
+#_______________________
+
+proc file::Detach {{fnames ""}} {
+  # Open file in detached editors
+  #   fnames - file names' list
 
   SourceDetach
-  alited::detached::_run [alited::bar::FileName]
+  if {$fnames eq {}} {set fnames [alited::bar::FileName]}
+  alited::detached::_run $fnames
 }
 #_______________________
 
 proc file::OpenDetach {} {
+  # Choose files and open them in detached editors.
 
   if {[set fnames [ChooseMultipleFiles no]] eq {}} return
   SourceDetach
@@ -1129,7 +1151,15 @@ proc file::OpenDetach {} {
 }
 #_______________________
 
+proc file::DetachFromTree {} {
+
+  SourceDetach
+  alited::detached::_run [TreeFileList]
+}
+#_______________________
+
 proc file::SourceDetach {} {
+  # Sources detached.tcl.
 
   if {![namespace exists ::alited::detached]} {
     namespace eval ::alited {

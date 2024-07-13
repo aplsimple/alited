@@ -42,7 +42,8 @@ namespace eval ::alited {
     {Save All} {Зберегти всі}
     {Save and Close} {Зберегти і закрити}
     {Close and Delete} {Закрити і видалити}
-    {Detach} {Від'єднати}
+    {Detach} {Відчепити}
+    {Detach Selected Files} {Відчепити вибрані файли}
     {Preferences} {Настройки}
     {Preferences...} {Настройки...}
     {Quit} {Вихід}

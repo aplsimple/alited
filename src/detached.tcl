@@ -19,16 +19,12 @@ proc detached::Options {} {
   # Returns a list of index, apave object name, window path, geometry.
   # The geometry is of some previously used window or "".
 
-  namespace upvar ::alited al al
-  while {[incr i]<999} {
-    incr id
-    set pobj ::alited::al(detachedObj,$id,)
-    set win $al(WIN).detachedWin$id
-    set geo {}
+  while {[incr id]<99} {
+    lassign [alited::file::DetachedInfo $id] pobj win
     if {![info exists $pobj]} {
-      # vacant yet
+      set geo {}  ;# vacant yet
     } elseif {![winfo exists $win]} {
-      set geo [::apave::checkGeometry [set $pobj]]
+      set geo [::apave::checkGeometry [set $pobj]] ;# was used
     } else {
       continue
     }
@@ -76,13 +72,21 @@ proc detached::DisplayText {pobj fname} {
 }
 #_______________________
 
-proc detached::Modified {pobj wtxt args} {
+proc detached::Modified {pobj win wtxt args} {
   # Callback for modifying text.
   #   pobj - apave object of detached editor
+  #   win - window's path
   #   wtxt - text's path
 
   catch {
-    if {[$wtxt edit modified]} {set state normal} {set state disabled}
+    set ttl [string trimleft [wm title $win] *]
+    if {[$wtxt edit modified]} {
+      set ttl *$ttl
+      set state normal
+    } else {
+      set state disabled
+    }
+    wm title $win $ttl
     [$pobj ToolTop].buT_alimg_SaveFile configure -state $state
   }
 }
@@ -101,13 +105,13 @@ proc detached::SaveFile {pobj fname} {
 }
 #_______________________
 
-proc detached::Cancel {pobj win fname args} {
+proc detached::Close {id pobj win fname args} {
   # Closes detached editor.
-  #   pobj -apave object
+  #   id - editor's index
+  #   pobj - apave object
   #   win - editor's window
   #   fname - file name
 
-  lassign [split $pobj ,] -> id
   if {$id<=8} {
     # save only first ones' geometry (avoiding fat history)
     set $pobj [wm geometry $win]
@@ -123,6 +127,7 @@ proc detached::Cancel {pobj win fname args} {
   }
   catch {destroy $win}
   $pobj destroy
+  alited::ini::SaveIni
 }
 #_______________________
 
@@ -132,9 +137,10 @@ proc detached::_create {fname} {
 
   namespace upvar ::alited al al
   lassign [Options] id pobj win geo
+  if {$id eq {} || ![file isfile $fname]} return
   set $pobj $geo
   if {$geo ne {}} {set geo "-geometry $geo"}
-  set al(detachtools) [list]
+  set al(detachtools) {}
   foreach icon {SaveFile undo redo cut copy paste} {
     set img [alited::ini::CreateIcon $icon]
     append al(detachtools) " $img \{{} "
@@ -164,7 +170,7 @@ proc detached::_create {fname} {
     {.FrAText - - - - {pack -side left -expand 1 -fill both \
       -padx 0 -pady 0 -ipadx 0 -ipady 0} {-background $::apave::BGMAIN2}}
     {.frAText.Text - - - - {pack -expand 1 -fill both} \
-      {-w 50 -h 30 -gutter GutText -gutterwidth $al(ED,gutterwidth) \
+      {-w 50 -h 20 -gutter GutText -gutterwidth $al(ED,gutterwidth) \
       -guttershift $al(ED,guttershift)}}
     {.sbv + L - - {pack -side right -fill y}}
   }
@@ -175,13 +181,16 @@ proc detached::_create {fname} {
   }
   foreach ev {f F} {bind $wtxt <Control-$ev> "focus $cbx"}
   bind $wtxt <F3> "alited::detached::Find $pobj $wtxt 1"
+  foreach ev [alited::pref::BindKey2 0 -] {
+    bind $win <$ev> "alited::detached::SaveFile $pobj $fname"
+  }
   after 50 after idle "$pobj fillGutter $wtxt;\
     alited::file::MakeThemHighlighted {} $wtxt;\
     alited::detached::DisplayText $pobj {$fname};\
-    alited::main::HighlightText {} {$fname} $wtxt {alited::detached::Modified $pobj};\
+    alited::main::HighlightText {} {$fname} $wtxt {alited::detached::Modified $pobj $win};\
     "
   $pobj showModal $win -modal no -waitvar no -resizable 1 -minsize {300 200} \
-    -onclose "alited::detached::Cancel $pobj $win {$fname}" -focus $wtxt {*}$geo
+    -onclose "alited::detached::Close $id $pobj $win {$fname}" -focus $wtxt {*}$geo
   after 200 after idle "$pobj fillGutter $wtxt"
 }
 #_______________________

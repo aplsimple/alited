@@ -100,6 +100,8 @@ proc bar::FillBar {wframe {newproject no}} {
     "com {$bysize} {alited::bar::Sort Size {\n$bysize}}" \
     "com {$byextn} {alited::bar::Sort Extn {\n$byextn}}" \
     sep \
+    "com {$al(MC,detach)} {alited::bar::Detach %t}" \
+    sep \
     "chb {$ttl} alited::bar::Lifo {} {} {$tip} ::alited::al(lifo)" \
     ]
   set curname [lindex $tabs $al(curtab)]
@@ -344,9 +346,24 @@ proc bar::Sort {by {ttl ""}} {
 }
 #_______________________
 
+proc bar::Detach {TID} {
+  # Gets an attribute of the current tab.
+  #   TID - tab's ID
+
+  if {[llength [set TIDs [BAR listFlag s]]]<=1} {
+    set TIDs $TID
+  }
+  foreach TID $TIDs {
+    alited::file::Detach [FileName $TID]
+  }
+}
+#_______________________
+
 proc bar::SelFile {TID tip} {
   # Open a file from the file list even when it's closed
   # (the file list may be open due to -tearoff option).
+  #   TID - tab's ID
+  #   tip - tip of tab
 
   lassign [split $tip \n] fname
   if {[alited::file::OpenFile $fname yes] eq {}} {

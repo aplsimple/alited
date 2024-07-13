@@ -390,7 +390,8 @@ proc ini::ReadIniGeometry {nam val} {
     runGeometry    {set al(runGeometry) $val}
     detach*        {
       set id [string range $nam 6 end]
-      set al(detachedObj,$id,) $val
+      lassign [alited::file::DetachedInfo $id] pobj
+      set $pobj $val
     }
   }
 }
@@ -1045,9 +1046,14 @@ proc ini::SaveIni {{newproject no}} {
   }
   puts $chan "GEOM=[wm geometry $al(WIN)]"
   foreach id {1 2 3 4 5 6 7 8} {
-    set dgeo al(detachedObj,$id,)
-    if {[info exists $dgeo]} {
-      puts $chan "detach$id=[set $dgeo]"
+    lassign [alited::file::DetachedInfo $id] pobj win
+    if {[info exists $pobj]} {
+      if {[winfo exists $win]} {
+        set geo [wm geometry $win]
+      } else {
+        set geo [set $pobj]
+      }
+      puts $chan "detach$id=$geo"
     } else {
       break
     }

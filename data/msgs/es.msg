@@ -39,6 +39,7 @@ namespace eval ::alited {
     {Save and Close} {Guardar y cerrar}
     {Close and Delete} {Cerrar y borrar}
     {Detach} {Separar}
+    {Detach Selected Files} {Separar archivos seleccionados}
     {Preferences} {Preferencias}
     {Preferences...} {Preferencias...}
     {Quit} {Salir}

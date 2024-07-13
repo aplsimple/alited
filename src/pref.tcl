@@ -1243,6 +1243,23 @@ proc pref::BindKey {nk {key ""} {defk ""}} {
 }
 #_______________________
 
+proc pref::BindKey2 {nk {key ""} {defk ""}} {
+  # Almost the same as BindKey, but gets a list of upper & lower keys.
+  #   nk - index of combobox corresponding to the event
+  #   key - key combination or "-" (for not engaged keys)
+  #   defk - default key combination
+  # See also: BindKey
+
+  set res [BindKey $nk $key $defk]
+  set char [string range $res end-1 end]
+  if {[regexp {^[-][[:alpha:]]$} $char]} {
+    set res [string range $res 0 end-2]
+    set res [list $res[string toupper $char] $res[string tolower $char]]
+  }
+  return $res
+}
+#_______________________
+
 proc pref::IniKeys {} {
   # Gets key settings at opening "Preferences" dialogue.
 

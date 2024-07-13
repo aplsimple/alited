@@ -643,6 +643,9 @@ proc tree::ShowPopupMenu {ID X Y} {
     set msg [string map [list %n $sname] $al(MC,openofdir)]
     $popm add command {*}[$obPav iconA none] -label $msg \
       -command "::alited::file::OpenOfDir {$fname}"
+    $popm add separator
+    $popm add command {*}[$obPav iconA none] -label $al(MC,detachsel) \
+      -command ::alited::file::DetachFromTree
   }
   set addsel {}
   if {[llength [$wtree selection]]>1} {

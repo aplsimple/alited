@@ -40,6 +40,7 @@ namespace eval ::alited {
     set al(MC,clallleft)   [msgcat::mc {... All at Left}]
     set al(MC,clallright)  [msgcat::mc {... All at Right}]
     set al(MC,detach)      [msgcat::mc Detach]
+    set al(MC,detachsel)   [msgcat::mc {Detach Selected Files}]
     set al(MC,pref)        [msgcat::mc Preferences]
     set al(MC,pref...)     [msgcat::mc Preferences...]
     set al(MC,notrecomm)   [msgcat::mc "Not recommended for projects\nwith large files (>2000 LOC)!"]

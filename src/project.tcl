@@ -959,6 +959,18 @@ proc project::CloseSelFiles {} {
 }
 #_______________________
 
+proc project::DetachSelFiles {} {
+  # Detaches selected files.
+
+  lassign [SelFiles] lbx selidx
+  set fnames [list]
+  if {$lbx ne {}} {
+    foreach idx $selidx {lappend fnames [$lbx get $idx]}
+  }
+  alited::file::Detach $fnames
+}
+#_______________________
+
 proc project::afterOpenCloseFiles {} {
   # Actions after opening/closing files.
 
@@ -993,11 +1005,15 @@ proc project::LbxPopup {X Y} {
   variable filefilter
   set popm [$obPrj LbxFlist].popup
   catch {destroy $popm}
-  menu $popm -tearoff 0
-  $popm add command -label $::alited::al(MC,openselfile) -command alited::project::OpenSelFiles
+  lassign [SelFiles] lbx selidx
   if {$filefilter eq {}} {set state normal} {set state disabled}
+  if {[llength $selidx]} {set stateS normal} {set stateS [set state disabled]}
+  menu $popm -tearoff 0
+  $popm add command -label $::alited::al(MC,openselfile) -command alited::project::OpenSelFiles -state $stateS
   $popm add command -label [msgcat::mc {Close Selected Files}] \
     -command alited::project::CloseSelFiles -state $state
+  $popm add separator
+  $popm add command -label $::alited::al(MC,detachsel) -command alited::project::DetachSelFiles -state $stateS
   $popm add separator
   $popm add command -label [msgcat::mc {Select All}] -command alited::project::SelectAllFiles -accelerator Ctrl+A
   baltip::sleep 1000

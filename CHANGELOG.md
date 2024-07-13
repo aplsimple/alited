@@ -6,19 +6,19 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.6b4 (11 Jul'24)`
+Version `v1.8.6b5 (13 Jul'24)`
 
   - BUGFIX: Ctrl+N, Alt+H => bad text index ".0"
   - BUGFIX: e_menu's bug injected in v1.8.5
   - BUGFIX: in Linux: not seen .file in the file tree (thanks to George)
   - DELETE: Tools/Run...: "combined" mode
   - NEW   : Tools/Run...: "as is" mode (thanks to Johann)
-  - NEW   : File/Detach menu items (thanks to George)
+  - NEW   : Detach in File, file tree, tabbar menu, Projects/Files (thanks to George)
   - NEW   : status bar message for bad #RUNF: / #EXEC: command
   - CHANGE: run by Tkcon for #RUNF: / #EXEC: when it begins with %f wildcard
   - CHANGE: tip of status bar's right info
   - CHANGE: Tools/Run...: appearance
-  - CHANGE: packages: e_menu
+  - CHANGE: packages: e_menu/apave 4.4.7
 
 
 Version `v1.8.5 (3 Jul'24)`
