@@ -1132,13 +1132,20 @@ proc file::DetachedInfo {id} {
 }
 #_______________________
 
-proc file::Detach {{fnames ""}} {
+proc file::Detach {{fnames ""} {TID ""}} {
   # Open file in detached editors
   #   fnames - file names' list
 
+  namespace upvar ::alited al al
+  set foc [focus]
   SourceDetach
-  if {$fnames eq {}} {set fnames [alited::bar::FileName]}
+  if {$fnames eq {} || $TID ne {}} {
+    set fnames [alited::bar::FileName $TID]
+    if {[alited::file::IsNoName $fnames] && ![SaveFileAs $TID]} return
+    set fnames [alited::bar::FileName $TID]
+  }
   alited::detached::_run $fnames
+  apave::focusByForce $foc
 }
 #_______________________
 

@@ -1320,11 +1320,9 @@ proc ::em::callmenu {typ s1 {amp ""} {from ""}} {
     append pars " \"cs=[lindex $::apave::_CS_(ALL) [::apave::cs_Max]]\""
   }
   set geo [wm geometry .em]
-  set geo [string range $geo [string first + $geo] end]
   # shift the new menu if it's shown above the current one
-  set geo [apave::checkGeometry $geo]
   if {$::em::solo && ($noME || $::em::ontop)} {
-    lassign [split $geo +] -> x y
+    lassign [apave::splitGeometry $geo] - - x y
     set geo +[expr {20+$x}]+[expr {30+$y}]
   }
   if {$::em::ex eq {}} {set pars "g=$geo $pars"}

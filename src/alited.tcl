@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.6b5  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.6b6  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -1020,11 +1020,12 @@ namespace eval alited {
   }
   #_______________________
 
-  proc HighlightAddon {wtxt fname colors} {
+  proc HighlightAddon {wtxt fname colors {fontsize ""}} {
     # Tries to highlight add-on extensions.
     #   wtxt - text's path
     #   fname - current file's name
     #   colors - colors of highlighting
+    #   fontsize - font size
 
     namespace upvar ::alited al al LIBDIR LIBDIR
     set res {}
@@ -1051,7 +1052,9 @@ namespace eval alited {
           }
         }
         lappend colors [FgFgBold]
-        if {[dict exists $al(FONT,txt) -size]} {
+        if {$fontsize ne {}} {
+          set fsz $fontsize
+        } elseif {[dict exists $al(FONT,txt) -size]} {
           set fsz [dict get $al(FONT,txt) -size]
         } else {
           set fsz $al(FONTSIZE,std)

@@ -353,9 +353,11 @@ proc bar::Detach {TID} {
   if {[llength [set TIDs [BAR listFlag s]]]<=1} {
     set TIDs $TID
   }
+  set foc [focus]
   foreach TID $TIDs {
-    alited::file::Detach [FileName $TID]
+    alited::file::Detach {} $TID
   }
+  after idle after 200 apave::focusByForce $foc
 }
 #_______________________
 

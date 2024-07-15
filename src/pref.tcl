@@ -584,7 +584,7 @@ proc pref::General_Tab1 {} {
     {.labFsz1 .labFon T 1 1 {-st e -pady 1 -padx 3} {-t {Small font size:}}}
     {.spxFsz1 + L 1 1 {-st sw -pady 1 -padx 3} \
       {-tvar ::alited::al(FONTSIZE,small) -from 6 -to 72}}
-    {.labFsz2 .labFsz1 T 1 1 {-st e -pady 1 -padx 3} {-t {Middle font size:}}}
+    {.labFsz2 .labFsz1 T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,middlefont)}}}
     {.spxFsz2 + L 1 1 {-st sw -pady 1 -padx 3} {-tvar ::alited::al(FONTSIZE,std) -from 7 -to 72}}
     {seh_2 fra2 T 1 2 {-pady 4}}
     {lab + T 1 2 {-st w -pady 4 -padx 3} {-t Notes:}}

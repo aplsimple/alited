@@ -248,6 +248,9 @@ namespace eval ::alited {
   # -topmost attribute of Find/Replace dialog
   set al(topFindRepl) [::asKDE]
 
+  # flag "middle font size in detached editor"
+  set al(fontdetach) 1
+
 }
 
 # ________________________ Variables _________________________ #
@@ -388,6 +391,7 @@ proc ini::ReadIniGeometry {nam val} {
     treecw0        {set al(TREE,cw0) $val}
     treecw1        {set al(TREE,cw1) $val}
     runGeometry    {set al(runGeometry) $val}
+    fontdetach     {set al(fontdetach) $val}
     detach*        {
       set id [string range $nam 6 end]
       lassign [alited::file::DetachedInfo $id] pobj
@@ -1058,6 +1062,7 @@ proc ini::SaveIni {{newproject no}} {
       break
     }
   }
+  puts $chan "fontdetach=$al(fontdetach)"
   close $chan
   SaveIniPrj $newproject
   SaveIniGlob

@@ -88,6 +88,11 @@ proc detached::Modified {pobj win wtxt args} {
     }
     wm title $win $ttl
     [$pobj ToolTop].buT_alimg_SaveFile configure -state $state
+    foreach do {undo redo} {
+      if {[$wtxt edit can$do]} {set state normal} else {set state disabled}
+      [$pobj ToolTop].buT_alimg_$do configure -state $state
+    }
+
   }
 }
 #_______________________
@@ -152,6 +157,7 @@ proc detached::_create {fname} {
       }
       undo - redo - cut - copy - paste {
         append al(detachtools) "-com {alited::detached::Tool $pobj $icon}"
+        if {$icon in {undo redo}} {append al(detachtools) " -state disabled"}
         set tip [string totitle $icon]
       }
     }
@@ -184,10 +190,11 @@ proc detached::_create {fname} {
   foreach ev [alited::pref::BindKey2 0 -] {
     bind $win <$ev> "alited::detached::SaveFile $pobj $fname"
   }
+  if {$al(fontdetach)} {set fsz $al(FONTSIZE,std)} {set fsz {}}
   after 50 after idle "$pobj fillGutter $wtxt;\
     alited::file::MakeThemHighlighted {} $wtxt;\
     alited::detached::DisplayText $pobj {$fname};\
-    alited::main::HighlightText {} {$fname} $wtxt {alited::detached::Modified $pobj $win};\
+    alited::main::HighlightText {} {$fname} $wtxt {alited::detached::Modified $pobj $win} {} $fsz;\
     "
   $pobj showModal $win -modal no -waitvar no -resizable 1 -minsize {300 200} \
     -onclose "alited::detached::Close $id $pobj $win {$fname}" -focus $wtxt {*}$geo

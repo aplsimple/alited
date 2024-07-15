@@ -410,10 +410,12 @@ proc menu::FillMenu {} {
 
   ### ________________________ Detach _________________________ ###
 
-  menu $m.detach -tearoff 0 -title $al(MC,detach)
+  menu $m.detach -tearoff 1 -title $al(MC,detach)
   $m add cascade -label $al(MC,detach) -menu $m.detach
   $m.detach add command -label $al(MC,detach) -command alited::file::Detach
   $m.detach add command -label $al(MC,open...) -command alited::file::OpenDetach
+  $m.detach add separator
+  $m.detach add checkbutton -label [string trim $al(MC,middlefont) :] -variable ::alited::al(fontdetach)
   $m add separator
 
   ### ________________________ Reload _________________________ ###

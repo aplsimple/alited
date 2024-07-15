@@ -591,13 +591,14 @@ proc main::FocusInText {TID wtxt} {
 
 # ________________________ Highlight _________________________ #
 
-proc main::HighlightText {TID curfile wtxt {cmd ""} {cmdpos ""}} {
+proc main::HighlightText {TID curfile wtxt {cmd ""} {cmdpos ""} {fontsize ""}} {
   # Highlights a file's syntax constructs.
   #   TID - tab's ID
   #   curfile - file name
   #   wtxt - text widget's path
   #   cmd - callback for modifying text
   #   cmdpos - callback for changing cursor position
+  #   fontsize - text font size
   # Depending on a file name, Tcl or C highlighter is called.
 
   namespace upvar ::alited al al obPav obPav
@@ -626,17 +627,19 @@ proc main::HighlightText {TID curfile wtxt {cmd ""} {cmdpos ""}} {
       }
       lappend "${lng}colors" $clrCURL
     }
+    set tfont $al(FONT,txt)
+    if {$fontsize ne {}} {append tfont " -size $fontsize"}
     if {[alited::file::IsClang $curfile]} {
       lassign [::hl_tcl::addingColors] -> clrCMN2
       lappend Ccolors $clrCMN2
       ::hl_c::hl_init $wtxt -dark [$obPav csDark] \
         -multiline 1 -keywords $al(ED,CKeyWords) \
-        -cmd $cmd -cmdpos $cmdpos -font $al(FONT,txt) -colors $Ccolors
+        -cmd $cmd -cmdpos $cmdpos -font $tfont -colors $Ccolors
     } else {
       lassign [alited::ExtTrans $curfile] -> istrans
       set pltext [expr {$istrans || ![alited::file::IsTcl $curfile]}]
       if {$pltext} {
-        set plcom [alited::HighlightAddon $wtxt $curfile $colors]
+        set plcom [alited::HighlightAddon $wtxt $curfile $colors $fontsize]
         if {$plcom ne {}} {set pltext 0}
       } else {
         set plcom {}
@@ -644,7 +647,7 @@ proc main::HighlightText {TID curfile wtxt {cmd ""} {cmdpos ""}} {
       ::hl_tcl::hl_init $wtxt -dark [$obPav csDark] \
         -multiline $al(prjmultiline) -keywords $al(ED,TclKeyWords) \
         -cmd $cmd -cmdpos $cmdpos -plaintext $pltext -plaincom $plcom \
-        -font $al(FONT,txt) -colors $colors
+        -font $tfont -colors $colors
     }
     UpdateText $wtxt $curfile
     BindsForCode $wtxt $curfile
