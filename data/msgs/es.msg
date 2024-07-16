@@ -32,6 +32,7 @@ namespace eval ::alited {
     {Close} {Cerrar}
     {New} {Nuevo}
     {Open...} {Abrir...}
+    {Open with} {Abrir en}
     {Recent Files} {Archivos recientes}
     {Save} {Guardar}
     {Save as...} {Guardar como...}
@@ -118,7 +119,6 @@ namespace eval ::alited {
     {    In unit:} {    En unidad:}
     "\"%n\" contains unbalanced {}: %1!=%2" "\"%n\" contiene desequilibrado {}: %1!=%2"
     {Back} {Atrás}
-    {File not found: %f} {Archivo no encontrado: %f}
     {Unit not found: %u} {Unidad no encontrada: %u}
     {Don't show anymore} {No mostrar más}
     {%f is a directory} {%f es una carpeta}

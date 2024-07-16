@@ -142,7 +142,11 @@ proc detached::_create {fname} {
 
   namespace upvar ::alited al al
   lassign [Options] id pobj win geo
-  if {$id eq {} || ![file isfile $fname]} return
+  if {$id eq {}} return
+  if {![file isfile $fname]} {
+    alited::Balloon1 $fname
+    return
+  }
   set $pobj $geo
   if {$geo ne {}} {set geo "-geometry $geo"}
   set al(detachtools) {}
@@ -198,7 +202,7 @@ proc detached::_create {fname} {
     "
   $pobj showModal $win -modal no -waitvar no -resizable 1 -minsize {300 200} \
     -onclose "alited::detached::Close $id $pobj $win {$fname}" -focus $wtxt {*}$geo
-  after 200 after idle "$pobj fillGutter $wtxt"
+  after [expr {300+($id%9)*100}] after idle "$pobj fillGutter $wtxt" ;# for sure
 }
 #_______________________
 

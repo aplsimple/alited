@@ -265,11 +265,13 @@ proc tree::Create {} {
   || !$al(TREE,isunits) && $al(TREE,files)} return  ;# no need
   set wtree [$obPav Tree]
   if {$al(TREE,isunits)} {
-    pack forget [$obPav BtTRenT] ;# hide Rename & Clone buttons for unit tree
+    pack forget [$obPav BtTRenT] ;# hide file buttons for unit tree
     pack forget [$obPav BtTCloT]
+    pack forget [$obPav BtTOpen]
   } else {
-    pack [$obPav BtTRenT] -side left -after [$obPav BtTAddT]  ;# show Rename & Clone buttons
+    pack [$obPav BtTRenT] -side left -after [$obPav BtTAddT]  ;# show file buttons
     pack [$obPav BtTCloT] -side left -after [$obPav BtTDelT]
+    pack [$obPav BtTOpen] -side left -after [$obPav BtTCloT]
     # for file tree: get its current "open branch" flags
     # in order to check them in CreateFilesTree
     set al(SAVED_FILE_TREE) [list]
@@ -635,11 +637,12 @@ proc tree::ShowPopupMenu {ID X Y} {
   } else {
     $popm add command {*}[$obPav iconA copy] \
       -label $al(MC,clonefile...) -command ::alited::file::CloneFile
+    $popm add separator
+    $popm add command {*}[$obPav iconA OpenFile] -label $al(MC,openwith) \
+      -command ::alited::file::OpenWith
     if {$isfile} {set fname [file dirname $fname]}
     set sname [file tail $fname]
-    $popm add separator
-    $popm add command {*}[$obPav iconA OpenFile] -label $al(MC,openselfile) \
-      -command ::alited::file::OpenFiles
+    $popm add command {*}[$obPav iconA none] -label $al(MC,openselfile) -command ::alited::file::OpenFiles
     set msg [string map [list %n $sname] $al(MC,openofdir)]
     $popm add command {*}[$obPav iconA none] -label $msg \
       -command "::alited::file::OpenOfDir {$fname}"

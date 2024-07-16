@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.6b6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.6b7  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -1002,21 +1002,12 @@ namespace eval alited {
   }
   #_______________________
 
-  proc ExtTrans {{fname ""}} {
-    # Gets a file's extention and translation attributes (istrans, from, to).
+  proc EditExt {{fname ""}} {
+    # Gets an edited file's extention without '.'.
     #   fname - the file name
 
     if {$fname eq {}} {set fname [bar::FileName]}
-    set ext [string trimleft [file extension $fname] .]
-    lassign [split $ext -] from to
-    set ismsg [expr {[string tolower $ext] eq {msg}}]
-    if {$ismsg} {
-      set from en  ;# e.g. ru.msg is from English to Russian
-      set to [file rootname [file tail $fname]]
-    }
-    set istrans [regexp {^[[:alpha:]][[:alpha:]]-[[:alpha:]][[:alpha:]]$} $ext]
-    set istrans [expr {$istrans || $ismsg}]
-    return [list $ext $istrans $from $to]
+    string trimleft [file extension $fname] .
   }
   #_______________________
 
@@ -1029,15 +1020,9 @@ namespace eval alited {
 
     namespace upvar ::alited al al LIBDIR LIBDIR
     set res {}
-    lassign [ExtTrans $fname] ext istrans
+    set ext [EditExt $fname]
     if {$ext ne {}} {
       catch {
-        if {$istrans} {
-          # it's a file to translate from language to language
-          set ext trans
-          HelpMe $ext -trans
-          after idle alited::main::FocusText
-        }
         switch $ext {
           htm - ui - tpl1 {set ext html}
           ale - conf {set ext ini}

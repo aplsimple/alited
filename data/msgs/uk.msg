@@ -36,6 +36,7 @@ namespace eval ::alited {
     {Close} {Закрити}
     {New} {Новий}
     {Open...} {Відкрити...}
+    {Open with} {Відкрити у}
     {Recent Files} {Нещодавні файли}
     {Save} {Зберегти}
     {Save as...} {Зберегти як...}
@@ -122,7 +123,6 @@ namespace eval ::alited {
     {    In unit:} {    У юніті:}
     "\"%n\" contains unbalanced \{\}: %1!=%2" "\"%n\" має незбалансовані \{\}: %1!=%2"
     {Back} {Відкат}
-    {File not found: %f} {Файл не знайдений: %f}
     {Unit not found: %u} {Юніт не знайдений: %u}
     {Don't show anymore} {Більш не показувати}
     {%f is a directory} {%f - це каталог}

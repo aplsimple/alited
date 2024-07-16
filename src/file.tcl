@@ -554,6 +554,10 @@ proc file::CloneFile {{undermouse yes} {fromtree yes}} {
     set ar -
   }
   if {$fname eq {} || [alited::file::IsNoName $fname]} return
+  if {![file isfile $fname]} {
+    alited::Balloon1 $fname
+    return
+  }
   set fname2 [CloneFileName $fname]
   set name [file tail $fname2]
   lassign [InputFileName $al(MC,clonefile) $name $undermouse {*}$ar] res name2
@@ -678,10 +682,10 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message ""}} {
       append exts { } $al(TextExts)
       set sexts [string map {. {}} "  $al(TclExts)\n  $al(ClangExts)\n  $al(TextExts)"]
       set exts [string trim [string map {{ } {, } . {}} $exts]]
-      lassign [alited::ExtTrans $fname] ext istrans
+      set ext [alited::EditExt $fname]
       set ext [string tolower [string trim $ext .]]
       set esp [split [string map [list { } {} \n ,] $exts] ,]
-      if {!$reload && $ext ni $esp && !$istrans && $ansOpen<11} {
+      if {!$reload && $ext ni $esp && $ansOpen<11} {
         set msg [string map [list %f [file tail $fname] %s $sexts] $al(MC,nottoopen)]
         set ansOpen [alited::msg yesnocancel warn $msg YES -ch $al(MC,noask)]
         if {!$ansOpen || $ansOpen==12} break
@@ -1099,7 +1103,7 @@ proc file::CloseAll {func args} {
 }
 #_______________________
 
-proc file::TreeFileList {} {
+proc file::TreeSelFiles {} {
   # Gets a list of file tree's selected files.
 
   namespace upvar ::alited al al obPav obPav
@@ -1113,10 +1117,24 @@ proc file::TreeFileList {} {
 }
 #_______________________
 
+proc file::SortTreeSelFiles {} {
+  # Sorts a list of file tree's selected files.
+
+  lsort -decreasing -dictionary [TreeSelFiles]
+}
+#_______________________
+
 proc file::OpenFiles {} {
   # Opens files selected in the file tree.
 
-  OpenFile [lsort -decreasing -dictionary [TreeFileList]] no yes
+  OpenFile [SortTreeSelFiles] no yes
+}
+#_______________________
+
+proc file::OpenWith {} {
+  # Opens files selected in the file tree, with their apps.
+
+  foreach fn [SortTreeSelFiles] {openDoc $fn}
 }
 
 # ________________________ Detach file _________________________ #
@@ -1137,7 +1155,6 @@ proc file::Detach {{fnames ""} {TID ""}} {
   #   fnames - file names' list
 
   namespace upvar ::alited al al
-  set foc [focus]
   SourceDetach
   if {$fnames eq {} || $TID ne {}} {
     set fnames [alited::bar::FileName $TID]
@@ -1145,7 +1162,6 @@ proc file::Detach {{fnames ""} {TID ""}} {
     set fnames [alited::bar::FileName $TID]
   }
   alited::detached::_run $fnames
-  apave::focusByForce $foc
 }
 #_______________________
 
@@ -1161,7 +1177,7 @@ proc file::OpenDetach {} {
 proc file::DetachFromTree {} {
 
   SourceDetach
-  alited::detached::_run [TreeFileList]
+  alited::detached::_run [TreeSelFiles]
 }
 #_______________________
 

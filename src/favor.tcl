@@ -100,10 +100,7 @@ proc favor::OpenSelectedFile {fname} {
   set al(dolastvisited) no
   set TID [alited::file::OpenFile $fname yes]
   set al(dolastvisited) yes
-  if {$TID eq {}} {
-    set msg [string map [list %f $fname] [msgcat::mc {File not found: %f}]]
-    alited::Message $msg 4
-  }
+  if {$TID eq {}} {alited::Balloon1 $fname}
   return $TID
 }
 #_______________________

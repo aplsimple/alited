@@ -636,8 +636,7 @@ proc main::HighlightText {TID curfile wtxt {cmd ""} {cmdpos ""} {fontsize ""}} {
         -multiline 1 -keywords $al(ED,CKeyWords) \
         -cmd $cmd -cmdpos $cmdpos -font $tfont -colors $Ccolors
     } else {
-      lassign [alited::ExtTrans $curfile] -> istrans
-      set pltext [expr {$istrans || ![alited::file::IsTcl $curfile]}]
+      set pltext [expr {![alited::file::IsTcl $curfile]}]
       if {$pltext} {
         set plcom [alited::HighlightAddon $wtxt $curfile $colors $fontsize]
         if {$plcom ne {}} {set pltext 0}
@@ -1165,6 +1164,8 @@ proc main::_create {} {
       {-image alimg_delete -com alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra1.BtTCloT - - - - {pack forget -side left -fill x} \
       {-image alimg_copy -com alited::file::CloneFile -tip "$al(MC,clonefile)"}}
+    {.fraBot.panBM.fraTree.fra1.BtTOpen - - - - {pack forget -side left -fill x} \
+      {-image alimg_OpenFile -com ::alited::file::OpenWith -tip "$al(MC,openwith)"}}
     {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
     {.fraBot.panBM.fraTree.fra1.btTCtr - - - - {pack -side left -fill x} \
       {-image alimg_minus -com {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}

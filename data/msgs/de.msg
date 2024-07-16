@@ -32,6 +32,7 @@ namespace eval ::alited {
     {Close} {Schließen}
     {New} {Neu}
     {Open...} {Öffnen ...}
+    {Open with} {Öffnen in}
     {Recent Files} {Jüngste Dateien}
     {Save} {Speichern}
     {Save as...} {Speichern unter...}
@@ -118,7 +119,6 @@ namespace eval ::alited {
     {    In unit:} {  In Einheit:}
     "\"%n\" contains unbalanced \{\}: %1!=%2" "\"%n\" unausgeglichene  \{\}: %1!=%2"
     {Back} {Zurück}
-    {File not found: %f} {Datei nicht gefunden: %f}
     {Unit not found: %u} {Einheit nicht gefunden: %u}
     {Don't show anymore} {Nicht mehr anzeigen}
     {%f is a directory} {%f ist ein Verzeichnis}
@@ -134,9 +134,9 @@ namespace eval ::alited {
     {Tips on / off} {Tipps ein / aus}
     {Exit} {Ausgang}
     {Encoding} {Kodierung}
-    {Reload with EOL} {Öffne mit EOL}
+    {Reload with EOL} {Öffnen mit EOL}
     "Save the file:\n%F ?" "Werden Sie die Datei speichern:\n%F ?"
-    {Reload with Encoding} {Öffne mit die Kodierung}
+    {Reload with Encoding} {Öffnen mit die Kodierung}
     "Saving and reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nSave the file:\n%F ?" "Das Speichern und erneute Laden von \"%f\"\nmit der Kodierung \"%e\" kann falsch sein.\n\nWerden Sie die Datei speichern:\n%F ?"
     "Reloading \"%f\"\nwith the encoding \"%e\" may turn out to be wrong.\n\nReload the file:\n%F ?" "Das erneute Laden von \"%f\"\nmit der Kodierung \"%e\" kann falsch sein.\n\nWerden Sie die Datei laden:\n%F ?"
     {Color Values #hhhhhh} {Farbwerte #hhhhhh}
@@ -163,7 +163,7 @@ namespace eval ::alited {
   ::msgcat::mcmset de {
     "Click \"%t\"" "Drücke \"%t\""
     {Copy Declaration} {Kopiere Deklaration}
-    "Open All Tcl Files of \"%n\"" "Öffne alle Tcl-Dateien in \"%n\""
+    "Open All Tcl Files of \"%n\"" "Öffnen alle Tcl-Dateien in \"%n\""
     "Remove \"%n\"\nfrom \"%f\"?" "Entferne \"%n\"\nvon \"%f\"?"
     "Delete \"%f\"?" "Lösche \"%f\"?"
     {Rewrite} {Überschreiben}
@@ -176,7 +176,7 @@ namespace eval ::alited {
     {Clone File...} {Datei klonen...}
     {Clone...} {Klonen...}
     {Select one file in the tree.} {Wähle eine Datei im Baum.}
-    {Open Selected Files} {Öffne ausgewählte Dateien}
+    {Open Selected Files} {Öffnen ausgewählte Dateien}
     {Close Selected Files} {Schliesse ausgewählte Dateien}
   }
 
@@ -488,10 +488,10 @@ namespace eval ::alited {
     {'Last Visited' length:} {Maximale Anzahl 'Zuletzt besuchte':}
     {Maximum of project files:} {Maximale Anzahl Projetdateien:}
     {Confirm exit:} {Bestätige beenden:}
-    {Save configuration on} {Speicher Konfiguration}
-    {opening a file:} {Öffne eine Datei:}
-    {closing a file:} {Schließe eine Datei:}
-    {saving a file:} {Sichere eine Datei}
+    {Save configuration on} {Speichern Konfiguration}
+    {opening a file:} {Öffnung einer Datei:}
+    {closing a file:} {Schließung einer Datei:}
+    {saving a file:} {Sicherung einer Datei}
     {Back up files to a project's subdirectory:} {Sichere Dateien in ein Unterverzeichnis des Projektes:}
     "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." "Ein Unterverzeichnis von Projekten indem Sicherungskopien der Dateien gesichert werden.\nFeld leeren um Backup abzubrechen."
     {  Maximum:} {  Мaximum:}
@@ -504,8 +504,8 @@ namespace eval ::alited {
 
   ### ________________________ Keys _________________________ ###
   ::msgcat::mcmset de {
-    {Save File} {Speicher Datei}
-    {Save File as} {Speicher Datei als}
+    {Save File} {Speichern Datei}
+    {Save File as} {Speichern Datei als}
     {Run e_menu} {e_menu ausführen}
     {Run File} {Datei ausführen}
     {Double Selection} {Mehrfachauswahl}
@@ -567,7 +567,7 @@ namespace eval ::alited {
 
   ### ________________________ Tools _________________________ ###
   ::msgcat::mcmset de {
-    {Open bar-menu settings} {Öffne bar-menu Einstellungen}
+    {Open bar-menu settings} {Öffnen bar-menu Einstellungen}
     "An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar." "Ein Icon fügt das Ausführelement der Symbolleiste hinzu.\nLeer oder 'none' entfernt es aus der Symbolleiste."
     "The run item for the menu and/or the toolbar.\nSelect it from the e_menu items." "Das Ausführungselement für das Menü und/oder die Symbolleiste.\nWähle Du es aus dem e_menu-Einträgen aus."
     {Directory of menus:} {Menüverzeichnis:}

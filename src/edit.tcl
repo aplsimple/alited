@@ -331,7 +331,7 @@ proc edit::BackupFileName {fname {iincr 1}} {
 
   namespace upvar ::alited al al
   if {$al(MAXBACKUP)>1} {
-    if {[catch {set baks [glob ${fname}*]}] || $baks eq {}} {
+    if {[set baks [glob -nocomplain ${fname}*]] eq {}} {
       set nbak 1
       if {!$iincr} {return {}} ;# no backups yet
     } else {
