@@ -1134,7 +1134,10 @@ proc file::OpenFiles {} {
 proc file::OpenWith {} {
   # Opens files selected in the file tree, with their apps.
 
-  foreach fn [SortTreeSelFiles] {openDoc $fn}
+  foreach fn [SortTreeSelFiles] {
+    incr i
+    after [expr {($i-1)*500}] openDoc $fn ;# let the app get 0.5 sec pause
+  }
 }
 
 # ________________________ Detach file _________________________ #
