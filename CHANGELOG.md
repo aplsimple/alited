@@ -6,7 +6,7 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.6b7 (16 Jul'24)`
+Version `v1.8.6 (17 Jul'24)`
 
   - BUGFIX: Ctrl+N, Alt+H => bad text index ".0"
   - BUGFIX: e_menu's bug injected in v1.8.5

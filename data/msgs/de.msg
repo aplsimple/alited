@@ -491,7 +491,7 @@ namespace eval ::alited {
     {Save configuration on} {Speichern Konfiguration}
     {opening a file:} {Öffnung einer Datei:}
     {closing a file:} {Schließung einer Datei:}
-    {saving a file:} {Sicherung einer Datei}
+    {saving a file:} {Speichern einer Datei}
     {Back up files to a project's subdirectory:} {Sichere Dateien in ein Unterverzeichnis des Projektes:}
     "A subdirectory of projects where backup copies of files will be saved to.\nSet the field blank to cancel the backup." "Ein Unterverzeichnis von Projekten indem Sicherungskopien der Dateien gesichert werden.\nFeld leeren um Backup abzubrechen."
     {  Maximum:} {  Мaximum:}
