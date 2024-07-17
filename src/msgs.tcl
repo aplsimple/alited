@@ -32,7 +32,7 @@ namespace eval ::alited {
     set al(MC,runAsIs)     [msgcat::mc {Run as Is}]
     set al(MC,new)         [msgcat::mc New]
     set al(MC,open...)     [msgcat::mc Open...]
-    set al(MC,openwith)    [msgcat::mc {Open with}]
+    set al(MC,openwith)    [msgcat::mc {Open Selected Files with}]
     set al(MC,close)       [msgcat::mc Close]
     set al(MC,save)        [msgcat::mc Save]
     set al(MC,saveas...)   [msgcat::mc {Save as...}]

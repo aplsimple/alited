@@ -32,7 +32,7 @@ namespace eval ::alited {
     {Close} {Cerrar}
     {New} {Nuevo}
     {Open...} {Abrir...}
-    {Open with} {Abrir en}
+    {Open Selected Files with} {Abrir archivos seleccionados en}
     {Recent Files} {Archivos recientes}
     {Save} {Guardar}
     {Save as...} {Guardar como...}

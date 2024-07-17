@@ -637,9 +637,9 @@ proc tree::ShowPopupMenu {ID X Y} {
   } else {
     $popm add command {*}[$obPav iconA copy] \
       -label $al(MC,clonefile...) -command ::alited::file::CloneFile
-    $popm add separator
     $popm add command {*}[$obPav iconA OpenFile] -label $al(MC,openwith) \
       -command ::alited::file::OpenWith
+    $popm add separator
     if {$isfile} {set fname [file dirname $fname]}
     set sname [file tail $fname]
     $popm add command {*}[$obPav iconA none] -label $al(MC,openselfile) -command ::alited::file::OpenFiles
