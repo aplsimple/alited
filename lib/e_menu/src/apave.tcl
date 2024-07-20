@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.4.7
+package provide apave 4.4.8
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -371,7 +371,8 @@ namespace eval ::apave {
     #   geom - geometry
     #   X - default X-coordinate
     #   Y - default Y-coordinate
-    # Returns a list of width, height, X and Y (coordinates are always with + or -).
+    # Returns a list of width, height, X and Y (coordinates are always with + or -)
+    # and also a flag "negative coordinates, calculated from bottom right".
 
     lassign [split $geom x+-] w h
     lassign [regexp -inline -all {([+-][[:digit:]]+)} $geom] -> x y
@@ -379,7 +380,8 @@ namespace eval ::apave {
       if {$x in {"" 0} || [catch {expr {$x+0}}]} {set x $X}
       if {$y in {"" 0} || [catch {expr {$y+0}}]} {set y $Y}
     }
-    list $w $h $x $y
+    set neg [expr {[string first - $geom]>=0 && [string first + $geom]<0}]
+    list $w $h $x $y $neg
   }
   #_______________________
 
