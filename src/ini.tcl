@@ -69,7 +69,7 @@ namespace eval ::alited {
   set al(RE,leaf) $al(RE,leafDEF)
 
   # RE for Tcl leaf units
-  set al(RE,procDEF) {^\s*(((proc|method)\s+([^[:blank:]]+))|((constructor|destructor)\s+))}
+  set al(RE,procDEF) {^\s*(((proc|method|test)\s+([^[:blank:]]+))|((constructor|destructor)\s+))}
   set al(RE,proc) $al(RE,procDEF)
 
   # RE to check for leaf units (# _  / # _ abc)
@@ -77,7 +77,7 @@ namespace eval ::alited {
   set al(RE,leaf2) $al(RE,leaf2DEF)
 
   # RE to check for Tcl leaf units (proc abc {}...)
-  set al(RE,proc2DEF) {^\s*(proc|method|constructor|destructor)\s+}
+  set al(RE,proc2DEF) {^\s*(proc|method|test|constructor|destructor)\s+}
   set al(RE,proc2) $al(RE,proc2DEF)
 
   # list of current favorite units
