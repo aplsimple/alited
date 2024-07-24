@@ -238,7 +238,7 @@ proc edit::FindColorValues {mode} {
       lappend hlcolors $hlc
     }
   }
-  return [list [llength $hlcolors] $RF]
+  list [llength $hlcolors] $RF
 }
 #_______________________
 
@@ -318,7 +318,7 @@ proc edit::BackupDirFileNames {TID} {
     return {}
   }
   set fname3 [file join $dir [file tail $fname]]
-  return [list $dir $fname $fname2]
+  list $dir $fname $fname2
 }
 #_______________________
 
@@ -1245,7 +1245,7 @@ proc edit::EscapeValue {value} {
   # Escapes a value's backslashes and braces.
   #   value - the value
 
-  return [string map [list \\ \\\\ \} \\\} \{ \\\{] $value]
+  string map [list \\ \\\\ \} \\\} \{ \\\{] $value
 }
 #_______________________
 
@@ -1253,7 +1253,7 @@ proc edit::UnEscapeValue {value} {
   # Unescapes a value's backslashes and braces.
   #   value - the value
 
-  return [string map [list \\\\ \\ \\\}  \} \\\{ \{] $value]
+  string map [list \\\\ \\ \\\}  \} \\\{ \{] $value
 }
 #_______________________
 

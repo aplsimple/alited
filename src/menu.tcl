@@ -135,7 +135,7 @@ proc menu::MapRunItems {fname} {
 
   namespace upvar ::alited al al
   set ftail [file tail $fname]
-  return [list %PD $al(prjroot) %D [file dirname $fname] %f $fname %F $ftail \$::FILETAIL $ftail]
+  list %PD $al(prjroot) %D [file dirname $fname] %f $fname %F $ftail \$::FILETAIL $ftail
 }
 #_______________________
 
@@ -170,7 +170,7 @@ proc menu::MacroOptions {ca am} {
   } else {
     set opts {}
   }
-  return [list -label $am -command [list alited::edit::DispatchMacro $ca] {*}$opts]
+  list -label $am -command [list alited::edit::DispatchMacro $ca] {*}$opts
 }
 #_______________________
 
@@ -661,7 +661,7 @@ proc menu::FillMenu {} {
 proc menu::HelpFiles {} {
   # Gets a list of Help/Context (file names and labels).
 
-  return [list \
+  list \
     pref-nbk-f1.txt {Preferences\General} \
     pref-nbk-f2.txt {Preferences\Saving} \
     pref-nbk-f3.txt {Preferences\Projects} \
@@ -687,8 +687,7 @@ proc menu::HelpFiles {} {
     favor_ls.txt {Setup\Favorites Lists...} \
     format1.txt {Setup\Moving Unit Descriptions...} \
     - - \
-    find2.txt {Search\Find by List} \
-  ]
+    find2.txt {Search\Find by List}
 
 }
 

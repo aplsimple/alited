@@ -200,7 +200,7 @@ proc pref::TextIcons {} {
 proc pref::ReservedIcons {} {
   # Returns a list of icons already engaged by alited.
 
-  return [list file OpenFile box SaveFile saveall undo redo help replace run other ok color]
+  list file OpenFile box SaveFile saveall undo redo help replace run other ok color
 }
 #_______________________
 

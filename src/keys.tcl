@@ -119,7 +119,7 @@ proc keys::Test {klist} {
 proc keys::ReservedList {} {
   # Returns a list of keys reserved by alited.
 
-  return [list \
+  list \
     F1 \
     F10 \
     Control-A \
@@ -142,7 +142,6 @@ proc keys::ReservedList {} {
     Alt-Left \
     Alt-Right \
     Alt-F4
-  ]
 }
 #_______________________
 

@@ -150,7 +150,7 @@ method Tab_Create {BID TID w text} {
   } else {
     $wb2 configure -state disabled -image {}
   }
-  return [list $wb $wb1 $wb2]
+  list $wb $wb1 $wb2
 }
 #_______________________
 

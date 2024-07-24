@@ -21,16 +21,6 @@ namespace eval ::alited::info {
 
 # ________________________ Common _________________________ #
 
-proc info::Get {i} {
-  # Gets a message of the info listbox widget by its index.
-  #   i - index of message
-
-  variable list
-  variable info
-  return list [[lindex $list $i] [lindex $info $i]]
-}
-#_______________________
-
 proc info::Put {msg {inf ""} {bold no} {red no} {see no} {fg ""}} {
   # Puts a message to the info listbox widget.
   #   msg - the message

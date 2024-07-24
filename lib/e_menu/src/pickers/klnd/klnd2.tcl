@@ -446,7 +446,7 @@ proc ::klnd::selectedDay {{obj {}} {y {}} {m {}} {d {}} {doblink yes}} {
     }
     after idle "::klnd::my::ShowMonth2 $obj $m $y yes yes; ::klnd::blinking $doblink"
   }
-  return [list $my::p(yvis$obj) $my::p(mvis$obj) $my::p(dvis$obj)]
+  list $my::p(yvis$obj) $my::p(mvis$obj) $my::p(dvis$obj)
 }
 #_______________________
 

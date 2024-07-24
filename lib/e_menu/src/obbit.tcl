@@ -736,7 +736,7 @@ proc ::apave::textsplit {textcont} {
   # Splits a text's contents by EOLs. Those inventors of EOLs...
   #   textcont - text's contents
 
-  return [split [string map [list \r\n \n \r \n] $textcont] \n]
+  split [string map [list \r\n \n \r \n] $textcont] \n
 }
 #_______________________
 

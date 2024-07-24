@@ -487,7 +487,7 @@ namespace eval ::apave {
     } else {
       set res $W
     }
-    return [list $res $clr]
+    list $res $clr
   }
 
   ### ________________________ Blinking widgets _________________________ ###

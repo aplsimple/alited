@@ -1728,7 +1728,7 @@ proc ini::ToolbarTip {i} {
   #   i - index of e_menu item
 
   set maplist [alited::menu::MapRunItems [alited::bar::FileName]]
-  return [string map $maplist $::alited::pref::em_mnu($i)]
+  string map $maplist $::alited::pref::em_mnu($i)
 }
 
 # ________________________ Projects' toolbar _________________________ #
@@ -1847,7 +1847,7 @@ proc ini::ToolPrjTip {i} {
   #   i - index of e_menu item
 
   set maplist [alited::menu::MapRunItems [ToolPrjFilename]]
-  return [string map $maplist $::alited::pref::em_mnu($i)]
+  string map $maplist $::alited::pref::em_mnu($i)
 }
 #_______________________
 

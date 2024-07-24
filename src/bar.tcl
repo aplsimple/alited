@@ -146,7 +146,7 @@ proc bar::UniqueListTab {fname} {
   # Returns a unique tab name for a file.
   #   fname - file name
 
-  return [UniqueTab [BAR listTab] [file tail $fname] -index 1]
+  UniqueTab [BAR listTab] [file tail $fname] -index 1
 }
 
 # ________________________ Menu additions _________________________ #

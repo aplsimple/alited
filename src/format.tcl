@@ -188,7 +188,7 @@ proc format::Re_Colors {} {
   namespace upvar ::alited obDl2 obDl2
   lassign [::hl_tcl::hl_colors .] - - - - fg
   lassign [$obDl2 csGet] - - bg
-  return [list $fg $bg]
+  list $fg $bg
 }
 #_______________________
 
@@ -218,7 +218,7 @@ proc format::Separ1 {title} {
   } else {
     set limit 9999
   }
-  return [list $title [incr limit -1]]
+  list $title [incr limit -1]
 }
 #_______________________
 
@@ -267,7 +267,7 @@ proc format::MoveOut {cont title l1 l2} {
   set title $pad[string trim $title]
   set cont [lreplace $cont [incr i] $l1]
   set cont [linsert $cont $i {} $title {*}$replcont {}]
-  return [list $cont 1]
+  list $cont 1
 }
 #_______________________
 
@@ -350,7 +350,7 @@ proc format::MoveInside {cont l1 l2 pad} {
   } else {
     set cont [lreplace $cont $l0 $replln $separ2]
   }
-  return [list $cont 1]
+  list $cont 1
 }
 #_______________________
 
@@ -564,7 +564,7 @@ proc format::BeforeFormatting {{islines no}} {
     set pos2 [::apave::pint $pos2].end
   }
   set valueOrig [set value [$wtxt get $pos1 $pos2]]
-  return [list $wtxt $value $pos1 $pos2]
+  list $wtxt $value $pos1 $pos2
 }
 #_______________________
 

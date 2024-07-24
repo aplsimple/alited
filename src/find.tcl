@@ -141,13 +141,13 @@ proc find::GetWordOfLine {line idx {mode ""}} {
 #_______________________
 
 proc find::GetCommandOfText {wtxt {mode ""}} {
-  # Gets a command of text under the cursor.
+  # Gets a command under the cursor.
   #   wtxt - text widget's path
-  #   mode - if it ends with "2", the result includes a range of found string.
+  #   mode - if it ends with "2", the result includes a range of found string
 
   set idx [$wtxt index insert]
   set line [$wtxt get "$idx linestart" "$idx lineend"]
-  return [list [GetCommandOfLine $line $idx "" $mode] $idx]
+  list [GetCommandOfLine $line $idx "" $mode] $idx
 }
 #_______________________
 
@@ -422,7 +422,7 @@ proc find::FindOptions {wtxt} {
     default {
       append options {-exact }}
   }
-  return [list $findstr [string trim $options] $stopidx]
+  list $findstr [string trim $options] $stopidx
 }
 
 # ________________________ Show results _________________________ #
@@ -1060,7 +1060,9 @@ proc find::CloseFind2 {args} {
 
 # _____________________ Search by list ____________________ #
 
-proc find::SearchByList_Options {findstr} {
+proc find::PrepareSearchByList {findstr} {
+  # Prepares searched word by list and search options.
+  #   findstr - searched word
 
   namespace upvar ::alited al al
   if {!$al(caseSBL)} {append options {-nocase }}
@@ -1076,7 +1078,7 @@ proc find::SearchByList_Options {findstr} {
     default {
       append options {-exact }}
   }
-  return [list $findstr $options]
+  list $findstr $options
 }
 #_______________________
 
@@ -1099,7 +1101,7 @@ proc find::SearchByList_Do {{show yes}} {
   SetTags $wtxt
   UnsetTags $wtxt
   foreach findword [split $list] {
-    lassign [SearchByList_Options $findword] findstr options
+    lassign [PrepareSearchByList $findword] findstr options
     if {[catch {set fnd [$wtxt search {*}$options -count ::alited::find::counts -all -- $findstr 1.0]} err]} {
       alited::Message $err 4
       break

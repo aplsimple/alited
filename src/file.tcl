@@ -22,7 +22,7 @@ proc file::IsModified {{TID ""}} {
   #   TID - ID of tab
 
   if {$TID eq ""} {set TID [alited::bar::CurrentTabID]}
-  return [expr {[lsearch -index 0 [alited::bar::BAR listFlag m] $TID]>-1}]
+  expr {[lsearch -index 0 [alited::bar::BAR listFlag m] $TID]>-1}
 }
 #_______________________
 
@@ -114,7 +114,7 @@ proc file::FileAttrs {TID} {
   } else {
     set curtime {}
   }
-  return [list $fname $isfile $mtime $mtimefile $curtime]
+  list $fname $isfile $mtime $mtimefile $curtime
 }
 #_______________________
 
@@ -397,7 +397,7 @@ proc file::TreeFilename {} {
   set name [$wtree item $ID -text]
   set fname [lindex [$wtree item $ID -values] 1]
   set TID [alited::bar::FileTID $fname]
-  return [list $wtree $name $fname $ID $TID]
+  list $wtree $name $fname $ID $TID
 }
 #_______________________
 
@@ -536,7 +536,7 @@ proc file::InputFileName {title name undermouse args} {
   lassign [$obDl2 input {} $title [list \
     ent "{} {} {-w 32}" "{$name}"] \
     -head [msgcat::mc {File name:}] {*}$args] res name
-  return [list $res $name]
+  list $res $name
 }
 #_______________________
 
@@ -1099,7 +1099,7 @@ proc file::CloseAll {func args} {
   set al(closefunc) $func ;# disables "recent files" at closing all
   alited::bar::BAR closeAll $::alited::al(BID) $TID $func {*}$args
   set al(closefunc) 0
-  return [expr {[llength [alited::bar::BAR listFlag "m"]]==0}]
+  expr {[llength [alited::bar::BAR listFlag "m"]]==0}
 }
 #_______________________
 

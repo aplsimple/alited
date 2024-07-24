@@ -308,7 +308,7 @@ proc paver::CheckCommentedOptions {gridpack attrs} {
       set $vl [lreplace $lst $i end]
     }
   }
-  return [list $gridpack $attrs]
+  list $gridpack $attrs
 }
 #_______________________
 

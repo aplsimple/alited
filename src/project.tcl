@@ -31,7 +31,7 @@ namespace eval project {
   # data of projects
   variable prjinfo; array set prjinfo [list]
   foreach _ $::alited::OPTS {
-    catch {set prjinfo(*DEFAULT*,$_) $::alited::al(DEFAULT,$_)}  ;#default options
+    catch {set prjinfo(*DEFAULT*,$_) $::alited::al(DEFAULT,$_)}  ;# default options
   }
 
   # data of currently open project (to save/restore)
@@ -233,7 +233,7 @@ proc project::GetProjectOpts {fname} {
   # save project files' settings in prjinfo array
   set filecont [readTextFile $fname]
   foreach opt $OPTS {
-    catch {set prjinfo($pname,$opt) $prjinfo(*DEFAULT*,$opt)}  ;#defaults
+    catch {set prjinfo($pname,$opt) $prjinfo(*DEFAULT*,$opt)}  ;# defaults
   }
   set prjinfo($pname,tablist) [list]
   if {[set currentprj [expr {$curinfo(prjname) eq $pname}]]} {
@@ -427,7 +427,7 @@ proc project::SortRems {rems} {
       set outdated 2 ;# "ahead" day reached
     }
   }
-  return [list $dmin $rems $outdated]
+  list $dmin $rems $outdated
 }
 #_______________________
 
@@ -528,7 +528,7 @@ proc project::SelectedPrj {item} {
   }
   set isel [$tree index $item]
   if {$isel<0 || $isel>=[llength $prjlist]} {return {}}
-  return [list $tree $item [lindex $prjlist $isel]]
+  list $tree $item [lindex $prjlist $isel]
 }
 #_______________________
 
@@ -832,7 +832,7 @@ proc project::SelFiles {} {
     Message [msgcat::mc {No selected files}] 4
     return {}
   }
-  return [list $lbx $selidx]
+  list $lbx $selidx
 }
 #_______________________
 

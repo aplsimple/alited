@@ -557,7 +557,7 @@ proc favor::CurrentName {{dobell no}} {
   lassign [alited::tree::CurrentItemByLine {} 1] itemID - - - name l1 l2
   set name [string trim $name]
   if {$name eq {} && $dobell} bell
-  return [list $itemID $name $l1 $l2]
+  list $itemID $name $l1 $l2
 }
 #_______________________
 
@@ -586,7 +586,7 @@ proc favor::CurrentID {undermouse} {
       if {$favID eq {}} {return {}}
     }
   }
-  return [list $favID $name2 $fname $treelist $header]
+  list $favID $name2 $fname $treelist $header
 }
 
 # ________________________ Popup menus _________________________ #

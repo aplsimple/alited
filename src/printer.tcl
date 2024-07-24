@@ -509,7 +509,7 @@ proc printer::Off_Html_tags {cont} {
   # Disables html tags in a code snippet.
   #   cont - the code snippet
 
-  return [string map [list < "&lt;" > "&gt;"] $cont]
+  string map [list < "&lt;" > "&gt;"] $cont
 }
 
 # ________________________ Processing _________________________ #
@@ -676,7 +676,7 @@ proc printer::GetReadme {dirfrom} {
     }
     append cont $line \n
   }
-  return [list $cont $fname]
+  list $cont $fname
 }
 #_______________________
 
@@ -712,7 +712,7 @@ proc printer::GetDirLink {dir} {
   namespace upvar ::alited al al
   set dirtail [::apave::FileTail $al(prjroot) $dir]
   if {$dirtail eq {}} {set branch <hr>} {set branch $dirtail}
-  return [list $dirtail [GetBranchLink # $branch]]
+  list $dirtail [GetBranchLink # $branch]
 }
 #_______________________
 

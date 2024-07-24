@@ -248,7 +248,7 @@ proc ::hl_c::my::CountQSH {txt ln} {
   foreach spch {/ *} {
     incr comments [::hl_tcl::my::CountChar $st $spch]
   }
-  return [list $quotes $slashes $comments]
+  list $quotes $slashes $comments
 }
 #_______________________
 

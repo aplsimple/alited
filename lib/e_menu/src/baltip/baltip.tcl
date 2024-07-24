@@ -616,7 +616,14 @@ proc ::baltip::my::ShowWindow {win} {
 }
 #_______________________
 
-proc ::baltip::my::Show {w text force geo optvals} {
+proc ::baltip::my::Show {args} {
+  # Calls DoShow catching errors.
+
+  catch {DoShow {*}$args}
+}
+#_______________________
+
+proc ::baltip::my::DoShow {w text force geo optvals} {
   # Creates and shows the tip's window.
   #   w - the widget's path
   #   text - the tip text

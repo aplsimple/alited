@@ -55,7 +55,7 @@ proc complete::CursorCoordsChar {{wtxt ""} {shift ""}} {
     incr Y $y
     if {[catch {set p [winfo parent $p]}] || $p in {{} {.}}} break
   }
-  return [list $X $Y $ch]
+  list $X $Y $ch
 }
 #_______________________
 
@@ -130,6 +130,7 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
     }
   }
   set idx1 [expr {int([$wtxt index insert])}].$idx1
+  # check for $ dollar char
   set isdol [expr {[$wtxt get "$idx1 -1 c"] eq {$}}]
   set isdol1 [expr {[$wtxt get "$idx1 -2 c" $idx1] eq {$:}}]
   set isdol2 [expr {[$wtxt get "$idx1 -3 c" $idx1] eq {$::}}]
@@ -138,11 +139,8 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
       if {[llength $v]==1} {lappend res \$$v}
     }
   }
-  # if it's not a variable's value, add also commands
-  if {$isdol || $isdol1 || $isdol2} {
-    set withcomm no
-  } else {
-    set withcomm yes
+  # if it isn't a variable's value, add also commands
+  if {[set withcom [expr {!$isdol && !$isdol1 && !$isdol2}]]} {
     # get commands available in files of current session
     foreach tab [alited::SessionList] {
       set TID [lindex $tab 0]
@@ -165,7 +163,7 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
     }
   }
   if {!$isread} {alited::info::Clear end}
-  return [list $res $withcomm]
+  list $res $withcom
 }
 #_______________________
 
@@ -174,9 +172,8 @@ proc complete::IsMatch {curword com} {
   #   curword - the word
   #   com - the command
 
-  return [expr {[string match ${curword}* $com] || \
-    [string match ${curword}* [namespace tail $com]] || \
-    [regexp "^\[\$\]?${curword}" $com]}]
+  expr {[string match $curword* $com] || [string match $curword* \
+    [namespace tail $com]] || [regexp "^\[\$\]?$curword" $com]}
 }
 #_______________________
 
@@ -221,7 +218,7 @@ proc complete::MatchedCommands {{curword ""} args} {
   }
   set commsorig $comms
   set comms [lsort -dictionary -unique $comms]
-  return [list $curword $idx1 $idx2]
+  list $curword $idx1 $idx2
 }
 
 # ________________________ GUI _________________________ #

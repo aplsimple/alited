@@ -470,7 +470,7 @@ proc ::hl_tcl::my::CountQSH {txt ln} {
 
   set ln [expr {int($ln)}]
   set st [$txt get $ln.0 $ln.end]
-  return [list [CountChar $st \"] [CountChar $st \\] [CountChar $st #]]
+  list [CountChar $st \"] [CountChar $st \\] [CountChar $st #]
 }
 #_______________________
 
@@ -1208,7 +1208,7 @@ proc ::hl_tcl::hl_all {args} {
 proc ::hl_tcl::hl_colorNames {} {
   # Returns a list of color names for syntax highlighting.
 
-  return [list clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT clrBRA]
+  list clrCOM clrCOMTK clrSTR clrVAR clrCMN clrPROC clrOPT clrBRA
 }
 
 #_______________________
@@ -1290,7 +1290,7 @@ proc ::hl_tcl::hl_commands {} {
   # Lists all Tcl/Tk commands registered here.
 
   variable my::data
-  return [list {*}$my::data(PROC_TCL) {*}$my::data(CMD_TCL) {*}$my::data(CMD_TK)]
+  list {*}$my::data(PROC_TCL) {*}$my::data(CMD_TCL) {*}$my::data(CMD_TK)
 }
 #_______________________
 

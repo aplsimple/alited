@@ -98,17 +98,6 @@ proc unit::GetHeader {wtree ID {NC ""} {wtxt ""} {tip ""} {l1 0} {l2 0}} {
 }
 #_______________________
 
-proc unit::BranchLines {ID} {
-  # Gets a line range of a branch.
-  #   ID - ID of the branch
-
-  set branch [alited::tree::GetTree $ID]
-  set l1 [lindex $branch 0 4 0]
-  set l2 [lindex $branch end 4 1]
-  return [list $l1 $l2]
-}
-#_______________________
-
 proc unit::UnitHeaderMode {TID} {
   # Gets modes for unit tree : do use RE for leaf headers and do not.
   #   TID - tab's ID
@@ -118,7 +107,7 @@ proc unit::UnitHeaderMode {TID} {
   set isProc [expr {!$isLeafRE && \
     ($TID eq {TMP} || [alited::file::IsTcl [alited::bar::FileName $TID]])}]
   set leafRE [LeafRegexp]
-  return [list $isLeafRE $isProc $leafRE]
+  list $isLeafRE $isProc $leafRE
 }
 #_______________________
 
@@ -362,7 +351,7 @@ proc unit::TemplateData {wtxt l1 l2 tpldata} {
       set pos $r.[expr {$c+$ll}]
     }
   }
-  return [list $tex $pos $place]
+  list $tex $pos $place
 }
 #_______________________
 
@@ -502,7 +491,7 @@ proc unit::CorrectPos {wtxt tex posc pos0 posi} {
       append tex $t
     }
   }
-  return [list $tex $pos0 $posc]
+  list $tex $pos0 $posc
 }
 #_______________________
 

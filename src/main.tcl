@@ -150,7 +150,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
     HighlightText $TID $curfile $wtxt
     if {$al(TREE,isunits)} alited::tree::RecreateTree
   }
-  return [list $curfile $wtxt $wsbv $pos $doinit $dopack $selrange $wrap]
+  list $curfile $wtxt $wsbv $pos $doinit $dopack $selrange $wrap
 }
 #_______________________
 
@@ -204,7 +204,7 @@ proc main::GutterAttrs {} {
   # Returns list of gutter's data (canvas widget, width, shift)
 
   namespace upvar ::alited al al obPav obPav
-  return [list [$obPav GutText] $al(ED,gutterwidth) $al(ED,guttershift)]
+  list [$obPav GutText] $al(ED,gutterwidth) $al(ED,guttershift)
 }
 #_______________________
 

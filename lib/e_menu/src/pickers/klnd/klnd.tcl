@@ -188,7 +188,7 @@ proc ::klnd::my::ShowMonth {m y {dopopup no}} {
 proc ::klnd::my::MapYMD {script y m d} {
   # Gets a script with %y, %m, %d wildcards.
 
-  return [string map [list %y $y %m $m %d $d] $script]
+  string map [list %y $y %m $m %d $d] $script
 }
 
 ## ________________________ Current day _________________________ ##
@@ -380,7 +380,7 @@ proc ::klnd::my::InitCalendar {args} {
     set p(dvis) [clock format $ym -format %e]
   }
   ::apave::obj untouchWidgets *KLND*
-  return [list $title $datevalue $tvar $parent $centerme $geo $entry]
+  list $title $datevalue $tvar $parent $centerme $geo $entry
 }
 #_______________________
 
@@ -467,13 +467,11 @@ proc ::klnd::maxYear {} {
 
 proc ::klnd::currentYearMonthDay {} {
   # Gets current year, month, day.
-  # Return a list of  current year, month, day.
+  # Returns a list of current year, month, day.
 
-  set ym [clock seconds]
-  return [list {*}"\
-    [clock format $ym -format %Y] \
-    [clock format $ym -format %N] \
-    [clock format $ym -format %e]"]
+  set cl [clock seconds]
+  foreach d {Y N e} {lappend res {*}[clock format $cl -format %$d]}
+  return $res
 }
 #_______________________
 
@@ -513,7 +511,7 @@ proc ::klnd::weekdays {{loc ""}} {
     lappend days [clock format [clock scan "03/[expr {14+$i}]/2021" \
       -format %D -locale $loc] -format %a -locale $loc]
   }
-  return [list $days $wformat]
+  list $days $wformat
 }
 #_______________________
 
@@ -529,7 +527,7 @@ proc ::klnd::clearArgs {args} {
   # Removes specific options from args.
   #   args - list of options
 
-  return [::apave::removeOptions $args -title -value -tvar -locale -parent -dateformat -weekday -com -command -currentmonth -united -daylist -hllist -popup -tip -weeks]
+  ::apave::removeOptions $args -title -value -tvar -locale -parent -dateformat -weekday -com -command -currentmonth -united -daylist -hllist -popup -tip -weeks
 }
 #_______________________
 

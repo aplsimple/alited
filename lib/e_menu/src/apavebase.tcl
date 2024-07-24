@@ -2934,7 +2934,7 @@ oo::class create ::apave::APaveBase {
     bind $lab <Leave> "::apave::obj EXPORT HoverLab $lab {$v} no $fg $bg"
     bind $lab <Button-1> "::apave::obj EXPORT VisitedLab $lab {$v} yes $fg2 $bg2;$v"
     if {$doadd} {lappend ::apave::_AP_VISITED(ALL) [list $lab $v $inv]}
-    return [list $fg $bg $fg2 $bg2]
+    list $fg $bg $fg2 $bg2
   }
   #_______________________
 

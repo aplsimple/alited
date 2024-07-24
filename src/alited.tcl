@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.6.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.6.2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -469,7 +469,7 @@ namespace eval alited {
     #   wprev - widget for Shift/Tab
     # Used by obPrf & obPrj objects.
 
-    return [list *.ButOK $wprev]
+    list *.ButOK $wprev
   }
   #_______________________
 
@@ -509,7 +509,7 @@ namespace eval alited {
       incr all
       incr processed [$procname [lindex $tab 0]]
     }
-    return [list $all $processed]
+    list $all $processed
   }
   #_______________________
 
