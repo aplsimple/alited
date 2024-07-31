@@ -12,6 +12,7 @@ Version `v1.8.6.3 (31 Jul'24)`
   - BUGFIX: e_menu's bug injected in v1.8.5
   - BUGFIX: in Linux: not seen .file in the file tree (thanks to George)
   - BUGFIX: no highlighting .msg files (injected by Edit/Formats/Translation)
+  - BUGFIX: press+move middle mouse button -> line numbers unchanged (thanks to George)
   - DELETE: Tools/Run...: "combined" mode
   - NEW   : Tools/Run...: "as is" mode (thanks to Johann)
   - NEW   : file tree: "Open Selected Files with" opens files in their apps (thanks to George)
