@@ -2596,6 +2596,7 @@ oo::class create ::apave::APaveBase {
           if {![winfo exists $canvas]} {set canvas [my $canvas]}
           set bind [list [self] fillGutter $w $canvas $width $shift]
           bind $w <Configure> $bind
+          bind $w <MouseWheel> $bind
           if {[trace info execution $w] eq {}} {
             trace add execution $w leave $bind
           }

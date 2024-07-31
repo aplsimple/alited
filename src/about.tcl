@@ -101,6 +101,9 @@ proc about::About {} {
     [list "linkAM" "openDoc %t@@https://en.wikipedia.org/wiki/Argentina@@"] \
     [list "linkHO" "openDoc %t@@https://wiki.tcl-lang.org/page/Harald+Oehlmann@@"] \
     [list "linkJM" "openDoc %t@@https://github.com/jgm@@"] \
+    [list "linkJN" "openDoc %t@@https://github.com/johannish@@"] \
+    [list "linkGN" "openDoc %t@@https://github.com/gregnix@@"] \
+    [list "linkGR" "openDoc %t@@https://github.com/georgtree@@"] \
     ]
 
   ### ________________________ "General" tab _________________________ ###
@@ -181,6 +184,9 @@ proc about::About {} {
     \u2022 <linkML>Martin Lemburg</linkML>\n \
     \u2022 <linkDN>Daniele Bonini</linkDN>\n \
     \u2022 <linkAM>Alexis Martin</linkAM>\n \
+    \u2022 <linkJN>Johann</linkJN>\n \
+    \u2022 <linkGN>Gregor</linkGN>\n \
+    \u2022 <linkGR>George</linkGR>\n \
     \n $spec\n\n \
     \u2022 <linkTW>Trevor Williams</linkTW>\n \
     \u2022 <linkDF>Donal K. Fellows</linkDF>\n \

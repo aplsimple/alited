@@ -97,15 +97,16 @@ proc detached::Modified {pobj win wtxt args} {
 }
 #_______________________
 
-proc detached::SaveFile {pobj fname} {
+proc detached::SaveFile {pobj fname win} {
   # Saves changed text.
   #   pobj - apave object of detached editor
   #   fname - file name
+  #   win - window's path
 
   set wtxt [$pobj Text]
   if {[alited::file::SaveText $wtxt $fname]} {
     $wtxt edit modified no
-    alited::detached::Modified $pobj $wtxt
+    alited::detached::Modified $pobj $win $wtxt
   }
 }
 #_______________________
@@ -125,7 +126,7 @@ proc detached::Close {id pobj win fname args} {
   if {[$wtxt edit modified]} {
     set msg [msgcat::mc {Save changes made to the text?}]
     switch [alited::msg yesnocancel warn $msg {} -centerme $win] {
-      1 {SaveFile $pobj $fname}
+      1 {SaveFile $pobj $fname $win}
       2 {}
       default {return}
     }
@@ -156,7 +157,7 @@ proc detached::_create {fname} {
     switch $icon {
       SaveFile {
         append al(detachtools) \
-          "-com {alited::detached::SaveFile $pobj $fname} -state disabled"
+          "-com {alited::detached::SaveFile $pobj $fname $win} -state disabled"
         set tip $::alited::al(MC,ico$icon)
       }
       undo - redo - cut - copy - paste {
@@ -192,7 +193,7 @@ proc detached::_create {fname} {
   foreach ev {f F} {bind $wtxt <Control-$ev> "focus $cbx"}
   bind $wtxt <F3> "alited::detached::Find $pobj $wtxt 1"
   foreach ev [alited::pref::BindKey2 0 -] {
-    bind $win <$ev> "alited::detached::SaveFile $pobj $fname"
+    bind $win <$ev> "alited::detached::SaveFile $pobj $fname $win"
   }
   if {$al(fontdetach)} {set fsz $al(FONTSIZE,std)} {set fsz {}}
   after 50 after idle "$pobj fillGutter $wtxt;\

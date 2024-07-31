@@ -272,14 +272,13 @@ proc tree::Create {} {
     pack [$obPav BtTRenT] -side left -after [$obPav BtTAddT]  ;# show file buttons
     pack [$obPav BtTCloT] -side left -after [$obPav BtTDelT]
     pack [$obPav BtTOpen] -side left -after [$obPav BtTCloT]
-    # for file tree: get its current "open branch" flags
-    # in order to check them in CreateFilesTree
-    set al(SAVED_FILE_TREE) [list]
+    # get file tree's current "open branch" flags to check in CreateFilesTree
+    set al(FILETREE_BRANCH_OPEN) [dict create]
     foreach item [GetTree] {
       lassign $item - - ID - values
       lassign $values -> fname isfile
-      if {[string is false -strict $isfile]} {
-        lappend al(SAVED_FILE_TREE) [list $fname [$wtree item $ID -open]]
+      if {[string is false -strict $isfile] && [$wtree item $ID -open]} {
+        dict set al(FILETREE_BRANCH_OPEN) $fname 1
       }
     }
   }
@@ -298,7 +297,6 @@ proc tree::Create {} {
     CreateUnitsTree $TID $wtree
   } else {
     CreateFilesTree $wtree
-    unset al(SAVED_FILE_TREE)
   }
 }
 #_______________________
@@ -439,7 +437,6 @@ proc tree::CreateFilesTree {wtree} {
   $wtree heading #0 -text ":: $al(prjname) ::"
   $wtree heading #1 -text $al(MC,files)
   bind $wtree <Return> {::alited::tree::OpenFile}
-  set selID ""
   if {[catch {set selfile [alited::bar::FileName]}]} {
     set selfile {} ;# at closing by Ctrl+W with file tree open: no current file
   }
@@ -448,7 +445,6 @@ proc tree::CreateFilesTree {wtree} {
   foreach item [GetDirectoryContents $al(prjroot)] {
     set itemID  [alited::tree::NewItemID [incr iit]]
     lassign $item lev isfile fname fcount iroot
-    if {$selfile eq $fname} {set selID $itemID}
     set title [file tail $fname]
     if {$iroot<0} {
       set parent {}
@@ -466,18 +462,15 @@ proc tree::CreateFilesTree {wtree} {
       # get the directory's flag of expanded branch (in the file tree)
     }
     if {$fcount} {set fc $fcount} {set fc {}}
+    set isopen [dict exists $al(FILETREE_BRANCH_OPEN) $fname]
     $wtree insert $parent end -id $itemID -text "$title" \
-      -values [list $fc $fname $isfile $itemID] -open no {*}$imgopt
+      -values [list $fc $fname $isfile $itemID] -open $isopen {*}$imgopt
     $wtree tag add tagNorm $itemID
     if {!$isfile} {
       $wtree tag add tagBranch $itemID
     } elseif {[alited::bar::FileTID $fname $filesTIDs] ne {}} {
       $wtree tag add tagSel $itemID
     }
-  }
-  if {$selID ne {}} {
-    $wtree see $selID
-    $wtree selection set $selID
   }
 }
 #_______________________
