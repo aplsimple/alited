@@ -1534,6 +1534,22 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
+  method bindGutter {txt canvas {width 5} {shift 3}} {
+    # Makes bindings for a text and its gutter.
+    #  txt - path to the text widget
+    #  canvas - canvas of the gutter
+    #  width - width of the gutter, in chars
+    #  shift - addition to the width (to shift from the left side)
+
+    set bind [list [self] fillGutter $txt $canvas $width $shift]
+    bind $txt <Configure> $bind
+    bind $txt <Motion> [list after idle $bind]
+    if {[trace info execution $txt] eq {}} {
+      trace add execution $txt leave $bind
+    }
+  }
+  #_______________________
+
   method gutterContents {txt} {
     # Gets contents of a text's gutter
     #   txt - text's path
@@ -2594,12 +2610,7 @@ oo::class create ::apave::APaveBase {
         -gutter {
           lassign [::apave::parseOptions $v -canvas Gut -width 5 -shift 6] canvas width shift
           if {![winfo exists $canvas]} {set canvas [my $canvas]}
-          set bind [list [self] fillGutter $w $canvas $width $shift]
-          bind $w <Configure> $bind
-          bind $w <Motion> $bind
-          if {[trace info execution $w] eq {}} {
-            trace add execution $w leave $bind
-          }
+          my bindGutter $w $canvas $width $shift
         }
         -onReturn {   ;# makes a command run at Enter key pressing
           lassign $v cmd from to

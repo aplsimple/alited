@@ -107,11 +107,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
     text $wtxt {*}$texopts
     $wtxt tag configure sel -borderwidth $selbw
     $obPav themeNonThemed [winfo parent $wtxt]
-    set bind [list $obPav fillGutter $wtxt $canvas $width $shift]
-    bind $wtxt <Configure> $bind
-    if {[trace info execution $wtxt] eq {}} {
-      trace add execution $wtxt leave $bind
-    }
+    $obPav bindGutter $wtxt $canvas $width $shift
     ttk::scrollbar $wsbv -orient vertical -takefocus 0
     $wtxt configure -yscrollcommand "$wsbv set"
     $wsbv configure -command "$wtxt yview"
@@ -1025,7 +1021,7 @@ proc main::PackTextWidgets {wtxt wsbv} {
   lassign [GutterAttrs] canvas width shift
   # widgets created outside apave require the theming:
   $obPav csSet [$obPav csCurrent] $al(WIN) -doit
-  $obPav fillGutter $wtxt $canvas $width $shift
+  $obPav bindGutter $wtxt $canvas $width $shift
 }
 #_______________________
 
