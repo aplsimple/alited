@@ -237,7 +237,32 @@ proc tree::SeeSelection {{wtree ""}} {
   namespace upvar ::alited al al obPav obPav
   if {$wtree eq {}} {set wtree [$obPav Tree]}
   set selection [$wtree selection]
-  if {[llength $selection]==1} {$wtree see $selection}
+  if {[llength $selection]==1} {ExpandSelection $selection $wtree}
+}
+#_______________________
+
+proc tree::ExpandSelection {selID {wtree ""}} {
+  # Expands the tree selection, counting the file tree expanded mode.
+  #   selID - ID of selection
+  #   wtree - tree's path
+
+  namespace upvar ::alited al al obPav obPav
+  if {$al(TREE,isunits) || $al(TREE,isexpand)} {
+    if {$wtree eq {}} {set wtree [$obPav Tree]}
+    catch {$wtree see $selID}
+  }
+}
+#_______________________
+
+proc tree::SeeFile {fname} {
+  # Sees file name in file tree.
+  #   fname - file name
+
+  namespace upvar ::alited obPav obPav
+  set id [alited::file::SearchInFileTree $fname]
+  if {$id ne {}} {
+    after 10 "[$obPav Tree] selection add $id; alited::tree::ExpandSelection $id"
+  }
 }
 #_______________________
 
@@ -1083,6 +1108,7 @@ proc tree::ExpandContractTree {Tree {isexp yes}} {
   if {$al(TREE,isunits)} {
     lassign [CurrentItemByLine $pos 1] itemID
   } else {
+    set al(TREE,isexpand) $isexp
     set itemID [CurrentItem]
   }
   set branch [set selbranch {}]
@@ -1144,7 +1170,7 @@ proc tree::RecreateTree {{wtree ""} {headers ""} {clearsel no}} {
       catch {$wtree selection add $item}
     }
   }
-  catch {$wtree see [lindex $selection 0]}
+  catch {ExpandSelection [lindex $selection 0] $wtree}
 }
 #_______________________
 

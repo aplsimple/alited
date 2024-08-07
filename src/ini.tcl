@@ -21,6 +21,7 @@ namespace eval ::alited {
   set al(ED,btsbd) 0        ;# borderwidth for bartabs
   set al(ED,BlinkCurs) 1    ;# blinking cursor
   set al(TREE,isunits) yes  ;# current mode of tree: units/files
+  set al(TREE,isexpand) 1   ;# current mode of tree: expanded or not
   set al(TREE,units) no     ;# flag "is a unit tree created"
   set al(TREE,files) no     ;# flag "is a file tree created"
   set al(TREE,cw0) 200      ;# tree column #0 width

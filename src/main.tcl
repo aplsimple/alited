@@ -168,7 +168,7 @@ proc main::ShowText {} {
   if {[set itemID [alited::tree::NewSelection]] ne {}} {
     # if a new unit is selected, show it in the unit tree
     set wtree [$obPav Tree]
-    $wtree see $itemID
+    alited::tree::ExpandSelection $itemID $wtree
     # this code below redraws the tree's scrollbar
     $wtree configure -yscrollcommand [$wtree cget -yscrollcommand]
   }

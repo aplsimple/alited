@@ -6,28 +6,35 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.6.4 (1 Aug'24)`
+Version `v1.8.7b1 (7 Aug'24)`
+
+  - BUGFIX: press+move middle mouse button -> line numbers unchanged (thanks to George)
+  - NEW   : contracted file tree remains so till "expand all" (thanks to George)
+  - CHANGE: File/Open & File/Save: select a file in file tree (if present)
+  - CHANGE: Update file tree: branches remain open if possible (thanks to George)
+  - CHANGE: Preferences/Units: "test" added to regexps
+  - CHANGE: wish8.7 of installers
+  - CHANGE: About / Acknowledgements
+  - CHANGE: clearances
+  - CHANGE: packages: e_menu/apave 4.4.9
+
+
+Version `v1.8.6 (17 Jul'24)`
 
   - BUGFIX: Ctrl+N, Alt+H => bad text index ".0"
   - BUGFIX: e_menu's bug injected in v1.8.5
   - BUGFIX: in Linux: not seen .file in the file tree (thanks to George)
   - BUGFIX: no highlighting .msg files (injected by Edit/Formats/Translation)
-  - BUGFIX: press+move middle mouse button -> line numbers unchanged (thanks to George)
   - DELETE: Tools/Run...: "combined" mode
   - NEW   : Tools/Run...: "as is" mode (thanks to Johann)
   - NEW   : file tree: "Open Selected Files with" opens files in their apps (thanks to George)
   - NEW   : Detach in File, file tree, tabbar menu, Projects/Files (thanks to George)
   - NEW   : status bar message for bad #RUNF: / #EXEC: command
-  - CHANGE: Update file tree: branches remain open if possible (thanks to George)
-  - CHANGE: Preferences/Units: "test" added to regexps
   - CHANGE: run by Tkcon for #RUNF: / #EXEC: when it begins with %f wildcard
   - CHANGE: tip of status bar's right info
   - CHANGE: Tools/Run...: appearance
-  - CHANGE: wish8.7 of installers
-  - CHANGE: About / Acknowledgements
-  - CHANGE: clearances
   - CHANGE: docs
-  - CHANGE: packages: e_menu/apave 4.4.8
+  - CHANGE: packages: e_menu/apave 4.4.7
 
 
 Version `v1.8.5 (3 Jul'24)`

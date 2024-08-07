@@ -420,6 +420,18 @@ proc file::CommandForFile2 {comm fname fname2} {
 }
 #_______________________
 
+proc file::SearchInFileTree {fname {ID {}}} {
+  # Searches a file name in file tree.
+  #   fname - file name
+  #   ID - returned ID if file name isn't found
+
+  set ltree [alited::tree::GetTree]
+  set i [lsearch -exact -index {4 1} $ltree $fname]
+  if {$i>-1} {set res [lindex $ltree $i 2]} {set res $ID}
+  return $res
+}
+#_______________________
+
 proc file::SelectFileInTree {wtree fname ID} {
   # Finds a file in file tree and selects it.
   #   wtree - file tree's path
@@ -427,10 +439,7 @@ proc file::SelectFileInTree {wtree fname ID} {
   #   ID - ID of default item to select (if the file not found)
 
   alited::tree::RecreateTree $wtree -
-  set ltree [alited::tree::GetTree]
-  set i [lsearch -exact -index {4 1} $ltree $fname]
-  if {$i>-1} {set ID [lindex $ltree $i 2]}
-  SelectInTree $wtree $ID
+  SelectInTree $wtree [SearchInFileTree $fname $ID]
 }
 #_______________________
 
@@ -665,7 +674,7 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message ""}} {
   #   Message - name of procedure for "open file" message
   # Returns the file's tab ID if it's loaded, or {} if not loaded.
 
-  namespace upvar ::alited al al obPav obPav
+  namespace upvar ::alited al al
   variable ansOpen
   if {$fnames eq {}} {
     set fnames [ChooseMultipleFiles]
@@ -724,7 +733,8 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message ""}} {
     alited::bar::BAR $TID show $many $many
   }
   RecreateFileTree
-  alited::FocusText
+  if {!$islist} {alited::tree::SeeFile [lindex $fnames 0]}
+  after 20 alited::FocusText
   return $TID
 }
 #_______________________
@@ -793,6 +803,7 @@ proc file::SaveFileByName {TID fname {doit no}} {
     alited::edit::Modified $TID $wtxt
     alited::main::HighlightText $TID $fname $wtxt
     RecreateFileTree
+    alited::tree::SeeFile $fname
   }
   return 1
 }
@@ -1575,10 +1586,10 @@ proc file::SelectInTree {wtree id} {
 
   catch {
     $wtree selection add $id
-    $wtree see $id
+    alited::tree::ExpandSelection $id $wtree
   }
   after idle [list after 200 \
-    "catch {focus $wtree ;  $wtree selection set $id ; $wtree focus $id}"]
+    "catch {focus $wtree ;  $wtree selection set $id ; alited::tree::ExpandSelection $id $wtree ; $wtree focus $id}"]
 }
 
 # ________________________ Recent files _________________________ #
