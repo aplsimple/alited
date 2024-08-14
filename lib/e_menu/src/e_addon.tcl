@@ -618,7 +618,7 @@ proc ::em::changePDspx {} {
   lassign [obj csGet $::em::ncolor] - fg - bg
   set labmsg [::em::dialog LabMsg]
   set font [font configure TkFixedFont]
-  set font [dict set font -size $::em::fs]
+  dict set font -size $::em::fs
   set txt [obj csGetName $::em::ncolor]
   set txt [string range [append txt [string repeat " " 20]] 0 20]
   $labmsg configure -foreground $fg -background $bg -font $font \

@@ -6,10 +6,10 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7b1 (7 Aug'24)`
+Version `v1.8.7b2 (14 Aug'24)`
 
   - BUGFIX: press+move middle mouse button -> line numbers unchanged (thanks to George)
-  - NEW   : contracted file tree remains so till "expand all" (thanks to George)
+  - NEW   : contracted file/unit tree remains so till "expand all", saved through sessions (thanks to George)
   - CHANGE: File/Open & File/Save: select a file in file tree (if present)
   - CHANGE: Update file tree: branches remain open if possible (thanks to George)
   - CHANGE: Preferences/Units: "test" added to regexps

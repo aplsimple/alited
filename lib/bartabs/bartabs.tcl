@@ -418,7 +418,7 @@ method Tab_SelAttrs {fnt fgsel bgsel} {
 
   lassign $fnt opt val
   if {$fgsel eq {}} {
-    set val [dict set val -underline 1]
+    dict set val -underline 1
   } else {
     if {$bgsel eq {}} {
       set bgsel [ttk::style configure $fgsel -selectbackground]

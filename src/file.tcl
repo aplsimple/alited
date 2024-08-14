@@ -574,7 +574,7 @@ proc file::CloneFile {{undermouse yes} {fromtree yes}} {
     set fname2 [file join [file dirname $fname2] $name2]
     if {![CommandForFile2 copy $fname $fname2]} return
     OpenFile $fname2
-    if {!$al(TREE,isunits)} RecreateFileTree
+    if {!$al(TREE,isunits)} {RecreateFileTree; AfterSaving}
   }
 }
 #_______________________
@@ -733,7 +733,6 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message ""}} {
     alited::bar::BAR $TID show $many $many
   }
   RecreateFileTree
-  if {!$islist} {alited::tree::SeeFile [lindex $fnames 0]}
   after 20 alited::FocusText
   return $TID
 }
@@ -803,7 +802,6 @@ proc file::SaveFileByName {TID fname {doit no}} {
     alited::edit::Modified $TID $wtxt
     alited::main::HighlightText $TID $fname $wtxt
     RecreateFileTree
-    alited::tree::SeeFile $fname
   }
   return 1
 }
@@ -823,12 +821,7 @@ proc file::SaveFile {{TID ""} {doit no}} {
   }
   set res [SaveFileByName $TID $fname $doit]
   alited::ini::SaveCurrentIni "$res && $al(INI,save_onsave)" $doit
-  if {!$doit} {
-    alited::main::ShowHeader yes
-    if {$al(TREE,isunits)} {set fname {}}
-    alited::tree::RecreateTree {} $fname
-    alited::tree::SeeSelection
-  }
+  if {!$doit} AfterSaving
   return $res
 }
 #_______________________
@@ -857,12 +850,18 @@ proc file::SaveFileAs {{TID ""}} {
   } elseif {[set res [SaveFileByName $TID $fname]]} {
     AddRecent $fnameorig
     RenameFile $TID $fname
-    alited::main::ShowHeader yes
-    if {$al(TREE,isunits)} {set fname {}}
-    alited::tree::RecreateTree {} $fname
-    alited::tree::SeeSelection
+    AfterSaving
   }
   return $res
+}
+#_______________________
+
+proc file::AfterSaving {} {
+  # Actions after saving files.
+
+  alited::main::ShowHeader yes
+  alited::main::UpdateAll
+  alited::tree::SeeTreeItem
 }
 #_______________________
 
@@ -1215,7 +1214,7 @@ proc file::RecreateFileTree {} {
   if {!$al(TREE,isunits) && ![winfo exists $::alited::project::win]} {
     [$obPav Tree] selection set {}
     catch {after cancel $al(_AFT_RECR_)}
-    set al(_AFT_RECR_) [after 100 ::alited::tree::RecreateTree]
+    set al(_AFT_RECR_) [after 100 {alited::tree::RecreateTree; alited::tree::SeeSelection}]
   }
 }
 #_______________________
@@ -1574,7 +1573,7 @@ proc file::Delete {ID wtree sy} {
     if {$in1>=[llength $ltree]} {set in1 end}
     set id1 [lindex $ltree $in1 2]
     $wtree selection set {}
-    SelectInTree $wtree $id1
+    AfterSaving
   }
 }
 #_______________________
@@ -1586,10 +1585,10 @@ proc file::SelectInTree {wtree id} {
 
   catch {
     $wtree selection add $id
-    alited::tree::ExpandSelection $id $wtree
+    $wtree see $id
   }
   after idle [list after 200 \
-    "catch {focus $wtree ;  $wtree selection set $id ; alited::tree::ExpandSelection $id $wtree ; $wtree focus $id}"]
+    "catch {focus $wtree ;  $wtree selection set $id ; $wtree see $id ; $wtree focus $id}"]
 }
 
 # ________________________ Recent files _________________________ #

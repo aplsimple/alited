@@ -5,7 +5,8 @@ w=25
 pos=29.15
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENU_FOSGIT]} {set ::EMENU_FOSGIT Fossil}
-%C if {![info exist ::EMENUFILE]} {set ::EMENUFILE [set ::EMENURUNFILE "%f"] ; if {[::iswindows]} {set ::EMENURUNFILE [string map [list \\ \\\\] "%f"]; set ::EMENUFILE [string map [list \\ \\\\\\\\] "%f"]}}
+%C if {![info exist ::EMENUFILE]} {set ::EMENUFILE [set ::EMENURUNFILE {%f}] ; if {[::iswindows]} {set ::EMENURUNFILE [string map [list \\ \\\\] {%f}]; set ::EMENUFILE [string map [list \\ \\\\\\\\] {%f}]}}
+%C set ::EMENUTCLFILE  [string map [list \\ /] {%f}]
 %C set ::EMENUFILETAIL [file tail {$::EMENUFILE}]
 %C set ::FILETAIL {"$::EMENUFILETAIL"}
 %C set ::DIRTAIL "\"[file tail {%d}]\""
@@ -26,9 +27,8 @@ R: %C set ::_EM_RF_ [string map {\\$ \$} {%RF}]
 R: %C set ::_EM_EE_ [string map {\\$ \$} {%EE}]
 SE: %IF {%EE} ne "" %THEN $::_EM_EE_
 RE: %IF "%x" in ".tcl .tm .test" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
-RE: %IF "%x" in ".tcl .tm .test" %THEN %T tclsh "$::EMENURUNFILE" $::_EM_AR_
-RE: %IF "%x" eq ".py"  %THEN %t python3 "$::EMENURUNFILE" %AR
-RE: %IF "%x" eq ".sh"  %THEN %t "$::EMENURUNFILE"
+RE: %IF "%x" in ".tcl .tm .test" %THEN %T tclsh "$::EMENUTCLFILE" $::_EM_AR_
+RE: %IF "%x" eq ".py"  %THEN python3 "$::EMENURUNFILE" %AR
 RE: %IF "%x" in {.htm .html} %THEN %b "$::EMENURUNFILE"
 SE: %IF {%RF} ne "" %THEN %RF
 RE: %IF {%AR} eq "" && ![::iswindows] %THEN %O "$::EMENURUNFILE"
@@ -36,7 +36,7 @@ RE: "$::EMENURUNFILE" %AR
 
 ITEM = Run Tcl {all selection}
 S: cd %d
-RE: %IF "%TF" eq "%f" || ![file exists "%TF"] %THEN %M \n Select Tcl snippet\n while editing a file in alited editor!\n
+RE: %IF {%TF} eq {%f} || ![file exists "%TF"] %THEN %M \n Select Tcl snippet\n while editing a file in alited editor!\n
 S: tclsh %m/src/ch_.tcl "%TF"
 
 ITEM = Edit/create file "%s"

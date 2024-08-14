@@ -23,12 +23,15 @@ proc tree::SwitchTree {} {
     unset al(widthPanBM)  ;# the variable used to save the panel's size
     [$obPav PanL] add [$obPav FraFV]
     RecreateTree
+    SeeUnit
   } else {
     set al(widthPanBM) [winfo geometry [$::alited::obPav PanBM]]
     [$obPav PanL] forget [$obPav FraFV]
     set al(TREE,files) no
     Create
+    SeeFile [alited::bar::FileName]
   }
+  IconContract
   alited::main::FocusText
   update idletasks
 }
@@ -241,27 +244,55 @@ proc tree::SeeSelection {{wtree ""}} {
 }
 #_______________________
 
+proc tree::IsExpandedTree {} {
+  # Gets a flag "the tree is in expanded mode".
+
+  namespace upvar ::alited al al
+  expr {$al(TREE,isunits) && [IsExpandUT] || !$al(TREE,isunits) && $al(expandFT)}
+}
+#_______________________
+
 proc tree::ExpandSelection {selID {wtree ""}} {
-  # Expands the tree selection, counting the file tree expanded mode.
+  # Expands the tree selection, counting the tree expanded mode.
   #   selID - ID of selection
   #   wtree - tree's path
 
-  namespace upvar ::alited al al obPav obPav
-  if {$al(TREE,isunits) || $al(TREE,isexpand)} {
+  namespace upvar ::alited obPav obPav
+  if {[IsExpandedTree]} {
     if {$wtree eq {}} {set wtree [$obPav Tree]}
     catch {$wtree see $selID}
   }
 }
 #_______________________
 
+proc tree::SeeUnit {} {
+  # Sees unit name in tree.
+
+  namespace upvar ::alited obPav obPav
+  catch {[$obPav Tree] see [CurrentItemByLine]}
+}
+#_______________________
+
 proc tree::SeeFile {fname} {
-  # Sees file name in file tree.
+  # Sees file name in tree.
   #   fname - file name
 
   namespace upvar ::alited obPav obPav
   set id [alited::file::SearchInFileTree $fname]
   if {$id ne {}} {
-    after 10 "[$obPav Tree] selection add $id; alited::tree::ExpandSelection $id"
+    set wtree [$obPav Tree]
+    after idle [list after 100 "$wtree selection set $id; $wtree see $id"]
+  }
+}
+#_______________________
+
+proc tree::SeeTreeItem {} {
+  # Sees item in tree.
+
+  if {$::alited::al(TREE,isunits)} {
+    alited::tree::SeeUnit
+  } else {
+    alited::tree::SeeFile [alited::bar::FileName]
   }
 }
 #_______________________
@@ -298,14 +329,6 @@ proc tree::Create {} {
     pack [$obPav BtTCloT] -side left -after [$obPav BtTDelT]
     pack [$obPav BtTOpen] -side left -after [$obPav BtTCloT]
     # get file tree's current "open branch" flags to check in CreateFilesTree
-    set al(FILETREE_BRANCH_OPEN) [dict create]
-    foreach item [GetTree] {
-      lassign $item - - ID - values
-      lassign $values -> fname isfile
-      if {[string is false -strict $isfile] && [$wtree item $ID -open]} {
-        dict set al(FILETREE_BRANCH_OPEN) $fname 1
-      }
-    }
   }
   set TID [alited::bar::CurrentTabID]
   Delete $wtree {} $TID
@@ -371,8 +394,8 @@ proc tree::CreateUnitsTree {TID wtree} {
       set isopen no
     } else {
       set imgopt "-image alimg_gulls"
-      set levtmp [lindex $al(_unittree,$TID) $iiuni 0]
-      set isopen [expr ($levtmp+0)>$lev]
+      set levtmp [expr ([lindex $al(_unittree,$TID) $iiuni 0]+0)]
+      set isopen [expr {$levtmp>$lev && [IsExpandUT]}]
     }
     $wtree insert $parent end -id $itemID -text "$title" \
       -values [list $l1 $l2 {} $itemID $lev $leaf $fl1] -open $isopen {*}$imgopt
@@ -487,9 +510,8 @@ proc tree::CreateFilesTree {wtree} {
       # get the directory's flag of expanded branch (in the file tree)
     }
     if {$fcount} {set fc $fcount} {set fc {}}
-    set isopen [dict exists $al(FILETREE_BRANCH_OPEN) $fname]
     $wtree insert $parent end -id $itemID -text "$title" \
-      -values [list $fc $fname $isfile $itemID] -open $isopen {*}$imgopt
+      -values [list $fc $fname $isfile $itemID] -open $al(expandFT) {*}$imgopt
     $wtree tag add tagNorm $itemID
     if {!$isfile} {
       $wtree tag add tagBranch $itemID
@@ -1097,6 +1119,19 @@ proc tree::GetTree {{parent {}} {Tree Tree} {wtree ""}} {
 }
 #_______________________
 
+proc tree::IconContract {} {
+  # Sets "Contract All" toolbar action's icon.
+
+  namespace upvar ::alited obPav obPav
+  if {[IsExpandedTree]} {
+    set ico alimg_minus
+  } else {
+    set ico alimg_actions
+  }
+  [$obPav PanL].fraBot.panBM.fraTree.fra1.btTCtr configure -image $ico
+}
+#_______________________
+
 proc tree::ExpandContractTree {Tree {isexp yes}} {
   # Expands or contracts the tree.
   #   Tree - the tree's name
@@ -1104,13 +1139,15 @@ proc tree::ExpandContractTree {Tree {isexp yes}} {
 
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav $Tree]
-  set pos [[alited::main::CurrentWTXT] index insert]
   if {$al(TREE,isunits)} {
+    set pos [[alited::main::CurrentWTXT] index insert]
     lassign [CurrentItemByLine $pos 1] itemID
+    dict set al(expandUT) [alited::bar::FileName] $isexp
   } else {
-    set al(TREE,isexpand) $isexp
+    set al(expandFT) $isexp
     set itemID [CurrentItem]
   }
+  IconContract
   set branch [set selbranch {}]
   foreach item [GetTree {} $Tree] {
     lassign $item lev cnt ID
@@ -1127,6 +1164,16 @@ proc tree::ExpandContractTree {Tree {isexp yes}} {
     $wtree selection set $selbranch
     SeeSelection
   }
+}
+#_______________________
+
+proc tree::IsExpandUT {{fname ""}} {
+  # Gets a flag "expanding unit tree of text".
+  #   fname - file name
+
+  namespace upvar ::alited al al
+  if {$fname eq {}} {set fname [alited::bar::FileName]}
+  expr {![dict exists $al(expandUT) $fname] || [dict get $al(expandUT) $fname]}
 }
 #_______________________
 
@@ -1170,7 +1217,7 @@ proc tree::RecreateTree {{wtree ""} {headers ""} {clearsel no}} {
       catch {$wtree selection add $item}
     }
   }
-  catch {ExpandSelection [lindex $selection 0] $wtree}
+  catch {$wtree see [lindex $selection 0]}
 }
 #_______________________
 

@@ -164,15 +164,13 @@ proc main::ShowText {} {
     set al(TREE,units) no
     alited::tree::Create
   }
+  # this code below redraws the tree's scrollbar
+  set wtree [$obPav Tree]
+  $wtree configure -yscrollcommand [$wtree cget -yscrollcommand]
   FocusText $TID $pos
-  if {[set itemID [alited::tree::NewSelection]] ne {}} {
-    # if a new unit is selected, show it in the unit tree
-    set wtree [$obPav Tree]
-    alited::tree::ExpandSelection $itemID $wtree
-    # this code below redraws the tree's scrollbar
-    $wtree configure -yscrollcommand [$wtree cget -yscrollcommand]
-  }
   focus $wtxt
+  alited::tree::SeeTreeItem
+  alited::tree::IconContract
   if {$selrange ne {}} {
     catch {$wtxt tag add sel {*}$selrange}
   }

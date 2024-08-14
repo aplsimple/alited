@@ -1475,7 +1475,7 @@ proc project::Ok {args} {
   after 200 {after idle alited::main::FocusText}
   set _dirtree [list] ;# free its memory
   if {!$al(TREE,isunits)} {
-    after 200 {after idle alited::tree::RecreateTree}
+    after 200 {after idle {alited::tree::RecreateTree; alited::tree::SeeTreeItem}}
   }
   set updateGUI no ;# GUI will be updating anyway
   $obPrj res $win 1

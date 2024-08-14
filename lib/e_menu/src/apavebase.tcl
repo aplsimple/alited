@@ -1266,7 +1266,7 @@ oo::class create ::apave::APaveBase {
     lassign [::apave::extractOptions attrs -t {} -text {}] t text
     if {$t ne {} || $text ne {}} {
       if {$text eq {}} {set text $t}
-      set attrs [dict set attrs -t [my MC $text]]
+      dict set attrs -t [my MC $text]
     }
     return $attrs
   }

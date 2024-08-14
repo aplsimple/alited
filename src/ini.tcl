@@ -21,12 +21,13 @@ namespace eval ::alited {
   set al(ED,btsbd) 0        ;# borderwidth for bartabs
   set al(ED,BlinkCurs) 1    ;# blinking cursor
   set al(TREE,isunits) yes  ;# current mode of tree: units/files
-  set al(TREE,isexpand) 1   ;# current mode of tree: expanded or not
   set al(TREE,units) no     ;# flag "is a unit tree created"
   set al(TREE,files) no     ;# flag "is a file tree created"
   set al(TREE,cw0) 200      ;# tree column #0 width
   set al(TREE,cw1) 70       ;# tree column #1 width
   set al(TREE,showinfo) 0   ;# flag "show info on a file in tips"
+  set al(expandUT) [dict create] ;# current mode of unit tree: expanded or not
+  set al(expandFT) 1        ;# current mode of file tree: expanded or not
   set al(FONT) {}           ;# default font's options
   set al(FONT,txt)          TkFixedFont
   set al(FONT,defsmall)     TkDefaultFont
@@ -718,6 +719,7 @@ proc ini::ReadIniPrj {} {
   set al(curtab) 0
   set al(_check_menu_state_) 1
   set al(comForce) [set al(comForceLs) {}]
+  set al(expandFT) 1
   set al(FAV,current) [list]
   set al(FAV,visited) [list]
   alited::favor::InitFavorites [list]
@@ -782,6 +784,10 @@ proc ini::ReadPrjTabs {nam val} {
         set fname [lindex $val 0]
         if {[lsearch -exact -index 0 $al(tabs) $fname]<0} {
           lappend al(tabs) $val
+          lassign [split $val \t] - - isexp
+          if {[string is boolean -strict $isexp]} {
+            dict set al(expandUT) $fname $isexp
+          }
         }
       }
       recent {alited::file::InsertRecent $val end}
@@ -840,6 +846,7 @@ proc ini::ReadPrjMisc {nam val} {
     comforce   {set al(comForce) $val}
     comforcech {set al(comForceCh) $val}
     comforcels {set al(comForceLs) $val}
+    expandFT   {set al(expandFT) $val}
   }
 }
 
@@ -1096,7 +1103,8 @@ proc ini::SaveIniPrj {{newproject no}} {
       } else {
         set pos [alited::bar::GetTabState $TID --pos]
       }
-      append tab \t $pos  ;# save the current cursor position (fit to all files)
+      # save the current cursor position (fit to all files)
+      append tab \t $pos \t [alited::tree::IsExpandUT $tab]
       catch {
         set wrap [[alited::main::GetWTXT $TID] cget -wrap]
         if {$wrap ne {word}} {
@@ -1152,6 +1160,7 @@ proc ini::SaveIniPrj {{newproject no}} {
     puts $chan comforce=$al(comForce)
     puts $chan comforcech=$al(comForceCh)
     puts $chan comforcels=$al(comForceLs)
+    puts $chan expandFT=$al(expandFT)
   }
   puts \n
   close $chan
@@ -1524,9 +1533,7 @@ proc ini::InitFonts {} {
       obj basicDefFont [dict get $al(FONT) -family]
     }
     set smallfont $al(FONT)
-    catch {
-      set smallfont [dict set smallfont -size $al(FONTSIZE,small)]
-    }
+    catch {dict set smallfont -size $al(FONTSIZE,small)}
     foreach font {TkDefaultFont TkMenuFont TkHeadingFont TkCaptionFont} {
       font configure $font {*}$al(FONT)
     }
@@ -1536,9 +1543,7 @@ proc ini::InitFonts {} {
     ::baltip::configure -font $smallfont
   }
   set statusfont [obj basicSmallFont]
-  catch {
-    set statusfont [dict set statusfont -size $al(FONTSIZE,small)]
-  }
+  catch {dict set statusfont -size $al(FONTSIZE,small)}
   obj basicSmallFont $statusfont
   obj basicFontSize $al(FONTSIZE,std)
   set gl [file join $MSGSDIR $al(LOCAL)]
