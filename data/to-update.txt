@@ -1,3 +1,6 @@
+=== 2024-08-14 ===
+   EDITED lib/e_menu/menus/menu.em
+
 === 2024-05-27 ===
    EDITED lib/e_menu/menus/menu.em
 

@@ -27,7 +27,7 @@ namespace eval ::alited {
   set al(TREE,cw1) 70       ;# tree column #1 width
   set al(TREE,showinfo) 0   ;# flag "show info on a file in tips"
   set al(expandUT) [dict create] ;# current mode of unit tree: expanded or not
-  set al(expandFT) 1        ;# current mode of file tree: expanded or not
+  set al(expandFT) 0        ;# current mode of file tree: expanded or not
   set al(FONT) {}           ;# default font's options
   set al(FONT,txt)          TkFixedFont
   set al(FONT,defsmall)     TkDefaultFont
@@ -89,7 +89,7 @@ namespace eval ::alited {
   set al(FAV,visited) [list]
 
   # flag "is now favorites (not last visited)"
-  set al(FAV,IsFavor) yes
+  set al(FAV,IsFavor) 0
 
   # maximum of "last visited" items
   set al(FAV,MAXLAST) 32
@@ -719,7 +719,7 @@ proc ini::ReadIniPrj {} {
   set al(curtab) 0
   set al(_check_menu_state_) 1
   set al(comForce) [set al(comForceLs) {}]
-  set al(expandFT) 1
+  set al(expandFT) 0
   set al(FAV,current) [list]
   set al(FAV,visited) [list]
   alited::favor::InitFavorites [list]

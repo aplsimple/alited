@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.7b2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.7b3  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -31,7 +31,7 @@ namespace eval alited {
   variable al2; array set al2 [list] ;# alternative array, just to not touch "al"
 
   # versions of mnu/ini to update to
-  set al(MNUversion) 1.8.5a1
+  set al(MNUversion) 1.8.7b3
   set al(INIversion) 1.8.0
 
   # previous version of alited to update from

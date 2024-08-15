@@ -6,14 +6,16 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7b2 (14 Aug'24)`
+Version `v1.8.7b3 (15 Aug'24)`
 
   - BUGFIX: press+move middle mouse button -> line numbers unchanged (thanks to George)
-  - NEW   : contracted file/unit tree remains so till "expand all", saved through sessions (thanks to George)
+  - NEW   : "Contract all" mode of file/unit tree, saved through projects/files
+  - CHANGE: "Run me" item of menu.em to comply with Windows (thanks to Gregor)
+  - CHANGE: default setting: prefer "Last Visited" to "Favorites"
   - CHANGE: File/Open & File/Save: select a file in file tree (if present)
-  - CHANGE: Update file tree: branches remain open if possible (thanks to George)
-  - CHANGE: Preferences/Units: "test" added to regexps
-  - CHANGE: wish8.7 of installers
+  - CHANGE: Update file/unit tree: branches remain open if possible (thanks to George)
+  - CHANGE: Preferences/Units: "test" added to regexps (thanks to George)
+  - CHANGE: wish8.7 of installers (thanks to George)
   - CHANGE: About / Acknowledgements
   - CHANGE: clearances
   - CHANGE: packages: e_menu/apave 4.4.9
