@@ -860,7 +860,7 @@ proc file::AfterSaving {} {
   # Actions after saving files.
 
   alited::main::ShowHeader yes
-  alited::main::UpdateAll
+  alited::tree::RecreateTree
   alited::tree::SeeTreeItem
 }
 #_______________________

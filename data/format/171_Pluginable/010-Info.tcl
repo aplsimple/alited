@@ -37,9 +37,11 @@
 # Also demonstrates, how to use
 #   - "command=" line to treat the rest of file as Tcl code block
 #   - "proc" commands creating procedures in alited::format namespace
-#   - alited::Msg to show messages
+#   - alited::Msg to show messages with tags
 #   - separator for tool bar
 #   - icon for tool bar
+#   - modal=0 to disable focusing an edited text (the info is non-modal)
+#
 
 Mode = 6
 
@@ -48,6 +50,8 @@ sep = 1
 
 #! comment "icon=" to be inactive
 icon = info
+
+modal = 0
 
 events = <Alt-I>, <Alt-i>
 
@@ -77,10 +81,12 @@ proc INFO {} {
   set ishort 0
   set maxlen 0
   set minlen 9999999999
+  set charcnt 0
   set cont [split [%W get 1.0 end] \n]
   foreach line $cont {
     incr il
     if {[set len [string length $line]]} {
+      incr charcnt $len
       if {$maxlen < $len} {
         set ilong $il
         set maxlen $len
@@ -95,21 +101,22 @@ proc INFO {} {
   set pad [string repeat { } $ll]
   set ishort [string range $ishort$pad 0 $ll]
   set ilong [string range $ilong$pad 0 $ll]
-  list $ishort $ilong $minlen $maxlen
+  list $ishort $ilong $minlen $maxlen $charcnt
 }
 
 # ________________________ main _________________________ #
 
 # current file info
-lassign [INFO] ishort ilong minlen maxlen
+lassign [INFO] ishort ilong minlen maxlen charcnt
+set lin(0) "Chars total   :  $charcnt"
 set lin(1) "Shortest line :  $ishort (length: $minlen)"
 set lin(2) "Longest line  :  $ilong (length: $maxlen)"
 
 # misc info
-set lin(3) "Locale          : [msgcat::mclocale]"
-set lin(4) "MC preferences  : [msgcat::mcpreferences]"
-set lin(5) "Encoding system : [encoding system]"
-set lin(6) "File volumes    : [file volumes]"
+set lin(3) "<b>Locale          </b>: [msgcat::mclocale]"
+set lin(4) "<b>MC preferences  </b>: [msgcat::mcpreferences]"
+set lin(5) "<b>Encoding system </b>: [encoding system]"
+set lin(6) "<b>File volumes    </b>: [file volumes]"
 set ln 6
 
 # platform info
@@ -133,7 +140,7 @@ foreach pn $platfinfo {
     set val $::tcl_platform($pn)
   }
   set pn [string range $pn$pad 0 $maxl]
-  set lin($ln) "$pn: $val"
+  set lin($ln) "<b>$pn</b>: $val"
 }
 
 # format info message
@@ -141,6 +148,8 @@ set maxl [MAXARRNAME lin]
 set maxl [expr {min($maxl,99)}]
 set under_ [string repeat _ $maxl]
 set message "\
+<b>%f</b> \n\n\
+$lin(0) \n\
 $lin(1) \n\
 $lin(2) \n\
 $under_ \n\n\
@@ -156,5 +165,6 @@ for {set i 0} {$i<[llength $platfinfo]} {incr i} {
 set message [string trimright $message \n]
 
 # message with icon=info in text mode
-alited::Msg $message info -text 1 -width [incr maxl 2]
+alited::Msg $message info -modal 0 -text 1 -width [incr maxl 2] \
+  {*}[alited::MessageTags]
 set _ ""

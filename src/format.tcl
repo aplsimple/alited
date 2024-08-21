@@ -744,7 +744,7 @@ proc format::Mode5 {cont args} {
   namespace upvar ::alited al al DIR DIR
   lassign [BeforeFormatting] wtxt value
   set value [alited::edit::EscapeValue $value]
-  lassign $args -> fname
+  lassign $args fn1 fn2 modal
   if {[info exists $cont]} {
     set cont [set $cont]
   }
@@ -764,7 +764,7 @@ proc format::Mode5 {cont args} {
       }
       # map format's own and template's woildcards
       set com [alited::Map {} \
-        $com %W $wtxt %v $value %f $fname \
+        $com %W $wtxt %v $value %f [alited::bar::FileName] \
         %d $al(TPL,%d) \
         %t $al(TPL,%t) \
         %u $al(TPL,%u) \
@@ -784,7 +784,7 @@ proc format::Mode5 {cont args} {
       if {$ending} break
     }
   }
-  alited::FocusText
+  if {[string is true $modal]} alited::FocusText
 }
 
 ## ________________________ pluginable _________________________ ##
@@ -805,10 +805,13 @@ proc format::Mode6 {cont args} {
   set bind6($fform) [list]
   set res [set icon {}]
   set sep 0
+  set modal 1
   foreach line $cont {
     incr il
-    set sp [alited::edit::IniParameter sep $line -nocase]
-    if {[string is true -strict $sp]} {set sep 1}
+    foreach o {sep modal} {
+      set v [alited::edit::IniParameter $o $line -nocase]
+      if {[string is boolean -strict $v]} {set $o $v}
+    }
     set ic [alited::edit::IniParameter icon $line -nocase]
     if {$ic ne {}} {set icon $ic}
     set events [alited::edit::IniParameter events $line -nocase]
@@ -817,6 +820,7 @@ proc format::Mode6 {cont args} {
         if {$ev ne {}} {
           set wasacc [info exist cont6($fform)]
           if {[EventOK $fullformname $fform $ev $wasacc]} {
+            lappend com $modal
             catch {bind $wtxt $ev $com}
             if {![llength $bind6($fform)]} {set res $ev}
             lappend bind6($fform) [list $ev $com]
@@ -834,7 +838,7 @@ proc format::Mode6 {cont args} {
     CreateFormatIcon $icon $sep $com $fform
   } elseif {$res eq {}} {
     # no event encountered - run the formatter once
-    Mode5 $cont {*}$args
+    Mode5 $cont {*}$args $modal
   }
   return $res
 }
@@ -855,9 +859,9 @@ proc format::EventOK {fullformname fform ev wasacc} {
   foreach key $keys {
     lassign $key ev1
     if {$ev1 eq $ev2} {
-      set mitem [alited::menu::FormatsItemName $fform]
+      set fn [alited::menu::FormatsItemName $fform]
       set msg [msgcat::mc {%e is overlapped by formatter "%f"}]
-      set msg [string map [list %e $ev %f $mitem] $msg]
+      set msg [string map [list %e $ev %f $fn] $msg]
       alited::MessageError $msg
       return no
     }

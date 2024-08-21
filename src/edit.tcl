@@ -1267,6 +1267,10 @@ proc edit::BindPluginables {wtxt} {
     SourceFormatTcl
     foreach n $lformat {
       lassign $al($n) fullformname ev
+      set fn [file tail $fullformname]
+      if {[set i [lsearch -index 0 $al(FORMATNAMES) $fn]]>-1} {
+        set fullformname [lindex $al(FORMATNAMES) $i 1] ;# truly source name
+      }
       set fform [FormatterName $fullformname]
       if {[info exists ::alited::format::bind6($fform)] && \
       [llength $::alited::format::bind6($fform)]} {

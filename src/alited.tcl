@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.7b3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.7b4  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -638,7 +638,7 @@ namespace eval alited {
       [list "b" "-foreground $fS"] \
       [list "link" "openDoc %t@@https://%l@@"] \
       ]
-    return "-tags ::alited::textTags"
+    return {-tags ::alited::textTags}
   }
   #_______________________
 
@@ -688,7 +688,8 @@ namespace eval alited {
       set res 0
     } else {
       set al(obDlg-BUSY) yes
-      set res [$obDlg $type $icon $title "\n$message\n" {*}$defb {*}$args]
+      set res [$obDlg $type $icon $title "\n$message\n" {*}$defb \
+        -onclose destroy {*}$args]
       unset -nocomplain al(obDlg-BUSY)
     }
     return [lindex $res 0]

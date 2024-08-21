@@ -267,6 +267,7 @@ proc menu::FillFormatItems {mnu {dir ""} {lev 0} {mnuID 0}} {
   if {$dir eq {}} {
     set dir [file join $::alited::DATADIR format]
   }
+  set al(FORMATNAMES) [list]
   set fnames [glob -nocomplain -directory $dir *]
   foreach fn [lsort -dictionary $fnames] {
     if {[string tolower [file tail $fn]] eq {init.tcl}} continue
@@ -283,6 +284,7 @@ proc menu::FillFormatItems {mnu {dir ""} {lev 0} {mnuID 0}} {
     } else {
       if {[incr idx] % 25} {set cbr {}} {set cbr {-columnbreak 1}}
       $mnu add command -label $it -command [list alited::edit::RunFormat $fn] {*}$cbr
+      lappend al(FORMATNAMES) [list [file tail $fn] $fn]
     }
   }
   if {!$lev} {

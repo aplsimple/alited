@@ -6,10 +6,13 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7b3 (15 Aug'24)`
+Version `v1.8.7b4 (21 Aug'24)`
 
+  - BUGFIX: Edit/Formats: %f wildcard (current file name)
+  - BUGFIX: at changing install dir: original pathes to bind pluginable formatters
   - BUGFIX: press+move middle mouse button -> line numbers unchanged (thanks to George)
   - NEW   : "Contract all" mode of file/unit tree, saved through projects/files
+  - NEW   : Edit/Formats/Pluginable/Info: non-modal, file name, chars total
   - CHANGE: "Run me" item of menu.em to comply with Windows (thanks to Gregor)
   - CHANGE: default setting: prefer "Last Visited" to "Favorites"
   - CHANGE: File/Open & File/Save: select a file in file tree (if present)
