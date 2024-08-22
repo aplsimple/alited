@@ -69,8 +69,8 @@ namespace eval pref {
 
   # standard keys' data
   variable stdkeys [dict create \
-     0 [list {Save File} F2] \
-     1 [list {Save File as} Control-S] \
+     0 [list {Save File} Control-S] \
+     1 [list {Save File as} Alt-S] \
      2 [list {Run e_menu} F4] \
      3 [list {Run File} F5] \
      4 [list {Double Selection} Control-D] \
@@ -1838,7 +1838,7 @@ proc pref::_create {tab} {
   set arrayTab($curTab) [$win.fra.fraR.$curTab select]
   CheckTheming no
   baltip::configure {*}$tipson
-  foreach arr {data keys prevkeys savekeys} {array unset $arr *}
+  foreach arr {data prevkeys savekeys} {array unset $arr *}
   catch {destroy $win}
   $obPrf destroy
   return $res

@@ -219,8 +219,8 @@ proc keys::ReservedAdd {} {
   Add action close-delete Control-Alt-W {::alited::file::CloseAndDelete; break}
   Add action help         F1 {alited::tool::Help}
   # other keys are customized in Preferences
-  Add action save-file    [alited::pref::BindKey 0 - F2] ::alited::file::SaveFile
-  Add action save-as      [alited::pref::BindKey 1 - Control-S] {::alited::file::SaveFileAs; break}
+  Add action save-file    [alited::pref::BindKey 0 - Control-S] ::alited::file::SaveFile
+  Add action save-as      [alited::pref::BindKey 1 - Alt-S] {::alited::file::SaveFileAs; break}
   Add action e_menu       [alited::pref::BindKey 2 - F4] alited::tool::e_menu3
   Add action run          [alited::pref::BindKey 3 - F5] alited::tool::_run
   Add action indent       [alited::pref::BindKey 6 - Control-I] {::alited::edit::Indent; break}

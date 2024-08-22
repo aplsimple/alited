@@ -6,8 +6,9 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7b4 (21 Aug'24)`
+Version `v1.8.7b5 (23 Aug'24)`
 
+  - BUGFIX: keys made default after Preferences + Projects (thanks to George)
   - BUGFIX: Edit/Formats: %f wildcard (current file name)
   - BUGFIX: at changing install dir: original pathes to bind pluginable formatters
   - BUGFIX: press+move middle mouse button -> line numbers unchanged (thanks to George)
