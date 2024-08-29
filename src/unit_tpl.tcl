@@ -233,7 +233,7 @@ proc unit_tpl::SyntaxText {wtxt} {
   alited::SyntaxHighlight tcl $wtxt [alited::SyntaxColors]
 }
 
-# ________________________ GUI Handlers _________________________ #
+# ________________________ GUI handlers _________________________ #
 
 proc unit_tpl::Ok {args} {
   # Handles "OK" button.

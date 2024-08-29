@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.7b5  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.7b6  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -1026,7 +1026,7 @@ namespace eval alited {
       catch {
         switch $ext {
           htm - ui - tpl1 {set ext html}
-          ale - conf {set ext ini}
+          ale - conf - typetpl {set ext ini}
         }
         set addon hl_$ext
         lassign [glob -nocomplain [file join $LIBDIR addon $addon.tcl]] fhl

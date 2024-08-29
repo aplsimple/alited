@@ -172,8 +172,10 @@ proc complete::IsMatch {curword com} {
   #   curword - the word
   #   com - the command
 
-  expr {[string match $curword* $com] || [string match $curword* \
-    [namespace tail $com]] || [regexp "^\[\$\]?$curword" $com]}
+  set res 0
+  catch {set res [expr {[string match $curword* $com] || [string match $curword* \
+    [namespace tail $com]] || [regexp "^\[\$\]?$curword" $com]}]}
+  return $res
 }
 #_______________________
 
@@ -239,13 +241,14 @@ proc complete::WinGeometry {lht} {
 
   variable win
   update
-  lassign [split [wm geometry $win] x+] w h
   lassign [TextCursorCoordinates] x y
-  set w2 [winfo reqwidth $win]
-  if {$w2>$w} {set w $w2}
-  set h2 [winfo reqheight $win]
-  if {$h2>20} {
-    wm geometry $win ${w}x${h2}+${x}+${y}
+  lassign [split [wm geometry $win] x+] w h
+  set w2 [winfo reqwidth $win] ; set w3 [winfo width $win]
+  set h2 [winfo reqheight $win]; set h3 [winfo height $win]
+  set w [expr {max($w,$w2,$w3)}]
+  set h [expr {max($h,$h2,$h3)}]
+  if {$w>20 && $h>20} {
+    wm geometry $win ${w}x${h}+${x}+${y}
   } else {
     wm geometry $win 220x325+${x}+${y}
   }
@@ -289,8 +292,7 @@ proc complete::PickCommand {wtxt} {
   if {$::alited::al(IsWindows)} {
     toplevel $win
   } else {
-    frame $win
-    wm manage $win
+    toplevel $win
     # the line below is of an issue in kubuntu (KDE?): small sizes of the popup window
     after idle [list ::alited::complete::WinGeometry $lht]
   }
@@ -298,7 +300,7 @@ proc complete::PickCommand {wtxt} {
   wm overrideredirect $win 1
   ::apave::APave create $obj $win
   set lwidgets [list \
-    "Ent - - - - {pack -expand 1 -fill x} {-w $::alited::complete::maxwidth \
+    "Ent - - - - {pack -fill x} {-w $::alited::complete::maxwidth \
     -tvar ::alited::complete::word -validate key \
     -validatecommand {alited::complete::PickValid $wtxt %V %d %i %s %S}}" \
     "fra - - - - {pack -expand 1 -fill both}" \

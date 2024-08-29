@@ -1,0 +1,82 @@
+[1.0]
+
+IMPORTANT: Change the above version to 2.0 (2.1, 2.2 etc.) to protect
+it from possible attempts by alited to update.
+
+[Description]
+
+Here, some "type templates" are collected for files with extensions
+according to this file's name.
+
+E.g., a file named "htm,html.typetpl" contains templates for files
+with .htm and .html extensions.
+
+Each template is set after [alited:TYPE] where TYPE is a template type.
+To mark a cursor position in a template, use the back quote (`).
+
+So, at editing *.htm or *.html files, you can type "TYPE" and Space key
+which will replace "TYPE" with its template.
+
+You can create your own type templates in your configuration directory,
+in data/typetpl subdirectory. Use "Setup/Type Templates" menu to open
+existing template files and update them or create new ones from them.
+
+[alited:HTML - <html>..</html>]
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="author" content="">
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/jpg" href="favicon.jpg">
+</head>
+<body>
+<title>`</title>
+</body>
+</html>
+[alited:UL - <ul>..</ul>]
+<ul>
+<li>`</li>
+<li></li>
+</ul>
+[alited:LI - <li>..</li>]
+<li>`</li>
+[alited:A - <a>..</a>]
+<a href="https://`" title=""></a>
+[alited:IMG - <img>]
+<img src="file/`.png" alt="">
+[alited:TABLE - <table>..</table>]
+
+<table>
+	<thead>
+	<tr class="row0">
+		<th class="col0"> ` </th>
+		<th class="col1">  </th>
+	</tr>
+	</thead>
+	<tbody>
+	  <tr>
+	    <td class="col0">  </td>
+	    <td class="col1">  </td>
+	  </tr>
+	</tbody>
+</table>
+
+[alited:TR - <tr>..</tr>]
+<tr class="row0">
+  <td class="col0"> ` </td>
+<tr>
+[alited:TD - <td>..</td>]
+  <td class="col0"> ` </td>
+[alited:B - <b>..</b>]
+<b>`</b>
+[alited:I - <i>..</i>]
+<i>`</i>
+[alited:H1 - <h1>..</h1>]
+
+<h1 id=""> ` </h1>
+
+[alited:H2 - <h2>..</h2>]
+
+<h2 id=""> ` </h2>

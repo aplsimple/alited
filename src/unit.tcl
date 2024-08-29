@@ -562,6 +562,173 @@ proc unit::Delete {wtree fname sy} {
   }
 }
 
+## ________________________ Type templates _________________________ ##
+
+proc unit::PutTypeTemplate {wtxt} {
+  # Inserts a type template depending on a current chars at the cursor.
+  #   wtxt - text's path
+
+  if {[set word [alited::find::GetWordOfText]] ne {}} {
+    set idxr [$wtxt index insert]
+    set idxl "$idxr -[string length $word] c"
+    set wordleft [$wtxt get $idxl $idxr]
+    if {$wordleft eq $word && [set tpl [GetTypeTemplate $word]] ne {}} {
+      $wtxt replace $idxl $idxr $tpl
+      AfterInsertingTypeTemplate $wtxt $idxl $tpl
+      return -code break
+    }
+  }
+}
+#_______________________
+
+proc unit::InsertTypeTemplate {word} {
+  # Inserts a type template at the cursor.
+  #   word - template's word
+
+  if {[set tpl [GetTypeTemplate $word]] ne {}} {
+    set wtxt [alited::main::CurrentWTXT]
+    set idxl [$wtxt index insert]
+    $wtxt insert $idxl $tpl
+    AfterInsertingTypeTemplate $wtxt $idxl $tpl
+  }
+}
+#_______________________
+
+proc unit::AfterInsertingTypeTemplate {wtxt idxl tpl} {
+  # Actions after inserting type template.
+  #   wtxt - text's path
+  #   idxl - insertion index
+  #   tpl - template's contents
+
+  if {[set i [string first ` $tpl]]>-1} {
+    set idxl [$wtxt index "$idxl +$i c"]
+    $wtxt replace $idxl [$wtxt index "$idxl +1 c"] {}
+    ::tk::TextSetCursor $wtxt $idxl
+  }
+  alited::main::UpdateAll
+}
+#_______________________
+
+proc unit::GetTypeTemplate {word} {
+  # Gets a template's content.
+  #   word - template's word
+
+  namespace upvar ::alited al al
+  set res {}
+  set ttdict [ReadTypeTemplate]
+  if {[dict exists $ttdict $word]} {
+    foreach line [dict get $ttdict $word] {
+      if {$res ne {}} {append res \n}
+      append res $line
+    }
+  }
+  return $res
+}
+#_______________________
+
+proc unit::TypeTemplateFiles {} {
+  # Lists files of type template directory.
+
+  namespace upvar ::alited al al
+  if {![info exists al(_TypeTemplateDir)]} {
+    set tpldir [CreateTypeTemplateFiles]
+    set al(_TypeTemplateDir) [list]
+    foreach fn [glob -nocomplain [file join $tpldir *]] {
+      lappend al(_TypeTemplateDir) $fn
+    }
+  }
+  return $al(_TypeTemplateDir)
+}
+#_______________________
+
+proc unit::CreateTypeTemplateFiles {} {
+  # Creates type template files, if they don't exist.
+
+  namespace upvar ::alited DATADIR DATADIR USERDIR USERDIR
+  set aledir [file join $DATADIR typetpl]
+  set tpldir [file join $USERDIR typetpl]
+  if {![file exists $tpldir]} {
+    if {[catch {file copy $aledir $tpldir} err]} {
+      alited::Message $err 4
+    }
+  }
+  return $tpldir
+}
+#_______________________
+
+proc unit::ReadTypeTemplate {} {
+  # Reads all template contents for the current edited file.
+
+  namespace upvar ::alited al al
+  set type [alited::EditExt]
+  if {![info exists al(_TypeTemplateFile,$type)]} {
+    set al(_TypeTemplateFile,$type) [dict create]
+    set ttsection \[alited:
+    foreach fn [TypeTemplateFiles] {
+      # find the current file type among template files:
+      # template file rootname can be "htm,html,css"
+      if {[regexp "\(^|,\)$type\(,|$\)" [file rootname $fn]]} {
+        set tt {}
+        foreach line [textsplit [readTextFile $fn]] {
+          set linetr [string trim $line]
+          if {[string first $ttsection $linetr]==0 \
+          && [string index $linetr end] eq "\]"} {
+            set tt [string range $linetr [string length $ttsection] end-1]
+            set tt [set ttl [string trim $tt]]
+            if {[set i [string first { } $tt]]>0} {
+              set tt [string range $tt 0 $i]
+            }
+            set tt [string trim $tt]
+            dict set al(_TypeTemplateFile,$type) $tt [list]   ;# template's contents
+            dict set al(_TypeTemplateFile,$type) $tt,ttl $ttl ;# template's title
+          } elseif {$tt ne {}} {
+            dict lappend al(_TypeTemplateFile,$type) $tt $line
+          }
+        }
+        break
+      }
+    }
+  }
+  return $al(_TypeTemplateFile,$type)
+}
+#_______________________
+
+proc unit::OpenTypeTemplate {} {
+  # Opens type template(s) for editing.
+
+  namespace upvar ::alited al al obPav obPav
+  set tpldir [CreateTypeTemplateFiles]
+  set ::alited::al(TMPfname) {}
+  set fnames [$obPav chooser tk_getOpenFile ::alited::al(TMPfname) \
+    -initialdir $tpldir -parent $al(WIN) -multiple 1]
+  unset ::alited::al(TMPfname)
+  foreach fn [lreverse [lsort $fnames]] {
+    alited::file::OpenFile $fn yes
+  }
+}
+#_______________________
+
+proc unit::FillTypeTplMenu {} {
+  # Fills "Type Templates" submenu.
+
+  namespace upvar ::alited al al
+  set ttdict [ReadTypeTemplate]
+  set m $al(TYPETPLMENU)
+  catch {$m delete 2 end}
+  if {$ttdict ne {}} {
+    $m add separator
+    foreach ttl [lsort [dict keys $ttdict]] {
+      if {[set i [string first ,ttl $ttl]]>0} {
+        set tt [string range $ttl 0 [incr i -1]]
+        set it [dict get $ttdict $ttl]
+        if {[incr idx] % 25} {set cbr {}} {set cbr {-columnbreak 1}}
+        $m add command -label $it \
+          -command [list alited::unit::InsertTypeTemplate $tt] {*}$cbr
+      }
+    }
+  }
+}
+
 # ________________________ Moving units _________________________ #
 
 proc unit::DropUnits {wtree fromIDs toID} {

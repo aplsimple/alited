@@ -181,6 +181,9 @@ proc main::ShowText {} {
   # update "File" menu and app's header
   alited::menu::CheckMenuItems
   ShowHeader
+  # fill Type Templates menu
+  catch {after cancel $al(afterFillTTMenu)}
+  set al(afterFillTTMenu) [after 500 {after idle alited::unit::FillTypeTplMenu}]
 }
 
 # ________________________ Updating gutter & text _________________________ #
@@ -985,6 +988,7 @@ proc main::BindsForText {TID wtxt} {
       [list + if {{%K} eq {Tab} && {%s}==1} "focus [$obPav LbxInfo]; break"]
   }
   bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}
+  bind $wtxt <space> "+ alited::unit::PutTypeTemplate $wtxt"
   ::apave::bindToEvent $wtxt <ButtonRelease-1> alited::main::SaveVisitInfo $wtxt
   ::apave::bindToEvent $wtxt <KeyRelease> alited::main::SaveVisitInfo $wtxt %K %s
   ::apave::bindToEvent $wtxt <<Undo>> alited::main::AfterUndoRedo

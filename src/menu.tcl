@@ -573,8 +573,14 @@ proc menu::FillMenu {} {
 
   set m [set al(SETUP) $al(WIN).menu.setup]
   $m add command -label [msgcat::mc Projects...] -command alited::project::_run
-  $m add command -label [msgcat::mc Templates...] -command alited::unit::Add
   $m add command -label [msgcat::mc {Favorites Lists...}] -command alited::favor::Lists
+  $m add separator
+  $m add command -label [msgcat::mc Templates...] -command alited::unit::Add
+
+  set al(TYPETPLMENU) $m.typetpl
+  menu $al(TYPETPLMENU) -tearoff 1
+  $m add cascade -label [msgcat::mc {Type Templates}] -menu $al(TYPETPLMENU)
+  $al(TYPETPLMENU) add command -label [msgcat::mc {Open...}] -command alited::unit::OpenTypeTemplate
   $m add separator
 
   $m add checkbutton -label [msgcat::mc {Wrap Lines}] \

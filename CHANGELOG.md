@@ -6,12 +6,14 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7b5 (23 Aug'24)`
+Version `v1.8.7b6 (29 Aug'24)`
 
+  - BUGFIX: issues with autocomplete (thanks to George)
   - BUGFIX: keys made default after Preferences + Projects (thanks to George)
   - BUGFIX: Edit/Formats: %f wildcard (current file name)
   - BUGFIX: at changing install dir: original pathes to bind pluginable formatters
   - BUGFIX: press+move middle mouse button -> line numbers unchanged (thanks to George)
+  - NEW   : "Setup/Type Templates" (very beta): type *type + space* => template
   - NEW   : "Contract all" mode of file/unit tree, saved through projects/files
   - NEW   : Edit/Formats/Pluginable/Info: non-modal, file name, chars total
   - CHANGE: "Run me" item of menu.em to comply with Windows (thanks to Gregor)
@@ -22,7 +24,7 @@ Version `v1.8.7b5 (23 Aug'24)`
   - CHANGE: wish8.7 of installers (thanks to George)
   - CHANGE: About / Acknowledgements
   - CHANGE: clearances
-  - CHANGE: packages: e_menu/apave 4.4.9
+  - CHANGE: packages: e_menu/apave 4.4.9, hl_tcl 1.1.5
 
 
 Version `v1.8.6 (17 Jul'24)`

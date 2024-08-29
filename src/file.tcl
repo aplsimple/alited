@@ -689,6 +689,7 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message ""}} {
       set exts $al(TclExts)
       append exts { } $al(ClangExts)
       append exts { } $al(TextExts)
+      append exts { typetpl}
       set sexts [string map {. {}} "  $al(TclExts)\n  $al(ClangExts)\n  $al(TextExts)"]
       set exts [string trim [string map {{ } {, } . {}} $exts]]
       set ext [alited::EditExt $fname]

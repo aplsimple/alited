@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.1.4
+package provide hl_tcl 1.1.5
 
 # ______________________ Common data ____________________ #
 
@@ -474,7 +474,7 @@ proc ::hl_tcl::my::CountQSH {txt ln} {
 }
 #_______________________
 
-proc hl_tcl::my::IsCurline {txt {flag ""}} {
+proc ::hl_tcl::my::IsCurline {txt {flag ""}} {
   # Sets / gets "highlight a current line" flag for a text.
   #   txt - the text's path
   #   flag - the flag
@@ -1294,7 +1294,7 @@ proc ::hl_tcl::hl_commands {} {
 }
 #_______________________
 
-proc hl_tcl::iscurline {txt {flag ""}} {
+proc ::hl_tcl::iscurline {txt {flag ""}} {
   # Sets / gets "highlight a current line" flag for a text.
   #   txt - the text's path
   #   flag - the flag

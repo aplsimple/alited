@@ -24,10 +24,16 @@ proc hl_ini::init {w font szfont args} {
   dict set font -weight bold
   $w tag config iniSECT -font $font -foreground $clrPROC
   dict set font -weight normal
-  $w tag config iniOPT -font $font -foreground $clrCOM
-  $w tag config iniVAL -font $font -foreground $clrSTR
-  dict set font -slant italic
-  $w tag config iniCMNT -font $font -foreground $clrCMN
+  if {[alited::EditExt] eq {typetpl}} {
+    $w tag config iniOPT -font $font
+    $w tag config iniVAL -font $font
+    $w tag config iniCMNT -font $font
+  } else {
+    $w tag config iniOPT -font $font -foreground $clrCOM
+    $w tag config iniVAL -font $font -foreground $clrSTR
+    dict set font -slant italic
+    $w tag config iniCMNT -font $font -foreground $clrCMN
+  }
   foreach t {SECT CMNT} {after idle $w tag raise ini$t}
   return [namespace current]::line
 }
