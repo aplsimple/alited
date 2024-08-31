@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.1.5
+package provide hl_tcl 1.1.6
 
 # ______________________ Common data ____________________ #
 
@@ -1060,7 +1060,6 @@ proc ::hl_tcl::hl_init {txt args} {
   #   -font - attributes of font
   #   -seen - lines seen at start
   #   -keywords - additional commands to highlight (as Tk ones)
-  #   -dobind - if yes, forces key bindings
   # This procedure has to be called before writing a text in the text widget.
   # See also: hl_colorNames
 
@@ -1070,7 +1069,6 @@ proc ::hl_tcl::hl_init {txt args} {
   iscurline $txt 1
   set ::hl_tcl::my::data(REG_TXT,$txt) {}  ;# disables Modified at changing the text
   set ::hl_tcl::my::data(KEYWORDS,$txt) {}
-  set ::hl_tcl::my::data(DOBIND,$txt) 0
   # get default options from text's ones
   set defopts [list -insertwidth]
   foreach defopt $defopts {
@@ -1079,7 +1077,7 @@ proc ::hl_tcl::hl_init {txt args} {
       set ::hl_tcl::my::data($opt,DEFAULT) [$txt cget $defopt]
     }
   }
-  foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 -dobind 0 \
+  foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 \
   -multiline 1 -seen 500 -plaintext no -plaincom {} -insertwidth {} -keywords {}} {
     if {[dict exists $args $opt]} {
       set val [dict get $args $opt]
@@ -1160,16 +1158,12 @@ proc ::hl_tcl::hl_text {txt} {
   $txt tag raise tagBRACKETERR
   catch {$txt tag raise hilited;  $txt tag raise hilited2} ;# for apave package
   my::HighlightAll $txt
-  if {![info exists ::hl_tcl::my::data(BIND_TXT,$txt)] ||
-  [info exists ::hl_tcl::my::data(DOBIND,$txt)] && $::hl_tcl::my::data(DOBIND,$txt)} {
-    my::BindToEvent $txt <FocusIn> ::hl_tcl::my::MemPos $txt
-    my::BindToEvent $txt <KeyPress> ::hl_tcl::my::MemPos1 $txt yes %K %s
-    my::BindToEvent $txt <KeyRelease> ::hl_tcl::my::MemPos $txt
-    my::BindToEvent $txt <ButtonRelease-1> ::hl_tcl::my::MemPos $txt
-    foreach ev {Enter KeyRelease ButtonRelease-1} {
-      my::BindToEvent $txt <$ev> ::hl_tcl::my::HighlightBrackets $txt
-    }
-    set ::hl_tcl::my::data(BIND_TXT,$txt) yes
+  my::BindToEvent $txt <FocusIn> ::hl_tcl::my::MemPos $txt
+  my::BindToEvent $txt <KeyPress> ::hl_tcl::my::MemPos1 $txt yes %K %s
+  my::BindToEvent $txt <KeyRelease> ::hl_tcl::my::MemPos $txt
+  my::BindToEvent $txt <ButtonRelease-1> ::hl_tcl::my::MemPos $txt
+  foreach ev {Enter KeyRelease ButtonRelease-1} {
+    my::BindToEvent $txt <$ev> ::hl_tcl::my::HighlightBrackets $txt
   }
   set ro $::hl_tcl::my::data(READONLY,$txt)
   set com2 $::hl_tcl::my::data(CMD,$txt)

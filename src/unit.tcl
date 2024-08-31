@@ -573,6 +573,7 @@ proc unit::PutTypeTemplate {wtxt} {
     set idxl "$idxr -[string length $word] c"
     set wordleft [$wtxt get $idxl $idxr]
     if {$wordleft eq $word && [set tpl [GetTypeTemplate $word]] ne {}} {
+      undoIn $wtxt
       $wtxt replace $idxl $idxr $tpl
       AfterInsertingTypeTemplate $wtxt $idxl $tpl
       return -code break
@@ -588,6 +589,7 @@ proc unit::InsertTypeTemplate {word} {
   if {[set tpl [GetTypeTemplate $word]] ne {}} {
     set wtxt [alited::main::CurrentWTXT]
     set idxl [$wtxt index insert]
+    undoIn $wtxt
     $wtxt insert $idxl $tpl
     AfterInsertingTypeTemplate $wtxt $idxl $tpl
   }
@@ -600,11 +602,12 @@ proc unit::AfterInsertingTypeTemplate {wtxt idxl tpl} {
   #   idxl - insertion index
   #   tpl - template's contents
 
-  if {[set i [string first ` $tpl]]>-1} {
+  if {[set i [string first `` $tpl]]>-1} {
     set idxl [$wtxt index "$idxl +$i c"]
-    $wtxt replace $idxl [$wtxt index "$idxl +1 c"] {}
+    $wtxt replace $idxl [$wtxt index "$idxl +2 c"] {}
     ::tk::TextSetCursor $wtxt $idxl
   }
+  undoOut $wtxt
   alited::main::UpdateAll
 }
 #_______________________
@@ -622,7 +625,7 @@ proc unit::GetTypeTemplate {word} {
       append res $line
     }
   }
-  return $res
+  string map [list ``` {}] $res
 }
 #_______________________
 
@@ -668,8 +671,9 @@ proc unit::ReadTypeTemplate {} {
       # find the current file type among template files:
       # template file rootname can be "htm,html,css"
       if {[regexp "\(^|,\)$type\(,|$\)" [file rootname $fn]]} {
+        set fcont [CheckTypeTemplate $fn]
         set tt {}
-        foreach line [textsplit [readTextFile $fn]] {
+        foreach line $fcont {
           set linetr [string trim $line]
           if {[string first $ttsection $linetr]==0 \
           && [string index $linetr end] eq "\]"} {
@@ -690,6 +694,27 @@ proc unit::ReadTypeTemplate {} {
     }
   }
   return $al(_TypeTemplateFile,$type)
+}
+#_______________________
+
+proc unit::CheckTypeTemplate {fname} {
+  # Checks the type template's version.
+  # If it's obsolete, updates it from alited's source.
+  #   fname - type template file name
+
+  namespace upvar ::alited DATADIR DATADIR
+  set fcont [textsplit [readTextFile $fname]]
+  set alefn [file join $DATADIR typetpl [file tail $fname]]
+  if {[file exists $alefn]} {
+    set acont [textsplit [readTextFile $alefn]]
+    if {[lindex $acont 0] > [lindex $fcont 0]} {
+      if {[catch {file copy -force $alefn $fname} err]} {
+        alited::Message $err 4
+      }
+      return $acont
+    }
+  }
+  return $fcont
 }
 #_______________________
 

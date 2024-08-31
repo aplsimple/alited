@@ -1956,7 +1956,7 @@ proc project::KlndClick {y m d} {
   # then display a new reminder's text
   set klndtex [$obPrj TexKlnd]
   $obPrj displayText $klndtex [KlndText $klnddata(date)]
-  alited::ini::HighlightFileText $klndtex .md 0  -dobind 1 -cmdpos ::apave::None \
+  alited::ini::HighlightFileText $klndtex .md 0 -cmdpos ::apave::None \
     -cmd alited::project::KlndTextModified
   [$obPrj LabKlndDate] configure -text [KlndDate $klnddata(date)]
 }
@@ -2286,7 +2286,7 @@ proc project::_create {} {
   bind $prjtex <FocusOut> alited::project::SaveNotes
   if {$ilast>-1} {Select $ilast}
   $obPrj displayText [$obPrj TexTemplate] $al(PTP,text)
-  alited::ini::HighlightFileText $prjtex .md 0  -dobind 1 -cmdpos ::apave::None
+  alited::ini::HighlightFileText $prjtex .md 0 -cmdpos ::apave::None
   set res [$obPrj showModal $win -geometry $geo -minsize {600 400} -resizable 1 \
     -onclose alited::project::Cancel -focus [$obPrj TreePrj]]
   set oldTab [$nbk select]

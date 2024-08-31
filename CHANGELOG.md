@@ -6,8 +6,10 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7b6 (29 Aug'24)`
+Version `v1.8.7b7 (31 Aug'24)`
 
+  - BUGFIX: detach files with spaces in file name
+  - BUGFIX: issues with highlighting the detached (thanks to George)
   - BUGFIX: issues with autocomplete (thanks to George)
   - BUGFIX: keys made default after Preferences + Projects (thanks to George)
   - BUGFIX: Edit/Formats: %f wildcard (current file name)

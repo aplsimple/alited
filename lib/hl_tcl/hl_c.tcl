@@ -535,7 +535,6 @@ proc ::hl_c::hl_init {txt args} {
   #   -colors - list of colors: clrCOM, clrCOMTK, clrSTR, clrVAR, clrCMN, clrPROC
   #   -font - attributes of font
   #   -seen - lines seen at start
-  #   -dobind - if yes, forces key bindings
   # This procedure has to be called before writing a text in the text widget.
 
   if {[set setonly [expr {[lindex $args 0] eq {--}}]]} {
@@ -544,7 +543,6 @@ proc ::hl_c::hl_init {txt args} {
   ::hl_tcl::iscurline $txt 1
   set ::hl_c::my::data(REG_TXT,$txt) {}  ;# disables Modified at changing the text
   set ::hl_c::my::data(KEYWORDS,$txt) {}
-  set ::hl_c::my::data(DOBIND,$txt) 0
   # get default options from text's ones
   set defopts [list -insertwidth]
   foreach defopt $defopts {
@@ -553,7 +551,7 @@ proc ::hl_c::hl_init {txt args} {
       set ::hl_c::my::data($opt,DEFAULT) [$txt cget $defopt]
     }
   }
-  foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 -dobind 0 \
+  foreach {opt val} {-dark 0 -readonly 0 -cmd {} -cmdpos {} -optRE 1 \
   -multiline 1 -seen 500 -plaintext no -insertwidth {} -keywords {}} {
     if {[dict exists $args $opt]} {
       set val [dict get $args $opt]
@@ -632,16 +630,12 @@ proc ::hl_c::hl_text {txt} {
   $txt tag raise tagBRACKETERR
   catch {$txt tag raise hilited;  $txt tag raise hilited2} ;# for apave package
   my::HighlightAll $txt
-  if {![info exists ::hl_c::my::data(BIND_TXT,$txt)] ||
-  [info exists ::hl_c::my::data(DOBIND,$txt)] && $::hl_c::my::data(DOBIND,$txt)} {
-    ::hl_tcl::my::BindToEvent $txt <FocusIn> ::hl_c::my::MemPos $txt
-    ::hl_tcl::my::BindToEvent $txt <KeyPress> ::hl_c::my::MemPos1 $txt yes %K %s
-    ::hl_tcl::my::BindToEvent $txt <KeyRelease> ::hl_c::my::MemPos $txt
-    ::hl_tcl::my::BindToEvent $txt <ButtonRelease-1> ::hl_c::my::MemPos $txt
-    foreach ev {Enter KeyRelease ButtonRelease-1} {
-      ::hl_tcl::my::BindToEvent $txt <$ev> ::hl_tcl::my::HighlightBrackets $txt
-    }
-    set ::hl_c::my::data(BIND_TXT,$txt) yes
+  ::hl_tcl::my::BindToEvent $txt <FocusIn> ::hl_c::my::MemPos $txt
+  ::hl_tcl::my::BindToEvent $txt <KeyPress> ::hl_c::my::MemPos1 $txt yes %K %s
+  ::hl_tcl::my::BindToEvent $txt <KeyRelease> ::hl_c::my::MemPos $txt
+  ::hl_tcl::my::BindToEvent $txt <ButtonRelease-1> ::hl_c::my::MemPos $txt
+  foreach ev {Enter KeyRelease ButtonRelease-1} {
+    ::hl_tcl::my::BindToEvent $txt <$ev> ::hl_tcl::my::HighlightBrackets $txt
   }
   set ro $::hl_c::my::data(READONLY,$txt)
   set com2 $::hl_c::my::data(CMD,$txt)

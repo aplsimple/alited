@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.7b6  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.7b7  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -436,7 +436,7 @@ namespace eval alited {
     variable al
     if {$cs eq {}} {set cs [obj csCurrent]}
     ::hl_${lng}::hl_init $wtxt -dark [obj csDark $cs] -colors $colors \
-      -multiline 1 -font $al(FONT,txt) -cmdpos ::apave::None -dobind yes {*}$args
+      -multiline 1 -font $al(FONT,txt) -cmdpos ::apave::None {*}$args
     ::hl_${lng}::hl_text $wtxt
   }
   #_______________________

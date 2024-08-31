@@ -1,4 +1,4 @@
-[1.0]
+[1.1]
 
 IMPORTANT: Change the above version to 2.0 (2.1, 2.2 etc.) to protect
 it from possible attempts by alited to update.
@@ -14,9 +14,8 @@ with .htm and .html extensions.
 Each template is set after [alited:TYPE] where TYPE is a template type.
 
 The back quote (`) is treated specially:
-  - 1st instance marks the cursor position in a template
-  - when last in a line it's removed, e.g. " a `" will become " a "
-  - if the cursor position should be at a line end, just set it as ``
+  - all ``` instances are removed, e.g. "set a ```" will become "set a "
+  - first `` instance marks the cursor position in a template, e.g. "set a ``"
 
 So, at editing *.htm or *.html files, you can type "TYPE" and Space key
 which will replace "TYPE" with its template.
@@ -26,9 +25,9 @@ in data/typetpl subdirectory. Use "Setup/Type Templates" menu to open
 existing template files and update them or create new ones from them.
 
 [alited:IMG - <img>]
-<img src="https://`.png" class="media" alt="">
+<img src="https://``.png" class="media" alt="">
 [alited:HL - link]
-[`](https://)
+[``](https://)
 [alited:LI - list items]
-  * `
-  * `
+  * ``
+  * ```

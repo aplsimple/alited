@@ -1173,7 +1173,7 @@ proc file::Detach {{fnames ""} {TID ""}} {
   if {$fnames eq {} || $TID ne {}} {
     set fnames [alited::bar::FileName $TID]
     if {[alited::file::IsNoName $fnames] && ![SaveFileAs $TID]} return
-    set fnames [alited::bar::FileName $TID]
+    set fnames [list [alited::bar::FileName $TID]]
   }
   alited::detached::_run $fnames
 }
