@@ -6,7 +6,7 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7b7 (31 Aug'24)`
+Version `v1.8.7b8 (7 Sep'24)`
 
   - BUGFIX: detach files with spaces in file name
   - BUGFIX: issues with highlighting the detached (thanks to George)
@@ -26,7 +26,7 @@ Version `v1.8.7b7 (31 Aug'24)`
   - CHANGE: wish8.7 of installers (thanks to George)
   - CHANGE: About / Acknowledgements
   - CHANGE: clearances
-  - CHANGE: packages: e_menu/apave 4.4.9, hl_tcl 1.1.5
+  - CHANGE: packages: e_menu/apave 4.4.10, hl_tcl 1.1.6
 
 
 Version `v1.8.6 (17 Jul'24)`

@@ -202,8 +202,7 @@ proc detached::_create {fname} {
     alited::main::HighlightText {} {$fname} $wtxt {alited::detached::Modified $pobj $win} {} $fsz;\
     "
   $pobj showModal $win -modal no -waitvar no -resizable 1 -minsize {300 200} \
-    -onclose "alited::detached::Close $id $pobj $win {$fname}" -focus $wtxt {*}$geo
-  after [expr {300+($id%9)*100}] after idle "$pobj fillGutter $wtxt" ;# for sure
+    -onclose [list alited::detached::Close $id $pobj $win $fname] -focus $wtxt {*}$geo
 }
 #_______________________
 

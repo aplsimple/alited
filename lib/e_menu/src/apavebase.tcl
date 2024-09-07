@@ -1491,7 +1491,7 @@ oo::class create ::apave::APaveBase {
       return
     }
     if {$canvas eq {}} {
-      event generate $txt <Configure> ;# repaints the gutter
+      catch {{*}[bind $txt <Configure>]} ;# update gutter
       return
     }
     set oper [lindex $args 0 1]

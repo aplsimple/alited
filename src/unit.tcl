@@ -703,15 +703,14 @@ proc unit::CheckTypeTemplate {fname} {
   #   fname - type template file name
 
   namespace upvar ::alited DATADIR DATADIR
-  set fcont [textsplit [readTextFile $fname]]
-  set alefn [file join $DATADIR typetpl [file tail $fname]]
-  if {[file exists $alefn]} {
-    set acont [textsplit [readTextFile $alefn]]
-    if {[lindex $acont 0] > [lindex $fcont 0]} {
-      if {[catch {file copy -force $alefn $fname} err]} {
-        alited::Message $err 4
-      }
-      return $acont
+  set fcont [textsplit [string trimleft [readTextFile $fname]]]
+  set fverAle 1.1
+  set fverCur [string trim [lindex $fcont 0] { []}]
+  set fnameAle [file join $DATADIR typetpl [file tail $fname]]
+  if {$fverAle > $fverCur && [file exists $fnameAle]} {
+    set fcont [textsplit [readTextFile $fnameAle]]
+    if {[catch {file copy -force $fnameAle $fname} err]} {
+      alited::Message $err 4
     }
   }
   return $fcont
