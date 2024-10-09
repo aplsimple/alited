@@ -1,0 +1,5 @@
+ Pressing <r>Ctrl+G</r> brings up "Go to Line" dialogue allowing you
+ to go to a unit by a relative line number.
+
+ It's useful when you get an error message with a proc / method
+ name and a line number.

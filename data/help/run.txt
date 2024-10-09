@@ -1,0 +1,75 @@
+ In this dialogue, a current Tcl script (file.tcl) can be run in console
+ or Tkcon.
+
+ There is also as is mode that runs a command "as is", i.e. as it is
+ entered in the command entry field.
+
+ With <r>By #RUNF: / #EXEC:</r> you write comments in a current file, like:
+
+ <b>#RUNF: afile.tcl arg1 arg2 arg3</b>
+ or
+ <b>#EXEC: tclsh afile.tcl arg1 arg2 arg3</b>
+ meaning that "tclsh afile.tcl arg1 arg2 arg3" will be run at editing
+ the current file. If there is no #RUNF: nor #EXEC: comment, the current
+ file is run by an associated application.
+
+ With <r>By command</r> you can set a list of arbitrary commands to be
+ selected and run independently on a type of current file.
+ It can be OS commands or executables to be run in console.
+
+ If a Tcl file has to be run, you can set the command with or without
+ tclsh, wish, tclkit etc., for example:
+
+ <b>/usr/bin/tclsh /home/me/myPG/src/file.tcl LOG=~/TMP/log.txt
+ /home/me/myPG/src/file.tcl LOG=~/TMP/log.txt</b>
+
+ If your Tcl executable command includes spaces (not pretty nice case
+ though), quote it. For example:
+
+ <b>"C:\Tcl 64\bin\wish.exe" myproj3.tcl arg1 arg2...</b>
+
+ The combobox's commands can be created and edited in the text box,
+ at that the text's current line is highlighted and displayed in the
+ combobox.
+
+ The commands and #RUNF: / #EXEC: comments can include wildcards:
+
+ %f - current file's name
+ %d - current file's directory
+ %pd - project's directory
+ %s - text's selection / current word
+ %H - home directory
+ %% - %
+
+ These two ways of "Run" are useful for two different type of projects:
+
+ <b>heterogeneous</b>: a project contains a lot of files that need to be
+ tested and debugged with their own commands then #RUNF: / #EXEC: helps
+
+ <b>monolith</b>: you have a lot of files that need a list of commands
+ to test and debug the whole application (alited is an example)
+
+ Anyhow, "Run me" item of e_menu tool allows running a current file in
+ "normal" manner by an associated application. Press F4 twice for it.
+
+ Also, you can enter commands to be run before running a current file.
+ It can be necessary for a specific project, sort of initialization.
+ These commands can be OS commands or executables, for example:
+
+ <b>cd ~/TMP
+ rm log.txt</b>
+
+ <r>Run</r> button runs a selected command. Sort of "run it on fly".
+ The command is active all the time when "Run" dialogue is open.
+ It's also run with F5 key.
+
+ The dialogue isn't closed with <b>Run</b> button, so that you can
+ customize commands before saving them. Also, while "Run" dialogue
+ is open, you can modify your scripts (the dialogue is non-modal).
+
+ After customizing all commands, press <r>Save</r> button: it saves the
+ dialogue's current settings and closes it.
+
+ <r>Cancel</r> button dismisses all changes made in the dialogue.
+
+ All of the "Run" settings are per project.

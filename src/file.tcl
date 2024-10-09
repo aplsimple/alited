@@ -489,6 +489,8 @@ proc file::DoRenameFileInTree {wtree ID fname fname2} {
   }
   alited::bar::BAR draw
   RecreateFileTree
+  AfterSaving
+  alited::main::UpdateHighlighting
 }
 #_______________________
 
@@ -663,6 +665,7 @@ proc file::NewFile {{fname ""}} {
     set TID [alited::bar::InsertTab $tab $fname]
   }
   alited::bar::BAR $TID show
+  alited::tree::SeeTreeItem
 }
 #_______________________
 
@@ -904,6 +907,7 @@ proc file::CloseAndDelete {{TID ""}} {
       FillRecent $fname
       if {!$al(TREE,isunits)} {alited::tree::RecreateTree {} {} yes}
       alited::edit::MacroUpdate $fname
+      alited::tree::SeeTreeItem
       return 1
     }
   }

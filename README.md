@@ -1,4 +1,4 @@
-# What is that
+# What is this
 
 [alited](https://github.com/aplsimple/alited) stands for *a lite editor*.
 
@@ -38,7 +38,21 @@ Briefly, [alited](https://github.com/aplsimple/alited) is totally quick, being a
 
 For a quick acquaintance of [alited](https://github.com/aplsimple/alited), a few of [its demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6) are available.
 
-For a quick installation of [alited](https://github.com/aplsimple/alited), just run an [installer of alited](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.6).
+# How to run this
+
+For a quick installation of [alited](https://github.com/aplsimple/alited), just run an [installer of alited](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.6). Then run [alited](https://github.com/aplsimple/alited)'s desktop shortcut.
+
+---
+
+Also, when you have [Tcl/Tk](https://wiki.tcl-lang.org/) deployed on your machine and like to install and run [alited](https://github.com/aplsimple/alited) from its source, you need only to unpack [alited](https://github.com/aplsimple/alited)'s source to a directory and run it with *tclsh src/alited.tcl* command. Thus, in this case the installation of [alited](https://github.com/aplsimple/alited) is straightforward as well:
+
+  * download *alited.zip* from [here](https://github.com/aplsimple/alited) (or from [here](https://chiselapp.com/user/aplsimple/repository/alited/download))
+  * unpack *alited.zip* to some directory, say *~/PG/alited*
+  * to run the installed [alited](https://github.com/aplsimple/alited), use the command:
+
+    `wish ~/PG/alited/src/alited.tcl`
+
+In Linux, you can run *tclsh* instead of *wish*.
 
 # Links
 

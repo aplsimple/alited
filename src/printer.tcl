@@ -1001,7 +1001,8 @@ proc printer::StdClr {fld1 var1 fld2 var2} {
 proc printer::Help {} {
   # Handles "Help" button.
 
-  alited::HelpAlited #printer
+  fetchVars
+  alited::Help $win
 }
 #_______________________
 

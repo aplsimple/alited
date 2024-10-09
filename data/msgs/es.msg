@@ -186,6 +186,7 @@ namespace eval ::alited {
     {Template:} {Plantilla:}
     {Templates} {Plantillas}
     {Templates...} {Plantillas...}
+    {Type Templates} {Plantillas de Tipo}
     {Current template:} {Plantilla actual:}
     {New template:} {Nueva plantilla:}
     {Hot keys} {Teclas rápidas}

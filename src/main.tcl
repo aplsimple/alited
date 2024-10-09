@@ -58,6 +58,14 @@ proc main::SetTabs {wtxt indent} {
   set texttabs [expr {$indent * [font measure $al(FONT,txt) 0]}]
   $wtxt configure -tabs "$texttabs left" -tabstyle wordprocessor
 }
+#_______________________
+
+proc main::Help {{suff ""}} {
+  # Display context helps.
+  #   suff - suffix of file name
+
+  alited::Help $::alited::al(WIN) $suff
+}
 
 # ________________________ Get and show text widget _________________________ #
 
@@ -184,6 +192,15 @@ proc main::ShowText {} {
   # fill Type Templates menu
   catch {after cancel $al(afterFillTTMenu)}
   set al(afterFillTTMenu) [after 500 {after idle alited::unit::FillTypeTplMenu}]
+}
+#_______________________
+
+proc main::UpdateHighlighting {} {
+  # Updates the current text's highlighting.
+
+  set TID [alited::bar::CurrentTabID]
+  lassign [GetText $TID] curfile wtxt
+  HighlightText $TID $curfile $wtxt
 }
 
 # ________________________ Updating gutter & text _________________________ #
@@ -382,7 +399,7 @@ proc main::UnsetMark {idx X Y} {
     $popm add command -label "$lab +" -command "alited::main::MarkWidth 1"
     $popm add command -label "$lab -" -command "alited::main::MarkWidth -1"
     $popm add separator
-    $popm add command -label $al(MC,help) -command {alited::HelpAlited #bookmark}
+    $popm add command -label $al(MC,help) -command {alited::main::Help mark}
     tk_popup $popm $X $Y
   }
   if {$disabletips && ![info exists al(MARK_TIPOFF)]} {
@@ -751,7 +768,7 @@ proc main::GotoLine {} {
     set ::alited::main::gotoline1 {}
     set ::alited::main::gotolineTID $TID
   }
-  after 300 {catch {bind [apave::dlgPath] <F1> {alited::HelpAlited #units5}}}
+  after 300 {catch {bind [apave::dlgPath] <F1> {alited::main::Help goline}}}
   lassign [$obDl2 input {} $head [list \
     spx "{$prompt1} {} {-from 1 -to $lmax -selected yes}" "{$ln}" \
     cbx "{$prompt2} {} {-tvar ::alited::main::gotoline1 -state readonly -h 16 -w 25}" \

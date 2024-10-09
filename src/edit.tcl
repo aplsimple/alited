@@ -886,7 +886,7 @@ proc edit::OpenMacroFile {} {
 proc edit::HelpOnMacro {} {
   # Shows Play Macro help.
 
-  alited::HelpAlited #macros
+  alited::Help $::alited::al(WIN) macro
 }
 
 # ________________________ Rectangular selection _________________________ #

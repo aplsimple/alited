@@ -694,8 +694,17 @@ proc menu::HelpFiles {} {
     unit_tpl.txt {Setup\Templates...} \
     favor_ls.txt {Setup\Favorites Lists...} \
     format1.txt {Setup\Moving Unit Descriptions...} \
+    tool.txt {Setup\For Start...} \
+    ini.txt {Setup\Configurations...} \
     - - \
-    find2.txt {Search\Find by List}
+    editmacro.txt {Edit\Play Macro} \
+    mainmark.txt {Edit\Marks} \
+    find2.txt {Search\Find by List} \
+    maingoline.txt {Search\Go to Line} \
+    run.txt {Tools\Run...} \
+    check.txt {Tools\Check Tcl...} \
+    printer.txt {Tools\Project Printer...} \
+    paver.txt {Tools\Paver}
 
 }
 

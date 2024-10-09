@@ -190,6 +190,7 @@ namespace eval ::alited {
     {Template:} {Шаблон:}
     {Templates} {Шаблони}
     {Templates...} {Шаблони...}
+    {Type Templates} {Типові шаблони}
     {Current template:} {Поточний шаблон:}
     {New template:} {Новий шаблон:}
     {Hot keys} {Клявіши}

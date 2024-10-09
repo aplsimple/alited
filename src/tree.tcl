@@ -403,7 +403,7 @@ proc tree::SeeFile {fname} {
   set id [alited::file::SearchInFileTree $fname]
   if {$id ne {}} {
     set wtree [$obPav Tree]
-    after idle [list after 100 "$wtree selection set $id; $wtree see $id"]
+    after idle [list after 100 "catch {$wtree selection set $id; $wtree see $id}"]
   }
 }
 #_______________________
@@ -411,10 +411,14 @@ proc tree::SeeFile {fname} {
 proc tree::SeeTreeItem {} {
   # Sees item in tree.
 
-  if {$::alited::al(TREE,isunits)} {
-    alited::tree::SeeUnit
-  } else {
-    alited::tree::SeeFile [alited::bar::FileName]
+  after idle {
+    after 200 {
+      if {$::alited::al(TREE,isunits)} {
+        alited::tree::SeeUnit
+      } else {
+        alited::tree::SeeFile [alited::bar::FileName]
+      }
+    }
   }
 }
 

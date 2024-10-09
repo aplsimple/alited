@@ -48,7 +48,8 @@ proc paver::Destroy {args} {
 proc paver::Help {args} {
   # Handles hitting Help button.
 
-  alited::HelpAlited #paver
+  variable win
+  alited::Help $win
 }
 
 # ________________________ Function _________________________ #

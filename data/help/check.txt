@@ -1,0 +1,32 @@
+ This tool checks Tcl files (.tcl, .tm, .msg) for consistency of {}, [], ()
+ and "". Results are shown in the <b>info bar</b>.
+
+ Also, the files are checked for duplicate unit names.
+
+ The results contain general info about a file and specific data on its
+ <b>leaves</b> (procedures and methods). The <b>branches</b> are not checked.
+
+ The <b>file results</b> cover the whole file. There might be inconsistencies
+ in some specific leaves and seemingly good results for the file as whole.
+
+ The file results include <b>(a/b/c/d)</b> data meaning inconsistencies found
+ for {}, [], () and "".
+
+ Click on a result <b>to enter</b> the appropriate file/unit.
+
+ An inconsistency for {} may occur when some procedure declares a procedure
+ inside itself. Or if a procedure is located at edges of a namespace or a
+ class - in such cases the unit may include its finishing braces.
+
+ To get rid of these "inconsistencies" you can insert branches named like
+ "End of class/NS so and so".
+
+ Also, there may be shown inconsistencies of "", when the double quotes
+ are used in regular expressions.
+
+ To overcome these false inconsistencies, you can use special comments
+ meaning "this unit is checked and proved normal":
+    <b># alited_checked</b>
+
+ <r>Note</r>: The checking for consistencies is executed for a current
+ proc / method before <b>Run the file</b> tool automatically!

@@ -1322,7 +1322,7 @@ proc ini::GetConfiguration {} {
       diR1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50 \
         -values $configs -clearcom {alited::main::ClearCbx %w ::alited::ini::configs}]] \
         "{$::alited::CONFIGDIR}" \
-    ] -head $head -help {alited::HelpAlited #configs} -resizable no]
+    ] -head $head -help alited::ini::Help -resizable no]
   catch {alitedObjToDel destroy}
   lassign $res ok confdir
   if {$ok} {
@@ -1735,6 +1735,13 @@ proc ini::ToolbarTip {i} {
 
   set maplist [alited::menu::MapRunItems [alited::bar::FileName]]
   string map $maplist $::alited::pref::em_mnu($i)
+}
+#_______________________
+
+proc ini::Help {} {
+  # Shows "Configurations" help.
+
+  alited::Help $::alited::al(WIN)
 }
 
 # ________________________ Projects' toolbar _________________________ #

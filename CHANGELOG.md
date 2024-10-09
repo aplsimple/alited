@@ -6,8 +6,10 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7b8 (7 Sep'24)`
+Version `v1.8.7 (9 Oct'24)`
 
+  - BUGFIX: renaming current file in file tree: highlight & alited's title
+  - BUGFIX: file tree: selecting current file after add / close & delete
   - BUGFIX: detach files with spaces in file name
   - BUGFIX: issues with highlighting the detached (thanks to George)
   - BUGFIX: issues with autocomplete (thanks to George)
@@ -15,9 +17,12 @@ Version `v1.8.7b8 (7 Sep'24)`
   - BUGFIX: Edit/Formats: %f wildcard (current file name)
   - BUGFIX: at changing install dir: original pathes to bind pluginable formatters
   - BUGFIX: press+move middle mouse button -> line numbers unchanged (thanks to George)
-  - NEW   : "Setup/Type Templates" (very beta): type *type + space* => template
+  - NEW   : "Setup/Type Templates": type *TYPE + space* => template
   - NEW   : "Contract all" mode of file/unit tree, saved through projects/files
   - NEW   : Edit/Formats/Pluginable/Info: non-modal, file name, chars total
+  - CHANGE: doc/index.html redirects to aplsimple.github.io
+  - CHANGE: Help/Context: some data/help files (incl. restored)
+  - CHANGE: Tools/Run...: clicking RUNF/EXEC updates related fields
   - CHANGE: "Run me" item of menu.em to comply with Windows (thanks to Gregor)
   - CHANGE: default setting: prefer "Last Visited" to "Favorites"
   - CHANGE: File/Open & File/Save: select a file in file tree (if present)

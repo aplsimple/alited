@@ -92,7 +92,8 @@ proc run::Cancel {args} {
 proc run::Help {} {
   # Shows Run's help.
 
-  alited::HelpAlited #runme
+  variable win
+  alited::Help $win
 }
 
 # ________________________ GUI _________________________ #
@@ -209,6 +210,15 @@ proc run::FillCbx {args} {
 }
 #_______________________
 
+proc run::GetRUNFEXEC {} {
+  # Gets value of RUNF/EXEC entry.
+
+  variable vent
+  lassign [alited::tool::RunArgs] ar rf ex
+  set vent "$ar$rf$ex"
+}
+#_______________________
+
 proc run::DeleteForcedRun {} {
   # Clears current combobox' value.
 
@@ -244,14 +254,21 @@ proc run::ChbForced {} {
   # Checks states & values of widgets.
 
   namespace upvar ::alited al al obRun obRun
-  if {$al(comForceCh)} {set state normal} {set state disabled}
   set cbx [$obRun CbxfiL]
   set but [string map {.cbx .btT} $cbx] ;# path to combobox' button
-  $cbx configure -state $state
-  $but configure -state $state
-  [$obRun Tex1] configure -state $state
+  set tex [$obRun Tex1]
+  $obRun readonlyWidget $tex no
+  GetRUNFEXEC
   FillTex1
   ValidatePath
+  if {$al(comForceCh)} {
+    set state normal
+  } else {
+    $obRun readonlyWidget $tex yes
+    set state disabled
+  }
+  $cbx configure -state $state
+  $but configure -state $state
 }
 # ________________________ Main _________________________ #
 
@@ -260,7 +277,6 @@ proc run::_create {} {
 
   namespace upvar ::alited al al obRun obRun
   variable win
-  variable vent
   alited::SaveRunOptions
   set al(_startRunDialogue) yes
   if {[catch {
@@ -279,8 +295,7 @@ proc run::_create {} {
   if {![llength $al(comForceLs)] && $fname ne $al(MC,nofile)} {
     set al(comForceLs) [list {} $fname]
   }
-  lassign [alited::tool::RunArgs] ar rf ex
-  set vent "$ar$rf$ex"
+  GetRUNFEXEC
   set run [::alited::ProcEOL $al(prjbeforerun) in]
   $obRun makeWindow $win.fra $al(MC,run)
   $obRun paveWindow $win.fra {

@@ -18,7 +18,13 @@ proc tool::ToolButName {img} {
   namespace upvar ::alited obPav obPav
   return [$obPav ToolTop].buT_alimg_$img-big
 }
+#_______________________
 
+proc tool::HelpContext {} {
+  # Handles hitting "Help" button.
+
+  alited::Help $::alited::al(WIN)
+}
 # ________________________ Edit functions _________________________ #
 
 proc tool::Undo {} {
@@ -578,7 +584,7 @@ proc tool::AfterStartDlg {} {
   lassign [$obDl2 input {} $al(MC,afterstart) [list \
     lab [list {} {-pady 8} [list -t $lab]] {} \
     tex "{} {} {-w 80 -h 16 -tabnext {butOK butCANCEL} -afteridle {alited::tool::AfterStartSyntax %w}}" "$run" ] \
-    -help {alited::HelpAlited #forstart}] res run
+    -help alited::tool::HelpContext] res run
   if {$res} {
     set al(afterstart) [::alited::ProcEOL [string trim $run] out]
     alited::ini::SaveIni

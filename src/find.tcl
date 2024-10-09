@@ -1427,7 +1427,7 @@ proc find::_create {} {
   set wtxt [alited::main::CurrentWTXT]
   alited::keys::BindAllKeys $wtxt yes
   bind $win <Enter> alited::find::SessionButtons
-  bind $win <F1> {alited::HelpAlited #search1}
+  bind $win <F1> {alited::main::Help find}
   bind $win <F3> "$w.but1 invoke"
   bind $w.cbx1 <Return> "$w.but1 invoke"  ;# hotkeys in comboboxes
   bind $w.cbx2 <Return> "$w.but4 invoke"

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.7b8  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.7  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -851,7 +851,7 @@ namespace eval alited {
     # Shows a main help of alited.
     #   ilink - internal link
 
-    openDoc file://[file join $::alited::DIR doc index.html]$ilink
+    openDoc https://aplsimple.github.io/en/tcl/alited/index.html$ilink
   }
   #_______________________
 

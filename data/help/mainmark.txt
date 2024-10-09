@@ -1,0 +1,21 @@
+ The <r>book-marks</r> are especially useful to navigate over a document without
+ much of structure. Though, sometimes even a well structured Tcl script
+ may require book-marking.
+
+ The book-marks are set in the mark bar at left side of the text box's line
+ numbers.
+
+ There are 24 book-marks of different colors, from bright green to bright red.
+
+ To set a book-mark, click any of the mark bar cell with the mouse left button.
+ After that, you can click the cell to go to the mark, i.e. to the book-marked
+ text position.
+
+ The book-marks are active during the current session of alited. Still, even if
+ you close a file, its book-marks remain active in the session.
+
+ To clear a book-mark, click it with the mouse right button. The right button
+ clicking an empty mark cell will bring out the popup menu which allows you:
+
+   to <b>clear</b> all book-marks
+   to <b>change</b> the mark bar's width

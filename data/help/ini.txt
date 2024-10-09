@@ -1,0 +1,24 @@
+ At the very first start, alited offers some simple initial actions.
+
+ Namely: you are offered to choose a configuration directory where
+ alited will store its settings.
+
+ The default directory is probably the best choice if you don't plan
+ to have several <b>types of projects</b> at your machine.
+
+ When you use the default directory, you may not pass it to alited as
+ its first argument.
+
+ On the other hand, if you choose some other configuration directory,
+ this directory's name may be passed to alited as its <b>first argument</b>.
+
+ You can have several copies of your configuration directories, e.g.
+ ~/.config1, ~/.config2 etc. each of them customized for its own
+ <b>type of projects</b>: public/private, for work/fun and so on.
+
+ For example, you can develop some fun projects with "Florid" color
+ scheme and a funny font for editing. Or hobby projects with other
+ settings. At last, work projects with "tough-stuff" settings:)
+
+ Anyhow, alited shows you where it will store its settings,
+ so that you can <b>backup</b> them along with other programs' ones.
