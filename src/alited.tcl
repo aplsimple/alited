@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.7  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.7.1  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -31,7 +31,7 @@ namespace eval alited {
   variable al2; array set al2 [list] ;# alternative array, just to not touch "al"
 
   # versions of mnu/ini to update to
-  set al(MNUversion) 1.8.7b3
+  set al(MNUversion) 1.8.7.1
   set al(INIversion) 1.8.0
 
   # previous version of alited to update from
@@ -163,9 +163,9 @@ namespace eval alited {
   set al(prjleafRE) {}    ;# "leaf's RE"
   foreach _ $OPTS {set al(DEFAULT,$_) $al($_)}
 
-  set al(TITLE) {%f :: %d :: %p}           ;# alited title's template
-  set al(TclExtsDef) {.tcl .tm .msg .test} ;# extensions of Tcl files
-  set al(ClangExtsDef) {.c .h .cpp .hpp}   ;# extensions of C/C++ files
+  set al(TITLE) {%f :: %d :: %p} ;# alited title's template
+  set al(TclExtsDef) [list .tcl .tk .tm .msg .test] ;# extensions of Tcl files
+  set al(ClangExtsDef) {.c .h .cpp .hpp} ;# extensions of C/C++ files
   set al(TextExtsDef) {html htm css md txt sh bat ini alm em ale conf wiki ui} ;# ... plain texts
   set al(TclExts) $al(TclExtsDef)
   set al(ClangExts) $al(ClangExtsDef)

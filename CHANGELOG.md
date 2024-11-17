@@ -6,7 +6,7 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7 (9 Oct'24)`
+Version `v1.8.7.1 (17 Nov'24)`
 
   - BUGFIX: renaming current file in file tree: highlight & alited's title
   - BUGFIX: file tree: selecting current file after add / close & delete
@@ -17,6 +17,7 @@ Version `v1.8.7 (9 Oct'24)`
   - BUGFIX: Edit/Formats: %f wildcard (current file name)
   - BUGFIX: at changing install dir: original pathes to bind pluginable formatters
   - BUGFIX: press+move middle mouse button -> line numbers unchanged (thanks to George)
+  - NEW   : .tk file extension recognized as Tcl's
   - NEW   : "Setup/Type Templates": type *TYPE + space* => template
   - NEW   : "Contract all" mode of file/unit tree, saved through projects/files
   - NEW   : Edit/Formats/Pluginable/Info: non-modal, file name, chars total

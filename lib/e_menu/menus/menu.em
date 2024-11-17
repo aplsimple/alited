@@ -26,8 +26,8 @@ R: %C set ::_EM_AR_ [string map {\\$ \$} {%AR}]
 R: %C set ::_EM_RF_ [string map {\\$ \$} {%RF}]
 R: %C set ::_EM_EE_ [string map {\\$ \$} {%EE}]
 SE: %IF {%EE} ne "" %THEN $::_EM_EE_
-RE: %IF "%x" in ".tcl .tm .test" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
-RE: %IF "%x" in ".tcl .tm .test" %THEN %T tclsh "$::EMENUTCLFILE" $::_EM_AR_
+RE: %IF "%x" in ".tcl .tk .tm .test" && {%RF} ne "" %THEN %T tclsh $::_EM_RF_
+RE: %IF "%x" in ".tcl .tk .tm .test" %THEN %T tclsh "$::EMENUTCLFILE" $::_EM_AR_
 RE: %IF "%x" eq ".py"  %THEN python3 "$::EMENURUNFILE" %AR
 RE: %IF "%x" in {.htm .html} %THEN %b "$::EMENURUNFILE"
 SE: %IF {%RF} ne "" %THEN %RF

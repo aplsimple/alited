@@ -441,7 +441,12 @@ proc ini::ReadIniOptions {nam val} {
     CKeyWords     {set al(ED,CKeyWords) $val}
     clrDark       {set al(ED,Dark) $val}
     save_onadd - save_onclose - save_onsave {set al(INI,$nam) $val}
-    TclExts       {set al(TclExts) $val}
+    TclExts       {
+      set al(TclExts) [split $val]
+      foreach e $al(TclExtsDef) {
+        if {$e ni $al(TclExts)} {lappend al(TclExts) $e}
+      }
+    }
     ClangExts     {set al(ClangExts) $val}
     TextExts      {set al(TextExts) $val}
     REbranch      {set al(RE,branch) $val}
