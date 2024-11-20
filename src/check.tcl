@@ -232,6 +232,7 @@ proc check::Check {} {
   variable fileerrors
   alited::info::Clear
   alited::info::Put $al(MC,wait) {} yes yes
+  alited::main::UpdateUnitTree
   set errors [set fileerrors 0]
   if {$atopen || $what==1} {  ;# at start, check a current file
     CheckFile

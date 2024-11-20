@@ -641,6 +641,7 @@ proc tool::RunArgs {} {
 proc tool::CheckTcl {} {
   # Check a current unit for errors, before running Tcl file.
 
+  alited::main::UpdateUnitTree
   lassign [alited::tree::CurrentItemByLine {} 1] - - leaf - name l1 l2
   if {[string is true -strict $leaf] && $name ne {}} {
     alited::CheckSource
