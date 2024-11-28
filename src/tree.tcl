@@ -1200,7 +1200,7 @@ proc tree::ForEach {wtree aproc {lev 0} {branch {}}} {
       %text [$wtree item $branch -text] \
       %values [$wtree item $branch -values]] \
       $aproc]
-    uplevel [expr {$lev+1}] "$proc"
+    catch {uplevel [expr {$lev+1}] $proc}
   }
   incr lev
   foreach child $children {
