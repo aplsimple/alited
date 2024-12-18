@@ -3066,7 +3066,7 @@ oo::class create ::apave::APaveBase {
           return -code break
         }
       }
-    braceright {
+    braceright - "\}" {
         # right brace pressed: shift the brace to left
         set idx1 [$w index insert]
         set st [$w get "$idx1 linestart" "$idx1 lineend"]

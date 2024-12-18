@@ -636,7 +636,16 @@ proc menu::FillMenu {} {
   ## ________________________ Help _________________________ ##
 
   set m $al(WIN).menu.help
-  $m add command -label Tcl/Tk -command alited::tool::Help -accelerator F1
+  menu $m.help -tearoff 0
+  $m add cascade -label Tcl/Tk -menu $m.help
+  $m.help add command -label Tcl/Tk -command alited::tool::Help -accelerator F1
+  $m.help add command -label {Tcl Wiki} -command {alited::tool::Help Wiki}
+  $m.help add separator
+  $m.help add command -label Tcllib -command {alited::tool::Help Tcllib}
+  $m.help add command -label Tklib -command {alited::tool::Help Tklib}
+  $m.help add command -label {Math functions} -command {alited::tool::Help Math}
+  $m.help add separator
+  $m.help add command -label StackOverflow -command {alited::tool::Help SOF}
   $m add separator
   $m add command -label alited -command alited::HelpAlited
   menu $m.helps -tearoff 1

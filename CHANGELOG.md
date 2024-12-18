@@ -6,10 +6,12 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7.3 (28 Nov'24)`
+Version `v1.8.7.4 (18 Dec'24)`
 
   - BUGFIX: creating a unit tree item at "proc A{a}"
   - NEW   : .tk file extension recognized as Tcl's
+  - CHANGE: menu Help/Tcl/Tk
+  - CHANGE: handling braceright
   - CHANGE: main::UpdateUnitTree before checking Tcl, for assurance
 
 

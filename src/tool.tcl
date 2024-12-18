@@ -242,10 +242,32 @@ proc tool::tkcon {args} {
 }
 #_______________________
 
-proc tool::Help {} {
-  # Calls a help on alited.
+proc tool::Help {{onwhat ""}} {
+  # Calls a help.
+  #   onwhat - what to be helped
 
-  _run Help
+  switch -- $onwhat {
+    Wiki {
+      set url "https://wiki.tcl-lang.org/recent"
+    }
+    Tcllib {
+      set url "https://www.tcl.tk/software/tcllib/"
+    }
+    Tklib {
+      set url "https://www.tcl.tk/software/tklib/"
+    }
+    Math {
+      set url "https://www.tcl.tk/man/tcl8.6/TclCmd/mathfunc.htm"
+    }
+    SOF {
+      set url "https://stackoverflow.com/questions/tagged/tcl"
+    }
+    default {
+      _run Help
+      return
+    }
+  }
+  openDoc $url
 }
 #_______________________
 
