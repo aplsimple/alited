@@ -1684,7 +1684,8 @@ oo::class create ::apave::APaveBase {
     } elseif {$choosname in {tk_getOpenFile tk_getSaveFile}} {
       set vargeo $filvar
       set widname [my AuxSetChooserGeometry $vargeo $dirvar $parent __tk_filedialog]
-      if {[set fn [set $tvar]] eq {}} {
+      if {[catch {set fn [set $tvar]}]} {set fn {}}
+      if {$fn eq {}} {
         set dn [pwd]
       } else {
         set dn [file dirname $fn]
