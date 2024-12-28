@@ -6,13 +6,16 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7.4 (18 Dec'24)`
+Version `v1.8.7.5 (28 Dec'24)`
 
-  - BUGFIX: creating a unit tree item at "proc A{a}"
+  - BUGFIX: "Save as" with duplicate tab name, e.g. FNAME, should be FNAME(2)
+  - BUGFIX: creating a unit tree item at "proc A{a}" (not "proc A {a}")
   - NEW   : .tk file extension recognized as Tcl's
   - CHANGE: menu Help/Tcl/Tk
   - CHANGE: handling braceright
   - CHANGE: main::UpdateUnitTree before checking Tcl, for assurance
+  - CHANGE: "Copy Declaration" in units/favorites menu
+  - CHANGE: clearance
 
 
 Version `v1.8.7 (9 Oct'24)`

@@ -623,15 +623,15 @@ proc favor::ShowPopupMenu {ID X Y} {
     $popm add command -label $al(MC,favoradd) {*}[$obPav iconA none] \
       -command ::alited::favor::Add -image alimg_add
     $popm add command -label $al(MC,favorren) {*}[$obPav iconA change] \
-      -command {::alited::favor::Rename no}
+      -command {alited::favor::Rename no}
   }
   $popm add command -label $al(MC,favordel) {*}[$obPav iconA none] \
-    -command {::alited::favor::Delete no} -image alimg_delete
+    -command {alited::favor::Delete no} -image alimg_delete
   $popm add command -label $al(MC,favordelall) {*}[$obPav iconA none] \
-    -command {::alited::favor::DeleteAll no} -image alimg_trash
+    -command {alited::favor::DeleteAll no} -image alimg_trash
   $popm add separator
   $popm add command -label $al(MC,copydecl) {*}[$obPav iconA none] \
-    -command "::alited::favor::CopyDeclaration $wtree $ID"
+    -command "alited::favor::CopyDeclaration $wtree $ID"
   $obPav themePopup $popm
   tk_popup $popm $X $Y
 }
@@ -663,7 +663,7 @@ proc favor::CopyDeclaration {wtree ID} {
   #   ID - tree item's ID
 
   clipboard clear
-  clipboard append [lindex [$wtree item $ID -values] 2]
+  clipboard append \n[lindex [$wtree item $ID -values] 2]\ \{\n\}
 }
 #_______________________
 
@@ -691,8 +691,8 @@ proc favor::_init {} {
   namespace upvar ::alited al al obPav obPav
   set wtree [$obPav TreeFavor]
   alited::tree::AddTags $wtree
-  $wtree tag bind tagNorm <Return> {::alited::favor::Select}
-  $wtree tag bind tagNorm <ButtonRelease-1> {::alited::favor::Select}
+  $wtree tag bind tagNorm <Return> {alited::favor::Select}
+  $wtree tag bind tagNorm <ButtonRelease-1> {alited::favor::Select}
   $wtree tag bind tagNorm <ButtonPress-3> {after idle {alited::favor::PopupMenu %x %y %X %Y}}
   $wtree heading #1 -text [msgcat::mc $al(MC,favorites)]
   ShowFavVisit

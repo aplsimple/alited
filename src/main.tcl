@@ -997,14 +997,14 @@ proc main::BindsForText {TID wtxt} {
     bind $wtxt <FocusIn> [list after 500 "::alited::main::FocusInText $TID $wtxt"]
   }
   bind $wtxt <Control-ButtonRelease-1> "::alited::find::LookDecl ; break"
-  bind $wtxt <Control-Shift-ButtonRelease-1> {::alited::find::SearchWordInSession ; break}
-  bind $wtxt <Control-Tab> {::alited::bar::ControlTab}
+  bind $wtxt <Control-Shift-ButtonRelease-1> {alited::find::SearchWordInSession ; break}
+  bind $wtxt <Control-Tab> {alited::bar::ControlTab}
   if {$al(IsWindows)} {
     # unlike Unix, Shift+Key doesn't work in Windows
     bind $wtxt <Tab> \
       [list + if {{%K} eq {Tab} && {%s}==1} "focus [$obPav LbxInfo]; break"]
   }
-  bind $wtxt <Alt-BackSpace> {::alited::unit::SwitchUnits ; break}
+  bind $wtxt <Alt-BackSpace> {alited::unit::SwitchUnits ; break}
   bind $wtxt <space> "+ alited::unit::PutTypeTemplate $wtxt"
   ::apave::bindToEvent $wtxt <ButtonRelease-1> alited::main::SaveVisitInfo $wtxt
   ::apave::bindToEvent $wtxt <KeyRelease> alited::main::SaveVisitInfo $wtxt %K %s
@@ -1174,7 +1174,7 @@ proc main::_create {} {
       {-image alimg_add -com alited::tree::AddItem}}
     {.fraBot.panBM.fraTree.fra1.BtTRenT - - - - {pack forget -side left -fill x} \
       {-image alimg_change -tip "$al(MC,renamefile)\nF2" \
-      -com {::alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
+      -com {alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
     {.fraBot.panBM.fraTree.fra1.BtTDelT - - - - {pack -side left -fill x} \
       {-image alimg_delete -com alited::tree::DelItem}}
     {.fraBot.panBM.fraTree.fra1.BtTCloT - - - - {pack forget -side left -fill x} \
@@ -1194,8 +1194,8 @@ proc main::_create {} {
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1}
       {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 \
       {-width $al(TREE,cw0)} L1 {-width $al(TREE,cw1) -anchor e}" -style TreeNoHL \
-      -takefocus 0 -selectmode extended -tip {-BALTIP {alited::tree::GetTooltip %i %c} \
-      -SHIFTX 10}}}
+      -takefocus 0 -selectmode extended \
+      -tip {-BALTIP {alited::tree::GetTooltip %i %c} -SHIFTX 10}}}
 {#
 ### ________________________ Favorites _________________________ ###
 }
@@ -1296,7 +1296,7 @@ proc main::_create {} {
   bind $lbxi <FocusOut> "alited::info::FocusOut $sbhi"
   bind $lbxi <<ListboxSelect>> {alited::info::ListboxSelect %W}
   bind $lbxi <ButtonPress-3> {alited::info::PopupMenu %X %Y}
-  bind [$obPav ToolTop] <ButtonPress-3> {::alited::tool::PopupBar %X %Y}
+  bind [$obPav ToolTop] <ButtonPress-3> {alited::tool::PopupBar %X %Y}
   bind [$obPav Labstat3] <Button-1> alited::main::ProcMessage
   ::baltip tip [$obPav Labstat4] = -command ::alited::main::TipStatus -per10 0
 }

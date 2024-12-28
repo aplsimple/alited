@@ -453,8 +453,7 @@ proc file::RenameFile {TID fname {doshow yes}} {
     alited::bar::SetTabState $TID --fname $fname
     alited::bar::BAR $TID configure -text {} -tip {}
     set tab [alited::bar::UniqueListTab $fname]
-    set sname [file tail $fname]
-    alited::bar::BAR $TID configure -text $sname -tip [FileStat $fname]
+    alited::bar::BAR $TID configure -text $tab -tip [FileStat $fname]
     if {$doshow} {
       alited::bar::BAR $TID show yes
     }
@@ -523,7 +522,7 @@ proc file::CheckForNew {{docheck no}} {
       NewFile
     }
   } else {
-    after idle {::alited::file::CheckForNew yes}
+    after idle {alited::file::CheckForNew yes}
   }
 }
 #_______________________

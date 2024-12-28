@@ -77,7 +77,7 @@ proc paver::AutoUpdate {{dorun 0}} {
       after 500 {after idle alited::main::FocusText}
     }
   }
-  after 300 {::alited::paver::AutoUpdate 1}
+  after 300 {alited::paver::AutoUpdate 1}
 }
 #_______________________
 
@@ -346,7 +346,7 @@ proc paver::_create {{inplist ""}} {
   $pobj makeWindow $win.fra $paverttl
   $pobj paveWindow $win.fra $widgetlist
   if {$geometry ne {}} {set geo "-geometry $geometry"} {set geo {}}
-  after 300 {::alited::paver::AutoUpdate 2}
+  after 300 {alited::paver::AutoUpdate 2}
   set res [$pobj showModal $win -modal no -waitvar 1 -resizable 1 -minsize {50 50} \
     -escape 1 -onclose ::alited::paver::Close {*}$geo]
   Destroy

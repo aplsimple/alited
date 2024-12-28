@@ -63,11 +63,11 @@ proc bar::FillBar {wframe {newproject no}} {
     -bg [lindex [$obPav csGet] 3] -popuptip ::alited::bar::PopupTip \
     -menu [list \
       sep \
-      "com {$lab0} {::alited::bar::SelTab %t} {} {}" \
-      "com {$lab1} {::alited::bar::SelTabVis} {} {}" \
-      "com {$lab2} {::alited::bar::SelTabLeft %t} {} {{\[::alited::bar::DisableTabLeft %t\]}}" \
-      "com {$lab3} {::alited::bar::SelTabRight %t} {} {{\[::alited::bar::DisableTabRight %t\]}}" \
-      "com {$lab4} {::alited::bar::SelTabAll} {} {}"] \
+      "com {$lab0} {alited::bar::SelTab %t} {} {}" \
+      "com {$lab1} {alited::bar::SelTabVis} {} {}" \
+      "com {$lab2} {alited::bar::SelTabLeft %t} {} {{\[::alited::bar::DisableTabLeft %t\]}}" \
+      "com {$lab3} {alited::bar::SelTabRight %t} {} {{\[::alited::bar::DisableTabRight %t\]}}" \
+      "com {$lab4} {alited::bar::SelTabAll} {} {}"] \
     -separator no -font apaveFontDefTypedsmall \
     -csel2 {alited::bar::OnTabSelection %t} \
     -csel3 alited::bar::OnControlClick \
@@ -622,7 +622,7 @@ proc bar::ColorBar {} {
   if {$cs>-1} {
     lassign [$obPav csGet $cs] cfg2 cfg1 cbg2 cbg1 cfhh - - - - - - - - - - - - fgmark
     # %t wildcard means "a tooltip on the list of files":
-    BAR configure -fgmark $fgmark -comlist {::alited::bar::SelFile %ID "%t"}
+    BAR configure -fgmark $fgmark -comlist {alited::bar::SelFile %ID "%t"}
   }
 }
 #_______________________

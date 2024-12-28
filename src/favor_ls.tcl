@@ -527,8 +527,8 @@ proc favor_ls::_create {} {
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
     {.ButOK - - - - {pack $forget -side left} {-t "$al(MC,select)" -com ::alited::favor_ls::Ok}}
     {.ButOpenFile - - - - {pack -side left -padx 2} {-t Open... \
-      -com {::alited::favor_ls::Ok 4} -tip {Opens files with current favorites.}}}
-    {.butUndo - - - - {pack $forget -side left} {-t Back -com {::alited::favor_ls::Ok 3} \
+      -com {alited::favor_ls::Ok 4} -tip {Opens files with current favorites.}}}
+    {.butUndo - - - - {pack $forget -side left} {-t Back -com {alited::favor_ls::Ok 3} \
       -tip "Sets a list of Favorites\nthat was active initially."}}
     {.butCancel - - - - {pack -side left -padx 2} {-t Cancel -com ::alited::favor_ls::Cancel}}
   }

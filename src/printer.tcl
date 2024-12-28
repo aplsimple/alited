@@ -1131,7 +1131,7 @@ proc printer::_create  {} {
     {.seh .fraw T 1 3 {-pady 8}}
     {.lab4 + T 1 2 {-st nw} {-t {Final processor:}}}
     {.btT + L 1 1 {-st e -padx 3} {-image alimg_run \
-      -com {::alited::printer::RunFinal 1} -tip {Runs the final processor.}}}
+      -com {alited::printer::RunFinal 1} -tip {Runs the final processor.}}}
     {.Fil .lab4 T 1 3 {-st new} {-tvar ::alited::printer::final -w $wden}}
     {fraTree fraTop T 2 1 {-st news -cw 1}}
     {.Tree - - - - {pack -side left -fill both -expand 1} \

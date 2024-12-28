@@ -305,7 +305,7 @@ proc find::FindUnit {} {
     pack [$obPav FraHead] -side bottom -fill x -pady 3 -after [$obPav GutText]
     foreach k {f F} {bind $ent <Shift-Control-$k> {alited::find::DoFindUnit; break}}
     bind $ent <Return> alited::find::DoFindUnit
-    bind $ent <Escape> {::alited::find::HideFindUnit; break}
+    bind $ent <Escape> {alited::find::HideFindUnit; break}
   }
   focus $ent
   after idle "$ent selection range 0 end"
@@ -1431,8 +1431,8 @@ proc find::_create {} {
   bind $win <F3> "$w.but1 invoke"
   bind $w.cbx1 <Return> "$w.but1 invoke"  ;# hotkeys in comboboxes
   bind $w.cbx2 <Return> "$w.but4 invoke"
-  foreach k {f F} {bind $win <Control-$k> {::alited::find::LastInvoke; break}}
-  foreach k {r R} {bind $win <Control-$k> {::alited::find::btTPaste; break}}
+  foreach k {f F} {bind $win <Control-$k> {alited::find::LastInvoke; break}}
+  foreach k {r R} {bind $win <Control-$k> {alited::find::btTPaste; break}}
   foreach k {t T} {bind $win <Control-$k> "focusByForce $wtxt"}
   FocusCbx
   set but [$obFND But1]

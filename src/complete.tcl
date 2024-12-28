@@ -316,7 +316,7 @@ proc complete::PickCommand {wtxt} {
   set ent [$obj Ent]
   set lbx [$obj Lbx]
   foreach ev {ButtonPress-1 Return KP_Enter KeyPress-space} {
-    catch {bind $lbx <$ev> "after idle {::alited::complete::SelectCommand $obj $lbx}"}
+    catch {bind $lbx <$ev> "after idle {alited::complete::SelectCommand $obj $lbx}"}
   }
   ColorPick $wtxt
   $lbx selection set 0

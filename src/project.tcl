@@ -763,7 +763,7 @@ proc project::KlndDayRem {dmin} {
   #   dmin - date in seconds to select
 
   KlndDay $dmin
-  after idle {::alited::project::KlndBorderText red}
+  after idle {alited::project::KlndBorderText red}
 }
 #_______________________
 
@@ -2114,7 +2114,7 @@ proc project::Tab2 {} {
       {-tvar ::alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,indent:)}}}
     {.spxIndent + L 1 1 {-st sw -pady 3 -padx 3} \
-      {-tvar ::alited::al(prjindent) -from 0 -to 8 -com {::alited::pref::CheckIndent ""}}}
+      {-tvar ::alited::al(prjindent) -from 0 -to 8 -com {alited::pref::CheckIndent ""}}}
     {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} \
       {-var ::alited::al(prjindentAuto) -t {$al(MC,indentAuto)}}}
     {.labRedunit .labIndent T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
@@ -2229,7 +2229,7 @@ proc project::Tab5 {} {
     {seh_ labFilter T 1 3}
     {LabFlist + T 1 3 {-pady 3 -padx 3} {-foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fraFlist + T 1 3 {-st nswe -padx 3 -rw 1}}
-    {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {::alited::project::LbxPopup %X %Y}}}
+    {.LbxFlist - - - - {pack -side left -fill both -expand 1} {-takefocus 0 -selectmode multiple -popup {alited::project::LbxPopup %X %Y}}}
     {.sbvFlist + L - - {pack -side left}}
   }
 }

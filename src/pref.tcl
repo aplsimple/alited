@@ -1147,8 +1147,8 @@ proc pref::Keys_Tab1 {} {
             set pr {}
           }
           set lwid ".$cbx + L 1 1 {-st we} {-tvar ::alited::pref::keys($i) \
-            -postcommand {::alited::pref::GetKeyList $i} -selcombobox \
-            {::alited::pref::SelectKey $i} -state readonly -h 16 -w 20 $pr}"
+            -postcommand {alited::pref::GetKeyList $i} -selcombobox \
+            {alited::pref::SelectKey $i} -state readonly -h 16 -w 20 $pr}"
           %C $lwid
           set pr .$lab
         }

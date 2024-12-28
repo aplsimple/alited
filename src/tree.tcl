@@ -600,7 +600,7 @@ proc tree::CreateFilesTree {wtree branchexp} {
   baltip::tip [$obPav BtTDown] $al(MC,movedownF)
   $wtree heading #0 -text ":: $al(prjname) ::"
   $wtree heading #1 -text $al(MC,files)
-  bind $wtree <Return> {::alited::tree::OpenFile}
+  bind $wtree <Return> {alited::tree::OpenFile}
   if {[catch {set selfile [alited::bar::FileName]}]} {
     set selfile {} ;# at closing by Ctrl+W with file tree open: no current file
   }
@@ -767,16 +767,16 @@ proc tree::ShowPopupMenu {ID X Y} {
     -command alited::tree::RecreateTree -image alimg_retry
   $popm add separator
   $popm add command {*}[$obPav iconA none] -label $moveup \
-    -command {::alited::tree::MoveItem up} -image alimg_up
+    -command {alited::tree::MoveItem up} -image alimg_up
   $popm add command {*}[$obPav iconA none] -label $movedown \
-    -command {::alited::tree::MoveItem down} -image alimg_down
+    -command {alited::tree::MoveItem down} -image alimg_down
   $popm add separator
   $popm add command {*}[$obPav iconA none] -label $m2 \
     -command "::alited::tree::AddItem $ID" {*}$accins -image alimg_add
   if {!$al(TREE,isunits)} {
     $popm add command {*}[$obPav iconA change] \
       -label $al(MC,renamefile...) -accelerator F2 \
-      -command {::alited::file::RenameFileInTree no}
+      -command {alited::file::RenameFileInTree no}
   }
   $popm add command {*}[$obPav iconA none] -label $m3 \
     -command "::alited::tree::DelItem $ID -100" {*}$accdel -image alimg_delete
@@ -789,7 +789,7 @@ proc tree::ShowPopupMenu {ID X Y} {
     if {$isunit} {
       $popm add separator
       $popm add command {*}[$obPav iconA none] -label $al(MC,copydecl) \
-        -command "clipboard clear ; clipboard append {$header}"
+        -command "clipboard clear ; clipboard append {\n$header \{\n\}}"
     }
   } else {
     $popm add command {*}[$obPav iconA copy] \
