@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide bartabs 1.6.9
+package provide bartabs 1.6.10
 
 # ________________________ NS bartabs _________________________ #
 
@@ -731,6 +731,10 @@ method OnButtonMotion {wb wb1 x y} {
     bind $movWin <ButtonPress> $againstLooseFocus
     $wb1 configure -foreground $fgm
     my $BID configure -wb1 $wb1 -MOVX1 $movx1 -MOVY0 $movY0
+  }
+  if {abs([winfo pointery .]-$movY0)>$movY0*.5} {
+    my $BID DestroyMoveWindow  ;# too vertical
+    return
   }
   lassign [my $BID cget -WWID] wframe wlarr
   lassign [split [winfo geometry $wframe] x+] wflen

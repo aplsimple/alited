@@ -2495,7 +2495,7 @@ oo::class create ::apave::APaveBase {
         -entrypop - -entrypopRO - -textpop - -textpopRO - -ListboxSel - \
         -callF2 - -timeout - -bartabs - -onReturn - -linkcom - -selcombobox - \
         -afteridle - -gutter - -propagate - -columnoptions - -selborderwidth -
-        -selected - -popup - -bindEC - -tags - -debug - -clearcom {
+        -selected - -popup - -bindEC - -tags - -debug - -clearcom - -onevent {
           # attributes specific to apave, processed below in "Post"
           set v2 [string trimleft $v \{]
           set v2 [string range $v2 0 end-[expr {[string length $v]-[string length $v2]}]]
@@ -2699,6 +2699,12 @@ oo::class create ::apave::APaveBase {
               set method {}
             }
             puts "WIDGET: $w $method"
+          }
+        }
+        -onevent {
+          set v [string map [list %w $w] $v]
+          foreach {ev proc} $v {
+            after idle [list bind $w $ev [subst $proc]]
           }
         }
       }

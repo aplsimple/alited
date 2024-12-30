@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.7.5  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.7.6  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 

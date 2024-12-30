@@ -288,7 +288,7 @@ proc pref::MainFrame {} {
     {fraB + T 1 2 {-st nsew} {-padding {2 2}}}
     {.ButHelp - - - - {pack -side left} {-t {$::alited::al(MC,help)} \
       -tip F1 -com ::alited::pref::Help}}
-    {.LabMess - - - - {pack -side left -expand 1 -fill both -padx 8}}
+    {.LabMess - - - - {pack -side left -expand 1 -fill both -padx 8} {-onevent {<Button-1> alited::pref::ProcMessage}}}
     {.ButOK - - - - {pack -side left -anchor s -padx 2} {-t Save -com ::alited::pref::Ok}}
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -com ::alited::pref::Cancel}}
   }
@@ -1825,7 +1825,6 @@ proc pref::_create {tab} {
   }
   foreach o {o O} {bind $win <Control-$o> alited::ini::EditSettings}
   bind $win <F1> "[$obPrf ButHelp] invoke"
-  bind [$obPrf LabMess] <Button-1> alited::pref::ProcMessage
   $obPrf untouchWidgets *.texSample *.texCSample
   if {$geo in [list {} "{}"]} {set geo root=$al(WIN)}
   set res [$obPrf showModal $win -geometry $geo -minsize {800 600} -resizable 1 \

@@ -1137,8 +1137,11 @@ proc printer::_create  {} {
     {.Tree - - - - {pack -side left -fill both -expand 1} \
       {-height 20 -columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} \
       -columnoptions "#0 {-width $width1} L1 {-width $width2 -anchor e}" \
-      -style TreeNoHL -selectmode browse -tip {-BALTIP {alited::tree::GetTooltip %i %c} \
-      -SHIFTX 10}}}
+      -style TreeNoHL -selectmode browse -onevent { \
+      <space> "alited::printer::Mark1 %w; break" \
+      <FocusIn> "alited::printer::FocusIn %w" \
+      <FocusOut> "alited::printer::FocusOut %w"} \
+      -tip {-BALTIP {alited::tree::GetTooltip %i %c} -SHIFTX 10}}}
     {.SbvTree fraTree.Tree L - - {pack -side right -fill both}}
     {fraMid fraBody T 1 3 {-st wes -rw 1 -padx 2}}
     {.seh1 - - - - {pack -side top -expand 1 -fill both -pady 4}}
@@ -1155,9 +1158,6 @@ proc printer::_create  {} {
     }}}
   }
   set wtree [$obDl2 Tree]
-  bind $wtree <space> "alited::printer::Mark1 $wtree; break"
-  bind $wtree <FocusIn> "alited::printer::FocusIn $wtree"
-  bind $wtree <FocusOut> "alited::printer::FocusOut $wtree"
   bind $win <F1> "alited::printer::Help"
   bind [$obDl2 Labstat1] <Button-1> alited::printer::ProcMessage
   alited::tree::AddTags $wtree

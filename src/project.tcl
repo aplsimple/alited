@@ -1993,9 +1993,13 @@ proc project::MainFrame {} {
 
   return {
     {fraTreePrj - - 10 1 {-st nswe -pady 4 -rw 1}}
-    {.TreePrj - - - - {pack -side left -expand 1 -fill both} \
-      {-h 16 -show headings -columns {C1} -displaycolumns {C1} \
-      -popup {alited::project::PopupMenu %x %y %X %Y}}}
+    {.TreePrj - - - - {pack -side left -expand 1 -fill both}
+      {-h 16 -show headings -columns {C1} -displaycolumns {C1}
+      -popup {alited::project::PopupMenu %x %y %X %Y}
+      -onevent {<<TreeviewSelect>> alited::project::Select
+      <Delete> alited::project::Delete
+      <Double-Button-1> alited::project::ProjectEnter
+      <Return> alited::project::ProjectEnter}}}
     {.sbvPrjs + L - - {pack -side left -fill both}}
     {fraR fraTreePrj L 10 1 {-st nsew -cw 1 -pady 4}}
     {fraR.nbk - - - - {pack -side top -expand 1 -fill both} {
@@ -2007,26 +2011,26 @@ proc project::MainFrame {} {
       -traverse yes -select f1
     }}
     {fraB1 fraTreePrj T 1 1 {-st nsew}}
-    {.btTad - - - - {pack -side left -anchor n} \
+    {.btTad - - - - {pack -side left -anchor n}
       {-com alited::project::Add -tip {$::alited::al(MC,prjadd)} -image alimg_add-big}}
-    {.btTch - - - - {pack -side left} \
+    {.btTch - - - - {pack -side left}
       {-com alited::project::Change -tip {$::alited::al(MC,prjchg)} -image alimg_change-big}}
-    {.btTdel - - - - {pack -side left} \
-      {-com alited::project::Delete -tip {$::alited::al(MC,prjdel1)} \
+    {.btTdel - - - - {pack -side left}
+      {-com alited::project::Delete -tip {$::alited::al(MC,prjdel1)}
       -image alimg_delete-big}}
     {.h_ - - - - {pack -side left -expand 1}}
-    {.btTtpl - - - - {pack -side left} \
-      {-com alited::project::Template -tip {$::alited::al(MC,CrTemplPrj)} \
+    {.btTtpl - - - - {pack -side left}
+      {-com alited::project::Template -tip {$::alited::al(MC,CrTemplPrj)}
       -image alimg_plus-big}}
-    {.btTtview - - - - {pack -side left -padx 4} \
+    {.btTtview - - - - {pack -side left -padx 4}
       {-image alimg_folder-big -com alited::project::ViewDir -tip {$::alited::al(MC,ViewDir)}}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 + T 1 2 {-st nsew} {-padding {2 2}}}
-    {.ButHelp - - - - {pack -side left -anchor s -padx 2} \
+    {.ButHelp - - - - {pack -side left -anchor s -padx 2}
       {-t {$::alited::al(MC,help)} -tip F1 -com alited::project::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
-    {.ButOK - - - - {pack -side left -anchor s -padx 2} \
+    {.ButOK - - - - {pack -side left -anchor s -padx 2}
       {-t {$::alited::al(MC,select)} -com alited::project::Ok}}
     {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -com alited::project::Cancel}}
   }
@@ -2057,38 +2061,38 @@ proc project::Tab1 {} {
   return {
     {v_ - - 1 1}
     {fra1 v_ T 1 2 {-st nsew -cw 1}}
-    {.labName - - 1 1 {-st e -pady 1 -padx 3} \
+    {.labName - - 1 1 {-st e -pady 1 -padx 3}
       {-t {$al(MC,prjName)} -foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {.EntName + L 1 1 {-st sw -pady 5} {-tvar ::alited::al(prjname) -w 50}}
     {.labDir .labName T 1 1 {-st e -pady 8 -padx 3} {-t "Root directory:"}}
-    {.Dir + L 1 9 {-st sw -pady 5 -padx 3} \
-      {-tvar ::alited::al(prjroot) -w 50 -validate focus \
+    {.Dir + L 1 9 {-st sw -pady 5 -padx 3}
+      {-tvar ::alited::al(prjroot) -w 50 -validate focus
       -validatecommand alited::project::ValidateDir}}
     {lab fra1 T 1 1 {-st w -pady 4 -padx 3} {-t "Notes:"}}
     {fra2 + T 2 1 {-st nsew -rw 1 -cw 99}}
-    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3} \
+    {.TexPrj - - - - {pack -side left -expand 1 -fill both -padx 3}
       {-h 20 -w 40 -wrap word -tabnext *.spx -tip {-BALTIP {$al(MC,notes)} -MAXEXP 1}}}
     {.sbv + L - - {pack -side left}}
     {frasp lab L 1 1 {-st nsew}}
     {.lab - - - - {pack -side left} {-t {TODO days ahead:}}}
-    {.spx - - - - {pack -side left -padx 8} \
-      {-tvar ::alited::al(todoahead) -from 0 -to 365 -w 5 -justify center \
-      -com alited::project::Select -validate all \
+    {.spx - - - - {pack -side left -padx 8}
+      {-tvar ::alited::al(todoahead) -from 0 -to 365 -w 5 -justify center
+      -com alited::project::Select -validate all
       -validatecommand {alited::project::ValidateIni %V}}}
     {fra3 fra2 L 2 1 {-st nsew} {-relief groove -borderwidth 2}}
     {.seh - - - - {pack -fill x}}
-    {.daT - - - - {pack -fill both} \
-      {-tvar ::alited::project::klnddata(date) \
-      -com {alited::project::KlndUpdate; alited::project::KlndBorderText} \
-      -dateformat "$::alited::al(TPL,%d)" \
-      -tip {alited::project::KlndText %D} -weeks $::alited::al(klndweeks) \
+    {.daT - - - - {pack -fill both}
+      {-tvar ::alited::project::klnddata(date)
+      -com {alited::project::KlndUpdate; alited::project::KlndBorderText}
+      -dateformat "$::alited::al(TPL,%d)"
+      -tip {alited::project::KlndText %D} -weeks $::alited::al(klndweeks)
       -popup {alited::project::KlndPopup %W %y %m %d %X %Y} -width 3}}
     {fra3.fra - - - - {pack -fill both -expand 1}}
     {.seh2 - - - - {pack -side top -fill x}}
-    {.too - - - - {pack -side top} \
+    {.too - - - - {pack -side top}
       {-relief flat -borderwidth 0 -array {$::alited::project::klnddata(toobar)}}}
-    {.TexKlnd - - - - {pack -side left -fill both -expand 1} \
-      {-wrap word -tabnext {alited::Tnext *.texPrj} -w 4 -h 8 \
+    {.TexKlnd - - - - {pack -side left -fill both -expand 1}
+      {-wrap word -tabnext {alited::Tnext *.texPrj} -w 4 -h 8
       -tip {-BALTIP {$al(MC,prjTtext)} -MAXEXP 1}}}
 }
 }
@@ -2104,34 +2108,34 @@ proc project::Tab2 {} {
   }
   return {
     {v_ - - 1 10}
-    {lab1 + T 1 2 {-st nsew -pady 1 -padx 3} \
+    {lab1 + T 1 2 {-st nsew -pady 1 -padx 3}
       {-t {$al(MC,DEFopts)} -foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fra2 + T 1 2 {-st nsew -cw 1}}
     {.labIgn - - 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,Ign:)}}}
     {.entIgn + L 1 8 {-st sw -pady 5 -padx 3} {-tvar ::alited::al(prjdirign) -w 50}}
     {.labEOL .labIgn T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,EOL:)}}}
-    {.cbxEOL + L 1 1 {-st sw -pady 3 -padx 3} \
+    {.cbxEOL + L 1 1 {-st sw -pady 3 -padx 3}
       {-tvar ::alited::al(prjEOL) -values {{} LF CR CRLF} -w 9 -state readonly}}
     {.labIndent .labEOL T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,indent:)}}}
-    {.spxIndent + L 1 1 {-st sw -pady 3 -padx 3} \
+    {.spxIndent + L 1 1 {-st sw -pady 3 -padx 3}
       {-tvar ::alited::al(prjindent) -from 0 -to 8 -com {alited::pref::CheckIndent ""}}}
-    {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3} \
+    {.chbIndAuto + L 1 1 {-st sw -pady 3 -padx 3}
       {-var ::alited::al(prjindentAuto) -t {$al(MC,indentAuto)}}}
     {.labRedunit .labIndent T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,redunit)}}}
-    {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3} \
+    {.spxRedunit + L 1 1 {-st sw -pady 3 -padx 3}
       {-tvar ::alited::al(prjredunit) -from $al(minredunit) -to 100}}
     {.labmaxcom .labRedunit T 1 1 {-st e -pady 1 -padx 3} {-t {Maximum Run commands}}}
-    {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3} \
+    {.spxMaxcom + L 1 1 {-st sw -pady 3 -padx 3}
       {-tvar ::alited::al(prjmaxcoms) -from 4 -to 99 -tabnext alited::Tnext}}
-    {.labMult .labmaxcom T 1 1 {-st e -pady 1 -padx 3} \
+    {.labMult .labmaxcom T 1 1 {-st e -pady 1 -padx 3}
       {-t {$al(MC,multiline)} -tip {$al(MC,notrecomm)}}}
-    {.swiMult + L 1 1 {-st sw -pady 3 -padx 3} \
+    {.swiMult + L 1 1 {-st sw -pady 3 -padx 3}
       {-var ::alited::al(prjmultiline) -tip {$al(MC,notrecomm)}}}
     {.labTrWs .labMult T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,trailwhite)}}}
     {.swiTrWs + L 1 1 {-st sw -pady 1} {-var ::alited::al(prjtrailwhite)}}
     {.seh .labTrWs T 1 9}
     {.labUself + T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,useleafRE)}}}
-    {.swiUself + L 1 1 {-st sw -pady 1} \
+    {.swiUself + L 1 1 {-st sw -pady 1}
       {-var ::alited::al(prjuseleafRE) -com alited::project::CheckPrjUseLeaf}}
     {.butStd + L 1 7 {-st e} {-t Standard -com alited::project::StdLeafRE}}
     {.labLf .labUself T 1 1 {-st e -pady 1 -padx 3} {-t {$al(MC,leafRE)}}}
@@ -2146,17 +2150,17 @@ proc project::Tab3 {} {
   return {
     {v_ - - 1 9}
     {lab1 + T 1 9 {-st nsew -pady 1 -padx 3} {-t {$al(MC,TemplPrj)}}}
-    {lab2 + T 1 1 {-st ew -pady 5 -padx 3} \
+    {lab2 + T 1 1 {-st ew -pady 5 -padx 3}
       {-t Template: -foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
-    {CbxTpl + L 1 3 {-st ew -pady 5} \
-      {-w 40 -h 12 -cbxsel {$al(PTP,name)} -tvar ::alited::al(PTP,name) \
-      -values {$al(PTP,names)} -clearcom alited::project::DeleteFromTplList \
+    {CbxTpl + L 1 3 {-st ew -pady 5}
+      {-w 40 -h 12 -cbxsel {$al(PTP,name)} -tvar ::alited::al(PTP,name)
+      -values {$al(PTP,names)} -clearcom alited::project::DeleteFromTplList
       -selcombobox alited::project::UpdateTplText}}
     {fraTlist + T 1 8 {-st nswe -padx 3 -cw 1 -rw 1}}
-    {.TexTemplate - - - - {pack -side left -fill both -expand 1} \
+    {.TexTemplate - - - - {pack -side left -fill both -expand 1}
       {-h 20 -w 40 -tabnext "*.butTplDef *.cbxTpl" -wrap none}}
     {.sbv + L - - {pack -side left}}
-    {butTplDef fraTlist T 1 1 {-st w -padx 4 -pady 4} \
+    {butTplDef fraTlist T 1 1 {-st w -padx 4 -pady 4}
       {-t Standard -com alited::project::TplDefault -tabnext alited::Tnext}}
   }
 }
@@ -2172,7 +2176,7 @@ proc project::Tab4 {} {
   return {
     {v_ - - 1 3}
     {Labprj + T 1 2 {} {-foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
-    {ChbClearRun labprj L 1 1 {-st w} \
+    {ChbClearRun labprj L 1 1 {-st w}
       {-var ::alited::al(PTP,chbClearRun) -com alited::project::ChecksRun -takefocus 0}}
     {tcl {
         set prt labprj
@@ -2264,12 +2268,8 @@ proc project::_create {} {
   $tree heading C1 -text $al(MC,projects)
   if {$oldTab ne {}} {$nbk select $oldTab}
   UpdateTree
-  ::apave::bindToEvent $tree <<TreeviewSelect>> alited::project::Select
   bind $win <$al(acc_2)> "alited::ini::ToolByKey $nbk ToolPrjEM"
   bind $win <$al(acc_3)> "alited::ini::ToolByKey $nbk ToolPrjRun"
-  bind $tree <Delete> alited::project::Delete
-  bind $tree <Double-Button-1> alited::project::ProjectEnter
-  bind $tree <Return> alited::project::ProjectEnter
   foreach ev {KeyPress ButtonPress} {
     bind $tree <$ev> {+ alited::project::KeyOnTree %K}
   }

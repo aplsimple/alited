@@ -489,46 +489,52 @@ proc favor_ls::_create {} {
   $obFav paveWindow $win {
     {fraLbxFav - - 1 2 {-st nswe -rw 1 -pady 4} {}}
     {.fra - - - - {pack $forget -side right -fill both} {}}
-    {.fra.btTAd - - - - {pack -side top -anchor n} {-com ::alited::favor_ls::Add \
+    {.fra.btTAd - - - - {pack -side top -anchor n} {-com ::alited::favor_ls::Add
       -tip "Add a list of favorites" -image alimg_add-big}}
-    {.fra.btTChg - - - - {pack -side top} {-com ::alited::favor_ls::Change \
+    {.fra.btTChg - - - - {pack -side top} {-com ::alited::favor_ls::Change
       -tip "Change a list of favorites" -image alimg_change-big}}
-    {.fra.btTDel - - - - {pack -side top} {-com ::alited::favor_ls::Delete \
+    {.fra.btTDel - - - - {pack -side top} {-com ::alited::favor_ls::Delete
       -tip "Delete a list of favorites" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill y}}
-    {.fra.btTFil - - - - {pack $forget -side top} {-com ::alited::favor_ls::AddFiles \
-      -tip "Add .tcl files of current session\nas the favorites" -image alimg_plus-big}}
-    {.fra.btTCur - - - - {pack $forget -side top} {-com ::alited::favor_ls::DisplayFavorText \
+    {.fra.btTFil - - - - {pack $forget -side top} {-com ::alited::favor_ls::AddFiles
+      -tip "Add .tcl files of current session\nas the favorites"
+      -image alimg_plus-big}}
+    {.fra.btTCur - - - - {pack $forget -side top} {
+      -com ::alited::favor_ls::DisplayFavorText
       -tip "$al(MC,currfavs)" -image alimg_heart-big}}
-    {.LbxFav - - - - {pack -side left -expand 1 -fill both} \
-      {-h 10 -w 40 -lvar ::alited::favor_ls::favlist}}
+    {.LbxFav - - - - {pack -side left -expand 1 -fill both}
+      {-h 10 -w 40 -lvar ::alited::favor_ls::favlist -onevent {
+      <<ListboxSelect>> ::alited::favor_ls::Select
+      <FocusIn> ::alited::favor_ls::Select
+      <Double-Button-1> ::alited::favor_ls::DoubleClick
+      <Return> ::alited::favor_ls::DoubleClick}}}
     {.sbvFavs + L - - {pack -side left -fill y} {}}
     {fra1 fraLbxFav T 1 2 {-st nswe}}
     {.h_ - - 1 1 {pack -side top -expand 1 -fill both -pady 10}}
     {fra1.fraEnt - - 1 1 {pack -side top -expand 1 -fill both -pady 4}}
     {.labFav - - 1 1 {pack $forget -side left -padx 4} {-t "$al(MC,currfavs):"}}
-    {.EntFav - - 1 1 {pack $forget -side left -expand 1 -fill both} \
+    {.EntFav - - 1 1 {pack $forget -side left -expand 1 -fill both}
       {-tvar ::alited::favor_ls::fav -tip {$al(MC,favent1)}}}
     {fratex fra1 T 1 2 {-st nswe -rw 1 -cw 1}}
-    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 72 \
+    {.TexFav - - - - {pack -side left -expand 1 -fill both} {-h 10 -w 72
       -tip "Favorites of the current list" -ro 1 -wrap none}}
     {.sbvFav + L - - {pack -side left -fill y}}
     {fra2 fratex T 1 2 {-st nswe} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack $forget -side left} {-t "Non-favorite files to be:"}}
-    {.radA - - - - {pack $forget -side left -padx 8}  \
-      {-t kept -var ::alited::favor_ls::place -value 1 \
+    {.radA - - - - {pack $forget -side left -padx 8}
+      {-t kept -var ::alited::favor_ls::place -value 1
       -tip "Doesn't close any tab without favorites\nat choosing Favorites' list"}}
-    {.radB - - - - {pack $forget -side left -padx 8}  \
-      {-t closed -var ::alited::favor_ls::place -value 2 \
+    {.radB - - - - {pack $forget -side left -padx 8}
+      {-t closed -var ::alited::favor_ls::place -value 2
       -tip "Closes all tabs without favorites\nat choosing Favorites' list"}}
     {LabMess fra2 T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 + T 1 2 {-st nswe}}
     {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -com ::alited::favor_ls::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
     {.ButOK - - - - {pack $forget -side left} {-t "$al(MC,select)" -com ::alited::favor_ls::Ok}}
-    {.ButOpenFile - - - - {pack -side left -padx 2} {-t Open... \
+    {.ButOpenFile - - - - {pack -side left -padx 2} {-t Open...
       -com {alited::favor_ls::Ok 4} -tip {Opens files with current favorites.}}}
-    {.butUndo - - - - {pack $forget -side left} {-t Back -com {alited::favor_ls::Ok 3} \
+    {.butUndo - - - - {pack $forget -side left} {-t Back -com {alited::favor_ls::Ok 3}
       -tip "Sets a list of Favorites\nthat was active initially."}}
     {.butCancel - - - - {pack -side left -padx 2} {-t Cancel -com ::alited::favor_ls::Cancel}}
   }
@@ -537,10 +543,6 @@ proc favor_ls::_create {} {
   DisplayFavorText
   Restore_favlist
   if {!$al(FAV,IsFavor)} {after idle "alited::favor_ls::Select 0 ; focus $lbx"}
-  bind $lbx <<ListboxSelect>> ::alited::favor_ls::Select
-  bind $lbx <FocusIn> ::alited::favor_ls::Select
-  bind $lbx <Double-Button-1> ::alited::favor_ls::DoubleClick
-  bind $lbx <Return> ::alited::favor_ls::DoubleClick
   bind $win <F1> "[$obFav ButHelp] invoke"
   bind [$obFav LabMess] <Button-1> alited::favor_ls::ProcMessage
   after 500 ::alited::favor_ls::HelpMe ;# show an introduction after a short pause

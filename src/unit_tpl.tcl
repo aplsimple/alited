@@ -124,7 +124,7 @@ proc unit_tpl::UpdateTree {{saveini yes}} {
     lappend tplid $item
   }
   if {$item0 ne {} && $::alited::unit::ilast<0} {Focus $item0}
-  ClearCbx
+  ClearCbx [$obTpl CbxKey]
   if {$saveini} SaveIni
 }
 #_______________________
@@ -285,11 +285,10 @@ proc unit_tpl::HelpMe {args} {
 
 ## ________________________ GUI cont. _________________________ ##
 
-proc unit_tpl::ClearCbx {} {
+proc unit_tpl::ClearCbx {cbx} {
   # Helper to clear the combobox's selection.
 
-  variable obTpl
-  [$obTpl CbxKey] selection clear
+  $cbx selection clear
 }
 #_______________________
 
@@ -493,18 +492,22 @@ proc unit_tpl::_create {{geom ""}} {
     {fraTreeTpl - - 10 10 {-st nswe -rw 3 -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
     {.fra.btTAd - - - - {pack $forget -side top -anchor n} \
-      {-com ::alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
+      {-com alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
     {.fra.btTChg - - - - {pack $forget -side top} \
-      {-com ::alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
+      {-com alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
     {.fra.btTDel - - - - {pack $forget -side top} \
-      {-com ::alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big}}
+      {-com alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill x -pady 2} {}}
     {.fra.btTImp - - - - {pack $forget -side top} \
-      {-com ::alited::unit_tpl::Import \
+      {-com alited::unit_tpl::Import \
       -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big}}
     {.TreeTpl - - - - {pack -side left -expand 1 -fill both} \
       {-h 12 -show headings -columns {C1 C2} -displaycolumns {C1 C2} \
-      -columnoptions "C2 {-stretch 0}"}}
+      -columnoptions "C2 {-stretch 0}" -onevent { \
+      <<TreeviewSelect>> alited::unit_tpl::Select \
+      <Delete> alited::unit_tpl::Delete \
+      <Double-Button-1> alited::unit_tpl::Ok \
+      <Return> alited::unit_tpl::Ok}}}
     {.sbvTpls + L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
     {.h_ - - 1 1 {-st we} {-h 20}}
@@ -512,11 +515,13 @@ proc unit_tpl::_create {{geom ""}} {
     {.EntTpl .labTpl L 1 8 {-st we} \
       {-tvar ::alited::unit_tpl::tpl -w 45 -tip {-BALTIP {$al(MC,tplent1)} -MAXEXP 1}}}
     {.CbxKey + L 1 1 {-st w} \
-      {-tvar ::alited::unit_tpl::tplkey -postcommand ::alited::unit_tpl::GetKeyList \
-      -state readonly -h 16 -w 16 -tip {-BALTIP {$al(MC,tplent3)} -MAXEXP 1}}}
+      {-tvar ::alited::unit_tpl::tplkey -postcommand alited::unit_tpl::GetKeyList \
+      -state readonly -h 16 -w 16 -tip {-BALTIP {$al(MC,tplent3)} -MAXEXP 1} \
+      -onevent {<FocusOut> "alited::unit_tpl::ClearCbx %w"}}}
     {fratex fra1 T 10 10 {-st nsew -rw 1 -cw 1} {}}
     {.TexTpl - - - - {pack -side left -expand 1 -fill both} \
-    {-h 10 -w 80 -tip  {-BALTIP {$al(MC,tplent2)} -MAXEXP 1}}}
+    {-h 10 -w 80 -tip {-BALTIP {$al(MC,tplent2)} -MAXEXP 1} -onevent {
+    <FocusIn> "alited::unit_tpl::InText %w"}}}
     {.sbvTpl + L - - pack {}}
     {fra2 fratex T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Place after:"}}
@@ -532,31 +537,24 @@ proc unit_tpl::_create {{geom ""}} {
     {.radD - - - - {pack -side left -padx 8} \
       {-t "file's beginning" -var ::alited::unit_tpl::place -value 4 \
       -tip {-BALTIP {$al(MC,tplaft4)} -UNDER 4}}}
-    {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
+    {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS \
+      -onevent {<Button-1> alited::unit_tpl::ProcMessage}}}
     {fra3 + T 1 10 {-st nsew}}
     {.ButHelp - - - - {pack -side left} \
-      {-t {$al(MC,help)} -tip F1 -command ::alited::unit_tpl::Help}}
+      {-t {$al(MC,help)} -tip F1 -com alited::unit_tpl::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
     {.butOK - - - - {pack $forget -side left -padx 2} \
-      {-t "$al(MC,select)" -command ::alited::unit_tpl::Ok}}
+      {-t "$al(MC,select)" -com alited::unit_tpl::Ok}}
     {.butCancel - - - - {pack -side left} \
-      {-t $::alited::unit_tpl::BUTEXIT -command ::alited::unit_tpl::Cancel}}
+      {-t $::alited::unit_tpl::BUTEXIT -com alited::unit_tpl::Cancel}}
   }
   set tree [$obTpl TreeTpl]
   $tree heading C1 -text [msgcat::mc Template]
   $tree heading C2 -text [msgcat::mc {Hot keys}]
   UpdateTree no
   Select
-  set wtxt [$obTpl TexTpl]
-  SyntaxText $wtxt
-  bind $tree <<TreeviewSelect>> ::alited::unit_tpl::Select
-  bind $tree <Delete> ::alited::unit_tpl::Delete
-  bind $tree <Double-Button-1> ::alited::unit_tpl::Ok
-  bind $tree <Return> ::alited::unit_tpl::Ok
-  bind $wtxt <FocusIn> "::alited::unit_tpl::InText $wtxt"
-  bind [$obTpl CbxKey] <FocusOut> ::alited::unit_tpl::ClearCbx
+  SyntaxText [$obTpl TexTpl]
   bind $win <F1> "[$obTpl ButHelp] invoke"
-  bind [$obTpl LabMess] <Button-1> alited::unit_tpl::ProcMessage
   if {[llength $tpllist]} {set foc $tree} {set foc [$obTpl EntTpl]}
   if {[set il $::alited::unit::ilast] > -1} {
     Select $il
