@@ -508,10 +508,10 @@ proc edit::RemoveTrailWhites {{TID ""} {doit no} {skipGUI no}} {
   }
   if {!$skipGUI} {
     if {$waseditcurr} {
-      alited::main::UpdateTextGutterTreeIcons
-    } else {
-      alited::main::UpdateIcons
+      alited::main::UpdateUnitTree
+      alited::main::UpdateGutter
     }
+    alited::main::UpdateIcons
   }
 }
 

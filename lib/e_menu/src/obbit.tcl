@@ -205,13 +205,13 @@ proc ::apave::initWM {args} {
   ::apave::place . 0 0 center
   lassign [parseOptions $args -cursorwidth $::apave::cursorwidth -theme default \
     -buttonwidth -8 -buttonborder 1 -labelborder 0 -padding 1 -cs -2 -isbaltip yes] \
-    cursorwidth theme buttonwidth buttonborder labelborder padding cs ::apave::ISBALTIP
+    cursorwidth theme butwidth butborder labborder padding cs ::apave::ISBALTIP
   initBaltip
   if {$theme eq {}} {set theme default}
   if {$cs<-2 || $cs>47} {set cs -2}
   set ::apave::_CS_(initWM) 0
   set ::apave::_CS_(CURSORWIDTH) $cursorwidth
-  set ::apave::_CS_(LABELBORDER) $labelborder
+  set ::apave::_CS_(LABELBORDER) $labborder
   # for default theme: only most common settings
   set tfg1 $::apave::_CS_(!FG)
   set tbg1 $::apave::_CS_(!BG)
@@ -224,13 +224,13 @@ proc ::apave::initWM {args} {
   ttk::style configure . -selectforeground	$tfg1 -selectbackground	$tbg1
 
   # configure separate widget types
-  ttk::style configure TButton -anchor center -width $buttonwidth \
-    -relief raised -borderwidth $buttonborder -padding $padding
+  ttk::style configure TButton -anchor center -width $butwidth \
+    -relief raised -borderwidth $butborder -padding $padding
   ttk::style configure TMenubutton -width 0 -padding 0
   # TLabel's standard style saved for occasional uses
   initStyle TLabelSTD TLabel -anchor w
   # ... TLabel new style
-  ttk::style configure TLabel -borderwidth $labelborder -padding $padding
+  ttk::style configure TLabel -borderwidth $labborder -padding $padding
   # ... Treeview colors
   set twfg [ttk::style map Treeview -foreground]
   set twfg [putOption selected $tfg1 {*}$twfg]

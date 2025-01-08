@@ -2109,7 +2109,7 @@ oo::class create ::apave::APaveBase {
         }
         set font " -font {$fontS}"
         # status prompt
-        set wid1 [list .[my ownWName [my Transname Lab ${name}_[incr j]]] - - - - "pack -side left -in $w.$name" "-t {[lindex $v1 0]} $font $dattr"]
+        set wid1 [list .[my ownWName [my Transname Lab ${name}_[incr j]]] - - - - "pack -side left -in $w.$name" "-t {[lindex $v1 0]} $font"]
         # status value
         if {$::apave::_CS_(LABELBORDER)} {set relief sunken} {set relief flat}
         set wid2 [list .[my ownWName [my Transname Lab $name$j]] - - - - "pack -side left $expand -in $w.$name" "-style TLabelSTD -relief $relief -w $v2 -t { } $font $dattr"]
@@ -2132,6 +2132,7 @@ oo::class create ::apave::APaveBase {
             } else {
               set but BuT
             }
+            set v2 [string map [list %w $v1] $v2]
             set v2 "[my toolbarItem_Attrs [string match _* $v1] $v1 $fontB \
               $fg $bg $fga $bga] -command $v2"
             lassign [::apave::extractOptions v2 -method {}] ismeth

@@ -2986,7 +2986,7 @@ proc ::em::initmenu {} {
     set ::em::minwidth [expr [winfo width .em] * $::em::ratiomin]
     set ::em::minheight [winfo height .em]
   } else {
-    set ::em::minheight [expr {[winfo height .em.fr.win] + 1}]
+    set ::em::minheight [expr {max([winfo height .em.fr.win],[winfo height .em]) + 1}]
     if {[winfo exists .em.fr.cb]} {
       incr ::em::minheight [winfo height .em.fr.cb]
     }

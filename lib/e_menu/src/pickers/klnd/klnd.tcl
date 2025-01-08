@@ -325,7 +325,7 @@ proc ::klnd::my::InitSettings {} {
     d 0 m 0 y 0 dvis 0 mvis 0 yvis 0 icurr 0 ienter 0 weekday {} \
     d1st 1 width 2 loc en_uk]
   if {![info exists :klnd::my::prevY]} {
-    foreach {i icon} {0 date 1 previous2 2 previous 3 next 4 next2} {
+    foreach {i icon} {0 home 1 previous2 2 previous 3 next 4 next2} {
       image create photo IM_KLND_$i -data [::apave::iconData $icon small]
     }
     lassign [::apave::obj csGet] p(fg0) p(fg1) p(bg0) p(bg1) - p(bgsel) p(fgsel) - - p(fgh) - - - - p(fg2) p(bg2)

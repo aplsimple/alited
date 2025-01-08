@@ -6,17 +6,22 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7.6 (30 Dec'24)`
+Version `v1.8.7.7 (6 Jan'25)`
 
   - BUGFIX: "Save as" with duplicate tab name, e.g. FNAME, should be FNAME(2)
   - BUGFIX: creating a unit tree item at "proc A{a}" (not "proc A {a}")
+  - BUGFIX: in e_menu (rare & weird)
   - NEW   : .tk file extension recognized as Tcl's
+  - NEW   : Edit/Display Colors: "Don't show anymore" colorizes after color picker
+  - CHANGE: calendar: home icon for today
+  - CHANGE: tcltk.em: "rlwrap tclsh" added (good for toolbar)
+  - CHANGE: less updates at trailing whitespaces
   - CHANGE: menu Help/Tcl/Tk
   - CHANGE: handling braceright
   - CHANGE: main::UpdateUnitTree before checking Tcl, for assurance
   - CHANGE: "Copy Declaration" in units/favorites menu
   - CHANGE: clearance
-  - CHANGE: packages: apave/e_menu 4.4.11, bartabs 1.6.10
+  - CHANGE: packages: apave/e_menu 4.4.11, bartabs 1.6.10, klnd
 
 
 Version `v1.8.7 (9 Oct'24)`

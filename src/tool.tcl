@@ -127,6 +127,9 @@ proc tool::ColorPicker {} {
   if {$res ne {}} {
     set al(chosencolor) $res
     InsertInText $res $pos1 $pos2
+    if {$::alited::edit::ans_hlcolors} {
+      after idle "alited::edit::FindColorValues $::alited::edit::ans_hlcolors"
+    }
   }
   alited::FocusText
 }
