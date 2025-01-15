@@ -120,6 +120,7 @@ proc main::GetText {TID {doshow no} {dohighlight yes}} {
     $wtxt configure -yscrollcommand "$wsbv set"
     $wsbv configure -command "$wtxt yview"
     BindsForText $TID $wtxt
+    alited::file::OutwardChange $TID no
   }
   if {[winfo exists $wold1]} {
     # previous text: save its state
@@ -171,6 +172,7 @@ proc main::ShowText {} {
     # for newly displayed text: create also its unit tree
     set al(TREE,units) no
     alited::tree::Create
+    after idle alited::main::SaveVisitInfo
   }
   # this code below redraws the tree's scrollbar
   set wtree [$obPav Tree]
@@ -1231,7 +1233,7 @@ proc main::_create {} {
     {.fraFV.fra.TreeFavor - - - - {pack -side left -fill both -expand 1}
       {-h 5 -style TreeNoHL -columns {C1 C2 C3 C4} -displaycolumns C1
       -show headings -takefocus 0 -tip {-BALTIP {alited::favor::GetTooltip %i} -SHIFTX 10}}}
-    {.fraFV.fra.SbvFavor .fraFV.fra.TreeFavor L - - {pack -side left -fill both}}
+    {.fraFV.fra.SbvFavor + L - - {pack -fill both}}
     {fra.pan.PanR - - - - {add} {-orient vertical $::alited::PanR_wh}}
 {#
 ### ________________________ Tab bar & Text _________________________ ###
@@ -1278,7 +1280,7 @@ proc main::_create {} {
       -highlightthickness 0 -onevent {
       <<ListboxSelect>> "alited::info::ListboxSelect %w"
       <ButtonPress-3> "alited::info::PopupMenu %X %Y"}}}
-    {.fraBot.fra.sbv .fraBot.fra.LbxInfo L - - pack}
+    {.fraBot.fra.sbv + L - - pack}
     {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
     {.fraBot.stat - - - - {pack -side bottom} {-array {
       {{$al(MC,Row:)}} 12

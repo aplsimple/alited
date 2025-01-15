@@ -44,6 +44,31 @@ proc detached::Tool {pobj tool} {
 }
 #_______________________
 
+proc detached::Wrapping {pobj id} {
+  # Handles (un)wrapping lines.
+  #   pobj - apave object of detached editor
+  #   id - ID of detached object
+
+  namespace upvar ::alited al al
+  set wtool [$pobj ToolTop].buT_alimg_next2
+  set wtxt [$pobj Text]
+  set sbh [$pobj Sbh]
+  set al(wrapdetach,$id) [expr {!$al(wrapdetach,$id)}]
+  if {$al(wrapdetach,$id)} {
+    pack forget $sbh
+    $wtool configure -image alimg_next2
+    ::baltip tip $wtool $al(MC,iconext2)
+    set wrap word
+  } else {
+    pack $sbh -side bottom -fill x -before $wtxt
+    $wtool configure -image alimg_previous2
+    ::baltip tip $wtool $al(MC,icoprev2)
+    set wrap none
+  }
+  $wtxt configure -wrap $wrap
+}
+#_______________________
+
 proc detached::Find {pobj wtxt {donext 0}} {
   # Finds string in text.
   #   pobj - apave object of detached editor
@@ -137,9 +162,10 @@ proc detached::Close {id pobj win fname args} {
 }
 #_______________________
 
-proc detached::_create {fname} {
+proc detached::_create {fname unwrap} {
   # Handles detached editor.
   #   fname - edited file's name
+  #   unwrap - 1 to unwrap lines at start
 
   namespace upvar ::alited al al
   lassign [Options] id pobj win geo
@@ -151,19 +177,22 @@ proc detached::_create {fname} {
   set $pobj $geo
   if {$geo ne {}} {set geo "-geometry $geo"}
   set al(detachtools) {}
-  foreach icon {SaveFile undo redo cut copy paste} {
+  foreach icon {SaveFile undo redo next2 cut copy paste} {
     set img [alited::ini::CreateIcon $icon]
     append al(detachtools) " $img \{{} "
     switch $icon {
       SaveFile {
         append al(detachtools) \
           "-com {alited::detached::SaveFile $pobj $fname $win} -state disabled"
-        set tip $::alited::al(MC,ico$icon)
+        set tip $al(MC,ico$icon)
       }
       undo - redo - cut - copy - paste {
         append al(detachtools) "-com {alited::detached::Tool $pobj $icon}"
         if {$icon in {undo redo}} {append al(detachtools) " -state disabled"}
         set tip [string totitle $icon]
+      }
+      next2 {
+        append al(detachtools) "-com {alited::detached::Wrapping $pobj $id}"
       }
     }
     append al(detachtools) " -tip {$tip@@ -under 4}\}"
@@ -180,10 +209,11 @@ proc detached::_create {fname} {
     {.GutText - - - - {pack -side left -expand 0 -fill both}}
     {.FrAText - - - - {pack -side left -expand 1 -fill both \
       -padx 0 -pady 0 -ipadx 0 -ipady 0} {-background $::apave::BGMAIN2}}
-    {.frAText.Text - - - - {pack -expand 1 -fill both} \
+    {.frAText.Text - - - - {pack -side left -expand 1 -fill both} \
       {-w 50 -h 20 -gutter GutText -gutterwidth $al(ED,gutterwidth) \
       -guttershift $al(ED,guttershift)}}
-    {.sbv + L - - {pack -side right -fill y}}
+    {.frAText.sbv + L - - pack}
+    {.frAText.Sbh .frAText.text T - - {pack -side bottom -fill x -before %w}}
   }
   set wtxt [$pobj Text]
   set cbx [$pobj CbxFind]
@@ -196,21 +226,31 @@ proc detached::_create {fname} {
     bind $win <$ev> "alited::detached::SaveFile $pobj $fname $win"
   }
   if {$al(fontdetach)} {set fsz $al(FONTSIZE,std)} {set fsz {}}
-  after 50 after idle "$pobj fillGutter $wtxt;\
+  after idle after [expr {400+10*$id}] "$pobj fillGutter $wtxt;\
     alited::file::MakeThemHighlighted {} $wtxt;\
     alited::detached::DisplayText $pobj {$fname};\
     alited::main::HighlightText {} {$fname} $wtxt {alited::detached::Modified $pobj $win} {} $fsz;\
     "
+  if {$unwrap eq ""} {
+    set unwrap 1
+    catch {
+      set TID [alited::bar::FileTID $fname]
+      set wtxt [alited::main::GetWTXT $TID] ;# may be not open yet
+      set unwrap [expr {[$wtxt cget -wrap] eq {word}}]
+    }
+  }
+  set al(wrapdetach,$id) $unwrap
+  alited::detached::Wrapping $pobj $id
   $pobj showModal $win -modal no -waitvar no -resizable 1 -minsize {300 200} \
     -onclose [list alited::detached::Close $id $pobj $win $fname] -focus $wtxt {*}$geo
 }
 #_______________________
 
-proc detached::_run {fnames} {
+proc detached::_run {fnames {wrap ""}} {
   # Open files in detached editors.
   #   fnames - file name list
 
   foreach fn $fnames {
-    _create $fn
+    _create $fn $wrap
   }
 }

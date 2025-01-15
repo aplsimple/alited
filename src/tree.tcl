@@ -162,7 +162,8 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
   lassign [$wtree item $itnew -values] l1 l2
   AddTagSel $wtree $itnew
   # get saved pos
-  if {[info exists al(CPOS,$ctab,$header)]} {
+  set issaved [info exists al(CPOS,$ctab,$header)]
+  if {$issaved} {
     set pos [::apave::p+ $l1 $al(CPOS,$ctab,$header)]
   } else {
     set pos [$wtxt index insert]
@@ -176,8 +177,16 @@ proc tree::NewSelection {{itnew ""} {line 0} {topos no}} {
       set pos [expr {$l1+$line}]
     } else {
       if {$pos<$l1 || $pos>=($l2+1)} {
-        # if not saved, get it from 1st line
+        # if not saved, get it from 1st line or TODO
         set pos $l1.0
+        if {!$issaved} {
+          foreach {ltd1 ltd2} [$wtxt tag ranges tagCMN2] {
+            if {$ltd1>=$l1 && $ltd1<=$l2} {
+              set pos $ltd1
+              break
+            }
+          }
+        }
       }
     }
   }

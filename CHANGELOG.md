@@ -6,13 +6,16 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.7.7 (6 Jan'25)`
+Version `v1.8.8 (15 Jan'25)`
 
   - BUGFIX: "Save as" with duplicate tab name, e.g. FNAME, should be FNAME(2)
   - BUGFIX: creating a unit tree item at "proc A{a}" (not "proc A {a}")
   - BUGFIX: in e_menu (rare & weird)
+  - BUGFIX: search in Session, external change a file => change not seen by alited
   - NEW   : .tk file extension recognized as Tcl's
   - NEW   : Edit/Display Colors: "Don't show anymore" colorizes after color picker
+  - NEW   : detached files: "Wrap Lines", default is off or inverse for open files
+  - NEW   : if a unit has TODO, the TODO is preferred at moving the cursor
   - CHANGE: calendar: home icon for today
   - CHANGE: tcltk.em: "rlwrap tclsh" added (good for toolbar)
   - CHANGE: less updates at trailing whitespaces

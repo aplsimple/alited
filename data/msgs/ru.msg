@@ -79,6 +79,7 @@ namespace eval ::alited {
     "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Править отступы \"%f\",\nпо %i на каждый?"
     {The line %n: unbalanced brace!} {Строка %n: несбалансированная скобка!}
     {Wrap Lines} {Сворачивать строки}
+    {Unwrap Lines} {Разворачивать строки}
     {Default values for new projects:} {Опции по умолчанию для проектов:}
   }
 

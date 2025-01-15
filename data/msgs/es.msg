@@ -79,6 +79,7 @@ namespace eval ::alited {
     "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "¿Corregir la sangría de \"%f\"\ncon sangría de espacios %i?"
     {The line %n: unbalanced brace!} {¡La línea %n: abrazadera desequilibrada!}
     {Wrap Lines} {Enrollar líneas}
+    {Unwrap Lines} {Desenrollar líneas}
     {Default values for new projects:} {Valores predeterminados para nuevos proyectos:}
   }
 

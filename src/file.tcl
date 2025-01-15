@@ -585,7 +585,6 @@ proc file::CloneFileName {fname} {
   #   fname - file name
   # Returns the clone's file name.
 
-  namespace upvar ::alited al al
   set tailname [file tail $fname]
   set ext [file extension $tailname]
   set root [file rootname $tailname]
@@ -1187,14 +1186,14 @@ proc file::OpenDetach {} {
 
   if {[set fnames [ChooseMultipleFiles no]] eq {}} return
   SourceDetach
-  alited::detached::_run $fnames
+  alited::detached::_run $fnames 1
 }
 #_______________________
 
 proc file::DetachFromTree {} {
 
   SourceDetach
-  alited::detached::_run [TreeSelFiles]
+  alited::detached::_run [TreeSelFiles] 1
 }
 #_______________________
 

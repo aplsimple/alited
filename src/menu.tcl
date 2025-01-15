@@ -583,7 +583,7 @@ proc menu::FillMenu {} {
   $al(TYPETPLMENU) add command -label [msgcat::mc {Open...}] -command alited::unit::OpenTypeTemplate
   $m add separator
 
-  $m add checkbutton -label [msgcat::mc {Wrap Lines}] \
+  $m add checkbutton -label $al(MC,icoprev2) \
     -variable ::alited::al(wrapwords) -command alited::file::WrapLines
   $m add checkbutton -label [msgcat::mc {Tip File Info}] \
     -variable ::alited::al(TREE,showinfo) -command alited::file::UpdateFileStat

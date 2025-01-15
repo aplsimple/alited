@@ -53,7 +53,7 @@ proc about::About {} {
     [list "red" "-font {$font} -foreground $fS -background $bS"] \
     [list "link1" "openDoc %t@@https://%l@@"] \
     [list "link2" "openDoc %t@@https://wiki.tcl-lang.org/recent@@"] \
-    [list "linkapl" "openDoc %t@@https://github.com/aplsimple/@@"] \
+    [list "linkapl" "openDoc %t@@https://aplsimple.github.io/@@"] \
     [list "linkCN" "openDoc %t@@https://www.nemethi.de/@@"] \
     [list "linkSH" "openDoc %t@@https://wiki.tcl-lang.org/page/Steve+Huntley@@"] \
     [list "linkHE" "openDoc %t@@https://wiki.tcl-lang.org/page/HE@@"] \

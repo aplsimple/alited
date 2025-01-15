@@ -79,6 +79,7 @@ namespace eval ::alited {
     "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Das Einrücken von \"%f\" anpassen\ndurch Einrückem mit %i Leerzeichen?"
     {The line %n: unbalanced brace!} {Zeile %n: Fehlende Klammer!}
     {Wrap Lines} {Zeilenumbruch}
+    {Unwrap Lines} {Zeilenumbruch aufheben}
     {Default values for new projects:} {Voreinstellungen für neue Projekte:}
   }
 
