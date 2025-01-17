@@ -342,7 +342,7 @@ proc favor::Show {} {
     set tip $::alited::al(MC,lastvisit)
     set state normal
     SetFavorites $al(FAV,current)
-    $wtree heading #1 -text [msgcat::mc $al(MC,favorites)]
+    $wtree heading #1 -text $al(MC,favorites)
   } else {
     pack forget [$obPav BtTAddF]
     pack forget [$obPav BtTRenF]
@@ -354,7 +354,7 @@ proc favor::Show {} {
     set tip $al(MC,favorites)
     set state disable
     SetFavorites $al(FAV,visited)
-    $wtree heading #1 -text [msgcat::mc $al(MC,lastvisit)]
+    $wtree heading #1 -text $al(MC,lastvisit)
   }
   baltip::tip [$obPav BtTVisitF] $tip
 }
@@ -694,7 +694,7 @@ proc favor::_init {} {
   $wtree tag bind tagNorm <Return> {alited::favor::Select}
   $wtree tag bind tagNorm <ButtonRelease-1> {alited::favor::Select}
   $wtree tag bind tagNorm <ButtonPress-3> {after idle {alited::favor::PopupMenu %x %y %X %Y}}
-  $wtree heading #1 -text [msgcat::mc $al(MC,favorites)]
+  $wtree heading #1 -text $al(MC,favorites)
   ShowFavVisit
 }
 

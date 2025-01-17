@@ -384,8 +384,7 @@ proc format::MoveUnitDesc {TID} {
       lassign $item lev leaf fl1 title l1 l2
       set line [$wtxt get $l1.0 $l1.end]
       if {$isProc && [regexp $al(RE,proc) $line] || $isLeafRE && [regexp $leafRE $line]} {
-        set msg [msgcat::mc $al(MC,unitprocsd)]
-        set msg [string map [list %f $fname %n 0] $msg]
+        set msg [string map [list %f $fname %n 0] $al(MC,unitprocsd)]
         alited::info::Put $line [list $TID $l1]  ;# line of issue
         alited::info::Put $msg $infdat           ;# file of issue
         set al(prjuseleafRE) $lfRE
@@ -435,9 +434,9 @@ proc format::MoveUnitDesc {TID} {
     } else {
       alited::unit::RecreateUnits $TID $wtxt
     }
-    set msg [msgcat::mc {%f processed, units touched: %n}]
+    set msg [msgcat::mc {%f processed, units affected: %n}]
   } else {
-    set msg [msgcat::mc $al(MC,unitprocsd)]
+    set msg $al(MC,unitprocsd)
   }
   set msg [string map [list %f $fname %n $moved] $msg]
   alited::info::Put $msg $infdat
