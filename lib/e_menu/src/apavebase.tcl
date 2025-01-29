@@ -123,7 +123,7 @@ namespace eval ::apave {
     scf {{} {}} \
     seh {{-sticky ew} {-orient horizontal -takefocus 0}} \
     sev {{-sticky ns} {-orient vertical -takefocus 0}} \
-    siz {{} {}} \
+    siz {{} {-takefocus 0}} \
     spx {{} {}} \
     spX {{} {}} \
     tbl {{} {-selectborderwidth 1 -highlightthickness 2 \
@@ -3668,7 +3668,7 @@ oo::class create ::apave::APaveBase {
   }
   #_______________________
 
-  method showWindow {win modal ontop {var ""} {minsize ""} {waitvar 1} {waitme {}}} {
+  method showWindow {win modal ontop {var ""} {minsize ""} {waitvar 0} {waitme {}}} {
     # Displays a windows and goes in tkwait cycle to interact with a user.
     #   win - the window's path
     #   modal - yes at showing the window as modal
@@ -3689,9 +3689,6 @@ oo::class create ::apave::APaveBase {
       }
     } else {
       ::apave::deiconify $win
-    }
-    if {$minsize eq {}} {
-      set minsize [list [winfo width $win] [winfo height $win]]
     }
     wm minsize $win {*}$minsize
     bind $win <Configure> "[namespace current]::WinResize $win"

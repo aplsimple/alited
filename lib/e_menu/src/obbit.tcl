@@ -26,7 +26,7 @@ namespace eval ::apave {
   variable _AP_Properties; array set _AP_Properties [list]
   set _PU_opts(_ERROR_) {}
   set _PU_opts(_EOL_) {}
-  set _PU_opts(_LOGFILE_) {}
+  set _PU_opts(_LOGFILE) {}
   set _PU_opts(_MODALWIN_) [list]
   # - main color scheme data
   variable _C_
@@ -781,7 +781,7 @@ proc ::apave::logName {fname} {
   # If fname is {}, disables logging.
 
   variable _PU_opts;
-  set _PU_opts(_LOGFILE_) [file normalize $fname]
+  set _PU_opts(_LOGFILE) [file normalize $fname]
 }
 #_______________________
 
@@ -789,12 +789,12 @@ proc ::apave::logMessage {msg {lev 16}} {
   # Logs messages to a log file.
   #   msg - the message
   #   lev - maximum level for [info level] to introspect calls
-  # A log file's name is set by _PU_opts(_LOGFILE_). If it's blank,
+  # A log file's name is set by _PU_opts(_LOGFILE). If it's blank,
   # no logging is made.
 
   variable _PU_opts;
-  if {$_PU_opts(_LOGFILE_) eq {}} return
-  set chan [open $_PU_opts(_LOGFILE_) a]
+  if {$_PU_opts(_LOGFILE) eq {}} return
+  set chan [open $_PU_opts(_LOGFILE) a]
   set dt [clock format [clock seconds] -format {%d%b'%y %T}]
   set msg "$dt $msg"
   for {set i $lev} {$i>0} {incr i -1} {
@@ -806,7 +806,8 @@ proc ::apave::logMessage {msg {lev 16}} {
   }
   puts $chan $msg
   close $chan
-  puts "$_PU_opts(_LOGFILE_) - $msg"
+  if {[incr _PU_opts(_LOGNN)]==1} {puts $_PU_opts(_LOGFILE):}
+  puts $_PU_opts(_LOGNN):\ $msg
 }
 #_______________________
 
@@ -1933,6 +1934,7 @@ oo::class create ::apave::ObjectTheming {
     ttk::style map "." \
       -background [list disabled $bD active $bA] \
       -foreground [list disabled grey active $fA]
+    . configure -bg $tbg1
   }
   #_______________________
 

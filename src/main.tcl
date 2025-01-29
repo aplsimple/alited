@@ -911,6 +911,7 @@ proc main::CalcIndentation {{wtxt ""} {doit no}} {
     if {$wtxt eq {}} {
       if {[catch {set wtxt [CurrentWTXT]}]} {return $res}
     }
+    if {![winfo exists $wtxt]} {return $res}
     if {!$doit && [info exists al(_INDENT_,$wtxt)]} {return $al(_INDENT_,$wtxt)}
     foreach line [split [$wtxt get 1.0 end] \n] {
       if {[set lsp [obj leadingSpaces $line]]>0} {

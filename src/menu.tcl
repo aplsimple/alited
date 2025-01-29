@@ -643,6 +643,7 @@ proc menu::FillMenu {} {
   $m.help add separator
   $m.help add command -label Tcllib -command {alited::tool::Help Tcllib}
   $m.help add command -label Tklib -command {alited::tool::Help Tklib}
+  $m.help add command -label {Thread package} -command {alited::tool::Help Thread}
   $m.help add command -label {Math functions} -command {alited::tool::Help Math}
   $m.help add separator
   $m.help add command -label StackOverflow -command {alited::tool::Help SOF}

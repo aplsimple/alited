@@ -249,6 +249,8 @@ proc tool::Help {{onwhat ""}} {
   # Calls a help.
   #   onwhat - what to be helped
 
+  namespace upvar ::alited al al
+  set fname {=none=}
   switch -- $onwhat {
     Wiki {
       set url "https://wiki.tcl-lang.org/recent"
@@ -260,7 +262,12 @@ proc tool::Help {{onwhat ""}} {
       set url "https://www.tcl.tk/software/tklib/"
     }
     Math {
+      set fname [file join $al(EM,h=) TclCmd mathfunc.htm]
       set url "https://www.tcl.tk/man/tcl8.6/TclCmd/mathfunc.htm"
+    }
+    Thread {
+      set fname [file join $al(EM,h=) ThreadCmd thread.htm]
+      set url "https://www.tcl.tk/man/tcl8.6/ThreadCmd/thread.htm"
     }
     SOF {
       set url "https://stackoverflow.com/questions/tagged/tcl"
@@ -269,6 +276,9 @@ proc tool::Help {{onwhat ""}} {
       _run Help
       return
     }
+  }
+  if {[file exists $fname] || [file exists [append fname l]]} {
+    set url $fname
   }
   openDoc $url
 }

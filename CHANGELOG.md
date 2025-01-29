@@ -6,6 +6,13 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
+Version `v1.8.8.1 (29 Jan'25)`
+
+  - CHANGE: menu Help/Tcl/Tk: "Thread package"; check for local htm(l) files
+  - CHANGE: main::CalcIndentation: check for existing window
+  - CHANGE: packages: apave/e_menu 4.5
+
+
 Version `v1.8.8 (15 Jan'25)`
 
   - BUGFIX: "Save as" with duplicate tab name, e.g. FNAME, should be FNAME(2)

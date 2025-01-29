@@ -985,6 +985,7 @@ oo::class create ::apave::APaveDialog {
       tags cc themecolors optsGrid addpopup minsize savetext
     set wasgeo [set textmode [set stay [set waitvar 0]]]
     set readonly [set hidefind [set scroll [set modal 1]]]
+    set wrap word
     set curpos {1.0}
     set CheckNomore 0
     foreach {opt val} {*}$argdia {
@@ -1043,7 +1044,7 @@ oo::class create ::apave::APaveDialog {
         -theme {append themecolors " {$val}"}
         -post {set postcom $val}
         -popup {set addpopup [string map [list %w $qdlg.fra.texM] "$val"]}
-        -timeout - -focusback - -scroll - -tab2 - -stay - -modal - -waitvar {
+        -timeout - -focusback - -scroll - -tab2 - -stay - -modal - -waitvar - -wrap {
           set [string range $opt 1 end] $val
         }
         -savetext {set savetext $val}
@@ -1174,7 +1175,7 @@ oo::class create ::apave::APaveDialog {
       lappend widlist [list fraM $prevh T 10 12 {-st nswe -pady 3 -rw 1}]
       lappend widlist [list TexM - - 1 12 {pack -side left -expand 1 -fill both -in \
         $qdlg.fra.fraM} [list -h $il -w $maxw {*}$optsFontM {*}$optsMisc \
-        -wrap word -textpop 0 -tabnext "$qdlg.fra.[lindex $buttons 0] *but0"]]
+        -wrap $wrap -textpop 0 -tabnext "$qdlg.fra.[lindex $buttons 0] *but0"]]
       if {$scroll} {
         lappend widlist {sbv texM L 1 1 {pack -in $qdlg.fra.fraM}}
       }
