@@ -167,22 +167,80 @@ proc ::klnd::my::ShowMonth {m y {dopopup no}} {
       }
     }
     lappend ttls [string trim $ttl]
+    lassign [fgMayHL $p(fg1) $y $m $iday] fg fg2
+    append weeksfg([expr {($i-1)/7}]) $fg2
     set wbut [$p(obj) BuT_KLNDSTD$i]
-    $wbut configure {*}$att -fg $p(fg1) -bg $p(bg1) -relief flat -text $ttl
+    $wbut configure {*}$att -fg $fg -bg $p(bg1) -relief flat -text $ttl
     if {$dopopup && $p(popup) ne {}} {
       bind $wbut <Button-3> $script
     }
   }
   set wnums [WeekNumbers $day1st $ttls]
   for {set i 0} {$i<6} {} {
+    if {$p(hlweeks) && [string match *red* $weeksfg($i)]} {
+      set fg red
+    } else {
+      set fg $p(fgh)
+    }
     set wnum [lindex $wnums $i]
     set wbut [$p(obj) BuTW[incr i]]
-    $wbut configure {*}$::klnd::TMPATTW -text $wnum
+    $wbut configure {*}$::klnd::TMPATTW -text $wnum -foreground $fg
   }
   set p(mvis) $m  ;# month & year currently visible
   set p(yvis) $y
 }
 
+#_______________________
+
+proc ::klnd::my::fgMayHL {fg1 y m d} {
+  # Gets -fg option for day cell & week number.
+  #   fg1 - default fg color
+  #   y - year
+  #   m - month
+  #   d - day
+
+  variable p
+  set fg [set fgw $fg1]
+  set d [string trim $d]
+  set m [string trim $m]
+  if {$d ni {0 ""}} {
+    set fmt %Y/%N/%e
+    set day1 $y/$m/$d
+    set week1 [clock format [clock scan $y/$m/$d -format $fmt] -format %V]
+    foreach day $p(hllist) {
+      lassign [split $day /] y2 m2 d2
+      set y2 [string range 20$y2 end-3 end]
+      set m2 [string trimleft $m2 0]
+      set d2 [string trimleft $d2 0]
+      set day2 $y2/$m2/$d2
+      if {$p(hlweeks)} {
+        set week2 [clock format [clock scan $day2 -format $fmt] -format %V]
+        if {$week1 eq $week2} {
+          set fgw red
+          break
+        }
+      } elseif {$day1 eq $day2} {
+        set fg red
+        break
+      }
+    }
+  }
+  list $fg $fgw
+}
+#_______________________
+
+proc ::klnd::my::fgHL {n fg} {
+  # Highlights day from -hllist option.
+  #   n - day button's index
+  #   fg - default fg color
+  # Returns list of button path, fg for day, fg for week
+
+  variable p
+  set but [$p(obj) BuT_KLNDSTD$n]
+  set d [$but cget -text]
+  lassign [fgMayHL $fg $p(yvis) $p(mvis) $d] fg fg2
+  list $but $fg $fg2
+}
 #_______________________
 
 proc ::klnd::my::MapYMD {script y m d} {
@@ -218,7 +276,10 @@ proc ::klnd::my::HighlightCurrentDay {} {
   # Highlights the current day's button.
 
   variable p
-  catch {[$p(obj) BuT_KLNDSTD$p(icurr)] configure -fg $p(fg2) -bg $p(bg2)}
+  catch {
+    lassign [fgHL $p(icurr) $p(fg2)] but fg fg2
+    $but configure -fg $fg -bg $p(bg2)
+  }
 }
 #_______________________
 
@@ -291,7 +352,8 @@ proc ::klnd::my::Enter {i {focusin 0} {ret ""}} {
   variable p
   if {![IsDay $i]} {return {*}$ret}
   Leave
-  [set w [$p(obj) BuT_KLNDSTD$i]] configure -fg $p(fgsel) -bg $p(bgsel)
+  lassign [fgHL $i $p(fgsel)] w fg fg2
+  $w configure -fg $fg -bg $p(bgsel)
   set p(ienter) $i
   set p(dvis) [$w cget -text]
   catch {after cancel $p(after2)}
@@ -309,7 +371,10 @@ proc ::klnd::my::Leave {{i 0}} {
   variable p
   if {$i && ![[$p(obj) BuT_KLNDSTD$i] cget -takefocus]} return
   foreach n [list $i $p(ienter)] {
-    if {$n} {[$p(obj) BuT_KLNDSTD$n] configure -fg $p(fg1) -bg $p(bg1)}
+    if {$n} {
+      lassign [fgHL $n $p(fg1)] but fg fg2
+      $but configure -fg $fg -bg $p(bg1)
+    }
   }
   HighlightCurrentDay
 }
@@ -349,10 +414,12 @@ proc ::klnd::my::InitCalendar {args} {
   lassign [::apave::parseOptions $args -locale [::msgcat::mclocale] \
   -title {} -value {} -tvar {} -parent {} -dateformat %D -weeks 0 \
   -weekday {} -centerme {} -geometry {} -entry {} -com {} -command {} \
-  -currentmonth {} -united no -daylist {-} -hllist {} -popup {} -tip {} -width 2] \
+  -currentmonth {} -united no -daylist {-} -hllist {} -popup {} -tip {} \
+  -width 2 -hlweeks 0] \
     loc title datevalue tvar parent p(dformat) p(weeks) \
     p(weekday) centerme geo entry com1 com2 \
-    p(currentmonth) p(united) p(daylist) p(hllist) p(popup) p(tip) p(width)
+    p(currentmonth) p(united) p(daylist) p(hllist) p(popup) p(tip) \
+    p(width) p(hlweeks)
   if {$com2 eq {}} {set p(com) $com1} {set p(com) $com2}
   # get localized week day names
   lassign [::klnd::weekdays $loc] p(days) p(weekday)
@@ -527,7 +594,9 @@ proc ::klnd::clearArgs {args} {
   # Removes specific options from args.
   #   args - list of options
 
-  ::apave::removeOptions $args -title -value -tvar -locale -parent -dateformat -weekday -com -command -currentmonth -united -daylist -hllist -popup -tip -weeks
+  ::apave::removeOptions $args -title -value -tvar -locale -parent \
+    -dateformat -weekday -com -command -currentmonth -united -daylist \
+    -hllist -popup -tip -weeks -hlweeks
 }
 #_______________________
 
@@ -544,7 +613,7 @@ proc ::klnd::calendar {args} {
   # if no geometry option, show the calendar under the mouse pointer
   if {$geo ne {}} {
     set geo "-geometry $geo"
-  } elseif {$entry ne {}} {
+  } elseif {$entry ne {} && [string first GEO $entry]<0} {
     set x [winfo rootx $entry]
     set y [expr {[winfo rooty $entry]+32}]
     set geo "-geometry +$x+$y"

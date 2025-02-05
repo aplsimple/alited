@@ -6,11 +6,11 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.8.1 (29 Jan'25)`
+Version `v1.8.8.2 (5 Feb'25)`
 
-  - CHANGE: menu Help/Tcl/Tk: "Thread package"; check for local htm(l) files
+  - CHANGE: menu Help/Tcl-Tk: "Thread package"; check for local htm(l) files
   - CHANGE: main::CalcIndentation: check for existing window
-  - CHANGE: packages: apave/e_menu 4.5
+  - CHANGE: packages: apave/e_menu 4.5.1, hl_tcl 1.2
 
 
 Version `v1.8.8 (15 Jan'25)`

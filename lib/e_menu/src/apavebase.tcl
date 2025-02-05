@@ -1762,7 +1762,7 @@ oo::class create ::apave::APaveBase {
       source [file join $::apave::apaveDir pickers color clrpick.tcl]
     }
     lassign [apave::extractOptions args -entry {} -inifile {} -ontop 0] ent ini top
-    if {$ent ne {}} {
+    if {$ent ne {} && [string first GEO $ent]<0} {
       set ent [my [my ownWName $ent]]
       set x [winfo rootx $ent]
       set y [expr {[winfo rooty $ent]+32}]

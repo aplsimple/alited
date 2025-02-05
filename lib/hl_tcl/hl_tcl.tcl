@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.1.6
+package provide hl_tcl 1.2
 
 # ______________________ Common data ____________________ #
 
@@ -33,7 +33,8 @@ namespace eval ::hl_tcl {
       auto_load tell auto_mkindex memory trace time clock timerate auto_qualify \
       auto_reset socket bgerror oo::copy unload history tailcall \
       interp parray pid transchan nextto unknown dde pkg_mkIndex zlib auto_import \
-      pkg::create tcl::prefix \
+      coroinject coroprobe const ledit lpop lremove lseq tcl::process \
+      readFile writeFile foreachLine pkg::create tcl::prefix \
       http::config http::geturl http::formatQuery http::reset http::wait \
       http::status http::size http::code http::ncode http::meta http::data \
       http::error http::cleanup http::register http::unregister * \
