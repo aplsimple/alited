@@ -6,11 +6,14 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.8.2 (5 Feb'25)`
+Version `v1.8.8.4 (19 Feb'25)`
 
+  - BUGFIX: running date picker after Projects
+  - NEW   : doctest: code may include #< comments to execute by doctest
+  - CHANGE: no wrapping lines for calendar text (deadlines) of Projects
   - CHANGE: menu Help/Tcl-Tk: "Thread package"; check for local htm(l) files
   - CHANGE: main::CalcIndentation: check for existing window
-  - CHANGE: packages: apave/e_menu 4.5.1, hl_tcl 1.2
+  - CHANGE: packages: apave/e_menu 4.5.3, hl_tcl 1.2
 
 
 Version `v1.8.8 (15 Jan'25)`

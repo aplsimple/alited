@@ -42,7 +42,7 @@ namespace eval ::apave {
     date help home misc terminal run tools file find replace other view \
     categories actions config pin cut copy paste plus minus add delete \
     change diagram box trash double more undo redo up down previous next \
-    previous2 next2 upload download tag tagoff tree lock light restricted \
+    previous2 next2 upload download tag tagoff tree lock lamp restricted \
     attach share mail www map umbrella gulls sound heart clock people info \
     err warn ques retry yes no ok cancel exit }
   variable _AP_IMG;  array set _AP_IMG [list]
@@ -1451,7 +1451,19 @@ oo::class create ::apave::APaveBase {
           set adds [eval {*}[string map [list \$ \\\$ \[ \\\[] \
             [string map [list %a $label] $precom]]]
         }
-        $w add radiobutton -label $label -variable $vname {*}$args {*}$adds
+        set il [string last -checkvar $label]
+        if {$il<=0} {set il [string last -radiovar $label]}
+        if {$il > 0} {
+          set last [string range $label $il end]
+          lassign $last optvar vname opt com
+          set label [string trimright [string range $label 0 [incr il -1]]]
+          set com [string map [list %t $label] $com]
+          set but [string range $optvar 1 5]
+          $w add ${but}button -label $label -variable $vname \
+            {*}$args {*}$adds {*}[list $opt $com]
+        } else {
+          $w add radiobutton -label $label -variable $vname {*}$args {*}$adds
+        }
       } else {
         set child [menu $w.[incr n] -tearoff 0]
         $w add cascade -label [lindex $arg 0] -menu $child

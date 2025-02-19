@@ -1085,27 +1085,27 @@ proc printer::_create  {} {
   $obDl2 paveWindow $win.fra {
     {labh - - 1 3 {} {-t {Project Printer} -foreground $fgbold -font {$::apave::FONTMAINBOLD}}}
     {fraTop labh L 1 3 {-st ew}}
-    {.btTmark - - - - {pack -padx 4 -side left} \
+    {.btTmark - - - - {pack -padx 4 -side left}
       {-image alimg_ok -com alited::printer::MarkUnmarkFile  -tip {$tipmark}}}
     {.sev2 - - - - {pack -side left -fill y -padx 5}}
-    {.btTCtr - - - - {pack -side left -padx 4} \
+    {.btTCtr - - - - {pack -side left -padx 4}
       {-image alimg_minus -com {alited::printer::ExpandContract no} -tip "Contract All"}}
-    {.btTExp - - - - {pack -side left} \
+    {.btTExp - - - - {pack -side left}
       {-image alimg_plus -com {alited::printer::ExpandContract} -tip "Expand All"}}
-    {.btTExp2 - - - - {pack -side left -padx 4} \
+    {.btTExp2 - - - - {pack -side left -padx 4}
       {-image alimg_add -com {alited::printer::ExpandMarked} -tip "Expand Selected"}}
     {fraBody labh T 1 3 {-st news}}
     {.lab1 - - 1 1 {-st nw} {-t {Output directory:}}}
     {.Dir + T 1 3 {-st new} {-tvar ::alited::printer::dir -w $wden}}
     {.v_1 + T 1 1 {-pady 8}}
     {.lab2 + T 1 1 {-st nw} {-t {Markdown processor:}}}
-    {.cbx + T 1 3 {-st nw} {-tvar ::alited::printer::mdproc \
+    {.cbx + T 1 3 {-st nw} {-tvar ::alited::printer::mdproc
       -value {$::alited::printer::mdprocs} -w $wden}}
     {.v_2 + T 1 3 {-pady 8}}
     {.lfr + T 1 3 {-st nwe} {-t {Directory title colors}}}
     {.lfr.lab1 - - 1 1 {-st ne} {-t {Foreground:}}}
     {.lfr.Clr1 + L 1 1 {-st new} {-tvar ::alited::printer::ttlfg}}
-    {.lfr.butClr1 + L 1 1 {-st new} {-t Standard -takefocus 0 \
+    {.lfr.butClr1 + L 1 1 {-st new} {-t Standard -takefocus 0
       -com {alited::printer::StdClr Clr1 ttlfg Clr2 ttlbg}}}
     {.lfr.lab2 .lfr.lab1 T 1 1 {-st ne} {-t {Background:}}}
     {.lfr.Clr2 + L 1 1 {-st new} {-tvar ::alited::printer::ttlbg}}
@@ -1113,7 +1113,7 @@ proc printer::_create  {} {
     {.lfr2 + T 1 3 {-st nwe} {-t {File title colors}}}
     {.lfr2.lab1 - - 1 1 {-st ne} {-t {Foreground:}}}
     {.lfr2.Clr3 + L 1 3 {-st nw} {-tvar ::alited::printer::leaffg}}
-    {.lfr2.butClr3 + L 1 1 {-st new} {-t Standard -takefocus 0 \
+    {.lfr2.butClr3 + L 1 1 {-st new} {-t Standard -takefocus 0
       -com {alited::printer::StdClr Clr3 leaffg Clr4 leafbg}}}
     {.lfr2.lab2 .lfr2.lab1 T 1 1 {-st ne} {-t {Background:}}}
     {.lfr2.Clr4 + L 1 3 {-st nw} {-tvar ::alited::printer::leafbg}}
@@ -1126,21 +1126,21 @@ proc printer::_create  {} {
     {.fraw.labst .fraw.labcs T 1 1 {-st nse} {-t {Sort units:}}}
     {.fraw.swist + L 1 1 {-st nsw -padx 4} {-var alited::printer::dosort}}
     {.fraw.labwc .fraw.labst T 1 1 {-st nse} {-t {Width of contents:}}}
-    {.fraw.SpxCwidth + L 1 4 {-st nsw -padx 4} \
+    {.fraw.SpxCwidth + L 1 4 {-st nsw -padx 4}
       {-tvar ::alited::printer::cwidth -from 5 -to 99 -w 4 -justify center}}
     {.seh .fraw T 1 3 {-pady 8}}
     {.lab4 + T 1 2 {-st nw} {-t {Final processor:}}}
-    {.btT + L 1 1 {-st e -padx 3} {-image alimg_run \
+    {.btT + L 1 1 {-st e -padx 3} {-image alimg_run
       -com {alited::printer::RunFinal 1} -tip {Runs the final processor.}}}
     {.Fil .lab4 T 1 3 {-st new} {-tvar ::alited::printer::final -w $wden}}
     {fraTree fraTop T 2 1 {-st news -cw 1}}
-    {.Tree - - - - {pack -side left -fill both -expand 1} \
-      {-height 20 -columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} \
+    {.Tree - - - - {pack -side left -fill both -expand 1}
+      {-height 20 -columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1}
       -columnoptions "#0 {-width $width1} L1 {-width $width2 -anchor e}" \
       -style TreeNoHL -selectmode browse -onevent { \
       <space> "alited::printer::Mark1 %w; break" \
       <FocusIn> "alited::printer::FocusIn %w" \
-      <FocusOut> "alited::printer::FocusOut %w"} \
+      <FocusOut> "alited::printer::FocusOut %w"}
       -tip {-BALTIP {alited::tree::GetTooltip %i %c} -SHIFTX 10}}}
     {.SbvTree fraTree.Tree L - - {pack -side right -fill both}}
     {fraMid fraBody T 1 3 {-st wes -rw 1 -padx 2}}

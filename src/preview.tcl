@@ -129,7 +129,7 @@ proc ::preview::Run {} {
   set ::dat1 [clock format [clock seconds] -format $::datefmt]
   trace add variable ::sc write ::tracer
   set ::opc default
-  set ::opcSet [list default clam classic alt -- {{light / dark} awlight awdark \
+  set ::opcSet [list default clam classic alt -- {{light / dark} awlight awdark
     -- forest-light forest-dark -- lightbrown darkbrown -- plastik}]
   set ttl [$obj csGetName $CS]
   set ttl [string range $ttl [string first { } $ttl]+1 end]
@@ -154,13 +154,13 @@ proc ::preview::Run {} {
     {swi1 + L 1 1 {-st ws} {-t "Switch" -var ::c1}}
     {chb1 + L 1 1 {-st ws} {-t "Checkbox" -var ::c2}}
     {lab3 lab2 T 1 1 {-st wsn} {-t "Combobox: "}}
-    {cbx1 + L 1 1 {-st ws} {-w 12 -tvar ::en2 -state readonly \
+    {cbx1 + L 1 1 {-st ws} {-w 12 -tvar ::en2 -state readonly
       -values {"Combo 1" "Combo 2" "Combo 3"}}}
-    {lab4 lab3 T 1 1 {-st en} \
+    {lab4 lab3 T 1 1 {-st en}
       {-t "Labelframe:\nText:\nTooltip:\nScrollbar:\nTool button:\nPopup menu:\nButton:"}}
-    {ftx1 + L 1 4 {-st wesn -cw 1 -rw 1} \
-      {-h 5 -w 50 -ro 0 -tvar ::preview::SCRIPT -title {Pick a file to view} \
-      -filetypes {{{Tcl scripts} .tcl} {{Text files} {.txt .test}}} -wrap none \
+    {ftx1 + L 1 4 {-st wesn -cw 1 -rw 1}
+      {-h 5 -w 50 -ro 0 -tvar ::preview::SCRIPT -title {Pick a file to view}
+      -filetypes {{{Tcl scripts} .tcl} {{Text files} {.txt .test}}} -wrap none
       -tabnext .win.fra.but5 -tip "After choosing a file\nthe text will be read-only."}}
   }
   $obj paveWindow $win.fra.nbk.f2 {

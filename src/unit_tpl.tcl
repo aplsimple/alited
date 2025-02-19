@@ -491,61 +491,61 @@ proc unit_tpl::_create {{geom ""}} {
   $obTpl paveWindow $win {
     {fraTreeTpl - - 10 10 {-st nswe -rw 3 -pady 8} {}}
     {.fra - - - - {pack -side right -fill both} {}}
-    {.fra.btTAd - - - - {pack $forget -side top -anchor n} \
+    {.fra.btTAd - - - - {pack $forget -side top -anchor n}
       {-com alited::unit_tpl::Add -tip "Add a template" -image alimg_add-big}}
-    {.fra.btTChg - - - - {pack $forget -side top} \
+    {.fra.btTChg - - - - {pack $forget -side top}
       {-com alited::unit_tpl::Change -tip "Change a template" -image alimg_change-big}}
-    {.fra.btTDel - - - - {pack $forget -side top} \
+    {.fra.btTDel - - - - {pack $forget -side top}
       {-com alited::unit_tpl::Delete -tip "Delete a template" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill x -pady 2} {}}
-    {.fra.btTImp - - - - {pack $forget -side top} \
+    {.fra.btTImp - - - - {pack $forget -side top}
       {-com alited::unit_tpl::Import \
       -tip "Import templates\nfrom external alited.ini" -image alimg_plus-big}}
-    {.TreeTpl - - - - {pack -side left -expand 1 -fill both} \
-      {-h 12 -show headings -columns {C1 C2} -displaycolumns {C1 C2} \
-      -columnoptions "C2 {-stretch 0}" -onevent { \
-      <<TreeviewSelect>> alited::unit_tpl::Select \
-      <Delete> alited::unit_tpl::Delete \
-      <Double-Button-1> alited::unit_tpl::Ok \
+    {.TreeTpl - - - - {pack -side left -expand 1 -fill both}
+      {-h 12 -show headings -columns {C1 C2} -displaycolumns {C1 C2}
+      -columnoptions "C2 {-stretch 0}" -onevent {
+      <<TreeviewSelect>> alited::unit_tpl::Select
+      <Delete> alited::unit_tpl::Delete
+      <Double-Button-1> alited::unit_tpl::Ok
       <Return> alited::unit_tpl::Ok}}}
     {.sbvTpls + L - - {pack -side left -fill both}}
     {fra1 fraTreeTpl T 10 10 {-st nsew}}
     {.h_ - - 1 1 {-st we} {-h 20}}
     {.labTpl .h_ T 1 1 {-st e} {-anchor center -t "Current template:"}}
-    {.EntTpl .labTpl L 1 8 {-st we} \
+    {.EntTpl .labTpl L 1 8 {-st we}
       {-tvar ::alited::unit_tpl::tpl -w 45 -tip {-BALTIP {$al(MC,tplent1)} -MAXEXP 1}}}
-    {.CbxKey + L 1 1 {-st w} \
-      {-tvar ::alited::unit_tpl::tplkey -postcommand alited::unit_tpl::GetKeyList \
-      -state readonly -h 16 -w 16 -tip {-BALTIP {$al(MC,tplent3)} -MAXEXP 1} \
+    {.CbxKey + L 1 1 {-st w}
+      {-tvar ::alited::unit_tpl::tplkey -postcommand alited::unit_tpl::GetKeyList
+      -state readonly -h 16 -w 16 -tip {-BALTIP {$al(MC,tplent3)} -MAXEXP 1}
       -onevent {<FocusOut> "alited::unit_tpl::ClearCbx %w"}}}
     {fratex fra1 T 10 10 {-st nsew -rw 1 -cw 1} {}}
-    {.TexTpl - - - - {pack -side left -expand 1 -fill both} \
+    {.TexTpl - - - - {pack -side left -expand 1 -fill both}
     {-h 10 -w 80 -tip {-BALTIP {$al(MC,tplent2)} -MAXEXP 1} -onevent {
     <FocusIn> "alited::unit_tpl::InText %w"}}}
     {.sbvTpl + L - - pack {}}
     {fra2 fratex T 1 10 {-st nsew} {-padding {5 5 5 5} -relief groove}}
     {.labBA - - - - {pack -side left} {-t "Place after:"}}
-    {.radA - - - - {pack -side left -padx 8} \
-      {-t "line" -var ::alited::unit_tpl::place -value 1 \
+    {.radA - - - - {pack -side left -padx 8}
+      {-t "line" -var ::alited::unit_tpl::place -value 1
       -tip {-BALTIP {$al(MC,tplaft1)} -UNDER 4}}}
-    {.radB - - - - {pack -side left -padx 8} \
-      {-t "unit" -var ::alited::unit_tpl::place -value 2 \
+    {.radB - - - - {pack -side left -padx 8}
+      {-t "unit" -var ::alited::unit_tpl::place -value 2
       -tip {-BALTIP {$al(MC,tplaft2)} -UNDER 4}}}
-    {.radC - - - - {pack -side left -padx 8} \
-      {-t "cursor" -var ::alited::unit_tpl::place -value 3 \
+    {.radC - - - - {pack -side left -padx 8}
+      {-t "cursor" -var ::alited::unit_tpl::place -value 3
       -tip {-BALTIP {$al(MC,tplaft3)} -UNDER 4}}}
-    {.radD - - - - {pack -side left -padx 8} \
-      {-t "file's beginning" -var ::alited::unit_tpl::place -value 4 \
+    {.radD - - - - {pack -side left -padx 8}
+      {-t "file's beginning" -var ::alited::unit_tpl::place -value 4
       -tip {-BALTIP {$al(MC,tplaft4)} -UNDER 4}}}
-    {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS \
+    {LabMess fra2 T 1 10 {-st nsew -pady 0 -padx 3} {-style TLabelFS
       -onevent {<Button-1> alited::unit_tpl::ProcMessage}}}
     {fra3 + T 1 10 {-st nsew}}
-    {.ButHelp - - - - {pack -side left} \
+    {.ButHelp - - - - {pack -side left}
       {-t {$al(MC,help)} -tip F1 -com alited::unit_tpl::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
-    {.butOK - - - - {pack $forget -side left -padx 2} \
+    {.butOK - - - - {pack $forget -side left -padx 2}
       {-t "$al(MC,select)" -com alited::unit_tpl::Ok}}
-    {.butCancel - - - - {pack -side left} \
+    {.butCancel - - - - {pack -side left}
       {-t $::alited::unit_tpl::BUTEXIT -com alited::unit_tpl::Cancel}}
   }
   set tree [$obTpl TreeTpl]

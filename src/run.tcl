@@ -299,33 +299,33 @@ proc run::_create {} {
   set run [::alited::ProcEOL $al(prjbeforerun) in]
   $obRun makeWindow $win.fra $al(MC,run)
   $obRun paveWindow $win.fra {
-    {h_ - - 1 5} \
-    {lab T + 1 1 {-st e -pady 5 -padx 8} {-t Run:}} \
-    {fraIn + L 1 4 {-st ew}} \
-    {.Rad1 - - 1 1 {pack -side left} {-tvar ::alited::al(MC,inconsole) -value 1 -var ::alited::al(prjincons)}} \
-    {.rad0 + L 1 1 {pack -side left -expand 1} {-tvar ::alited::al(MC,intkcon) -value 0 -var ::alited::al(prjincons)}} \
-    {.Rad2 + L 1 1 {pack -side left} {-tvar ::alited::al(MC,asis) -value 2 -var ::alited::al(prjincons)}} \
-    {.h_ - - 1 1 {pack -side left -expand 1}} \
-    {seh1 lab T 1 5 {-pady 5}} \
-    {rad3 + T 1 1 {-st w -padx 8} {-t {By #RUNF: / #EXEC:} -value 0 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
-    {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar ::alited::run::vent}} \
-    {rad4 rad3 T 1 1 {-st w -padx 8} {-t {By command:} -value 1 -var ::alited::al(comForceCh) -com alited::run::ChbForced}} \
-    {fiL + L 1 4 {-st ew} {-h 12 -cbxsel "$al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$al(comForceLs)" -validate focus -validatecommand alited::run::ValidatePath}} \
-    {fra1 rad4 T 1 5 {-st nsew -cw 1 -rw 1}} \
-    {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 50 -h 9 -afteridle alited::run::FillTex1 -tabnext *tex2}} \
-    {.sbv + L - - {pack -side left}} \
-    {seh3 fra1 T 1 5 {-pady 5}} \
-    {lab2 + T 1 5 {} {-t { OS or Tcl commands to be run before running a current file:}}} \
-    {fra2 + T 1 5 {-st nsew}} \
-    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 50 -h 4 -afteridle alited::run::FillTex2 -tabnext *butRun}} \
-    {.sbv + L - - {pack -side left}} \
-    {seh2 fra2 T 1 5 {-pady 5}} \
-    {butHelp + T 1 1 {-st w -padx 2} {-t Help -com alited::run::Help}} \
-    {h_2 + L 1 2 {-st ew}} \
-    {fra3 + L 1 2 {-st e}} \
-    {.butRun - - 1 1 {-padx 2} {-t Run -com alited::run::Run}} \
-    {.butSave + L 1 1 {} {-t Save -com alited::run::Save}} \
-    {.butCancel + L 1 1 {-padx 2} {-t Cancel -com alited::run::Cancel}} \
+    {h_ - - 1 5}
+    {lab T + 1 1 {-st e -pady 5 -padx 8} {-t Run:}}
+    {fraIn + L 1 4 {-st ew}}
+    {.Rad1 - - 1 1 {pack -side left} {-tvar ::alited::al(MC,inconsole) -value 1 -var ::alited::al(prjincons)}}
+    {.rad0 + L 1 1 {pack -side left -expand 1} {-tvar ::alited::al(MC,intkcon) -value 0 -var ::alited::al(prjincons)}}
+    {.Rad2 + L 1 1 {pack -side left} {-tvar ::alited::al(MC,asis) -value 2 -var ::alited::al(prjincons)}}
+    {.h_ - - 1 1 {pack -side left -expand 1}}
+    {seh1 lab T 1 5 {-pady 5}}
+    {rad3 + T 1 1 {-st w -padx 8} {-t {By #RUNF: / #EXEC:} -value 0 -var ::alited::al(comForceCh) -com alited::run::ChbForced}}
+    {Ent + L 1 4 {-st ew -pady 5} {-state disabled -tip {-BALTIP ! -COMMAND {[$::alited::obRun Ent] get} -UNDER 2 -PER10 0} -tvar ::alited::run::vent}}
+    {rad4 rad3 T 1 1 {-st w -padx 8} {-t {By command:} -value 1 -var ::alited::al(comForceCh) -com alited::run::ChbForced}}
+    {fiL + L 1 4 {-st ew} {-h 12 -cbxsel "$al(comForce)" -clearcom alited::run::DeleteForcedRun -values "$al(comForceLs)" -validate focus -validatecommand alited::run::ValidatePath}}
+    {fra1 rad4 T 1 5 {-st nsew -cw 1 -rw 1}}
+    {.Tex1 - - - - {pack -side left -fill both -expand 1} {-w 50 -h 9 -afteridle alited::run::FillTex1 -tabnext *tex2}}
+    {.sbv + L - - {pack -side left}}
+    {seh3 fra1 T 1 5 {-pady 5}}
+    {lab2 + T 1 5 {} {-t { OS or Tcl commands to be run before running a current file:}}}
+    {fra2 + T 1 5 {-st nsew}}
+    {.Tex2 - - - - {pack -side left -fill both -expand 1} {-w 50 -h 4 -afteridle alited::run::FillTex2 -tabnext *butRun}}
+    {.sbv + L - - {pack -side left}}
+    {seh2 fra2 T 1 5 {-pady 5}}
+    {butHelp + T 1 1 {-st w -padx 2} {-t Help -com alited::run::Help}}
+    {h_2 + L 1 2 {-st ew}}
+    {fra3 + L 1 2 {-st e}}
+    {.butRun - - 1 1 {-padx 2} {-t Run -com alited::run::Run}}
+    {.butSave + L 1 1 {} {-t Save -com alited::run::Save}}
+    {.butCancel + L 1 1 {-padx 2} {-t Cancel -com alited::run::Cancel}}
   }
   ValidatePath
   bind $win <F1> alited::run::Help

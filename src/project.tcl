@@ -2092,7 +2092,7 @@ proc project::Tab1 {} {
     {.too - - - - {pack -side top}
       {-relief flat -borderwidth 0 -array {$::alited::project::klnddata(toobar)}}}
     {.TexKlnd - - - - {pack -side left -fill both -expand 1}
-      {-wrap word -tabnext {alited::Tnext *.texPrj} -w 4 -h 8
+      {-wrap none -tabnext {alited::Tnext *.texPrj} -w 4 -h 8
       -tip {-BALTIP {$al(MC,prjTtext)} -MAXEXP 1}}}
 }
 }

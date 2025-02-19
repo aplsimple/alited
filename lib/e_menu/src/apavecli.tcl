@@ -93,4 +93,4 @@ proc ::apavecli::run {} {
 
 ::apavecli::run
 
-#%   DOCTEST   SOURCE   tests/apavecli.test
+#%   DOCTEST   SOURCE   ../apave_tests/tests/apavecli.test

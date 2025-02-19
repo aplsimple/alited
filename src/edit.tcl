@@ -675,26 +675,26 @@ proc edit::InputMacro {idx} {
   set head [string map [list %s $al(acc_16)] $head]
   $obDl2 makeWindow $win.fra $al(MC,playtkl)
   $obDl2 paveWindow $win.fra { \
-    {lab - - 1 4 {-padx 4} {-t {$head}}} \
-    {Fil + T 1 4 {-pady 4 -padx 4 -st ew} \
+    {lab - - 1 4 {-padx 4} {-t {$head}}}
+    {Fil + T 1 4 {-pady 4 -padx 4 -st ew}
       "-tvar ::alited::al(_macro) -validate all \
       -validatecommand alited::edit::ValidMacro -w 30 -initialdir {$dir} \
-      -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"} \
-    {chb + T 1 4 {-st w -pady 4} {-t {Record mouse} -var ::alited::al(macromouse)}} \
-    {seh + T 1 4 {-pady 4}} \
-    {lab2 + T 1 4 {} {-t Comment:}} \
-    {fra0 + T 1 4 {-rw 1 -st nsew}} \
-    {.TexCmn L + - - {pack -side left -expand 1 -fill both -padx 3} \
-      {-h 4 -w 40 -wrap word -tabnext *.buth -rotext ::alited::al(macrocomment) -ro 0}} \
-    {.sbvText + L - - pack} \
-    {seh2 fra0 T 1 4 {-pady 4}} \
-    {fra + T 1 1 {-st w}} \
-    {.ButPlay - - 1 1 {-padx 4} {-com 1 -tip "Play Macro" -image alimg_run}} \
-    {.ButRec + L 1 1 {} {-com 2 -tip "Record Macro" -image alimg_change}} \
-    {.ButDel + L 1 1 {-padx 4} {-com 3 -tip "Delete Macro" -image alimg_delete}} \
-    {h_ fra L 1 1 {-st we -cw 1}} \
-    {buth + L 1 1 {-st e} {-t Help -com alited::edit::HelpOnMacro}} \
-    {but + L 1 1 {-st e} {-com 0 -t Cancel}} \
+      -filetypes {{{Macros} $al(macroext)} {{All files} .*}}"}
+    {chb + T 1 4 {-st w -pady 4} {-t {Record mouse} -var ::alited::al(macromouse)}}
+    {seh + T 1 4 {-pady 4}}
+    {lab2 + T 1 4 {} {-t Comment:}}
+    {fra0 + T 1 4 {-rw 1 -st nsew}}
+    {.TexCmn L + - - {pack -side left -expand 1 -fill both -padx 3}
+      {-h 4 -w 40 -wrap word -tabnext *.buth -rotext ::alited::al(macrocomment) -ro 0}}
+    {.sbvText + L - - pack}
+    {seh2 fra0 T 1 4 {-pady 4}}
+    {fra + T 1 1 {-st w}}
+    {.ButPlay - - 1 1 {-padx 4} {-com 1 -tip "Play Macro" -image alimg_run}}
+    {.ButRec + L 1 1 {} {-com 2 -tip "Record Macro" -image alimg_change}}
+    {.ButDel + L 1 1 {-padx 4} {-com 3 -tip "Delete Macro" -image alimg_delete}}
+    {h_ fra L 1 1 {-st we -cw 1}}
+    {buth + L 1 1 {-st e} {-t Help -com alited::edit::HelpOnMacro}}
+    {but + L 1 1 {-st e} {-com 0 -t Cancel}}
   }
   set tex [$obDl2 TexCmn]
   bind $win <F1> alited::edit::HelpOnMacro

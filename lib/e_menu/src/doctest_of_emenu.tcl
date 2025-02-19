@@ -51,6 +51,10 @@ See details in README.md"
   variable options
 }
 
+#% doctest for fun
+
+#< namespace eval ::doctest {}
+
 ###################################################################
 # Show info message, e.g.: MES "Info title" $st == $BL_END \n\n ...
 
@@ -64,6 +68,12 @@ proc ::doctest::MES {title args} {
     }
   }
 }
+
+#% set a bbb
+#% ::doctest::MES title!!! arg1 arg2
+#> ""
+
+#> doctest
 
 proc ::doctest::ERR {args} { MES ERROR {*}$args }
 
@@ -119,6 +129,7 @@ proc ::doctest::get_test_block {begin end} {
   for {set i $begin} {$i<=$end} {incr i} {
     append block [get_line_contents $i] "\n"
   }
+  set block [regsub -all {\n(#<)} $block "\n"]
   return $block
 }
 

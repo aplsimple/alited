@@ -55,7 +55,7 @@ proc ::klnd::my::GoMonth2 {obj i {dobreak no}} {
 }
 #_______________________
 
-proc ::klnd::my::fgMayHL {obj fg y m d} {
+proc ::klnd::my::fgMayHL2 {obj fg y m d} {
   # Gets a foreground color (possibly highlighting).
   #   fg - default foreground color
   #   y - year
@@ -142,7 +142,7 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
     }
     lappend ttls [string trim $ttl]
     # as last refuge: highlighting fg by hllist
-    set fg [fgMayHL $obj $fg $y $m $iday]
+    set fg [fgMayHL2 $obj $fg $y $m $iday]
     $wbut configure {*}$att -relief flat -fg $fg -bg $bg -text $ttl
   }
   set wnums [WeekNumbers $day1st $ttls]
@@ -180,7 +180,7 @@ proc ::klnd::my::HighlightCurrentDay2 {obj} {
     catch {
       set day [$p(wcurr$obj) cget -text]
       if {[$p(wcurr$obj) cget -bg] ne $p(bgsel) && [TrimN $day] ne {}} {
-        set fg [fgMayHL $obj $p(fg2) $p(yvis$obj) $p(mvis$obj) $day]
+        set fg [fgMayHL2 $obj $p(fg2) $p(yvis$obj) $p(mvis$obj) $day]
         $p(wcurr$obj) configure -fg $fg -bg $p(bg2)
       }
       if {$p(united$obj)} {
@@ -244,7 +244,7 @@ proc ::klnd::my::Enter2 {obj i {focusin 0}} {
           $p(wunited) configure -fg $p(fg1) -bg $p(bg1)
         }
         if {[$p(wcurr$obj) cget -bg] ne $p(bgsel)} {
-          set fg [fgMayHL $obj $p(fg2) $p(yvis$obj) $p(mvis$obj) $p(dvis$obj)]
+          set fg [fgMayHL2 $obj $p(fg2) $p(yvis$obj) $p(mvis$obj) $p(dvis$obj)]
           $p(wcurr$obj) configure -fg $fg -bg $p(bg2)
         }
       }
@@ -264,7 +264,7 @@ proc ::klnd::my::Enter2 {obj i {focusin 0}} {
           }
         }
         # show selected day
-        set fg [fgMayHL $obj $p(fgsel) $p(yvis$obj) $p(mvis$obj) $p(dvis$obj)]
+        set fg [fgMayHL2 $obj $p(fgsel) $p(yvis$obj) $p(mvis$obj) $p(dvis$obj)]
         $w configure -fg $fg -bg $p(bgsel)
       }
       # save the selected widget for THIS month
