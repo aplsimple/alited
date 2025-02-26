@@ -15,7 +15,7 @@ Version `v1.8.8.5 (26 Feb'25)`
   - CHANGE: menu Help/alited: submenu
   - CHANGE: menu Help/Tcl-Tk: "Thread package"; check for local htm(l) files
   - CHANGE: main::CalcIndentation: check for existing window
-  - CHANGE: packages: apave/e_menu 4.5.3, hl_tcl 1.2
+  - CHANGE: packages: apave/e_menu 4.5.4, hl_tcl 1.2
 
 
 Version `v1.8.8 (15 Jan'25)`
