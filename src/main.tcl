@@ -1193,11 +1193,11 @@ proc main::_create {} {
 #### ________________________ Tree _________________________ ####
 }
     {.fraBot.panBM.fraTree.fra1.sev3 - - - - {pack -side right -fill y -padx 0}}
-    {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {}}
+    {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {-w 1}}
     {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1}
-      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1} -columnoptions "#0 \
-      {-width $al(TREE,cw0)} L1 {-width $al(TREE,cw1) -anchor e}" -style TreeNoHL \
-      -takefocus 0 -selectmode extended
+      {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1}
+      -columnoptions "#0 {-width $al(TREE,cw0)} L1 {-width $al(TREE,cw1) -anchor e}"
+      -style TreeNoHL -takefocus 0 -selectmode extended
       -tip {-BALTIP {alited::tree::GetTooltip %i %c} -SHIFTX 10}}}
 {#
 ### ________________________ Favorites _________________________ ###

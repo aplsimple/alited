@@ -740,14 +740,16 @@ proc file::OpenFile {{fnames ""} {reload no} {islist no} {Message ""}} {
 }
 #_______________________
 
-proc file::ChooseMultipleFiles {{dosort yes}} {
+proc file::ChooseMultipleFiles {{dosort yes} {inidir ""}} {
   # Choose miltiple files to open.
   #   dosort - if yes, handles the result's sorting
+  #   inidir - initial dir
 
   namespace upvar ::alited al al obPav obPav
   set al(TMPfname) {}
+  if {$inidir eq {}} {set inidir [file dirname [alited::bar::CurrentTab 2]]}
   set fnames [$obPav chooser tk_getOpenFile ::alited::al(TMPfname) -multiple 1 \
-    -initialdir [file dirname [alited::bar::CurrentTab 2]] -parent $al(WIN)]
+    -initialdir $inidir -parent $al(WIN)]
   if {$dosort && $al(lifo)} {set fnames [lsort -decreasing $fnames]}
   unset al(TMPfname)
   return $fnames

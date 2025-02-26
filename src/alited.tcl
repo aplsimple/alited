@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.8.4  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.8.5  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
 
@@ -93,7 +93,9 @@ namespace eval alited {
   variable DATAUSERINI [file join $DATAUSER ini]
   variable DATAUSERINIFILE [file join $DATAUSERINI alited.ini]
   variable HOMEDIR ~
-  if {[info exists ::env(HOME)]} {set HOMEDIR $::env(HOME)}
+  if {[catch {set HOMEDIR [file home]}] && [info exists ::env(HOME)]} {
+    set HOMEDIR $::env(HOME)
+  }
 
   # directories of user's data
   variable CONFIGDIRSTD [file join $HOMEDIR .config]
@@ -852,6 +854,17 @@ namespace eval alited {
     #   ilink - internal link
 
     openDoc https://aplsimple.github.io/en/tcl/alited/index.html$ilink
+  }
+  #_______________________
+
+  proc AlitedSrc {} {
+    # File open dialog for alited/src.
+
+    variable SRCDIR
+    set fnames [file::ChooseMultipleFiles yes $SRCDIR]
+    if {[llength $fnames]} {
+      file::OpenFile $fnames yes yes
+    }
   }
   #_______________________
 

@@ -43,7 +43,7 @@ namespace eval ::apave {
     categories actions config pin cut copy paste plus minus add delete \
     change diagram box trash double more undo redo up down previous next \
     previous2 next2 upload download tag tagoff tree lock lamp restricted \
-    attach share mail www map umbrella gulls sound heart clock people info \
+    attach share mail www map hamburger gulls sound heart clock people info \
     err warn ques retry yes no ok cancel exit }
   variable _AP_IMG;  array set _AP_IMG [list]
   variable _AP_VARS; array set _AP_VARS [list]

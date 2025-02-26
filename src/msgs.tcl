@@ -127,6 +127,7 @@ namespace eval ::alited {
     set al(MC,formatdesc)  [msgcat::mc {Moving Unit Descriptions}]
     set al(MC,formatdesc...) [msgcat::mc {Moving Unit Descriptions...}]
     set al(MC,middlefont)  [msgcat::mc {Middle font size:}]
+    set al(MC,Help)        [msgcat::mc Help]
 
     ## _  project options _ ##
     set al(MC,Ign:)        [msgcat::mc {Skip files/directories:}]

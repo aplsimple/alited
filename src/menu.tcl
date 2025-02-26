@@ -554,13 +554,13 @@ proc menu::FillMenu {} {
   $m add separator
   MenuCascade $m paver Paver
 
-  $m.paver add command -label {Paver} -command {alited::menu::Paver 0}
+  $m.paver add command -label Paver -command {alited::menu::Paver 0}
   $m.paver add separator
   $m.paver add checkbutton -label [msgcat::mc {Auto Update}] \
     -variable ::alited::al(paverauto) -command {alited::menu::Paver 1}
   $m.paver add command -label [msgcat::mc {Widget List}] -command {alited::menu::Paver 2}
   $m.paver add separator
-  $m.paver add command -label [msgcat::mc {Help}] -command {alited::menu::Paver 3}
+  $m.paver add command -label $al(MC,Help) -command {alited::menu::Paver 3}
 
   ### ________________________ Pickers _________________________ ###
 
@@ -638,7 +638,7 @@ proc menu::FillMenu {} {
   set m $al(WIN).menu.help
   menu $m.help -tearoff 0
   $m add cascade -label Tcl/Tk -menu $m.help
-  $m.help add command -label Tcl/Tk -command alited::tool::Help -accelerator F1
+  $m.help add command -label $al(MC,Help) -command alited::tool::Help -accelerator F1
   $m.help add command -label {Tcl Wiki} -command {alited::tool::Help Wiki}
   $m.help add separator
   $m.help add command -label Tcllib -command {alited::tool::Help Tcllib}
@@ -648,7 +648,10 @@ proc menu::FillMenu {} {
   $m.help add separator
   $m.help add command -label StackOverflow -command {alited::tool::Help SOF}
   $m add separator
-  $m add command -label alited -command alited::HelpAlited
+  menu $m.ale -tearoff 0
+  $m add cascade -label alited -menu $m.ale
+  $m.ale add command -label $al(MC,Help) -command alited::HelpAlited
+  $m.ale add command -label alited/src -command alited::AlitedSrc
   menu $m.helps -tearoff 1
   $m add cascade -label [msgcat::mc Context] -menu $m.helps
   foreach {hlp lab} [HelpFiles] {
