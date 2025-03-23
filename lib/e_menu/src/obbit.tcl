@@ -88,7 +88,7 @@ namespace eval ::apave {
 
 {{ 3: SunValleyLight} "#050b0d" #050b0d #ffffff #e1e1e1 #1056af #74c9ff #000 #444 grey #1574cd #000 #84d9ff - #cccccc #000 #FBFB95 #e2e2e0 #950000 #76b2f1 #005 #006 #007}
 
-{{ 4: LightBrown}     "#00002f" #00001a #f6f4f2 #f6f4f2 #7b3e30 #edc89b #000 #682800 grey #d59e6d #000000 #deb98c - #dfdddb #000 #FBFB95 #e3e2e0 #a30000 #900000 #005 #006 #007}
+{{ 4: LightBrown}     "#00002f" #00001a #f6f4f2 #f6f4f2 #682800 #edc89b #000 #672a1c grey #996231 #000000 #deb98c - #dfdddb #000 #FBFB95 #e3e2e0 #a30000 #900000 #005 #006 #007}
 
 {{ 5: Grey1}          "#050b0d" #050b0d #F8F8F8 #dadad8 #933232 #b8b8b8 #000 #444 grey #843e3e #000 #AFAFAF - #caccd0 #000 #FBFB95 #e0e0d8 #a20000 #76b2f1 #005 #006 #007}
 

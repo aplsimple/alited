@@ -259,7 +259,6 @@ namespace eval ::alited {
     set al(MC,icoredo)     [msgcat::mc "Redo changes\nCtrl+Shift+Z"]
     set al(MC,icobox)      [msgcat::mc Projects]
     set al(MC,icoprev2)    [msgcat::mc {Wrap Lines}]
-    set al(MC,iconext2)    [msgcat::mc {Unwrap Lines}]
 
     ## _ find units _ ##
     set al(MC,findunit)    [msgcat::mc "Use glob patterns to find units' declarations\ne.g. \"s*rt\" would find \"start\" and \"insert\".\nThe letter case is ignored."]

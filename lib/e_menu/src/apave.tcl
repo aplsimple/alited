@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.5.4
+package provide apave 4.5.7
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -1071,7 +1071,7 @@ oo::class create ::apave::APave {
       set centerme "-centerme $centerme"
     }
     set args [::apave::removeOptions $args \
-      -titleHELP -buttons -comOK -titleOK -titleCANCEL -centerme -modal]
+      -titleHELP -buttons -comOK -titleOK -titleCANCEL -centerme]
     lappend args {*}$focusopt
     if {[catch {
       lassign [my PrepArgs {*}$args] args

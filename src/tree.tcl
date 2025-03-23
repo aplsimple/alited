@@ -725,7 +725,6 @@ proc tree::AdjustWidth {} {
 
   namespace upvar ::alited al al obPav obPav
   set wpf [winfo width [$obPav FraTree]]
-  set ws1 [winfo width [$obPav SbvTree]]
   set ws2 [winfo width [$obPav SbvFavor]]
   set w2 [[$obPav Tree] column #1 -width]
   [$obPav Tree] column #0 -width [expr {$wpf-$w2-$ws2-4}]

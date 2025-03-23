@@ -49,20 +49,13 @@ proc detached::Wrapping {pobj id} {
   #   pobj - apave object of detached editor
   #   id - ID of detached object
 
-  namespace upvar ::alited al al
-  set wtool [$pobj ToolTop].buT_alimg_next2
   set wtxt [$pobj Text]
   set sbh [$pobj Sbh]
-  set al(wrapdetach,$id) [expr {!$al(wrapdetach,$id)}]
-  if {$al(wrapdetach,$id)} {
+  if {$::alited::al(wrapdetach,$id)} {
     pack forget $sbh
-    $wtool configure -image alimg_next2
-    ::baltip tip $wtool $al(MC,iconext2)
     set wrap word
   } else {
     pack $sbh -side bottom -fill x -before $wtxt
-    $wtool configure -image alimg_previous2
-    ::baltip tip $wtool $al(MC,icoprev2)
     set wrap none
   }
   $wtxt configure -wrap $wrap
@@ -177,7 +170,7 @@ proc detached::_create {fname unwrap} {
   set $pobj $geo
   if {$geo ne {}} {set geo "-geometry $geo"}
   set al(detachtools) {}
-  foreach icon {SaveFile undo redo next2 cut copy paste} {
+  foreach icon {SaveFile undo redo cut copy paste} {
     set img [alited::ini::CreateIcon $icon]
     append al(detachtools) " $img \{{} "
     switch $icon {
@@ -191,16 +184,16 @@ proc detached::_create {fname unwrap} {
         if {$icon in {undo redo}} {append al(detachtools) " -state disabled"}
         set tip [string totitle $icon]
       }
-      next2 {
-        append al(detachtools) "-com {alited::detached::Wrapping $pobj $id}"
-      }
     }
     append al(detachtools) " -tip {$tip@@ -under 4}\}"
     if {$icon in {SaveFile redo}} {
       append al(detachtools) " sev 6"
     }
   }
-  append al(detachtools) " sev 16 lab1 {{Find: }} CbxFind {-font {$::apave::FONTMAIN}}"
+  append al(detachtools) " \
+    sev 6 lab1 {{Find: }} CbxFind {-font {$::apave::FONTMAIN} -w 16} chb \
+    {-var ::alited::al(wrapdetach,$id) -t {Wrap Lines} \
+    -com {alited::detached::Wrapping $pobj $id}}"
   ::apave::APave create $pobj $win
   $pobj makeWindow $win.fra $fname
   $pobj paveWindow $win.fra {

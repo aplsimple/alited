@@ -16,6 +16,7 @@ namespace eval ::klnd {
   namespace eval my {
     variable msgdir [file normalize [file join [file dirname [info script]] msgs]]
     variable p
+    variable red #ff4a4a
     variable locales
     # locale 1st day of week: %u means Mon (default), %w means Sun
     array set locales [list \
@@ -126,6 +127,7 @@ proc ::klnd::my::ShowMonth {m y {dopopup no}} {
   #   dopopup - yes, if bind a popup menu
 
   variable p
+  variable red
   set sec [CurrentDate]
   set y [expr {max($y,1753)}]
   ::baltip::tip [$p(obj) BuT_IM_KLND_0] \
@@ -177,8 +179,8 @@ proc ::klnd::my::ShowMonth {m y {dopopup no}} {
   }
   set wnums [WeekNumbers $day1st $ttls]
   for {set i 0} {$i<6} {} {
-    if {$p(hlweeks) && [string match *red* $weeksfg($i)]} {
-      set fg red
+    if {$p(hlweeks) && [string match *$red* $weeksfg($i)]} {
+      set fg $red
     } else {
       set fg $p(fgh)
     }
@@ -200,6 +202,7 @@ proc ::klnd::my::fgMayHL {fg1 y m d} {
   #   d - day
 
   variable p
+  variable red
   set fg [set fgw $fg1]
   set d [string trim $d]
   set m [string trim $m]
@@ -215,12 +218,12 @@ proc ::klnd::my::fgMayHL {fg1 y m d} {
       set day2 $y2/$m2/$d2
       if {$p(hlweeks)} {
         set week2 [clock format [clock scan $day2 -format $fmt] -format %V]
-        if {$week1 eq $week2} {
-          set fgw red
+        if {$week1 eq $week2 && $y==$y2} {
+          set fgw $red
           break
         }
       } elseif {$day1 eq $day2} {
-        set fg red
+        set fg $red
         break
       }
     }

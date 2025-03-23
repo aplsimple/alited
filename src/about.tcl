@@ -104,6 +104,7 @@ proc about::About {} {
     [list "linkJN" "openDoc %t@@https://github.com/johannish@@"] \
     [list "linkGN" "openDoc %t@@https://github.com/gregnix@@"] \
     [list "linkGR" "openDoc %t@@https://github.com/georgtree@@"] \
+    [list "linkFL" "openDoc %t@@https://wiki.tcl-lang.org/page/Docking+framework@@"] \
     ]
 
   ### ________________________ "General" tab _________________________ ###
@@ -187,6 +188,7 @@ proc about::About {} {
     \u2022 <linkJN>Johann</linkJN>\n \
     \u2022 <linkGN>Gregor</linkGN>\n \
     \u2022 <linkGR>George</linkGR>\n \
+    \u2022 <linkFL>Flame</linkFL>\n \
     \n $spec\n\n \
     \u2022 <linkTW>Trevor Williams</linkTW>\n \
     \u2022 <linkDF>Donal K. Fellows</linkDF>\n \

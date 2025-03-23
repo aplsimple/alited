@@ -7,7 +7,23 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.8.5  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.9b2  ;# for documentation (esp. for Ruff!)
+
+namespace eval alited {
+  variable al; array set al [list]
+  set DEBUG no  ;# debug mode
+}
+
+# firstly, remove alited's options from argv
+if {[set _ [lsearch -exact $::argv -OLDTHEME]]>-1} {
+  set ::alited::al(OLDTHEME) [lindex $::argv $_+1]
+  set ::argv [lreplace $::argv $_ [incr _]]
+}
+if {[set _ [lsearch -exact $::argv DEBUG]]>-1} {
+  set ::alited::DEBUG yes
+  set ::argv [lreplace $::argv $_ $_]
+}
+set ::argc [llength $::argv]
 
 namespace eval alited {
 
@@ -27,7 +43,6 @@ namespace eval alited {
     if {$res ne {ok}} exit
   }
 
-  variable al; array set al [list]
   variable al2; array set al2 [list] ;# alternative array, just to not touch "al"
 
   # versions of mnu/ini to update to
@@ -55,7 +70,6 @@ namespace eval alited {
 
   ## ________________________ Main variables _________________________ ##
 
-  set DEBUG no  ;# debug mode
   set LOG {}    ;# log file in develop mode
 
   set al(WIN) .alwin    ;# main form's path
@@ -119,6 +133,7 @@ namespace eval alited {
   variable obDlg ::alited::aliteddlg  ;# dialog of 1st level
   variable obDl2 ::alited::aliteddl2  ;# dialog of 2nd level
   variable obCHK ::alited::alitedCHK  ;# dialog of "Check Tcl"
+  variable obDFW ::alited::alitedDFW  ;# dialog of "DockingFW"
   variable obFND ::alited::alitedFND  ;# dialog of "Find/Replace"
   variable obFN2 ::alited::alitedFN2  ;# dialog of "Find by list"
   variable obRun ::alited::alitedRun  ;# dialog of "Run..."
@@ -174,6 +189,10 @@ namespace eval alited {
   set al(TextExts) $al(TextExtsDef)
   set al(MOVEFG) black
   set al(MOVEBG) #7eeeee
+
+  set al(DockGeo) root=$al(WIN)
+  set al(DockLayout) [file join $CONFIGDIR alited data dockFW.tcl]
+  set al(ApaveLayout) [file join $CONFIGDIR alited data apaveFW.tcl]
 
   ## __________________ Procs to raise the alited app ___________________ ##
 
@@ -268,11 +287,6 @@ if {[package versions alited] eq {}} {
   }
   if {[set _ [lsearch -glob $::argv LOG=*]]>-1} {
     set ::alited::LOG [string range [lindex $::argv $_] 4 end]
-    set ::argv [lreplace $::argv $_ $_]
-    incr ::argc -1
-  }
-  if {[set _ [lsearch -exact $::argv DEBUG]]>-1} {
-    set ::alited::DEBUG yes
     set ::argv [lreplace $::argv $_ $_]
     incr ::argc -1
   }
@@ -412,7 +426,7 @@ namespace eval alited {
   proc ListPaved {} {
     # Returns a list of apave objects for dialogues.
 
-    list obDlg obDl2 obFND obFN2 obCHK obRun
+    list obDlg obDl2 obFND obFN2 obCHK obRun obDFW
   }
   #_______________________
 
@@ -1265,6 +1279,7 @@ if {[info exists ALITED_PORT]} {
       \n\nTry to rename/move it or take it from alited's source. \
       \nThen restart alited.\n\nDetails are in stdout."
   }
+  set OLDTHEME $::alited::al(THEME)
   alited::main::_create  ;# create the main form
   alited::favor::_init   ;# initialize favorites
   alited::tool::AfterStart
@@ -1295,6 +1310,9 @@ if {[info exists ALITED_PORT]} {
       if {[file isfile [lindex $::alited::ARGV $i]]} {  ;# remove file names passed to ALE
         set ::alited::ARGV [lreplace $::alited::ARGV $i $i]
       }
+    }
+    if {{-OLDTHEME} ni $::alited::ARGV} {
+      lappend ::alited::ARGV -OLDTHEME $OLDTHEME
     }
     exec -- [info nameofexecutable] $::alited::SCRIPT {*}$::alited::ARGV &
   } elseif {$::alited::LOG ne {}} {

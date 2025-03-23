@@ -1152,138 +1152,138 @@ proc main::_create {} {
     {fra.Pan - - - - {pack -side top -fill both -expand 1} {-orient horizontal
       $::alited::Pan_wh -onevent {<ButtonRelease> alited::tree::AdjustWidth}}}
     {fra.pan.PanL - - - - {add} {-orient vertical $::alited::PanL_wh}}
-    {.fraBot - - - - {add}}
+    {fra.pan.panL.fraBot - - - - {add}}
 {#
 ### ________________________ Tree pan _________________________ ###
 }
-    {.fraBot.PanBM - - - - {pack -fill both -expand 1} {$::alited::PanBM_wh}}
-    {.fraBot.panBM.FraTree - - - - {pack -side top -fill both -expand 1}}
-    {.fraBot.panBM.fraTree.fra1 - - - - {pack -side top -fill x}}
+    {.PanBM - - - - {pack -fill both -expand 1} {$::alited::PanBM_wh}}
+    {.panBM.FraTree - - - - {pack -side top -fill both -expand 1}}
+    {fra.pan.panL.fraBot.panBM.fraTree.fra1 - - - - {pack -side top -fill x}}
 {#
 #### ________________________ Tree's toolbar _________________________ ####
 }
-    {.fraBot.panBM.fraTree.fra1.BtTswitch - - - - {pack -side left -fill x}
+    {.BtTswitch - - - - {pack -side left -fill x}
       {-image alimg_gulls -com alited::tree::SwitchTree}}
-    {.fraBot.panBM.fraTree.fra1.BtTUpdT - - - - {pack -side left -fill x}
+    {.BtTUpdT - - - - {pack -side left -fill x}
       {-image alimg_retry -tip {$al(MC,updtree)}
     -command alited::main::UpdateAll}}
-    {.fraBot.panBM.fraTree.fra1.sev1 - - - - {pack -side left -fill y -padx 5}}
-    {.fraBot.panBM.fraTree.fra1.BtTUp - - - - {pack -side left -fill x}
+    {.sev1 - - - - {pack -side left -fill y -padx 5}}
+    {.BtTUp - - - - {pack -side left -fill x}
       {-image alimg_up -com {alited::tree::MoveItem up}}}
-    {.fraBot.panBM.fraTree.fra1.BtTDown - - - - {pack -side left -fill x}
+    {.BtTDown - - - - {pack -side left -fill x}
       {-image alimg_down -com {alited::tree::MoveItem down}}}
-    {.fraBot.panBM.fraTree.fra1.sev2 - - - - {pack -side left -fill y -padx 5}}
-    {.fraBot.panBM.fraTree.fra1.BtTAddT - - - - {pack -side left -fill x}
+    {.sev2 - - - - {pack -side left -fill y -padx 5}}
+    {.BtTAddT - - - - {pack -side left -fill x}
       {-image alimg_add -com alited::tree::AddItem}}
-    {.fraBot.panBM.fraTree.fra1.BtTRenT - - - - {pack forget -side left -fill x}
+    {.BtTRenT - - - - {pack forget -side left -fill x}
       {-image alimg_change -tip "$al(MC,renamefile)\nF2"
       -com {alited::file::RenameFileInTree 0 -geometry pointer+10+10}}}
-    {.fraBot.panBM.fraTree.fra1.BtTDelT - - - - {pack -side left -fill x}
+    {.BtTDelT - - - - {pack -side left -fill x}
       {-image alimg_delete -com alited::tree::DelItem}}
-    {.fraBot.panBM.fraTree.fra1.BtTCloT - - - - {pack forget -side left -fill x}
+    {.BtTCloT - - - - {pack forget -side left -fill x}
       {-image alimg_copy -com alited::file::CloneFile -tip "$al(MC,clonefile)"}}
-    {.fraBot.panBM.fraTree.fra1.BtTOpen - - - - {pack forget -side left -fill x}
+    {.BtTOpen - - - - {pack forget -side left -fill x}
       {-image alimg_OpenFile -com ::alited::file::OpenWith -tip "$al(MC,openwith)"}}
-    {.fraBot.panBM.fraTree.fra1.h_ - - - - {pack -anchor center -side left -fill both -expand 1}}
-    {.fraBot.panBM.fraTree.fra1.btTCtr - - - - {pack -side left -fill x}
+    {.lab_ - - - - {pack -anchor center -side left -fill both -expand 1} {-t {  }}}
+    {.btTCtr - - - - {pack -side left -fill x}
       {-image alimg_minus -com {alited::tree::ExpandContractTree Tree no} -tip "Contract All"}}
-    {.fraBot.panBM.fraTree.fra1.btTExp - - - - {pack -side left -fill x}
+    {.btTExp - - - - {pack -side left -fill x}
       {-image alimg_plus -com {alited::tree::ExpandContractTree Tree} -tip "Expand All"}}
 {#
 #### ________________________ Tree _________________________ ####
 }
-    {.fraBot.panBM.fraTree.fra1.sev3 - - - - {pack -side right -fill y -padx 0}}
-    {.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {-w 1}}
-    {.fraBot.panBM.fraTree.fra.Tree - - - - {pack -side left -fill both -expand 1}
+    {.sev3 - - - - {pack -side right -fill y -padx 0}}
+    {fra.pan.panL.fraBot.panBM.fraTree.fra - - - - {pack -side bottom -fill both -expand 1} {-w 1}}
+    {.Tree - - - - {pack -side left -fill both -expand 1}
       {-columns {L1 L2 PRL ID LEV LEAF FL1} -displaycolumns {L1}
       -columnoptions "#0 {-width $al(TREE,cw0)} L1 {-width $al(TREE,cw1) -anchor e}"
       -style TreeNoHL -takefocus 0 -selectmode extended
       -tip {-BALTIP {alited::tree::GetTooltip %i %c} -SHIFTX 10}}}
+    {.SbvTree .Tree L - -
+      {pack -side right -fill both}}
 {#
 ### ________________________ Favorites _________________________ ###
 }
-    {.fraBot.panBM.fraTree.fra.SbvTree .fraBot.panBM.fraTree.fra.Tree L - -
-      {pack -side right -fill both}}
-    {.FraFV - - - - {add}}
-    {.fraFV.v_ - - - - {pack -side top -fill x} {-h 5}}
-    {.fraFV.fra1 - - - - {pack -side top -fill x}}
-    {.fraFV.fra1.seh - - - - {pack -side top -fill x -expand 1 -pady 0}}
+    {fra.pan.panL.FraFV - - - - {add}}
+    {.v_ - - - - {pack -side top -fill x} {-h 5}}
+    {fra.pan.panL.fraFV.fra1 - - - - {pack -side top -fill x}}
+    {.seh - - - - {pack -side top -fill x -expand 1 -pady 0}}
 {#
 #### ________________________ Favorites' toolbar _________________________ ####
 }
-    {.fraFV.fra1.BtTVisitF - - - - {pack -side left -fill x}
+    {.BtTVisitF - - - - {pack -side left -fill x}
       {-image alimg_misc -tip {$al(MC,lastvisit)} -com alited::favor::SwitchFavVisit}}
-    {.fraFV.fra1.sev0 - - - - {pack -side left -fill y -padx 5}}
-    {.fraFV.fra1.BtTListF - - - - {pack -side left -fill x}
+    {.sev0 - - - - {pack -side left -fill y -padx 5}}
+    {.BtTListF - - - - {pack -side left -fill x}
       {-image alimg_SaveFile -tip {$al(MC,FavLists)} -com alited::favor::Lists}}
-    {.fraFV.fra1.SevF - - - - {pack -side left -fill y -padx 5}}
-    {.fraFV.fra1.BtTAddF - - - - {pack -side left -fill x}
+    {.SevF - - - - {pack -side left -fill y -padx 5}}
+    {.BtTAddF - - - - {pack -side left -fill x}
       {-image alimg_add -tip {$al(MC,favoradd)} -com alited::favor::Add}}
-    {.fraFV.fra1.BtTRenF - - - - {pack -side left -fill x}
+    {.BtTRenF - - - - {pack -side left -fill x}
       {-image alimg_change -tip {$al(MC,favorren)} -command ::alited::favor::Rename}}
-    {.fraFV.fra1.btTDelF - - - - {pack -side left -fill x}
+    {.btTDelF - - - - {pack -side left -fill x}
       {-image alimg_delete -tip {$al(MC,favordel)} -com alited::favor::Delete}}
-    {.fraFV.fra1.btTDelAllF - - - - {pack -side left -fill x}
+    {.btTDelAllF - - - - {pack -side left -fill x}
       {-image alimg_trash -tip {$al(MC,favordelall)} -com alited::favor::DeleteAll}}
-    {.fraFV.fra1.h_2 - - - - {pack -anchor center -side left -fill both -expand 1}}
-    {.fraFV.fra1.sev2 - - - - {pack -side right -fill y -padx 0}}
-    {.fraFV.fra - - - - {pack -fill both -expand 1} {}}
+    {.h_2 - - - - {pack -anchor center -side left -fill both -expand 1}}
+    {.sev2 - - - - {pack -side right -fill y -padx 0}}
+    {fra.pan.panL.fraFV.fra - - - - {pack -fill both -expand 1} {}}
 {#
 #### ________________________ Favorites' list _________________________ ####
 }
-    {.fraFV.fra.TreeFavor - - - - {pack -side left -fill both -expand 1}
+    {.TreeFavor - - - - {pack -side left -fill both -expand 1}
       {-h 5 -style TreeNoHL -columns {C1 C2 C3 C4} -displaycolumns C1
       -show headings -takefocus 0 -tip {-BALTIP {alited::favor::GetTooltip %i} -SHIFTX 10}}}
-    {.fraFV.fra.SbvFavor + L - - {pack -fill both}}
+    {.SbvFavor + L - - {pack -fill both}}
     {fra.pan.PanR - - - - {add} {-orient vertical $::alited::PanR_wh}}
 {#
 ### ________________________ Tab bar & Text _________________________ ###
 }
-    {.fraTop - - - - {add}}
-    {.fraTop.PanTop - - - - {pack -fill both -expand 1} {$::alited::PanTop_wh}}
-    {.fraTop.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3}}
-    {.fraTop.panTop.canmark - - - - {pack -side left -expand 0 -fill both
+    {fra.pan.panR.fraTop - - - - {add}}
+    {.PanTop - - - - {pack -fill both -expand 1} {$::alited::PanTop_wh}}
+    {.panTop.BtsBar  - - - - {pack -side top -fill x -pady 3}}
+    {.panTop.canmark - - - - {pack -side left -expand 0 -fill both
       -padx 0 -pady 0 -ipadx 0 -ipady 0} {-w $al(markwidth)
       -afteridle {alited::main::FillMarkBar %w}}}
-    {.fraTop.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
-    {.fraTop.panTop.FrAText - - - - {pack -side left -expand 1 -fill both
+    {.panTop.GutText - - - - {pack -side left -expand 0 -fill both}}
+    {.panTop.FrAText - - - - {pack -side left -expand 1 -fill both
       -padx 0 -pady 0 -ipadx 0 -ipady 0} {-background $::apave::BGMAIN2}}
-    {.fraTop.panTop.frAText.Text - - - - {pack -expand 1 -fill both}
+    {.panTop.frAText.Text - - - - {pack -expand 1 -fill both}
       {-w 80 -h 30 -gutter GutText -gutterwidth $al(ED,gutterwidth)
       -guttershift $al(ED,guttershift)}}
-    {.fraTop.panTop.fraSbv - - - - {pack -side right -fill y}}
+    {.panTop.fraSbv - - - - {pack -side right -fill y}}
 {#
 ### ________________________ Find units _________________________ ###
 }
-    {.fraTop.panTop.fraSbv.SbvText .fraTop.panTop.frAText.text L - - {pack -fill y}}
-    {.fraTop.FraSbh  - - - - {pack forget -fill x}}
-    {.fraTop.fraSbh.SbhText .fraTop.panTop.frAText.text T - - {pack -fill x}}
-    {.fraTop.FraHead  - - - - {pack forget -side bottom -fill x}
+    {.panTop.fraSbv.SbvText .panTop.frAText.text L - - {pack -fill y}}
+    {.FraSbh  - - - - {pack forget -fill x}}
+    {.fraSbh.SbhText .panTop.frAText.text T - - {pack -fill x}}
+    {fra.pan.panR.fraTop.FraHead  - - - - {pack forget -side bottom -fill x}
       {-padding {4 4 4 4} -relief groove}}
-    {.fraTop.fraHead.labFind - - - - {pack -side left} {-t {    Unit: }}}
-    {.fraTop.fraHead.CbxFindSTD - - - - {pack -side left}
+    {.labFind - - - - {pack -side left} {-t {    Unit: }}}
+    {.CbxFindSTD - - - - {pack -side left}
       {-tvar ::alited::al(findunit) -values {$al(findunitvals)} -w 30 -tip {$al(MC,findunit)}}}
-    {.fraTop.fraHead.btT - - - - {pack -side left -padx 4}
+    {.btT - - - - {pack -side left -padx 4}
       {-t {Find: } -com alited::find::DoFindUnit -w 8 -anchor e -tip {Find Unit}}}
-    {.fraTop.fraHead.rad1 - - - - {pack -side left -padx 4}
+    {.rad1 - - - - {pack -side left -padx 4}
       {-takefocus 0 -var ::alited::main::findunits -t {in all} -value 1}}
-    {.fraTop.fraHead.rad2 - - - - {pack -side left -padx 4}
+    {.rad2 - - - - {pack -side left -padx 4}
       {-takefocus 0 -var ::alited::main::findunits -t {in current} -value 2}}
-    {.fraTop.fraHead.h_ - - - - {pack -side left -fill x -expand 1}}
-    {.fraTop.fraHead.btTno - - - - {pack -side left} {-command {alited::find::HideFindUnit}}}
+    {.h_ - - - - {pack -side left -fill x -expand 1}}
+    {.btTno - - - - {pack -side left} {-command {alited::find::HideFindUnit}}}
 {#
 ### ________________________ Info & status bar _________________________ ###
 }
-    {.fraBot - - - - {add}}
-    {.fraBot.fra - - - - {pack -fill both -expand 1}}
-    {.fraBot.fra.LbxInfo - - - - {pack -side left -fill both -expand 1}
+    {fra.pan.panR.fraBot - - - - {add}}
+    {.fra - - - - {pack -fill both -expand 1}}
+    {.fra.LbxInfo - - - - {pack -side left -fill both -expand 1}
       {-h 1 -w 40 -lvar ::alited::info::list -font $al(FONT,defsmall)
       -highlightthickness 0 -onevent {
       <<ListboxSelect>> "alited::info::ListboxSelect %w"
       <ButtonPress-3> "alited::info::PopupMenu %X %Y"}}}
-    {.fraBot.fra.sbv + L - - pack}
-    {.fraBot.fra.SbhInfo .fraBot.fra.LbxInfo T - - {pack -side bottom -before %w}}
-    {.fraBot.stat - - - - {pack -side bottom} {-array {
+    {.fra.sbv + L - - pack}
+    {.fra.SbhInfo .fra.LbxInfo T - - {pack -side bottom -before %w}}
+    {.stat - - - - {pack -side bottom} {-array {
       {{$al(MC,Row:)}} 12
       {{$al(MC,Col:)}} 4
       {{} -anchor w -expand 1} 51

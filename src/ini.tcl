@@ -390,7 +390,14 @@ proc ini::ReadIniGeometry {nam val} {
     filgeometry    {set ::alited::FilGeometry $val}
     favgeometry    {set ::alited::favgeometry $val}
     tplgeometry    {set ::alited::tplgeometry $val}
-    treecw0        {set al(TREE,cw0) $val}
+    treecw0        {
+      if {[info exists ::alited::al(OLDTHEME)]
+      && $::alited::al(OLDTHEME) ne $::alited::al(THEME)} {
+        # this adjusts unit tree column #1 to make scroll bar visible
+        set val [expr {max(100,$val-20)}]
+      }
+      set al(TREE,cw0) $val
+    }
     treecw1        {set al(TREE,cw1) $val}
     runGeometry    {set al(runGeometry) $val}
     fontdetach     {set al(fontdetach) $val}
@@ -645,9 +652,11 @@ proc ini::ReadIniMisc {nam val} {
     HelpedMe {set ::alited::helpedMe $val}
     listSBL - checkgeo - tonemoves - moveall - chosencolor \
     - sortList - activemacro - commentmode - format_separ1 - format_separ2 \
-    - TIPS,* - MNUGEO,* - markwidth - klndweeks - topFindRepl {
+    - TIPS,* - MNUGEO,* - markwidth - klndweeks - topFindRepl \
+    - DockGeo - DockLayout - ApaveLayout {
       set al($nam) $val
     }
+
     tplilast {set ::alited::unit::ilast $val}
     incdec {lassign $val al(incdecName) al(incdecDate) al(incdecSize) al(incdecExtn)}
     blifo {set al(lifo) [string is true $val]}
@@ -1030,6 +1039,9 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "markwidth=$al(markwidth)"
   puts $chan "klndweeks=$al(klndweeks)"
   puts $chan "topFindRepl=$al(topFindRepl)"
+  puts $chan "DockGeo=$al(DockGeo)"
+  puts $chan "DockLayout=$al(DockLayout)"
+  puts $chan "ApaveLayout=$al(ApaveLayout)"
   # save the Edit/Formats pluginables
   puts $chan {}
   puts $chan {[Formats]}
@@ -1589,7 +1601,7 @@ proc ini::_init {} {
   # Initializes alited app.
 
   namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2 \
-    obFND obFND obFN2 obFN2 obCHK obCHK obRun obRun
+    obFND obFND obFN2 obFN2 obCHK obCHK obDFW obDFW obRun obRun
   namespace upvar ::alited::pref em_Num em_Num em_ico em_ico em_inf em_inf em_mnu em_mnu
 
   ::apave::initBaltip

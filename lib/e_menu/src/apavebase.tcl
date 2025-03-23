@@ -1708,6 +1708,8 @@ oo::class create ::apave::APaveBase {
         set rootname 1
         set dn [string range $dn 1 end]
       }
+      set com [lindex [split $dn] 0] ;# command for initialdir
+      if {$com ne {.} && [llength [info commands $com]]} {catch {set dn [eval $dn]}}
       set args [list -initialfile $fn -initialdir $dn {*}$parent {*}$args]
       incr isfilename
     } elseif {$nchooser eq {tk_chooseDirectory}} {
@@ -2061,6 +2063,7 @@ oo::class create ::apave::APaveBase {
         return $args
       }
     }
+    set orvert 0
     set attcur [list]
     set namvar [list]
     # get array of pairs (e.g. image-command for toolbar)
@@ -2074,6 +2077,8 @@ oo::class create ::apave::APaveBase {
           if {$name eq {menu}} {set v2 [list [my MC $v2]]}
           lappend namvar [namespace current]::$typ[incr ind] $v1 $v2
         }
+      } elseif {$nam eq {-orient}} {
+        set orvert [string match vert* $val]
       } else {
         lappend attcur $nam $val
       }
@@ -2103,11 +2108,19 @@ oo::class create ::apave::APaveBase {
     set k [set j [set j2 [set wasmenu 0]]]
     foreach {nam v1 v2} $namvar {
       if {[string first # $v1]==0} continue
-      if {$v1 eq {h_}} {  ;# horisontal space
+      if {$v1 eq {h_}} {
         set ntmp [my Transname fra ${name}[incr j2]]
         set wid1 [list $ntmp - - - - "pack -side left -in $w.$name -fill y"]
         set wid2 [list $ntmp.[my ownWName [my Transname h_ $name$j]] - - - - "pack -fill y -expand 1 -padx $v2"]
-      } elseif {$v1 eq {sev}} {   ;# vertical separator
+      } elseif {$v1 eq {v_}} {
+        set ntmp [my Transname fra ${name}[incr j2]]
+        set wid1 [list $ntmp - - - - "pack -in $w.$name -fill x"]
+        set wid2 [list $ntmp.[my ownWName [my Transname h_ $name$j]] - - - - "pack -fill x -expand 1 -pady $v2"]
+      } elseif {$v1 eq {seh}} {
+        set ntmp [my Transname fra ${name}[incr j2]]
+        set wid1 [list $ntmp - - - - "pack -in $w.$name -fill x"]
+        set wid2 [list $ntmp.[my ownWName [my Transname seh $name$j]] - - - - "pack -fill x -expand 1 -pady $v2"]
+      } elseif {$v1 eq {sev}} {
         set ntmp [my Transname fra ${name}[incr j2]]
         set wid1 [list $ntmp - - - - "pack -side left -in $w.$name -fill y"]
         set wid2 [list $ntmp.[my ownWName [my Transname sev $name$j]] - - - - "pack -fill y -expand 1 -padx $v2"]
@@ -2154,6 +2167,11 @@ oo::class create ::apave::APaveBase {
               my MakeWidgetName $w.$name [string totitle $v1 0 0]
             }
           }
+        }
+        if {$orvert} {
+          set wid1 [list $name.$v1 - - - - "pack $packreq" $v2]
+          set lwidgets [linsert $lwidgets [incr itmp] $wid1]
+          continue
         }
         set wid1 [list $name.$v1 - - - - "pack -side left $packreq" $v2]
         if {[incr wasseh]==1} {
@@ -2610,9 +2628,19 @@ oo::class create ::apave::APaveBase {
             } elseif {![string match #* $fr]} {
               set attr [my GetMC $attr]
               set attr [subst $attr]
-              lassign [::apave::extractOptions attr -tip {} -tooltip {}] tip t2
+              lassign [::apave::extractOptions attr -tip {} -tooltip {} \
+                -Attrs {}] tip t2 Attrs
               set wt [my MakeWidgetName $w $fr]
-              $w add [ttk::frame $wt] {*}$attr
+              if {[string match lab* $fr]} {
+                set wid ttk::label
+              } elseif {[string match laB* $fr]} {
+                set wid label
+              } elseif {[string match fra* $fr]} {
+                set wid ttk::frame
+              } else {
+                set wid frame
+              }
+              $w add [$wid $wt {*}$Attrs] {*}$attr
               catch {$wt config -takefocus 0}
               if {[append tip $t2] ne {}} {
                 set tip [my MC $tip]

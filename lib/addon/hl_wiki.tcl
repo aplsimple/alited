@@ -98,11 +98,16 @@ proc hl_wiki::line {w {pos ""} {prevQtd 0}} {
     $w tag add wikiCMNT "$il.end -[incr p1] char" $il.end
     return yes
   }
+  # list beginning with *, +, -
   lassign [regexp -inline {^(\s+[*+-]\s)} $line] lre
   if {$lre ne {}} {
     set p1 [string length $lre]
     $w tag add wikiLIST $il.0 $il.$p1
     set line [string replace $line [incr p1 -2] $p1 { }]
+  }
+  # underline beginning with ----
+  if {[regexp {^----+\s*$} $line]} {
+    $w tag add wikiLIST $il.0 $il.end
   }
   set italic [regexp -inline -all -indices {(?!'<)'{2}(?!').*?'{2}(?!'>)} $line]
   foreach l2 $italic {

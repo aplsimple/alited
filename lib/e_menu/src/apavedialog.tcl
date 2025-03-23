@@ -1236,16 +1236,18 @@ oo::class create ::apave::APaveDialog {
              \$pop add command $noIMG -accelerator F3 -label \"Find Next\" \\
               -command \"[self] findInText 1\"
              $addpopup
+             [[self] popupHighlightCommands \$pop $wt]
              \$pop add separator
              \$pop add command [my iconA exit] -accelerator Esc -label \"Close\" \\
               -command \"\[[self] paveoptionValue Defb1\] invoke\"
             "
+            after idle "[self] set_highlight_matches $wt"
           } else {
             set appendHL yes
           }
         } else {
           # make bindings and popup menu for text widget
-          after idle "[self] set_highlight_matches \[[self] TexM\]"
+          after idle "[self] set_highlight_matches $wt"
           append binds "
             [my setTextBinds $wt]
             menu \$pop
@@ -1362,7 +1364,7 @@ oo::class create ::apave::APaveDialog {
         }
       }
       if {$readonly} {
-        my readonlyWidget ::$wtxt true false
+        my readonlyWidget $wtxt true false
       }
       if {$savetext ne {}} {
         my askForSave $wtxt $savetext

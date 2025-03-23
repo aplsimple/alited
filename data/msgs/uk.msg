@@ -29,6 +29,7 @@ namespace eval ::alited {
     {Search} {Пошук}
     {Tools} {Струменти}
     {Setup} {Опції}
+    {Setup...} {Опції...}
     {Help} {Допомога}
     {Yes} {Так}
     {No} {Ні}
@@ -83,7 +84,6 @@ namespace eval ::alited {
     "Correct the indentation of \"%f\"\nwith indenting %i spaces?" "Правити відступи \"%f\",\nпо %i на кожний?"
     {The line %n: unbalanced brace!} {Рядок %n: незбалансована скобка!}
     {Wrap Lines} {Згортати рядки}
-    {Unwrap Lines} {Розгортати рядки}
     {Default values for new projects:} {Опції за замовчуванням для проектів:}
   }
 

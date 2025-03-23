@@ -562,6 +562,28 @@ proc menu::FillMenu {} {
   $m.paver add separator
   $m.paver add command -label $al(MC,Help) -command {alited::menu::Paver 3}
 
+  ### ________________________ DockingFW _________________________ ###
+
+  MenuCascade $m dockingFW {Paned GUI}
+  $m.dockingFW add command -label {Docking Framework} -command alited::tool::DFWokay
+  $m.dockingFW add separator
+  $m.dockingFW add command -label DFW_Layout \
+    -command alited::tool::DFWdocklayout
+  $m.dockingFW add command -label apave_Layout \
+    -command alited::tool::DFWapavelayout
+  $m.dockingFW add separator
+  $m.dockingFW add command -label $al(MC,open...) \
+    -command alited::tool::DFWopen
+  $m.dockingFW add command -label [msgcat::mc Setup...] \
+    -command alited::tool::DFWtool
+  $m.dockingFW add separator
+  $m.dockingFW add command -label $al(MC,Help) -command alited::tool::DFWhelp
+  ::baltip::tip $m.dockingFW "$al(MC,run):\n\ntclsh [alited::tool::DFWscript]\
+    \"DFW_Layout.tcl\" -load" -index 3 -per10 4000
+  ::baltip::tip $m.dockingFW "$al(MC,run):\n\ntclsh \"apave_Layout.tcl\"" -index 4
+  ::baltip::tip $m.dockingFW \
+    "$al(MC,open...)\n\nDFW_Layout.tcl\napave_Layout.tcl" -index 6
+
   ### ________________________ Pickers _________________________ ###
 
   $m add separator
@@ -580,7 +602,7 @@ proc menu::FillMenu {} {
   set al(TYPETPLMENU) $m.typetpl
   menu $al(TYPETPLMENU) -tearoff 1
   $m add cascade -label [msgcat::mc {Type Templates}] -menu $al(TYPETPLMENU)
-  $al(TYPETPLMENU) add command -label [msgcat::mc {Open...}] -command alited::unit::OpenTypeTemplate
+  $al(TYPETPLMENU) add command -label $al(MC,open...) -command alited::unit::OpenTypeTemplate
   $m add separator
 
   $m add checkbutton -label $al(MC,icoprev2) \

@@ -6,16 +6,19 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.8.5 (26 Feb'25)`
+Version `v1.8.9b2 (23 Mar'25)`
 
   - BUGFIX: running date picker after Projects
+  - NEW   : Tools/Docking FW
   - NEW   : doctest: code may include #< comments to execute by doctest
+  - CHANGE: simplify main window's layout
+  - CHANGE: "Wrap lines" as checkbox in detached texts
   - CHANGE: no wrapping lines for calendar text (deadlines) of Projects
   - CHANGE: HOMEDIR variable: use Tcl 9.0 "file home" as variant
   - CHANGE: menu Help/alited: submenu
   - CHANGE: menu Help/Tcl-Tk: "Thread package"; check for local htm(l) files
   - CHANGE: main::CalcIndentation: check for existing window
-  - CHANGE: packages: apave/e_menu 4.5.4, hl_tcl 1.2
+  - CHANGE: packages: apave/e_menu 4.5.7, hl_tcl 1.2
 
 
 Version `v1.8.8 (15 Jan'25)`

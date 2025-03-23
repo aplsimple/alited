@@ -7,6 +7,7 @@
 ###########################################################
 
 namespace eval tool {
+  variable winFW $::alited::al(WIN).dockFW
 }
 
 #_______________________
@@ -300,6 +301,116 @@ proc tool::TooltipRun {} {
     set res $al(comForce)\n[lindex [split $res \n] 1]
   }
   append res [AddTooltipRun]
+}
+
+# ________________________ dockingFW _________________________ #
+
+proc tool::DFWtool {} {
+  # Handles DockingFrameWork tool.
+
+  namespace upvar ::alited al al obDFW obDFW
+  variable winFW
+  set head {
+  DockingFrameWork allows to get a paned GUI using "drag-and-drop" moves
+  of ttk::notebook tabs.
+
+  The two entries below mean the output file paths the resulting layouts will
+  be written to.
+
+  If an output file's directory doesn't exist, it will be created.
+}
+  set geo $al(DockGeo)
+  namespace upvar ::alited al al obDFW obDFW
+  catch {destroy $winFW}
+  $obDFW makeWindow $winFW.fra [msgcat::mc Setup]
+  $obDFW paveWindow $winFW.fra {
+    {v_ - -}
+    {labHead v_ T 1 1 {-st w -pady 4 -padx 8} {-t {$head}}}
+    {fra + T 1 1 {-st nsew -pady 0 -padx 3} {-padding {5 5 5 5} -relief groove}}
+    {.lab1 - - - - {-st e} {-t {DFW Layout:}}}
+    {.fil1 + L 1 1 {-st w} {-w 50 -tvar ::alited::al(DockLayout)}}
+    {.lab2 .lab1 T 1 1 {-st e} {-t {apave Layout:}}}
+    {.fil2 + L 1 1 {-st w} {-w 50 -tvar ::alited::al(ApaveLayout)}}
+    {fra2 fra T 1 1 {-st nsew -pady 3 -padx 3} {-padding {5 5 5 5} -relief groove}}
+    {.h_ - - - - {pack -side left -expand 1 -fill both}}
+    {.ButOK - - - - {pack -side left -padx 2} {-t OK -com ::alited::tool::DFWokay}}
+    {.butClose - - - - {pack -side left} {-t Close -com ::alited::tool::DFWcancel}}
+  }
+  $obDFW showModal $winFW -modal no -waitvar no -onclose alited::tool::DFWcancel \
+    -focus [$obDFW ButOK] -geometry $geo
+}
+#_______________________
+
+proc tool::DFWdocklayout {} {
+  # Runs dockingFW layout.
+
+  namespace upvar ::alited al al
+  if {![file exists $al(DockLayout)]} {
+    alited::Message "$al(DockLayout) doesn't exists" 4
+    return
+  }
+  alited::Run [DFWscript] $al(DockLayout) -load
+}
+#_______________________
+
+proc tool::DFWapavelayout {} {
+  # Runs apave FW layout.
+
+  namespace upvar ::alited al al
+  if {![file exists $al(ApaveLayout)]} {
+    alited::Message "$al(ApaveLayout) doesn't exists" 4
+    return
+  }
+  alited::Run $al(ApaveLayout)
+}
+#_______________________
+
+proc tool::DFWscript {} {
+  # Gets path to dockingFW.tcl.
+
+  file join $::alited::LIBDIR util dockingFW.tcl
+}
+#_______________________
+
+proc tool::DFWokay {} {
+   # Handles hitting "OK" button of dockingFW.
+
+  namespace upvar ::alited al al PAVEDIR PAVEDIR
+  variable winFW
+  catch {set al(DockGeo) [wm geometry $winFW]}
+  alited::Run [DFWscript] $al(DockLayout) $al(ApaveLayout) $PAVEDIR
+}
+#_______________________
+
+proc tool::DFWcancel {args} {
+  # Handles hitting "Cancel" button of dockingFW.
+
+  variable winFW
+  set ::alited::al(DockGeo) [wm geometry $winFW]
+  destroy $winFW
+
+}
+#_______________________
+
+proc tool::DFWopen {} {
+  # Opens layout files.
+
+  namespace upvar ::alited al al obPav obPav
+  set inidir [file dirname $al(DockLayout)]
+  set ::alited::al(TMPfname) {}
+  set fnames [$obPav chooser tk_getOpenFile ::alited::al(TMPfname) \
+    -initialdir $inidir -parent $al(WIN) -multiple 1]
+  unset ::alited::al(TMPfname)
+  foreach fn [lreverse [lsort $fnames]] {
+    alited::file::OpenFile $fn yes
+  }
+}
+#_______________________
+
+proc tool::DFWhelp {} {
+  # Shows docs on DFW.
+
+  openDoc https://github.com/aplsimple/apave_tools/tree/main/tools/dockingFW
 }
 
 # ________________________ emenu support _________________________ #

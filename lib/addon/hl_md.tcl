@@ -71,6 +71,17 @@ proc hl_md::line {w {pos ""} {prevQtd 0}} {
     $w tag add mdLIST $il.0 $il.$p1
     set line [string replace $line [incr p1 -2] $p1 { }]
   }
+  # underline beginning with ---
+  if {[regexp {^---+\s*$} $line]} {
+    $w tag add mdLIST $il.0 $il.end
+  }
+  # underline beginning with =
+  set _ [expr {$il-1}]
+  if {[regexp {^=+\s*$} $line]} {
+    $w tag add mdHEAD3 $_.0 $il.end
+  } elseif {![regexp {^=+\s*$} [$w get $_.0 $_.end]]} {
+    $w tag remove mdHEAD3 $_.0 $il.end
+  }
   # back apostrophes for code snippets
   set apos [regexp -inline -all -indices {(^|[^`])+(`[^`]+`)+([^`]|$)} $line]
   foreach {- - l2 -} $apos {
