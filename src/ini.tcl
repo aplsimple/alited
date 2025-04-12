@@ -437,7 +437,7 @@ proc ini::ReadIniOptions {nam val} {
     deffont       {set al(FONT) $val}
     smallfontsize {set al(FONTSIZE,small) $val}
     stdfontsize   {set al(FONTSIZE,std) $val}
-    txtfont       {set al(FONT,txt) $val}
+    txtfont       {set al(FONT,txt) $val; obj basicTextFont $val}
     maxfind       {set al(INI,maxfind) $val}
     confirmexit   {set al(INI,confirmexit) $val}
     belltoll      {set al(INI,belltoll) $val}

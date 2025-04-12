@@ -5,3 +5,10 @@
  key groups to others.
 
  For example, <r>Alt+</r>A/B/C... would work highly likely always.
+ ____________________________________________________________________
+
+ Some key combinations can be not accessible due to their use by OS.
+
+ In Linux, for example, <b>Ctrl+F5</b> may be used to switch to 5th desktop,
+ so that if you don't have the 5th desktop and want <b>Ctrl+F5</b> be
+ used in alited, just clear this OS setting.

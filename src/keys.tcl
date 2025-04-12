@@ -151,16 +151,14 @@ proc keys::UserList {} {
   namespace upvar ::alited al al
   set reserved [ReservedList]
   lappend reserved {*}[alited::edit::PluginAccelerator $al(MENUFORMATS)]
-  foreach mod {"" Control- Alt- Shift- Control-Shift- Control-Alt-} {
-    if {$mod ni {Control- Control-Alt-}} {
-      foreach k {F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12} {
-        set key "$mod$k"
-        if {$key ni $reserved} {lappend res $key}
-      }
+  foreach mod {{} Control- Alt- Shift- Control-Shift- Control-Alt-} {
+    foreach k {F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12} {
+      set key $mod$k
+      if {$key ni $reserved} {lappend res $key}
     }
-    if {$mod ni {"" "Shift-"}} {
+    if {$mod ni {{} Shift-}} {
       foreach k [split 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ {}] {
-        set key "$mod$k"
+        set key $mod$k
         if {$key ni $reserved} {lappend res $key}
       }
     }
@@ -238,7 +236,7 @@ proc keys::ReservedAdd {} {
   Add action autocomplete [alited::pref::BindKey 19 - Tab] [list + if $i1 {alited::complete::AutoCompleteCommand; break}]
   Add action goto-bracket [alited::pref::BindKey 20 - Alt-B] {alited::main::GotoBracket; break}
   Add action file-list [alited::pref::BindKey 21 - F9] {alited::bar::BAR popList %X %Y; break}
-  Add action run-file [alited::pref::BindKey 22 - Shift-F5] $al(runAsIs)
+  Add action run-file [alited::pref::BindKey 22 - Control-F5] $al(runAsIs)
 }
 #_______________________
 

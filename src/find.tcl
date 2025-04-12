@@ -235,13 +235,7 @@ proc find::LookDecl {{wtxt ""}} {
     lassign [LookDecl1 $wtxt no] found TID
   }
   if {$found ne {}} {
-    alited::main::SaveVisitInfo
-    alited::favor::SkipVisited yes
-    alited::bar::BAR $TID show
-    after idle " \
-      alited::main::FocusText $TID $found.0 ; \
-      alited::tree::NewSelection ; \
-      alited::main::SaveVisitInfo"
+    alited::unit::SwitchToTIDPos $TID $found.0
   } else {
     set msg [string map [list %u $what] $al(MC,notfndunit)]
     alited::Message $msg 4

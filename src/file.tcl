@@ -544,8 +544,8 @@ proc file::InputFileName {title name undermouse args} {
     }
   }
   lassign [$obDl2 input {} $title [list \
-    ent "{} {} {-w 32}" "{$name}"] \
-    -head [msgcat::mc {File name:}] {*}$args] res name
+    fis "{} {-pady 16 -padx 8} {-w 50}" "{$name}"] \
+    -head \n\ [msgcat::mc {File name:}] {*}$args] res name
   list $res $name
 }
 #_______________________

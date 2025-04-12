@@ -372,12 +372,23 @@ proc tool::DFWscript {} {
 }
 #_______________________
 
+proc tool::DFWSaveGeometry {} {
+  # Saves dockingFW window's geometry.
+
+  namespace upvar ::alited al al
+  variable winFW
+  catch {
+    lassign [split [wm geometry $winFW] x+] - - x y
+    set al(DockGeo) +$x+$y
+  }
+}
+#_______________________
+
 proc tool::DFWokay {} {
    # Handles hitting "OK" button of dockingFW.
 
   namespace upvar ::alited al al PAVEDIR PAVEDIR
-  variable winFW
-  catch {set al(DockGeo) [wm geometry $winFW]}
+  DFWSaveGeometry
   alited::Run [DFWscript] $al(DockLayout) $al(ApaveLayout) $PAVEDIR
 }
 #_______________________
@@ -386,7 +397,7 @@ proc tool::DFWcancel {args} {
   # Handles hitting "Cancel" button of dockingFW.
 
   variable winFW
-  set ::alited::al(DockGeo) [wm geometry $winFW]
+  DFWSaveGeometry
   destroy $winFW
 
 }

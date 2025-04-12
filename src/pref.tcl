@@ -549,19 +549,19 @@ proc pref::General_Tab1 {} {
     {.labCS .labTheme T 1 1 {-st e -pady 1 -padx 3} {-t {Color scheme:}}}
     {.opc2 + L 1 1 {-st sw -pady 1} {::alited::pref::opcc ::alited::pref::opcColors
     {-width 21 -compound left -image alimg_color -com alited::pref::CheckCS
-    -tip {-indexedtips
-      0 {$al(MC,nocs)}
-      2 {$al(MC,fitcs): awlight}
-      3 {$al(MC,fitcs): azure-light}
-      4 {$al(MC,fitcs): forest-light}
-      5 {$al(MC,fitcs): sun-valley-light}
-      6 {$al(MC,fitcs): lightbrown}
-      26 {$al(MC,fitcs): sun-valley-dark}
-      27 {$al(MC,fitcs): awdark}
-      28 {$al(MC,fitcs): azure-dark}
-      29 {$al(MC,fitcs): forest-dark}
-      30 {$al(MC,fitcs): sun-valley-dark}
-      31 {$al(MC,fitcs): darkbrown}
+    -tip {-indexedtips\
+      0 {$al(MC,nocs)}\
+      2 {$al(MC,fitcs): awlight}\
+      3 {$al(MC,fitcs): azure-light}\
+      4 {$al(MC,fitcs): forest-light}\
+      5 {$al(MC,fitcs): sun-valley-light}\
+      6 {$al(MC,fitcs): lightbrown}\
+      26 {$al(MC,fitcs): sun-valley-dark}\
+      27 {$al(MC,fitcs): awdark}\
+      28 {$al(MC,fitcs): azure-dark}\
+      29 {$al(MC,fitcs): forest-dark}\
+      30 {$al(MC,fitcs): sun-valley-dark}\
+      31 {$al(MC,fitcs): darkbrown}\
       }} {alited::pref::opcToolPre %a}}}
     {.butOK + L 1 1 {-padx 20} {-t "$al(MC,test)" -com {alited::pref::CheckTheming yes yes}}}
     {.labHue .labCS T 1 1 {-st e -pady 1 -padx 3} {-t Tint:}}

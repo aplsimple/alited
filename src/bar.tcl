@@ -554,6 +554,7 @@ proc bar::OnTabSelection {TID} {
     ::alited::tree::SeeSelection
     ::alited::main::UpdateGutter
     ::alited::favor::SkipVisited no
+    ::alited::main::SaveVisitInfo
   }
   if {![alited::file::IsNoName $fname] && ![file exists $fname]} {
     after idle [list alited::Balloon1 $fname]

@@ -815,6 +815,7 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
   #   s - key's state
 
   namespace upvar ::alited al al obPav obPav
+  SaveLast2
   # only for unit tree and not navigation key
   if {!$al(TREE,isunits) || [alited::favor::SkipVisited] || \
   $K in {Tab Up Down Left Right Next Prior Home End Insert} || \
@@ -853,6 +854,29 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
     if {$name eq [alited::tree::UnitTitle $title $l1 $l2]} {
       set al(CPOS,$TID,$header) [::apave::p+ $pos -$l1]
       return
+    }
+  }
+}
+#_______________________
+
+proc main::SaveLast2 {} {
+  # Saves the current text's info in last two visited, to switch them.
+  # See also: unit::SwitchUnits
+
+  namespace upvar ::alited al al
+  catch {
+    if {![info exists al(Last2Visited)]} {set al(Last2Visited) [list]}
+    set wtxt [CurrentWTXT]
+    set pos [$wtxt index insert]
+    set TID [alited::bar::CurrentTabID]
+    lassign [alited::tree::CurrentItemByLine $pos 1] curitem
+    set info [list $TID $curitem $pos]
+    lassign [lindex $al(Last2Visited) 0] TID2 curitem2
+    if {$TID eq $TID2 && $curitem eq $curitem2} {
+      set al(Last2Visited) [lreplace $al(Last2Visited) 0 0 $info]
+    } else {
+      set al(Last2Visited) [linsert $al(Last2Visited) 0 $info]
+      set al(Last2Visited) [lrange $al(Last2Visited) 0 1]
     }
   }
 }

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.9b2  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.9b6  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
   variable al; array set al [list]
@@ -29,8 +29,8 @@ namespace eval alited {
 
   variable tcltk_version [package require Tk]
   variable isTcl90 [package vsatisfies $tcltk_version 9.0-]
-  if {![package vsatisfies $tcltk_version 8.6.10-]} {
-    tk_messageBox -message "\nalited needs Tcl/Tk v8.6.10+ \
+  if {![package vsatisfies $tcltk_version 8.6.9-]} {
+    tk_messageBox -message "\nalited needs Tcl/Tk v8.6.9+ \
       \n\nwhile the current is v$tcltk_version\n"
     exit
   }

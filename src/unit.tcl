@@ -216,12 +216,27 @@ proc unit::GetUnits {TID textcont} {
 
 proc unit::SwitchUnits {} {
   # Switches between last two active units.
+  # See also: main::SaveLast2
 
   namespace upvar ::alited al al
-  if {[llength $al(FAV,visited)]<2} return
-  lassign [lindex $al(FAV,visited) 1 4] name fname header
-  if {[set TID [alited::favor::OpenSelectedFile $fname]] eq {}} return
-  alited::favor::GoToUnit $TID $name $header
+  if {![info exists al(Last2Visited)] || [llength $al(Last2Visited)]<2} return
+  lassign [lindex $al(Last2Visited) 1] TID curitem pos
+  SwitchToTIDPos $TID $pos
+}
+#_______________________
+
+proc unit::SwitchToTIDPos {TID pos} {
+  # Switches to tab & text position.
+  #   TID - tab's ID
+  #   pos - text position
+
+  alited::main::SaveVisitInfo
+  alited::favor::SkipVisited yes
+  alited::bar::BAR $TID show
+  after idle " \
+    alited::main::FocusText $TID $pos ; \
+    alited::tree::NewSelection ; \
+    alited::main::SaveVisitInfo"
 }
 #_______________________
 
