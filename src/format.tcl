@@ -635,22 +635,41 @@ proc format::Mode2 {cont args} {
   # Applies a command to selection/current line.
   #   cont - list of config.file's lines
 
-  lassign [BeforeFormatting] wtxt value pos1 pos2
-  if {$wtxt eq {}} return
+  set wtxt [alited::main::CurrentWTXT]
   set err 0
   foreach line $cont {
     if {[set com [alited::edit::IniParameter command $line]] ne {}} {
-      set value [alited::edit::EscapeValue $value]
-      set com [alited::Map -nocase $com %v $value]
-      if {[catch {set value [eval $com]} e]} {
-        alited::Message $e 4
-        set err 1
-        break
+      set selection [$wtxt tag ranges sel]
+      if {[llength $selection]==0} {
+        set pos [expr {int([$wtxt index insert])}]
+        set pos1 $pos.0
+        set pos2 $pos.end
+        set selection [list $pos1 $pos2]
       }
-      set value [alited::edit::UnEscapeValue $value]
+      # Mode=2 allows a rectangular selection,
+      # so we should apply the command ($com)
+      # to each line of the rectangular selection
+      foreach {pos1 pos2} $selection {
+        set value [$wtxt get $pos1 $pos2]
+        if {$value ne {}} {
+          set value [alited::edit::EscapeValue $value]
+          set comtodo [alited::Map -nocase $com %v $value]
+          if {[catch {set value [eval $comtodo]} e]} {
+            alited::Message $e 4
+            set err 1
+            break
+          }
+          set value [alited::edit::UnEscapeValue $value]
+          $wtxt replace $pos1 $pos2 $value
+          set nch [string length $value]
+          $wtxt tag add sel $pos1 "$pos1 +$nch chars"
+        }
+      }
+      if {$err} break
     }
   }
-  if {!$err} {AfterFormatting $wtxt $pos1 $pos2 $value}
+  alited::main::UpdateAll
+  focusByForce $wtxt
 }
 
 ## ________________________ on line list _________________________ ##

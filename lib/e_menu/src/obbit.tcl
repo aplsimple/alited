@@ -1754,6 +1754,7 @@ emfg  embg   -  menubg  winfg   winbg   itemHL2 #003...reserved...
       if {$ts eq {Treeview}} {
         ttk::style map $ts -foreground [list readonly $tfgD disabled $tfgD {selected focus} $tfgS {selected !focus} $thlp] \
           -background [list readonly $tbgD disabled $tbgD {selected focus} $tbgS {selected !focus} $tbg1]
+        ttk::style configure $ts -rowheight [expr {[my basicFontSize] + 9}]
       } else {
         my Ttk_style map $ts -foreground [list readonly $tfgD disabled $tfgD selected $tfgS]
         my Ttk_style map $ts -background [list readonly $tbgD disabled $tbgD selected $tbgS]

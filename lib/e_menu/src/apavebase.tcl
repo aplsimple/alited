@@ -2700,7 +2700,7 @@ method Post {w attrs} {
         after idle [list [self] timeoutButton $w $timo $lbl]
       }
       -myown {
-        eval {*}[string map [list %w $w] $v]
+        my Eval {*}[string map [list %w $w] $v]
       }
       -bartabs {
         after 10 [string map [list %w $w] $v]
@@ -3567,7 +3567,7 @@ method Window {w inplists} {
       }
       my Pre attrs
       set addcomms [my AdditionalCommands $w $wname attrs]
-      eval $widget $wname {*}$attrs
+      my Eval $widget $wname {*}$attrs
       my Post $wname $attrs
       foreach acm $addcomms {{*}$acm}
       # for buttons and entries - set up the hotkeys (Up/Down etc.)
@@ -3615,6 +3615,12 @@ method Window {w inplists} {
     }
   }
   return $lwidgets
+}
+#_______________________
+
+method Eval {args} {
+
+  eval {*}$args
 }
 #_______________________
 

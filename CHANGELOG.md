@@ -6,10 +6,11 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.9b6 (10 Apr'25)`
+Version `v1.8.9b7 (14 Apr'25)`
 
   - BUGFIX: running date picker after Projects
   - BUGFIX: "Search/To Last Visited": issues fixed for file tree & clicking tabs
+  - NEW   : Edit/Formats/Strings: applicable to rectangular selections (exc. Squeeze)
   - NEW   : Tools/Docking FW
   - NEW   : doctest: code may include #< comments to execute by doctest
   - NEW   : font & editor (text) font of Preferences are used in all widgets

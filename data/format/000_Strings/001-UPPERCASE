@@ -3,6 +3,8 @@
 # or, if there is no selection, to a current line.
 #
 # In the command, %v wildcard stands for the selection or the current line.
+#
+# NOTE: this mode allows rectangular selections.
 
 # ===========================================================================
 #
