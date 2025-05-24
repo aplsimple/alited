@@ -1082,9 +1082,21 @@ proc main::ShowOutdatedTODO {prj date todo is} {
   set todo "\n$al(MC,prjName) $prj\n\n$al(MC,on) $date\n\n$todo\n"
   set opts {}
   if {[string first !!! $todo]>-1 || ($is==1 && $al(todoahead))} {
-    set opts {-ontop 1 -eternal 1 -fg white -bg red}
+    set opts [list -ontop 1 -eternal 1 -fg white -bg red \
+      -onmouse {alited::main::HandleOutdatedTODO %b}]
   }
   ::alited::Balloon $todo yes 2500 {*}$opts
+}
+#_______________________
+
+proc main::HandleOutdatedTODO {butt} {
+  # Processes clicking the outdated (red) TODOs.
+  #   butt - number of mouse button (1 - left)
+
+  ::baltip::hide $::alited::al(WIN) 1
+  if {$butt == 1} {
+    alited::project::_run
+  }
 }
 #_______________________
 

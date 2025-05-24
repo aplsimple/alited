@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.9b7  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.9  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
   variable al; array set al [list]

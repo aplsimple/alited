@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.6.2
+package provide baltip 1.6.3
 
 # ________________________ Variables _________________________ #
 
@@ -59,7 +59,7 @@ proc ::baltip::configure {args} {
   }
   set force no
   set index -1
-  lassign {} geometry tag ctag nbktab reset command maxexp focus
+  lassign {} geometry tag ctag nbktab reset command maxexp focus onmouse
   set global [expr {[dict exists $args -global] && [dict get $args -global]}]
   foreach {n v} $args {
     set n1 [string range $n 1 end]
@@ -71,7 +71,7 @@ proc ::baltip::configure {args} {
         set my::ttdata($n1) $v
       }
       -force - -geometry - -index - -tag - -global - -ctag - -nbktab - -reset - \
-      -command - -maxexp - -focus {
+      -command - -maxexp - -focus - -onmouse {
         set $n1 $v
       }
       default {return -code error "baltip: invalid option \"$n\""}
@@ -84,7 +84,7 @@ proc ::baltip::configure {args} {
     }
   }
   return [list \
-    $force $geometry $index $tag $ctag $nbktab $reset $command $maxexp $focus]
+    $force $geometry $index $tag $ctag $nbktab $reset $command $maxexp $focus $onmouse]
 }
 #_______________________
 
@@ -126,7 +126,7 @@ proc ::baltip::optionlist {} {
 
   return [list -on -per10 -fade -pause -fg -bg -bd -padx -pady -padding -font \
     -alpha -text -index -tag -bell -under -image -compound -relief -ctag \
-    -nbktab -reset -command -maxexp -focus -shiftX -shiftY -ontop -eternal]
+    -nbktab -reset -command -maxexp -focus -shiftX -shiftY -ontop -eternal -onmouse]
 }
 #_______________________
 
@@ -166,7 +166,7 @@ proc ::baltip::tip {w {text "-BALTIPGET"} args} {
     set arrsaved [array get my::ttdata]
     set optvals [::baltip::my::CGet {*}$args]
     # block of related lines for special options
-    set specopt {forced geo index ttag ctag nbktab reset command maxexp focus}
+    set specopt {forced geo index ttag ctag nbktab reset command maxexp focus onmouse}
     lassign $optvals {*}$specopt
     set optArgs [lrange $optvals [llength $specopt] end] ;# get rid of spec.options
     if {[catch {set optvals $my::ttdata(optvals,$w)}]} {
@@ -180,6 +180,7 @@ proc ::baltip::tip {w {text "-BALTIPGET"} args} {
     } else {
       set my::ttdata(command,$w) $command
     }
+    set my::ttdata(onmouse,$w) $onmouse
     if {$command ne {}} {::baltip::update $w $text}
     if {![info exists my::ttdata(maxexp,$w)]} {
       set my::ttdata(maxexp,$w) $maxexp
@@ -721,8 +722,10 @@ proc ::baltip::my::DoShow {w text force geo optvals} {
     bind $win <Any-Enter> "::baltip::hide $w"
     bind Tooltip$win <Any-Enter>  "::baltip::hide $w"
   }
-  bind $win <Any-Button> "::baltip::hide $w 1"
-  bind Tooltip$win <Any-Button> "::baltip::hide $w 1"
+  set butcom "::baltip::hide $w 1"
+  catch {if {$ttdata(onmouse,$w) ne {}} {set butcom $ttdata(onmouse,$w)}}
+  bind $win <Any-Button> $butcom
+  bind Tooltip$win <Any-Button> $butcom
   set aint 20
   set fint [expr {int($data(-fade)/$aint)}]
   set icount [expr {int($data(-per10)/$aint*$icount/10.0)}]

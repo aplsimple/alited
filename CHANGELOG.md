@@ -6,7 +6,7 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.9b7 (14 Apr'25)`
+Version `v1.8.9 (24 May'25)`
 
   - BUGFIX: running date picker after Projects
   - BUGFIX: "Search/To Last Visited": issues fixed for file tree & clicking tabs
@@ -15,6 +15,7 @@ Version `v1.8.9b7 (14 Apr'25)`
   - NEW   : doctest: code may include #< comments to execute by doctest
   - NEW   : font & editor (text) font of Preferences are used in all widgets
   - NEW   : Ctrl+F1..F12 & Ctrl+Alt+F1..F12 allowed in Preferences/Keys
+  - CHANGE: click on red reminder of project TODO: left button enters Projects, right one hides reminder
   - CHANGE: oldest Tcl/Tk version to run alited is 8.6.9 (i/o 8.6.10)
   - CHANGE: default Ctrl+F5 i/o Shift+F5 for "Tools/Run as is"
   - CHANGE: File/Clone : button of file chooser
@@ -25,7 +26,7 @@ Version `v1.8.9b7 (14 Apr'25)`
   - CHANGE: menu Help/alited: submenu
   - CHANGE: menu Help/Tcl-Tk: "Thread package"; check for local htm(l) files
   - CHANGE: main::CalcIndentation: check for existing window
-  - CHANGE: packages: apave/e_menu 4.6.0, hl_tcl 1.2
+  - CHANGE: packages: apave/e_menu 4.6.1, hl_tcl 1.2
 
 
 Version `v1.8.8 (15 Jan'25)`
