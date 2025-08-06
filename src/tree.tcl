@@ -1026,10 +1026,10 @@ proc tree::UnitTooltip {wtxt l1 l2} {
 }
 #_______________________
 
-proc tree::GetTooltip {ID NC} {
+proc tree::GetTooltip {ID nc} {
   # Gets a tip for unit / file tree's item.
   #   ID - ID of treeview item
-  #   NC - column of treeview item
+  #   nc - column of treeview item
 
   namespace upvar ::alited al al obPav obPav
   if {[info exists al(movWin)] && $al(movWin) ne {} || ![::alited::IsTipable]} {
@@ -1038,7 +1038,7 @@ proc tree::GetTooltip {ID NC} {
   set wtree [$obPav Tree]
   if {$al(TREE,isunits)} {
     # for units
-    set tip [alited::unit::GetHeader $wtree $ID $NC]
+    set tip [alited::unit::GetHeader $wtree $ID $nc]
     # try to read and add TODOs for this unit
     catch {
       lassign [$wtree item $ID -values] l1 l2

@@ -628,7 +628,7 @@ proc menu::FillMenu {} {
 
   menu $m.tipson -tearoff 1
   $m add cascade -label [msgcat::mc {Tips on / off}] -menu $m.tipson
-  $m.tipson add checkbutton -label $al(MC,projects) -variable ::alited::al(TIPS,Projects) -command alited::ini::SaveIni
+  $m.tipson add checkbutton -label $al(MC,icobox) -variable ::alited::al(TIPS,Projects) -command alited::ini::SaveIni
   $m.tipson add checkbutton -label $al(MC,tpl) -variable ::alited::al(TIPS,Templates) -command alited::ini::SaveIni
   $m.tipson add checkbutton -label $al(MC,pref) -variable ::alited::al(TIPS,Preferences) -command alited::ini::SaveIni
   $m.tipson add checkbutton -label $al(MC,FavLists) -variable ::alited::al(TIPS,SavedFavorites) -command alited::ini::SaveIni

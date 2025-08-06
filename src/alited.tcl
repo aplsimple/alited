@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.9  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.10  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
   variable al; array set al [list]
@@ -897,7 +897,7 @@ namespace eval alited {
     if {[file exists $fname]} {
       set msg [readTextFile $fname]
     } else {
-      set msg "Here should be a text of\n\"$fname\""
+      set msg "Here should be a text of\n\"$fname\"\n\nPlease message the issue to the developer."
     }
     if {$::alited::DEBUG} {puts "help file: $fname"}
     set wmax 1
@@ -929,9 +929,8 @@ namespace eval alited {
       catch {destroy $al(DLGPREV)}
       after idle "set ::alited::al(DLGPREV) \[$pobj dlgPath\]"
     }
-    set res [$pobj ok {} Help "\n$msg\n" -modal no -waitvar no \
-      -onclose "alited::destroyWindow %w [focus]" -centerme $win -text 1 -scroll no \
-      {*}$tags -ontop $ontop -w [incr wmax] {*}$args]
+    set res [$pobj ok {} Help "\n$msg\n" -centerme $win \
+      -text 1 -scroll no {*}$tags -ontop $ontop -w [incr wmax] {*}$args]
     return $res
   }
   #_______________________
@@ -1139,14 +1138,6 @@ namespace eval alited {
     #   args - script's name and arguments
 
     exec -- [info nameofexecutable] {*}$args &
-  }
-  #_______________________
-
-  proc CloseDlg {} {
-    # Tries to close a Help dialogue, open non-modal aside by the current dialogue.
-
-    variable obDlg
-    catch {[$obDlg ButOK] invoke}
   }
   #_______________________
 

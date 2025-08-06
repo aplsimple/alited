@@ -278,7 +278,7 @@ proc ini::ReadIni {{projectfile ""}} {
   set al(KEYS,bind) [list]
   set em_i 0
   set fontsize [expr {$al(FONTSIZE,std)+1}]
-  set al(FONT,txt) "-family {[obj basicTextFont]} -size $fontsize"
+  set al(FONT,txt) "[obj basicTextFont] -size $fontsize"
   lassign "" ::alited::Pan_wh ::alited::PanL_wh ::alited::PanR_wh \
     ::alited::PanBM_wh ::alited::PanTop_wh ::alited::al(GEOM)
   puts "alited pwd    : [pwd]"
@@ -385,6 +385,7 @@ proc ini::ReadIniGeometry {nam val} {
     geomfind       {set ::alited::find::geo $val}
     geomfind2      {set ::alited::find::geo2 $val}
     geomproject    {set ::alited::project::geo $val}
+    geomtodolist   {set ::alited::project::geotodolist $val}
     geompref       {set ::alited::pref::geo $val}
     dirgeometry    {set ::alited::DirGeometry $val}
     filgeometry    {set ::alited::FilGeometry $val}
@@ -711,7 +712,7 @@ proc ini::InitXterminal {} {
   set xte x-terminal-emulator
   if {[::isunix] && [file tail $tty] eq $xte} {
     if {[auto_execok $tty] eq {} || [catch {set man [exec man $xte]}]} {
-      set al(EM,tt) {} ;# no x-terminal-emulator command
+      # no x-terminal-emulator command ?
       return
     }
     switch -glob $man {
@@ -1055,6 +1056,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "geomfind=$::alited::find::geo"
   puts $chan "geomfind2=$::alited::find::geo2"
   puts $chan "geomproject=$::alited::project::geo"
+  puts $chan "geomtodolist=$::alited::project::geotodolist"
   puts $chan "geompref=$::alited::pref::geo"
   puts $chan "dirgeometry=$::alited::DirGeometry"
   puts $chan "filgeometry=$::alited::FilGeometry"
@@ -1270,7 +1272,8 @@ proc ini::CheckUpdates {doit} {
     lab3  {{} {-padx 20} {-t {$::alited::al(_updDirMnu_)}}} {} \
     lab4  {{} {-padx 20} {-t {$::alited::al(_updFileIni_)}}} {} \
     {*}$lab5 \
-    ] -head $head -weight bold -buttons "butHELP {View Changes} ::alited::ini::ViewUpdates" -resizable no -focus *YES] \
+    ] -head $head {*}[obj basicTextFont] -weight bold -buttons "butHELP {View Changes} \
+    ::alited::ini::ViewUpdates" -resizable no -focus *YES] \
     res updmnu updini
   catch {$pobj destroy}
   if {!$res} {if {$doit} return else exit}
@@ -1339,7 +1342,7 @@ proc ini::GetConfiguration {} {
       diR1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50 \
         -values $configs -clearcom {alited::main::ClearCbx %w ::alited::ini::configs}]] \
         "{$::alited::CONFIGDIR}" \
-    ] -head $head -help alited::ini::Help -resizable no]
+    ] -head $head -help alited::ini::Help -resizable no {*}[obj basicTextFont]]
   catch {alitedObjToDel destroy}
   lassign $res ok confdir
   if {$ok} {
@@ -1546,9 +1549,7 @@ proc ini::InitFonts {} {
   namespace upvar ::alited al al MSGSDIR MSGSDIR
 
   if {$al(FONT) ne {}} {
-    catch {
-      obj basicDefFont [dict get $al(FONT) -family]
-    }
+    obj basicDefFont $al(FONT)
     set smallfont $al(FONT)
     catch {dict set smallfont -size $al(FONTSIZE,small)}
     foreach font {TkDefaultFont TkMenuFont TkHeadingFont TkCaptionFont} {
@@ -1635,7 +1636,7 @@ proc ini::_init {} {
   TipToolHotkeys
   foreach {icon} {none gulls heart add change delete up down paste plus minus retry \
   misc previous previous2 next next2 folder file OpenFile SaveFile saveall undo redo \
-  box replace ok color date help run e_menu other trash actions paste copy} {
+  box replace ok color date help run e_menu other trash actions paste copy more} {
     set img [CreateIcon $icon]
     if {$icon in {file OpenFile SaveFile saveall box undo redo replace \
     ok color date help run e_menu other}} {

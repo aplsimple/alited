@@ -315,7 +315,6 @@ proc pref::Ok {args} {
 
   fetchVars
   if {![CheckOk]} return
-  alited::CloseDlg
   if {$al(INI,confirmexit)>1} {
     set timo "-timeout {$al(INI,confirmexit) ButOK}"
   } else {
@@ -411,7 +410,6 @@ proc pref::Cancel {args} {
     }
   }
   RestoreSettings
-  alited::CloseDlg
   $obPrf res $win 0
 }
 #_______________________

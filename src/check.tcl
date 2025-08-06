@@ -250,7 +250,6 @@ proc check::Cancel {args} {
   namespace upvar ::alited al al
   variable win
   set al(checkgeo) [wm geometry $win]
-  alited::CloseDlg
   destroy $win
 }
 #_______________________

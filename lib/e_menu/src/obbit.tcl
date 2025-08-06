@@ -56,8 +56,8 @@ set _CS_(isActive) 1
 set _CS_(!FG) #000000
 set _CS_(!BG) #b7b7b7 ;#a8bcd2 #c3c3c3 #9cb0c6 #4a6984
 set _CS_(expo,tfg1) "-"
-set _CS_(defFont) [font actual TkDefaultFont -family]
-set _CS_(textFont) [font actual TkFixedFont -family]
+set _CS_(defFont) [font actual TkDefaultFont]
+set _CS_(textFont) [font actual TkFixedFont]
 set _CS_(smallFont) [font actual TkSmallCaptionFont]
 set _CS_(fs) [font actual TkDefaultFont -size]
 set _CS_(untouch) [list]
@@ -1253,7 +1253,7 @@ method boldDefFont {{fs 0}} {
 
   if {$fs == 0} {set fs [my basicFontSize]}
   set bf [font actual basicDefFont]
-  dict replace $bf -family [my basicDefFont] -weight bold -size $fs
+  dict replace $bf {*}[my basicDefFont] -weight bold -size $fs
 }
 #_______________________
 
@@ -1263,7 +1263,7 @@ method boldTextFont {{fs 0}} {
 
   if {$fs == 0} {set fs [expr {2+[my basicFontSize]}]}
   set bf [font actual TkFixedFont]
-  dict replace $bf -family [my basicTextFont] -weight bold -size $fs
+  dict replace $bf {*}[my basicTextFont] -weight bold -size $fs
 }
 
 ## ________________________ Color schemes _________________________ ##
@@ -1326,84 +1326,64 @@ method csCurrent {} {
 }
 #_______________________
 
-method csGetName {{ncolor 0}} {
+method csGetName {{iCS 0}} {
 
   # Gets a color scheme's name
-  #   ncolor - index of color scheme
+  #   iCS - index of color scheme
 
-  if {$ncolor < $::apave::_CS_(MINCS)} {
+  if {$iCS < $::apave::_CS_(MINCS)} {
     return "-2: None"
-  } elseif {$ncolor == $::apave::_CS_(MINCS)} {
+  } elseif {$iCS == $::apave::_CS_(MINCS)} {
     return "-1: Basic"
   }
-  lindex [my ColorScheme $ncolor] 0
+  lindex [my ColorScheme $iCS] 0
 }
 #_______________________
 
-method csGet {{ncolor ""}} {
+method csGet {{iCS ""}} {
 
   # Gets a color scheme's colors
-  #   ncolor - index of color scheme
+  #   iCS - index of color scheme
 
-  if {$ncolor eq ""} {set ncolor [my csCurrent]}
-  lrange [my ColorScheme $ncolor] 1 end
+  if {$iCS eq ""} {set iCS [my csCurrent]}
+  lrange [my ColorScheme $iCS] 1 end
 }
 #_______________________
 
-method csSet {{ncolor 0} {win .} args} {
-
+method csSet {{iCS 0} {win .} args} {
   # Sets a color scheme and applies it to Tk/Ttk widgets.
-  #   ncolor - index of color scheme
+  #   iCS - index of color scheme
   #   win - window's name
-  #   args - list of colors if ncolor=""
-  #
+  #   args - list of colors if iCS=""
   # The `args` can be set as "-doit". In this case the method does set
-  # the `ncolor` color scheme (otherwise it doesn't set the CS if it's
-  # already of the same `ncolor`).
-
-  # The clrtitf, clrinaf etc. had been designed for e_menu. And as such,
-  # they can be used directly, outside of this "color scheming" UI.
-  # They set pairs of related fb/bg:
-  #   clrtitf/clrtitb is item's fg/bg
-  #   clrinaf/clrinab is main fg/bg
-  #   clractf/clractb is active (selection) fg/bg
-  # and separate colors:
-  #   clrhelp is "help" foreground
-  #   clrcurs is "caret" background
-  #   clrgrey is "shadowing" background
-  #   clrhotk is "hotkey/border" foreground
-  #
-  # In color scheming, these colors are transformed to be consistent
-  # with Tk/Ttk's color mechanics.
-  #
-  # Additionally, "grey" color is used as "border color/disabled foreground".
-  #
+  # the `iCS` color scheme (otherwise it doesn't set the CS if it's
+  # already of the same `iCS`).
   # Returns a list of colors used by the color scheme.
 
-  if {$ncolor == -2} {
-    ttk::style map Treeview -foreground [list readonly grey disabled grey selected black]
+  if {$iCS == -2} {
+    my themeDefaultCS
     return {}
   }
-  if {$ncolor eq {}} {
+  if {$iCS eq {}} {
     lassign $args \
       clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk tfgI tbgI fM bM tfgW tbgW tHL2 tbHL chkHL res5 res6 res7
   } else {
-    foreach cs [list $ncolor $::apave::_CS_(MINCS)] {
+    foreach cs [list $iCS $::apave::_CS_(MINCS)] {
       lassign [my csGet $cs] \
         clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk tfgI tbgI fM bM tfgW tbgW tHL2 tbHL chkHL res5 res6 res7
       if {$clrtitf ne ""} break
-      set ncolor $cs
+      set iCS $cs
     }
-    set ::apave::_CS_(index) $ncolor
+    set ::apave::_CS_(index) $iCS
   }
   # colors can be passed in args as -clrtitf "color" -clrinaf "color" ...
-  if {$ncolor>=0} {
+  if {$iCS>=0} {
     foreach nclr {clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk tfgI tbgI fM bM tfgW tbgW tHL2 tbHL chkHL} {
       incr ic
       if {[set i [lsearch $args -$nclr]]>-1} {
         set $nclr [lindex $args $i+1]
-        set chcs [lreplace [lindex $::apave::_CS_(ALL) $ncolor] $ic $ic [set $nclr]]
-        set ::apave::_CS_(ALL) [lreplace $::apave::_CS_(ALL) $ncolor $ncolor $chcs]
+        set chcs [lreplace [lindex $::apave::_CS_(ALL) $iCS] $ic $ic [set $nclr]]
+        set ::apave::_CS_(ALL) [lreplace $::apave::_CS_(ALL) $iCS $iCS $chcs]
       }
     }
   }
@@ -1418,8 +1398,8 @@ method csSet {{ncolor 0} {win .} args} {
   set cc $clrcurs  ;# caret's color
   set ht $clrhotk  ;# hotkey color
   set grey $gr ;# #808080
-  if {$::apave::_CS_(old) != $ncolor || "-doit" in $args} {
-    set ::apave::_CS_(old) $ncolor
+  if {$::apave::_CS_(old) != $iCS || "-doit" in $args} {
+    set ::apave::_CS_(old) $iCS
     my themeWindow $win [list $fg $bg $fE $bE $fS $bS $grey $bg $cc $ht $hh $tfgI $tbgI $fM $bM $tfgW $tbgW $tHL2 $tbHL $chkHL $res5 $res6 $res7]
     my UpdateColors
     my initTooltip
@@ -1429,7 +1409,7 @@ method csSet {{ncolor 0} {win .} args} {
   set ::apave::FGMAIN2 $fE
   set ::apave::BGMAIN2 $bE
   catch {
-    if {[my csDark $ncolor]} {::baltip::configure -relief groove}
+    if {[my csDark $iCS]} {::baltip::configure -relief groove}
   }
   list $fg $bg $fE $bE $fS $bS $hh $grey $cc $ht $tfgI $tbgI $fM $bM $tfgW $tbgW $tHL2 $tbHL $chkHL $res5 $res6 $res7
 }
@@ -1544,17 +1524,17 @@ method csNewIndex {} {
 }
 #_______________________
 
-method ColorScheme {{ncolor ""}} {
+method ColorScheme {{iCS ""}} {
   # Gets a full record of color scheme from a list of available ones
-  #   ncolor - index of color scheme
+  #   iCS - index of color scheme
 
-  if {$ncolor eq {} || $ncolor<0} {
+  if {$iCS eq {} || $iCS<0} {
     # basic color scheme: get colors from a current ttk::style colors
     set fW black
     set bW #FBFB95
     set bg2 #e4e4e4
     if {[info exists ::apave::_CS_(def_fg)]} {
-      if {$ncolor == $::apave::_CS_(NONCS)} {set bg2 #e5e5e5}
+      if {$iCS == $::apave::_CS_(NONCS)} {set bg2 #e5e5e5}
       set fg $::apave::_CS_(def_fg)
       set fg2 #2b3f55
       set bg $::apave::_CS_(def_bg)
@@ -1588,12 +1568,10 @@ method ColorScheme {{ncolor ""}} {
           $fg    $fg     $bA    $bg     $fg2    $bS     $fS    #444  grey   #4f6379 $fS $bS - $bg $fW $bW $bg2 #a20000 #76b2f1 #005 #006 #007]
     # clrtitf clrinaf clrtitb clrinab clrhelp clractb clractf clrcurs clrgrey clrhotk fI  bI fM bM fW bW
   }
-  lindex $::apave::_CS_(ALL) $ncolor
+  lindex $::apave::_CS_(ALL) $iCS
 }
 
 # ________________________ Theming _________________________ #
-
-## ________________________ Common _________________________ ##
 
 method apaveTheme {{theme {}}} {
   # Checks if apave color scheme is used (always for standard ttk themes).
@@ -1625,16 +1603,23 @@ method thDark {theme} {
   }
   string match -nocase *dark* $theme
 }
+#_______________________
 
-## ________________________ Theme methods _________________________ ##
+method themeDefaultCS {} {
+  # Theming for CS=-2 (default).
+
+  ttk::style map Treeview -foreground [list readonly grey disabled grey selected black]
+  set ::apave::_C_(text,0) 1
+  set ::apave::_C_(text,1) [list -font [font actual apaveFontMono]]
+}
+#_______________________
 
 method themeWindow {win {clrs ""} {isCS true} args} {
-  # Changes a Tk style (theming a bit)
+  # Changes a Tk style.
   #   win - window's name
   #   clrs - list of colors
   #   isCS - true, if the colors are taken from a CS
   #   args - other options
-  #
   # The clrs contains:
   #   tfg1 - foreground for themed widgets (main stock)
   #   tbg1 - background for themed widgets (main stock)
@@ -1651,7 +1636,6 @@ method themeWindow {win {clrs ""} {isCS true} args} {
   #   tbgI - background for external CS
   #   tfgM - foreground for menus
   #   tbgM - background for menus
-  #
   # The themeWindow can be used outside of "color scheme" UI.
   # E.g., in TKE editor, e_menu and add_shortcuts plugins use it to
   # be consistent with TKE theme.
@@ -1666,10 +1650,6 @@ method themeWindow {win {clrs ""} {isCS true} args} {
   if {!$isCS} {
     # if 'external  scheme' is used, register it in _CS_(ALL)
     # and set it as the current CS
-
-# <CS>    itemfg  mainfg  itembg  mainbg  itemsHL  actbg   actfg  cursor  greyed   hot \
-emfg  embg   -  menubg  winfg   winbg   itemHL2 #003...reserved...
-
     my csAdd [list CS-[my csNewIndex] $tfg2 $tfg1 $tbg2 $tbg1 \
       $thlp $tbgS $tfgS $tcur $tfgD $bclr $tfgI $tbgI $tfgM $tbgM \
       $twfg $twbg $tHL2 $tbHL $chkHL $res5 $res6 $res7]
@@ -1895,64 +1875,6 @@ emfg  embg   -  menubg  winfg   winbg   itemHL2 #003...reserved...
 }
 #_______________________
 
-method Ttk_style {oper ts opt val} {
-  # Sets a new style options.
-  #   oper - command of ttk::style ("map" or "configure")
-  #   ts - type of style to be configurated
-  #   opt - option's name
-  #   val - option's value
-
-  if {![catch {set oldval [ttk::style $oper $ts $opt]}]} {
-    catch {ttk::style $oper $ts $opt $val}
-    if {$oldval eq {} && $oper eq {configure}} {
-      switch -exact -- $opt {
-        -foreground - -background {
-          set oldval [ttk::style $oper . $opt]
-        }
-        -fieldbackground {
-          set oldval white
-        }
-        -insertcolor {
-          set oldval black
-        }
-      }
-    }
-  }
-}
-#_______________________
-
-method Main_Style {tfg1 tbg1 tfg2 tbg2 tfgS tbgS bclr tc fA bA bD} {
-  # Sets main colors of application
-  #   tfg1 - main foreground
-  #   tbg1 - main background
-  #   tfg2 - not used
-  #   tbg2 - not used
-  #   tfgS - selectforeground
-  #   tbgS - selectbackground
-  #   bclr - bordercolor
-  #   tc - troughcolor
-  #   fA - foreground active
-  #   bA - background active
-  #   bD - background disabled
-  # The *foreground disabled* is set as `grey`.
-
-  my create_Fonts
-  if {[ttk::style theme use] eq {classic}} {
-    set hlc "-highlightcolor $tbg1"
-  } else {
-    set hlc {}
-  }
-  ttk::style configure "." \
-    -foreground $tfg1 -background $tbg1 -bordercolor $bclr -darkcolor $tbg1 \
-    -lightcolor $tbg1 -troughcolor $tc -arrowcolor $tfg1 \
-    -selectforeground $tfgS -selectbackground $tbgS {*}$hlc
-  ttk::style map "." \
-    -background [list disabled $bD active $bA] \
-    -foreground [list disabled grey active $fA]
-  . configure -bg $tbg1
-}
-#_______________________
-
 method themeMandatory {win args} {
   # Themes all that must be themed.
   #   win - window's name
@@ -2090,6 +2012,65 @@ method themeNonThemed {win {addwid {}}} {
       }
     }
   }
+}
+
+## ________________________ Private methods _________________________ ##
+
+method Ttk_style {oper ts opt val} {
+  # Sets a new style options.
+  #   oper - command of ttk::style ("map" or "configure")
+  #   ts - type of style to be configurated
+  #   opt - option's name
+  #   val - option's value
+
+  if {![catch {set oldval [ttk::style $oper $ts $opt]}]} {
+    catch {ttk::style $oper $ts $opt $val}
+    if {$oldval eq {} && $oper eq {configure}} {
+      switch -exact -- $opt {
+        -foreground - -background {
+          set oldval [ttk::style $oper . $opt]
+        }
+        -fieldbackground {
+          set oldval white
+        }
+        -insertcolor {
+          set oldval black
+        }
+      }
+    }
+  }
+}
+#_______________________
+
+method Main_Style {tfg1 tbg1 tfg2 tbg2 tfgS tbgS bclr tc fA bA bD} {
+  # Sets main colors of application
+  #   tfg1 - main foreground
+  #   tbg1 - main background
+  #   tfg2 - not used
+  #   tbg2 - not used
+  #   tfgS - selectforeground
+  #   tbgS - selectbackground
+  #   bclr - bordercolor
+  #   tc - troughcolor
+  #   fA - foreground active
+  #   bA - background active
+  #   bD - background disabled
+  # The *foreground disabled* is set as `grey`.
+
+  my create_Fonts
+  if {[ttk::style theme use] eq {classic}} {
+    set hlc "-highlightcolor $tbg1"
+  } else {
+    set hlc {}
+  }
+  ttk::style configure "." \
+    -foreground $tfg1 -background $tbg1 -bordercolor $bclr -darkcolor $tbg1 \
+    -lightcolor $tbg1 -troughcolor $tc -arrowcolor $tfg1 \
+    -selectforeground $tfgS -selectbackground $tbgS {*}$hlc
+  ttk::style map "." \
+    -background [list disabled $bD active $bA] \
+    -foreground [list disabled grey active $fA]
+  . configure -bg $tbg1
 }
 #_______________________
 

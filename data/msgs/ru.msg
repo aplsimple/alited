@@ -84,7 +84,7 @@ namespace eval ::alited {
   }
 
   ::msgcat::mcmset ru {
-    {Select} {Выбор}
+    {Select} {Выбрать}
     {Save as} {Сохранить как}
     {Files} {Файлы}
     {Line} {№ ст.}
@@ -218,6 +218,7 @@ namespace eval ::alited {
 
   ## ________________________ Projects ________________________ ##
   ::msgcat::mcmset ru {
+    {Project} {Проект}
     {Projects} {Проекты}
     {Projects...} {Проекты...}
     {You are going to %n!} {Вы собираетесь %n!}
@@ -255,7 +256,7 @@ namespace eval ::alited {
     {Options for new projects are set in "Preferences/General/Projects"} {Опции для новых проектов берутся из "Опции/Общее/Проекты"}
     {Date} {Дата}
     {Reminder} {Напоминание}
-    {Erase a text} {Стереть текст}
+    {Erase text} {Стереть текст}
     {Paste a text} {Вставить текст}
     {Undo changes} {Отменить изменения}
     {Redo changes} {Переотменить изменения}
@@ -286,6 +287,9 @@ namespace eval ::alited {
     {The project directory already exists! It isn't created with templates.} {Директория проекта уже сушествует! Он не создается по шаблону.}
     {All files filter:} {Фильтр всех файлов:}
     {TODO days ahead:} {TODO дней впереди:}
+    {All pending TODOs} {Все намеченные TODO}
+    {No TODO pending!} {Нет намеченных TODO!}
+    {There is another TODO on this day!} {В этот день уже есть TODO!}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -394,7 +398,7 @@ namespace eval ::alited {
   ## ________________________ Start and update ________________________ ##
   ::msgcat::mcmset ru {
     {Choosing Directory for Settings} {Выбор каталога для настроек}
-    "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" "\n Программе \"alited\" нужно указать каталог для сохранения своих настроек.\n Вы можете задавать его как аргумент при вызове alited.\n\n По умолчанию, каталог сохранения настроек - \"%d\".\n Это рекомендуемый каталог, позволяющий вызывать \"alited\" без аргументов.\n"
+    "\n The alited needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is %d.\n It's preferable as used to run alited without arguments.\n" "\n Программе alited нужно указать каталог для сохранения своих настроек.\n Вы можете задавать его как аргумент при вызове alited.\n\n По умолчанию, каталог сохранения настроек - %d.\n Это рекомендуемый каталог, позволяющий вызывать alited без аргументов.\n"
     {Choose a directory} {Выбор каталога}
     {Some things have been changed in alited %v.} {Кое-что изменилось в alited %v.}
     {Updating alited} {Обновление alited}
@@ -633,6 +637,7 @@ namespace eval ::alited {
   ## ________________________ Misc. ________________________ ##
   ::msgcat::mcmset ru {
     "\"%f\" removed to \"%d\"" "\"%f\" удален в \"%d\""
+    {Filter:} {Фильтр:}
     {File name:} {Имя файла:}
     {Directory} {Каталог}
     "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?" "Файл \"%f\", похоже, не типа\n%s.\n\nВсё-таки открыть его?"
@@ -734,6 +739,7 @@ namespace eval ::alited {
     "'from' refers to previous 'to' in: %l (see: %n)" "'с' ссылается на предыдущее 'на' в: %l (см.: %n)"
     {Use %e to run "%m"} {Пользуйтесь %e для запуска "%m"}
     {%e is overlapped by formatter "%f"} {%e перекрывается форматером "%f"}
+    "The pluginable % has been registered.\nCancel the registration?" "Плагин % был зарегистрирован.\nОтменить регистрацию?"
   }
 
   ## ________________________ Project printer _________________________ ##

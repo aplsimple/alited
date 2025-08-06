@@ -834,10 +834,11 @@ proc format::Mode6 {cont args} {
     if {$ic ne {}} {set icon $ic}
     set events [alited::edit::IniParameter events $line -nocase]
     if {$events ne {}} {
+      set firstin yes
       foreach ev [split $events { ,}] {
         if {$ev ne {}} {
           set wasacc [info exist cont6($fform)]
-          if {[EventOK $fullformname $fform $ev $wasacc]} {
+          if {[EventOK $fullformname $fform $ev $wasacc $firstin]} {
             lappend com $modal
             catch {bind $wtxt $ev $com}
             if {![llength $bind6($fform)]} {set res $ev}
@@ -846,6 +847,7 @@ proc format::Mode6 {cont args} {
             set res {}
             break
           }
+          set firstin no
         }
         set cont6($fform) [lrange $cont $il end]
       }
@@ -862,12 +864,13 @@ proc format::Mode6 {cont args} {
 }
 #_______________________
 
-proc format::EventOK {fullformname fform ev wasacc} {
+proc format::EventOK {fullformname fform ev wasacc firstin} {
   # Checks if an event is correct (not overlap alited key mapping).
   #   fullformname - full path to formatter
   #   fform - formatter's name
   #   ev - the event
   #   wasacc - if true, -accelerator of $fform menu item was made
+  #   firstin - yes for first check of event
 
   namespace upvar ::alited al al
   variable cont6
@@ -884,11 +887,24 @@ proc format::EventOK {fullformname fform ev wasacc} {
       return no
     }
   }
+  set plugkey FORMATS,$fform,$ev2
+  set itemttl [alited::menu::FormatsItemName $fform]
   if {!$wasacc} {
     # add -accelerator to Formats menu item of $fform
     set mnu $al(MENUFORMATS)
-    set itemttl [alited::menu::FormatsItemName $fform]
     alited::edit::PluginAccelerator $mnu $itemttl $ev2
+  } elseif {$firstin && [info exists al($plugkey)]} {
+    set msg [msgcat::mc "The pluginable % has been registered.\nCancel the registration?"]
+    set msg [string map [list % $itemttl] $msg]
+    set unreg [alited::msg yesno warn $msg NO -geometry pointer+40+-100]
+    if {$unreg} {
+      foreach n [array names al -glob FORMATS,*] {
+        if {[string equal -nocase $n $plugkey]} {
+          unset al($n)
+        }
+      }
+      return no
+    }
   }
   set al(FORMATS,$fform,$ev2) [list $fullformname $ev2]
   return yes

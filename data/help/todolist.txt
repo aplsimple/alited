@@ -1,0 +1,18 @@
+ In this dialogue you can:
+
+   - view all pending TODOs
+
+   - filter TODOs: use <b>Filter</b> entry
+     (the filter is case-insensitive)
+
+   - modify any TODO: use <b>its text</b> field
+
+   - erase a TODO at all: use <b>Erase</b> tool button
+
+   - move TODO by day/week: use <b>Move</b> tool buttons
+
+   - select a project to resolve its TODOs: just
+     <b>double-click</b> its item or use <b>Select</b> button
+
+ The TODOs are sorted by projects and dates, the
+ overdue ones are highlighted with red & magenta.

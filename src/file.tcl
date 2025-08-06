@@ -545,7 +545,7 @@ proc file::InputFileName {title name undermouse args} {
   }
   lassign [$obDl2 input {} $title [list \
     fis "{} {-pady 16 -padx 8} {-w 50}" "{$name}"] \
-    -head \n\ [msgcat::mc {File name:}] {*}$args] res name
+    -head \n\ [msgcat::mc {File name:}] {*}[obj basicTextFont] {*}$args] res name
   list $res $name
 }
 #_______________________
@@ -1479,7 +1479,7 @@ proc file::Add {ID} {
       seh {{} {-pady 10}} {} \
       ent {{File name:} {} {-w 40}} "{$fname}" \
       chb [list {} {-padx 5} [list -toprev 1 -t Directory]] {0} ] \
-      -head $head -family "{[obj basicTextFont]}"]
+      -head $head {*}[obj basicTextFont]]
     lassign $res res fname isdir
     if {$res && $fname eq {}} bell else break
   }

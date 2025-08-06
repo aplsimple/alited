@@ -28,7 +28,7 @@ package require Tk
 wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.6.1}
+  variable em_version {e_menu 4.6.5}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -2242,7 +2242,7 @@ proc ::em::fillCommands {amc osm {domenu 0}} {
         }
         o= {set ::em::ornament [::apave::getN $seltd 0 -2 3]
           if {$::em::ornament>1} {
-            set ::em::font_f2 "-family {[obj basicTextFont]}"
+            set ::em::font_f2 [obj basicTextFont]
           }
         }
         g= {

@@ -1761,7 +1761,7 @@ method chooser {nchooser tvar args} {
       set bname [string map [list .$ent .$but] $tname]
       focus $bname
     }
-    focus $tname
+    ::apave::focusByForce $tname
     after idle "catch {$tname selection range 0 end ; $tname icursor end}"
   }
   return $res

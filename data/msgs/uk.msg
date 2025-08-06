@@ -88,7 +88,7 @@ namespace eval ::alited {
   }
 
   ::msgcat::mcmset uk {
-    {Select} {Вибір}
+    {Select} {Вибрати}
     {Save as} {Зберігти як}
     {Files} {Файли}
     {Line} {№ ряд.}
@@ -223,6 +223,7 @@ namespace eval ::alited {
 
   ## ________________________ Projects ________________________ ##
   ::msgcat::mcmset uk {
+    {Project} {Проект}
     {Projects} {Проекти}
     {Projects...} {Проекти...}
     {You are going to %n!} {Ви збираєтеся %n!}
@@ -260,7 +261,7 @@ namespace eval ::alited {
     {Options for new projects are set in "Preferences/General/Projects"} {Опції для нових проектів беруться з "Опції/Загальне/Проекти"}
     {Date} {Дата}
     {Reminder} {Нагадування}
-    {Erase a text} {Стерти текст}
+    {Erase text} {Стерти текст}
     {Paste a text} {Вставити текст}
     {Undo changes} {Відмінити зміни}
     {Redo changes} {Перевідмінити зміни}
@@ -291,6 +292,9 @@ namespace eval ::alited {
     {The project directory already exists! It isn't created with templates.} {Директорія проекту вже існує! Він не створюється по шаблону.}
     {All files filter:} {Фільтр усіх файлів:}
     {TODO days ahead:} {TODO днів попереду:}
+    {All pending TODOs} {Всі поставлені TODO}
+    {No TODO pending!} {Немає поставлених TODO!}
+    {There is another TODO on this day!} {У цей день вже є TODO!}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -399,7 +403,7 @@ namespace eval ::alited {
   ## ________________________ Start and update ________________________ ##
   ::msgcat::mcmset uk {
     {Choosing Directory for Settings} {Вибір каталогу для опцій}
-    "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" "\n Програма \"alited\" мусить мати каталог для збереження своїх опцій.\n Ви можете задати його як аргумент при виклику alited.\n\n За замовчуванням, каталог збереження опцій - \"%d\".\n Це рекомендований каталог, що дозволяє викликати \"alited\" без аргументів.\n"
+    "\n The alited needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is %d.\n It's preferable as used to run alited without arguments.\n" "\n Програма alited мусить мати каталог для збереження своїх опцій.\n Ви можете задати його як аргумент при виклику alited.\n\n За замовчуванням, каталог збереження опцій - %d.\n Це рекомендований каталог, що дозволяє викликати alited без аргументів.\n"
     {Choose a directory} {Вибір каталогу}
     {Some things have been changed in alited %v.} {Дещо змінилося у alited %v.}
     {Updating alited} {Оновлення alited}
@@ -638,6 +642,7 @@ namespace eval ::alited {
   ## ________________________ Misc. ________________________ ##
   ::msgcat::mcmset uk {
     "\"%f\" removed to \"%d\"" "\"%f\" видалений до \"%d\""
+    {Filter:} {Фільтр:}
     {File name:} {Ім'я файлу:}
     {Directory} {Каталог}
     "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?" "Файл \"%f\", здається, не типа\n%s.\n\nВсе одно відкрити його?"
@@ -739,6 +744,7 @@ namespace eval ::alited {
     "'from' refers to previous 'to' in: %l (see: %n)" "'з' посилається на попереднє 'на' у: %l (див.: %n)"
     {Use %e to run "%m"} {Користуйтесь %e для запуску "%m"}
     {%e is overlapped by formatter "%f"} {%e перекривається форматером "%f"}
+    "The pluginable % has been registered.\nCancel the registration?" "Плагін % був зареєстрований.\nСкасувати реєстрацію?"
   }
 
   ## ________________________ Project printer _________________________ ##

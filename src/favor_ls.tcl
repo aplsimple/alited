@@ -50,7 +50,6 @@ proc favor_ls::Ok {{res 0}} {
   variable win
   variable favcont
   variable favpla
-  alited::CloseDlg
   if {!$res || $res==4} {
     if {[set isel [Selected]] eq {}} {
       focus [$obFav LbxFav]
@@ -82,7 +81,6 @@ proc favor_ls::Cancel {args} {
 
   variable obFav
   variable win
-  alited::CloseDlg
   Save_favlist
   $obFav res $win 0
 }

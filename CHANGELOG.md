@@ -6,7 +6,22 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.9 (24 May'25)`
+Version `v1.8.10 (6 Aug'25)`
+
+  - BUGFIX: Projects: at shifting TODO, 1st text line highlighted only
+  - NEW   : Projects: "All pending TODOs" tool
+  - NEW   : Edit/Formats/Pluginuble: repeated calls allow (un)registering
+  - NEW   : `expr` template to enter `[expr {}]`
+  - CHANGE: Projects: forbidden TODO shifts to non-free day
+  - CHANGE: Projects: current day label be bold
+  - CHANGE: Projects: selecting project: YesNoCancel i/o YesNo for files modified
+  - CHANGE: in Linux, no check for terminal command's man (to be run as is)
+  - CHANGE: help forms be modal
+  - CHANGE: clearance a bit
+  - CHANGE: packages: apave/e_menu 4.6.5
+
+
+Version `v1.8.9 (29 May'25)`
 
   - BUGFIX: running date picker after Projects
   - BUGFIX: "Search/To Last Visited": issues fixed for file tree & clicking tabs
@@ -26,7 +41,7 @@ Version `v1.8.9 (24 May'25)`
   - CHANGE: menu Help/alited: submenu
   - CHANGE: menu Help/Tcl-Tk: "Thread package"; check for local htm(l) files
   - CHANGE: main::CalcIndentation: check for existing window
-  - CHANGE: packages: apave/e_menu 4.6.1, hl_tcl 1.2
+  - CHANGE: packages: apave/e_menu 4.6.2, hl_tcl 1.2
 
 
 Version `v1.8.8 (15 Jan'25)`

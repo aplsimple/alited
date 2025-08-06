@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.6.1
+package provide apave 4.6.5
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -934,7 +934,7 @@ method input {icon ttl iopts args} {
       lappend inopts [list fraM.fra$name.labB$name - - - - \
         "pack -side left -anchor $anc -padx 3" \
         "-t \"$prompt\" -font \
-        \"-family {[my basicTextFont]} -size [my basicFontSize]\""]
+        \"[my basicTextFont] -size [my basicFontSize]\""]
     }
     # for most widgets:
     #   1st item of 'valopts' list is the current value

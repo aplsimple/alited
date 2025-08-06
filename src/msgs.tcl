@@ -130,6 +130,7 @@ namespace eval ::alited {
     set al(MC,Help)        [msgcat::mc Help]
 
     ## _  project options _ ##
+    set al(MC,project)     [msgcat::mc Project]
     set al(MC,Ign:)        [msgcat::mc {Skip files/directories:}]
     set al(MC,EOL:)        [msgcat::mc {End of line:}]
     set al(MC,indent:)     [msgcat::mc {Indentation:}]
@@ -157,7 +158,6 @@ namespace eval ::alited {
     set al(MC,tpldelq)     [msgcat::mc {Delete a template #%n ?}]
 
     ## _ projects _ ##
-    set al(MC,projects)    [msgcat::mc Projects]
     set al(MC,prjgoing)    [msgcat::mc {You are going to %n!}]
     set al(MC,prjadd)      [msgcat::mc {Add a project}]
     set al(MC,prjchg)      [msgcat::mc {Change a project}]
@@ -176,7 +176,7 @@ namespace eval ::alited {
     set al(MC,prjdelq)     [msgcat::mc "Delete a project \"%n\" ?"]
     set al(MC,prjexists)   [msgcat::mc "A project \"%n\" already exists."]
     set al(MC,DEFopts)     [msgcat::mc {Options for new projects are set in "Preferences/General/Projects"}]
-    set al(MC,prjTdelete)  [msgcat::mc {Erase a text}]
+    set al(MC,prjTdelete)  [msgcat::mc {Erase text}]
     set al(MC,prjTpaste)   [msgcat::mc {Paste a text}]
     set al(MC,prjTundo)    [msgcat::mc {Undo changes}]
     set al(MC,prjTredo)    [msgcat::mc {Redo changes}]
@@ -185,11 +185,13 @@ namespace eval ::alited {
     set al(MC,prjTprevious2) [msgcat::mc {TODO previous week}]
     set al(MC,prjTnext)    [msgcat::mc {TODO next day}]
     set al(MC,prjTnext2)   [msgcat::mc {TODO next week}]
+    set al(MC,prjTmore)    [msgcat::mc {All pending TODOs}]
     set al(MC,TemplPrj)    [msgcat::mc "Enter a tree of directories for the project template.\nIndent them by equal indents to mean subdirectories.\n\nFiles like README*, CHANGELOG* will be created blank.\nFiles like LICENSE* will be taken from the current project."]
     set al(MC,CrTemplPrj)  [msgcat::mc {Create a project by template}]
     set al(MC,ViewDir)     [msgcat::mc {Project directory}]
     set al(MC,com)         [msgcat::mc Command]
     set al(MC,coms)        [msgcat::mc Commands]
+    set al(MC,tododupl)    [msgcat::mc {There is another TODO on this day!}]
 
     ## _ favorites _ ##
     set al(MC,favsel)      [msgcat::mc {Click a list of favorites}]
@@ -226,7 +228,7 @@ namespace eval ::alited {
 
     ## _ start and update _ ##
     set al(MC,chini1)      [msgcat::mc {Choosing Directory for Settings}]
-    set al(MC,chini2)      [msgcat::mc "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n"]
+    set al(MC,chini2)      [msgcat::mc "\n The alited needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is %d.\n It's preferable as used to run alited without arguments.\n"]
     set al(MC,chini3)      [msgcat::mc {Choose a directory}]
     set al(MC,updateALE)   [msgcat::mc {Updating alited}]
     set al(MC,updLab1)     [msgcat::mc " You are highly recommended to accept\n these changes in order to complete updating:"]

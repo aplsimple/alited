@@ -218,6 +218,7 @@ namespace eval ::alited {
 
   ## ________________________ Projects ________________________ ##
   ::msgcat::mcmset es {
+    {Project} {Proyecto}
     {Projects} {Proyectos}
     {Projects...} {Proyectos...}
     {You are going to %n!} {¡Vas a %n!}
@@ -255,7 +256,7 @@ namespace eval ::alited {
     {Options for new projects are set in "Preferences/General/Projects"} {Las opciones para nuevos proyectos se establecen en "Preferencias/General/Proyectos"}
     {Date} {Fecha}
     {Reminder} {Recordatorio}
-    {Erase a text} {Borrar un texto}
+    {Erase text} {Borrar texto}
     {Paste a text} {Pegar un texto}
     {Undo changes} {Deshacer cambios}
     {Redo changes} {Rehacer cambios}
@@ -286,6 +287,9 @@ namespace eval ::alited {
     {The project directory already exists! It isn't created with templates.} {¡El directorio del proyecto ya existe! No se crea con plantillas.}
     {All files filter:} {Todos archivos filtran:}
     {TODO days ahead:} {TODO días para el futuro:}
+    {All pending TODOs} {Todas TODO pendientes}
+    {No TODO pending!} {¡No hay TODO pendiente!}
+    {There is another TODO on this day!} {¡Hay otro TODO en este día!}
   }
 
   ## ________________________ Favorites ________________________ ##
@@ -394,7 +398,7 @@ namespace eval ::alited {
   ## ________________________ Start and update ________________________ ##
   ::msgcat::mcmset es {
     {Choosing Directory for Settings} {Elección de carpeta para la configuración}
-    "\n The \"alited\" needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is \"%d\".\n It's preferable as used to run \"alited\" without arguments.\n" "\n El \"alited\" necesita una carpeta para guardar su configuración.\n Puede pasar su nombre a alited como argumento.\n\n La carpeta de configuración predeterminado es \"%d\".\n Es preferible como se usa para ejecutar \"alited\" sin argumentos.\n"
+    "\n The alited needs a configuration directory to store its settings.\n You can pass its name to alited as an argument.\n\n The default configuration directory is %d.\n It's preferable as used to run alited without arguments.\n" "\n El alited necesita una carpeta para guardar su configuración.\n Puede pasar su nombre a alited como argumento.\n\n La carpeta de configuración predeterminado es %d.\n Es preferible como se usa para ejecutar alited sin argumentos.\n"
     {Choose a directory} {Elija una carpeta}
     {Some things have been changed in alited %v.} {Algunas cosas han cambiado en alited %v.}
     {Updating alited} {Actualización de alited}
@@ -633,6 +637,7 @@ namespace eval ::alited {
   ## ________________________ Misc. ________________________ ##
   ::msgcat::mcmset es {
     "\"%f\" removed to \"%d\"" "\"%f \"borrado a \"%d\""
+    {Filter:} {Filtran:}
     {File name:} {Nombre de archivo:}
     {Directory} {Carpeta}
     "The file \"%f\" seems to be not of types\n%s.\n\nStill do you want to open it?" "El archivo \"%f\" parece no ser del tipo\n%s.\n\n¿Todavía quieres abrirlo?"
@@ -734,6 +739,7 @@ namespace eval ::alited {
     "'from' refers to previous 'to' in: %l (see: %n)" "'desde' se refiere a anteriores 'hacia' dentro: %l (ve: %n)"
     {Use %e to run "%m"} {Usa %e para ejecutar "%m"}
     {%e is overlapped by formatter "%f"} {El formateador "%f" superpone %e}
+    "The pluginable % has been registered.\nCancel the registration?" "El pluginable % ha sido registrado.\n¿Cancelar el registro?"
   }
 
   ## ________________________ Project printer _________________________ ##

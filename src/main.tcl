@@ -830,7 +830,7 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
     return
   }
   set wtree [$obPav Tree]
-  set pos [$wtxt index insert]
+  if {[catch {set pos [$wtxt index insert]}]} return
   lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name l1
   set header [alited::unit::GetHeader $wtree $itemID]
   set gokeys [list {}]
@@ -1079,13 +1079,15 @@ proc main::ShowOutdatedTODO {prj date todo is} {
   #   is - 1 for current day TODO, 2 for "ahead" TODO
 
   namespace upvar ::alited al al
-  set todo "\n$al(MC,prjName) $prj\n\n$al(MC,on) $date\n\n$todo\n"
-  set opts {}
-  if {[string first !!! $todo]>-1 || ($is==1 && $al(todoahead))} {
-    set opts [list -ontop 1 -eternal 1 -fg white -bg red \
-      -onmouse {alited::main::HandleOutdatedTODO %b}]
+  if {[string trim $todo] ne {}} {
+    set todo "\n$al(MC,prjName) $prj\n\n$al(MC,on) $date\n\n$todo\n"
+    set opts {}
+    if {[string first !!! $todo]>-1 || ($is==1 && $al(todoahead))} {
+      set opts [list -ontop 1 -eternal 1 -fg white -bg red \
+        -onmouse {alited::main::HandleOutdatedTODO %b}]
+    }
+    ::alited::Balloon $todo yes 2500 {*}$opts
   }
-  ::alited::Balloon $todo yes 2500 {*}$opts
 }
 #_______________________
 

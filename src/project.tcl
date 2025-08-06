@@ -21,6 +21,7 @@ namespace eval project {
 
   # initial geometry of Projects dialogue (centered in the main form)
   variable geo root=$::alited::al(WIN)
+  variable geotodolist root=$win
 
   # saved index of last selected project
   variable ilast -1
@@ -151,7 +152,7 @@ proc project::IsOutdated {prj {todo no}} {
   #   todo - if yes, gets also date and todo
   # Returns 0, if no todo for the project, 1 otherwise; if todo=yes, adds also date and todo outdated (if there is).
 
-  set rems [SortRems [ReadRems $prj]]
+  set rems [ReadRems $prj]
   set res [lindex $rems 2]
   if {$todo} {
     lappend res {*}[lindex $rems 1 0]
@@ -377,13 +378,16 @@ proc project::NotesFile {prj} {
 
 proc project::RemsFile {prj} {
   # Gets a file name of reminders.
+  #   prj - project's name
 
   return [file join $::alited::PRJDIR $prj-rems.txt]
 }
 #_______________________
 
 proc project::ReadRems {prj} {
-  # Reads a file of reminders.
+  # Reads reminders.
+  #   prj - project's name
+  # Returns sorted reminders of project.
 
   variable klnddata
   set frems [RemsFile $prj]
@@ -392,7 +396,7 @@ proc project::ReadRems {prj} {
   } else {
     set res [list]
   }
-  return $res
+  SortRems $res
 }
 #_______________________
 
@@ -435,19 +439,31 @@ proc project::Klnd_save {} {
   # Saves a reminder on a date.
 
   variable obPrj
-  variable prjinfo
   variable klnddata
   set wtxt [$obPrj TexKlnd]
   if {[set prjname $klnddata(SAVEPRJ)] eq {}} return
-  set text [string trim [$wtxt get 1.0 end]]
   set date $klnddata(SAVEDATE)
-  set info [list $date $text "TODO opt."]  ;# + possible options for future
+  Klnd_Dosave $wtxt $prjname $date
+}
+#_______________________
+
+proc project::Klnd_Dosave {txt prjname date {doborder yes}} {
+  # Saves text of reminder
+  #   txt - text widget of text content
+  #   prjname - project name
+  #   date - date of TODO
+  #   doborder - yes to highlight the todo text border
+
+  variable prjinfo
+  set iswidget [winfo exists $txt]
+  if {$iswidget} {set txt [string trim [$txt get 1.0 end]]}
+  set info [list $date $txt "TODO opt."]  ;# + possible options for future
   set i [KlndSearch $date $prjname]
-  if {$text eq {}} {
+  if {$txt eq {}} {
     if {$i>-1} {
       set prjinfo($prjname,prjrem) [lreplace $prjinfo($prjname,prjrem) $i $i]
     }
-    KlndBorderText
+    if {$iswidget && $doborder} KlndBorderText
   } elseif {$i>-1} {
     set prjinfo($prjname,prjrem) [lreplace $prjinfo($prjname,prjrem) $i $i $info]
   } else {
@@ -544,7 +560,7 @@ proc project::Select {{item ""}} {
     lassign [SelectedPrj $item] tree item prj
     if {$prj eq {}} return
     ReadNotes $prj
-    lassign [SortRems [ReadRems $prj]] dmin prjinfo($prj,prjrem)
+    lassign [ReadRems $prj] dmin prjinfo($prj,prjrem)
     foreach opt $OPTS {
       if {[catch {set al($opt) $prjinfo($prj,$opt)} e]} {
         Message $e
@@ -1254,7 +1270,6 @@ proc project::Delete {} {
 
   namespace upvar ::alited al al
   variable prjlist
-  variable prjinfo
   variable win
   variable curinfo
   if {[set isel [Selected index]] eq {}} return
@@ -1374,6 +1389,31 @@ proc project::Template {} {
 }
 #_______________________
 
+proc project::PendingTODOs {} {
+  # Displays all pending TODOs.
+
+  variable prjlist
+  variable prjinfo
+  alited::ScriptSource todolist
+  set tdlist [list]
+  foreach prj $prjlist {
+    lassign [ReadRems $prj] dmin prjinfo($prj,prjrem)
+    if {$prjinfo($prj,prjrem) ne {}} {
+      lappend tdlist [list $prj $prjinfo($prj,prjrem)]
+    }
+  }
+  set prj [alited::todolist::_run $tdlist]
+  catch {
+    if {$prj ne {}} {
+      Select $prjinfo($prj,ID)
+      after idle {after 250 alited::project::Ok}
+    } else {
+      KlndUpdate
+    }
+  }
+}
+#_______________________
+
 proc project::UpdateMsg {msg {showtotals yes}} {
   # Displays a message on project updating.
   #   msg - message of action (add/change)
@@ -1394,10 +1434,8 @@ proc project::Ok {args} {
   variable obPrj
   variable win
   variable prjlist
-  variable prjinfo
   variable curinfo
   variable updateGUI
-  alited::CloseDlg
   if {$curinfo(_NO2ENT)} {
     # disables entering twice (at multiple double-clicks)
     return
@@ -1411,11 +1449,15 @@ proc project::Ok {args} {
   if {[set N [llength [alited::bar::BAR listFlag m]]]} {
     set msg [msgcat::mc "All modified files (%n) will be saved.\n\nDo you agree?"]
     set msg [string map [list %n $N] $msg]
-    if {![alited::msg yesno ques $msg YES -centerme $win]} return
-  }
-  if {![alited::file::SaveAll]} {
-    $obPrj res $win 0
-    return
+    set ans [alited::msg yesnocancel ques $msg YES -centerme $win]
+    switch $ans {
+      0 {return}
+      2 {alited::bar::BAR unmarkTab}
+    }
+    if {![alited::file::SaveAll]} {
+      $obPrj res $win 0
+      return
+    }
   }
   if {[set N [llength [alited::bar::BAR cget -select]]]} {
     set msg [msgcat::mc "All selected files (%n) will remain open\nin the project you are switching to.\n\nDo you agree?"]
@@ -1482,13 +1524,12 @@ proc project::Ok {args} {
 }
 #_______________________
 
-proc project::Cancel {args} {
-  # 'Cancel' button handler.
+proc project::Close {args} {
+  # 'Close' button handler.
   #   args - possible arguments
 
   variable obPrj
   variable win
-  alited::CloseDlg
   SaveData
   SaveNotes
   RestoreSettings
@@ -1604,25 +1645,31 @@ proc project::Klnd_delete {} {
 }
 #_______________________
 
-proc project::Klnd_moveTODO {wrem todo date} {
+proc project::Klnd_moveTODO {wrem todo date1 date2} {
   # Moves current TODO to a new date.
   #   wrem - text widget of TODO
   #   todo - text of TODO
-  #   date - new date (in seconds)
+  #   date1 - old date (in seconds)
+  #   date2 - new date (in seconds)
 
   variable klnddata
   # get TODO of new date
-  lassign [ClockYMD $date] y m d
+  lassign [ClockYMD $date2] y m d
   KlndClick $y $m $d
   set todonew [string trimright [$wrem get 1.0 end]]
-  if {$todonew ne {}} {append todonew \n}
-  # add the moved TODO to the new TODO
-  append todonew $todo
-  # select the new date
-  set klnddata(SAVEDATE) [ClockFormat $date]
-  KlndDay $date no
-  # update the new TODO
-  $wrem replace 1.0 end $todonew
+  if {$todonew ne {}} {
+    # there is TODO on new day
+    Message $::alited::al(MC,tododupl) 4
+    # return to old day
+    lassign [ClockYMD $date1] y m d
+    KlndClick $y $m $d
+  } else {
+    # select the new date
+    set klnddata(SAVEDATE) [ClockFormat $date2]
+    KlndDay $date2 no
+  }
+  $wrem replace 1.0 end $todo
+  ::hl_tcl::hl_text $wrem
 }
 #_______________________
 
@@ -1640,9 +1687,9 @@ proc project::Klnd_next {{days 1}} {
     return
   }
   Klnd_delete
-  set date [ClockScan $klnddata(SAVEDATE)]
-  set date [clock add $date $days days]
-  after 100 [list alited::project::Klnd_moveTODO $wrem $todo $date]
+  set date1 [ClockScan $klnddata(SAVEDATE)]
+  set date2 [clock add $date1 $days days]
+  after 100 [list alited::project::Klnd_moveTODO $wrem $todo $date1 $date2]
 }
 #_______________________
 
@@ -1986,6 +2033,7 @@ proc project::KlndTextModified {wtxt args} {
   catch {after cancel $al($aft)}
   set al($aft) [after idle alited::project::Klnd_save]
 }
+
 # ________________________ GUI _________________________ #
 
 proc project::MainFrame {} {
@@ -2010,7 +2058,7 @@ proc project::MainFrame {} {
       f5 {-text Files}
       -traverse yes -select f1
     }}
-    {fraB1 fraTreePrj T 1 1 {-st nsew}}
+    {fraB1 fraTreePrj T 1 1 {-st ew -pady 0}}
     {.btTad - - - - {pack -side left -anchor n}
       {-com alited::project::Add -tip {$::alited::al(MC,prjadd)} -image alimg_add-big}}
     {.btTch - - - - {pack -side left}
@@ -2018,12 +2066,15 @@ proc project::MainFrame {} {
     {.btTdel - - - - {pack -side left}
       {-com alited::project::Delete -tip {$::alited::al(MC,prjdel1)}
       -image alimg_delete-big}}
-    {.h_ - - - - {pack -side left -expand 1}}
     {.btTtpl - - - - {pack -side left}
       {-com alited::project::Template -tip {$::alited::al(MC,CrTemplPrj)}
       -image alimg_plus-big}}
-    {.btTtview - - - - {pack -side left -padx 4}
+    {.sev - - - - {pack -side left -padx 4 -fill y}}
+    {.btTtview - - - - {pack -side left}
       {-image alimg_folder-big -com alited::project::ViewDir -tip {$::alited::al(MC,ViewDir)}}}
+    {.btTtdl - - - - {pack -side left}
+      {-com alited::project::PendingTODOs -tip {$::alited::al(MC,prjTmore)}
+      -image alimg_more-big}}
     {LabMess fraB1 L 1 1 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {seh fraB1 T 1 2 {-st nsew -pady 2}}
     {fraB2 + T 1 2 {-st nsew} {-padding {2 2}}}
@@ -2032,7 +2083,7 @@ proc project::MainFrame {} {
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 8} {-w 50}}
     {.ButOK - - - - {pack -side left -anchor s -padx 2}
       {-t {$::alited::al(MC,select)} -com alited::project::Ok}}
-    {.butCancel - - - - {pack -side left -anchor s} {-t Cancel -com alited::project::Cancel}}
+    {.butClose - - - - {pack -side left -anchor s} {-t Close -com alited::project::Close}}
   }
 }
 #_______________________
@@ -2043,16 +2094,15 @@ proc project::Tab1 {} {
   namespace upvar ::alited al al
   variable klnddata
   set klnddata(SAVEDATE) [set klnddata(SAVEPRJ) {}]
-  set monofont "[font actual apaveFontMono] -size $al(FONTSIZE,small)"
-  set klnddata(toobar) "LabKlndDate {{} {} {-font {$monofont}}} sev 6"
-  foreach img {delete paste undo redo - previous2 previous next next2} {
+  set monofont "[font actual apaveFontMono] -weight bold -size $al(FONTSIZE,small)"
+  set klnddata(toobar) "LabKlndDate {{} {} {-font {$monofont}}}"
+  foreach img {- delete paste undo redo - previous2 previous next next2} {
     # -method option for possible disable/enable BuT_alimg_delete etc.
     if {$img eq {-}} {
       append klnddata(toobar) " sev 4"
       continue
     }
-    append klnddata(toobar) " alimg_$img \{{} \
-      -tip {-BALTIP {$al(MC,prjT$img)} -MAXEXP 2@@ -under 4} \
+    append klnddata(toobar) " alimg_$img \{{} -tip {$al(MC,prjT$img)} \
       -com alited::project::Klnd_$img -method yes \}"
   }
   set klnddata(vsbltext) yes
@@ -2227,9 +2277,9 @@ proc project::Tab5 {} {
   return {
     {frat - - 1 9 {-st ew}}
     {frat.ToolTop + T - - pack {-array {$::alited::al(atools)} -relief groove -borderwidth 1}}
-    {labFilter frat T 1 1 {-st se -padx 1} {-t {All files filter:}}}
-    {EntFilter + L 1 1 {-st swe -padx 1 -cw 1} {-tvar ::alited::project::filefilter -validate all -validatecommand alited::project::preValidateFilter}}
-    {ChbFilter + L 1 1 {-st sw -padx 1} {-var ::alited::project::casefilter -t {Match case} -com alited::project::postValidateFilter}}
+    {labFilter + T 1 1 {-st nse -padx 1 -pady 8} {-t {All files filter:}}}
+    {EntFilter + L 1 1 {-st nswe -padx 1 -cw 1 -pady 8} {-tvar ::alited::project::filefilter -validate all -validatecommand alited::project::preValidateFilter}}
+    {ChbFilter + L 1 1 {-st nsw -padx 1} {-var ::alited::project::casefilter -t {Match case} -com alited::project::postValidateFilter}}
     {seh_ labFilter T 1 3}
     {LabFlist + T 1 3 {-pady 3 -padx 3} {-foreground $al(FG,DEFopts) -font {$::apave::FONTMAINBOLD}}}
     {fraFlist + T 1 3 {-st nswe -padx 3 -rw 1}}
@@ -2255,7 +2305,7 @@ proc project::_create {} {
   set tipson [baltip::cget -on]
   baltip::configure -on $al(TIPS,Projects)
   ::apave::APave create $obPrj $win
-  $obPrj makeWindow $win.fra "$al(MC,projects) :: $::alited::PRJDIR"
+  $obPrj makeWindow $win.fra "$al(MC,icobox) :: $::alited::PRJDIR"
   set nbk $win.fra.fraR.nbk
   $obPrj paveWindow \
     $win.fra [MainFrame] \
@@ -2265,7 +2315,7 @@ proc project::_create {} {
     $nbk.f4 [Tab4] \
     $nbk.f5 [Tab5]
   set tree [$obPrj TreePrj]
-  $tree heading C1 -text $al(MC,projects)
+  $tree heading C1 -text $al(MC,project)
   if {$oldTab ne {}} {$nbk select $oldTab}
   UpdateTree
   bind $win <$al(acc_2)> "alited::ini::ToolByKey $nbk ToolPrjEM"
@@ -2288,7 +2338,7 @@ proc project::_create {} {
   $obPrj displayText [$obPrj TexTemplate] $al(PTP,text)
   alited::ini::HighlightFileText $prjtex .md 0 -cmdpos ::apave::None
   set res [$obPrj showModal $win -geometry $geo -minsize {600 400} -resizable 1 \
-    -onclose alited::project::Cancel -focus [$obPrj TreePrj]]
+    -onclose alited::project::Close -focus [$obPrj TreePrj]]
   set oldTab [$nbk select]
   set al(PTP,text) [string trimright [[$obPrj TexTemplate] get 1.0 end]]
   if {[llength $res] < 2} {set res ""}

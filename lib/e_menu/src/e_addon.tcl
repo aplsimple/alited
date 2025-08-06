@@ -297,7 +297,7 @@ proc ::em::menuTextModified {w bfont} {
     set bg2 #0c560c
     set fg3 #606060
   }
-  $w tag config tagNORM -font "-family {[obj basicTextFont]} -size [obj basicFontSize]"
+  $w tag config tagNORM -font "[obj basicTextFont] -size [obj basicFontSize]"
   $w tag add tagNORM 1.0 end
   $w tag config tagRSIM -font $bfont -foreground $fg1
   $w tag config tagMARK -font $bfont -foreground $bg2
@@ -669,6 +669,9 @@ proc ::em::changePD {} {
     default {set ornam [lindex $ornams 3]}
   }
   ::apave::APave create ::em::dialog .em
+  if {[catch {set familyM [dict get [obj basicTextFont] -family]}]} {
+    set familyM Mono
+  }
   set r -1
   while {$r == -1} {
     after 0 {after idle ::em::changePDspx}
@@ -679,7 +682,7 @@ proc ::em::changePD {} {
       Spx [list "    Color scheme:" {} \
         [list -tvar ::em::ncolor -from -2 -to [::apave::cs_Max] -w 5 \
         -justify center -state $::em::noCS -msgLab {LabMsg {                     } \
-        {-padding {16 5 16 5} -font {-family {$::apave::_CS_(textFont)} -size $::em::fs}}} \
+        {-padding {16 5 16 5} -font {$::apave::_CS_(textFont) -size $::em::fs}}} \
         -command ::em::changePDspx -tooltip $tip1]] {} \
       chb1 {{} {-padx 5} {-toprev 1 -state $::em::noCS -t "Use it"}} {0} \
       spx2 [list "       Font size:" {} \
@@ -698,8 +701,7 @@ proc ::em::changePD {} {
       rad3 [list "                 " {-fill x -expand 1} "-state $dkst"] \
         [list "$::em::dk" dialog dock desktop] \
       chb3 {{} {-padx 5} {-toprev 1 -t "Use it"}} {0} \
-    ] -head $message -weight bold -family "{[obj basicTextFont]}" \
-    -centerme .em {*}[themingPave]]
+    ] -head $message -weight bold -family $familyM -centerme .em {*}[themingPave]]
     set r [lindex $res 0]
   }
   set ::em::ncolor [::apave::getN $::em::ncolor $ncolorsav -2 [::apave::cs_Max]]
