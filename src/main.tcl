@@ -1093,11 +1093,14 @@ proc main::ShowOutdatedTODO {prj date todo is} {
 
 proc main::HandleOutdatedTODO {butt} {
   # Processes clicking the outdated (red) TODOs.
-  #   butt - number of mouse button (1 - left)
+  #   butt - number of mouse button
 
   ::baltip::hide $::alited::al(WIN) 1
-  if {$butt == 1} {
+  if {$butt == 3} {
     alited::project::_run
+  } else {
+    alited::raise_window
+    after 100 "catch {focus [CurrentWTXT]}"
   }
 }
 #_______________________

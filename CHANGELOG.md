@@ -6,12 +6,13 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.10 (6 Aug'25)`
+Version `v1.8.10 (11 Aug'25)`
 
   - BUGFIX: Projects: at shifting TODO, 1st text line highlighted only
   - NEW   : Projects: "All pending TODOs" tool
   - NEW   : Edit/Formats/Pluginuble: repeated calls allow (un)registering
   - NEW   : `expr` template to enter `[expr {}]`
+  - CHANGE: click on red reminder of project TODO: hides reminder, right button enters Projects (others try to focus current text)
   - CHANGE: Projects: forbidden TODO shifts to non-free day
   - CHANGE: Projects: current day label be bold
   - CHANGE: Projects: selecting project: YesNoCancel i/o YesNo for files modified
@@ -30,7 +31,6 @@ Version `v1.8.9 (29 May'25)`
   - NEW   : doctest: code may include #< comments to execute by doctest
   - NEW   : font & editor (text) font of Preferences are used in all widgets
   - NEW   : Ctrl+F1..F12 & Ctrl+Alt+F1..F12 allowed in Preferences/Keys
-  - CHANGE: click on red reminder of project TODO: left button enters Projects, right one hides reminder
   - CHANGE: oldest Tcl/Tk version to run alited is 8.6.9 (i/o 8.6.10)
   - CHANGE: default Ctrl+F5 i/o Shift+F5 for "Tools/Run as is"
   - CHANGE: File/Clone : button of file chooser
