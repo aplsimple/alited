@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.6.5
+package provide apave 4.6.6
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -1075,9 +1075,10 @@ method input {icon ttl iopts args} {
   lappend args {*}$focusopt
   if {[catch {
     lassign [my PrepArgs {*}$args] args
+    if {[lindex $focusopt 1] in {. ""}} {set foc butOK} {set foc {}}
     set res [my Query $icon $ttl {} \
       "$butHelp $buttons butOK $titleOK $comOK $butCancel" \
-      butOK $inopts $args {} {*}$centerme -input yes]} e]
+      $foc $inopts $args {} {*}$centerme -input yes]} e]
   } then {
     catch {destroy $Dlgpath}  ;# Query's window
     set under \n[string repeat _ 80]\n\n

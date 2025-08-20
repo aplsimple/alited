@@ -1151,7 +1151,7 @@ proc file::OpenWith {} {
 
   foreach fn [SortTreeSelFiles] {
     incr i
-    after [expr {($i-1)*500}] openDoc $fn ;# let the app get 0.5 sec pause
+    after [expr {($i-1)*500}] openDoc \"$fn\" ;# let the app get 0.5 sec pause
   }
 }
 

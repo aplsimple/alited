@@ -310,6 +310,24 @@ proc pref::CheckOk {} {
 }
 #_______________________
 
+proc pref::CheckFonts {} {
+  # Checks fonts' correctness.
+
+  fetchVars
+  set fonttemp temptestFont
+  foreach {var msg} {FONT main FONT,txt editor} {
+    catch {font delete $fonttemp}
+    if {[catch {font create $fonttemp {*}$al($var)} err]} {
+      bell
+      tk_messageBox -icon error -title "ERROR" -parent $win \
+        -message "ERROR:\n\nAt setting the $msg font:\n\n$err"
+      return no
+    }
+  }
+  return yes
+}
+#_______________________
+
 proc pref::Ok {args} {
   # Handler of "OK" button.
 
@@ -323,6 +341,7 @@ proc pref::Ok {args} {
   set ans [alited::msg okcancel info $al(MC,restart) OK -centerme $win {*}$timo]
   if {$ans} {
     # check options that can make alited unusable
+    if {![CheckFonts]} return
     if {![::apave::intInRange $al(INI,HUE) -50 50]} {set al(INI,HUE) 0}
     if {![::apave::intInRange $al(FONTSIZE,small) 6 72]} {set al(FONTSIZE,small) 9}
     if {![::apave::intInRange $al(FONTSIZE,std) 7 72]} {set al(FONTSIZE,std) 10}

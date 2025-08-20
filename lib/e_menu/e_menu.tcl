@@ -28,7 +28,7 @@ package require Tk
 wm withdraw .
 
 namespace eval ::em {
-  variable em_version {e_menu 4.6.5}
+  variable em_version {e_menu 4.6.6}
   variable em_script [file normalize [info script]]
   variable solo [expr {[info exist ::em::executable] || ( \
   [info exist ::argv0] && [file normalize $::argv0] eq $em_script)} ? 1 : 0]
@@ -1519,6 +1519,7 @@ proc ::em::getPD {{lookdir ""} {lookP2 1}} {
   }
   file nativename $ldir
 }
+proc ::em::get_PD {args} {getPD {*}$args} ;# == getPD
 #_______________________
 
 proc ::em::getPDU {} {

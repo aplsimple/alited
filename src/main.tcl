@@ -832,6 +832,7 @@ proc main::SaveVisitInfo {{wtxt ""} {K ""} {s 0}} {
   set wtree [$obPav Tree]
   if {[catch {set pos [$wtxt index insert]}]} return
   lassign [alited::tree::CurrentItemByLine $pos 1] itemID - - - name l1
+  if {$itemID eq {}} return
   set header [alited::unit::GetHeader $wtree $itemID]
   set gokeys [list {}]
   foreach gk {F3 AltQ AltW} {

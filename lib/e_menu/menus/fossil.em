@@ -5,7 +5,7 @@ w=25
 t4==%b-%Y/%U-week
 u=%s
 in=1.0
-pos=9.22
+pos=227.18
 ::FSLUSER=aplsimple
 ::FSLBRANCH=New_branch
 ::FSLBRANCHCOLOR=#0000aa
@@ -193,7 +193,7 @@ R: %I {} "TOUCH & COMMIT" { \
  --date-override DATE   DATE to use instead of 'now'\n\
  --user-override USER   USER to use instead of the current default\
 } \
-   } -head {\n This will TOUCH the file(s) of Fossil repository\n to have the file(s) time equal to the time stamp.\n\n Then this will run COMMIT on the repository:\n %UD\n} -weight bold == ::EM_T_FILE ::EM_T_TIME ::EM_T_VERBOSE ::EM_COMOPT
+   } -focus butOK -head {\n This will TOUCH the file(s) of Fossil repository\n to have the file(s) time equal to the time stamp.\n\n Then this will run COMMIT on the repository:\n %UD\n} -weight bold == ::EM_T_FILE ::EM_T_TIME ::EM_T_VERBOSE ::EM_COMOPT
 S: %C if $::EM_T_VERBOSE {set ::EM_T_v -v} {set ::EM_T_v ""}
 SW: %IF "$::EM_T_TIME" ni {{} none} && "$::EM_T_FILE" ne "" %THEN fossil touch $::EM_T_v $::EM_T_TIME $::EM_T_FILE
 S: fossil commit --allow-empty $::EM_COMOPT
@@ -224,7 +224,7 @@ R: %I {} "ADDREMOVE" { \
 \n    all files that show as MISSING with the 'status' command) are\
 \n    removed as if by the 'rm' command.\
 \n\n The 'Dry run' shows the supposed changes, not doing actually.} \
-   } -head {\n This will ADD the new and REMOVE the deleted\n file(s) of "$::EMENUPRJ" repository. \n} -weight bold == ::EM_T_DRY
+   } -focus butOK -head {\n This will ADD the new and REMOVE the deleted\n file(s) of "$::EMENUPRJ" repository. \n} -weight bold == ::EM_T_DRY
 S: %C if $::EM_T_DRY {set ::EM_T_n -n} {set ::EM_T_n ""}
 S: fossil addremove $::EM_T_n
 

@@ -92,20 +92,22 @@ proc tree::CurrentItemByLine {{pos ""} {fullinfo no}} {
   }
   set l [expr {int($pos)}]
   set TID [alited::bar::CurrentTabID]
-  set L 0
-  set R [llength $al(_unittree,$TID)]
-  while {$L<$R} {
-    set m [expr {int(($L+$R)/2)}]
-    lassign [lindex $al(_unittree,$TID) $m] lev leaf fl1 title l1 l2 ID
-    if {$l2<$l} {
-      set L [incr m]
-    } elseif {$l1>$l} {
-      set R $m
-    } else {
-      if {$fullinfo} {
-        return [list $ID $lev $leaf $fl1 $title $l1 $l2]
+  if {[info exists al(_unittree,$TID)]} {
+    set L 0
+    set R [llength $al(_unittree,$TID)]
+    while {$L<$R} {
+      set m [expr {int(($L+$R)/2)}]
+      lassign [lindex $al(_unittree,$TID) $m] lev leaf fl1 title l1 l2 ID
+      if {$l2<$l} {
+        set L [incr m]
+      } elseif {$l1>$l} {
+        set R $m
+      } else {
+        if {$fullinfo} {
+          return [list $ID $lev $leaf $fl1 $title $l1 $l2]
+        }
+        return $ID
       }
-      return $ID
     }
   }
   return {}

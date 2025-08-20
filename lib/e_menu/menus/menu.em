@@ -2,7 +2,7 @@
 
 in=1.0
 w=25
-pos=29.15
+pos=114.18
 ::EMENUTMPFILE=%mn.tmp~
 %C if {![info exist ::EMENU_FOSGIT]} {set ::EMENU_FOSGIT Fossil}
 %C if {![info exist ::EMENUFILE]} {set ::EMENUFILE [set ::EMENURUNFILE {%f}] ; if {[::iswindows]} {set ::EMENURUNFILE [string map [list \\ \\\\] {%f}]; set ::EMENUFILE [string map [list \\ \\\\\\\\] {%f}]}}
@@ -111,7 +111,7 @@ R: %I {} "GDIFF" { \
    seh2 {{} {-pady 3} {}} {} \
    texc {{   Hint:} {} {-h 12 -w 60 -ro 1 -wrap word}} \
    {\n Select a version from the combobox to be compared to tip.\n\n If it's blank, the current file is compared to tip.\n\n No response means no differences.\n\n Or you can compare a current file with its .bak version\n saved in .bak subdirectory of project, before last changes.\n\n (temp file: $::EMENUTMPFILE)} \
-   } -head {\n This will compare a selected version of\n     $::EMENUFILE\n to its tip.} -weight bold == ::EMENUFILE ::EMENUCOMMIT ::EMENU_FOSGIT ::EMENUCHB
+   } -focus butOK -head {\n This will compare a selected version of\n     $::EMENUFILE\n to its tip.} -weight bold == ::EMENUFILE ::EMENUCOMMIT ::EMENU_FOSGIT ::EMENUCHB
 R: %IF {$::EMENUCHB} %THEN "%DF" "$::EMENUFILE" "$::EMENUBAKFILE"
 R: %C if {"$::EMENUCOMMIT" eq ""} \
    {set ::EMENUTMP ""} {set ::EMENUTMP "--from $::EMENUCOMMIT --to tip"}
