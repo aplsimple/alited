@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide hl_tcl 1.2
+package provide hl_tcl 1.2.2
 
 # ______________________ Common data ____________________ #
 
@@ -19,7 +19,8 @@ namespace eval ::hl_tcl {
     # Tcl commands
     set data(PROC_TCL) [lsort [list \
       return proc method self my coroutine yield yieldto constructor destructor \
-      break continue namespace oo::define oo::class oo::objdefine oo::object test
+      break continue namespace test \
+      oo::define oo::class oo::objdefine oo::object oo::abstract
     ]]
     set data(CMD_TCL) [lsort [list \
       set incr if else elseif string expr list lindex lrange llength lappend \
@@ -31,7 +32,7 @@ namespace eval ::hl_tcl {
       mathop apply fileevent unset join next exec refchan package source \
       exit vwait binary lreverse registry auto_execok subst encoding load \
       auto_load tell auto_mkindex memory trace time clock timerate auto_qualify \
-      auto_reset socket bgerror oo::copy unload history tailcall \
+      auto_reset socket bgerror oo::copy superclass unload history tailcall \
       interp parray pid transchan nextto unknown dde pkg_mkIndex zlib auto_import \
       coroinject coroprobe const ledit lpop lremove lseq tcl::process \
       readFile writeFile foreachLine pkg::create tcl::prefix \
@@ -146,7 +147,7 @@ proc ::hl_tcl::my::NotEscaped {line i} {
     }
     incr cntq
   }
-  return [expr {($cntq%2)==0}]
+  expr {($cntq%2)==0}
 }
 #_______________________
 
@@ -459,7 +460,6 @@ proc ::hl_tcl::my::BindToEvent {w event args} {
   if {[string first $args [bind $w $event]]<0} {
     bind $w $event [list + {*}$args]
   }
-  return
 }
 
 # _________________________ DYNAMIC highlighting ________________________ #
@@ -742,9 +742,8 @@ proc ::hl_tcl::my::InRange {p1 p2 l {c -1}} {
   lassign [split $p1 .] l1 c1
   lassign [split $p2 .] l2 c2
   incr c2 -1 ;# text ranges are not right-inclusive
-  return [expr { \
-    ($l>=$l1 && $l<$l2 && $c>=$c1) || ($l>$l1 && $l<=$l2 && $c<=$c2) ||
-    ($l==$l1 && $l1==$l2 && $c>=$c1 && $c<=$c2) || ($l>$l1 && $l<$l2)}]
+  expr { ($l>=$l1 && $l<$l2 && $c>=$c1) || ($l>$l1 && $l<=$l2 && $c<=$c2)
+    || ($l==$l1 && $l1==$l2 && $c>=$c1 && $c<=$c2) || ($l>$l1 && $l<$l2) }
 }
 #_______________________
 
@@ -905,7 +904,7 @@ proc ::hl_tcl::my::Escaped {line curpos} {
 
   set line [string range $line 0 $curpos-1]
   set linetrim [string trimright $line \\]
-  return [expr {([string length $line]-[string length $linetrim])%2}]
+  expr {([string length $line]-[string length $linetrim])%2}
 }
 #_______________________
 
@@ -1003,7 +1002,6 @@ proc ::hl_tcl::my::HighlightBrackets {w} {
   } else {
     $w tag add tagBRACKETERR $curpos
   }
-  return
 }
 
 # _________________________ INTERFACE procedures ________________________ #
@@ -1294,7 +1292,7 @@ proc ::hl_tcl::iscurline {txt {flag ""}} {
   #   txt - the text's path
   #   flag - the flag
 
-  return [my::IsCurline $txt $flag]
+  my::IsCurline $txt $flag
 }
 #_______________________
 
@@ -1303,7 +1301,7 @@ proc ::hl_tcl::isdone {txt} {
   #   txt - text's path
 
   variable my::data
-  return [expr {[info exist my::data(REG_TXT,$txt)] && $my::data(REG_TXT,$txt) ne {}}]
+  expr {[info exist my::data(REG_TXT,$txt)] && $my::data(REG_TXT,$txt) ne {}}
 }
 #_______________________
 

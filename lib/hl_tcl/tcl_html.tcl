@@ -24,3 +24,4 @@ foreach ghtml $::argv {
     }
   }
 }
+after idle exit

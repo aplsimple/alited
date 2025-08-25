@@ -36,7 +36,7 @@ proc ::hl_tcl_html::highlight {htmlfile darkedit args} {
   #   tag1 - opening tag(s) of Tcl code snippet
   #   tag2 - ending tag(s) of Tcl code snippet
 
-  set txt .t
+  set txt .hl_tcl_Temp
   text $txt
   set chan [open $htmlfile]
   chan configure $chan -encoding utf-8
@@ -138,8 +138,9 @@ proc ::hl_tcl_html::highlight {htmlfile darkedit args} {
   chan configure $chan -encoding utf-8
   puts -nonewline $chan $text
   close $chan
+  destroy $txt
 }
-after idle exit
+
 # _________________________________ EOF _________________________________ #
 #% file copy -force .bak/index-SRC.html .bak/index.html
 #% exec tclsh ./tcl_html.tcl .bak/index.html

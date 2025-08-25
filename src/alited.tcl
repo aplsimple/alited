@@ -680,7 +680,7 @@ namespace eval alited {
     variable obDlg
     variable al
     if {$type eq {ok}} {
-      set args [linsert $args 0 $defb]
+      set args [linsert $args 0 {*}$defb]
       set defb {}
     } elseif {$defb eq {}} {
       set defb YES

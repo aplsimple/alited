@@ -1051,9 +1051,11 @@ method Query {icon ttl msg buttons defb inopts argdia {precom ""} args} {
       }
       -savetext {set savetext $val}
       default {
-        append optsFont " $opt [list $val]"
-        if {$opt ne "-family"} {
-          append optsFontM " $opt [list $val]"
+        if {$opt ne {} && $val ne {}} {
+          append optsFont " $opt [list $val]"
+          if {$opt ne "-family"} {
+            append optsFontM " $opt [list $val]"
+          }
         }
       }
     }
