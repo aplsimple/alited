@@ -11,7 +11,7 @@
 
 package require Tk
 
-package provide aloupe 1.8.1
+package provide aloupe 1.8.2
 
 namespace eval ::aloupe {
   variable solo [expr {[info exist ::argv0] && [file normalize $::argv0] eq [file normalize [info script]]}]
@@ -56,7 +56,14 @@ proc ::aloupe::RunSolo {} {
     if {$::aloupe::solo} {set aar $::argv} {set aar {}}
     exec -- $tclsh $::aloupe::aloupescript {*}$aar &
   } else {
-    puts "aloupe: $::aloupe::runerr"
+    puts "aloupe error: $::aloupe::runerr"
+    tk_messageBox -title Error -icon error -message \
+      "aloupe error:\n\
+      \n$::aloupe::runerr\n\
+      \nProbably, you need to install\
+      \nTk packages treectrl and Img\
+      \nwhose libraries may be named\
+      \n'tktreectrl' and 'libtk-img'."
   }
 }
 

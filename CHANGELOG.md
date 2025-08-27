@@ -6,10 +6,12 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.10.3 (25 Aug'25)`
+Version `v1.8.10.4 (27 Aug'25)`
 
   - BUGFIX: some messages failed
   - BUGFIX: File tree: "Open with" on file names with spaces
+  - DELETE: treectrl & img packages in installers' bin directory (Linux x86_64)
+  - NEW   : Tools/Loupe: tk_messageBox for errors of packages a user has to install
   - NEW   : Preferences: checking the fonts' correctness
   - CHANGE: File tree: "Rename file": focusing the file name entry (i/o OK button)
   - CHANGE: checks for correct ID (in CurrentItemByLine, SaveVisitInfo)
