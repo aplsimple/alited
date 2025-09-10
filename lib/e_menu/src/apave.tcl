@@ -1185,7 +1185,7 @@ method onTop {wpar top {wtoplist -} {res ""}} {
 method enhanceTitle {optsName} {
   # Enhances dialog title font.
   #   optsName - variable for font options
- 
+
   upvar $optsName opts
   set opts [linsert $opts 0 {*}[my basicTextFont] -hsz [expr {[my basicFontSize] + 1}]]
 }
