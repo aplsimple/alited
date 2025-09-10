@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.7.0
+package provide apave 4.7.1
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -425,6 +425,18 @@ proc focusedWidget {w} {
 }
 #_______________________
 
+proc focusByForce {foc {cnt 10}} {
+  # Focuses a widget.
+  #   foc - widget's path
+
+  if {[incr cnt -1]>0} {
+    after idle after 5 ::apave::focusByForce $foc $cnt
+  } else {
+    catch {focus -force [winfo toplevel $foc]; focus $foc}
+  }
+}
+#_______________________
+
 proc MouseOnWidget {w1} {
   # Places the mouse pointer on a widget.
   #   w1 - the widget's path
@@ -446,18 +458,6 @@ proc CursorAtEnd {w} {
   focus $w
   $w selection clear
   $w icursor end
-}
-#_______________________
-
-proc focusByForce {foc {cnt 10}} {
-  # Focuses a widget.
-  #   foc - widget's path
-
-  if {[incr cnt -1]>0} {
-    after idle after 5 ::apave::focusByForce $foc $cnt
-  } else {
-    catch {focus -force [winfo toplevel $foc]; focus $foc}
-  }
 }
 #_______________________
 
@@ -878,10 +878,11 @@ method input {icon ttl iopts args} {
   if {$iopts ne {}} {
     my initInput  ;# clear away all internal vars
   }
-  set pady "-pady 2"
+  my enhanceTitle args
   if {[set focusopt [::apave::getOption -focus {*}$args]] ne {}} {
     set focusopt "-focus $focusopt"
   }
+  set pady {-pady 2}
   lappend inopts [list fraM + T 1 98 "-st nsew $pady -rw 1"]
   set savedvv [list]
   set frameprev {}
@@ -1178,6 +1179,15 @@ method onTop {wpar top {wtoplist -} {res ""}} {
     }
   }
   return $res
+}
+#_______________________
+
+method enhanceTitle {optsName} {
+  # Enhances dialog title font.
+  #   optsName - variable for font options
+ 
+  upvar $optsName opts
+  set opts [linsert $opts 0 {*}[my basicTextFont] -hsz [expr {[my basicFontSize] + 1}]]
 }
 
 # ________________________ EONS _________________________ #

@@ -6,7 +6,7 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.10.4 (27 Aug'25)`
+Version `v1.8.10.5 (10 Sep'25)`
 
   - BUGFIX: some messages failed
   - BUGFIX: File tree: "Open with" on file names with spaces
@@ -15,7 +15,7 @@ Version `v1.8.10.4 (27 Aug'25)`
   - NEW   : Preferences: checking the fonts' correctness
   - CHANGE: File tree: "Rename file": focusing the file name entry (i/o OK button)
   - CHANGE: checks for correct ID (in CurrentItemByLine, SaveVisitInfo)
-  - CHANGE: packages: apave/e_menu 4.7.0, hl_tcl 1.2.2
+  - CHANGE: packages: apave/e_menu 4.7.1, hl_tcl 1.2.2
 
 
 Version `v1.8.10 (11 Aug'25)`

@@ -586,7 +586,7 @@ proc ::em::createEm {mnuname} {
 proc ::em::about {} {
   # Shows "About..." box.
 
-  set textTags [list [list red " -font {-weight bold -size 12} \
+  set textTags [list [list red " -font {-weight bold} \
     -foreground $::em::clractf -background $::em::clractb"] \
     [list link {::eh::browse %t@@https://%l}] \
     [list linkM {::apave::openDoc %l@@e-mail: %l}] \

@@ -237,6 +237,7 @@ method misc {icon ttl msg butts {defb ""} args} {
       set defb $num
     }
   }
+  my enhanceTitle args
   lassign [my PrepArgs {*}$args] args
   my Query $icon $ttl $msg $apave_msc_bttns But$defb {} $args
 }
