@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.7.1
+package provide apave 4.7.2
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -1179,15 +1179,6 @@ method onTop {wpar top {wtoplist -} {res ""}} {
     }
   }
   return $res
-}
-#_______________________
-
-method enhanceTitle {optsName} {
-  # Enhances dialog title font.
-  #   optsName - variable for font options
-
-  upvar $optsName opts
-  set opts [linsert $opts 0 {*}[my basicTextFont] -hsz [expr {[my basicFontSize] + 1}]]
 }
 
 # ________________________ EONS _________________________ #

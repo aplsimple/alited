@@ -137,6 +137,15 @@ method PrepArgs {args} {
 }
 #_______________________
 
+method enhanceTitle {optsName} {
+  # Enhances dialog title font.
+  #   optsName - variable for font options
+
+  upvar $optsName opts
+  set opts [linsert $opts 0 {*}[my basicTextFont] -hsz [expr {[my basicFontSize] + 1}]]
+}
+#_______________________
+
 method ok {icon ttl msg args} {
   # Shows the *OK* dialog.
   #   icon - icon
