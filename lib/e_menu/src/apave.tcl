@@ -7,7 +7,7 @@
 ###########################################################
 
 package require Tk
-package provide apave 4.7.2
+package provide apave 4.7.3
 
 source [file join [file dirname [info script]] apavedialog.tcl]
 
@@ -1074,19 +1074,11 @@ method input {icon ttl iopts args} {
   set args [::apave::removeOptions $args \
     -titleHELP -buttons -comOK -titleOK -titleCANCEL -centerme]
   lappend args {*}$focusopt
-  if {[catch {
-    lassign [my PrepArgs {*}$args] args
-    if {[lindex $focusopt 1] in {. ""}} {set foc butOK} {set foc {}}
-    set res [my Query $icon $ttl {} \
-      "$butHelp $buttons butOK $titleOK $comOK $butCancel" \
-      $foc $inopts $args {} {*}$centerme -input yes]} e]
-  } then {
-    catch {destroy $Dlgpath}  ;# Query's window
-    set under \n[string repeat _ 80]\n\n
-    ::apave::obj ok err "ERROR" "\n$e$under $inopts$under $args$under $centerme" \
-      -t 1 -head "\nAPave error: \n" -hfg red -weight bold -w 80
-    return 0
-  }
+  lassign [my PrepArgs {*}$args] args
+  if {[lindex $focusopt 1] in {. ""}} {set foc butOK} {set foc {}}
+  set res [my Query $icon $ttl {} \
+    "$butHelp $buttons butOK $titleOK $comOK $butCancel" \
+    $foc $inopts $args {} {*}$centerme -input yes]
   if {![lindex $res 0]} {  ;# restore old values if OK not chosen
     foreach {vn vv} $_savedvv {
       # tk_optionCascade (destroyed now) was tracing its variable => catch
