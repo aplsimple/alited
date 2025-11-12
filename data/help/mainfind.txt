@@ -1,0 +1,23 @@
+ The non-standard settings of <r>Find/Replace</r>
+ dialogue are
+
+   <b>Find by List</b> checkbox at <b>Find</b> field:
+     allows finding words of <b>Find</b> field
+     (words are separated by spaces)
+
+   <b>Paste "Find"</b> button at <b>Replace</b> field:
+     copies <b>Find</b> field to <b>Replace</b> field
+
+   <b>RE2</b> button: allows applying additional
+     <b>regexp</b> conditions to the search result
+
+   <b>Redraw</b> button: switches to/from standard
+     geometry of <r>Find/Replace</r> dialogue
+
+   <b>-geometry</b> checkbox: if set, allows saving
+     current geometry of <r>Find/Replace</r>
+     dialogue at closing it
+
+   <b>Replace by blank</b> checkbox: allows blank
+     replacements, just removing the found
+     strings

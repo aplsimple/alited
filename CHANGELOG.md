@@ -6,6 +6,12 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
+Version `v1.8.10.8 (12 Nov'25)`
+
+  - BUGFIX: mainfind.txt absent (help for Find/Replace, through F1 key)
+  - NEW   : Find/Replace: "Find by list" checkbox
+
+
 Version `v1.8.10.7 (24 Sep'25)`
 
   - BUGFIX: some messages failed

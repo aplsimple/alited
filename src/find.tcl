@@ -27,6 +27,7 @@ namespace eval find {
   set data(lastinvoke) 3
 
   # options of "Find/Replace" dialogue
+  set data(c0) 0  ;# find by list
   set data(c1) 0  ;# words only
   set data(c2) 1  ;# case
   set data(c3) 0  ;# by blank
@@ -136,7 +137,7 @@ proc find::GetWordOfLine {line idx {mode ""}} {
   #   mode - if it ends with "2", the result includes a range of found string.
 
   variable adelim
-  return [GetCommandOfLine $line $idx $adelim $mode]
+  GetCommandOfLine $line $idx $adelim $mode
 }
 #_______________________
 
@@ -540,13 +541,31 @@ proc find::Search1 {wtxt pos} {
 
   variable win
   variable data
+  variable counts
   lassign [FindOptions $wtxt] findstr options
-  if {[catch {set fnd [$wtxt search {*}$options -count ::alited::find::counts -all -- $findstr $pos]} err]} {
-    alited::msg ok err $err -ontop yes -parent $win
-    set data(_ERR_) yes
-    return [list 1 {}]
+  if {$data(c0)} {
+    set findstr [split [string trim $findstr] { }]
+  } else {
+    set findstr [list $findstr]
   }
-  return [list 0 $fnd]
+  set res [list]
+  foreach find1 $findstr {
+    if {$find1 eq {}} continue
+    if {[catch {set fnd [$wtxt search {*}$options \
+    -count ::alited::find::counts -all -- $find1 $pos]} err]} {
+      alited::msg ok err $err -ontop yes -parent $win
+      set data(_ERR_) yes
+      return [list 1 {}]
+    }
+    set i 0
+    foreach index1 $fnd {
+      set index2 [$wtxt index "$index1 + [lindex $counts $i]c"]
+      lappend res $index1 $index2
+      incr i
+    }
+  }
+  set res [lsort -real -stride 2 $res]
+  return [list 0 $res]
 }
 #_______________________
 
@@ -568,10 +587,8 @@ proc find::Search {wtxt} {
   SetTags $wtxt
   lassign [Search1 $wtxt 1.0] err fnd
   if {$err} {return {}}
-  set i 0
   set res [list]
-  foreach index1 $fnd {
-    set index2 [$wtxt index "$index1 + [lindex $counts $i]c"]
+  foreach {index1 index2} $fnd {
     if {[CheckWord $wtxt $index1 $index2 $data(c1)]} {
       set strfound [$wtxt get $index1 $index2]
       set OK yes
@@ -594,7 +611,6 @@ proc find::Search {wtxt} {
       }
       if {$OK} {lappend res [list $index1 $index2]}
     }
-    incr i
   }
   return $res
 }
@@ -1308,7 +1324,7 @@ proc find::skipRE2 {line} {
   # Checks if a RE2 line has to be skipped.
   #   line - the line
 
-  return [regexp {^\s*[*]+[^*]+} $line]
+  regexp {^\s*[*]+[^*]+} $line
 }
 #_______________________
 
@@ -1316,7 +1332,7 @@ proc find::stopRE2 {line} {
   # Checks if a text line stops RE2 list.
   #   line - the line
 
-  return [regexp {^\s*[*]+\s*$} $line]
+  regexp {^\s*[*]+\s*$} $line
 }
 #_______________________
 
@@ -1360,8 +1376,10 @@ proc find::_create {} {
   $obFND makeWindow $w $al(MC,findreplace) -type dialog
   $obFND paveWindow $w {
     {labB1 - - 1 1    {-st es -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Find: " -style TLabelFS}}
-    {Cbx1 + L 1 5 {-st wes -ipadx 0 -padx 0 -ipady 0 -pady 0}
+    {Cbx1 + L 1 4 {-st wes -ipadx 0 -padx 0 -ipady 0 -pady 0}
       {-tvar ::alited::find::data(en1) -values {$::alited::find::data(vals1)}}}
+    {chb0 + L 1 1 {-st ws -ipady 0 -pady 0}
+      {-tip "Find by List" -var ::alited::find::data(c0) -style TCheckbuttonFS}}
     {labB2 labB1 T 1 1 {-st es -ipadx 0 -padx 0 -ipady 0 -pady 0}
       {-t "Replace: " -style TLabelFS}}
     {Cbx2 + L 1 4 {-st wes -cw 1 -ipadx 0 -padx 0 -ipady 0 -pady 0}
@@ -1400,7 +1418,7 @@ proc find::_create {} {
       -value 2 -style TRadiobuttonFS}}
     {chb4 +  T 1 2 {-st w -ipadx 0 -padx 0 -ipady 0 -pady 0}
       {-t "Wrap" -var ::alited::find::data(c4) -style TCheckbuttonFS}}
-    {sev2 cbx1 L 9 1}
+    {sev2 chb0 L 9 1}
     {But1 + L 1 1 {-st wes -pady 2} {-t "Find" -com "::alited::find::Find 1"
       -style TButtonWestBoldFS}}
     {But2 + T 1 1 {-st we -pady 0} {-t "All in text" -com "::alited::find::FindInText 2"
