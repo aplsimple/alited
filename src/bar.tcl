@@ -551,10 +551,11 @@ proc bar::OnTabSelection {TID} {
   ::apave::setTextIndent $indent $indentchar
   if {$al(prjindentAuto)} {alited::main::UpdateProjectInfo $indent}
   after 10 {
-    ::alited::tree::SeeSelection
-    ::alited::main::UpdateGutter
-    ::alited::favor::SkipVisited no
-    ::alited::main::SaveVisitInfo
+    alited::tree::SeeSelection
+    alited::main::UpdateGutter
+    alited::favor::SkipVisited no
+    alited::main::SaveVisitInfo
+    alited::find::SessionButtons
   }
   if {![alited::file::IsNoName $fname] && ![file exists $fname]} {
     after idle [list alited::Balloon1 $fname]
@@ -568,6 +569,7 @@ proc bar::OnControlClick {} {
   set llen [llength [alited::bar::BAR cget -select]]
   set msg [string map "%n $llen" [msgcat::mc {Selected files: %n}]]
   alited::Message $msg 3
+  alited::find::SessionButtons
 }
 
 # ________________________ Handle Ctrl+Tab keys ______________________ #

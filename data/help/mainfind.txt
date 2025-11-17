@@ -1,4 +1,4 @@
- The non-standard settings of <r>Find/Replace</r>
+ The non-standard options of <r>Find/Replace</r>
  dialogue are
 
    <b>Find by List</b> checkbox at <b>Find</b> field:
@@ -21,3 +21,8 @@
    <b>Replace by blank</b> checkbox: allows blank
      replacements, just removing the found
      strings
+
+ Also, if some file tabs were selected after
+ pressing Ctrl key and clicking them, <b>All
+ in session</b> functions become <b>All in N files</b>
+ where N is a number of selected tabs.

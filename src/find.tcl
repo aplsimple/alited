@@ -983,13 +983,23 @@ proc find::SessionButtons {} {
   # Prepares buttons' label ("in all/selected tabs").
 
   namespace upvar ::alited al al obFND obFND
-  if {[set llen [llength [alited::bar::BAR listFlag s]]]>1} {
-    set btext [string map [list %n $llen] [msgcat::mc {All in %n Files}]]
-  } else {
-    set btext [msgcat::mc {All in session}]
+  catch {
+    set seltabs [alited::bar::BAR cget -select]
+    set llen [llength $seltabs]
+    set curtab [alited::bar::CurrentTabID]
+    if {$llen && $curtab ni $seltabs} {
+      incr llen
+    } elseif {$llen==1 && $curtab in $seltabs} {
+      set llen 0
+    }
+    if {$llen} {
+      set btext [string map [list %n $llen] [msgcat::mc {All in %n Files}]]
+    } else {
+      set btext [msgcat::mc {All in session}]
+    }
+    [$obFND But3] configure -text $btext
+    [$obFND But6] configure -text $btext
   }
-  [$obFND But3] configure -text $btext
-  [$obFND But6] configure -text $btext
 }
 #_______________________
 
@@ -1438,7 +1448,6 @@ proc find::_create {} {
   styleButtonRE2
   set wtxt [alited::main::CurrentWTXT]
   alited::keys::BindAllKeys $wtxt yes
-  bind $win <Enter> alited::find::SessionButtons
   bind $win <F1> {alited::main::Help find}
   bind $win <F3> "$w.but1 invoke"
   bind $w.cbx1 <Return> "$w.but1 invoke"  ;# hotkeys in comboboxes

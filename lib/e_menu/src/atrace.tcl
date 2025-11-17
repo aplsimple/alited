@@ -23,7 +23,7 @@ proc traceFile {mode fname excl} {
         if {$output ne ""} {append output \n}
         append output $line
         if {[regexp $RE $line -> type title] && $title ni $excl} {
-          append output \n $prep "$type $title" \"
+          append output \n $prep "\[incr ::__atrace__\]: $type $title" \"
         }
       }
       "untrace" {

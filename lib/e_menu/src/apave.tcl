@@ -917,7 +917,7 @@ method input {icon ttl iopts args} {
     set Name [string toupper $name 0]
     if {$ismeth && $typ ni {ra}} {
       # -method option forces making "WidgetName" method from "widgetName"
-      my MakeWidgetName $ff $Name -
+      my makeWidgetMethod $ff $Name -
     }
     if {$typ ne {la} && $toprev eq {}} {
       set takfoc [::apave::parseOptions $attrs -takefocus 1]
@@ -985,7 +985,7 @@ method input {icon ttl iopts args} {
           set FF $ff[incr nnn]
           lappend inopts [list $FF - - - - "pack -side left $gopts -padx $padx" "-var $vv -value \"$vo\" -t \"$vo\" $attrs"]
           if {$ismeth} {
-            my MakeWidgetName $FF $Name$nnn -
+            my makeWidgetMethod $FF $Name$nnn -
           }
           set padx [expr {$padx ? 0 : 9}]
         }
