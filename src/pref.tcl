@@ -1150,27 +1150,39 @@ proc pref::Keys_Tab1 {} {
     {v_ - - 1 1}
     {fra + T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
-    {tcl {
-        set pr -
-        for {set i 0} {$i<$::alited::pref::StdkeysSize} {incr i} {
-          set lab "lab$i"
-          set cbx "CbxKey$i"
-          lassign [dict get $::alited::pref::stdkeys $i] text key
-          set lwid ".$lab $pr T 1 1 {-st e -pady 1 -padx 3} {-t \"$text\"}"
-          %C $lwid
-          if {($i+1)==$::alited::pref::StdkeysSize} {
-            set pr {-tabnext alited::Tnext}
-          } else {
-            set pr {}
-          }
-          set lwid ".$cbx + L 1 1 {-st we} {-tvar ::alited::pref::keys($i) \
-            -postcommand {alited::pref::GetKeyList $i} -selcombobox \
-            {alited::pref::SelectKey $i} -state readonly -h 16 -w 20 $pr}"
-          %C $lwid
-          set pr .$lab
-        }
-    }}
+    {prc {alited::pref::fillKeyItems fra.scf}}
   }
+}
+#_______________________
+
+proc pref::fillKeyItems {wpar lwidgets ilw} {
+  # Fills Key items.
+  #   wpar - parent window
+  #   lwidgets - list of widgets
+  #   ilw - current index in lwidgets
+  # Returns updated list of widgets.
+
+  fetchVars
+  set pr -
+  for {set i 0} {$i<$StdkeysSize} {incr i} {
+    set lab "lab$i"
+    lassign [dict get $stdkeys $i] text key
+    set lwid ".$lab $pr T 1 1 {-st e -pady 1 -padx 3} {-t \"$text\"}"
+    set lwidgets [linsert $lwidgets [incr ilw] $lwid]
+    if {($i+1)==$StdkeysSize} {
+      set pr {-tabnext alited::Tnext}
+    } else {
+      set pr {}
+    }
+    set cbx "CbxKey$i"
+    set lwid ".$cbx + L 1 1 {-st we} {-tvar ::alited::pref::keys($i) \
+      -postcommand {alited::pref::GetKeyList $i} -selcombobox \
+      {alited::pref::SelectKey $i} -state readonly -h 16 -w 20 $pr}"
+    set lwidgets [linsert $lwidgets [incr ilw] $lwid]
+    $obPrf makeWidgetMethod $wpar $cbx
+    set pr .$lab
+  }
+  return $lwidgets
 }
 #_______________________
 
@@ -1582,23 +1594,7 @@ proc pref::Runs_Tab {tab} {
     {.btTDown - - - - {pack -side left} {-image alimg_down -com ::alited::pref::DownRun -tip {Move an item down}}}
     {.btTDelRun - - - - {pack -side left} {-image alimg_delete -com ::alited::pref::DelRun -tip {Delete an item}}}
     {fra.ScfRuns - - 1 1  {pack -fill both -expand 1}}
-    {tcl {
-        set prt "- -"
-        for {set i 0} {$i<$::alited::pref::em_Num} {incr i} {
-          set nit [expr {$i+1}]
-          set lwid ".OpcIco$i $prt 1 1 {-st nsw} {::alited::pref::em_ico($i) \
-          ::alited::pref::em_Icons {-width 9 -com alited::pref::Em_ShowAll \
-          -tip {{An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the toolbar.}}} \
-          {alited::pref::opcIcoPre %a}}"
-          %C $lwid
-          set lwid ".ButMnu$i + L 1 1 {-st sw -pady 1 -padx 8} \
-          {-t {$::alited::pref::em_mnu($i)} -com {alited::pref::PickMenuItem $i} \
-          -style TButtonWest -tip \
-          {{The run item for the menu and/or the toolbar.\nSelect it from the e_menu items.}}}"
-          %C $lwid
-          set prt ".OpcIco$i T"
-      }}
-    }
+    {prc {alited::pref::fillMenuItems fra.ScfRuns}}
   }
   if {$tab eq {Emenu_Tab} || \
   ($oldTab ne {} && [string match *nbk6.f3 $arrayTab($oldTab)])} {
@@ -1608,6 +1604,37 @@ proc pref::Runs_Tab {tab} {
   # "Run" items can be created with a little delay
   # imperceptible for a user, saving his/her time
   return [linsert $res 0 {after 500}]
+}
+#_______________________
+
+proc pref::fillMenuItems {wpar lwidgets ilw} {
+  # Fills Tools/bar-menu items.
+  #   wpar - parent window
+  #   lwidgets - list of widgets
+  #   ilw - current index in lwidgets
+  # Returns updated list of widgets.
+
+  fetchVars
+  set prt "- -"
+  for {set i 0} {$i<$em_Num} {incr i} {
+    set nit [expr {$i+1}]
+    set opc .OpcIco$i
+    set lwid "$opc $prt 1 1 {-st nsw} {::alited::pref::em_ico($i) \
+      ::alited::pref::em_Icons {-width 9 -com alited::pref::Em_ShowAll -tip \
+      {{An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the\
+      toolbar.}}} {alited::pref::opcIcoPre %a}}"
+    $obPrf makeWidgetMethod $wpar $opc
+    set lwidgets [linsert $lwidgets [incr ilw] $lwid]
+    set bar .ButMnu$i
+    set lwid "$bar + L 1 1 {-st sw -pady 1 -padx 8} \
+      {-t {$em_mnu($i)} -com {alited::pref::PickMenuItem $i} \
+      -style TButtonWest -tip {{The run item for the menu and/or the toolbar.\
+      \nSelect it from the e_menu items.}}}"
+    $obPrf makeWidgetMethod $wpar $bar
+    set lwidgets [linsert $lwidgets [incr ilw] $lwid]
+    set prt "$opc T"
+  }
+  return $lwidgets
 }
 #_______________________
 
@@ -1799,6 +1826,7 @@ proc pref::_create {tab} {
   set tipson [baltip::cget -on]
   set preview 0
   baltip::configure -on $al(TIPS,Preferences)
+puts [time {\
   ::apave::APave create $obPrf $win
   $obPrf makeWindow $win.fra "$al(MC,pref) :: $::alited::USERDIR"
   $obPrf paveWindow \
@@ -1816,7 +1844,7 @@ proc pref::_create {tab} {
     $win.fra.fraR.nbk6.f1 [Common_Tab] \
     $win.fra.fraR.nbk6.f2 [Emenu_Tab] \
     $win.fra.fraR.nbk6.f3 [Runs_Tab $tab] \
-    $win.fra.fraR.nbk6.f4 [Tkcon_Tab]
+    $win.fra.fraR.nbk6.f4 [Tkcon_Tab]}]
   set wtxt [$obPrf TexNotes]
   set fnotes [file join $::alited::USERDIR notes.txt]
   if {[file exists $fnotes]} {

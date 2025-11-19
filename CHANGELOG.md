@@ -6,21 +6,17 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.10.9 (17 Nov'25)`
+Version `v1.8.11 (19 Nov'25)`
 
   - BUGFIX: mainfind.txt missing (help for Find/Replace, through F1 key)
-  - NEW   : Find/Replace: "Find by list" checkbox
-  - CHANGE: selecting tabs by Ctrl+click displays "All in N files" of Find/Replace
-  - CHANGE: Tests/Trace tool: output lines numerated
-
-
-Version `v1.8.10.7 (24 Sep'25)`
-
   - BUGFIX: some messages failed
   - BUGFIX: File tree: "Open with" on file names with spaces
   - DELETE: treectrl & img packages in installers' bin directory (Linux x86_64)
+  - NEW   : Find/Replace: "Find by list" checkbox
   - NEW   : Tools/Loupe: tk_messageBox for errors of packages a user has to install
   - NEW   : Preferences: checking the fonts' correctness
+  - CHANGE: selecting tabs by Ctrl+click displays "All in N files" of Find/Replace
+  - CHANGE: Tests/Trace tool: output lines numerated
   - CHANGE: File tree: "Rename file": focusing the file name entry (i/o OK button)
   - CHANGE: checks for correct ID (in CurrentItemByLine, SaveVisitInfo)
   - CHANGE: packages: apave/e_menu 4.7.3, hl_tcl 1.2.2

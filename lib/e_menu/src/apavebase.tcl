@@ -1838,28 +1838,32 @@ method dateChooser {tvar args} {
 }
 #_______________________
 
-method Replace_Tcl {r1 r2 r3 args} {
+method Replace_Tcl {r1 r2 args} {
   # Replaces Tcl code with its resulting items in *lwidgets* list.
   #   r1 - variable name for a current index in *lwidgets* list
-  #   r2 - variable name for a length of *lwidgets* list
-  #   r3 - variable name for *lwidgets* list
-  #   args - "tcl" and "tcl code" for "tcl" type of widget
-  # The code should use the wildcard that goes first at a line:
-  #   %C - a command for inserting an item into lwidgets list.
-  # The "tcl" widget type can be useful to automate the inserting
-  # a list of similar widgets to the list of widgets.
-  # See tests/test2_pave.tcl where the "tcl" fills "Color schemes" tab.
+  #   r2 - variable name for *lwidgets* list
+  #   args - "tcl code" for "tcl", "prc name args" for "prc" type of widget
+  # Examples of "tcl" and "prc" types - in alited and expagog applications.
 
   lassign $args _name _code
-  if {[my ownWName $_name] ne {tcl}} {return $args}
-  upvar 1 $r1 _ii $r2 _lwlen $r3 _lwidgets
-; proc lwins {lwName i w} {
-    upvar 2 $lwName lw
-    set lw [linsert $lw $i $w]
+  switch -exact -- [my ownWName $_name] {
+    tcl {
+      upvar 1 $r1 _i $r2 _lwidgets
+      ; proc lwins {lwName i w} {
+        upvar 2 $lwName lw
+        set lw [linsert $lw $i $w]
+      }
+      set _lwidgets [lreplace $_lwidgets $_i $_i]
+      set _inext [expr {$_i-1}]
+      eval [string map {%C {lwins $r2 [incr _inext] }} $_code]
+    }
+    prc {
+      upvar 1 $r1 _i $r2 _lwidgets
+      set _lwidgets [lreplace $_lwidgets $_i $_i]
+      set _lwidgets [{*}$_code $_lwidgets [incr _i -1]]
+    }
+    default {return $args}
   }
-  set _lwidgets [lreplace $_lwidgets $_ii $_ii]  ;# removes tcl item
-  set _inext [expr {$_ii-1}]
-  eval [string map {%C {lwins $r3 [incr _inext] }} $_code]
   return {}
 }
 #_______________________
@@ -1903,7 +1907,7 @@ method Replace_chooser {r0 r1 r2 r3 args} {
       set lwlen2 [llength $lwidgets2]
       for {set i2 0} {$i2 < $lwlen2} {} {
         set lst2 [lindex $lwidgets2 $i2]
-        if {[my Replace_Tcl i2 lwlen2 lwidgets2 {*}$lst2] ne {}} {incr i2}
+        if {[my Replace_Tcl i2 lwidgets2 {*}$lst2] ne {}} {incr i2}
       }
       incr lwlen [llength $lwidgets2]
       set lwidgets [linsert $lwidgets [expr {$i+1}] {*}$lwidgets2]
@@ -3503,7 +3507,7 @@ method Window {w inplists} {
   }
   for {set i 0} {$i < $lwlen} {} {
     set lst1 [lindex $lwidgets $i]
-    if {[my Replace_Tcl i lwlen lwidgets {*}$lst1] ne {}} {incr i}
+    if {[my Replace_Tcl i lwidgets {*}$lst1] ne {}} {incr i}
   }
   # firstly, normalize all names that are "subwidgets" (.lab for fra.lab)
   # also, "+" for previous neighbors
