@@ -1150,13 +1150,13 @@ proc pref::Keys_Tab1 {} {
     {v_ - - 1 1}
     {fra + T 1 1 {-st nsew -cw 1 -rw 1}}
     {fra.scf - - 1 1  {pack -fill both -expand 1} {-mode y}}
-    {prc {alited::pref::fillKeyItems fra.scf}}
+    {prc {alited::pref::PaveKeyItems fra.scf}}
   }
 }
 #_______________________
 
-proc pref::fillKeyItems {wpar lwidgets ilw} {
-  # Fills Key items.
+proc pref::PaveKeyItems {wpar lwidgets ilw} {
+  # Creates Key items in list of widgets.
   #   wpar - parent window
   #   lwidgets - list of widgets
   #   ilw - current index in lwidgets
@@ -1179,7 +1179,6 @@ proc pref::fillKeyItems {wpar lwidgets ilw} {
       -postcommand {alited::pref::GetKeyList $i} -selcombobox \
       {alited::pref::SelectKey $i} -state readonly -h 16 -w 20 $pr}"
     set lwidgets [linsert $lwidgets [incr ilw] $lwid]
-    $obPrf makeWidgetMethod $wpar $cbx
     set pr .$lab
   }
   return $lwidgets
@@ -1594,7 +1593,7 @@ proc pref::Runs_Tab {tab} {
     {.btTDown - - - - {pack -side left} {-image alimg_down -com ::alited::pref::DownRun -tip {Move an item down}}}
     {.btTDelRun - - - - {pack -side left} {-image alimg_delete -com ::alited::pref::DelRun -tip {Delete an item}}}
     {fra.ScfRuns - - 1 1  {pack -fill both -expand 1}}
-    {prc {alited::pref::fillMenuItems fra.ScfRuns}}
+    {prc {alited::pref::PaveMenuItems fra.ScfRuns}}
   }
   if {$tab eq {Emenu_Tab} || \
   ($oldTab ne {} && [string match *nbk6.f3 $arrayTab($oldTab)])} {
@@ -1607,8 +1606,8 @@ proc pref::Runs_Tab {tab} {
 }
 #_______________________
 
-proc pref::fillMenuItems {wpar lwidgets ilw} {
-  # Fills Tools/bar-menu items.
+proc pref::PaveMenuItems {wpar lwidgets ilw} {
+  # Creates Tools/bar-menu items in list of widgets.
   #   wpar - parent window
   #   lwidgets - list of widgets
   #   ilw - current index in lwidgets
@@ -1623,14 +1622,12 @@ proc pref::fillMenuItems {wpar lwidgets ilw} {
       ::alited::pref::em_Icons {-width 9 -com alited::pref::Em_ShowAll -tip \
       {{An icon puts the run into the toolbar.\nBlank or 'none' excludes it from the\
       toolbar.}}} {alited::pref::opcIcoPre %a}}"
-    $obPrf makeWidgetMethod $wpar $opc
     set lwidgets [linsert $lwidgets [incr ilw] $lwid]
     set bar .ButMnu$i
     set lwid "$bar + L 1 1 {-st sw -pady 1 -padx 8} \
       {-t {$em_mnu($i)} -com {alited::pref::PickMenuItem $i} \
       -style TButtonWest -tip {{The run item for the menu and/or the toolbar.\
       \nSelect it from the e_menu items.}}}"
-    $obPrf makeWidgetMethod $wpar $bar
     set lwidgets [linsert $lwidgets [incr ilw] $lwid]
     set prt "$opc T"
   }
