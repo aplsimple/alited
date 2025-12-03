@@ -24,7 +24,7 @@ namespace eval check {
   variable what 1
 
   # counts for errors in units and in whole files
-  variable errors 0 errors1 0 errors2 0 errors3 0 errors4 0 fileerrors 0
+  variable fileerrors 0 uniterrors 0 errors1 0 errors2 0 errors3 0 errors4 0
 
   # flag "at opening the dialogue"
   variable atopen yes
@@ -35,12 +35,12 @@ namespace eval check {
 proc check::ShowResults {} {
   # Displays results of checking.
 
-  variable errors
   variable fileerrors
+  variable uniterrors
   variable atopen
-  if {$errors || $fileerrors} {
+  if {$fileerrors} {
     set msg [msgcat::mc {Found %f file error(s), %u unit error(s).}]
-    set msg [string map [list %f $fileerrors %u $errors] $msg]
+    set msg [string map [list %f $fileerrors %u $uniterrors] $msg]
     if {$atopen} bell
   } else {
     set msg [msgcat::mc {No errors found.}]
@@ -93,9 +93,8 @@ proc check::CheckUnit {wtxt pos1 pos2 {TID ""} {title ""} {bold no} {see no}} {
   set mapP2 [list "{\)}" {}]
   set mapQ [list "{\"}" {}]
   foreach line [split [$wtxt get $pos1 $pos2] \n] {
-    if {[string match -nocase *#*alited*check* $line] \
-    ||  [string match -nocase *#*check*alited* $line]} {
-      # if a line is "checked by alited", skip this unit as checked by a human
+    if {$TID ne {} && [string match -nocase *#*alited_checked* $line]} {
+      # if a line contains "# alited_checked", skip this unit as checked by a human
       return 0
     }
     if {$chBrace} {
@@ -146,7 +145,7 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
   #   wtxt - the file's text widget
   #   TID - the file's tab ID
 
-  variable errors
+  variable uniterrors
   variable fileerrors
   variable errors1
   variable errors2
@@ -166,31 +165,28 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
   set textcont [$wtxt get 1.0 end]
   set unittree [alited::unit::GetUnits $TID $textcont]
   # check for errors of a whole file
-  set errors1 [set errors2 [set errors3 [set errors4 0]]]
-  set fileerrs [CheckUnit $wtxt 1.0 end]
+  set ferr [CheckUnit $wtxt 1.0 end]
   # check for duplicate units
+  set errors1 [set errors2 [set errors3 [set errors4 [set duplerrs 0]]]]
   set errduplist [list]
   if {$chDuplUnits} {
     set prevtitle "\{\$\}"
     set errmsg [msgcat::mc {duplicate unit:}]
-    set uniterr 0
     foreach item [lsort -index 3 $unittree] {
       lassign $item lev leaf fl1 title l1
       if {$prevtitle eq $title && $title ni {constructor destructor}} {
-        set uniterr 1
+        incr uniterrors
+        incr duplerrs
         lappend errduplist [list "$curfile: $errmsg $title" $l1]
       }
       set prevtitle $title
     }
-    if {!$fileerrs} {set fileerrs $uniterr}
   }
   # put a whole file's statistics on errors
-  incr fileerrors $fileerrs
   set und [string repeat _ 30]
   set pos1 [alited::bar::GetTabState $TID --pos]
   if {![string is double -strict $$pos1]} {set pos1 1.0}
   set info [list $TID [expr {int($pos1)}]]
-  alited::info::Put "$und $fileerrs ($errors1/$errors2/$errors3/$errors4) file errors of $curfile $und$und$und" $info
   # put a list of duplicate units
   foreach errdup $errduplist {
     lassign $errdup msg pos1
@@ -201,11 +197,14 @@ proc check::CheckFile {{fname ""} {wtxt ""} {TID ""}} {
     lassign $item lev leaf fl1 title l1 l2
     if {!$leaf || $title eq {}} continue
     set title "$curfile: $title"
-    set err [CheckUnit $wtxt $l1.0 $l2.end $TID $title]
-    if {$err} {
-      incr errors $err
+    set uerr [CheckUnit $wtxt $l1.0 $l2.end $TID $title]
+    if {$uerr} {
+      incr uniterrors $uerr
+      incr ferr
     }
   }
+  alited::info::Put "$und $duplerrs ($errors1/$errors2/$errors3/$errors4) file errors of $curfile $und$und$und" $info
+  if {$ferr} {incr fileerrors}
 }
 #_______________________
 
@@ -228,12 +227,12 @@ proc check::Check {} {
   namespace upvar ::alited al al
   variable what
   variable atopen
-  variable errors
+  variable uniterrors
   variable fileerrors
   alited::info::Clear
   alited::info::Put $al(MC,wait) {} yes yes
   alited::main::UpdateUnitTree
-  set errors [set fileerrors 0]
+  set uniterrors [set fileerrors 0]
   if {$atopen || $what==1} {  ;# at start, check a current file
     CheckFile
   } elseif {$what==2} {
@@ -270,19 +269,19 @@ proc check::_create {} {
   catch {destroy $win}
   $obCHK makeWindow $win.fra $al(MC,checktcl)
   $obCHK paveWindow $win.fra {
-    {v_ - -}
-    {labHead v_ T 1 1 {-st w -pady 4 -padx 8} {-t "Checks available:"}}
-    {chb1 labHead T 1 1 {-st sw -pady 1 -padx 22} {-var ::alited::check::chBrace -t {Consistency of {} }}}
-    {chb2 + T 1 1 {-st sw -pady 5 -padx 22} {-var ::alited::check::chBracket -t {Consistency of []}}}
-    {chb3 + T 1 1 {-st sw -pady 1 -padx 22} {-var ::alited::check::chParenthesis -t {Consistency of ()}}}
-    {chb4 + T 1 1 {-st sw -pady 5 -padx 22} {-var ::alited::check::chQuotes -t {Consistency of ""}}}
-    {chb9 + T 1 1 {-st sw -pady 1 -padx 22} {-var ::alited::check::chDuplUnits -t {Duplicate units}}}
+    {v_ - - 1 2}
+    {labHead v_ T 1 1 {-st w -pady 4 -padx 4} {-t "Checks available:"}}
+    {chb9 + L 1 1 {-st sw -pady 4} {-var ::alited::check::chDuplUnits -t {Duplicate units}}}
+    {chb1 labHead T 2 1 {-st sw -pady 1 -padx 22} {-var ::alited::check::chBrace -t {Consistency of {} }}}
+    {chb2 + T 1 2 {-st sw -pady 5 -padx 22} {-var ::alited::check::chBracket -t {Consistency of []}}}
+    {chb3 + T 1 2 {-st sw -pady 1 -padx 22} {-var ::alited::check::chParenthesis -t {Consistency of ()}}}
+    {chb4 + T 1 2 {-st sw -pady 5 -padx 22} {-var ::alited::check::chQuotes -t {Consistency of ""}}}
     {v_2 + T}
-    {fra + T 1 1 {-st nsew -pady 0 -padx 3} {-padding {5 5 5 5} -relief groove}}
+    {fra + T 1 2 {-st nsew -pady 0 -padx 3} {-padding {5 5 5 5} -relief groove}}
     {fra.lab - - - - {pack -side left} {-t "Check:"}}
     {fra.radA - - - - {pack -side left -padx 9}  {-t "current file" -var ::alited::check::what -value 1}}
     {fra.radB - - - - {pack -side left -padx 9}  {-t "all of session files" -var ::alited::check::what -value 2}}
-    {fra2 fra T 1 1 {-st nsew -pady 3 -padx 3} {-padding {5 5 5 5} -relief groove}}
+    {fra2 fra T 1 2 {-st nsew -pady 3 -padx 3} {-padding {5 5 5 5} -relief groove}}
     {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -com alited::check::Help}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
     {.ButOK - - - - {pack -side left -padx 2} {-t "Check" -com ::alited::check::Check}}

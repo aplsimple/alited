@@ -1126,10 +1126,9 @@ method widgetType {wnamefull options attrs} {
         -command {} -com {} -from {} -to {}] cmd cmd2 from to
       append cmd $cmd2
       lassign [::apave::extractOptions attrs -tip {} -tooltip {}] t1 t2
-      set t2 "$t1$t2"
-      if {$from ne {} || $to ne {}} {
-        if {$t2 ne {}} {set t2 "\n $t2"}
-        set t2 " $from .. $to $t2"
+      if {"$from$to" ne {} && $t2 eq {}} {
+        if {$t1 ne {}} {set t1 \n$t1}
+        set t2 "$from .. $to$t1"
       }
       if {$t2 ne {}} {set t2 "-tip {$t2}"}
       append attrs " -onReturn {$::apave::UFF{$cmd} {$from} {$to}$::apave::UFF} $t2"

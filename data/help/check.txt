@@ -4,15 +4,17 @@
  Also, the files are checked for duplicate unit names.
 
  The results contain general info about a file and specific data on its
- <b>leaves</b> (procedures and methods). The <b>branches</b> are not checked.
+ <r>leaves</r> (procedures and methods).
 
- The <b>file results</b> cover the whole file. There might be inconsistencies
+ <r>The branches are not checked</r>.
+
+ Also the files as a whole are checked. There might be inconsistencies
  in some specific leaves and seemingly good results for the file as whole.
 
- The file results include <b>(a/b/c/d)</b> data meaning inconsistencies found
- for {}, [], () and "".
+ The file results include <b>e0 (e1/e2/e3/e4)</b> data meaning inconsistencies
+ found for <b>duplicate units</b> of file and <b>{}, [], (), ""</b> of units accordingly.
 
- Click on a result <b>to enter</b> the appropriate file/unit.
+ Click on the <b>info bar</b> result to enter the appropriate file/unit.
 
  An inconsistency for {} may occur when some procedure declares a procedure
  inside itself. Or if a procedure is located at edges of a namespace or a

@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.6.3
+package provide baltip 1.6.4
 
 # ________________________ Variables _________________________ #
 
@@ -239,6 +239,7 @@ proc ::baltip::tip {w {text "-BALTIPGET"} args} {
         } elseif {$nbktab ne {}} {
           # tip for notebook tabs
           configure -SPECTIP$nbktab $text
+          configure $nbktab -text $text ;# save as default tip
           bind Tooltip$w <Button-1> "::baltip::my::NbkInfo $w %x %y -"
           bind Tooltip$w <Motion> "::baltip::my::PrepareNbkTip $w %x %y"
         } elseif {$widgetclass eq {Listbox}} {
@@ -352,6 +353,10 @@ proc ::baltip::showBalloon {tip args} {
 
   variable my::ttdata
   set w .
+  if {[set i [lsearch -exact $args -balloonwindow]]>-1} {
+    set w [lindex $args $i+1]
+    set args [lreplace $args $i $i+1]
+  }
   if {[set isgeo [dict exists $args -geometry]]} {
     lappend args -pause 10
   } else {
@@ -546,10 +551,11 @@ proc ::baltip::my::BindCantagToEvent {w tag event args} {
 
 ## ________________________ Shows _________________________ ##
 
-proc ::baltip::my::Command {w text} {
+proc ::baltip::my::Command {w text args} {
   # Executes a command set for a window.
   #   w - the widget's path
   #   text - the tip text
+  #   args - command's arguments
   # The command allows wildcards:
   #   %w - window's path
   #   %t - text of the tip
@@ -557,8 +563,12 @@ proc ::baltip::my::Command {w text} {
   # The result of the command can be a new tip if "yes" and the result ne {}.
 
   variable ttdata
-  if {![info exists ttdata(command,$w)] || $ttdata(command,$w) eq {}} {return no}
-  set com [string map [list %w $w %t "{$text}"] $ttdata(command,$w)]
+  if {![info exists ttdata(command,$w)] || $ttdata(command,$w) eq {} ||
+  [winfo class $w] eq {TNotebook} && ![llength $args]} {
+    # command is not complete
+    return no
+  }
+  set com [string map [list %w $w %t "{$text}" %a $args] $ttdata(command,$w)]
   if {[catch {set res [eval $com]} e]} {return no}
   if {$text ne {}} {
     set ttdata(text,$w) $res
@@ -696,6 +706,8 @@ proc ::baltip::my::DoShow {w text force geo optvals} {
   wm overrideredirect $win 1
   if {[info exists data(-ontop)] && $data(-ontop)} {
     wm attributes $win -topmost 1
+  } else {
+    wm attributes $win -topmost 0 ;# maybe this would work in a new Tk
   }
   if {$data(-relief) eq {}} {set data(-relief) solid}
   if {[set imgoptions $data(-image)] ne {}} {
@@ -950,14 +962,14 @@ proc ::baltip::my::PrepareNbkTip {w x y} {
     lassign [::baltip cget -pause] -> pause
     lassign [NbkInfo $w $x $y] tab tab2
     set nbktab [lindex [$w tabs] $tab]
-    if {$tab ne {} && $tab2 ni "$tab -"} {
+    if {$nbktab ne {} && $tab ne {} && $tab2 ni "$tab -"} {
       ::baltip hide $w
       lassign [::baltip cget -SPECTIP$nbktab] -> tip
-      lassign [Command $w $tip] ans res
+      lassign [Command $w $tip $nbktab [winfo name $nbktab]] ans res
       if {$ans} {
         if {$res ne {}} {
           # the command should be displayed here (not somewhere else)
-          set $ans no
+          set ans no
         }
         # the command redefined the tip's text
         set tip $res

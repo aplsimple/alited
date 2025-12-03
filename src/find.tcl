@@ -1388,8 +1388,8 @@ proc find::_create {} {
     {labB1 - - 1 1    {-st es -ipadx 0 -padx 0 -ipady 0 -pady 0}  {-t "Find: " -style TLabelFS}}
     {Cbx1 + L 1 4 {-st wes -ipadx 0 -padx 0 -ipady 0 -pady 0}
       {-tvar ::alited::find::data(en1) -values {$::alited::find::data(vals1)}}}
-    {chb0 + L 1 1 {-st ws -ipady 0 -pady 0}
-      {-tip "Find by List" -var ::alited::find::data(c0) -style TCheckbuttonFS}}
+    {chb0 + L 1 1 {-st ws -ipady 0 -pady 0} {-tip "Find by List"
+      -var ::alited::find::data(c0) -style TCheckbuttonFS -takefocus 0}}
     {labB2 labB1 T 1 1 {-st es -ipadx 0 -padx 0 -ipady 0 -pady 0}
       {-t "Replace: " -style TLabelFS}}
     {Cbx2 + L 1 4 {-st wes -cw 1 -ipadx 0 -padx 0 -ipady 0 -pady 0}
