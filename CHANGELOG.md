@@ -6,7 +6,7 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.12.1 (3 Dec'25)`
+Version `v1.8.12.1 (4 Dec'25)`
 
   - BUGFIX: file results in Tools/Check Tcl shown before calculation
   - CHANGE: Tools/Check Tcl: calculation of results & appearance & help
