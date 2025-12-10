@@ -2378,7 +2378,7 @@ method DiaWidgetName {w} {
   # See also: makeWidgetMethod, input
 
   if {[string index $w 0] eq {.}} {return $w}
-  return $Dlgpath.fra.$w
+  return [my dlgPath].fra.$w
 }
 #_______________________
 

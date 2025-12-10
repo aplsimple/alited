@@ -117,7 +117,7 @@ namespace eval ::alited {
     {To Matched Bracket} {Zur passenden Klammer}
     {Go to Line} {Gehe zu Zeile}
     {Line number:} {Zeilennummer:}
-    {    In unit:} {  In Einheit:}
+    {In unit:} {In Einheit:}
     "\"%n\" contains unbalanced \{\}: %1!=%2" "\"%n\" unausgeglichene  \{\}: %1!=%2"
     {Back} {Zurück}
     {Unit not found: %u} {Einheit nicht gefunden: %u}

@@ -9,12 +9,14 @@
 # _________________________ Variables ________________________ #
 
 namespace eval main {
-  variable findunits 1     ;# where to find units: 1 current file, 2 all
-  variable gotoline1 {}    ;# line number of "Go to Line" dialogue
-  variable gotoline2 {}    ;# units list of "Go to Line" dialogue
-  variable gotolineTID {}  ;# tab ID last used in "Go to Line" dialogue
+  variable winGTL $::alited::al(WIN).winGTL
+  variable lnGTL 1     ;# line number of "Go to Line"
+  variable unitGTL {}  ;# selected unit of "Go to Line"
+  variable valsGTL {}  ;# units list of "Go to Line"
+  variable tidGTL {}   ;# tab ID last used in "Go to Line"
+  variable findunits 1 ;# where to find units: 1 current file, 2 all
   variable wcan {} fgcan {} bgcan {}   ;# canvas' path and its colors
-  variable saveini no      ;# flag "save alited.ini"
+  variable saveini no  ;# flag "save alited.ini"
 }
 
 # ________________________ Common _________________________ #
@@ -60,11 +62,13 @@ proc main::SetTabs {wtxt indent} {
 }
 #_______________________
 
-proc main::Help {{suff ""}} {
+proc main::Help {{suff ""} {win ""}} {
   # Display context helps.
   #   suff - suffix of file name
+  #   win - window to center help
 
-  alited::Help $::alited::al(WIN) $suff
+  if {$win eq {}} {set win $::alited::al(WIN)}
+  alited::Help $win $suff
 }
 
 # ________________________ Get and show text widget _________________________ #
@@ -745,65 +749,105 @@ proc main::GotoBracket {{frommenu no}} {
     }
   }
 }
-#_______________________
+
+## ________________________ Go to line _________________________ ##
 
 proc main::GotoLine {} {
-  # Processes Ctrl+G keypressing: "go to a line".
+  # "Go to a line" dialog.
 
-  namespace upvar ::alited al al obDl2 obDl2
-  set head [msgcat::mc {Go to Line}]
-  set prompt1 [msgcat::mc {Line number:}]
-  set prompt2 [msgcat::mc {    In unit:}]
+  namespace upvar ::alited al al obGTL obGTL
+  variable winGTL
   set wtxt [CurrentWTXT]
-  set ln 1 ;#[expr {int([$wtxt index insert])}]
   set lmax [expr {int([$wtxt index "end -1c"])}]
-  set units [list]
+  catch {destroy $winGTL}
+  $obGTL makeWindow $winGTL.fra [msgcat::mc {Go to Line}]
+  $obGTL paveWindow $winGTL.fra {
+    {lab1 - - 1 1 {-st en -pady 3} {-t {Line number:}}}
+    {Spx + L 1 1 {-st wn -pady 3} {-from 1 -to $lmax -tvar ::alited::main::lnGTL}}
+    {lab2 lab1 T 1 1 {-st en} {-t {{In unit:}}}}
+    {Cbx + L 1 1 {-st wn} {-tvar ::alited::main::unitGTL -values {$::alited::main::valsGTL} -state readonly -h 16 -w 25}}
+    {seh lab2 T 1 2 {-pady 3}}
+    {fra2 seh T 1 2 {-st nsew -padx 3} { -relief flat}}
+    {.h_ - - - - {pack -side left -expand 1 -fill both}}
+    {.ButOK - - - - {pack -side left -padx 2} {-t OK -com ::alited::main::DoGTL}}
+    {.butCancel - - - - {pack -side left} {-t Cancel -com ::alited::main::CancelGTL}}
+  }
+  bind $winGTL <F1> "alited::main::Help goline $winGTL"
+  bind $winGTL <Enter> alited::main::InitGTL
+  if {[set geo $al(gotoline)] ne {}} {
+    set geo [string range $geo [string first + $geo] end]
+    set geo "-geometry $geo"
+  }
+  $obGTL showModal $winGTL -modal no -waitvar no -onclose alited::main::CancelGTL \
+    -focus [$obGTL Spx] {*}$geo
+}
+#_______________________
+
+proc main::InitGTL {} {
+  # Initializes "Go to line" variables.
+
+  namespace upvar ::alited al al obGTL obGTL
+  variable tidGTL
+  variable unitGTL
+  variable valsGTL
   set TID [alited::bar::CurrentTabID]
-  foreach it $al(_unittree,$TID) {
-    lassign $it lev leaf fl1 title l1 l2
-    if {$leaf && [set title [string trim $title]] ne {}} {
-      lappend units $title
-    }
-  }
-  set ::alited::main::gotoline2 [linsert [lsort -nocase $units] 0 {}]
-  if {$::alited::main::gotolineTID ne $TID} {
-    set ::alited::main::gotoline1 {}
-    set ::alited::main::gotolineTID $TID
-  }
-  after 300 {catch {bind [apave::dlgPath] <F1> {alited::main::Help goline}}}
-  lassign [$obDl2 input {} $head [list \
-    spx "{$prompt1} {} {-from 1 -to $lmax -selected yes}" "{$ln}" \
-    cbx "{$prompt2} {} {-tvar ::alited::main::gotoline1 -state readonly -h 16 -w 25}" \
-      "{$::alited::main::gotoline1} $::alited::main::gotoline2" \
-  ]] res ln unit
-  if {$res} {
-    set ::alited::main::gotoline1 $unit
-    if {$unit ne {}} {
-      # for a chosen unit - a relative line number
-      if {[set it [lsearch -index 3 $al(_unittree,$TID) $unit]] >- 1} {
-        lassign [lindex $al(_unittree,$TID) $it] lev leaf fl1 title l1 l2
-        set l $l1
-        set fst 1
-        foreach line [split [$wtxt get $l1.0 $l2.end] \n] {
-          # gentlemen, use \ for continuation of long lines & strings!
-          set continued [expr {[string index $line end] eq "\\"}]
-          if {!$continued || $fst} {
-            if {$fst} {
-              set l $l1
-              if {[incr ln -1]<1} break
-            }
-            set fst [expr {!$continued}]
-          }
-          incr l1
-        }
-        set ln $l
+  if {$tidGTL ne $TID} {
+    set tidGTL $TID
+    set unitGTL {}
+    set units [list]
+    foreach it $al(_unittree,$TID) {
+      lassign $it lev leaf fl1 title l1 l2
+      if {$leaf && [set title [string trim $title]] ne {}} {
+        lappend units $title
       }
     }
-    after 200 " \
-      alited::main::FocusText $TID $ln.0 ; \
-      alited::tree::NewSelection {} $ln.0 yes; \
-      alited::main::HighlightLine"
+    set valsGTL [linsert [lsort -nocase $units] 0 {}]
+    [$obGTL Cbx] configure -values $valsGTL
   }
+}
+#_______________________
+
+proc main::DoGTL {} {
+  # Does go to a line of text.
+
+  namespace upvar ::alited al al obGTL obGTL
+  set ln [[$obGTL Spx] get]
+  set unit [[$obGTL Cbx] get]
+  set ::alited::main::unitGTL $unit
+  # for a chosen unit - a relative line number
+  set TID [alited::bar::CurrentTabID]
+  set it [lsearch -index 3 $al(_unittree,$TID) $unit]
+  if {$unit ne {} && $it >- 1} {
+    set wtxt [CurrentWTXT]
+    lassign [lindex $al(_unittree,$TID) $it] lev leaf fl1 title l1 l2
+    set l $l1
+    set fst 1
+    foreach line [split [$wtxt get $l1.0 $l2.end] \n] {
+      # gentlemen, use \ for continuation of long lines & strings!
+      set continued [expr {[string index $line end] eq "\\"}]
+      if {!$continued || $fst} {
+        if {$fst} {
+          set l $l1
+          if {[incr ln -1]<1} break
+        }
+        set fst [expr {!$continued}]
+      }
+      incr l1
+    }
+    set ln $l
+  }
+  alited::main::FocusText $TID $ln.0
+  alited::tree::NewSelection {} $ln.0 yes
+  alited::main::HighlightLine
+}
+#_______________________
+
+proc main::CancelGTL {args} {
+  # Cancels "Go to line" gialog.
+
+  variable winGTL
+  set ::alited::al(gotoline) [wm geometry $winGTL]
+  destroy $winGTL
 }
 
 # ________________________ Event handlers _________________________ #

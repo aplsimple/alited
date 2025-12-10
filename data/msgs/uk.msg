@@ -121,7 +121,7 @@ namespace eval ::alited {
     {To Matched Bracket} {На парну скобку}
     {Go to Line} {Перейти на рядок}
     {Line number:} {Номер рядку:}
-    {    In unit:} {    У юніті:}
+    {In unit:} {У юніті:}
     "\"%n\" contains unbalanced \{\}: %1!=%2" "\"%n\" має незбалансовані \{\}: %1!=%2"
     {Back} {Відкат}
     {Unit not found: %u} {Юніт не знайдений: %u}

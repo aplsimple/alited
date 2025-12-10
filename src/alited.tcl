@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.12.1  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.12.2  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
   variable al; array set al [list]
@@ -133,6 +133,7 @@ namespace eval alited {
   variable obDlg ::alited::aliteddlg  ;# dialog of 1st level
   variable obDl2 ::alited::aliteddl2  ;# dialog of 2nd level
   variable obCHK ::alited::alitedCHK  ;# dialog of "Check Tcl"
+  variable obGTL ::alited::alitedGTL  ;# dialog of "Go to line"
   variable obDFW ::alited::alitedDFW  ;# dialog of "DockingFW"
   variable obFND ::alited::alitedFND  ;# dialog of "Find/Replace"
   variable obFN2 ::alited::alitedFN2  ;# dialog of "Find by list"
@@ -426,7 +427,7 @@ namespace eval alited {
   proc ListPaved {} {
     # Returns a list of apave objects for dialogues.
 
-    list obDlg obDl2 obFND obFN2 obCHK obRun obDFW
+    list obDlg obDl2 obFND obFN2 obCHK obGTL obRun obDFW
   }
   #_______________________
 

@@ -57,6 +57,7 @@ namespace eval ::alited {
   set al(moveall) 1            ;# "move all" of color chooser
   set al(tonemoves) 1          ;# "tone moves" of color chooser
   set al(checkgeo) {}          ;# geometry of "Check Tcl" window
+  set al(gotoline) {}          ;# geometry of "Go to line" window
   set al(cmdNum) 6             ;# number of commands on Commands tab
 
   # flag "use special RE for leafs of unit tree"
@@ -651,7 +652,7 @@ proc ini::ReadIniMisc {nam val} {
     isfavor {set al(FAV,IsFavor) $val}
     showinfo {set al(TREE,showinfo) $val}
     HelpedMe {set ::alited::helpedMe $val}
-    listSBL - checkgeo - tonemoves - moveall - chosencolor \
+    listSBL - checkgeo - gotoline - tonemoves - moveall - chosencolor \
     - sortList - activemacro - commentmode - format_separ1 - format_separ2 \
     - TIPS,* - MNUGEO,* - markwidth - klndweeks - topFindRepl \
     - DockGeo - DockLayout - ApaveLayout {
@@ -1017,6 +1018,7 @@ proc ini::SaveIni {{newproject no}} {
   puts $chan "moveall=$al(moveall)"
   puts $chan "tonemoves=$al(tonemoves)"
   puts $chan "checkgeo=$al(checkgeo)"
+  puts $chan "gotoline=$al(gotoline)"
   puts $chan "HelpedMe=$::alited::helpedMe"
   foreach k [array names al -glob TIPS,*] {
     puts $chan "$k=$al($k)"
@@ -1602,7 +1604,7 @@ proc ini::_init {} {
   # Initializes alited app.
 
   namespace upvar ::alited al al obPav obPav obDlg obDlg obDl2 obDl2 \
-    obFND obFND obFN2 obFN2 obCHK obCHK obDFW obDFW obRun obRun
+    obFND obFND obFN2 obFN2 obCHK obCHK obGTL obGTL obDFW obDFW obRun obRun
   namespace upvar ::alited::pref em_Num em_Num em_ico em_ico em_inf em_inf em_mnu em_mnu
 
   ::apave::initBaltip

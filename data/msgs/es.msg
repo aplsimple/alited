@@ -117,7 +117,7 @@ namespace eval ::alited {
     {To Matched Bracket} {Al corchete emparejado}
     {Go to Line} {Ir a la línea}
     {Line number:} {Fila de línea:}
-    {    In unit:} {    En unidad:}
+    {In unit:} {En unidad:}
     "\"%n\" contains unbalanced {}: %1!=%2" "\"%n\" contiene desequilibrado {}: %1!=%2"
     {Back} {Atrás}
     {Unit not found: %u} {Unidad no encontrada: %u}
