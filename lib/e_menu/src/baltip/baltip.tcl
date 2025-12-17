@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.6.4
+package provide baltip 1.6.5
 
 # ________________________ Variables _________________________ #
 
@@ -64,10 +64,9 @@ proc ::baltip::configure {args} {
   foreach {n v} $args {
     set n1 [string range $n 1 end]
     switch -glob -- $n {
-      -SPECTIP* -
+      -SPECTIP* - -on - -shiftX - -shiftY - -ontop - -eternal - \
       -per10 - -fade - -pause - -fg - -bg - -bd - -alpha - -text - -relief - \
-      -on - -padx - -pady - -padding - -bell - -under - -font - -image - -compound - \
-      -shiftX - -shiftY - -ontop - -eternal {
+      -padx - -pady - -padding - -bell - -under - -font - -image - -compound {
         set my::ttdata($n1) $v
       }
       -force - -geometry - -index - -tag - -global - -ctag - -nbktab - -reset - \
@@ -338,8 +337,8 @@ proc ::baltip::sleep {msec} {
   #   msec - time to sleep, in msec
   # This is useful esp. before calling a popup menu on listbox/treeview.
 
-  configure -on no
-  after $msec "::baltip::configure -on yes"
+  configure -on 0
+  after $msec "::baltip::configure -on 1"
 }
 #_______________________
 
@@ -352,7 +351,13 @@ proc ::baltip::showBalloon {tip args} {
   # with this geometry and a minimal pause.
 
   variable my::ttdata
+  if {![lindex [cget -on] 1]} return
   set w .
+  if {[winfo exists $tip]} { ;# when mimics the usual tip: "tip $win $text ..."
+    set w $tip
+    set tip [lindex $args 0]
+    set args [lrange $args 1 end]
+  }
   if {[set i [lsearch -exact $args -balloonwindow]]>-1} {
     set w [lindex $args $i+1]
     set args [lreplace $args $i $i+1]
@@ -696,8 +701,8 @@ proc ::baltip::my::DoShow {w text force geo optvals} {
   [string is integer -strict $ttdata(maxexp,$w)]} {
     if {$ttdata(maxexp,$w)<=0} return
   }
-  lappend ttdata(REGISTERED) $w
-  foreach wold [lrange $ttdata(REGISTERED) 0 end-1] {::baltip::hide $wold}
+  catch {::baltip::hide $ttdata(REGISTERED)}
+  set ttdata(REGISTERED) $w
   if {$data(-fg) eq {}} {set data(-fg) black}
   if {$data(-bg) eq {}} {set data(-bg) #FBFB95}
   catch {destroy $win}
