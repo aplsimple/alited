@@ -564,8 +564,23 @@ proc find::Search1 {wtxt pos} {
       incr i
     }
   }
-  set res [lsort -real -stride 2 $res]
+  set res [lsort -command "alited::find::SortSearch $wtxt" -stride 2 $res]
   return [list 0 $res]
+}
+#_______________________
+
+proc find::SortSearch {wtxt pos1 pos2} {
+  # Compares two text positions.
+  #   wtxt - text's path
+  #   pos1 - 1st position to compare
+  #   pos2 - 2nd position to compare
+  
+  if {[$wtxt compare $pos1 < $pos2]} {
+    return -1
+  } elseif {[$wtxt compare $pos1 > $pos2]} {
+    return 1
+  }
+  return 0
 }
 #_______________________
 

@@ -7,7 +7,7 @@
 # License: MIT.
 ###########################################################
 
-package provide alited 1.8.12.3  ;# for documentation (esp. for Ruff!)
+package provide alited 1.8.12  ;# for documentation (esp. for Ruff!)
 
 namespace eval alited {
   variable al; array set al [list]
@@ -846,9 +846,10 @@ namespace eval alited {
     if {[set foc [focus]] eq {} || [string match *tearoff* $foc]} {
       return no  ;# no tips while focusing on a tearoff menu
     }
-    if {[winfo toplevel $foc] ne $al(WIN)} {
-      return no  ;# no tips while focusing on a toplevel other than alited's main
-    }
+#! don't know why:
+#!    if {[winfo toplevel $foc] ne $al(WIN)} {
+#!      return no  ;# no tips while focusing on a toplevel other than alited's main
+#!    }
     return yes
   }
 

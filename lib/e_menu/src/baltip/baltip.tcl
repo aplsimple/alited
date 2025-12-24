@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.6.5
+package provide baltip 1.6.6
 
 # ________________________ Variables _________________________ #
 
@@ -309,7 +309,6 @@ proc ::baltip::hide {{w ""} {doit no}} {
   # Returns 1, if the window was really hidden.
 
   variable my::ttdata
-  my::Command $w {}
   set res 1
   if {(![my::Eternal $w] && $my::ttdata(balloon) ne $w) || $doit} {
     set res [expr {![catch {destroy [tippath $w]}]}]
@@ -487,6 +486,14 @@ proc ::baltip::my::Eternal {w} {
   }
   return $res
 }
+#_______________________
+
+proc ::baltip::my::PutError {err} {
+  # Displays error message
+  #   err - message
+
+  puts stderr "::baltip error #[incr ::baltip::_ErrCnt_]\n$err"
+}
 
 ## ________________________ Binds _________________________ ##
 
@@ -497,16 +504,19 @@ proc ::baltip::my::BindToEvent {w event args} {
   #   args - the command
   # The command can be ended with " ; break".
 
-  if {[catch {set bound [bind $w $event]}]} {set bound {}}
+  if {[catch {set bound [bind $w $event]} err]} {
+    PutError $err
+    set bound {}
+  }
   if {[string first $args $bound]<0} {
-    catch {
+    if {[catch {
       if {[lrange $args end-1 end] eq "{;} break"} {
         set com [lrange $args 0 end-2]
         bind $w $event "$com ; break"
       } else {
         bind $w $event [list + {*}$args]
       }
-    }
+    } err]} {PutError $err}
   }
 }
 #_______________________
@@ -519,16 +529,19 @@ proc ::baltip::my::BindTextagToEvent {w tag event args} {
   #   args - the command
   # The command can be ended with " ; break".
 
-  if {[catch {set bound [$w tag bind $tag]}]} {set bound {}}
+  if {[catch {set bound [$w tag bind $tag]} err]} {
+    PutError $err
+    set bound {}
+  }
   if {[string first $args $bound]<0} {
-    catch {
+    if {[catch {
       if {[lrange $args end-1 end] eq "{;} break"} {
         set com [lrange $args 0 end-2]
         $w tag bind $tag $event "$com ; break"
       } else {
         $w tag bind $tag $event [list + {*}$args]
       }
-    }
+    } err]} {PutError $err}
   }
 }
 #_______________________
@@ -541,16 +554,19 @@ proc ::baltip::my::BindCantagToEvent {w tag event args} {
   #   args - the command
   # The command can be ended with " ; break".
 
-  if {[catch {set bound [$w bind $tag $event]}]} {set bound {}}
+  if {[catch {set bound [$w bind $tag $event]} err]} {
+    PutError $err
+    set bound {}
+  }
   if {[string first $args $bound]<0} {
-    catch {
+    if {[catch {
       if {[lrange $args end-1 end] eq "{;} break"} {
         set com [lrange $args 0 end-2]
         $w bind $tag $event "$com ; break"
       } else {
         $w bind $tag $event [list + {*}$args]
       }
-    }
+    } err]} {PutError $err}
   }
 }
 
@@ -574,10 +590,11 @@ proc ::baltip::my::Command {w text args} {
     return no
   }
   set com [string map [list %w $w %t "{$text}" %a $args] $ttdata(command,$w)]
-  if {[catch {set res [eval $com]} e]} {return no}
-  if {$text ne {}} {
-    set ttdata(text,$w) $res
+  if {[catch {set res [eval $com]} err]} {
+    PutError $err
+    return no
   }
+  set ttdata(text,$w) $res
   return [list yes $res]
 }
 #_______________________
@@ -938,7 +955,7 @@ proc ::baltip::my::ShowNbkTip {w tip} {
   #   w - the notebook's path
   #   tip - text of tip
 
-  catch {
+  if {[catch {
     set x [expr {[winfo pointerx $w]-[winfo rootx $w]}]
     set y [expr {[winfo pointery $w]-[winfo rooty $w]}]
     lassign [NbkInfo $w $x $y] tab tab2
@@ -948,7 +965,7 @@ proc ::baltip::my::ShowNbkTip {w tip} {
     } else {
       ::baltip hide $w
     }
-  }
+  } err]} {PutError $err}
 }
 
 #_______________________
@@ -963,7 +980,7 @@ proc ::baltip::my::PrepareNbkTip {w x y} {
   # This proc tries to imitate those events, with binding to <Motion> event.
 
   if {![string is integer -strict $x]} return
-  catch {
+  if {[catch {
     lassign [::baltip cget -pause] -> pause
     lassign [NbkInfo $w $x $y] tab tab2
     set nbktab [lindex [$w tabs] $tab]
@@ -991,7 +1008,7 @@ proc ::baltip::my::PrepareNbkTip {w x y} {
       NbkInfo $w $x $y -1
     }
     NbkInfo $w $x $y $tab
-  }
+  } err]} {PutError $err}
 }
 
 ### ________________________ Listbox _________________________ ###
@@ -1036,7 +1053,7 @@ proc ::baltip::my::ShowLbxTip {w optid idx whole} {
   #   idx - index of listbox's item
   #   whole - flag "tip for a whole listbox, not per item"
 
-  catch {
+  if {[catch {
     lassign [LbxCoord $w] x y idx inside
     if {$inside} {
       set tip [LbxTip $w $idx $whole]
@@ -1046,7 +1063,7 @@ proc ::baltip::my::ShowLbxTip {w optid idx whole} {
       ::baltip hide $w
       ::baltip configure $optid {}
     }
-  }
+  } err]} {PutError $err}
 }
 #_______________________
 
@@ -1060,7 +1077,7 @@ proc ::baltip::my::PrepareLbxTip {w x y} {
   # If "-text" of tip contains %i, the tip is a callback with %i as item index.
 
   if {![string is integer -strict $x]} return
-  catch {
+  if {[catch {
     set idx [$w index @$x,$y]
     lassign [::baltip cget -pause] -> pause
     set optid -SPECTIPid$w
@@ -1094,7 +1111,7 @@ proc ::baltip::my::PrepareLbxTip {w x y} {
       }
       ::baltip configure $optid $idx
     }
-  }
+  } err]} {PutError $err}
 }
 
 ### ________________________ Treeview _________________________ ###
@@ -1146,7 +1163,7 @@ proc ::baltip::my::ShowTreTip {w optid id whole} {
   #   id - ID of item
   #   whole - flag "tip for a whole treeview, not per item"
 
-  catch {
+  if {[catch {
     lassign [TreCoord $w $whole] x y id c inside
     if {$inside} {
       set tip [TreTip $w $id $c $whole]
@@ -1156,7 +1173,7 @@ proc ::baltip::my::ShowTreTip {w optid id whole} {
       ::baltip hide $w
       ::baltip configure $optid {}
     }
-  }
+  } err]} {PutError $err}
 }
 #_______________________
 
@@ -1170,7 +1187,7 @@ proc ::baltip::my::PrepareTreTip {w x y} {
   # If "-text" of tip contains %i, the tip is a callback with %i as item index.
 
   if {![string is integer -strict $x]} return
-  catch {
+  if {[catch {
     set id [$w identify item $x $y]
     lassign [::baltip cget -pause] -> pause
     set optid -SPECTIPid$w
@@ -1210,7 +1227,7 @@ proc ::baltip::my::PrepareTreTip {w x y} {
       ::baltip hide $w
       ::baltip configure $optid {}
     }
-  }
+  } err]} {PutError $err}
 }
 
 # ________________________________ EOF __________________________________ #

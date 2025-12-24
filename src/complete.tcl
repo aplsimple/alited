@@ -75,6 +75,124 @@ proc complete::TextCursorCoordinates {{wtxt ""}} {
 }
 #_______________________
 
+proc complete::ProcVars {wtxt l1 l2} {
+  # Gets current proc's variables.
+  #   wtxt - text's path
+  #   l1 - starting line of current proc
+  #   l2 - ending line of current proc
+
+  set NS _delete_me_
+  set procvars [set procbody [list]]
+  set proccode [$wtxt get $l1.0 [incr l2].0]
+  if {![catch {
+    # let method be proc in $NS namespace
+    set proccode [string trim $proccode]
+    set i [string first { } $proccode]
+    set proccode [string trim [string range $proccode $i end]]
+    set i [string first { } $proccode]
+    set procname ${NS}::[string range $proccode 0 $i-1]
+    set proccode [string trim [string range $proccode $i end]]
+    namespace eval $NS "proc $procname $proccode"
+  } e]} {
+    # proc is defined OK
+    set procbody [info body $procname]
+    lappend procvars {*}[info args $procname]
+    namespace delete $NS
+  } else {
+    # current proc isn't complete
+    catch {
+      # get variables from current proc's header
+      lassign [split [$wtxt get $l1.0 [expr {$l1+4}].0] \n] h1 h2 h3 h4 h5 h6 h7
+      foreach i {2 3 4 5 6 7} {
+        incr l1
+        if {[string index $h1 end] eq "\\"} {
+          set h1 [string trimright $h1 \\]\ [set h$i]
+        } else {
+          break
+        }
+      }
+      lassign [string trimright $h1 \{] typ - argums
+    }
+    if {$typ in {proc method}} {
+      foreach v $argums {
+        lappend procvars [lindex $v 0]
+      }
+    }
+    set procbody [$wtxt get $l1.0 [incr l2].0]
+  }
+  # get variables from current proc's body (however humble)
+  set novar [list {} \\ : ::]
+  set RE {(?:(\$)([:a-zA-Z0-9_]*[\(]*[:a-zA-Z0-9_,\$]*[\)]*))}
+  foreach line [split $procbody \n] {
+    set line [string trimright $line {\{ \\}]
+    set line [alited::edit::SqueezeString [string trimleft $line]]
+    set line [string map [list \[ \{ \] \}] $line]
+    foreach {- - var} [regexp -all -inline $RE $line] {
+      if {[string match *(* $var] || [string match *)* $var]} {
+        if {![string match *(*) $var]} {
+          set var [string trim $var ()]
+        }
+      }
+      if {$var ni $novar && $var ni $procvars} {lappend procvars $var}
+    }
+    if {[catch {lassign $line com var var2 var3}]} {
+      lassign [split $line] com var var2 var3
+    }
+    if {$com eq "for"} {
+      catch {
+        set line [alited::edit::SqueezeString [string trim $line]]
+        if {[catch {lassign $line -> com}] && [catch {lassign $line\} -> com}]} {
+          lassign [split $line] -> com
+        }
+        lassign [split $com] com var var2
+      }
+    }
+    switch -exact $com {
+      "set" - unset - append - lappend - incr - variable - global - const - parray
+      - lset - lpop - ledit {
+        if {$var ni $novar && $var ni $procvars} {
+          lappend procvars $var
+        }
+      }
+      "lassign" {
+        catch {
+          foreach var [lrange $line 2 end] {
+            if {$var ni $novar && $var ni $procvars} {
+              lappend procvars $var
+            }
+          }
+        }
+      }
+      "foreach" {
+        catch {
+          foreach {var ls} [lrange $line 1 end] {
+            if {$ls ne {} && $var ni $novar && $var ni $procvars} {
+              lappend procvars $var
+            }
+          }
+        }
+      }
+      "array" {
+        if {$var eq {default}} {
+          if {$var3 ni $novar && $var3 ni $procvars} {
+            lappend procvars $var3
+          }
+        } elseif {$var2 ni $novar && $var2 ni $procvars} {
+          lappend procvars $var2
+        }
+      }
+      "dict" {
+        if {$var in {append lappend set unset incr size update with} \
+        && $var2 ni $novar && $var2 ni $procvars} {
+          lappend procvars $var2
+        }
+      }
+    }
+  }
+  return $procvars
+}
+#_______________________
+
 proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
   # Gets all commands available in Tcl/Tk and in session files.
   #   currentTID - ID of a current tab
@@ -95,40 +213,7 @@ proc complete::AllSessionCommands {{currentTID ""} {idx1 0}} {
   set wtxt [alited::main::CurrentWTXT]
   lassign [alited::favor::CurrentName] itemID name l1 l2
   if {$l2 eq {}} {set l1 [set l2 0]}
-  catch {
-    # get variables from the current proc's header
-    lassign [split [$wtxt get $l1.0 [expr {$l1+4}].0] \n] h1 h2 h3 h4
-    foreach i {2 3 4} {
-      incr l1
-      if {[string index $h1 end] eq "\\"} {
-        set h1 [string trimright $h1 \\]\ [set h$i]
-      } else {
-        break
-      }
-    }
-    lassign [string trimright $h1 \{] typ - argums
-    if {$typ in {proc method}} {
-      foreach v $argums {
-        lappend res \$[lindex $v 0]
-      }
-    }
-  }
-  # get variables from the current proc's body
-  set RE {(?:(((^\s*|\[\s*|\{\s*)+((set|unset|append|lappend|incr|variable|global)\s+)}
-  append RE {)|\$)([:a-zA-Z0-9_]*[\(]*[:a-zA-Z0-9_,\$]*[\)]*))}
-  foreach line [split [$wtxt get $l1.0 [incr l2].0] \n] {
-    foreach {- - - - - - v} [regexp -all -inline $RE $line] {
-      if {[string match *(* $v] || [string match *)* $v]} {
-        if {![string match *(*) $v]} {
-          set v [string trim $v ()]
-        }
-      }
-      if {$v ni {{} : ::} && [lsearch -exact $res $v]==-1} {
-        if {![string match \$* $v]} {set v \$$v}
-        lappend res $v
-      }
-    }
-  }
+  foreach var [ProcVars $wtxt $l1 $l2] {lappend res \$$var}
   set idx1 [expr {int([$wtxt index insert])}].$idx1
   # check for $ dollar char
   set isdol [expr {[$wtxt get "$idx1 -1 c"] eq {$}}]
@@ -446,6 +531,7 @@ proc complete::AutoCompleteCommand {} {
   # Runs auto completion of commands.
 
   namespace upvar ::alited al al
+  variable comms
   variable tclcoms
   variable wordorig
   set wtxt [alited::main::CurrentWTXT]
@@ -479,6 +565,9 @@ proc complete::AutoCompleteCommand {} {
     if {[llength $com]==2 && [lindex $com 0] eq {_alited_}} {
       set wordorig [lindex $com 1]
       MatchedCommands $wordorig $idx1 $idx2
+      if {![llength $comms]} {
+        lassign [MatchedCommands] wordorig idx1 idx2
+      }
     } else {
       break
     }
