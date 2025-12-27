@@ -3916,10 +3916,6 @@ method showModal {win args} {
   } else {
     after 100 "catch {focus -force $opt(-focus); apave::setProperty FOCW_$win $opt(-focus)}"
   }
-  if {[info exists ::transpops::my::cntwait]} {
-    # this specific bind - for transpops package (to hide a demo message by keys)
-    bind $win <Control-Alt-0> {set ::transpops::my::cntwait 0}
-  }
   my showWindow $win $modal $ontop $varname $minsize $waitvar $waitme
   set res 0
   catch {

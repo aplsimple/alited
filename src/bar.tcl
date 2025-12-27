@@ -566,7 +566,7 @@ proc bar::OnTabSelection {TID} {
 proc bar::OnControlClick {} {
   # Shows a number of tabs selected by Ctrl+Click.
 
-  set llen [llength [alited::bar::BAR cget -select]]
+  set llen [llength [BAR cget -select]]
   set msg [string map "%n $llen" [msgcat::mc {Selected files: %n}]]
   alited::Message $msg 3
   alited::find::SessionButtons

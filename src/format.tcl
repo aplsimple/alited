@@ -838,11 +838,14 @@ proc format::Mode6 {cont args} {
       foreach ev [split $events { ,}] {
         if {$ev ne {}} {
           set wasacc [info exist cont6($fform)]
-          if {[EventOK $fullformname $fform $ev $wasacc $firstin]} {
+          set ok [EventOK $fullformname $fform $ev $wasacc $firstin]
+          if {$ok} {
             lappend com $modal
             catch {bind $wtxt $ev $com}
             if {![llength $bind6($fform)]} {set res $ev}
             lappend bind6($fform) [list $ev $com]
+          } elseif {$ok==0} {
+            return {} ;# pluginable unregistered
           } else {
             set res {}
             break
@@ -903,7 +906,7 @@ proc format::EventOK {fullformname fform ev wasacc firstin} {
           unset al($n)
         }
       }
-      return no
+      return 0
     }
   }
   set al(FORMATS,$fform,$ev2) [list $fullformname $ev2]

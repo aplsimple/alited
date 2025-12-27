@@ -6,7 +6,7 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.12 (24 Dec'25)`
+Version `v1.8.12 (27 Dec'25)`
 
   - BUGFIX: Projects/Files: tooltips after list's popup menu (baltip fixed)
   - BUGFIX: Tools/Check Tcl: file results in shown before calculation
@@ -14,6 +14,7 @@ Version `v1.8.12 (24 Dec'25)`
   - CHANGE: Search/Go to Line: non-modal (to switch texts while open) + saved geometry
   - CHANGE: Tools/Check Tcl: calculation of results & appearance & help
   - CHANGE: Find/Replace: -takefocus 0 for "Find by list"
+  - CHANGE: some clearance
   - CHANGE: packages: apave/e_menu 4.8.4, baltip 1.6.6
 
 
