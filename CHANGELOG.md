@@ -6,10 +6,11 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.12 (27 Dec'25)`
+Version `v1.8.12 (7 Jan'25)`
 
   - BUGFIX: Projects/Files: tooltips after list's popup menu (baltip fixed)
   - BUGFIX: Tools/Check Tcl: file results in shown before calculation
+  - CHANGE: Edit/Formats/Pluginable: better (un)registering; tip on icons
   - CHANGE: complete.tcl: added commands to get proc's variables
   - CHANGE: Search/Go to Line: non-modal (to switch texts while open) + saved geometry
   - CHANGE: Tools/Check Tcl: calculation of results & appearance & help

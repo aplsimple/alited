@@ -858,7 +858,7 @@ proc format::Mode6 {cont args} {
     }
   }
   if {$icon ne {}} {
-    CreateFormatIcon $icon $sep $com $fform
+    HandleFormatIcon create $icon $sep $com $fform $res
   } elseif {$res eq {}} {
     # no event encountered - run the formatter once
     Mode5 $cont {*}$args $modal
@@ -892,9 +892,9 @@ proc format::EventOK {fullformname fform ev wasacc firstin} {
   }
   set plugkey FORMATS,$fform,$ev2
   set itemttl [alited::menu::FormatsItemName $fform]
+  set mnu $al(MENUFORMATS)
+  # add -accelerator to Formats menu item of $fform
   if {!$wasacc} {
-    # add -accelerator to Formats menu item of $fform
-    set mnu $al(MENUFORMATS)
     alited::edit::PluginAccelerator $mnu $itemttl $ev2
   } elseif {$firstin && [info exists al($plugkey)]} {
     set msg [msgcat::mc "The pluginable % has been registered.\nCancel the registration?"]
@@ -906,6 +906,9 @@ proc format::EventOK {fullformname fform ev wasacc firstin} {
           unset al($n)
         }
       }
+      unset -nocomplain cont6($fform)
+      HandleFormatIcon delete $itemttl
+      alited::edit::PluginAccelerator $mnu $itemttl {} {} yes
       return 0
     }
   }
@@ -914,19 +917,29 @@ proc format::EventOK {fullformname fform ev wasacc firstin} {
 }
 #_______________________
 
-proc format::CreateFormatIcon {icon sep com fform} {
-  # Create icon of formatter in toolbar.
+proc format::HandleFormatIcon {mode icon {sep ""} {com ""} {fform ""} {ev ""}} {
+  # Handles icon of formatter in toolbar.
+  #   mode - "create" for creation, "delete" for deletion
   #   icon - icon name
   #   sep - true if separated
   #   com - command
   #   fform - formatter file name
+  #   ev - bound event or {}
 
   variable icon6
+  set icon [string tolower $icon]
+  set but [alited::tool::ToolButName $icon]_2
+  set separ ${but}_sep
+  if {$mode eq {delete}} {
+    unset -nocomplain icon6($icon)
+    catch {destroy $but}
+    catch {destroy $separ}
+    return
+  }
   if {[info exists icon6($icon)]} return
   set icon6($icon) 1
-  set but [alited::tool::ToolButName $icon]_2
   if {$sep} {
-    set separ [ttk::separator ${but}_sep -orient vertical]
+    ttk::separator $separ -orient vertical
     pack $separ -side left -fill y -padx 6
   }
   lassign [obj csGet] fga fg bga bg
@@ -940,7 +953,8 @@ proc format::CreateFormatIcon {icon sep com fform} {
   }
   set attrs [obj toolbarItem_Attrs $istext $img $fontB $fg $bg $fga $bga]
   button $but -text $txt -command $com {*}$attrs
-  ::baltip tip $but [msgcat::mc Pluginable]\n[alited::menu::FormatsItemName $fform]
+  if {$ev ne {}} {set ev \n[string trim $ev <>]}
+  ::baltip tip $but [msgcat::mc Pluginable]:\ [alited::menu::FormatsItemName $fform]$ev
   bind $but <Button-3> {alited::tool::PopupBar %X %Y}
   pack $but -side left
 }

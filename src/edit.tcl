@@ -1288,12 +1288,13 @@ proc edit::BindPluginables {wtxt} {
 }
 #_______________________
 
-proc edit::PluginAccelerator {mnu {itemttl ""} {ev ""} {retlist ""}} {
+proc edit::PluginAccelerator {mnu {itemttl ""} {ev ""} {retlist ""} {off no}} {
   # Adds -accelerator to Formats menu item or returns a list of
   # accelerators used by pluginables.
   #   mnu - menu path
   #   itemttl - item's title
   #   ev - event
+  #   off - if yes, deletes the accelerator
 
   set nitems [$mnu index end]
   for {set i 0} {$i<=$nitems} {incr i} {
@@ -1302,7 +1303,11 @@ proc edit::PluginAccelerator {mnu {itemttl ""} {ev ""} {retlist ""}} {
     switch $typ {
       command {
         if {$itemttl ne {} && $itemttl eq $ttl} {
-          $mnu entryconfigure $i -accelerator [::apave::KeyAccelerator $ev]
+          if {$off} {
+            $mnu entryconfigure $i -accelerator {}
+          } else {
+            $mnu entryconfigure $i -accelerator [::apave::KeyAccelerator $ev]
+          }
           break ;# it's call to set an accelerator
         }
         set acc [$mnu entrycget $i -accelerator]

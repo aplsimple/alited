@@ -677,12 +677,10 @@ proc ini::ReadIniFormats {nam val} {
   #   val - value of option
 
   namespace upvar ::alited al al
-  switch -exact -- $nam {
-    pluginable {
-      lassign $val fullformname ev
-      set fform [alited::edit::FormatterName $fullformname]
-      set al(FORMATS,$fform,$ev) $val
-    }
+  if {$nam eq {pluginable}} {
+    lassign $val fullformname ev
+    set fform [alited::edit::FormatterName $fullformname]
+    set al(FORMATS,$fform,$ev) $val
   }
 }
 #_______________________
