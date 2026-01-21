@@ -30,7 +30,7 @@ proc playtkl::Data {wc data} {
 proc playtkl::Mapping {win} {
   # Maps a recorded window to a played one.
   #   win - the recorded window's path
-  # At recording, some widgets may be dynamic, with their pathes not equal to current ones
+  # At recording, some widgets may be dynamic, with their paths not equal to current ones
   # => map them.
 
   variable dd
@@ -317,7 +317,7 @@ proc playtkl::replay {{fname ""} {cbreplay ""} {mappings {}} {ismacro yes} {wfoc
   # Replays a read/written recording, fastly at replaying a macro.
   #   fname - name of file to store the recording
   #   cbreplay - callback after replaying (e.g with "text edit separator")
-  #   mappings - mappings of some widgets' pathes to currently used ones
+  #   mappings - mappings of some widgets' paths to currently used ones
   #   ismacro - yes for fast replaying a macro (used by playtkl)
   #   wfocus - currently focused widget
 

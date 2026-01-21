@@ -2298,7 +2298,7 @@ method LowercaseWidgetName {name} {
   #   name - widget's name
   # The widgets of widget list can have uppercased names which
   # means that the appropriate methods will be created to access
-  # their full pathes with a command `my Name`.
+  # their full paths with a command `my Name`.
   # This method gets a "normal" name of widget accepted by Tk.
   # See also: makeWidgetMethod
 

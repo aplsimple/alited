@@ -6,7 +6,7 @@
 # License: MIT.
 ###########################################################
 
-package provide baltip 1.6.6
+package provide baltip 1.6.7
 
 # ________________________ Variables _________________________ #
 
@@ -1067,6 +1067,18 @@ proc ::baltip::my::ShowLbxTip {w optid idx whole} {
 }
 #_______________________
 
+proc ::baltip::my::CheckIfInteger {x errName} {
+  # Checks if a value is strictly integer.
+  #   x - the value to be checked
+  #   errName - error variable's name
+
+  if {[string is integer -strict $x]} {return yes}
+  upvar 1 $errName err
+  set err "\"$x\" isn't integer"
+  return no
+}
+#_______________________
+
 proc ::baltip::my::PrepareLbxTip {w x y} {
   # Prepares a tip for a listbox.
   #   w - the listbox's path
@@ -1076,8 +1088,7 @@ proc ::baltip::my::PrepareLbxTip {w x y} {
   # If "-text" of tip doesn't contain %i, the tip is for a whole listbox.
   # If "-text" of tip contains %i, the tip is a callback with %i as item index.
 
-  if {![string is integer -strict $x]} return
-  if {[catch {
+  if {![CheckIfInteger $x err] || [catch {
     set idx [$w index @$x,$y]
     lassign [::baltip cget -pause] -> pause
     set optid -SPECTIPid$w
@@ -1186,8 +1197,7 @@ proc ::baltip::my::PrepareTreTip {w x y} {
   # If "-text" of tip doesn't contain %i, the tip is for a whole treeview.
   # If "-text" of tip contains %i, the tip is a callback with %i as item index.
 
-  if {![string is integer -strict $x]} return
-  if {[catch {
+  if {![CheckIfInteger $x err] || [catch {
     set id [$w identify item $x $y]
     lassign [::baltip cget -pause] -> pause
     set optid -SPECTIPid$w

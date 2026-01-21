@@ -65,12 +65,12 @@ if {[catch {source [file join $::em::srcdir e_help.tcl]} e]} {
 set ::em::ncolor -2  ;# default color scheme
 if {$::em::solo} {set ::em::ncolor 0}
 
-proc ::em::terminalPathes {} {
-  # Sets pathes to terminal scripts.
+proc ::em::terminalPaths {} {
+  # Sets paths to terminal scripts.
   set ::em::lin_console [file join $::em::srcdir run_pause.sh]  ;# (for Linux)
   set ::em::win_console [file join $::em::srcdir run_pause.bat] ;# (for Windows)
 }
-::em::terminalPathes
+::em::terminalPaths
 
 # ________________________ internal trifles _________________________ #
 
@@ -238,17 +238,17 @@ proc ::em::emQuestion {ttl mes {typ okcancel} {icon warn} {defb OK} args} {
 
 # ________________________ common _________________________ #
 
-proc ::em::nativePathes {pathes} {
-  # Gets native names of the pathes' list.
+proc ::em::nativePaths {paths} {
+  # Gets native names of the paths' list.
 
-  string map [list \\ \\\\] $pathes
+  string map [list \\ \\\\] $paths
 }
 #_______________________
 
 proc ::em::nativePath {path} {
   # Gets a native name of the path.
 
-  nativePathes [file nativename $path]
+  nativePaths [file nativename $path]
 }
 #_______________________
 
@@ -1653,11 +1653,11 @@ proc ::em::preprPN {refpn {dt 0}} {
   prepr1 pn BF $::em::BF                 ;# %BF is a name of backup file
   prepr1 pn pd $::em::pd                 ;# %pd is a project directory
   prepr1 pn lg [::eh::get_language]      ;# %lg is a locale (e.g. ru_RU.utf8)
-  prepr1 pn ls [nativePathes $::em::ls]  ;# %ls is a list of files
+  prepr1 pn ls [nativePaths $::em::ls]  ;# %ls is a list of files
   foreach n [array names ::em::arEM] {
     set v $::em::arEM($n)
     if {$n in {f d}} {
-      set v [nativePath $v]  ;# as Windows' pathes use backslash (escaping char in Tcl)
+      set v [nativePath $v]  ;# as Windows' paths use backslash (escaping char in Tcl)
     }
     prepr1 pn $n $v
   }
@@ -2352,7 +2352,7 @@ proc ::em::fillCommands {amc osm {domenu 0}} {
         }
         ms= {
           set ::em::srcdir $seltd
-          terminalPathes
+          terminalPaths
         }
         default {
           if {$s1 in {TF=} || [string range $s1 0 0] in {x y z}} {
