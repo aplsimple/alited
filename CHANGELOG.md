@@ -10,6 +10,7 @@ Version `v1.8.12 (11 Feb'26)`
 
   - BUGFIX: Projects/Files: tooltips after list's popup menu (baltip fixed)
   - BUGFIX: Tools/Check Tcl: file results in shown before calculation
+  - BUGFIX: Setup/Type Templates: no recognizing type1 from type1,type2,type3..
   - CHANGE: Edit/Rectangular Selection/Paste: pasting the spaced rectangle
   - CHANGE: Edit/Formats/Pluginable: better (un)registering; tip on icons
   - CHANGE: complete.tcl: added commands to get proc's variables

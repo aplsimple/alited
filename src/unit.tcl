@@ -685,7 +685,7 @@ proc unit::ReadTypeTemplate {} {
     foreach fn [TypeTemplateFiles] {
       # find the current file type among template files:
       # template file rootname can be "htm,html,css"
-      if {[regexp "\(^|,\)$type\(,|$\)" [file rootname $fn]]} {
+      if {[regexp "\(^|,\)$type\(,|$\)" [file tail [file rootname $fn]]]} {
         set fcont [CheckTypeTemplate $fn]
         set tt {}
         foreach line $fcont {
