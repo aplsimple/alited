@@ -989,13 +989,23 @@ proc edit::pasteRect {wtxt nl nc} {
     undoIn $wtxt
     $wtxt tag remove sel 1.0 end
     set sels [list]
-    foreach line $al(rectSel,text) {
-      if {$line ne {}} {
-        $wtxt insert $nl.$nc $line
-        set pos2 $nl.[expr {$nc+[string length $line]}]
-        lappend sels $nl.$nc $pos2
-        if {![info exists pos1]} {set pos1 $pos2}
+    set maxfl 0
+    foreach frline $al(rectSel,text) {
+      if {[set fl [string length $frline]] > $maxfl} {
+        set maxfl $fl
       }
+    }
+    foreach frline $al(rectSel,text) {
+      set toline [$wtxt get $nl.0 $nl.end]
+      set fl [string length $frline]
+      set tl [string length $toline]
+      append frline [string repeat { } [expr {$maxfl-$fl}]]
+      append toline [string repeat { } [expr {$nc-$tl}]]
+      $wtxt replace $nl.0 $nl.end $toline
+      $wtxt insert $nl.$nc $frline
+      set pos2 $nl.[expr {$nc+[string length $frline]}]
+      lappend sels $nl.$nc $pos2
+      if {![info exists pos1]} {set pos1 $pos2}
       incr nl
     }
     catch {::tk::TextSetCursor $wtxt $pos1}
