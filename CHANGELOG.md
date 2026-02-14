@@ -6,15 +6,15 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.12 (11 Feb'26)`
+Version `v1.8.12 (14 Feb'26)`
 
   - BUGFIX: Projects/Files: tooltips after list's popup menu (baltip fixed)
   - BUGFIX: Tools/Check Tcl: file results in shown before calculation
-  - BUGFIX: Setup/Type Templates: no recognizing type1 from type1,type2,type3..
+  - BUGFIX: Setup/Type Templates: no recognizing type1 of type1,type2,type3.typetpl
   - CHANGE: Edit/Rectangular Selection/Paste: pasting the spaced rectangle
   - CHANGE: Edit/Formats/Pluginable: better (un)registering; tip on icons
   - CHANGE: complete.tcl: added commands to get proc's variables
-  - CHANGE: Search/Go to Line: non-modal (to switch texts while open) + saved geometry
+  - CHANGE: Search/Go to Line: non-modal + saved geometry + spinbox selection
   - CHANGE: Tools/Check Tcl: calculation of results & appearance & help
   - CHANGE: Find/Replace: -takefocus 0 for "Find by list"
   - CHANGE: some clearance

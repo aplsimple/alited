@@ -763,7 +763,8 @@ proc main::GotoLine {} {
   $obGTL makeWindow $winGTL.fra [msgcat::mc {Go to Line}]
   $obGTL paveWindow $winGTL.fra {
     {lab1 - - 1 1 {-st en -pady 3} {-t {Line number:}}}
-    {Spx + L 1 1 {-st wn -pady 3} {-from 1 -to $lmax -tvar ::alited::main::lnGTL}}
+    {Spx + L 1 1 {-st wn -pady 3} {-from 1 -to $lmax -tvar ::alited::main::lnGTL
+      -afteridle "apave::focusByForce %w 100; %w selection range 0 end"}}
     {lab2 lab1 T 1 1 {-st en} {-t {{In unit:}}}}
     {Cbx + L 1 1 {-st wn} {-tvar ::alited::main::unitGTL -values {$::alited::main::valsGTL} -state readonly -h 16 -w 25}}
     {seh lab2 T 1 2 {-pady 3}}
@@ -778,8 +779,7 @@ proc main::GotoLine {} {
     set geo [string range $geo [string first + $geo] end]
     set geo "-geometry $geo"
   }
-  $obGTL showModal $winGTL -modal no -waitvar no -onclose alited::main::CancelGTL \
-    -focus [$obGTL Spx] {*}$geo
+  $obGTL showModal $winGTL -modal no -waitvar no -onclose alited::main::CancelGTL {*}$geo
 }
 #_______________________
 
