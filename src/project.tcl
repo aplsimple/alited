@@ -838,14 +838,15 @@ proc project::ValidateIni {V} {
 
 # ________________________ Files tab's procs _________________________ #
 
-proc project::SelFiles {} {
+proc project::SelFiles {{domsg yes}} {
   # Checks for a selection of file listbox.
+  #   domsg - yes for error message shown
   # Returns: list of listbox's path and the selection or {}.
 
   variable obPrj
   set lbx [$obPrj LbxFlist]
   if {![llength [set selidx [$lbx curselection]]]} {
-    Message [msgcat::mc {No selected files}] 4
+    if {$domsg} {Message [msgcat::mc {No selected files}] 4}
     return {}
   }
   list $lbx $selidx
@@ -856,19 +857,26 @@ proc project::CurrentFile {} {
   # Gets a current file of file listbox.
   # Returns file name of first selected file or 1st in the list, if no selection.
 
-  variable obPrj
-  set lbx [$obPrj LbxFlist]
-  if {[catch {
-    if {[llength [set selidx [$lbx curselection]]]} {
-      set idx [lindex $selidx 0]
-    } else {
-      set idx 0
-    }
-    set res [$lbx get $idx]
-  }]} {
+  lassign [SelFiles no] lbx idx
+  if {$lbx ne {}} {
+    set res [$lbx get [lindex $idx 0]]
+  } else {
     set res {}
+    # no selected file: try README of project
+    set dircont [glob -nocomplain -directory $::alited::al(prjroot) *]
+    set dircont [lsort -dictionary $dircont]
+    foreach fname {*/README */README.*} {
+      set idx [lsearch -nocase $dircont $fname]
+      if {$idx>=0} {
+        set res [lindex $dircont $idx]
+        break
+      }
+    }
+    foreach fname $dircont {
+      if {$res eq {} && [file isfile $fname]} {set res $fname}
+    }
   }
-  return $res
+  return [file normalize $res]
 }
 #_______________________
 
