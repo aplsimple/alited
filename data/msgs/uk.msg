@@ -156,6 +156,7 @@ namespace eval ::alited {
     {Clear All} {Вичистити усе}
     {Width} {Ширина}
     {Weeks in Calendar} {Тижні у календарі}
+    "%f\nis already open in alited." "%f\nвже відкритий у alited."
   }
 
   ## ________________________ Moving a first unit up ________________________ ##

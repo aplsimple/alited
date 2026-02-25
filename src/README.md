@@ -30,6 +30,7 @@ Some additional alited's files are also contained in [alited/lib/addon](https://
   * [printer.tcl](https://aplsimple.github.io/en/tcl/printer/alited/files/src/printer.html) - "Tools / Project Printer" dialogue and procedures.
   * [project.tcl](https://aplsimple.github.io/en/tcl/printer/alited/files/src/project.html) - "Projects" dialogue and procedures.
   * [run.tcl](https://aplsimple.github.io/en/tcl/printer/alited/files/src/run.html) - "Tools / Run..." dialogue and procedures.
+  * [todolist.tcl](https://aplsimple.github.io/en/tcl/printer/alited/files/src/todolist.html) - Handles pending TODOs of Projects dialogue.
   * [tool.tcl](https://aplsimple.github.io/en/tcl/printer/alited/files/src/tool.html) - "Tools" menu's procedures.
   * [tree.tcl](https://aplsimple.github.io/en/tcl/printer/alited/files/src/tree.html) - Handles the tree of units and files.
   * [unit.tcl](https://aplsimple.github.io/en/tcl/printer/alited/files/src/unit.html) - Handles the unit tree.

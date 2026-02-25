@@ -68,6 +68,35 @@ proc file::IsSaved {TID args} {
 }
 #_______________________
 
+proc file::IsCorrectSavedName {TID fname} {
+  # Checks if the file name is correct for saving.
+  #   TID -  - ID of the tab
+  #   fname - file name to save
+
+  if {[IsNoName $fname]} {
+    set res 0
+  } else {
+    set res 1
+    foreach tab [alited::SessionList 2] {
+      set tid [lindex $tab 0]
+      if {$TID ne $tid && $fname eq [alited::bar::FileName $tid]} {
+        # file is in tab bar: check if it was open
+        if {[alited::main::GetWTXT $tid] ne {}} {
+          set res 0
+          set msg [msgcat::mc "%f\nis already open in alited."]
+          set msg [string map [list %f $fname] $msg]
+          alited::msg ok err $msg
+        } else {
+          alited::bar::BAR $tid close
+        }
+        break
+      }
+    }
+  }
+  return $res
+}
+#_______________________
+
 proc file::MakeThemHighlighted {{tabs ""} {wtxt ""}} {
   # Sets flag "highlight file(s) anyway".
   #   tabs - list of tabs to set the flag for
@@ -563,8 +592,7 @@ proc file::CloneFile {{undermouse yes} {fromtree yes}} {
     set fname [alited::bar::FileName]
     set ar -
   }
-  if {$fname eq {} || [alited::file::IsNoName $fname]} return
-  if {![file isfile $fname]} {
+  if {[IsNoName $fname] || ![file isfile $fname]} {
     alited::Balloon1 $fname
     return
   }
@@ -574,6 +602,8 @@ proc file::CloneFile {{undermouse yes} {fromtree yes}} {
   if {$res && $name2 ne {}} {
     set fname2 [file join [file dirname $fname2] $name2]
     if {![CommandForFile2 copy $fname $fname2]} return
+    lassign [Encoding $fname] -> enc
+    Encoding $fname2 $enc
     OpenFile $fname2
     if {!$al(TREE,isunits)} {RecreateFileTree; AfterSaving}
   }
@@ -849,9 +879,9 @@ proc file::SaveFileAs {{TID ""}} {
   set fname [$obPav chooser tk_getSaveFile ::alited::al(TMPfname) -initialdir $inidir \
     -defaultextension $defext -title [msgcat::mc {Save as}] -parent $al(WIN)]
   unset al(TMPfname)
-  if {[IsNoName $fname]} {
-    set res 0
-  } elseif {[set res [SaveFileByName $TID $fname]]} {
+  set res 0
+  if {[IsCorrectSavedName $TID $fname] && [SaveFileByName $TID $fname]} {
+    set res 1
     AddRecent $fnameorig
     RenameFile $TID $fname
     AfterSaving
@@ -1175,8 +1205,8 @@ proc file::Detach {{fnames ""} {TID ""}} {
   namespace upvar ::alited al al
   SourceDetach
   if {$fnames eq {} || $TID ne {}} {
-    set fnames [alited::bar::FileName $TID]
-    if {[alited::file::IsNoName $fnames] && ![SaveFileAs $TID]} return
+    set fname [alited::bar::FileName $TID]
+    if {[IsNoName $fname] && ![SaveFileAs $TID]} return
     set fnames [list [alited::bar::FileName $TID]]
   }
   alited::detached::_run $fnames
@@ -1528,7 +1558,7 @@ proc file::DeleteOne {ID wtree dlg dlgopts res} {
   set fname [lindex [$wtree item $ID -values] 1]
   set TID [alited::bar::FileTID $fname]
   if {$TID ne ""} {
-    return [alited::file::CloseAndDelete $TID]
+    return [CloseAndDelete $TID]
   }
   set msg [string map [list %f $name] $al(MC,delfile)]
   if {$res<11} {

@@ -152,6 +152,7 @@ namespace eval ::alited {
     {Clear All} {Alles löschen}
     {Width} {Breite}
     {Weeks in Calendar} {Wochen im Kalender}
+    "%f\nis already open in alited." "%f\nist schon in alited geöffnet."
   }
 
   ## ________________________ Moving a first unit up ________________________ ##
