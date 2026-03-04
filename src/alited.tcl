@@ -552,13 +552,14 @@ namespace eval alited {
   }
   #_______________________
 
-  proc SessionTclList {{mode 0}} {
+  proc SessionTclList {{mode 0} {incall 0}} {
     # Returns a list of all tabs or selected tabs of .tcl files.
     #   mode - 0 get selected or all, 1 force selected, 2 force all
+    #   incall - if yes, include all files (not only Tcl)
 
     set ltabs [list]
     foreach tab [alited::SessionList $mode] {
-      if {[alited::isTclScript $tab]} {
+      if {$incall || [alited::isTclScript $tab]} {
         lappend ltabs $tab
       }
     }
@@ -846,10 +847,6 @@ namespace eval alited {
     if {[set foc [focus]] eq {} || [string match *tearoff* $foc]} {
       return no  ;# no tips while focusing on a tearoff menu
     }
-#! don't know why:
-#!    if {[winfo toplevel $foc] ne $al(WIN)} {
-#!      return no  ;# no tips while focusing on a toplevel other than alited's main
-#!    }
     return yes
   }
 

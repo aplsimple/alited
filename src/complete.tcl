@@ -112,10 +112,10 @@ proc complete::ProcVars {wtxt l1 l2} {
         }
       }
       lassign [string trimright $h1 \{] typ - argums
-    }
-    if {$typ in {proc method}} {
-      foreach v $argums {
-        lappend procvars [lindex $v 0]
+      if {$typ in {proc method}} {
+        foreach v $argums {
+          lappend procvars [lindex $v 0]
+        }
       }
     }
     set procbody [$wtxt get $l1.0 [incr l2].0]

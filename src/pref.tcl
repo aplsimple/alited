@@ -1823,7 +1823,6 @@ proc pref::_create {tab} {
   set tipson [baltip::cget -on]
   set preview 0
   baltip::configure -on $al(TIPS,Preferences)
-puts [time {\
   ::apave::APave create $obPrf $win
   $obPrf makeWindow $win.fra "$al(MC,pref) :: $::alited::USERDIR"
   $obPrf paveWindow \
@@ -1841,7 +1840,7 @@ puts [time {\
     $win.fra.fraR.nbk6.f1 [Common_Tab] \
     $win.fra.fraR.nbk6.f2 [Emenu_Tab] \
     $win.fra.fraR.nbk6.f3 [Runs_Tab $tab] \
-    $win.fra.fraR.nbk6.f4 [Tkcon_Tab]}]
+    $win.fra.fraR.nbk6.f4 [Tkcon_Tab]
   set wtxt [$obPrf TexNotes]
   set fnotes [file join $::alited::USERDIR notes.txt]
   if {[file exists $fnotes]} {

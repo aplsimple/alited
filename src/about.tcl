@@ -38,8 +38,8 @@ proc about::About {} {
   lassign [obj csGet] fg fg2 bg bg2 - bS fS
   ::apave::InitAwThemesPath $::alited::LIBDIR
   foreach _ {alited apave bartabs baltip hl_tcl playtkl} {
-    if {[set v$_ v[package versions $_]] eq {v} \
-    && [catch {set v$_ v[package require $_]}]} {
+    if {[catch {set v$_ v[package require $_]}] \
+    && [set v$_ v[package versions $_]] eq {v}} {
       set v$_ {}
     }
   }
@@ -127,8 +127,8 @@ proc about::About {} {
     $long1\n\n \
     [msgcat::mc {Details:}] \n\n \
       \u2022 <link1>aplsimple.github.io/en/tcl/alited</link1>\n \
-      \u2022 <link1>github.com/aplsimple/alited</link1>\n \
-      \u2022 <link1>chiselapp.com/user/aplsimple/repository/alited</link1>\n\n \
+      \u2022 <link1>aplsimple.github.io/en/tcl/alited/alited.html</link1>\n \
+      \u2022 <link1>github.com/aplsimple/alited</link1>\n\n \
     [msgcat::mc {Authors:}] \n\n \
       \u2022 <linkapl>Alex Plotnikov</linkapl>\n\n \
     [msgcat::mc {License:}] <linkMIT>MIT</linkMIT>\n \

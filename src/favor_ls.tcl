@@ -287,7 +287,7 @@ proc favor_ls::AddFiles {} {
     Message $al(MC,favent1) 4
     return
   }
-  set tsel [alited::SessionTclList 1]
+  set tsel [alited::SessionTclList 1 yes]
   set tall [alited::SessionTclList 2]
   set isel [llength $tsel]
   set iall [llength $tall]

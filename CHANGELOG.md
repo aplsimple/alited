@@ -6,12 +6,14 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.12 (25 Feb'26)`
+Version `v1.8.12 (4 Mar'26)`
 
+  - BUGFIX: about.tcl: show correct versions of replaced packages
   - BUGFIX: Projects/Files: tooltips after list's popup menu (baltip fixed)
   - BUGFIX: Tools/Check Tcl: file results in shown before calculation
   - BUGFIX: Setup/Type Templates: no recognizing type1 of type1,type2,type3.typetpl
   - BUGFIX: File/Clone: remember encoding of cloned file
+  - CHANGE: Saved list of favorites: all selected tabs are included (not only Tcl)
   - CHANGE: File/Save as: forbid if target file is open in alited
   - CHANGE: File/Save as: don't change file's encoding to UTF-8 if it's remembered other
   - CHANGE: Projects/Files: project README for tools if no selected files

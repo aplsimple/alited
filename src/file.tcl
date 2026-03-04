@@ -89,7 +89,6 @@ proc file::IsCorrectSavedName {TID fname} {
         } else {
           alited::bar::BAR $tid close
         }
-        break
       }
     }
   }
