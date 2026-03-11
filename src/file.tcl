@@ -344,8 +344,8 @@ proc file::WrapLines {{wrapnone no}} {
 }
 #_______________________
 
-proc file::Encoding {{fname ""} {enc ""}} {
-  # Gets/sets a file's encoding.
+proc file::EncodingOpt {{fname ""} {enc ""}} {
+  # Gets/sets a file's encoding option.
   #   fname - file's name
   #   enc - if "", gets the encoding, otherwise sets the encoding of the file.
 
@@ -601,8 +601,8 @@ proc file::CloneFile {{undermouse yes} {fromtree yes}} {
   if {$res && $name2 ne {}} {
     set fname2 [file join [file dirname $fname2] $name2]
     if {![CommandForFile2 copy $fname $fname2]} return
-    lassign [Encoding $fname] -> enc
-    Encoding $fname2 $enc
+    lassign [EncodingOpt $fname] -> enc
+    EncodingOpt $fname2 $enc
     OpenFile $fname2
     if {!$al(TREE,isunits)} {RecreateFileTree; AfterSaving}
   }
@@ -643,10 +643,12 @@ proc file::ReadFile {TID fname {doErr 0}} {
   # Returns the file's contents.
 
   namespace upvar ::alited al al
-  set enc [Encoding $fname]
-  append enc { } [EOL $fname]
-  set filecont [readTextFile $fname {} $doErr {*}$enc]
-  set al(_unittree,$TID) [alited::unit::GetUnits $TID $filecont]
+  set encopt [EncodingOpt $fname]
+  append encopt { } [EOL $fname]
+  set filecont [readTextFile $fname {} $doErr {*}$encopt]
+  if {$TID ne {}} {
+    set al(_unittree,$TID) [alited::unit::GetUnits $TID $filecont]
+  }
   return $filecont
 }
 #_______________________
@@ -785,15 +787,15 @@ proc file::ChooseMultipleFiles {{dosort yes} {inidir ""}} {
 }
 #_______________________
 
-proc file::SaveText {wtxt fname {enc ""}} {
+proc file::SaveText {wtxt fname {encopt ""}} {
   # Saves text buffer to file.
   #   wtxt - text's path
   #   fname - file name
-  #   enc - encoding options
+  #   encopt - encoding option
 
   namespace upvar ::alited al al
   set fcont [$wtxt get 1.0 "end - 1 chars"]  ;# last \n excluded
-  if {![writeTextFile $fname fcont 0 1 {*}$enc]} {
+  if {![writeTextFile $fname fcont 0 1 {*}$encopt]} {
     alited::msg ok err [::apave::error $fname] -w 50 -text 1
     unset -nocomplain al(_NO_OUTWARD_)
     return 0
@@ -810,20 +812,20 @@ proc file::SaveFileByName {TID fname {doit no}} {
 
   namespace upvar ::alited al al
   if {[info exists al(THIS-ENCODING)]} {
-    set enc "-encoding $al(THIS-ENCODING)" ;# at saving "no name"
+    set encopt "-encoding $al(THIS-ENCODING)" ;# at saving "no name"
   } else {
-    set enc [Encoding $fname]
+    set encopt [EncodingOpt $fname]
   }
   if {[info exists al(THIS-EOL)]} {
     set eol "-translation $al(THIS-EOL)" ;# at saving "no name"
   } else {
     set eol [EOL $fname]
   }
-  append enc " $eol"
+  append encopt " $eol"
   set al(_NO_OUTWARD_) {}
   set wtxt [alited::main::GetWTXT $TID]
   if {$al(prjtrailwhite)} {alited::edit::RemoveTrailWhites $TID yes $doit}
-  if {![SaveText $wtxt $fname $enc]} {
+  if {![SaveText $wtxt $fname $encopt]} {
     return 0
   }
   unset al(_NO_OUTWARD_)
@@ -1036,7 +1038,7 @@ proc file::Reload2 {enc} {
   }
   set fname [alited::bar::FileName]
   set pos [$wtxt index insert]
-  Encoding $fname $enc
+  EncodingOpt $fname $enc
   DisplayFile $TID $fname $wtxt yes
   catch {::tk::TextSetCursor $wtxt $pos}
   alited::main::UpdateProjectInfo

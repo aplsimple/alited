@@ -86,7 +86,7 @@ proc detached::DisplayText {pobj fname} {
   #   pobj - apave object of detached editor
   #   fname - file name
 
-  $pobj displayText [$pobj Text] [readTextFile $fname]
+  $pobj displayText [$pobj Text] [alited::file::ReadFile {} $fname]
 }
 #_______________________
 
@@ -122,7 +122,7 @@ proc detached::SaveFile {pobj fname win} {
   #   win - window's path
 
   set wtxt [$pobj Text]
-  if {[alited::file::SaveText $wtxt $fname]} {
+  if {[alited::file::SaveText $wtxt $fname [alited::file::EncodingOpt $fname]]} {
     $wtxt edit modified no
     alited::detached::Modified $pobj $win $wtxt
   }

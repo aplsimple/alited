@@ -1022,10 +1022,8 @@ proc main::UpdateProjectInfo {{indent {}}} {
     lassign [split $eol] -> eol
   }
   if {$indent eq {}} {set indent [lindex [CalcIndentation] 0]}
-  if {[catch {set enc [alited::file::Encoding]}] || $enc eq {}} {
+  if {[catch {set enc [lindex [alited::file::EncodingOpt] 1]}] || $enc eq {}} {
     set enc utf-8
-  } else {
-    lassign [split $enc] -> enc
   }
   set info "$enc, eol=$eol, ind=$indent"
   if {$al(prjindentAuto)} {append info /auto}
