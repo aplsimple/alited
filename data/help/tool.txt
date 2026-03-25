@@ -1,11 +1,20 @@
- You can enter commands to be run <b>after starting alited</b>.
+ You can enter commands to be run <b>after starting alited</b>
+ which can be necessary for a <b>specific environment</b>.
+
+ Something like an initialization of <b>alited session</b>.
 
  These commands can be Tcl commands or executables, e.g.
+
+    set ::_MYTIME_ \
+      "START: [clock format [clock seconds] \
+      -format %H:%M:%S]"
     cd ~/TMP
     rm log.txt
     package require fsdialog
-    after 1000 ::alited::raise_window
+    after 1000 { \
+      ::alited::raise_window; \
+      unset -nocomplain ::_MYTIME_ \
+    }
 
- It can be necessary for a <b>specific environment</b>.
-
- Something like an initialization of <b>alited session</b>.
+ The commands must be one-liners or of multiple lines
+ with <b>backslash</b> as character of continuation.

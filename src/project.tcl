@@ -827,12 +827,7 @@ proc project::ValidateIni {V} {
   # Validates values of alited.ini.
   #   V - %V wildcard of -validatecommand
 
-  variable saveini
-  set saveini yes
-  if {$V eq {focusout}} {
-    alited::ini::SaveIni
-    set saveini no
-  }
+  if {$V eq {focusout}} alited::ini::SaveIniFile
   return 1
 }
 

@@ -888,9 +888,8 @@ proc ini::SaveCurrentIni {{saveon yes} {doit no}} {
 }
 #_______________________
 
-proc ini::SaveIni {{newproject no}} {
-  # Saves a current configuration of alited.
-  #   newproject - flag "for a new project"
+proc ini::SaveIniFile {} {
+  # Saves alited.ini file.
 
   namespace upvar ::alited al al obPav obPav
   namespace upvar ::alited::pref em_Num em_Num em_ico em_ico em_inf em_inf
@@ -1091,6 +1090,14 @@ proc ini::SaveIni {{newproject no}} {
   }
   puts $chan "fontdetach=$al(fontdetach)"
   close $chan
+}
+#_______________________
+
+proc ini::SaveIni {{newproject no}} {
+  # Saves a current configuration of alited.
+  #   newproject - flag "for a new project"
+
+  SaveIniFile
   SaveIniPrj $newproject
   SaveIniGlob
 }

@@ -718,14 +718,22 @@ proc tool::Runs {mc runs} {
   #   runs - list of commands
 
   set runs [::alited::ProcEOL $runs in]
+  set run1 {}
   foreach run [split $runs \n] {
     if {[set run [string trim $run]] ne {} && [string first # $run]!=0} {
-      if {[catch {eval $run} e]} {
-        catch {exec -- {*}$run} e2
-        if {$e2 ne {}} {set e $e2} {append e " / OS ?"}
+      set run1 [string trim $run1]
+      if {[string index $run end] eq "\\"} {
+        append run1 { } [string range $run 0 end-1]
+      } else {
+        append run1 { } $run
+        if {[catch {eval $run1} e]} {
+          catch {exec -- {*}$run1} e2
+          if {$e2 ne {}} {set e $e2} {append e " / OS ?"}
+        }
+        alited::info::Put "$mc\"$run1\" -> $e"
+        update
+        set run1 {}
       }
-      alited::info::Put "$mc\"$run\" -> $e"
-      update
     }
   }
 }
