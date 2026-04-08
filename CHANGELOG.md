@@ -6,6 +6,12 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
+Version `v1.8.13a1 (8 Apr'26)`
+
+  - BUGFIX: no theming context menu of book-mark bar (clam theme)
+  - NEW   : Preference/General/Test: added to preview: left tool bar & menu bar
+
+
 Version `v1.8.12 (25 Mar'26)`
 
   - BUGFIX: Projects: spinbox "TODO days ahead" validated for new project

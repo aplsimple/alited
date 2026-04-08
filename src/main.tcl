@@ -386,7 +386,7 @@ proc main::UnsetMark {idx X Y} {
   #   X - X-coordinate of pointer
   #   Y - Y-coordinate of pointer
 
-  namespace upvar ::alited al al
+  namespace upvar ::alited al al obPav obPav
   variable wcan
   set disabletips no
   lassign [MarkOptions $idx] N tip mark markdata
@@ -406,6 +406,7 @@ proc main::UnsetMark {idx X Y} {
     $popm add command -label "$lab -" -command "alited::main::MarkWidth -1"
     $popm add separator
     $popm add command -label $al(MC,help) -command {alited::main::Help mark}
+    $obPav themePopup $popm
     tk_popup $popm $X $Y
   }
   if {$disabletips && ![info exists al(MARK_TIPOFF)]} {

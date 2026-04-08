@@ -24,6 +24,7 @@ namespace eval ::preview {
   variable DIR [file dirname [file dirname $SCRIPT]]
   variable LIBDIR [file join $DIR lib]
   variable PAVEDIR [file join $LIBDIR e_menu src]
+  variable icons [list yes no info config file undo]
 }
 
 namespace eval :: {
@@ -91,6 +92,30 @@ proc ::preview::SyntaxHighlight {} {
 }
 #_______________________
 
+proc ::preview::FillMenu {} {
+
+  variable icons
+  set m .win.menu.file
+  $m add command -label "Open..." -command {tk_messageBox -message "\nSubstitute for 'Open...'\n" -parent .win}
+  $m add command -label "New" -command {tk_messageBox -message "\nSubstitute for 'New'\n" -parent .win}
+  $m add separator
+  $m add command -label "Exit" -command ::preview::Exit -accelerator Esc
+  set m .win.menu.tool
+  foreach icon $icons {
+    $m add command -label " [string totitle $icon]     " \
+      -command "::preview::Foo $icon" -accelerator F[incr iicon] \
+      -image img_$icon -compound left
+  }
+  set m .win.menu.help
+  $m add command -label "About" -command {tk_messageBox -message "\nIt's a preview of\n\nalited's theming options.\n" -parent .win}
+}
+#_______________________
+
+proc ::preview::Foo {icon} {
+  tk_messageBox -message "\nRun:\n\n[string totitle $icon] tool\n" -parent .win
+}
+#_______________________
+
 proc ::preview::Run {} {
   # Creates a window to preview widgets.
 
@@ -104,6 +129,7 @@ proc ::preview::Run {} {
   variable curswidth
   variable cursclr
   variable cursblink
+  variable icons
   ::apave::InitTheme $theme $LIBDIR
   if {$cursclr eq {}} {
     set cursclr [lindex [obj csGet $CS] 7]
@@ -114,6 +140,9 @@ proc ::preview::Run {} {
   if {!$cursblink} {
     lassign [obj defaultATTRS tex] texopts texattrs
     obj defaultATTRS tex $texopts [dict set texattrs -insertofftime 0]
+  }
+  foreach icon $icons {
+    image create photo img_$icon -data [apave::iconData $icon small]
   }
   set ::tclversion "Tcl [package require Tcl] : [info nameofexecutable]"
   set obj previewobj
@@ -135,6 +164,24 @@ proc ::preview::Run {} {
   set ttl [string range $ttl [string first { } $ttl]+1 end]
   $obj makeWindow $win.fra "$title: $theme, $ttl, $tint"
   $obj paveWindow $win.fra {
+    {Menu - - - - - {-array {
+      file &File
+      tool &Tools
+      help &Help
+    }} ::preview::FillMenu}
+    {fraLeft - - - - {pack -side left -expand 0 -fill y}}
+    {.sev - - - - {pack -side left -fill y}}
+    {.too - - - - {pack -side left -anchor n} {-orient vert -array {
+      img_yes {{::preview::Foo yes} -tip "Yes\nF1@@-under 2"}
+      img_no {{::preview::Foo no} -tip "No\nF2@@-under 2"}
+      seh 8
+      img_info {{::preview::Foo info} -tip "Info\nF3@@-under 2"}
+      img_config {{::preview::Foo config} -tip "Config\nF4@@-under 2"}
+      img_file {{::preview::Foo file} -tip "File\nF5@@-under 2"}
+      seh 8 {########## another separator #########} {}
+      img_undo {{::preview::::Foo undo} -tip "Undo\nF6@@-under 2"}
+    }}}
+    {.sev2 - - - - {pack -side left -fill y}}
     {nbk - - - - {pack -expand 1 -fill both} {
       f1 {-t Notebook -underline 0 -tip "Tab #1"}
       f2 {-t "Tab #2" -underline 0 -tip "Tab #2"}
@@ -184,9 +231,13 @@ proc ::preview::Run {} {
     {v_2 lab6 T 1 1 {-st ew -rw 1}}
     {pro2 h_ L 10 1 {-st ns} {-orient vert -mode indeterminate -afteridle {%w start}}}
   }
+  foreach icon $icons {
+    bind $win <F[incr iicon]> "::preview::Foo $icon"
+  }
   after idle ::preview::SyntaxHighlight
   after 100 "preview::Rerun $obj $win"
-  $obj showModal $win -focus [$obj Ent1] -geometry $algeom -ontop [::asKDE]
+  $obj showModal $win -focus [$obj Ent1] -geometry $algeom -minsize {300 200} \
+    -ontop [::asKDE]
   destroy $win
   $obj destroy
   Exit
