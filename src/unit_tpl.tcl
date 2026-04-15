@@ -206,7 +206,7 @@ proc unit_tpl::Text {} {
   # Returns the contents of the template's text.
 
   variable obTpl
-  return [[$obTpl TexTpl] get 1.0 {end -1 char}]
+  [$obTpl TexTpl] get 1.0 {end -1 char}
 }
 #_______________________
 
@@ -395,9 +395,7 @@ proc unit_tpl::Delete {} {
   if {!$dosel || [set isel [Selected index]] eq {}} return
   set nsel [expr {$isel+1}]
   set msg [string map [list %n $nsel] $al(MC,tpldelq)]
-  if {![alited::msg yesno warn $msg NO -centerme $win]} {
-    return
-  }
+  if {![alited::msg yesno warn $msg NO -centerme $win]} return
   foreach tl {tpllist tplcont tplpos tplpla tplid tplkeys} {
     set $tl [lreplace [set $tl] $isel $isel]
   }
@@ -539,7 +537,7 @@ proc unit_tpl::_create {{geom ""}} {
       -onevent {<Button-1> alited::unit_tpl::ProcMessage}}}
     {fra3 + T 1 10 {-st nsew}}
     {.ButHelp - - - - {pack -side left}
-      {-t {$al(MC,help)} -tip F1 -com alited::unit_tpl::Help}}
+      {-t {$al(MC,help)} -tip F1 -com alited::unit_tpl::Help -takefocus 0}}
     {.h_ - - - - {pack -side left -expand 1 -fill both}}
     {.butOK - - - - {pack $forget -side left -padx 2}
       {-t "$al(MC,select)" -com alited::unit_tpl::Ok}}

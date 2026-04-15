@@ -136,6 +136,8 @@ proc favor_ls::ComposeText {isfavor args} {
   foreach it $args {
     if {$text ne {}} {
       append text \n
+    }
+    if {$currents ne {}} {
       append currents $::alited::EOL
     }
     if {$isfiles} {
@@ -178,7 +180,9 @@ proc favor_ls::DisplayFavorText {args} {
   # See also: ComposeText, DisplayText
 
   namespace upvar ::alited al al
-  DisplayText [ComposeText $al(FAV,IsFavor) {*}$args]
+  set text [ComposeText $al(FAV,IsFavor) {*}$args]
+  DisplayText $text
+  return $text
 }
 #_______________________
 
@@ -291,12 +295,18 @@ proc favor_ls::AddFiles {} {
   set tall [alited::SessionTclList 2]
   set isel [llength $tsel]
   set iall [llength $tall]
+  set fsel [alited::SessionList 1]  ;# all selected bar tabs
+  set ifil [llength $fsel]
   set msgNoTcl {No .tcl files found in the session}
-  if {$iall<1} {
-    Message $msgNoTcl 4
-    return
+  if {$iall<1 || $ifil>1} {
+    set tsel $fsel
+    set isel $ifil
+    if {$isel<2} {
+      Message $msgNoTcl 4
+      return
+    }
   }
-  set msg [msgcat::mc "\n Save as favorites list: selected (%s) or all (%a) files?\n"]
+  set msg [msgcat::mc "\n Save as favorites list: selected (%s) or all (%a) Tcl files?\n"]
   set msg [string map [list %s $isel %a $iall] $msg]
   if {$isel>1} {set res 1} {set res 2}
   set res [$obFav misc ques $al(MC,question) $msg {Selected 1 {All files} 2 Cancel 0} $res]
@@ -495,7 +505,7 @@ proc favor_ls::_create {} {
       -tip "Delete a list of favorites" -image alimg_delete-big}}
     {.fra.v_ - - - - {pack -side top -expand 1 -fill y}}
     {.fra.btTFil - - - - {pack $forget -side top} {-com ::alited::favor_ls::AddFiles
-      -tip "Add .tcl files of current session\nas the favorites"
+      -tip "Add files of current session\nas the favorites"
       -image alimg_plus-big}}
     {.fra.btTCur - - - - {pack $forget -side top} {
       -com ::alited::favor_ls::DisplayFavorText
@@ -503,7 +513,7 @@ proc favor_ls::_create {} {
     {.LbxFav - - - - {pack -side left -expand 1 -fill both}
       {-h 10 -w 40 -lvar ::alited::favor_ls::favlist -onevent {
       <<ListboxSelect>> ::alited::favor_ls::Select
-      <FocusIn> ::alited::favor_ls::Select
+      <<FocusIn>> ::alited::favor_ls::Select
       <Double-Button-1> ::alited::favor_ls::DoubleClick
       <Return> ::alited::favor_ls::DoubleClick}}}
     {.sbvFavs + L - - {pack -side left -fill y} {}}
@@ -527,7 +537,7 @@ proc favor_ls::_create {} {
       -tip "Closes all tabs without favorites\nat choosing Favorites' list"}}
     {LabMess fra2 T 1 2 {-st nsew -pady 0 -padx 3} {-style TLabelFS}}
     {fra3 + T 1 2 {-st nswe}}
-    {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -com ::alited::favor_ls::Help}}
+    {.ButHelp - - - - {pack -side left} {-t {$al(MC,help)} -tip F1 -com ::alited::favor_ls::Help -takefocus 0}}
     {.h_ - - - - {pack -side left -expand 1 -fill both -padx 4}}
     {.ButOK - - - - {pack $forget -side left} {-t "$al(MC,select)" -com ::alited::favor_ls::Ok}}
     {.ButOpenFile - - - - {pack -side left -padx 2} {-t Open...
@@ -538,16 +548,19 @@ proc favor_ls::_create {} {
   }
   set fav {}
   set lbx [$obFav LbxFav]
-  DisplayFavorText
+  set text [DisplayFavorText]
   Restore_favlist
-  if {!$al(FAV,IsFavor)} {after idle "alited::favor_ls::Select 0 ; focus $lbx"}
   bind $win <F1> "[$obFav ButHelp] invoke"
   bind [$obFav LabMess] <Button-1> alited::favor_ls::ProcMessage
   after 500 ::alited::favor_ls::HelpMe ;# show an introduction after a short pause
   set geo {-resizable 1 -minsize {600 400}}
   if {$favgeometry ne {}} {append geo " -geometry $favgeometry"}
-  set res [$obFav showModal $win -onclose ::alited::favor_ls::Cancel \
-    -focus [$obFav EntFav] {*}$geo]
+  if {$al(FAV,IsFavor) && $text ne {}} {
+    append geo " -focus [$obFav EntFav]"
+  } else {
+    after idle [list after 300 "focus $lbx; alited::favor_ls::Select 0"]
+  }
+  set res [$obFav showModal $win -onclose ::alited::favor_ls::Cancel {*}$geo]
   set favgeometry [wm geometry $win]
   baltip::configure {*}$tipson
   catch {destroy $win}

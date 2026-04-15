@@ -1250,8 +1250,9 @@ proc main::_create {} {
     {.BtTswitch - - - - {pack -side left -fill x}
       {-image alimg_gulls -com alited::tree::SwitchTree}}
     {.BtTUpdT - - - - {pack -side left -fill x}
-      {-image alimg_retry -tip {$al(MC,updtree)}
-    -command alited::main::UpdateAll}}
+      {-image alimg_retry -tip {$al(MC,updtree)} -command alited::main::UpdateAll}}
+    {.BtTTagT - - - - {pack -side left -fill x}
+      {-image alimg_tag -com alited::tree::SwitchViewNS}}
     {.sev1 - - - - {pack -side left -fill y -padx 5}}
     {.BtTUp - - - - {pack -side left -fill x}
       {-image alimg_up -com {alited::tree::MoveItem up}}}
@@ -1375,6 +1376,7 @@ proc main::_create {} {
       {{} -anchor e} 25
     }}}
   }
+  alited::tree::ViewNSimage
   UpdateProjectInfo
   # a pause (and cycles) must be enough for FillBar to have proper -wbar option
   after idle after 50 after idle after 50 after idle after 50 after idle after 50 \

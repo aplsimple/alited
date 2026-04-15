@@ -58,15 +58,15 @@ proc format::UnitDesc {} {
     {.labSep .labRE1 T 1 1 {-st sne} {-t "Separator:"}}
     {.EntSepar + L 1 3 {-st ew -cw 1} {-tvar ::alited::format::da(separ) -validate all -validatecommand alited::format::ValidateUnitDesc}}
     {.seh1 .rad2 T 1 6}
-    {.Tex1 + T 1 6 {-st nsew -pady 4 -rw 1} {-h 11 -w 80 -wrap none -font {$al(FONT,txt)}}}
+    {.Tex1 + T 1 6 {-st nsew -pady 4 -rw 1} {-h 11 -w 80 -wrap none -font {$al(FONT,txt)} -tabnext *tex2}}
     {.fra + T 1 6}
     {.fra.LabFromTo + L 1 4 {-st nsew} {-image alimg_up-big}}
     {.fra.labdummy + L 1 1 {-st nsew} {-image alimg_none-big}}
-    {.Tex2 .fra T 1 6 {-st nsew -pady 4 -rw 1} {-h 11 -w 80 -wrap none -font {$al(FONT,txt)}}}
+    {.Tex2 .fra T 1 6 {-st nsew -pady 4 -rw 1} {-h 11 -w 80 -wrap none -font {$al(FONT,txt)} -tabnext *rad3}}
     {.frawhat + T 1 6}
     {.frawhat.labwhat - - - - {-st e} {-t "Process .tcl file(s):"}}
-    {.frawhat.rad1 + L 1 1 {-padx 20} {-t {$selected} -var ::alited::format::da(what) -value 1}}
-    {.frawhat.rad2 + L 1 1 {} {-t {$allopen} -var ::alited::format::da(what) -value 2}}
+    {.frawhat.rad3 + L 1 1 {-padx 20} {-t {$selected} -var ::alited::format::da(what) -value 1}}
+    {.frawhat.rad4 + L 1 1 {} {-t {$allopen} -var ::alited::format::da(what) -value 2  -tabnext *OK}}
     {.seh2 .frawhat T 1 6}
     {.butHelp + T 1 1 {-st w} {-t Help -com alited::format::Help}}
     {.h_ + L 1 4}

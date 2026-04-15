@@ -1449,6 +1449,10 @@ proc project::Ok {args} {
   }
   if {![ValidProject]} return
   if {[set pname [ExistingProject no]] eq {}} return
+  if {$pname eq $curinfo(prjname)} {
+    Close  ;# no actions for current project
+    return
+  }
   if {[set N [llength [alited::bar::BAR listFlag m]]]} {
     set msg [msgcat::mc "All modified files (%n) will be saved.\n\nDo you agree?"]
     set msg [string map [list %n $N] $msg]

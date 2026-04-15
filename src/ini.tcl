@@ -23,6 +23,7 @@ namespace eval ::alited {
   set al(TREE,isunits) yes  ;# current mode of tree: units/files
   set al(TREE,units) no     ;# flag "is a unit tree created"
   set al(TREE,files) no     ;# flag "is a file tree created"
+  set al(TREE,viewNS) yes    ;# flag "show full namespaces for units
   set al(TREE,cw0) 200      ;# tree column #0 width
   set al(TREE,cw1) 70       ;# tree column #1 width
   set al(TREE,showinfo) 0   ;# flag "show info on a file in tips"
@@ -401,6 +402,7 @@ proc ini::ReadIniGeometry {nam val} {
       set al(TREE,cw0) $val
     }
     treecw1        {set al(TREE,cw1) $val}
+    viewNS         {set al(TREE,viewNS) $val}
     runGeometry    {set al(runGeometry) $val}
     fontdetach     {set al(fontdetach) $val}
     detach*        {
@@ -1066,6 +1068,7 @@ proc ini::SaveIniFile {} {
   set al(TREE,cw1) [$wtree column #1 -width]
   puts $chan "treecw0=$al(TREE,cw0)"
   puts $chan "treecw1=$al(TREE,cw1)"
+  puts $chan "viewNS=$al(TREE,viewNS)"
   foreach v {Pan PanL PanR PanBM PanTop} {
     if {[info exists al(width$v)]} {
       set w $al(width$v)
@@ -1344,12 +1347,12 @@ proc ini::GetConfiguration {} {
     set pobj alitedObjToDel
     ::apave::APave create $pobj
   }
-  set res [$pobj input {} $al(MC,chini1) \
-    [list \
-      diR1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50 \
-        -values $configs -clearcom {alited::main::ClearCbx %w ::alited::ini::configs}]] \
-        "{$::alited::CONFIGDIR}" \
-    ] -head $head -help alited::ini::Help -resizable no {*}[obj basicTextFont]]
+  set res [$pobj input {} $al(MC,chini1) [list \
+    diR1 [list $al(MC,chini3) {} [list -title $al(MC,chini3) -w 50 \
+      -values $configs -clearcom {alited::main::ClearCbx %w \
+      ::alited::ini::configs}]] "{$::alited::CONFIGDIR}" \
+    ] -head $head -focus *cbx* -help alited::ini::Help \
+    -resizable no {*}[obj basicTextFont]]
   catch {alitedObjToDel destroy}
   lassign $res ok confdir
   if {$ok} {
@@ -1643,7 +1646,8 @@ proc ini::_init {} {
   TipToolHotkeys
   foreach {icon} {none gulls heart add change delete up down paste plus minus retry \
   misc previous previous2 next next2 folder file OpenFile SaveFile saveall undo redo \
-  box replace ok color date help run e_menu other trash actions paste copy more} {
+  box replace ok color date help run e_menu other trash actions paste copy more
+  tag tagoff} {
     set img [CreateIcon $icon]
     if {$icon in {file OpenFile SaveFile saveall box undo redo replace \
     ok color date help run e_menu other}} {

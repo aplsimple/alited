@@ -448,7 +448,9 @@ proc tree::Create {} {
     pack forget [$obPav BtTRenT] ;# hide file buttons for unit tree
     pack forget [$obPav BtTCloT]
     pack forget [$obPav BtTOpen]
+    pack [$obPav BtTTagT] -side left -after [$obPav BtTUpdT]
   } else {
+    pack forget [$obPav BtTTagT]
     pack [$obPav BtTRenT] -side left -after [$obPav BtTAddT]  ;# show file buttons
     pack [$obPav BtTCloT] -side left -after [$obPav BtTDelT]
     pack [$obPav BtTOpen] -side left -after [$obPav BtTCloT]
@@ -498,6 +500,12 @@ proc tree::CreateUnitsTree {TID wtree branchexp} {
   baltip::tip [$obPav BtTDelT] $al(MC,unitsdel)
   baltip::tip [$obPav BtTUp] $al(MC,moveupU)
   baltip::tip [$obPav BtTDown] $al(MC,movedownU)
+  if {$al(TREE,viewNS)} {
+    set vNS [msgcat::mc "Short namespaces\nof procs / methods"]
+  } else {
+    set vNS [msgcat::mc "Full namespaces\nof procs / methods"]
+  }
+  baltip::tip [$obPav BtTTagT] $vNS
   $wtree heading #0 -text [alited::bar::CurrentTab 1]
   $wtree heading #1 -text [msgcat::mc Row]
   set parents [list {}]
@@ -730,6 +738,26 @@ proc tree::AdjustWidth {} {
   set ws2 [winfo width [$obPav SbvFavor]]
   set w2 [[$obPav Tree] column #1 -width]
   [$obPav Tree] column #0 -width [expr {$wpf-$w2-$ws2-4}]
+}
+#_______________________
+
+proc tree::ViewNSimage {} {
+  # Sets image of "View NS" button of unit toolbar.
+
+  namespace upvar ::alited al al obPav obPav
+  if {$al(TREE,viewNS)} {set img tagoff} {set img tag}
+  [$obPav BtTTagT] configure -image alimg_$img
+}
+#_______________________
+
+proc tree::SwitchViewNS {} {
+  # Switches mode of viewing proc/method's namespaces.
+
+  namespace upvar ::alited al al obPav obPav
+  set al(TREE,viewNS) [expr {!$al(TREE,viewNS)}]
+  ViewNSimage
+  RecreateTree
+  ::baltip repaint [$obPav BtTTagT]
 }
 
 # ________________________ Buttons handlers _________________________ #

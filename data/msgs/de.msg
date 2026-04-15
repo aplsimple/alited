@@ -180,6 +180,8 @@ namespace eval ::alited {
     {Select one file in the tree.} {Wähle eine Datei im Baum.}
     {Open Selected Files} {Öffnen ausgewählte Dateien}
     {Close Selected Files} {Schliesse ausgewählte Dateien}
+    "Short namespaces\nof procs / methods" "Kurze Namensräume\nvon procs / methods"
+    "Full namespaces\nof procs / methods" "Vollständige Namensräume\nvon procs / methods"
   }
 
   ## ________________________ Templates ________________________ ##
@@ -332,9 +334,9 @@ namespace eval ::alited {
     {Favorites / Last Visited} {Favoriten / Zuletzt Besuchten}
     {Opens files with current favorites.} {Öffnet Dateien mit aktuellen Favoriten.}
     {Number of files to open: %n} {Anzahl der zu öffnenden Dateien: %n}
-    "Add .tcl files of current session\nas the favorites" "Hinzufügen .tcl Dateien der aktuellen Sitzung\nals Favoriten"
+    "Add files of current session\nas the favorites" "Hinzufügen Dateien der aktuellen Sitzung\nals Favoriten"
     {No .tcl files found in the session} {Keine .tcl Dateien in der Sitzung gefunden}
-    "\n Save as favorites list: selected (%s) or all (%a) files?\n" "\n Speichern als Favoritenliste: ausgewählt (%s) oder alle (%a) Dateien?\n"
+    "\n Save as favorites list: selected (%s) or all (%a) Tcl files?\n" "\n Speichern als Favoritenliste: ausgewählt (%s) oder alle (%a) Tcl Dateien?\n"
   }
 
   ## ________________________ Icons of toolbar: tips ________________________ ##

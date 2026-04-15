@@ -1,9 +1,8 @@
- Use buttons on the right to <b>add, change, delete</b> a favorites' item.
-
- Use <r>Add</r> and <r>Change</r> buttons after filling list's name.
+ Use toolbar buttons to <b>add, change, delete</b> a favorites' item.
 
  Use <r>Add Files</r> button to create the favorite list from the current
- session's files.
+ session's files, which can be Tcl files or selected tabs' files
+ (to select a bar tab, press Ctrl key and click the tab).
 
  The current list of favorites is displayed in the bottom listbox.
  Enter a name for the list and click <r>Add</r> button to save it.

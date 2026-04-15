@@ -168,7 +168,8 @@ proc unit::GetUnits {TID textcont} {
           break
         }
       }
-      if {[set cl [string last :: $title]]>-1 && [set cl [string last :: $title $cl]]>-1} {
+      if {!$al(TREE,viewNS) && [set cl [string last :: $title]]>-1
+      && [set cl [string last :: $title $cl]]>-1} {
         # let only a last namespace be present in the titles
         set title [string range $title $cl+2 end]
       }
