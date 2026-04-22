@@ -6,7 +6,7 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.13a2 (15 Apr'26)`
+Version `v1.8.13a3 (22 Apr'26)`
 
   - BUGFIX: no theming of book-mark's context menu (clam theme)
   - BUGFIX: Saved Favorites: list of files is ruined at "Change" action
@@ -15,6 +15,7 @@ Version `v1.8.13a2 (15 Apr'26)`
   - NEW   : Saved Favorites: at selecting bar tabs, Add+ action offers them
   - NEW   : Preference/General/Test: added to preview: left tool bar & menu bar
   - CHANGE: Projects: if current project is chosen, no actions (just close Projects)
+  - CHANGE: some clearance
 
 
 Version `v1.8.12 (25 Mar'26)`

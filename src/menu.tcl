@@ -704,43 +704,43 @@ proc menu::FillMenu {} {
 proc menu::HelpFiles {} {
   # Gets a list of Help/Context (file names and labels).
 
-  list \
-    pref-nbk-f1.txt {Preferences\General} \
-    pref-nbk-f2.txt {Preferences\Saving} \
-    pref-nbk-f3.txt {Preferences\Projects} \
-    pref-nbk2-f1.txt {Preferences\Editor} \
-    pref-nbk2-f2.txt {Preferences\Tcl syntax} \
-    pref-nbk2-f3.txt {Preferences\C/C++ syntax} \
-    pref-nbk2-f4.txt {Preferences\Plain text} \
-    pref-nbk3-f1.txt {Preferences\Units} \
-    pref-nbk4-f1.txt {Preferences\Templates} \
-    pref-nbk5-f1.txt {Preferences\Keys} \
-    pref-nbk6-f1.txt {Preferences\Tools} \
-    pref-nbk6-f2.txt {Preferences\e_menu} \
-    pref-nbk6-f3.txt {Preferences\bar-menu} \
-    pref-nbk6-f4.txt {Preferences\Tkcon} \
-    - - \
-    project.txt {Projects\Information} \
-    project2.txt {Projects\Options} \
-    project3.txt {Projects\Templates} \
-    project4.txt {Projects\Commands} \
-    project5.txt {Projects\Files} \
-    - - \
-    unit_tpl.txt {Setup\Templates...} \
-    favor_ls.txt {Setup\Favorites Lists...} \
-    format1.txt {Setup\Moving Unit Descriptions...} \
-    tool.txt {Setup\For Start...} \
-    ini.txt {Setup\Configurations...} \
-    - - \
-    editmacro.txt {Edit\Play Macro} \
-    mainmark.txt {Edit\Marks} \
-    find2.txt {Search\Find by List} \
-    maingoline.txt {Search\Go to Line} \
-    run.txt {Tools\Run...} \
-    check.txt {Tools\Check Tcl...} \
-    printer.txt {Tools\Project Printer...} \
+  return {
+    pref-nbk-f1.txt {Preferences\General}
+    pref-nbk-f2.txt {Preferences\Saving}
+    pref-nbk-f3.txt {Preferences\Projects}
+    pref-nbk2-f1.txt {Preferences\Editor}
+    pref-nbk2-f2.txt {Preferences\Tcl syntax}
+    pref-nbk2-f3.txt {Preferences\C/C++ syntax}
+    pref-nbk2-f4.txt {Preferences\Plain text}
+    pref-nbk3-f1.txt {Preferences\Units}
+    pref-nbk4-f1.txt {Preferences\Templates}
+    pref-nbk5-f1.txt {Preferences\Keys}
+    pref-nbk6-f1.txt {Preferences\Tools}
+    pref-nbk6-f2.txt {Preferences\e_menu}
+    pref-nbk6-f3.txt {Preferences\bar-menu}
+    pref-nbk6-f4.txt {Preferences\Tkcon}
+    - -
+    project.txt {Projects\Information}
+    project2.txt {Projects\Options}
+    project3.txt {Projects\Templates}
+    project4.txt {Projects\Commands}
+    project5.txt {Projects\Files}
+    - -
+    unit_tpl.txt {Setup\Templates...}
+    favor_ls.txt {Setup\Favorites Lists...}
+    format1.txt {Setup\Moving Unit Descriptions...}
+    tool.txt {Setup\For Start...}
+    ini.txt {Setup\Configurations...}
+    - -
+    editmacro.txt {Edit\Play Macro}
+    mainmark.txt {Edit\Marks}
+    find2.txt {Search\Find by List}
+    maingoline.txt {Search\Go to Line}
+    run.txt {Tools\Run...}
+    check.txt {Tools\Check Tcl...}
+    printer.txt {Tools\Project Printer...}
     paver.txt {Tools\Paver}
-
+  }
 }
 
 # _________________________________ EOF _________________________________ #

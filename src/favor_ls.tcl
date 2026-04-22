@@ -548,14 +548,13 @@ proc favor_ls::_create {} {
   }
   set fav {}
   set lbx [$obFav LbxFav]
-  set text [DisplayFavorText]
   Restore_favlist
   bind $win <F1> "[$obFav ButHelp] invoke"
   bind [$obFav LabMess] <Button-1> alited::favor_ls::ProcMessage
   after 500 ::alited::favor_ls::HelpMe ;# show an introduction after a short pause
   set geo {-resizable 1 -minsize {600 400}}
   if {$favgeometry ne {}} {append geo " -geometry $favgeometry"}
-  if {$al(FAV,IsFavor) && $text ne {}} {
+  if {$al(FAV,IsFavor) && [DisplayFavorText] ne {}} {
     append geo " -focus [$obFav EntFav]"
   } else {
     after idle [list after 300 "focus $lbx; alited::favor_ls::Select 0"]
