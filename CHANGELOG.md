@@ -6,11 +6,12 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.13a3 (22 Apr'26)`
+Version `v1.8.13b1 (29 Apr'26)`
 
   - BUGFIX: no theming of book-mark's context menu (clam theme)
   - BUGFIX: Saved Favorites: list of files is ruined at "Change" action
   - BUGFIX: Saved Favorites: color of list selection isn't themed at focusing in/out
+  - NEW   : Edit/Formats/Misc/English phonetic
   - NEW   : unit toolbar button: "Short/Full namespaces of procs/methods"
   - NEW   : Saved Favorites: at selecting bar tabs, Add+ action offers them
   - NEW   : Preference/General/Test: added to preview: left tool bar & menu bar
