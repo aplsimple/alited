@@ -6,7 +6,7 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
-Version `v1.8.13b1 (29 Apr'26)`
+Version `v1.8.13 (3 Jun'26)`
 
   - BUGFIX: no theming of book-mark's context menu (clam theme)
   - BUGFIX: Saved Favorites: list of files is ruined at "Change" action

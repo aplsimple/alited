@@ -56,15 +56,15 @@ In Linux, you can run *tclsh* instead of *wish*.
 
 # Links
 
-   * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.6)
+  * [Installers](https://github.com/aplsimple/alited/releases/tag/install-alited-v1.6)
 
-   * [Source #1](https://chiselapp.com/user/aplsimple/repository/alited/download)
-   * [Source #2](https://github.com/aplsimple/alited)
+  * [Source #1](https://chiselapp.com/user/aplsimple/repository/alited/download)
+  * [Source #2](https://github.com/aplsimple/alited)
 
-   * [Description](https://aplsimple.github.io/en/tcl/alited/index.html)
-   * [Reference](https://aplsimple.github.io/en/tcl/alited/alited.html)
-   * [Project printer](https://aplsimple.github.io/en/tcl/printer/alited/index.html)
-   * [Demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
+  * [Description](https://aplsimple.github.io/en/tcl/alited/index.html)
+  * [Reference](https://aplsimple.github.io/en/tcl/alited/alited.html)
+  * [Project printer](https://aplsimple.github.io/en/tcl/printer/alited/index.html)
+  * [Demos](https://github.com/aplsimple/alited/releases/tag/Demos_of_alited-1.6)
 
 # Inevitable blah-blah
 

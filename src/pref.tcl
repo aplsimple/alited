@@ -1903,8 +1903,7 @@ proc pref::_run {{tab {}}} {
 
   update  ;# if run from menu: there may be unupdated space under it (in some DE)
   _init
-  set res [_create $tab]
-  return $res
+  _create $tab
 }
 
 # _________________________________ EOF _________________________________ #

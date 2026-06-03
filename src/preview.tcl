@@ -208,7 +208,7 @@ proc ::preview::Run {} {
     {ftx1 + L 1 4 {-st wesn -cw 1 -rw 1}
       {-h 5 -w 50 -ro 0 -tvar ::preview::SCRIPT -title {Pick a file to view}
       -filetypes {{{Tcl scripts} .tcl} {{Text files} {.txt .test}}} -wrap none
-      -tabnext .win.fra.but5 -tip "After choosing a file\nthe text will be read-only."}}
+      -tabnext .win.fra.but5 -tip "After choosing a file\nits text will be read-only\nand not Tcl highlighted."}}
   }
   $obj paveWindow $win.fra.nbk.f2 {
     {lab0 - - 1 1 {-st wsn}  {-t "Spinbox: "}}
