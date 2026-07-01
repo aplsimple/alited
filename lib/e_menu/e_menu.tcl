@@ -721,6 +721,11 @@ proc ::em::prButton {ib args} {
   # run a command after keypressing
 
   focusButton $ib  ;# to see the selected
+  set msec [clock milliseconds]
+  if {[info exists ::em::lastmsec] && ($::em::lastmsec+1000)>$msec} {
+    return  ;# even slow double click not allowed
+  }
+  set ::em::lastmsec $msec
   set comm $args
   if {[set i [string first { } $comm]] > 2} {
     set comm [string range $comm 0 $i-1]_button\ [string range $comm $i end]

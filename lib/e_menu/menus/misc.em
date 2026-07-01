@@ -6,7 +6,7 @@ b2=3
 b3=1
 w=30
 u=%s
-in=1.0
+in=5.0
 %C if {![info exist ::EMENUP2]} {set ::EMENUP2 "%PN"}
 %C if {![info exist ::EMENUDIR1]} {set ::EMENUDIR1 "%PD"}
 %C if {![info exist ::EMENUDIR2]} {set ::EMENUDIR2 \
