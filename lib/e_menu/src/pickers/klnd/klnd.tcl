@@ -17,21 +17,6 @@ namespace eval ::klnd {
     variable msgdir [file normalize [file join [file dirname [info script]] msgs]]
     variable p
     variable red #ff4a4a
-    variable locales
-    # locale 1st day of week: %u means Mon (default), %w means Sun
-    array set locales [list \
-      en_uk %u \
-      en_us %w \
-      ru %u \
-      ru_ru %u \
-      ru_ua %u \
-      uk %u \
-      ua %u \
-      uk_ua %u \
-      ua_ua %u \
-      by %u \
-      be_by %u \
-    ]
   }
 }
 
@@ -191,7 +176,6 @@ proc ::klnd::my::ShowMonth {m y {dopopup no}} {
   set p(mvis) $m  ;# month & year currently visible
   set p(yvis) $y
 }
-
 #_______________________
 
 proc ::klnd::my::fgMayHL {fg1 y m d} {
@@ -208,17 +192,15 @@ proc ::klnd::my::fgMayHL {fg1 y m d} {
   set m [string trim $m]
   if {$d ni {0 ""}} {
     set fmt %Y/%N/%e
-    set day1 $y/$m/$d
-    set week1 [clock format [clock scan $y/$m/$d -format $fmt] -format %V]
+    set day1 [clock scan $y/$m/$d -format $fmt]
     foreach day $p(hllist) {
       lassign [split $day /] y2 m2 d2
       set y2 [string range 20$y2 end-3 end]
       set m2 [string trimleft $m2 0]
       set d2 [string trimleft $d2 0]
-      set day2 $y2/$m2/$d2
+      set day2 [clock scan $y2/$m2/$d2 -format $fmt]
       if {$p(hlweeks)} {
-        set week2 [clock format [clock scan $day2 -format $fmt] -format %V]
-        if {$week1 eq $week2 && $y==$y2} {
+        if {[::apave::firstWeekDay $day1] eq [::apave::firstWeekDay $day2]} {
           set fgw $red
           break
         }
@@ -412,7 +394,6 @@ proc ::klnd::my::InitCalendar {args} {
   # Initializes the settings of the calendar.
 
   variable p
-  variable locales
   InitSettings
   lassign [::apave::parseOptions $args -locale [::msgcat::mclocale] \
   -title {} -value {} -tvar {} -parent {} -dateformat %D -weeks 0 \
@@ -425,9 +406,9 @@ proc ::klnd::my::InitCalendar {args} {
     p(width) p(hlweeks)
   if {$com2 eq {}} {set p(com) $com1} {set p(com) $com2}
   # get localized week day names
-  lassign [::klnd::weekdays $loc] p(days) p(weekday)
+  lassign [::apave::weekdays $loc] p(days) p(weekday)
   # get localized month names
-  set p(months) [::klnd::months $loc]
+  set p(months) [::apave::months $loc]
   set p(loc) $loc
   set p(tvar) $tvar
   if {$tvar ne {}} {
@@ -511,79 +492,8 @@ proc ::klnd::my::MainWidgets {} {
     }}
   }
 }
-#_______________________
-
-proc ::klnd::my::DefaultLocale {} {
-  # Gets a default locale currently used in a system.
-
-  return [lindex [::msgcat::mcpreferences] 0]
-}
 
 # ________________________ UI _________________________ #
-
-proc ::klnd::minYear {} {
-  # Gets minimal year that is correct.
-
-  return 1753
-}
-#_______________________
-
-proc ::klnd::maxYear {} {
-  # Gets maximal year that is correct.
-
-  return 9999
-}
-#_______________________
-
-proc ::klnd::currentYearMonthDay {} {
-  # Gets current year, month, day.
-  # Returns a list of current year, month, day.
-
-  set cl [clock seconds]
-  foreach d {Y N e} {lappend res {*}[clock format $cl -format %$d]}
-  return $res
-}
-#_______________________
-
-proc ::klnd::months {{loc ""}} {
-  # Gets a list of months according to a locale.
-  #   loc - the locale
-
-  if {$loc eq {}} {set loc [my::DefaultLocale]}
-  set months [list]
-  foreach i {01 02 03 04 05 06 07 08 09 10 11 12} {
-    lappend months [clock format [clock scan "$i/01/2021" \
-      -format %D -locale $loc] -format %B -locale $loc]
-  }
-  return $months
-}
-#_______________________
-
-proc ::klnd::weekdays {{loc ""}} {
-  # Gets a list of week days according to a locale.
-  #   loc - the locale
-  # Return list of weekdays and week format (%u or %w)
-
-  variable my::locales
-  if {$loc eq {}} {set loc [my::DefaultLocale]}
-  if {[array names my::locales $loc] ne {}} {
-    set wformat $my::locales($loc)
-  } else {
-    set wformat %u  ;# by default, 1st day of week is Monday
-  }
-  if {$wformat eq {%u}} {  ;# Sunday be the last day of week
-    set wdays {1 2 3 4 5 6 7}
-  } else {
-    set wdays {0 1 2 3 4 5 6}
-  }
-  set days [list]
-  foreach i $wdays {
-    lappend days [clock format [clock scan "03/[expr {14+$i}]/2021" \
-      -format %D -locale $loc] -format %a -locale $loc]
-  }
-  list $days $wformat
-}
-#_______________________
 
 proc ::klnd::clearup {} {
   # Clearance for klnd data (variable my::p).

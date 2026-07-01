@@ -86,7 +86,7 @@ proc ::klnd::my::ShowMonth2 {obj m y {doenter yes} {dopopup no}} {
   #   dopopup - yes, if bind a popup menu
 
   variable p
-  set y [expr {max($y,[::klnd::minYear])}]
+  set y [expr {max($y,[::apave::minYear])}]
   set m [TrimN $m]
   # if calendars are linked with united, no display of year in a title
   if {$p(united$obj)} {set yd {}} {set yd " $y"}
@@ -492,7 +492,7 @@ proc ::klnd::calendar2 {pobj w ownname args} {
   my::InitSettings
   my::InitCalendar {*}$args
   if {$my::p(currentmonth) eq {}} {
-    lassign [::klnd::currentYearMonthDay] year month day
+    lassign [::apave::currentYearMonthDay] year month day
     set my::p(currentmonth) "$year/$month"
     set my::p(currentdate) "$year/$month/$day"
   }

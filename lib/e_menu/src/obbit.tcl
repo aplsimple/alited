@@ -43,6 +43,22 @@ namespace eval ::tk { ; # just to get localized messages
   }
 }
 
+# locale 1st day of week: %u means Mon (default), %w means Sun
+variable LOCALES
+array set LOCALES {
+  en_uk %u
+  en_us %w
+  ru %u
+  ru_ru %u
+  ru_ua %u
+  uk %u
+  ua %u
+  uk_ua %u
+  ua_ua %u
+  by %u
+  be_by %u
+}
+
 # ________________________ CS - color schemes _________________________ #
 
 ## ________________________ CS variables _________________________ ##
@@ -1035,6 +1051,88 @@ proc ::apave::DefaultCS {} {
     set res 23 ;# dark
   }
   return $res
+}
+
+## ________________________ Locale _________________________ ##
+
+proc ::apave::DefaultLocale {} {
+  # Gets a default locale currently used in a system.
+
+  lindex [::msgcat::mcpreferences] 0
+}
+
+## ________________________ Clock _________________________ ##
+
+proc ::apave::minYear {} {
+  # Gets minimal year that is correct.
+
+  return 1753
+}
+#_______________________
+
+proc ::apave::maxYear {} {
+  # Gets maximal year that is correct.
+
+  return 9999
+}
+#_______________________
+
+proc ::apave::firstWeekDay {dt} {
+  # Gets 1st date of week.
+  #   dt - clock time
+
+  set wd [clock format $dt -format %u]
+  clock add $dt -[incr wd -1] day
+}
+#_______________________
+
+proc ::apave::currentYearMonthDay {} {
+  # Gets current year, month, day.
+  # Returns a list of current year, month, day.
+
+  set cl [clock seconds]
+  foreach d {Y N e} {lappend res {*}[clock format $cl -format %$d]}
+  return $res
+}
+#_______________________
+
+proc ::apave::months {{loc ""}} {
+  # Gets a list of months according to a locale.
+  #   loc - the locale
+
+  if {$loc eq {}} {set loc [DefaultLocale]}
+  set months [list]
+  foreach i {01 02 03 04 05 06 07 08 09 10 11 12} {
+    lappend months [clock format [clock scan "$i/01/2021" \
+      -format %D -locale $loc] -format %B -locale $loc]
+  }
+  return $months
+}
+#_______________________
+
+proc ::apave::weekdays {{loc ""}} {
+  # Gets a list of week days according to a locale.
+  #   loc - the locale
+  # Return list of weekdays and week format (%u or %w)
+
+  variable LOCALES
+  if {$loc eq {}} {set loc [DefaultLocale]}
+  if {[array names LOCALES $loc] ne {}} {
+    set wformat $LOCALES($loc)
+  } else {
+    set wformat %u  ;# by default, 1st day of week is Monday
+  }
+  if {$wformat eq {%u}} {  ;# Sunday be the last day of week
+    set wdays {1 2 3 4 5 6 7}
+  } else {
+    set wdays {0 1 2 3 4 5 6}
+  }
+  set days [list]
+  foreach i $wdays {
+    lappend days [clock format [clock scan "03/[expr {14+$i}]/2021" \
+      -format %D -locale $loc] -format %a -locale $loc]
+  }
+  list $days $wformat
 }
 
 # ________________________ ObjectProperty _________________________ #
