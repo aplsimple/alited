@@ -2464,7 +2464,7 @@ method makePopup {w {isRO no} {istext no} {tearoff no} {addpop ""} {clearcom ""}
       -command "event generate $w <<Copy>>"
     if {$istext} {
       eval [my popupHighlightCommands $pop $w]
-      after idle [list [self] set_highlight_matches $w]
+      after idle "catch {[self] set_highlight_matches $w}"
     }
   } else {
     if {$istext} {
@@ -2488,8 +2488,8 @@ method makePopup {w {isRO no} {istext no} {tearoff no} {addpop ""} {clearcom ""}
           lassign $addpop com par1 par2
           eval [my $com $pop $w {*}$par1 {*}$par2]
         }
-        after idle [list [self] set_highlight_matches $w]
-        after idle [my setTextBinds $w]
+        after idle "catch {[self] set_highlight_matches $w}"
+        after idle [list catch [my setTextBinds $w]]
       }
     } else {
       if {$clearcom ne {}} {
@@ -3839,7 +3839,7 @@ method showModal {win args} {
     set opt(-onclose) {}
   }
   if {$opt(-onclose) eq {}} {
-    set opt(-onclose) "set $varname 0"
+    set opt(-onclose) "catch {set $varname 0}"
   } else {
     set opt(-onclose) "$opt(-onclose) $varname"  ;# $opt(-onclose) is a command
     set opt(-onclose) [string map [list %w $win] $opt(-onclose)]

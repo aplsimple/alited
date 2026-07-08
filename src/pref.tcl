@@ -99,9 +99,6 @@ namespace eval pref {
 
   # locales
   variable locales [list]
-
-  # preview flag
-  variable preview 0
 }
 
 # ________________________ Common procedures _________________________ #
@@ -136,7 +133,6 @@ proc pref::fetchVars {} {
     variable stdkeys
     variable StdkeysSize
     variable locales
-    variable preview
   }
 }
 #_______________________
@@ -830,12 +826,12 @@ proc pref::CheckTheming {{doit yes} {force no}} {
   if {[string is double -strict $al(CURSORWIDTH)]} {set cw $al(CURSORWIDTH)} {set cw 2}
   set thopts "$opc1 $cs $hue $cw $al(ED,BlinkCurs) $cc"
   if {![info exists al(checkTheming)] || $al(checkTheming) ne $thopts || $force} {
-    incr al(prefCheckID)
+    incr ::alited::pref::CheckID
     lassign [split [wm geometry $win] x+] w h x y
     set ch [open $fname w]
-    puts $ch "+[expr {$x+$w/6}]+[expr {$y+$h/3}] $thopts {$al(MC,test)} $al(prefCheckID)"
+    puts $ch "+[expr {$x+$w/6}]+[expr {$y+$h/3}] $thopts {$al(MC,test)} $::alited::pref::CheckID"
     close $ch
-    alited::Runtime [file join $SRCDIR preview.tcl] $fname $al(prefCheckID)
+    alited::Runtime [file join $SRCDIR preview.tcl] $fname $::alited::pref::CheckID
     set al(checkTheming) $thopts
   }
   after 100 {alited::pref::CheckTheming yes}
@@ -1821,7 +1817,6 @@ proc pref::_create {tab} {
 
   fetchVars
   set tipson [baltip::cget -on]
-  set preview 0
   baltip::configure -on $al(TIPS,Preferences)
   ::apave::APave create $obPrf $win
   $obPrf makeWindow $win.fra "$al(MC,pref) :: $::alited::USERDIR"

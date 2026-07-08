@@ -6,6 +6,13 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 # LAST CHANGES
 
 
+Version `v1.8.14 (8 Jul'26)`
+
+  - BUGFIX: Preferences: only calling Test -> asking about lost changes
+  - CHANGE: preview.tcl: foo dialogues in File menu; font picker in Tab #2
+  - CHANGE: packages: apave/e_menu 4.9.1
+
+
 Version `v1.8.13 (1 Jul'26)`
 
   - BUGFIX: no theming of book-mark's context menu (clam theme)
@@ -17,7 +24,6 @@ Version `v1.8.13 (1 Jul'26)`
   - NEW   : Preference/General/Test: added to preview: left tool bar & menu bar
   - CHANGE: Projects: if current project is chosen, no actions (just close Projects)
   - CHANGE: some clearance
-  - CHANGE: packages: apave/e_menu 4.9.0
 
 
 Version `v1.8.12 (25 Mar'26)`

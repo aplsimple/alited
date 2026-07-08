@@ -96,8 +96,8 @@ proc ::preview::FillMenu {} {
 
   variable icons
   set m .win.menu.file
-  $m add command -label "Open..." -command {tk_messageBox -message "\nSubstitute for 'Open...'\n" -parent .win}
-  $m add command -label "New" -command {tk_messageBox -message "\nSubstitute for 'New'\n" -parent .win}
+  $m add command -label "Open..." -command {::preview::FooFile tk_getOpenFile}
+  $m add command -label "Save..." -command {::preview::FooFile tk_getSaveFile}
   $m add separator
   $m add command -label "Exit" -command ::preview::Exit -accelerator Esc
   set m .win.menu.tool
@@ -112,7 +112,13 @@ proc ::preview::FillMenu {} {
 #_______________________
 
 proc ::preview::Foo {icon} {
-  tk_messageBox -message "\nRun:\n\n[string totitle $icon] tool\n" -parent .win
+  tk_messageBox -message "\nRun:\n\n\"[string totitle $icon]\" tool\n" -parent .win
+}
+#_______________________
+
+proc preview::FooFile {what} {
+  if {![info exists ::preview::TMPfname]} {set ::preview::TMPfname {}}
+  obj chooser $what ::preview::TMPfname -parent .win
 }
 #_______________________
 
@@ -156,6 +162,7 @@ proc ::preview::Run {} {
   set ::clr1 #e00042
   set ::datefmt %Y/%m/%d
   set ::dat1 [clock format [clock seconds] -format $::datefmt]
+  set ::fon1 [$obj basicDefFont]
   trace add variable ::sc write ::tracer
   set ::opc default
   set ::opcSet [list default clam classic alt -- {{light / dark} awlight awdark
@@ -228,7 +235,9 @@ proc ::preview::Run {} {
     {clr + L 1 1 {-st we} {-tvar ::clr1 -w 12}}
     {lab6 lab5 T 1 1 {-st wsn} {-t "Date picker: "}}
     {dat + L 1 1 {-st we} {-tvar ::dat1 -title {Pick a date} -dateformat $::datefmt -w 8}}
-    {v_2 lab6 T 1 1 {-st ew -rw 1}}
+    {lab7 lab6 T 1 1 {-st wsn} {-t "Font picker: "}}
+    {fon + L 1 1 {-st we} {-tvar ::fon1 -title {Pick a font}}}
+    {v_2 lab7 T 1 1 {-st ew -rw 1}}
     {pro2 h_ L 10 1 {-st ns} {-orient vert -mode indeterminate -afteridle {%w start}}}
   }
   foreach icon $icons {
