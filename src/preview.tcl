@@ -116,7 +116,7 @@ proc ::preview::Foo {icon} {
 }
 #_______________________
 
-proc preview::FooFile {what} {
+proc ::preview::FooFile {what} {
   if {![info exists ::preview::TMPfname]} {set ::preview::TMPfname {}}
   obj chooser $what ::preview::TMPfname -parent .win
 }
