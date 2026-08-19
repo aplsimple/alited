@@ -5,6 +5,13 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 
 # LAST CHANGES
 
+Version `v1.8.15 (19 Aug'26)`
+
+  - BUGFIX: Edit/Formats: mode=5: prohibit rectangular selection
+  - BUGFIX: Edit/Formats: mode=5: unescape resulting value
+  - NEW   : Edit/Formats: mode=5: handle a line at no selection
+  - NEW   : Edit/Formats/Strings: To title, to Title
+
 
 Version `v1.8.14 (8 Jul'26)`
 

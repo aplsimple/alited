@@ -761,6 +761,7 @@ proc format::Mode5 {cont args} {
 
   namespace upvar ::alited al al DIR DIR
   lassign [BeforeFormatting] wtxt value
+  if {$wtxt eq {}} return
   set value [alited::edit::EscapeValue $value]
   lassign $args fn1 fn2 modal
   if {[info exists $cont]} {
@@ -774,6 +775,13 @@ proc format::Mode5 {cont args} {
       set ending [expr {$com eq "-"}]
       if {$ending} {
         set com [join [lrange $cont $il end] \n]
+      }
+      if {![llength [$wtxt tag ranges sel]] && [string first %v $com]>-1} {
+        # command needs selection - if none, select current line
+        set pos0 [$wtxt index insert]
+        set pos1 [$wtxt index "$pos0 linestart"]
+        set pos2 [$wtxt index "$pos0 lineend"]
+        $wtxt tag add sel $pos1 $pos2
       }
       set selection [$wtxt tag ranges sel]
       set lsel [llength $selection]
@@ -792,9 +800,11 @@ proc format::Mode5 {cont args} {
         %M $al(EM,mnudir)]
       set value [eval $com]
       if {$value ne {}} {
+        set value [alited::edit::UnEscapeValue $value]
         if {$lsel} {
           lassign $selection pos1 pos2
           $wtxt replace $pos1 $pos2 $value
+          after idle "$wtxt tag add sel $pos1 $pos2"
         } else {
           $wtxt insert $pos $value
         }
