@@ -1,6 +1,6 @@
 
-# The mode=5 means that the result of Tcl command(s) will be inserted at the
-# current cursor position.
+# The mode=5 means that the result of Tcl command(s) is inserted at the
+# current cursor position or, if a text is selected, replaces the selection.
 #
 # The command can include wildcards:
 #   %w for current text's path
@@ -16,8 +16,8 @@
 
 # ===========================================================================
 
-# Formats sentences of selected text to title. Sentences are separated with
-"." and \n.
+# Formats sentences of selected text to title (at no selection, selects the
+# current line). Sentences are separated with "." and \n.
 
 Mode = 5
 
@@ -58,5 +58,4 @@ proc SELECTION_TOTITLE {seltext} {
   return $res
 }
 
-
-SELECTION_TOTITLE {%v}
+SELECTION_TOTITLE [GetSelection]

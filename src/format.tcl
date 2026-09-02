@@ -628,6 +628,30 @@ proc format::Mode1 {cont args} {
   }
   AfterFormatting $wtxt $pos1 $pos2 $value
 }
+#_______________________
+
+proc format::GetSelection {{posOnly no}} {
+  # Gets a text selection as positions or as text.
+  #   posOnly - yes for getting positions of selection
+  # If no text is selected, make the current line selected.
+
+  set wtxt [alited::main::CurrentWTXT]
+  if {![llength [$wtxt tag ranges sel]]} {
+    set pos0 [$wtxt index insert]
+    set pos1 [$wtxt index "$pos0 linestart"]
+    set pos2 [$wtxt index "$pos0 lineend"]
+    $wtxt tag add sel $pos1 $pos2
+  }
+  set positions [$wtxt tag ranges sel]
+  if {$posOnly} {
+    return $positions
+  }
+  lassign $positions pos1 pos2
+  if {[catch {set res [$wtxt get $pos1 $pos2]}]} {
+    set res {}
+  }
+  return $res
+}
 
 ## ________________________ commands _________________________ ##
 
@@ -639,13 +663,7 @@ proc format::Mode2 {cont args} {
   set err 0
   foreach line $cont {
     if {[set com [alited::edit::IniParameter command $line]] ne {}} {
-      set selection [$wtxt tag ranges sel]
-      if {[llength $selection]==0} {
-        set pos [expr {int([$wtxt index insert])}]
-        set pos1 $pos.0
-        set pos2 $pos.end
-        set selection [list $pos1 $pos2]
-      }
+      set selection [GetSelection yes]
       # Mode=2 allows a rectangular selection,
       # so we should apply the command ($com)
       # to each line of the rectangular selection
@@ -754,7 +772,8 @@ proc format::Mode4 {cont args} {
 ## ________________________ insertions _________________________ ##
 
 proc format::Mode5 {cont args} {
-  # Inserts a string at the current cursor position.
+  # Inserts a string at the current cursor position
+  # or, if a text is selected, replaces the selection.
   # Or does something without changing the text (if commands return "").
   #   cont - list of config.file's lines or variable name containing it
   #   args - contains the edited file name etc.
@@ -776,16 +795,8 @@ proc format::Mode5 {cont args} {
       if {$ending} {
         set com [join [lrange $cont $il end] \n]
       }
-      if {![llength [$wtxt tag ranges sel]] && [string first %v $com]>-1} {
-        # command needs selection - if none, select current line
-        set pos0 [$wtxt index insert]
-        set pos1 [$wtxt index "$pos0 linestart"]
-        set pos2 [$wtxt index "$pos0 lineend"]
-        $wtxt tag add sel $pos1 $pos2
-      }
       set selection [$wtxt tag ranges sel]
-      set lsel [llength $selection]
-      if {!$lsel} {
+      if {![llength $selection]} {
         set value {}
       }
       # map format's own and template's woildcards
@@ -801,7 +812,9 @@ proc format::Mode5 {cont args} {
       set value [eval $com]
       if {$value ne {}} {
         set value [alited::edit::UnEscapeValue $value]
-        if {$lsel} {
+        # formatter can reset the text selection
+        set selection [$wtxt tag ranges sel]
+        if {[llength $selection]} {
           lassign $selection pos1 pos2
           $wtxt replace $pos1 $pos2 $value
           after idle "$wtxt tag add sel $pos1 $pos2"
