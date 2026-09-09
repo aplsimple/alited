@@ -413,9 +413,9 @@ proc pref::Cancel {args} {
         lassign $data(em_inf,$i) em2 idx2 item2
         set em1 [file rootname $em1]  ;# for compatibility
         set em2 [file rootname $em2]  ;# with old ".mnu" extension
-        if {$em_mnu($i) ne $data(em_mnu,$i) || \
-            $em_ico($i) ne $data(em_ico,$i) || \
-            $em1 ne $em2 || $idx1 ne $idx2 || $item1 ne $item2} {
+        if {$em_mnu($i) ne $data(em_mnu,$i) \
+        || $em_ico($i) ne $data(em_ico,$i) \
+        || $em1 ne $em2 || $idx1 ne $idx2 || $item1 ne $item2} {
           set ischanged yes
         }
       }
@@ -1657,10 +1657,9 @@ proc pref::Em_ShowAll {{upd yes}} {
   #   upd - if yes, displays the widgets of bar-menu settings.
   fetchVars
   for {set i 0} {$i<$em_Num} {incr i} {
-    if {![info exists em_inf($i)]} {
+    if {![info exists em_inf($i)] || $em_ico($i) eq {none}} {
       lassign {} em_inf($i) em_mnu($i) em_ico($i)
     }
-    if {$em_ico($i) eq {none}} {set em_ico($i) {}}
     if {$upd} {
       [$obPrf ButMnu$i] configure -text $em_mnu($i)
       set ico [$obPrf OpcIco$i]

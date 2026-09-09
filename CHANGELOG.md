@@ -5,12 +5,13 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 
 # LAST CHANGES
 
-Version `v1.8.15 (2 Sep'26)`
+Version `v1.8.15 (9 Sep'26)`
 
   - BUGFIX: Edit/Formats: mode=5: prohibit rectangular selection
   - BUGFIX: Edit/Formats: mode=5: unescape resulting value
   - NEW   : Edit/Formats: mode=5: handle selection after command
   - NEW   : Edit/Formats/Strings: To title, to Title
+  - CHANGE: Preferences/Tools/bar-menu: clear menu item at choosing 'none' icon
 
 
 Version `v1.8.14 (8 Jul'26)`
