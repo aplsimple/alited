@@ -529,7 +529,7 @@ proc file::RenameFileInTree {{undermouse yes} args} {
   namespace upvar ::alited al al obPav obPav obDl2 obDl2
   lassign [TreeFilename] wtree name fname ID TID
   if {$fname eq {}} return
-  lassign [InputFileName $al(MC,renamefile) $name $undermouse {*}$args] res name2
+  lassign [InputFileName $al(MC,renamefile) $name . $undermouse {*}$args] res name2
   set name2 [string trim $name2]
   if {$res && $name2 ne {} && $name2 ne $name} {
     set fname2 [file join [file dirname $fname] $name2]
@@ -555,10 +555,11 @@ proc file::CheckForNew {{docheck no}} {
 }
 #_______________________
 
-proc file::InputFileName {title name undermouse args} {
+proc file::InputFileName {title name dname undermouse args} {
   # Dialogue to input a file name.
   #   title - title of the dialogue
   #   name - current file name
+  #   dname - current directory name
   #   undermouse - yes if open under the mouse pointer
   #   args - options for query
 
@@ -571,9 +572,12 @@ proc file::InputFileName {title name undermouse args} {
       set args {}
     }
   }
+  set pwd [pwd]
+  cd $dname
   lassign [$obDl2 input {} $title [list \
     fis "{} {-pady 16 -padx 8} {-w 50}" "{$name}"] \
     -head \n\ [msgcat::mc {File name:}] {*}[obj basicTextFont] {*}$args] res name
+  cd $pwd
   list $res $name
 }
 #_______________________
@@ -597,7 +601,8 @@ proc file::CloneFile {{undermouse yes} {fromtree yes}} {
   }
   set fname2 [CloneFileName $fname]
   set name [file tail $fname2]
-  lassign [InputFileName $al(MC,clonefile) $name $undermouse {*}$ar] res name2
+  set dname [file dirname $fname]
+  lassign [InputFileName $al(MC,clonefile) $name $dname $undermouse {*}$ar] res name2
   if {$res && $name2 ne {}} {
     set fname2 [file join [file dirname $fname2] $name2]
     if {![CommandForFile2 copy $fname $fname2]} return

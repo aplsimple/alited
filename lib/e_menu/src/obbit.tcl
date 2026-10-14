@@ -207,7 +207,14 @@ proc ::apave::mc {msg} {
   if {[info exists _MC_($msg)]} {return $_MC_($msg)}
   return $msg
 }
+#_______________________
 
+proc ::apave::Eval {args} {
+  # Attempts to diminish eval's costs and adds uplevel's level feature.
+  #   args - Tcl command and arguments (uplevel's level can precede them)
+
+  uplevel {*}$args
+}
 ## ________________________ Inits _________________________ ##
 
 proc ::apave::initWM {args} {

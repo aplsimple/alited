@@ -5,6 +5,15 @@ The *alited* provides the rich and comprehensive set of features, some are uniqu
 
 # LAST CHANGES
 
+Version `v1.8.16 (14 Oct'26)`
+
+  - BUGFIX: Find/Replace: focus lost after Ctrl+T, if file to be edit is switched
+  - NEW   : Preference/Tools/Linux terminal: "Test" button runs them separately
+  - CHANGE: File/Clone: file's directory is current in file chooser
+  - CHANGE: file list is sorted by default (Tools/File List/Sorted)
+  - CHANGE: packages: apave/e_menu 4.9.3
+
+
 Version `v1.8.15 (9 Sep'26)`
 
   - BUGFIX: Edit/Formats: mode=5: prohibit rectangular selection

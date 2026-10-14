@@ -1276,7 +1276,7 @@ method SpanConfig {w rcnam rc rcspan opt val} {
   # row/column for their *span* options.
 
   for {set i $rc} {$i < ($rc + $rcspan)} {incr i} {
-    eval [grid ${rcnam}configure $w $i $opt $val]
+    grid ${rcnam}configure $w $i $opt $val
   }
 }
 #_______________________
@@ -1447,7 +1447,7 @@ method OptionCascade_add {w vname argl precom args} {
       if {$precom eq {}} {
         set adds {}
       } else {
-        set adds [eval {*}[string map [list \$ \\\$ \[ \\\[] \
+        set adds [apave::Eval {*}[string map [list \$ \\\$ \[ \\\[] \
           [string map [list %a $label] $precom]]]
       }
       set il [string last -checkvar $label]
@@ -1854,7 +1854,7 @@ method Replace_Tcl {r1 r2 args} {
       }
       set _lwidgets [lreplace $_lwidgets $_i $_i]
       set _inext [expr {$_i-1}]
-      eval [string map {%C {lwins $r2 [incr _inext] }} $_code]
+      apave::Eval [string map {%C {lwins $r2 [incr _inext] }} $_code]
     }
     prc {
       upvar 1 $r1 _i $r2 _lwidgets
@@ -2463,7 +2463,7 @@ method makePopup {w {isRO no} {istext no} {tearoff no} {addpop ""} {clearcom ""}
     $pop add command {*}[my iconA copy] -accelerator Ctrl+C -label Copy \
       -command "event generate $w <<Copy>>"
     if {$istext} {
-      eval [my popupHighlightCommands $pop $w]
+      apave::Eval [my popupHighlightCommands $pop $w]
       after idle "catch {[self] set_highlight_matches $w}"
     }
   } else {
@@ -2482,11 +2482,11 @@ method makePopup {w {isRO no} {istext no} {tearoff no} {addpop ""} {clearcom ""}
       $pop add command {*}[my iconA redo] -accelerator Ctrl+Shift+Z -label Redo \
         -command "::apave::eventOnText $w <<Redo>>"
       catch {
-        eval [my popupBlockCommands $pop $w]
-        eval [my popupHighlightCommands $pop $w]
+        apave::Eval [my popupBlockCommands $pop $w]
+        apave::Eval [my popupHighlightCommands $pop $w]
         if {$addpop ne {}} {
           lassign $addpop com par1 par2
-          eval [my $com $pop $w {*}$par1 {*}$par2]
+          apave::Eval [my $com $pop $w {*}$par1 {*}$par2]
         }
         after idle "catch {[self] set_highlight_matches $w}"
         after idle [list catch [my setTextBinds $w]]
@@ -2704,7 +2704,7 @@ method Post {w attrs} {
         after idle [list [self] timeoutButton $w $timo $lbl]
       }
       -myown {
-        my Eval {*}[string map [list %w $w] $v]
+        apave::Eval {*}[string map [list %w $w] $v]
       }
       -bartabs {
         after 10 [string map [list %w $w] $v]
@@ -2899,7 +2899,7 @@ method labelFlashing {w1 w2 first args} {
 }
 #_______________________
 
-method VisitedLab {w cmd {on ""} {fg ""} {bg ""}} {
+method visitedLab {w cmd {on ""} {fg ""} {bg ""}} {
   # Marks a label as visited/not visited
   #   w - label's path
   #   cmd - command linked
@@ -2940,7 +2940,7 @@ method VisitedLab {w cmd {on ""} {fg ""} {bg ""}} {
 }
 #_______________________
 
-method HoverLab {w cmd on {fg ""} {bg ""}} {
+method hoverLab {w cmd on {fg ""} {bg ""}} {
   # Actions on entering/leaving a linked label.
   #   w - label's path
   #   cmd - command linked
@@ -2952,7 +2952,7 @@ method HoverLab {w cmd on {fg ""} {bg ""}} {
     if {$fg eq {}} {lassign [my csGet] fg - bg}
     $w configure -background $bg
   } else {
-    my VisitedLab $w $cmd {} $fg $bg
+    my visitedLab $w $cmd {} $fg $bg
   }
 }
 #_______________________
@@ -2997,10 +2997,10 @@ method makeLabelLinked {lab v fg bg fg2 bg2 {doadd yes} {inv no} } {
     set fg2 $ft
     set bg2 $bt
   }
-  my VisitedLab $lab $v $vz $fg $bg
-  bind $lab <Enter> "::apave::obj EXPORT HoverLab $lab {$v} yes $fg2 $bg2"
-  bind $lab <Leave> "::apave::obj EXPORT HoverLab $lab {$v} no $fg $bg"
-  bind $lab <Button-1> "::apave::obj EXPORT VisitedLab $lab {$v} yes $fg2 $bg2;$v"
+  my visitedLab $lab $v $vz $fg $bg
+  bind $lab <Enter> "[self] hoverLab $lab {$v} yes $fg2 $bg2"
+  bind $lab <Leave> "[self] hoverLab $lab {$v} no $fg $bg"
+  bind $lab <Button-1> "[self] visitedLab $lab {$v} yes $fg2 $bg2;$v"
   if {$doadd} {lappend ::apave::_AP_VISITED(ALL) [list $lab $v $inv]}
   list $fg $bg $fg2 $bg2
 }
@@ -3571,7 +3571,7 @@ method Window {w inplists} {
       }
       my Pre attrs
       set addcomms [my AdditionalCommands $w $wname attrs]
-      my Eval $widget $wname {*}$attrs
+      apave::Eval $widget $wname {*}$attrs
       my Post $wname $attrs
       foreach acm $addcomms {{*}$acm}
       # for buttons and entries - set up the hotkeys (Up/Down etc.)
@@ -3619,12 +3619,6 @@ method Window {w inplists} {
     }
   }
   return $lwidgets
-}
-#_______________________
-
-method Eval {args} {
-
-  eval {*}$args
 }
 #_______________________
 

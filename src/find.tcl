@@ -574,7 +574,7 @@ proc find::SortSearch {wtxt pos1 pos2} {
   #   wtxt - text's path
   #   pos1 - 1st position to compare
   #   pos2 - 2nd position to compare
-  
+
   if {[$wtxt compare $pos1 < $pos2]} {
     return -1
   } elseif {[$wtxt compare $pos1 > $pos2]} {
@@ -1469,7 +1469,7 @@ proc find::_create {} {
   bind $w.cbx2 <Return> "$w.but4 invoke"
   foreach k {f F} {bind $win <Control-$k> {alited::find::LastInvoke; break}}
   foreach k {r R} {bind $win <Control-$k> {alited::find::btTPaste; break}}
-  foreach k {t T} {bind $win <Control-$k> "focusByForce $wtxt"}
+  foreach k {t T} {bind $win <Control-$k> alited::FocusText}
   FocusCbx
   set but [$obFND But1]
   lassign [split [winfo geometry $but] x+] w h

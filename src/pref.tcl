@@ -1399,9 +1399,24 @@ proc pref::Common_Tab {} {
     set tt {{.labTT .labTcl T 1 1 {-st e -pady 1 -padx 3} {-t "Linux terminal:"}}
       {.cbxTT + L 1 1 {-st swe -pady 5} {-tvar ::alited::al(EM,tt=) -w 45 -values
       {$al(TTLIST)} -clearcom {alited::main::ClearCbx %w ::alited::al(TTLIST)}}}
-      {.butOK + L 1 1 {-pady 5} {-t Test -com {alited::tool::_run 5}}}}
+      {.butOK + L 1 1 {-pady 5} {-t Test -com alited::pref::TestLinuxTerminal}}}
   }
   linsert $res 5 {*}$tt
+}
+#_______________________
+
+proc pref::TestLinuxTerminal {} {
+  # Runs Linux terminal of Tools tab.
+
+  set comline [split $::alited::al(EM,tt=)]
+  set com [apave::autoexec [lindex $comline 0]]
+  if {$com eq {}} {
+    set com $comline
+  } else {
+    set com [lreplace $comline 0 0 $com]
+  }
+  puts $com
+  exec {*}$com &
 }
 
 ## ________________________ e_menu _________________________ ##

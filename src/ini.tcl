@@ -203,7 +203,7 @@ namespace eval ::alited {
   set al(TIPS,Marks) 1
 
   # flag "sorted file list"
-  set al(sortList) 0
+  set al(sortList) 1
 
   # modes to sort bartabs
   set al(incdecName) increasing
